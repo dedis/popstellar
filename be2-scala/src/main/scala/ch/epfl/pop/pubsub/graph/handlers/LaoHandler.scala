@@ -60,7 +60,9 @@ case object LaoHandler extends MessageHandler {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
     // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
     val ask = dbActor.ask("TODO").map {
-      case Some(_) => dbAskWritePropagate(rpcMessage)
+      case Some(_) =>
+        val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+        Await.result(ask, duration)
       // TODO careful about asynchrony and the fact that the network may reorder some messages
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,
@@ -71,5 +73,8 @@ case object LaoHandler extends MessageHandler {
     Await.result(ask, duration)
   }
 
-  def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
+  def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
 }

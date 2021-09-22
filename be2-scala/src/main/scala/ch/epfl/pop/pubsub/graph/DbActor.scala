@@ -54,6 +54,8 @@ object DbActor extends AskPatternConstants {
    *
    * @param channel the channel where the message should be published
    * @param message the message to write in db and propagate to clients
+   *
+   * @note DbActor will answer with a [[DbActorWriteAck]] if successful since the propagation cannot fail
    */
   final case class WriteAndPropagate(channel: Channel, message: Message) extends Event
 
@@ -68,7 +70,7 @@ object DbActor extends AskPatternConstants {
    * Request to check if channel <channel> exists in the db
    *
    * @param channel targeted channel
-   * @note db answers with a simple boolean
+   * @note db answers with a simple boolean // FIXME remove booleans
    */
   final case class ChannelExists(channel: Channel) extends Event
 
