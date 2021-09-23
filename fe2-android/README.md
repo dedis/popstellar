@@ -13,7 +13,7 @@ In `Tools` -> `AVD Manager` you can create an emulator to run the app. For the M
 
 There are two build variants on this project, *Prod* and *Mock*. Go to `Build Variants` and choose *prodDebug* as the `Active Build Variant` to run the application. The CI uses the *mockDebug* variant to build and run the tests.
 
-To run the application from the IDE you need to select the configuration *app* and the device. To run on an Android device connect it to the computer and run the following commands from the `fe2-android` folder. Keep in mind that the minimum API required is 26.
+To run the application from the IDE you need to select the configuration *app* and the device on the toolbar. To run on an Android device connect it to the computer and run the following commands from the `fe2-android` folder. Keep in mind that the minimum API required is 26.
 
 ```
 gradle build
