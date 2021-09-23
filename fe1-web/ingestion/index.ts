@@ -1,2 +1,2 @@
 export * from './Configure';
-export { storeMessage, storeMessage } from './Handler';
+export { storeMessage } from './Handler';
