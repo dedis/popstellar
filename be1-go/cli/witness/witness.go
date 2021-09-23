@@ -117,7 +117,7 @@ func Serve(cliCtx *cli.Context) error {
 func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub,
 	wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) error {
 
-	urlString := fmt.Sprintf("ws://%s/%s/witness/", address, otherHubType)
+	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
 	u, err := url.Parse(urlString)
 	if err != nil {
 		return xerrors.Errorf("failed to parse connection url %s %v", urlString, err)
