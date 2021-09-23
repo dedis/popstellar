@@ -44,8 +44,6 @@ const Event = (props: IPropTypes) => {
       return (
         <EventMeeting
           event={event}
-          childrenVisibility={toggleChildrenVisible}
-          renderItemFn={renderItemFn}
         />
       );
     }
