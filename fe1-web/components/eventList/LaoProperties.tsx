@@ -10,12 +10,14 @@ import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
+import QRCode from '../QRCode';
 
 function renderProperties(lao: Lao) {
   return (
     <>
       <ParagraphBlock text={`Lao name: ${lao.name}`} />
       <ParagraphBlock text={`Lao creation: ${lao.creation.toString()}`} />
+      <QRCode value={lao.id.toString()} visibility />
     </>
   );
 }
