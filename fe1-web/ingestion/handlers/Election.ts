@@ -1,4 +1,4 @@
-import { Message } from 'model/network/method/message';
+import { ExtendedMessage } from 'model/network/method/message';
 import {
   ActionType,
   CastVote,
@@ -18,7 +18,7 @@ import { getEventFromId } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
-function handleElectionSetupMessage(msg: Message): boolean {
+function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.SETUP) {
     console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
@@ -58,7 +58,7 @@ function handleElectionSetupMessage(msg: Message): boolean {
   return true;
 }
 
-function handleCastVoteMessage(msg: Message): boolean {
+function handleCastVoteMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.CAST_VOTE) {
     console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
@@ -107,7 +107,7 @@ function handleCastVoteMessage(msg: Message): boolean {
   return true;
 }
 
-function handleElectionEndMessage(msg: Message) {
+function handleElectionEndMessage(msg: ExtendedMessage) {
   console.log('Handling Election end message');
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.END) {
@@ -134,7 +134,7 @@ function handleElectionEndMessage(msg: Message) {
   return true;
 }
 
-function handleElectionResultMessage(msg: Message) {
+function handleElectionResultMessage(msg: ExtendedMessage) {
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.RESULT) {
     console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
@@ -166,7 +166,7 @@ function handleElectionResultMessage(msg: Message) {
   return true;
 }
 
-export function handleElectionMessage(msg: Message) {
+export function handleElectionMessage(msg: ExtendedMessage) {
   if (msg.messageData.object !== ObjectType.ELECTION) {
     console.warn('handleElectionMessage was called to process an unsupported message', msg);
     return false;

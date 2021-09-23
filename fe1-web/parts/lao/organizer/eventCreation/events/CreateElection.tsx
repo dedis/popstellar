@@ -92,8 +92,8 @@ const CreateElection = ({ route }: any) => {
       electionId,
       STRINGS.election_version_identifier,
       createdAt,
-      startDate,
-      endDate,
+      Timestamp.dateToTimestamp(startDate),
+      Timestamp.dateToTimestamp(endDate),
       getQuestionObjects(),
     )
       .then(() => {

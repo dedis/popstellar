@@ -53,10 +53,6 @@ export class Message {
     return this.#messageData;
   }
 
-  // The channel field gets assigned for all incoming messages in JsonRpcWithMessage.ts
-  // In order to use it when handling the messages, such as the election result msg
-  public channel?: Channel;
-
   constructor(msg: Partial<Message>) {
     if (!msg.data) {
       throw new ProtocolError("Undefined 'data' parameter encountered during 'Message' creation");
@@ -92,10 +88,6 @@ export class Message {
       }
     });
 
-    if (msg.channel) {
-      this.channel = msg.channel;
-    }
-
     this.sender = msg.sender;
     this.signature = msg.signature;
     this.message_id = msg.message_id;
@@ -115,7 +107,6 @@ export class Message {
       witness_signatures: obj.witness_signatures.map(
         (ws: WitnessSignatureState) => WitnessSignature.fromJson(ws),
       ),
-      channel: obj.channel,
     });
   }
 

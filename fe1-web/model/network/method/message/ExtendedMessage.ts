@@ -1,11 +1,12 @@
 import {
-  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp,
+  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp, Channel,
 } from 'model/objects';
 import { Message, MessageState } from 'model/network/method/message/Message';
 
 export interface ExtendedMessageState extends MessageState {
   receivedAt: number;
   processedAt?: number;
+  channel?: string;
 }
 
 export function markExtMessageAsProcessed(msg: ExtendedMessageState, when?: Timestamp)
@@ -21,16 +22,25 @@ export class ExtendedMessage extends Message {
 
   public processedAt?: Timestamp;
 
+  // The channel field gets assigned for all incoming messages in JsonRpcWithMessage.ts
+  // In order to use it when handling the messages, such as the election result msg
+  public channel?: Channel;
+
   constructor(msg: Partial<ExtendedMessage>) {
     super(msg);
     this.receivedAt = msg.receivedAt || Timestamp.EpochNow();
     this.processedAt = msg.processedAt;
+
+    if (msg.channel) {
+      this.channel = msg.channel;
+    }
   }
 
-  public static fromMessage(msg: Message, receivedAt?: Timestamp): ExtendedMessage {
+  public static fromMessage(msg: Message, ch: Channel, receivedAt?: Timestamp): ExtendedMessage {
     return new ExtendedMessage({
       ...msg,
-      receivedAt: receivedAt,
+      channel: ch,
+      receivedAt: receivedAt || Timestamp.EpochNow(),
     });
   }
 
@@ -41,16 +51,17 @@ export class ExtendedMessage extends Message {
       sender: new PublicKey(state.sender),
       signature: new Signature(state.signature),
       message_id: new Hash(state.message_id),
-      channel: state.channel,
       witness_signatures: state.witness_signatures.map(
         (ws: any) => new WitnessSignature({
           witness: new PublicKey(ws.witness),
           signature: new Signature(ws.signature),
         }),
       ),
+
       // extended fields:
       receivedAt: state.receivedAt ? new Timestamp(state.receivedAt) : undefined,
       processedAt: state.processedAt ? new Timestamp(state.processedAt) : undefined,
+      channel: state.channel,
     });
   }
 
