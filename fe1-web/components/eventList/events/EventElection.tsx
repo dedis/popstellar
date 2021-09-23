@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import {
+  SectionList, StyleSheet, Text, TextStyle,
+} from 'react-native';
+import { Badge } from 'react-native-elements';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { dispatch, getStore, updateEvent } from 'store';
+import { castVote, terminateElection } from 'network';
 import {
   Election,
   ElectionStatus,
@@ -10,18 +17,11 @@ import {
   Timestamp,
   Vote,
 } from 'model/objects';
-import {
-  SectionList, StyleSheet, Text, TextStyle,
-} from 'react-native';
 import { Spacing, Typography } from 'styles';
-import { castVote, terminateElection } from 'network';
 import CheckboxList from 'components/CheckboxList';
 import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
-import { Badge } from 'react-native-elements';
-import { dispatch, getStore, updateEvent } from 'store';
-import { useSelector } from 'react-redux';
 import BarChartDisplay from 'components/BarChartDisplay';
 import { getEventFromId } from 'ingestion/handlers/Utils';
 

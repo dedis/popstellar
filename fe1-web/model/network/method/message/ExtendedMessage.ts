@@ -1,5 +1,5 @@
 import {
-  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp, Channel,
+  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp,
 } from 'model/objects';
 import { Message, MessageState } from 'model/network/method/message/Message';
 
@@ -25,10 +25,6 @@ export class ExtendedMessage extends Message {
     super(msg);
     this.receivedAt = msg.receivedAt || Timestamp.EpochNow();
     this.processedAt = msg.processedAt;
-  }
-
-  public markAsProcessed(when?: Timestamp) {
-    this.processedAt = when || Timestamp.EpochNow();
   }
 
   public static fromMessage(msg: Message, receivedAt?: Timestamp): ExtendedMessage {

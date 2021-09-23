@@ -1,16 +1,14 @@
 import React, { useState } from 'react';
+import { Text } from 'react-native';
 import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { makeCurrentLao } from 'store';
+import { requestOpenRollCall } from 'network';
 import {
   RollCall, RollCallStatus, Wallet,
 } from 'model/objects';
-import { useSelector } from 'react-redux';
-import {
-  OpenedLaoStore, WalletStore,
-} from 'store';
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
-import { requestOpenRollCall } from 'network';
-import { Text } from 'react-native';
 
 /**
  * Component used to display a RollCall event in the LAO event list
@@ -20,7 +18,9 @@ import { Text } from 'react-native';
 const EventRollCall = (props: IPropTypes) => {
   const { event } = props;
   const { isOrganizer } = props;
-  const lao = OpenedLaoStore.get();
+  const laoSelect = makeCurrentLao();
+  const lao = useSelector(laoSelect);
+
   if (!lao) {
     console.warn('no LAO is currently active');
     return null;

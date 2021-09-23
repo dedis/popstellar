@@ -2,20 +2,16 @@ import React from 'react';
 import {
   SectionList, StyleSheet, Text, TextStyle, View, ViewStyle,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { makeIsLaoOrganizer } from 'store';
 
 import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
 
 import * as RootNavigation from 'navigation/RootNavigation';
 import TextBlock from 'components/TextBlock';
-import { useSelector } from 'react-redux';
 import Event from './events';
-import {
-  getKeyPairState, getStore, makeCurrentLao, WalletStore,
-} from '../../store';
-import { LaoEvent, PublicKey } from '../../model/objects';
 
 const styles = StyleSheet.create({
   flexBox: {
@@ -63,12 +59,8 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
 
-  // consider refactoring this into a selector that returns a boolean if we're organizers
-  const laoSelect = makeCurrentLao();
-  const lao = useSelector(laoSelect);
-  const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
-  const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
-  const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
+  const isOrganizerSelect = makeIsLaoOrganizer();
+  const isOrganizer = useSelector(isOrganizerSelect);
 
   const renderItemFn = (
     ({ item }: any) => <Event event={item} isOrganizer={isOrganizer} renderItemFn={renderItemFn} />
@@ -77,7 +69,7 @@ const EventListCollapsible = (props: IPropTypes) => {
   return (
     <SectionList
       sections={data}
-      keyExtractor={(item, index) => `${item.id}`}
+      keyExtractor={(item) => `${item.id}`}
       renderItem={renderItemFn}
       renderSectionHeader={({ section: { title } }) => renderSectionHeader(title, !!isOrganizer)}
     />

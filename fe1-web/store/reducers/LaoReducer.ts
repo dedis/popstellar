@@ -4,6 +4,7 @@ import {
 import { REHYDRATE } from 'redux-persist';
 
 import { Hash, Lao, LaoState } from 'model/objects';
+import { getKeyPairState } from './KeyPairReducer';
 // import laosData from 'res/laoData';
 
 /**
@@ -178,6 +179,19 @@ export const makeLaosMap = () => createSelector(
       return acc;
     }, {} as Record<string, Lao>,
   ),
+);
+
+export const makeIsLaoOrganizer = () => createSelector(
+  // First input: all LAOs map
+  (state) => getLaosState(state).byId,
+  // Second input: current LAO id
+  (state) => getLaosState(state)?.currentId,
+  // Second input: sorted LAO ids list
+  (state) => getKeyPairState(state)?.keyPair?.publicKey,
+  // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+  (laoMap: Record<string, LaoState>,
+    laoId: string | undefined,
+    pKey: string | undefined) : boolean => !!laoId && laoMap[laoId]?.organizer === pKey,
 );
 
 export default {

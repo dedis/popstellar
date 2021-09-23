@@ -1,9 +1,7 @@
 import {
-  shape, func, number, arrayOf, string, oneOf, object, any,
+  shape, func, number, arrayOf, string, oneOf, object,
 } from 'prop-types';
 import { Action } from '@react-navigation/routers/src/CommonActions';
-import { ParamListBase } from '@react-navigation/routers';
-import { NavigationProp } from '@react-navigation/core/src/types';
 
 const PROPS_TYPE = {
 
