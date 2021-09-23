@@ -5,7 +5,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
