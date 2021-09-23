@@ -1,6 +1,6 @@
 import { Channel } from 'model/objects/Channel';
 import { catchup, subscribe } from 'network/JsonRpcApi';
-import { storeMessages } from 'ingestion';
+import { storeMessage } from 'ingestion';
 
 export async function subscribeToChannel(channel: Channel) {
   if (!channel) {
@@ -17,7 +17,7 @@ export async function subscribeToChannel(channel: Channel) {
     const msgs = await catchup(channel);
 
     for (const msg of msgs) {
-      storeMessages(msg);
+      storeMessage(msg, channel);
     }
 
     return;

@@ -2,10 +2,12 @@ import {
   EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
+  CastVote,
   CloseRollCall,
   CreateLao,
   CreateMeeting,
   CreateRollCall,
+  EndElection,
   OpenRollCall,
   ReopenRollCall,
   SetupElection,
@@ -14,12 +16,12 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromId, ROOT_CHANNEL,
+  Channel, channelFromIds, ROOT_CHANNEL,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
-import { Question } from 'model/objects/Election';
+import { Question, Vote } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -36,7 +38,7 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
   });
 
   return publish(ROOT_CHANNEL, message)
-    .then(() => channelFromId(message.id));
+    .then(() => channelFromIds(message.id));
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
@@ -51,7 +53,7 @@ export function requestUpdateLao(name: string, witnesses?: PublicKey[]): Promise
     witnesses: (witnesses === undefined) ? currentLao.witnesses : witnesses,
   });
 
-  return publish(channelFromId(currentLao.id), message);
+  return publish(channelFromIds(currentLao.id), message);
 }
 
 /** Send a server query asking for the current state of a LAO */
@@ -71,7 +73,7 @@ export function requestStateLao(): Promise<void> {
     modification_signatures: [], // FIXME need modification_signatures from storage
   });
 
-  return publish(channelFromId(currentLao.id), message);
+  return publish(channelFromIds(currentLao.id), message);
 }
 
 /** Send a server query asking for the creation of a meeting given a certain name (String),
@@ -95,7 +97,7 @@ export function requestCreateMeeting(
     extra,
   });
 
-  return publish(channelFromId(currentLao.id), message);
+  return publish(channelFromIds(currentLao.id), message);
 }
 
 /** Send a server message to acknowledge witnessing the message message (JS object) */
@@ -137,7 +139,7 @@ export function requestCreateRollCall(
     description: description,
   });
 
-  const laoCh = channelFromId(currentLao.id);
+  const laoCh = channelFromIds(currentLao.id);
   return publish(laoCh, message);
 }
 
@@ -159,7 +161,7 @@ export function requestOpenRollCall(rollCallId: Hash, start?: Timestamp): Promis
     opened_at: time,
   });
 
-  return publish(channelFromId(lao.id), message);
+  return publish(channelFromIds(lao.id), message);
 }
 
 /**
@@ -180,7 +182,7 @@ export function requestReopenRollCall(rollCallId: Hash, start?: Timestamp): Prom
     opened_at: time,
   });
 
-  return publish(channelFromId(lao.id), message);
+  return publish(channelFromIds(lao.id), message);
 }
 
 /**
@@ -207,7 +209,7 @@ export function requestCloseRollCall(
     attendees: attendees,
   });
 
-  return publish(channelFromId(lao.id), message);
+  return publish(channelFromIds(lao.id), message);
 }
 
 /** Sends a server query asking for creation of an Election with a given name (String),
@@ -236,6 +238,42 @@ export function requestCreateElection(
     questions: questions,
   });
 
-  const laoCh = channelFromId(currentLao.id);
+  const laoCh = channelFromIds(currentLao.id);
   return publish(laoCh, message);
+}
+
+/** Sends a server query which creates a Vote in an ongoing election */
+export function castVote(
+  election_id: Hash,
+  votes: Vote[],
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+  const message = new CastVote({
+    lao: currentLao.id,
+    election: election_id,
+    created_at: time,
+    votes: votes,
+  });
+
+  const elecCh = channelFromIds(currentLao.id, election_id);
+  return publish(elecCh, message);
+}
+
+/** Sends a server query which creates a Vote in an ongoing election */
+export function terminateElection(
+  electionId: Hash,
+  registeredVotes: Hash,
+): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+  const message = new EndElection({
+    lao: currentLao.id,
+    election: electionId,
+    created_at: time,
+    registered_votes: registeredVotes,
+  });
+
+  const elecCh = channelFromIds(currentLao.id, electionId);
+  return publish(elecCh, message);
 }

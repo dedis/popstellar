@@ -11,6 +11,7 @@ const STRINGS = {
   navigation_tab_home: 'Home',
   navigation_tab_connect: 'Connect',
   navigation_tab_launch: 'Launch',
+  navigation_tab_wallet: 'Wallet',
 
   /* --- App Navigation Strings --- */
   app_navigation_tab_home: 'AppHome',
@@ -28,7 +29,7 @@ const STRINGS = {
   witness_navigation_tab_video: 'Witness Video',
 
   /* --- Organizer Navigation Strings --- */
-  organizer_navigation_tab_home: 'Organizer',
+  organizer_navigation_tab_home: 'Organizer Home',
   organizer_navigation_tab_create_event: 'Create Event',
   organizer_navigation_tab_add_witness: 'Add witness',
   organizer_navigation_tab_roll_call: 'Roll-Call',
@@ -37,7 +38,7 @@ const STRINGS = {
   organizer_navigation_creation_election: 'Create election',
 
   /* --- Wallet Navigation Strings --- */
-  navigation_home_tab_wallet: 'Wallet',
+  navigation_home_tab_wallet: 'Wallet Home',
   navigation_insert_seed_tab_wallet: 'Wallet Setup',
   navigation_show_seed_wallet: 'New Wallet',
   navigation_synced_wallet: 'My Wallet',

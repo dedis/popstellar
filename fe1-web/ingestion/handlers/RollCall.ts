@@ -1,4 +1,4 @@
-import { Message } from 'model/network/method/message';
+import { ExtendedMessage } from 'model/network/method/message';
 import {
   ActionType,
   CloseRollCall,
@@ -20,7 +20,7 @@ import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
-function handleRollCallCreateMessage(msg: Message): boolean {
+function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ROLL_CALL
     || msg.messageData.action !== ActionType.CREATE) {
     console.warn('handleRollCallCreateMessage was called to process an unsupported message', msg);
@@ -53,7 +53,7 @@ function handleRollCallCreateMessage(msg: Message): boolean {
   return true;
 }
 
-function handleRollCallOpenMessage(msg: Message): boolean {
+function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ROLL_CALL
     || msg.messageData.action !== ActionType.OPEN) {
     console.warn('handleRollCallOpenMessage was called to process an unsupported message', msg);
@@ -87,7 +87,7 @@ function handleRollCallOpenMessage(msg: Message): boolean {
   return true;
 }
 
-function handleRollCallCloseMessage(msg: Message): boolean {
+function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ROLL_CALL
     || msg.messageData.action !== ActionType.CLOSE) {
     console.warn('handleRollCallCloseMessage was called to process an unsupported message', msg);
@@ -135,8 +135,8 @@ function handleRollCallCloseMessage(msg: Message): boolean {
   return true;
 }
 
-export function handleRollCallMessage(msg: Message) {
-  if (msg.messageData.object !== ObjectType.LAO) {
+export function handleRollCallMessage(msg: ExtendedMessage) {
+  if (msg.messageData.object !== ObjectType.ROLL_CALL) {
     console.warn('handleRollCallMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -157,7 +157,7 @@ export function handleRollCallMessage(msg: Message) {
       return handleRollCallCloseMessage(msg);
 
     case ActionType.REOPEN:
-      // TODO: implement this logic
+      // TODO: currently unsupported
       // fallthrough
 
     default:

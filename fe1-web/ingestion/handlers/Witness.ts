@@ -1,4 +1,4 @@
-import { Message } from 'model/network/method/message';
+import { ExtendedMessage } from 'model/network/method/message';
 import {
   ActionType,
   ObjectType,
@@ -12,7 +12,7 @@ import {
 
 const getCurrentLao = makeCurrentLao();
 
-export function handleWitnessMessage(msg: Message): boolean {
+export function handleWitnessMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.MESSAGE
     || msg.messageData.action !== ActionType.WITNESS) {
     console.warn('handleWitnessMessage was called to process an unsupported message', msg);

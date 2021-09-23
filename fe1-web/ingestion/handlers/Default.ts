@@ -1,4 +1,4 @@
-import { Message } from 'model/network/method/message';
+import { ExtendedMessage } from 'model/network/method/message';
 import { ObjectType } from 'model/network/method/message/data';
 import { handleLaoMessage } from './Lao';
 import { handleWitnessMessage } from './Witness';
@@ -13,7 +13,7 @@ import { handleElectionMessage } from './Election';
  * @returns false if the message could not be handled
  * @returns true if the message was handled
  */
-export function handleMessage(msg: Message) {
+export function handleMessage(msg: ExtendedMessage) {
   switch (msg.messageData.object) {
     case ObjectType.LAO:
       return handleLaoMessage(msg);

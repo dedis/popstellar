@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 import { getNetworkManager } from 'network';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { Channel, channelFromId, Hash } from 'model/objects';
+import { Channel, channelFromIds, Hash } from 'model/objects';
 
 import { Spacing, Typography } from 'styles';
 import styleContainer from 'styles/stylesheets/container';
@@ -53,7 +53,7 @@ function connectTo(serverUrl: string): boolean {
 function validateLaoId(laoId: string): Channel | undefined {
   try {
     const h = new Hash(laoId);
-    return channelFromId(h);
+    return channelFromIds(h);
   } catch (err) {
     console.error(`Cannot connect to LAO '${laoId}' as it is an invalid LAO ID`, err);
   }
