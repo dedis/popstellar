@@ -52,11 +52,12 @@ public class LAORepository {
   private static final String ROOT = "/root/";
   private static LAORepository INSTANCE = null;
 
-  private final LAODataSource.Remote mRemoteDataSource;
+  @SuppressWarnings("Implementation of LAOLocalDataSource is not complete.")
   private final LAODataSource.Local mLocalDataSource;
+  private final LAODataSource.Remote mRemoteDataSource;
   private final AndroidKeysetManager mKeysetManager;
-  private final Gson mGson;
   private final SchedulerProvider schedulerProvider;
+  private final Gson mGson;
 
   // A subject that represents unprocessed messages
   private Subject<GenericMessage> unprocessed;
@@ -70,6 +71,7 @@ public class LAORepository {
   // Outstanding subscribes
   private Map<Integer, String> subscribeRequests;
 
+  // set of subscribed channels
   private Set<String> subscribedChannels;
 
   // Outstanding catchups
@@ -84,6 +86,7 @@ public class LAORepository {
   // Observable to subscribe to LAOs on reconnection
   private Observable<WebSocket.Event> websocketEvents;
 
+  // Observable to subscribe to the incoming messages
   private Observable<GenericMessage> upstream;
 
   private LAORepository(

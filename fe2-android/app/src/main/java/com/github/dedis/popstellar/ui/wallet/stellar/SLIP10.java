@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.model.stellar;
+package com.github.dedis.popstellar.ui.wallet.stellar;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
