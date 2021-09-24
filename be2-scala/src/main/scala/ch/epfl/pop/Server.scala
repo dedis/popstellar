@@ -25,7 +25,7 @@ object Server {
    * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
-    val PORT = 8000
+    val PORT = 9000
     val PATH = ""
 
     val system = akka.actor.ActorSystem("pop-be2-inner-actor-system")
