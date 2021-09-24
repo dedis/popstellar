@@ -6,17 +6,25 @@
 
 - [High-level ("Message data") messages](#high-level-message-data-messages)
 - [Introduction](#introduction)
+- [LAO](#lao)
   - [Creating a LAO (lao#create)](#creating-a-lao-laocreate)
   - [Update LAO properties (lao#update_properties)](#update-lao-properties-laoupdate_properties)
   - [LAO state broadcast (lao#state)](#lao-state-broadcast-laostate)
+- [Message](#message)
   - [Witness a message (message#witness)](#witness-a-message-messagewitness)
+- [Meeting](#meeting)
   - [Creating a Meeting (meeting#create)](#creating-a-meeting-meetingcreate)
   - [Meeting state broadcast (meeting#state)](#meeting-state-broadcast-meetingstate)
-  - [Roll Calls (introduction)](#roll-calls-introduction)
+- [Roll Calls (introduction)](#roll-calls-introduction)
   - [Creating a Roll-Call (roll_call#create)](#creating-a-roll-call-roll_callcreate)
   - [Opening a Roll-Call (roll_call#open)](#opening-a-roll-call-roll_callopen)
   - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
+- [Social Media](#social-media)
+  - [Posting a post by a user (post#user_post)](#posting-a-post-user)
+  - [Posting a post by a server (post#server_post)](#posting-a-post-server)
+  - [Removing a post by a user (post#user_remove)](#removing-a-post-user)
+  - [Removing a post by a server (post#server_remove)](#removing-a-post-server)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -47,6 +55,12 @@ Here are the existing `Message data`, identified by their unique
 * roll_call#open
 * roll_call#close
 * roll_call#reopen
+* post#user_post
+* post#server_post
+* post#user_remove
+* post#server_remove
+
+# LAO
 
 ## Creating a LAO (lao#create)
 
@@ -369,6 +383,8 @@ the required number of witness signatures.
 
 ```
 
+# Message
+
 ## Witness a message (message#witness)
 
 By sending the message/witness message to the LAO’s main channel (LAO's “id”), a
@@ -433,6 +449,8 @@ populated with all the witness signatures received by the server.
 }
 
 ```
+
+# Meeting
 
 ## Creating a Meeting (meeting#create)
 
@@ -1025,3 +1043,49 @@ the organizer forgets to scan an attendee’s public key.
 }
 
 ```
+
+# Social Media
+
+## Posting a post by a user (post#user_post)
+
+A post may be posted by a user on their own channel, only with an active PoP token. It consists of text (max. 280 Unicode code points), a Parent Id (if it is not the top level post) and of a timestamp (an UNIX stamp in UTC of the time the post is published).
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+</details>
+
+## Posting a post by a server (post#server_post)
+
+After validating the post, the organizer's server propagates the message on the channel it is meant for, but also will create and send the following message to the universal post channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+</details>
+
+## Removing a post by a user (post#user_remove)
+
+A user may also remove their own post from their channel, only with an active PoP token.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+</details>
+
+## Removing a post by a server (post#server_remove)
+
+After a user has sent the message to remove their post, the server will propagate it to the channel it is meant for, but also will create and send the following message to the universal post channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+</details>
