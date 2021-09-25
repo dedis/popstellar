@@ -1,24 +1,32 @@
 # High-level ("Message data") messages
 
-<!-- START doctoc.sh generated TOC please keep comment here to allow auto update -->
-<!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **:book: Table of Contents**
 
-- [High-level ("Message data") messages](#high-level-message-data-messages)
 - [Introduction](#introduction)
+- [LAO](#lao)
   - [Creating a LAO (lao#create)](#creating-a-lao-laocreate)
   - [Update LAO properties (lao#update_properties)](#update-lao-properties-laoupdate_properties)
   - [LAO state broadcast (lao#state)](#lao-state-broadcast-laostate)
+- [Message](#message)
   - [Witness a message (message#witness)](#witness-a-message-messagewitness)
+- [Meeting](#meeting)
   - [Creating a Meeting (meeting#create)](#creating-a-meeting-meetingcreate)
   - [Meeting state broadcast (meeting#state)](#meeting-state-broadcast-meetingstate)
+- [Roll Call](#roll-call)
   - [Roll Calls (introduction)](#roll-calls-introduction)
   - [Creating a Roll-Call (roll_call#create)](#creating-a-roll-call-roll_callcreate)
   - [Opening a Roll-Call (roll_call#open)](#opening-a-roll-call-roll_callopen)
   - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
+- [Social Media](#social-media)
+  - [Publishing a Post on user's feed (post#publish_user)](#publishing-a-post-on-users-feed-postpublish_user)
+  - [Publishing a Post on universal channel by the server (post#publish_server)](#publishing-a-post-on-universal-channel-by-the-server-postpublish_server)
+  - [Removing a Post on user's feed (post#remove_user)](#removing-a-post-on-users-feed-postremove_user)
+  - [Removing a Post on universal channel by the server (post#remove_server)](#removing-a-post-on-universal-channel-by-the-server-postremove_server)
 
-<!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 **Note**: do not edit JSON messages directly. Those are automatically embedded
 from `../protocol`. Use [embedme](https://github.com/zakhenry/embedme) to make
@@ -47,6 +55,12 @@ Here are the existing `Message data`, identified by their unique
 * roll_call#open
 * roll_call#close
 * roll_call#reopen
+* post#publish_user
+* post#publish_server
+* post#remove_user
+* post#remove_server
+
+# LAO
 
 ## Creating a LAO (lao#create)
 
@@ -73,7 +87,7 @@ broadcast”).
     "action": "create",
     "id": "XXX",
     "name": "XXX",
-    "creation": 1234,
+    "creation": 123,
     "organizer": "XXX",
     "witnesses": ["XXX"]
 }
@@ -369,6 +383,8 @@ the required number of witness signatures.
 
 ```
 
+# Message
+
 ## Witness a message (message#witness)
 
 By sending the message/witness message to the LAO’s main channel (LAO's “id”), a
@@ -433,6 +449,8 @@ populated with all the witness signatures received by the server.
 }
 
 ```
+
+# Meeting
 
 ## Creating a Meeting (meeting#create)
 
@@ -676,6 +694,8 @@ expected to publish the meeting/state message to the LAO’s main channel (LAO's
 }
 
 ```
+
+# Roll Call
 
 ## Roll Calls (introduction)
 
@@ -1025,3 +1045,107 @@ the organizer forgets to scan an attendee’s public key.
 }
 
 ```
+
+# Social Media
+
+## Publishing a Post on user's feed (post#publish_user)
+
+A post may be published by a user, on its channel, if they have an active
+PoP token. Post data consists of text that cannot be longer than 280 characters
+(Unicode code points.), parent ID (if it is not the top level post.) and
+UNIX timestamp in UTC.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_publish_user.json
+
+{
+    "object": "post",
+    "action": "publish",
+    "text": "my new post!",
+    "parent_id": 111111,
+    "timestamp": 1631280815
+}
+
+```
+
+</details>
+
+## Publishing a Post on universal channel by the server (post#publish_server)
+
+After validating the post, the organizer’s server propagates the above message
+on the channel it is meant for, but it also creates the following message and
+sends it to a universal post channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_publish_server.json
+
+{
+    "object": "post",
+    "action": "publish",
+    "post_id": 111111,
+    "channel": "channel_path",
+    "timestamp": 1631280815
+}
+
+```
+
+</details>
+
+## Removing a Post on user's feed (post#remove_user)
+
+A post may be removed by their user, if they have an active PoP token.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_remove_user.json
+
+{
+    "object": "post",
+    "action": "remove",
+    "post_id": 111111,
+    "timestamp": 1631280815
+}
+
+```
+
+</details>
+
+## Removing a Post on universal channel by the server (post#remove_server)
+
+After validating the post, the organizer’s server propagates the above message
+on the channel it is meant for, but it also creates the following message and
+sends it to a universal post channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_remove_server.json
+
+{
+    "object": "post",
+    "action": "remove",
+    "post_id": 111111,
+    "channel": "channel_path",
+    "timestamp": 1631280815
+}
+
+```
+
+</details>
