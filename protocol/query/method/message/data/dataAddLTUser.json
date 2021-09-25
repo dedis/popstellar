@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddLTUser.json",
+  "description": "Match a add LTUser query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "ltuser"
+    },
+    "action": {
+      "const": "add"
+    },
+    "token": {
+      "description": "PoP Token",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "user": {
+      "description": "LTUser Public Key",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "token", "user", "timestamp"]
+}

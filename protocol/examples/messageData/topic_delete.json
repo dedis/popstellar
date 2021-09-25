@@ -1,0 +1,6 @@
+{
+    "object": "topic",
+    "action": "delete",
+    "message_id": "XXX",
+    "timestamp": 123
+}

@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddPost.json",
+    "description": "Match a add post query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "post"
+        },
+        "action": {
+            "const": "add"
+        },
+        "text": {
+            "type": "string",
+            "contentEncoding": "UTF-8",
+            "$comment": "text in the post"
+        },
+        "parent_id": {
+            "description": "message_id of parent post",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "optional (only in case the post is a reply)"
+        },
+        "timestamp": {
+            "description": "UNIX Timestamp in UTC of this deletion request",
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "text", "timestamp"]
+}

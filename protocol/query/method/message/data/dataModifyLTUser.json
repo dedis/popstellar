@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataModifyLTUser.json",
+  "description": "Match a modify LTUser query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "ltuser"
+    },
+    "action": {
+      "const": "modify"
+    },
+    "token": {
+      "description": "PoP Token",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "user": {
+      "description": "LTUser Public Key",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC",
+      "type": "integer",
+      "minimum": 0
+    },
+    "signature": {
+      "description": "LTUser Signature",
+      "type": "string",
+      "contentEncoding": "base64",
+      "$comment": "Hash(token + timestamp)"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "token", "user", "timestamp", "signature"]
+}

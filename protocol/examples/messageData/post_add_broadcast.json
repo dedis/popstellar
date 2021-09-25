@@ -1,0 +1,7 @@
+{
+    "object": "post",
+    "action": "add",
+    "post_id": "XXX",
+    "channel": "/root/<lao_id>/social/<sender>/",
+    "timestamp": 123
+}

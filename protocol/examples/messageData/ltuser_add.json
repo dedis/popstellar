@@ -1,0 +1,7 @@
+{
+    "object": "ltuser",
+    "action": "add",
+    "token": "XXX",
+    "user": "XXX",
+    "timestamp": 123
+}

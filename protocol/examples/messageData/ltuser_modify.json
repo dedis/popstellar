@@ -1,0 +1,8 @@
+{
+    "object": "ltuser",
+    "action": "modify",
+    "token": "XXX",
+    "user": "XXX",
+    "timestamp": 123,
+    "signature": "XXX"
+}

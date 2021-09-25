@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataDeleteTopic.json",
+  "description": "Match a delete topic query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "topic"
+    },
+    "action": {
+      "const": "delete"
+    },
+    "message_id": {
+      "description": "Message id of the topic to delete",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC of this deletion request",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "message_id", "timestamp"]
+}
