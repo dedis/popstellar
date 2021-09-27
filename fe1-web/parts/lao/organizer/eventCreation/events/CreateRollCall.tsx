@@ -30,7 +30,7 @@ const CreateRollCall = ({ route }: any) => {
   // Sets initial start date 5 minutes in the future to avoid: proposed_start < creation
   initialStartDate.setMinutes(initialStartDate.getMinutes() + 5);
   // Sets initial end date to 1 hour later than start date
-  initialEndDate.setHours(initialEndDate.getHours() + 1);
+  initialEndDate.setHours(initialStartDate.getHours() + 1);
 
   const [proposedStartDate, setProposedStartDate] = useState(dateToTimestamp(initialStartDate));
   const [proposedEndDate, setProposedEndDate] = useState(dateToTimestamp(initialEndDate));
@@ -38,6 +38,23 @@ const CreateRollCall = ({ route }: any) => {
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');
   const [rollCallDescription, setRollCallDescription] = useState('');
+
+  const onChangeStartTime = (date: Date) => {
+    const dateStamp: Timestamp = dateToTimestamp(date);
+    setProposedStartDate(dateStamp);
+    const newEndDate = new Date(date.getTime());
+    newEndDate.setHours(date.getHours() + 1);
+    setProposedEndDate(dateToTimestamp(newEndDate));
+  };
+
+  const onChangeEndTime = (date: Date) => {
+    const dateStamp: Timestamp = dateToTimestamp(date);
+    if (dateStamp < proposedStartDate) {
+      alert('You must select a date after the start time'); // Not here to stay
+    } else {
+      setProposedEndDate(dateStamp);
+    }
+  };
 
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
@@ -50,12 +67,12 @@ const CreateRollCall = ({ route }: any) => {
         <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
         <DatePicker
           selected={startTime}
-          onChange={(date: Date) => setProposedStartDate(dateToTimestamp(date))}
+          onChange={(date: Date) => onChangeStartTime(date)}
         />
         <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
         <DatePicker
           selected={endTime}
-          onChange={(date: Date) => setProposedEndDate(dateToTimestamp(date))}
+          onChange={(date: Date) => onChangeEndTime(date)}
         />
       </View>
     );

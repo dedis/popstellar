@@ -27,8 +27,7 @@ const CreateElection = ({ route }: any) => {
   const navigation = useNavigation();
   const initialStartDate = new Date();
   const initialEndDate = new Date();
-  // Sets initial end date to 1 hour later than start date
-  initialEndDate.setMinutes(initialEndDate.getMinutes() + 15);
+  initialEndDate.setHours(initialStartDate.getHours() + 1);
 
   const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
   const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));
@@ -38,6 +37,22 @@ const CreateElection = ({ route }: any) => {
   const currentLao: Lao = OpenedLaoStore.get();
   const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
   const [questions, setQuestions] = useState([emptyQuestion]);
+
+  const onChangeStartTime = (date: Date) => {
+    setStartDate(Timestamp.dateToTimestamp(date));
+    const newEndDate = new Date(date.getTime());
+    newEndDate.setHours(date.getHours() + 1);
+    setEndDate(Timestamp.dateToTimestamp(newEndDate));
+  };
+
+  const onChangeEndTime = (date: Date) => {
+    const dateStamp: Timestamp = Timestamp.dateToTimestamp(date);
+    if (dateStamp < startDate) {
+      alert('You must select a date after the start time'); // Not here to stay
+    } else {
+      setEndDate(dateStamp);
+    }
+  };
 
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
@@ -51,14 +66,14 @@ const CreateElection = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
             selected={startTime}
-            onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
+            onChange={(date: Date) => onChangeStartTime(date)}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
             selected={endTime}
-            onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
+            onChange={(date: Date) => onChangeEndTime(date)}
           />
         </View>
       </View>

@@ -17,7 +17,6 @@ import { Timestamp } from 'model/objects';
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
  *
- * TODO makes impossible to set a finish time before the start time
  */
 function dateToTimestamp(date: Date): Timestamp {
   return new Timestamp(Math.floor(date.getTime() / 1000));
@@ -28,10 +27,12 @@ const CreateMeeting = ({ route }: any) => {
 
   const navigation = useNavigation();
   const initialStartDate = new Date();
+  const initialEndDate = new Date();
+  initialEndDate.setHours(initialStartDate.getHours() + 1);
 
   const [meetingName, setMeetingName] = useState('');
   const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(new Timestamp(-1));
+  const [endDate, setEndDate] = useState(dateToTimestamp(initialEndDate));
 
   const [location, setLocation] = useState('');
 
@@ -55,16 +56,15 @@ const CreateMeeting = ({ route }: any) => {
   const onChangeStartTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
     setStartDate(dateStamp);
-    if (endDate < startDate) {
-      setEndDate(dateStamp);
-    }
+    const newEndDate = new Date(date.getTime());
+    newEndDate.setHours(date.getHours() + 1);
+    setEndDate(dateToTimestamp(newEndDate));
   };
 
   const onChangeEndTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
-
     if (dateStamp < startDate) {
-      setEndDate(startDate);
+      alert('You must select a date after the start time'); // Not here to stay
     } else {
       setEndDate(dateStamp);
     }
