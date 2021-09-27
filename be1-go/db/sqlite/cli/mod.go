@@ -4,16 +4,29 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"log"
+	"github.com/rs/zerolog"
 	"os"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 )
+
+const defaultLevel = zerolog.InfoLevel
+
+var logout = zerolog.ConsoleWriter{
+	Out:        os.Stdout,
+	TimeFormat: time.RFC3339,
+}
 
 func main() {
 	var dbPath string
 	var schemaPath string
 	var force bool
+
+	log := zerolog.New(logout).Level(defaultLevel).
+		With().Timestamp().Logger().
+		With().Caller().Logger().
+		With().Str("role", "db").Logger()
 
 	flag.StringVar(&dbPath, "db", "pop_go_hub.db", "location of the database file")
 	flag.StringVar(&schemaPath, "schema", "schema.sql", "location of the SQL schema")
@@ -23,34 +36,34 @@ func main() {
 
 	_, err := os.Stat(dbPath)
 	if err == nil && !force {
-		log.Printf("db already exists, use -f if you want to overwrite it")
+		log.Err(err).Msg("db already exists, use -f if you want to overwrite it")
 		return
 	}
 
 	os.Remove(dbPath)
 
-	log.Println("opening db")
+	log.Info().Msg("opening db")
 
 	db, err := sql.Open("sqlite3", dbPath)
 	if err != nil {
-		log.Fatalf("failed to open db: %v", err)
+		log.Err(err).Msg("failed to open db")
 	}
 
 	defer db.Close()
 
-	log.Println("reading schema")
+	log.Info().Msg("reading schema")
 
 	schema, err := os.ReadFile(schemaPath)
 	if err != nil {
-		log.Fatalf("failed to read schema: %v", err)
+		log.Err(err).Msg("failed to read schema")
 	}
 
-	log.Println("setting up db")
+	log.Info().Msg("setting up db")
 
 	_, err = db.Exec(string(schema))
 	if err != nil {
-		log.Fatalf("failed to exec schema: %v", err)
+		log.Err(err).Msg("failed to exec schema")
 	}
 
-	log.Printf("done, db saved in %s", dbPath)
+	log.Info().Msgf("db successfully saved in %s", dbPath)
 }
