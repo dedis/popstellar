@@ -128,7 +128,7 @@ func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub,
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
 	}
 
-	log.Printf("connected to %s at %s", otherHubType, urlString)
+	log.Info().Msgf("connected to %s at %s", otherHubType, urlString)
 
 	switch otherHubType {
 	case hub.OrganizerHubType:

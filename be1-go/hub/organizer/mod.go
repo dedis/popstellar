@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"log"
 	"popstellar/channel"
 	"popstellar/channel/lao"
 	"popstellar/db/sqlite"
@@ -85,11 +84,11 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 	}
 
 	if sqlite.GetDBPath() != "" {
-		log.Printf("loading channels from db at %s", sqlite.GetDBPath())
+		log.Info().Msgf("loading channels from db at %s", sqlite.GetDBPath())
 
 		channels, err := getChannelsFromDB(&hub)
 		if err != nil {
-			log.Printf("error: failed to load channels from db: %v", err)
+			log.Err(err).Msg("failed to load channels from db")
 		} else {
 			hub.channelByID = channels
 		}
@@ -111,7 +110,7 @@ func (h *Hub) Start() {
 			case incomingMessage := <-h.messageChan:
 				ok := h.workers.TryAcquire(1)
 				if !ok {
-					log.Print("warn: worker pool full, waiting...")
+					h.log.Warn().Msg("worker pool full, waiting...")
 					h.workers.Acquire(context.Background(), 1)
 				}
 
@@ -124,7 +123,7 @@ func (h *Hub) Start() {
 				}
 				h.RUnlock()
 			case <-h.stop:
-				log.Println("Stopping the hub")
+				h.log.Info().Msg("stopping the hub")
 				return
 			}
 		}
@@ -134,7 +133,7 @@ func (h *Hub) Start() {
 // Stop implements hub.Hub
 func (h *Hub) Stop() {
 	close(h.stop)
-	log.Println("Waiting for existing workers to finish...")
+	h.log.Info().Msg("waiting for existing workers to finish...")
 	h.workers.Acquire(context.Background(), numWorkers)
 }
 
@@ -415,7 +414,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 	h.channelByID[laoChannelPath] = laoCh
 
 	if sqlite.GetDBPath() != "" {
-		saveChannel(laoChannelPath)
+		saveChannel(laoChannelPath, h.log)
 	}
 
 	return nil
@@ -442,8 +441,8 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 // DB operations
 // --
 
-func saveChannel(channelPath string) error {
-	log.Printf("trying to save the channel in db at %s", sqlite.GetDBPath())
+func saveChannel(channelPath string, log zerolog.Logger) error {
+	log.Info().Msgf("trying to save the channel in db at %s", sqlite.GetDBPath())
 
 	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 	if err != nil {
@@ -467,6 +466,7 @@ func saveChannel(channelPath string) error {
 
 	_, err = stmt.Exec(channelPath)
 	if err != nil {
+		log.Err(err).Msg("failed to save channel in db")
 		return xerrors.Errorf("failed to insert channel: %v", err)
 	}
 

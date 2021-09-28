@@ -1,14 +1,9 @@
 package network
 
 import (
-	"fmt"
-	"log"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
-
-	"golang.org/x/xerrors"
 )
 
 // WaitAndShutdownServers blocks until the user passes a SIGINT or SIGTERM and
@@ -17,19 +12,13 @@ func WaitAndShutdownServers(servers ...*Server) error {
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 	<-done
-	log.Println("received ctrl+c")
 
-	errors := []string{}
-	for i, server := range servers {
+	for _, server := range servers {
+		server.log.Info().Msgf("shutting down server %s", server.srv.Addr)
 		err := server.Shutdown()
 		if err != nil {
-			errors = append(errors, fmt.Sprintf("%d: %s", i, err))
+			server.log.Err(err).Msgf("failed to shutdown server %s", server.srv.Addr)
 		}
-	}
-
-	if len(errors) > 0 {
-		return xerrors.Errorf("failed to shutdown one or more servers: %s",
-			strings.Join(errors, ";"))
 	}
 
 	return nil

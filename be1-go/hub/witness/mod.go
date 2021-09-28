@@ -3,7 +3,6 @@ package witness
 import (
 	"context"
 	"fmt"
-	"log"
 	"popstellar/channel"
 	"popstellar/hub"
 	"popstellar/message/query/method"
@@ -99,7 +98,7 @@ func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) {
 
 // Start implements hub.Hub
 func (h *Hub) Start() {
-	log.Printf("started witness...")
+	h.log.Info().Msg("started witness...")
 
 	go func() {
 		for {
@@ -107,7 +106,7 @@ func (h *Hub) Start() {
 			case incMsg := <-h.messageChan:
 				ok := h.workers.TryAcquire(1)
 				if !ok {
-					log.Print("warn: worker pool full, waiting...")
+					h.log.Warn().Msg("worker pool full, waiting...")
 					h.workers.Acquire(context.Background(), 1)
 				}
 
@@ -120,7 +119,7 @@ func (h *Hub) Start() {
 				}
 				h.RUnlock()
 			case <-h.stop:
-				log.Println("closing the hub...")
+				h.log.Info().Msg("closing the hub...")
 				return
 			}
 		}
@@ -130,7 +129,7 @@ func (h *Hub) Start() {
 // Stop implements hub.Hub
 func (h *Hub) Stop() {
 	close(h.stop)
-	log.Println("Waiting for existing workers to finish...")
+	h.log.Info().Msg("waiting for existing workers to finish...")
 	h.workers.Acquire(context.Background(), numWorkers)
 }
 

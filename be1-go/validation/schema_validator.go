@@ -4,16 +4,25 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
+	"github.com/rs/zerolog"
 	"io"
 	"io/fs"
-	"log"
+	"os"
 	"path/filepath"
 	"popstellar/message/answer"
 	"strings"
+	"time"
 
 	"github.com/santhosh-tekuri/jsonschema/v3"
 	"golang.org/x/xerrors"
 )
+
+const defaultLevel = zerolog.InfoLevel
+
+var logout = zerolog.ConsoleWriter{
+	Out:        os.Stdout,
+	TimeFormat: time.RFC3339,
+}
 
 // SchemaValidator is used to validate JSON-RPC schemas.
 type SchemaValidator struct {
@@ -52,8 +61,14 @@ func init() {
 // VerifyJSON verifies that the `msg` follow the schema protocol of name
 // 'schemaName', it returns an error otherwise.
 func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
+	log := zerolog.New(logout).Level(defaultLevel).
+		With().Timestamp().Logger().
+		With().Caller().Logger()
+
 	reader := bytes.NewBuffer(msg[:])
 	var schema *jsonschema.Schema
+
+	log.Info().Msg("verifying msg follows the schema")
 
 	switch st {
 	case GenericMessage:
@@ -66,7 +81,7 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 
 	err := schema.Validate(reader)
 	if err != nil {
-		log.Printf("failed to validate schema: %s %v", msg, err)
+		log.Err(err).Msg("failed to validate schema")
 		return answer.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 
