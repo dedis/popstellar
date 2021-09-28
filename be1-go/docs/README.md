@@ -156,12 +156,6 @@ required. The rule of thumb is the leaf/last method called from the hub should
 create/return a `message.Error` and intermediate methods should propagate it up
 by wrapping it until it reaches a point where `Socket.SendError` is invoked.
 
-The backend is able to persist any data on disk and maintains in-memory data
-structures for storing messages. To make use of this functionality set the
-`HUB_DB` environment variable to point to an initialized sqlite database when
-you launch the server. Package `db/sqlite/cli` implements a CLI to initialize
-such db. See the README in `be1-go/README.md` for instructions.
-
 ##### Message definitions
 
 All messages are defined in the `message` package. Please note that the JSON-RPC
@@ -173,6 +167,24 @@ since the validation library checks the messages against it.
 All the incoming messages are validated using the `validation` package. The
 `make build` and `make test` commands automatically copy over the JSON-RPC
 specifications and bundle it up during compilation.
+
+#### Persistent storage
+
+The backend is able to persist any data on disk and maintains in-memory data
+structures for storing messages. To make use of this functionality set the
+`HUB_DB` environment variable to point to an initialized sqlite database when
+you launch the server. Package `db/sqlite/cli` implements a CLI to initialize
+such db. See the README in `be1-go/README.md` for instructions.
+
+You'll find the schema in the `db/sqlite/cli` folder. The following is an
+exported ERD diagram representation:
+
+<div align="center">
+  <img src="images/Schema.png" alt="Schema"/>
+</div>
+
+This schema has been generated with MySQL Workbench. To generate, use: File >
+Import > "Reverse Engineer MySQL create Script", and select the schema.
 
 #### Debugging Tips
 
