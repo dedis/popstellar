@@ -17,6 +17,7 @@ import { WalletStore } from 'store/stores/WalletStore';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
+import Social from "../../parts/Social";
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -118,6 +119,11 @@ function LaoNavigation() {
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.navigation_tab_home}
         component={Home}
+      />
+
+      <OrganizationTopTabNavigator.Screen
+        name={STRINGS.navigation_tab_social}
+        component={Social}
       />
 
       { buildTabComponent(isOrganizer, isWitness) }

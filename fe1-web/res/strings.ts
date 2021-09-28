@@ -52,7 +52,7 @@ const STRINGS = {
 
   /* --- Social Media Strings --- */
   feed_description: 'Feed',
-  button_post_test_message: 'Post a test message',
+  button_publish_test_post: 'Publish a test post',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',
