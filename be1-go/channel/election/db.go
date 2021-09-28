@@ -33,7 +33,7 @@ func (c *Channel) saveChannel() error {
 			election_channel_id,
 			start_timestamp,
 			end_timestamp,
-			terminated
+			is_terminated
 		)
 	VALUES(?, ?, ?, ?)`
 
@@ -233,7 +233,7 @@ func GetChannelsFromDB(hub channel.HubFunctionalities) ([]channel.Channel, error
 		election_channel_id,
 		start_timestamp,
 		end_timestamp,
-		terminated
+		is_terminated
 	FROM
 		election_channel`
 

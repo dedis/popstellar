@@ -29,8 +29,7 @@ func (c *Channel) saveChannel() error {
 
 	query := `
 	INSERT INTO
-		lao_channel(
-			lao_channel_id)
+		lao_channel ( lao_channel_id )
 	VALUES(?)`
 
 	stmt, err := db.Prepare(query)
@@ -49,9 +48,17 @@ func (c *Channel) saveChannel() error {
 }
 
 func insertAttendee(db *sql.DB, key string, channelID string) error {
-	stmt, err := db.Prepare("insert into lao_attendee(attendee_key, lao_channel_id) values(?, ?)")
+	query := `
+	INSERT INTO
+		lao_attendee(
+			attendee_key,
+			lao_channel_id
+		)
+	VALUES(?, ?)`
+
+	stmt, err := db.Prepare(query)
 	if err != nil {
-		return xerrors.Errorf("failed to prepare query: %v", err)
+		return xerrors.Errorf(dbPrepareErr, err)
 	}
 
 	defer stmt.Close()

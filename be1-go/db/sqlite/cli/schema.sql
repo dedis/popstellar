@@ -62,7 +62,7 @@ CREATE TABLE election_channel (
 
     start_timestamp INTEGER,
     end_timestamp INTEGER,
-    terminated INTEGER
+    is_terminated INTEGER
 );
 
 CREATE TABLE election_attendee (
@@ -102,7 +102,7 @@ CREATE TABLE election_valid_vote (
 );
 
 CREATE TABLE vote_index (
-    vote_index INTEGER
+    vote_index INTEGER,
 
     voter_id TEXT NOT NULL
         REFERENCES election_valid_vote(voter_id)
