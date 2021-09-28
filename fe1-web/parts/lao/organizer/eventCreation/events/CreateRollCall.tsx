@@ -29,6 +29,8 @@ const CreateRollCall = ({ route }: any) => {
   const initialEndDate = new Date();
   // Sets initial start date 5 minutes in the future to avoid: proposed_start < creation
   initialStartDate.setMinutes(initialStartDate.getMinutes() + 5);
+  initialEndDate.setMinutes(initialEndDate.getMinutes() + 5);
+
   // Sets initial end date to 1 hour later than start date
   initialEndDate.setHours(initialStartDate.getHours() + 1);
 
@@ -41,7 +43,9 @@ const CreateRollCall = ({ route }: any) => {
 
   const onChangeStartTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
-    setProposedStartDate(dateStamp);
+    if (dateStamp > dateToTimestamp(new Date())) {
+      setProposedStartDate(dateStamp);
+    }
     const newEndDate = new Date(date.getTime());
     newEndDate.setHours(date.getHours() + 1);
     setProposedEndDate(dateToTimestamp(newEndDate));
@@ -50,7 +54,7 @@ const CreateRollCall = ({ route }: any) => {
   const onChangeEndTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
     if (dateStamp < proposedStartDate) {
-      alert('You must select a date after the start time'); // Not here to stay
+      setProposedEndDate(proposedStartDate);
     } else {
       setProposedEndDate(dateStamp);
     }

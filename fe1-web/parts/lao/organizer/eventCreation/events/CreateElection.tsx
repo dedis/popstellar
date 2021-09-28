@@ -39,7 +39,10 @@ const CreateElection = ({ route }: any) => {
   const [questions, setQuestions] = useState([emptyQuestion]);
 
   const onChangeStartTime = (date: Date) => {
-    setStartDate(Timestamp.dateToTimestamp(date));
+    const dateStamp = Timestamp.dateToTimestamp(date);
+    if (dateStamp > Timestamp.dateToTimestamp(new Date())) {
+      setStartDate(dateStamp);
+    }
     const newEndDate = new Date(date.getTime());
     newEndDate.setHours(date.getHours() + 1);
     setEndDate(Timestamp.dateToTimestamp(newEndDate));
@@ -48,7 +51,7 @@ const CreateElection = ({ route }: any) => {
   const onChangeEndTime = (date: Date) => {
     const dateStamp: Timestamp = Timestamp.dateToTimestamp(date);
     if (dateStamp < startDate) {
-      alert('You must select a date after the start time'); // Not here to stay
+      setEndDate(startDate);
     } else {
       setEndDate(dateStamp);
     }

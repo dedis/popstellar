@@ -16,7 +16,6 @@ import { Timestamp } from 'model/objects';
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
- *
  */
 function dateToTimestamp(date: Date): Timestamp {
   return new Timestamp(Math.floor(date.getTime() / 1000));
@@ -55,7 +54,9 @@ const CreateMeeting = ({ route }: any) => {
 
   const onChangeStartTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
-    setStartDate(dateStamp);
+    if (dateStamp > dateToTimestamp(new Date())) {
+      setStartDate(dateStamp);
+    }
     const newEndDate = new Date(date.getTime());
     newEndDate.setHours(date.getHours() + 1);
     setEndDate(dateToTimestamp(newEndDate));
@@ -64,7 +65,7 @@ const CreateMeeting = ({ route }: any) => {
   const onChangeEndTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
     if (dateStamp < startDate) {
-      alert('You must select a date after the start time'); // Not here to stay
+      setEndDate(startDate);
     } else {
       setEndDate(dateStamp);
     }
