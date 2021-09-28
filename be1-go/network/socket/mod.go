@@ -1,4 +1,4 @@
-// The socket package contains an implementation of the Socket interface which
+// Package socket contains an implementation of the Socket interface which
 // is responsible for low level communication over websockets, i.e. sending
 // and receiving marshaled messages over the wire.
 //
