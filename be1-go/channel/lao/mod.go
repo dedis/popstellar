@@ -33,7 +33,8 @@ const (
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
-	defaultLevel = zerolog.InfoLevel
+	defaultLevel  = zerolog.InfoLevel
+	msgID		  = "msg id"
 )
 
 var logout = zerolog.ConsoleWriter{
@@ -86,7 +87,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	c.log.Info().
-		Str("msg id", strconv.Itoa(msg.ID)).
+		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received a subscribe")
 	c.sockets.Upsert(socket)
 
@@ -96,7 +97,7 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 // Unsubscribe is used to handle an unsubscribe message.
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	c.log.Info().
-		Str("msg id", strconv.Itoa(msg.ID)).
+		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("received an unsubscribe")
 
 	ok := c.sockets.Delete(socketID)
@@ -111,7 +112,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 // Catchup is used to handle a catchup message.
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	c.log.Info().
-		Str("msg id", strconv.Itoa(catchup.ID)).
+		Str(msgID, strconv.Itoa(catchup.ID)).
 		Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
@@ -121,7 +122,7 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 // subscribers.
 func (c *Channel) broadcastToAllClients(msg message.Message) {
 	c.log.Info().
-		Str("msg id", msg.MessageID).
+		Str(msgID, msg.MessageID).
 		Msg("broadcasting message to all clients")
 
 	rpcMessage := method.Broadcast{
@@ -151,7 +152,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 // VerifyPublishMessage checks if a Publish message is valid
 func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	c.log.Info().
-		Str("msg id", strconv.Itoa(publish.ID)).
+		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
 
 	// Check if the structure of the message is correct
