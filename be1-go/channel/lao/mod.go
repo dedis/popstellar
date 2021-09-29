@@ -5,7 +5,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log"
+	"github.com/rs/zerolog"
+	"os"
 	"popstellar/channel"
 	"popstellar/channel/election"
 	"popstellar/channel/inbox"
@@ -19,7 +20,9 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+	"strconv"
 	"sync"
+	"time"
 
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
@@ -30,7 +33,13 @@ const (
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
+	defaultLevel = zerolog.InfoLevel
 )
+
+var logout = zerolog.ConsoleWriter{
+	Out:        os.Stdout,
+	TimeFormat: time.RFC3339,
+}
 
 // Channel defines a LAO channel
 type Channel struct {
@@ -49,12 +58,19 @@ type Channel struct {
 	hub channel.HubFunctionalities
 
 	attendees map[string]struct{}
+
+	log zerolog.Logger
 }
 
 // NewChannel returns a new initialized LAO channel
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message) channel.Channel {
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
+
+	log := zerolog.New(logout).Level(defaultLevel).
+		With().Timestamp().Logger().
+		With().Caller().Logger().
+		With().Str("role", "lao channel").Logger()
 
 	return &Channel{
 		channelID: channelID,
@@ -63,12 +79,15 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
+		log:	   log,
 	}
 }
 
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
-	log.Printf("received a subscribe with id: %d", msg.ID)
+	c.log.Info().
+		Str("msg id", strconv.Itoa(msg.ID)).
+		Msg("received a subscribe")
 	c.sockets.Upsert(socket)
 
 	return nil
@@ -76,7 +95,9 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 
 // Unsubscribe is used to handle an unsubscribe message.
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
-	log.Printf("received an unsubscribe with id: %d", msg.ID)
+	c.log.Info().
+		Str("msg id", strconv.Itoa(msg.ID)).
+		Msg("received an unsubscribe")
 
 	ok := c.sockets.Delete(socketID)
 
@@ -89,7 +110,9 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 
 // Catchup is used to handle a catchup message.
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
-	log.Printf("received a catchup with id: %d", catchup.ID)
+	c.log.Info().
+		Str("msg id", strconv.Itoa(catchup.ID)).
+		Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
 }
@@ -97,6 +120,10 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *Channel) broadcastToAllClients(msg message.Message) {
+	c.log.Info().
+		Str("msg id", msg.MessageID).
+		Msg("broadcasting message to all clients")
+
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -115,7 +142,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		log.Printf("failed to marshal broadcast query: %v", err)
+		c.log.Err(err).Msg("failed to marshal broadcast query")
 	}
 
 	c.sockets.SendToAll(buf)
@@ -123,7 +150,9 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 // VerifyPublishMessage checks if a Publish message is valid
 func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
-	log.Printf("received a publish with id: %d", publish.ID)
+	c.log.Info().
+		Str("msg id", strconv.Itoa(publish.ID)).
+		Msg("received a publish")
 
 	// Check if the structure of the message is correct
 	msg := publish.Params.Message
@@ -465,7 +494,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 		return xerrors.Errorf("failed to create election: %w", err)
 	}
 
-	log.Printf("Election has created with success")
+	c.log.Info().Msg("election created with success")
 	return nil
 }
 
@@ -565,7 +594,7 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	if sqlite.GetDBPath() != "" {
 		db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 		if err != nil {
-			log.Printf("error: failed to connect to db: %v", err)
+			c.log.Err(err).Msg("failed to connect to db")
 			db = nil
 		} else {
 			defer db.Close()
@@ -576,11 +605,11 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 		c.attendees[attendee] = struct{}{}
 
 		if db != nil {
-			log.Printf("inserting attendee into db")
+			c.log.Info().Msgf("inserting attendee %s into db", attendee)
 
 			err := insertAttendee(db, attendee, c.channelID)
 			if err != nil {
-				log.Printf("error: failed to insert attendee into db: %v", err)
+				c.log.Err(err).Msgf("failed to insert attendee %s into db", attendee)
 			}
 		}
 	}

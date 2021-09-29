@@ -61,6 +61,7 @@ func init() {
 // VerifyJSON verifies that the `msg` follow the schema protocol of name
 // 'schemaName', it returns an error otherwise.
 func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
+	//TODO: take log in argument
 	log := zerolog.New(logout).Level(defaultLevel).
 		With().Timestamp().Logger().
 		With().Caller().Logger()
