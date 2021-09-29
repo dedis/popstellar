@@ -295,7 +295,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	}
 
 	// Verify the data
-	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data, c.log)
 	if err != nil {
 		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
@@ -315,7 +315,7 @@ func (c *Channel) publishCastVote(msg message.Message) error {
 	}
 
 	//This should update any previously set vote if the message ids are the same
-	c.inbox.StoreMessage(msg)
+	c.inbox.StoreMessage(msg, c.log)
 	for _, q := range voteMsg.Votes {
 
 		qs, ok := c.questions[q.Question]
@@ -427,7 +427,7 @@ func (c *Channel) publishEndElection(msg message.Message) error {
 
 	c.broadcastToAllClients(msg)
 
-	c.inbox.StoreMessage(msg)
+	c.inbox.StoreMessage(msg, c.log)
 
 	return nil
 }
@@ -478,7 +478,7 @@ func (c *Channel) publishResultElection(msg message.Message) error {
 
 	c.broadcastToAllClients(msg)
 
-	c.inbox.StoreMessage(msg)
+	c.inbox.StoreMessage(msg, c.log)
 
 	return nil
 }

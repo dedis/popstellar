@@ -2,6 +2,8 @@ package lao
 
 import (
 	"fmt"
+	"github.com/rs/zerolog"
+	"io"
 	"popstellar/channel"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -33,7 +35,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 		messages[i] = message
 
 		// Store the message in the inbox
-		laoChannel.inbox.StoreMessage(message)
+		laoChannel.inbox.StoreMessage(message, nolog)
 
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
@@ -53,6 +55,8 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 
 // -----------------------------------------------------------------------------
 // Utility functions
+
+var nolog = zerolog.New(io.Discard)
 
 type fakeHubFunctionalities struct {
 	channel.HubFunctionalities

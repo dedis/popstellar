@@ -156,7 +156,7 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	}
 
 	// validate message data against the json schema
-	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
+	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data, h.log)
 	if err != nil {
 		socket.SendError(&publish.ID, err)
 		return
@@ -201,7 +201,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	byteMessage := incomingMessage.Message
 
 	// validate against json schema
-	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
+	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage, h.log)
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
 		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
@@ -504,7 +504,7 @@ func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
 			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		channel, err := lao.CreateChannelFromDB(db, channelPath, h)
+		channel, err := lao.CreateChannelFromDB(db, channelPath, h, h.log)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to create channel from db: %v", err)
 		}

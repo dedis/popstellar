@@ -4,6 +4,8 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"fmt"
+	"github.com/rs/zerolog"
+	"io"
 	"popstellar/message/query/method/message"
 	"testing"
 
@@ -18,12 +20,12 @@ func TestInbox_AddWitnessSignature(t *testing.T) {
 	msg := newMessage(t, "123", "123", nil, "")
 
 	// Add a message to the inbox
-	inbox.StoreMessage(msg)
+	inbox.StoreMessage(msg, nolog)
 
 	require.Equal(t, 1, len(inbox.msgs))
 
 	// Add the witness signature to the message in the inbox
-	err := inbox.AddWitnessSignature(msg.MessageID, "456", "789")
+	err := inbox.AddWitnessSignature(msg.MessageID, "456", "789", nolog)
 	require.NoError(t, err)
 
 	// Check if the message was updated
@@ -40,7 +42,7 @@ func TestInbox_AddSigWrongMessages(t *testing.T) {
 	require.NoError(t, err)
 
 	// Add the witness signature to the message in the inbox
-	err = inbox.AddWitnessSignature(string(buf), "456", "789")
+	err = inbox.AddWitnessSignature(string(buf), "456", "789", nolog)
 	require.Error(t, err)
 
 	// Check that the message is still not in the inbox
@@ -56,14 +58,14 @@ func TestInbox_AddWitnessSignatures(t *testing.T) {
 	msg := newMessage(t, "123", "123", nil, "")
 
 	// Add a message to the inbox
-	inbox.StoreMessage(msg)
+	inbox.StoreMessage(msg, nolog)
 
 	require.Equal(t, 1, len(inbox.msgs))
 
 	signaturesNumber := 100
 	for i := 0; i < signaturesNumber; i++ {
 		// Add the witness signature to the message in the inbox
-		err := inbox.AddWitnessSignature(msg.MessageID, fmt.Sprintf("%d", i), fmt.Sprintf("%d", i))
+		err := inbox.AddWitnessSignature(msg.MessageID, fmt.Sprintf("%d", i), fmt.Sprintf("%d", i), nolog)
 		require.NoError(t, err)
 	}
 
@@ -96,3 +98,9 @@ func newMessage(t *testing.T, sender string, signature string,
 
 	return msg
 }
+
+// -----------------------------------------------------------------------------
+// Utility functions
+
+var nolog = zerolog.New(io.Discard)
+

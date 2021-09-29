@@ -2,6 +2,7 @@ package inbox
 
 import (
 	"database/sql"
+	"github.com/rs/zerolog"
 	"log"
 	"sort"
 	"sync"
@@ -48,14 +49,15 @@ func NewInbox(channelID string) *Inbox {
 // AddWitnessSignature adds a signature of witness to a message of ID
 // `messageID`. if the signature was correctly added return true otherwise
 // returns false
-func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) error {
+func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string, log zerolog.Logger) error {
 	msg, ok := i.GetMessage(messageID)
 	if !ok {
 		// TODO: We received a witness signature before the message itself. We
 		// ignore it for now but it might be worth keeping it until we actually
 		// receive the message
-		log.Printf("failed to find message_id %s for witness message", messageID)
-		return answer.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
+		err := answer.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
+		log.Err(err).Msgf("failed to find message_id %s for witness message", messageID)
+		return err
 	}
 
 	i.mutex.Lock()
@@ -67,17 +69,17 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 	})
 
 	if sqlite.GetDBPath() != "" {
-		log.Println("adding witness into db")
+		log.Info().Msg("adding witness into db")
 
 		db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 		if err != nil {
-			log.Printf("error: failed to open connection: %v", err)
+			log.Err(err).Msg("failed to open connection")
 		} else {
 			defer db.Close()
 
 			err := addWitnessInDB(db, messageID, public, signature)
 			if err != nil {
-				log.Printf("error: failed to store witness into db: %v", err)
+				log.Err(err).Msg("failed to store witness into db")
 			}
 		}
 	}
@@ -86,7 +88,7 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 }
 
 // StoreMessage stores a message inside the inbox
-func (i *Inbox) StoreMessage(msg message.Message) {
+func (i *Inbox) StoreMessage(msg message.Message, log zerolog.Logger) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
@@ -100,11 +102,11 @@ func (i *Inbox) StoreMessage(msg message.Message) {
 	i.msgs[msg.MessageID] = messageInfo
 
 	if sqlite.GetDBPath() != "" {
-		log.Println("storing message into db")
+		log.Info().Msg("storing message into db")
 
 		err := i.storeMessageInDB(messageInfo)
 		if err != nil {
-			log.Printf("error: failed to store message into db: %v", err)
+			log.Err(err).Msg("failed to store message into db")
 		}
 	}
 }

@@ -2,6 +2,8 @@ package validation
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -20,7 +22,7 @@ func TestSchemaValidator_ValidateResponse(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON([]byte(response), GenericMessage)
+	err = validator.VerifyJSON([]byte(response), GenericMessage, nolog)
 	require.NoError(t, err)
 }
 
@@ -32,7 +34,7 @@ func TestSchemaValidator_ValidateDataLAOCreate(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON(dataBuf, Data)
+	err = validator.VerifyJSON(dataBuf, Data, nolog)
 	require.NoError(t, err)
 }
 
@@ -42,7 +44,7 @@ func TestSchemaValidator_ValidateCatchupRequest(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage, nolog)
 	require.NoError(t, err)
 }
 
@@ -52,7 +54,7 @@ func TestSchemaValidator_ValidateCatchupRequestBadChannel(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage, nolog)
 	require.Error(t, err)
 }
 
@@ -62,7 +64,7 @@ func TestSchemaValidator_ValidateAnswer(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON([]byte(response), GenericMessage)
+	err = validator.VerifyJSON([]byte(response), GenericMessage, nolog)
 	require.NoError(t, err)
 }
 
@@ -72,7 +74,7 @@ func TestSchemaValidator_ValidatePublish(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage, nolog)
 	require.NoError(t, err)
 }
 
@@ -82,7 +84,7 @@ func TestSchemaValidator_ValidatePublishBadMethod(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON([]byte(request), GenericMessage)
+	err = validator.VerifyJSON([]byte(request), GenericMessage, nolog)
 	require.Error(t, err)
 }
 
@@ -94,6 +96,11 @@ func TestSchemaValidator_ValidateCastVoteData(t *testing.T) {
 	validator, err := NewSchemaValidator()
 	require.NoError(t, err)
 
-	err = validator.VerifyJSON(dataBuf, Data)
+	err = validator.VerifyJSON(dataBuf, Data, nolog)
 	require.NoError(t, err)
 }
+
+// -----------------------------------------------------------------------------
+// Utility functions
+
+var nolog = zerolog.New(io.Discard)

@@ -64,13 +64,13 @@ type Channel struct {
 
 // NewChannel returns a new initialized LAO channel
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message) channel.Channel {
-	inbox := inbox.NewInbox(channelID)
-	inbox.StoreMessage(msg)
-
 	log := zerolog.New(logout).Level(defaultLevel).
 		With().Timestamp().Logger().
 		With().Caller().Logger().
 		With().Str("role", "lao channel").Logger()
+
+	inbox := inbox.NewInbox(channelID)
+	inbox.StoreMessage(msg, log)
 
 	return &Channel{
 		channelID: channelID,
@@ -163,7 +163,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	}
 
 	// Verify the data
-	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data, c.log)
 	if err != nil {
 		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
@@ -255,7 +255,7 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 		return answer.NewInvalidActionError(action)
 	}
 
-	c.inbox.StoreMessage(msg)
+	c.inbox.StoreMessage(msg, c.log)
 
 	return nil
 }
@@ -360,7 +360,7 @@ func (c *Channel) processMeetingObject(action string, msg message.Message) error
 	case messagedata.MeetingActionState:
 	}
 
-	c.inbox.StoreMessage(msg)
+	c.inbox.StoreMessage(msg, c.log)
 
 	return nil
 }
@@ -382,7 +382,7 @@ func (c *Channel) processMessageObject(action string, msg message.Message) error
 			return answer.NewError(-4, "invalid witness signature")
 		}
 
-		err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+		err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature, c.log)
 		if err != nil {
 			return xerrors.Errorf("failed to add witness signature: %w", err)
 		}
@@ -453,7 +453,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		return xerrors.Errorf("failed to process roll call action: %s %w", action, err)
 	}
 
-	c.inbox.StoreMessage(msg)
+	c.inbox.StoreMessage(msg, c.log)
 
 	return nil
 }
@@ -522,7 +522,7 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	// }
 
 	// Saving the election channel creation message on the lao channel
-	c.inbox.StoreMessage(msg)
+	c.inbox.StoreMessage(msg, c.log)
 
 	// Add the new election channel to the organizerHub
 	c.hub.RegisterNewChannel(channelPath, &electionCh)
@@ -643,7 +643,7 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 }
 
 // CreateChannelFromDB restores a channel from the db
-func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities) (channel.Channel, error) {
+func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) (channel.Channel, error) {
 	channel := Channel{
 		channelID: channelPath,
 		sockets:   channel.NewSockets(),
@@ -651,6 +651,7 @@ func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunction
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
+		log:	   log,
 	}
 
 	attendees, err := getAttendeesChannelFromDB(db, channelPath)
