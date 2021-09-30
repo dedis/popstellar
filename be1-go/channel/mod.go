@@ -1,6 +1,7 @@
 package channel
 
 import (
+	"github.com/rs/zerolog"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -12,7 +13,7 @@ import (
 
 // LaoFactory is the function passed to the organizer that it must use to
 // create a new lao channel.
-type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message) Channel
+type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message, log zerolog.Logger) Channel
 
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {

@@ -4,32 +4,20 @@ package organizer
 
 import (
 	"encoding/base64"
-	"os"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
+	be1_go "popstellar"
 	"popstellar/channel/lao"
 	"popstellar/crypto"
 	"popstellar/hub/organizer"
 	"popstellar/network"
 	"popstellar/network/socket"
-	"time"
-
-	"github.com/rs/zerolog"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 )
-
-const defaultLevel = zerolog.InfoLevel
-
-var logout = zerolog.ConsoleWriter{
-	Out:        os.Stdout,
-	TimeFormat: time.RFC3339,
-}
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the organizer.
 func Serve(cliCtx *cli.Context) error {
-	log := zerolog.New(logout).Level(defaultLevel).
-		With().Timestamp().Logger().
-		With().Caller().Logger()
+	log := be1_go.Logger
 
 	// get command line args which specify public key, port to use for clients
 	// and witnesses

@@ -4,29 +4,17 @@ package main
 import (
 	"database/sql"
 	"flag"
-	"github.com/rs/zerolog"
-	"os"
-	"time"
-
 	_ "github.com/mattn/go-sqlite3"
+	"os"
+	be1_go "popstellar"
 )
-
-const defaultLevel = zerolog.InfoLevel
-
-var logout = zerolog.ConsoleWriter{
-	Out:        os.Stdout,
-	TimeFormat: time.RFC3339,
-}
 
 func main() {
 	var dbPath string
 	var schemaPath string
 	var force bool
 
-	log := zerolog.New(logout).Level(defaultLevel).
-		With().Timestamp().Logger().
-		With().Caller().Logger().
-		With().Str("role", "db").Logger()
+	log := be1_go.Logger
 
 	flag.StringVar(&dbPath, "db", "pop_go_hub.db", "location of the database file")
 	flag.StringVar(&schemaPath, "schema", "schema.sql", "location of the SQL schema")

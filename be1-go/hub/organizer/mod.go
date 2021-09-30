@@ -407,7 +407,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message)
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 

@@ -6,7 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
-	"os"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/election"
 	"popstellar/channel/inbox"
@@ -22,10 +23,6 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
-	"time"
-
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 )
 
 const (
@@ -33,14 +30,8 @@ const (
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
-	defaultLevel  = zerolog.InfoLevel
 	msgID		  = "msg id"
 )
-
-var logout = zerolog.ConsoleWriter{
-	Out:        os.Stdout,
-	TimeFormat: time.RFC3339,
-}
 
 // Channel defines a LAO channel
 type Channel struct {
@@ -64,11 +55,9 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized LAO channel
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message) channel.Channel {
-	log := zerolog.New(logout).Level(defaultLevel).
-		With().Timestamp().Logger().
-		With().Caller().Logger().
-		With().Str("role", "lao channel").Logger()
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
+
+	log = log.With().Str("channel", "lao").Logger()
 
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg, log)
@@ -512,7 +501,7 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false, setupMsg.Questions, c.attendees, msg, c.hub)
+	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false, setupMsg.Questions, c.attendees, msg, c.hub, c.log)
 	// {
 	// 	createBaseChannel(organizerHub, channelPath),
 	// 	setupMsg.StartTime,

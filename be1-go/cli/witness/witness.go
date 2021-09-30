@@ -5,35 +5,24 @@ package witness
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/gorilla/websocket"
+	"github.com/rs/zerolog"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 	"net/url"
-	"os"
+	be1_go "popstellar"
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/witness"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
-	"time"
-
-	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 )
-
-const defaultLevel = zerolog.InfoLevel
-
-var logout = zerolog.ConsoleWriter{
-	Out:        os.Stdout,
-	TimeFormat: time.RFC3339,
-}
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the witness.
 func Serve(cliCtx *cli.Context) error {
-	log := zerolog.New(logout).Level(defaultLevel).
-		With().Timestamp().Logger().
-		With().Caller().Logger()
+	log := be1_go.Logger
 
 	// get command line args which specify public key, organizer address, port
 	// for organizer, clients, witnesses, other witness' addresses

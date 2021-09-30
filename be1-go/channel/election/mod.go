@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
-	"os"
+	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
@@ -18,20 +18,9 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
-	"time"
-
-	"golang.org/x/xerrors"
 )
 
-const (
-	defaultLevel = zerolog.InfoLevel
-	msgID		 = "msg id"
-)
-
-var logout = zerolog.ConsoleWriter{
-	Out:        os.Stdout,
-	TimeFormat: time.RFC3339,
-}
+const msgID		 = "msg id"
 
 // attendees represents the attendees in an election.
 type attendees struct {
@@ -79,14 +68,10 @@ func (a *attendees) Copy() *attendees {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, terminated bool,
-	questions []messagedata.ElectionSetupQuestion, attendeesMap map[string]struct{},
-	msg message.Message, hub channel.HubFunctionalities) Channel {
+func NewChannel(channelPath string, start, end int64, terminated bool, questions []messagedata.ElectionSetupQuestion,
+	attendeesMap map[string]struct{}, msg message.Message, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
 
-	log := zerolog.New(logout).Level(defaultLevel).
-		With().Timestamp().Logger().
-		With().Caller().Logger().
-		With().Str("role", "election channel").Logger()
+	log = log.With().Str("channel", "election").Logger()
 
 	// Saving on election channel too so it self-contains the entire election history
 	// electionCh.inbox.storeMessage(msg)

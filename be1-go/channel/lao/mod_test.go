@@ -22,7 +22,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0])
+	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0], nolog)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
