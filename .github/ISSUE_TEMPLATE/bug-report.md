@@ -25,14 +25,14 @@ This bug was reproduced on:
 - Commit: ...hash... (make sure your working tree is clean and your commit is pushed to the repo)
 
 ##### Front-ends:
-- [] Fe1-Web (please include browser's names & version)
-- [] Fe2-Android (please specify if phone or emulation, and Android version)
-- [] Not applicable
+- [ ] Fe1-Web (please include browser's names & version)
+- [ ] Fe2-Android (please specify if phone or emulation, and Android version)
+- [ ] Not applicable
 
 ##### Back-ends:
-- [] Be1-Go
-- [] Be2-Scala
-- [] Not applicable
+- [ ] Be1-Go
+- [ ] Be2-Scala
+- [ ] Not applicable
 
 ##### Environment (as applicable):
  - Device: [e.g. Pixel 5 emulator on Mac]
