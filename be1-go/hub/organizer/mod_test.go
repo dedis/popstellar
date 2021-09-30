@@ -363,11 +363,12 @@ type fakeChannelFac struct {
 	chanID string
 	msg    message.Message
 	c      channel.Channel
+	log    zerolog.Logger
 }
 
 // newChannel implement the type channel.LaoFactory
 func (c *fakeChannelFac) newChannel(channelID string,
-	hub channel.HubFunctionalities, msg message.Message) channel.Channel {
+	hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
 
 	c.chanID = channelID
 	c.msg = msg

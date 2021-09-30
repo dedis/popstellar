@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
 	"popstellar/db/sqlite"
@@ -64,7 +65,7 @@ type Hub struct {
 // NewHub returns a Organizer Hub.
 func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator()
+	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
@@ -156,7 +157,7 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	}
 
 	// validate message data against the json schema
-	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data, h.log)
+	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		socket.SendError(&publish.ID, err)
 		return
@@ -201,7 +202,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	byteMessage := incomingMessage.Message
 
 	// validate against json schema
-	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage, h.log)
+	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
 		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
@@ -414,7 +415,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 	h.channelByID[laoChannelPath] = laoCh
 
 	if sqlite.GetDBPath() != "" {
-		saveChannel(laoChannelPath, h.log)
+		saveChannel(laoChannelPath)
 	}
 
 	return nil
@@ -441,7 +442,9 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 // DB operations
 // --
 
-func saveChannel(channelPath string, log zerolog.Logger) error {
+func saveChannel(channelPath string) error {
+	log := be1_go.Logger
+
 	log.Info().Msgf("trying to save the channel in db at %s", sqlite.GetDBPath())
 
 	db, err := sql.Open("sqlite3", sqlite.GetDBPath())

@@ -2,8 +2,7 @@ package inbox
 
 import (
 	"database/sql"
-	"github.com/rs/zerolog"
-	"log"
+	be1_go "popstellar"
 	"sort"
 	"sync"
 	"time"
@@ -49,15 +48,15 @@ func NewInbox(channelID string) *Inbox {
 // AddWitnessSignature adds a signature of witness to a message of ID
 // `messageID`. if the signature was correctly added return true otherwise
 // returns false
-func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string, log zerolog.Logger) error {
+func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) error {
+	log := be1_go.Logger
+
 	msg, ok := i.GetMessage(messageID)
 	if !ok {
 		// TODO: We received a witness signature before the message itself. We
 		// ignore it for now but it might be worth keeping it until we actually
 		// receive the message
-		err := answer.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
-		log.Err(err).Msgf("failed to find message_id %s for witness message", messageID)
-		return err
+		return answer.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
 	}
 
 	i.mutex.Lock()
@@ -88,7 +87,9 @@ func (i *Inbox) AddWitnessSignature(messageID string, public string, signature s
 }
 
 // StoreMessage stores a message inside the inbox
-func (i *Inbox) StoreMessage(msg message.Message, log zerolog.Logger) {
+func (i *Inbox) StoreMessage(msg message.Message) {
+	log := be1_go.Logger
+
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
@@ -227,6 +228,8 @@ func addWitnessInDB(db *sql.DB, messageID string, pubKey string, signature strin
 
 // CreateInboxFromDB creates an inbox from a database
 func CreateInboxFromDB(db *sql.DB, channelID string) (*Inbox, error) {
+	log := be1_go.Logger
+
 	inbox := NewInbox(channelID)
 
 	query := `
@@ -283,7 +286,7 @@ func CreateInboxFromDB(db *sql.DB, channelID string) (*Inbox, error) {
 			storedTime: timestamp,
 		}
 
-		log.Printf("Msg load: %+v", messageInfo.message)
+		log.Info().Msgf("msg load: %+v", messageInfo.message)
 
 		inbox.msgs[messageID] = &messageInfo
 	}

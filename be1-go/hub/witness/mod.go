@@ -43,7 +43,7 @@ type Hub struct {
 // NewHub returns a new Witness Hub.
 func NewHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator()
+	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}

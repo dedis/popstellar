@@ -35,7 +35,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 		messages[i] = message
 
 		// Store the message in the inbox
-		laoChannel.inbox.StoreMessage(message, nolog)
+		laoChannel.inbox.StoreMessage(message)
 
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
