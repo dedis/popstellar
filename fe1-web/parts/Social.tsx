@@ -19,7 +19,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const publishChirp = (message: String) => message;
+// TODO: Implement this method, so that it sends a test chirp to the network
+const publishChirp = () => {};
 
 const Social = () => (
   <View style={styleContainer.flex}>
