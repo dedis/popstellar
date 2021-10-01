@@ -1,14 +1,14 @@
 {
     "object": "election",
     "action": "cast_vote",
-    "lao": "XXX",
-    "election": "XXX",
-    "created_at": 123,
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "fWykAePKmYimXhhZyownIGfdGHxCbgjrLdBaCsib1qs=",
+    "created_at": 1633098941,
     "votes": [
         {
-            "id": "XXX",
-            "question": "XXX",
-            "write_in": "XXX"
+            "id": "Hda9JCGsLLG6ahl4Z8USd7wO0QUPdr0xsPV5ildRC94=",
+            "question": "What are you studying?",
+            "write_in": "Computer Science"
         }
     ]
 }
