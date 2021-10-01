@@ -189,4 +189,7 @@
   <string name="message_signed">MESSAGE SIGNED</string>
   <string name="witness_messages">WITNESS MESSAGES</string>
   <string name="delete_a_witness">delete a witness</string>
+
+  <!-- Social Media -->
+  <string name="chirp">CHIRP</string>
 </resources>

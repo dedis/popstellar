@@ -44,6 +44,7 @@ public class HomeActivity extends AppCompatActivity {
     setupLaunchButton();
     setupConnectButton();
     setupWalletButton();
+    setupSocialMediaButton();
 
     // Subscribe to "open lao" event
     mViewModel.getOpenLaoEvent()
@@ -196,6 +197,12 @@ public class HomeActivity extends AppCompatActivity {
     Button launchButton = (Button) findViewById(R.id.tab_wallet);
     launchButton.setOnClickListener(v ->
         mViewModel.openWallet());
+  }
+
+  public void setupSocialMediaButton() {
+    Button launchButton = (Button) findViewById(R.id.tab_socialmedia);
+    launchButton.setOnClickListener(v ->
+        mViewModel.openSocialMedia());
   }
 
   private void setupHomeFragment() {

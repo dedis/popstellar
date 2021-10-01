@@ -60,6 +60,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent = new MutableLiveData<>();
 
 
   /*
@@ -276,6 +277,10 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenLaoWalletEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
+    return mOpenSocialMediaEvent;
+  }
+
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -295,6 +300,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openWallet() {
     mOpenWalletEvent.postValue(new SingleEvent<>(isWalletSetUp()));
+  }
+
+  public void openSocialMedia() {
+    mOpenSocialMediaEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openSeed() {
