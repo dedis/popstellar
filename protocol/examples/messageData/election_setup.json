@@ -1,19 +1,19 @@
 {
     "object": "election",
     "action": "setup",
-    "id": "XXX",
-    "lao": "XXX",
-    "name": "XXX",
-    "version": "XXX",
-    "created_at": 123,
-    "start_time": 123,
-    "end_time": 123,
+    "id": "JVehtpaFJwPc2dp8VuiskXwxmjTQGT6OiIVbei-EbBI=",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "name": "Election",
+    "version": "1.0.0",
+    "created_at": 1633098941,
+    "start_time": 1633098941,
+    "end_time": 1633099812,
     "questions": [
         {
-            "id": "XXX",
-            "question": "XXX",
+            "id": "AQy6JrPiLXG7oIZ_EL83hbs87w_vjn5ZS3r4je1wV8o=",
+            "question": "Is this project fun?",
             "voting_method": "Plurality",
-            "ballot_options": ["XXX", "YYY"],
+            "ballot_options": ["Yes", "No"],
             "write_in": false
         }
     ]

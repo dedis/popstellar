@@ -1,13 +1,13 @@
 {
     "object": "election",
     "action": "cast_vote",
-    "lao": "XXX",
-    "election": "XXX",
-    "created_at": 123,
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "JVehtpaFJwPc2dp8VuiskXwxmjTQGT6OiIVbei-EbBI=",
+    "created_at": 1633098996,
     "votes": [
         {
-            "id": "XXX",
-            "question": "XXX",
+            "id": "JF8pLNhK6BArJpZxL7IWhbC6doPDpGPClRkgav0ry_0=",
+            "question": "AQy6JrPiLXG7oIZ_EL83hbs87w_vjn5ZS3r4je1wV8o=",
             "vote": [0]
         }
     ]

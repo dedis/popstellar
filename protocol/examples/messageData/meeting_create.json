@@ -1,11 +1,10 @@
 {
     "object": "meeting",
     "action": "create",
-    "id": "XXX",
-    "name": "XXX",
-    "creation": 123,
-    "location": "XXX",
-    "start": 123,
-    "end": 123,
-    "extra": { "anything": "XXX" }
+    "id": "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=",
+    "name": "Meeting",
+    "creation": 1633098331,
+    "location": "EPFL",
+    "start": 1633098900,
+    "end": 1633102500
 }
