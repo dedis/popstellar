@@ -51,8 +51,8 @@ const STRINGS = {
   home_launch_lao: 'To launch a new LAO as on organizer, please tap Launch tab above',
 
   /* --- Social Media Strings --- */
-  feed_description: 'Feed',
-  button_publish_test_post: 'Publish a test post',
+  feed_description: 'User feed',
+  button_publish_test_chirp: 'Publish a test chirp',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',

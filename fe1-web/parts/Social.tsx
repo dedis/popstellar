@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const publishPost = (message: String) => message;
+const publishChirp = (message: String) => message;
 
 const Social = () => (
   <View style={styleContainer.flex}>
@@ -28,8 +28,8 @@ const Social = () => (
     </View>
     <View style={styles.viewBottom}>
       <WideButtonView
-        title={STRINGS.button_publish_test_post}
-        onPress={publishPost}
+        title={STRINGS.button_publish_test_chirp}
+        onPress={publishChirp}
       />
     </View>
   </View>
