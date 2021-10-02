@@ -27,9 +27,8 @@ import { publish } from './JsonRpcApi';
 const ONE_MINUTE = 60;
 
 // Checks if start < creation and handles it accordingly
-const adaptStartTime = (creation: Timestamp, start: Timestamp) : Timestamp => {
-  return ((start.before(creation)) ? creation : start);
-};
+const adaptStartTime = (creation: Timestamp, start: Timestamp) : Timestamp => ((start
+  .before(creation)) ? creation : start);
 
 // Checks if end < start and handles it accordingly
 const adaptEndTime = (start: Timestamp, end: Timestamp | undefined) : Timestamp | undefined => {
