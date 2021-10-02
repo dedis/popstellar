@@ -27,9 +27,6 @@ const CreateRollCall = ({ route }: any) => {
   const navigation = useNavigation();
   const initialStartDate = new Date();
   const initialEndDate = new Date();
-  // Sets initial start date 5 minutes in the future to avoid: proposed_start < creation
-  initialStartDate.setMinutes(initialStartDate.getMinutes() + 5);
-  initialEndDate.setMinutes(initialEndDate.getMinutes() + 5);
 
   // Sets initial end date to 1 hour later than start date
   initialEndDate.setHours(initialStartDate.getHours() + 1);
