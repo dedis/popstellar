@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Button, Platform, TextInput,
+  View, Platform, TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker from 'components/DatePicker';
