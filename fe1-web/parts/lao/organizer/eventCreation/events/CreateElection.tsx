@@ -18,6 +18,10 @@ import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
 
+function dateToTimestamp(date: Date): Timestamp {
+  return new Timestamp(Math.floor(date.getTime() / 1000));
+}
+
 /**
  * UI to create an Election Event
  */
@@ -29,8 +33,8 @@ const CreateElection = ({ route }: any) => {
   const initialEndDate = new Date();
   initialEndDate.setHours(initialStartDate.getHours() + 1);
 
-  const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));
+  const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
+  const [endDate, setEndDate] = useState(dateToTimestamp(initialEndDate));
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
@@ -39,17 +43,23 @@ const CreateElection = ({ route }: any) => {
   const [questions, setQuestions] = useState([emptyQuestion]);
 
   const onChangeStartTime = (date: Date) => {
-    const dateStamp = Timestamp.dateToTimestamp(date);
-    if (dateStamp > Timestamp.dateToTimestamp(new Date())) {
+    const dateStamp = dateToTimestamp(date);
+    const now = new Date();
+    if (dateStamp > dateToTimestamp(now)) {
       setStartDate(dateStamp);
+      const newEndDate = new Date(date.getTime());
+      newEndDate.setHours(date.getHours() + 1);
+      setEndDate(dateToTimestamp(newEndDate));
+    } else {
+      setStartDate(dateToTimestamp(now));
+      const newEndDate = new Date(now.getTime());
+      newEndDate.setHours(now.getHours() + 1);
+      setEndDate(dateToTimestamp(newEndDate));
     }
-    const newEndDate = new Date(date.getTime());
-    newEndDate.setHours(date.getHours() + 1);
-    setEndDate(Timestamp.dateToTimestamp(newEndDate));
   };
 
   const onChangeEndTime = (date: Date) => {
-    const dateStamp: Timestamp = Timestamp.dateToTimestamp(date);
+    const dateStamp: Timestamp = dateToTimestamp(date);
     if (dateStamp < startDate) {
       setEndDate(startDate);
     } else {

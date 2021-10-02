@@ -40,12 +40,19 @@ const CreateRollCall = ({ route }: any) => {
 
   const onChangeStartTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
-    if (dateStamp > dateToTimestamp(new Date())) {
+    const now = new Date();
+
+    if (dateStamp > dateToTimestamp(now)) {
       setProposedStartDate(dateStamp);
+      const newEndDate = new Date(date.getTime());
+      newEndDate.setHours(date.getHours() + 1);
+      setProposedEndDate(dateToTimestamp(newEndDate));
+    } else {
+      setProposedStartDate(dateToTimestamp(now));
+      const newEndDate = new Date(now.getTime());
+      newEndDate.setHours(now.getHours() + 1);
+      setProposedEndDate(dateToTimestamp(newEndDate));
     }
-    const newEndDate = new Date(date.getTime());
-    newEndDate.setHours(date.getHours() + 1);
-    setProposedEndDate(dateToTimestamp(newEndDate));
   };
 
   const onChangeEndTime = (date: Date) => {

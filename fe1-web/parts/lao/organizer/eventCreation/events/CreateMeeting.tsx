@@ -13,6 +13,8 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 
+const ONE_MINUTE = 60;
+
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
@@ -54,18 +56,24 @@ const CreateMeeting = ({ route }: any) => {
 
   const onChangeStartTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
-    if (dateStamp > dateToTimestamp(new Date())) {
+    const now = new Date();
+    if (dateStamp > dateToTimestamp(now)) {
       setStartDate(dateStamp);
+      const newEndDate = new Date(date.getTime());
+      newEndDate.setHours(date.getHours() + 1);
+      setEndDate(dateToTimestamp(newEndDate));
+    } else {
+      setStartDate(dateToTimestamp(now));
+      const newEndDate = new Date(now.getTime());
+      newEndDate.setHours(now.getHours() + 1);
+      setEndDate(dateToTimestamp(newEndDate));
     }
-    const newEndDate = new Date(date.getTime());
-    newEndDate.setHours(date.getHours() + 1);
-    setEndDate(dateToTimestamp(newEndDate));
   };
 
   const onChangeEndTime = (date: Date) => {
     const dateStamp: Timestamp = dateToTimestamp(date);
     if (dateStamp < startDate) {
-      setEndDate(startDate);
+      setEndDate(startDate.addSeconds(ONE_MINUTE));
     } else {
       setEndDate(dateStamp);
     }
