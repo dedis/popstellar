@@ -89,25 +89,22 @@ const CreateMeeting = ({ route }: any) => {
     }
 
     return (
-      <>
-        { /* Start time */ }
-        <View style={styles.view}>
+      <View style={styles.viewVertical}>
+        <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
-          { /* zIndexBooster corrects the problem of DatePicker being other elements */ }
-          <DatePicker selected={startTime} onChange={onChangeStartTime} />
+          <DatePicker
+            selected={startTime}
+            onChange={(date: Date) => onChangeStartTime(date)}
+          />
         </View>
-
-        { /* End time */}
-        <View style={styles.view}>
+        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
-          { /* zIndexBooster corrects the problem of DatePicker being other elements */}
-          <DatePicker selected={endTime} onChange={onChangeEndTime} />
-          <View>
-            { /* the view is there to avoid button stretching */ }
-            <Button onPress={() => setEndDate(new Timestamp(-1))} title="Clear" />
-          </View>
+          <DatePicker
+            selected={endTime}
+            onChange={(date: Date) => onChangeEndTime(date)}
+          />
         </View>
-      </>
+      </View>
     );
   };
 
