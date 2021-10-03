@@ -41,11 +41,11 @@ const EventRollCall = (props: IPropTypes) => {
         console.debug('Unable to send roll call re-open request, the event does not have an idAlias');
         return;
       }
-      requestOpenRollCall(event.idAlias, lao.id).then().catch(
+      requestOpenRollCall(event.idAlias).then().catch(
         (e) => console.debug('Unable to send Roll call re-open request', e),
       );
     } else {
-      requestOpenRollCall(event.id, lao.id).then().catch(
+      requestOpenRollCall(event.id).then().catch(
         (e) => console.debug('Unable to send Roll call open request', e),
       );
     }
