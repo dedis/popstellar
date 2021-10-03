@@ -17,7 +17,7 @@ import { WalletStore } from 'store/stores/WalletStore';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
-import Social from "../../parts/Social";
+import Social from '../../parts/Social';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
