@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.model.network.answer;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
-/**
- * A succeed query's answer
- */
+/** A succeed query's answer */
 public final class Result extends Answer {
 
   private Optional<Integer> general;
@@ -15,8 +15,7 @@ public final class Result extends Answer {
   /**
    * Constructor of a Result
    *
-   * @param id     of the answer
-   * @param result of the answer
+   * @param id of the answer
    */
   public Result(int id) {
     super(id);
@@ -38,5 +37,25 @@ public final class Result extends Answer {
 
   public Optional<List<MessageGeneral>> getMessages() {
     return messages;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    if (!super.equals(o)) return false;
+    Result result = (Result) o;
+    return Objects.equals(getGeneral(), result.getGeneral())
+        && Objects.equals(getMessages(), result.getMessages());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(super.hashCode(), getGeneral(), getMessages());
+  }
+
+  @Override
+  public String toString() {
+    return "Result{" + "general=" + general + ", messages=" + messages + '}';
   }
 }

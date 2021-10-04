@@ -28,4 +28,14 @@ public class PublicKeySignaturePair {
   public String getSignatureEncoded() {
     return Base64.getUrlEncoder().encodeToString(this.signature);
   }
+
+  @Override
+  public String toString() {
+    return "PublicKeySignaturePair{"
+        + "witness="
+        + getWitnessEncoded()
+        + ", signature="
+        + getSignatureEncoded()
+        + '}';
+  }
 }

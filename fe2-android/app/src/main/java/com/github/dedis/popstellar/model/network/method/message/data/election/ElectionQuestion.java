@@ -2,23 +2,27 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ElectionQuestion {
 
   private String id;
   private String question;
+
   @SerializedName(value = "voting_method")
   private String votingMethod;
+
   @SerializedName(value = "ballot_options")
   private List<String> ballotOptions;
+
   @SerializedName(value = "write_in")
   private boolean writeIn;
 
-  /**
-   * Constructor for a data Question, for the election setup
-   */
+  /** Constructor for a data Question, for the election setup */
   public ElectionQuestion(
       String question,
       String votingMethod,
@@ -32,7 +36,6 @@ public class ElectionQuestion {
     this.votingMethod = votingMethod;
     this.id = Election.generateElectionQuestionId(electionId, question);
   }
-
 
   public String getId() {
     return id;
@@ -54,36 +57,27 @@ public class ElectionQuestion {
     return votingMethod;
   }
 
-
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+
     ElectionQuestion that = (ElectionQuestion) o;
-    return getQuestion() == that.getQuestion()
-        && getWriteIn() == that.getWriteIn()
-        && java.util.Objects.equals(getId(), that.getId())
-        && java.util.Objects.equals(getBallotOptions(), that.getBallotOptions())
-        && getVotingMethod() == that.getVotingMethod();
+    return getWriteIn() == that.getWriteIn()
+        && Objects.equals(getId(), that.getId())
+        && Objects.equals(getQuestion(), that.getQuestion())
+        && Objects.equals(getVotingMethod(), that.getVotingMethod())
+        && Objects.equals(getBallotOptions(), that.getBallotOptions());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(
-        getId(),
-        getVotingMethod(),
-        getWriteIn(),
-        getBallotOptions(),
-        getQuestion());
+    return Objects.hash(
+        getId(), getQuestion(), getVotingMethod(), getBallotOptions(), getWriteIn());
   }
 
   @Override
   public String toString() {
-
     return "ElectionQuestion{"
         + "id='"
         + id
@@ -91,16 +85,13 @@ public class ElectionQuestion {
         + ", question='"
         + question
         + '\''
-        + ", voting method='"
+        + ", votingMethod='"
         + votingMethod
         + '\''
-        + ", ballot options='"
-        + ballotOptions
-        + '\''
-        + ", write in ='"
+        + ", ballotOptions="
+        + Arrays.toString(ballotOptions.toArray())
+        + ", writeIn="
+        + writeIn
         + '}';
   }
-
 }
-
-

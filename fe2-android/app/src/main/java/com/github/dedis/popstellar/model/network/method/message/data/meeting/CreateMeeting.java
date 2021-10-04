@@ -6,9 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
-/**
- * Data sent to create a new meeting
- */
+/** Data sent to create a new meeting */
 public class CreateMeeting extends Data {
 
   private final String id;
@@ -21,18 +19,19 @@ public class CreateMeeting extends Data {
   /**
    * Constructor for a data Create Meeting Event
    *
-   * @param laoId    id of the LAO
-   * @param id       of the Meeting creation message, Hash("M"||laoId||creation||name)
-   * @param name     name of the Meeting
+   * @param laoId id of the LAO
+   * @param id of the Meeting creation message, Hash("M"||laoId||creation||name)
+   * @param name name of the Meeting
    * @param creation time of creation
    * @param location location of the Meeting
-   * @param start    of the Meeting
-   * @param end      of the Meeting
+   * @param start of the Meeting
+   * @param end of the Meeting
    * @throws IllegalArgumentException if the id is invalid
    */
   public CreateMeeting(
       String laoId, String id, String name, long creation, String location, long start, long end) {
-    if (!id.equals(Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
+    if (!id.equals(
+        Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
       throw new IllegalArgumentException(
           "CreateMeeting id must be Hash(\"M\"||laoId||creation||name)");
     }
