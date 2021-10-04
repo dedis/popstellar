@@ -1,6 +1,13 @@
 package messagedata
 
-import "encoding/json"
+import (
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
+	"fmt"
+
+	"golang.org/x/xerrors"
+)
 
 // MeetingState defines a message data
 type MeetingState struct {
@@ -25,4 +32,21 @@ type MeetingState struct {
 	Extra                  json.RawMessage         `json:"extra"`
 	ModificationID         string                  `json:"modification_id"`
 	ModificationSignatures []ModificationSignature `json:"modification_signatures"`
+}
+
+// Verify that the MeetingState message is valid
+func (message MeetingState) Verify(channelID string) error {
+
+	h := sha256.New()
+	h.Write([]byte("M"))
+	h.Write([]byte(channelID))
+	h.Write([]byte(fmt.Sprintf("%d", message.Creation)))
+	h.Write([]byte(message.Name))
+	testMeetingID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	if message.ID != testMeetingID {
+		return xerrors.Errorf("invalid MeetingState message: invalid ID")
+	}
+
+	return nil
 }

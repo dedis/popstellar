@@ -218,6 +218,11 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
+		err = laoState.Verify(c.channelID)
+		if err != nil {
+			return xerrors.Errorf("invalid lao#state message: %v", err)
+		}
+
 		err = c.processLaoState(laoState)
 		if err != nil {
 			return xerrors.Errorf("failed to process state action: %w", err)
@@ -277,6 +282,14 @@ func (c *Channel) processLaoState(data messagedata.LaoState) error {
 		return &answer.Error{
 			Code:        -4,
 			Description: fmt.Sprintf("failed to unmarshal message from the inbox: %v", err),
+		}
+	}
+
+	err = updateMsgData.Verifiy(c.channelID)
+	if err != nil {
+		return &answer.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("invalid lao#update message: %v", err),
 		}
 	}
 
@@ -393,6 +406,11 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
 		}
 
+		err = rollCallCreate.Verify(c.channelID)
+		if err != nil {
+			return xerrors.Errorf("invalid rollcall#create message: %v", err)
+		}
+
 		err = c.processCreateRollCall(rollCallCreate)
 		if err != nil {
 			return xerrors.Errorf("failed to process roll call create: %v", err)
@@ -410,6 +428,11 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		err := msg.UnmarshalData(&rollCallClose)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
+		}
+
+		err = rollCallClose.Verify(c.channelID)
+		if err != nil {
+			return xerrors.Errorf("invalid rollcall#close message: %v", err)
 		}
 
 		err = c.processCloseRollCall(rollCallClose)
@@ -536,6 +559,11 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 	err := msg.UnmarshalData(&rollCallOpen)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal roll call open: %v", err)
+	}
+
+	err = rollCallOpen.Verify(c.channelID)
+	if err != nil {
+		return xerrors.Errorf("invalid rollcall#open message: %v", err)
 	}
 
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
