@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
+import com.github.dedis.popstellar.ui.detail.event.consensus.ConsensusStatusFragment;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartAcceptorsFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
@@ -132,6 +133,9 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     //Subscribe to "open consensus vote" event
     setupConsensusVoteFragment();
+
+    //Subscribe to "open consensus status" event
+    setupConsensusStatusFragment();
   }
 
   private void subscribeWalletEvents() {
@@ -525,6 +529,30 @@ public class LaoDetailActivity extends AppCompatActivity {
               Boolean event = booleanSingleEvent.getContentIfNotHandled();
               if (event != null) {
                 setupElectionStartAcceptorsFragment();
+              }
+            }
+        );
+  }
+
+  private void setupConsensusStatusFragment() {
+    mViewModel
+        .getOpenConsensusStatusEvent()
+        .observe(
+            this,
+            booleanSingleEvent -> {
+              Boolean event = booleanSingleEvent.getContentIfNotHandled();
+              if (event != null) {
+                ConsensusStatusFragment consensusStatusFragment =
+                    (ConsensusStatusFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.fragment_consensus_status);
+                if (consensusStatusFragment == null) {
+                  consensusStatusFragment = ConsensusStatusFragment.newInstance(mViewModel.getCurrentConsensus().getId());
+                  ActivityUtils.replaceFragmentInActivity(
+                      getSupportFragmentManager(),
+                      consensusStatusFragment,
+                      R.id.fragment_container_lao_detail
+                  );
+                }
               }
             }
         );

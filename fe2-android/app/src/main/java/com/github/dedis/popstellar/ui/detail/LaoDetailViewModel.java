@@ -11,33 +11,34 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusVote;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.CreateConsensus;
-import com.github.dedis.popstellar.model.objects.Consensus;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusVote;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.CreateConsensus;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.LearnConsensus;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Consensus;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -61,6 +62,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -115,6 +117,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   private final MutableLiveData<SingleEvent<Boolean>> mCreatedConsensusEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenConsensusVoteEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenConsensusStatusEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -480,7 +483,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       return;
     }
     String channel = lao.getChannel();
-    String laoId = channel.substring(6); // removing /root/ prefix
 
     CreateConsensus createConsensus = new CreateConsensus(creation, objId, type, property, value);
 
@@ -503,6 +505,28 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       consensus.setProposer(publicKey);
       consensus.setChannel(channel + "/consensus");
       consensus.setEnd(Long.MAX_VALUE);
+
+      Set<String> acceptors = new HashSet<>();
+      acceptors.add(publicKey);
+      acceptors.add("aaaaaaaaaaaaaaaaaaaaaaaabbbbbb");
+      acceptors.add("ZFUkguyyBwfsSDn8QWIfrSXVDkGhHroMoFo0SHHe9ePH");
+      acceptors.add("pvq74r9VfTNSpUBMo9oGdXxnGM6MVnmD60SUMFsKdVWf");
+      acceptors.add("40di1HiBlo7OfUSOSUUlJOq0BjivevjmXDZspXDfdL0P");
+      acceptors.add("s5rxC09ju1rxQBHNf8rnOi8NWqcu8VwalM3JQgW8yrfWddddsgerherh");
+      acceptors.add("fmabt53tgya77IhUbcrF6hrr9Hv6LRfp3C3BddddYePd");
+      acceptors.add("EhU4rzfgOohCEqkQMjsjUAuA7CMjKgW2U8lxqloa6zox");
+      acceptors.add("wE5bP8XVmgjcegTCRobAz0Mq8Ebpvh8mtU1Md4xrOGOZ");
+      acceptors.add("gPZIJ6lskujHQYK2FEzlaOZfCcZHz4kvMnuWr0KPsY2l");
+      acceptors.add("R8BFeTxnyy75f7sMIRPgLdJqVzgp4V7BTAmUb");
+      acceptors.add("gKuPpS6jLsc6BU40de2KuJbBQ2OF1cZskPEmusnw9BbM");
+      Random rng = new Random();
+      for (String s : acceptors) {
+        if (rng.nextBoolean()) {
+          consensus.putAcceptorResponse(s, rng.nextBoolean());
+        } //else null
+      }
+
+      consensus.setAcceptors(acceptors);
       consensus.setEventState(EventState.OPENED);
       lao.updateConsensus(consensus.getId(), consensus);
       setCurrentConsensus(consensus);
@@ -524,9 +548,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                       Log.d(TAG, "failed to create a consensus");
                     }
                   },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for result on consensus/create", throwable);
-                  });
+                  throwable -> Log.d(TAG, "timed out waiting for result on consensus/create", throwable));
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -956,6 +978,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     return mOpenConsensusVoteEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenConsensusStatusEvent() {
+    return mOpenConsensusStatusEvent;
+  }
+
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
     return mAttendeeScanConfirmEvent;
   }
@@ -1129,6 +1155,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public void openConsensusVote(Boolean open) {
     mOpenConsensusVoteEvent.postValue(new SingleEvent<>(open));
+  }
+
+  public void openConsensusStatus(Boolean open) {
+    mOpenConsensusStatusEvent.postValue(new SingleEvent<>(open));
   }
 
   public void confirmEdit() {

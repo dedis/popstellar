@@ -455,16 +455,15 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     boolean isAcceptor = viewModel.isOrganizer().getValue() || viewModel.isWitness().getValue();
     boolean isVoteOpen = isAcceptor && consensus.getState() == EventState.OPENED;
-    boolean isStatusOpen = isAcceptor && consensus.getState() == RESULTS_READY;
 
     Button voteButton = binding.consensusVoteButton;
     Button statusButton = binding.consensusStatusButton;
 
     voteButton.setVisibility(isVoteOpen ? View.VISIBLE : View.GONE);
-    statusButton.setVisibility(isStatusOpen ? View.VISIBLE : View.GONE);
+    statusButton.setVisibility(isAcceptor ? View.VISIBLE : View.GONE);
 
     voteButton.setEnabled(isVoteOpen);
-    statusButton.setEnabled(isStatusOpen);
+    statusButton.setEnabled(isAcceptor);
 
     voteButton.setOnClickListener(
         clicked -> {
@@ -476,7 +475,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     statusButton.setOnClickListener(
         clicked -> {
           viewModel.setCurrentConsensus(consensus);
-          //TODO open a view with the consensus status
+          viewModel.openConsensusStatus(true);
         }
     );
 

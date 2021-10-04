@@ -179,6 +179,7 @@
   <string name="rejected">Rejected</string>
   <string name="vote">Vote</string>
   <string name="status">Status</string>
+  <string name="status_election_start">Status: Election Start</string>
 
   <!-- Wallet -->
   <string name="button_own_seed">I own a seed</string>
@@ -203,6 +204,4 @@
   <string name="message_signed">MESSAGE SIGNED</string>
   <string name="witness_messages">WITNESS MESSAGES</string>
   <string name="delete_a_witness">delete a witness</string>
-  <!-- TODO: Remove or change this placeholder text -->
-  <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -6,7 +6,6 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 public class Consensus extends Event {
@@ -105,19 +104,11 @@ public class Consensus extends Event {
     this.value = value;
   }
 
-  public long getCreation() {
-    return creation;
-  }
-
   public void setCreation(long creation) {
     if (creation < 0) {
       throw new IllegalArgumentException();
     }
     this.creation = creation;
-  }
-
-  public long getEnd() {
-    return end;
   }
 
   public void setEnd(long end) {
@@ -177,10 +168,6 @@ public class Consensus extends Event {
   }
 
   public Boolean isAccepted() {
-    // Part 1 : all acceptors need to accept the consensus to be accepted
-    //long acceptedCount = acceptorsResponses.values().stream().filter(b -> b).count();
-    //return acceptedCount == acceptors.size();
-
     return isAccepted;
   }
 
@@ -207,8 +194,8 @@ public class Consensus extends Event {
 
 
   public static String generateConsensusId(
-      long created_at, String type, String id, String property, Object value) {
+      long createdAt, String type, String id, String property, Object value) {
     return Hash.hash(
-        "consensus", Long.toString(created_at), type, id, property, String.valueOf(value));
+        "consensus", Long.toString(createdAt), type, id, property, String.valueOf(value));
   }
 }

@@ -34,22 +34,17 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <Button
+      android:id="@+id/consensus_vote_button"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:orientation="vertical">
+      android:text="@string/vote" />
 
-      <Button
-        android:id="@+id/consensus_vote_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/vote" />
+    <Button
+      android:id="@+id/consensus_status_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/status" />
 
-      <Button
-        android:id="@+id/consensus_status_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/status" />
-    </LinearLayout>
   </LinearLayout>
 </layout>
