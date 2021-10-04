@@ -32,6 +32,10 @@ const (
 
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
+
+	ChirpObject = "chirp"
+	ChirpActionAdd = "add"
+	ChirpActionDelete = "delete"
 )
 
 // GetObjectAndAction returns the object and action of a JSON RPC message.
