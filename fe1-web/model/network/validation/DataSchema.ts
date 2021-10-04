@@ -30,6 +30,8 @@ const dataSchemas = [
   dataResultElection,
 
   dataWitnessMessage,
+
+  dataAddChirp,
 ];
 
 export default dataSchemas;

@@ -18,6 +18,7 @@ export enum ObjectType {
   MEETING = 'meeting',
   ROLL_CALL = 'roll_call',
   ELECTION = 'election',
+  CHIRP = 'chirp',
 }
 
 export enum ActionType {
@@ -35,6 +36,7 @@ export enum ActionType {
   REOPEN = 'reopen',
   RESULT = 'result',
   CLOSE = 'close',
+  ADD = 'add',
 }
 
 const ajv = new Ajv();
@@ -74,6 +76,9 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.CAST_VOTE]: 'dataCastVote',
     [ActionType.END]: 'dataEndElection',
     [ActionType.RESULT]: 'dataResultElection',
+  },
+  [ObjectType.CHIRP]: {
+    [ActionType.ADD]: 'dataAddChirp',
   },
 };
 

@@ -53,6 +53,7 @@ const STRINGS = {
   /* --- Social Media Strings --- */
   feed_description: 'User feed',
   button_publish_test_chirp: 'Publish a test chirp',
+  add_chirp_test: 'Chirp Chip',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',

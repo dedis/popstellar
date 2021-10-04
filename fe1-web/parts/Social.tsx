@@ -7,6 +7,8 @@ import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
 import WideButtonView from 'components/WideButtonView';
 
+import { requestAddChirp } from 'network/MessageApi';
+
 /**
  * UI for the Social Media component
  */
@@ -20,7 +22,15 @@ const styles = StyleSheet.create({
 });
 
 // TODO: Implement this method, so that it sends a test chirp to the network
-const publishChirp = () => {};
+const publishChirp = () => {
+  requestAddChirp('chirp chirp', undefined)
+    .then(() => (
+      <TextBlock text={STRINGS.add_chirp_test} />
+    ))
+    .catch((err) => {
+      console.error('Could not ass chirp, error:', err);
+    });
+};
 
 const Social = () => (
   <View style={styleContainer.flex}>
