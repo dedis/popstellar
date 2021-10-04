@@ -99,7 +99,7 @@ public abstract class Data {
     // Consensus
     messagesMap.put(pair(CONSENSUS, PHASE_1_ELECT), CreateConsensus.class);
     messagesMap.put(pair(CONSENSUS, PHASE_1_ELECT_ACCEPT), ConsensusVote.class);
-    //messagesMap.put(pair(CONSENSUS, PHASE_1_LEARN), LearnConsensus.class);
+    messagesMap.put(pair(CONSENSUS, PHASE_1_LEARN), LearnConsensus.class);
 
     return Collections.unmodifiableMap(messagesMap);
   }
