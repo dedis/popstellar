@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
+import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartAcceptorsFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
@@ -128,6 +129,9 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     //Subscribe to "open manage election" event
     setupManageElectionFragment();
+
+    //Subscribe to "open consensus vote" event
+    setupConsensusVoteFragment();
   }
 
   private void subscribeWalletEvents() {
@@ -493,6 +497,34 @@ public class LaoDetailActivity extends AppCompatActivity {
                       getSupportFragmentManager(), electionResultFragment,
                       R.id.fragment_container_lao_detail);
                 }
+              }
+            }
+        );
+  }
+
+  private void setupElectionStartAcceptorsFragment() {
+    ElectionStartAcceptorsFragment electionStartAcceptorsFragment =
+        (ElectionStartAcceptorsFragment)
+            getSupportFragmentManager().findFragmentById(R.id.fragment_election_start_acceptors);
+    if (electionStartAcceptorsFragment == null) {
+      electionStartAcceptorsFragment = ElectionStartAcceptorsFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+          getSupportFragmentManager(),
+          electionStartAcceptorsFragment,
+          R.id.fragment_container_lao_detail
+      );
+    }
+  }
+
+  private void setupConsensusVoteFragment() {
+    mViewModel
+        .getOpenConsensusVoteEvent()
+        .observe(
+            this,
+            booleanSingleEvent -> {
+              Boolean event = booleanSingleEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupElectionStartAcceptorsFragment();
               }
             }
         );

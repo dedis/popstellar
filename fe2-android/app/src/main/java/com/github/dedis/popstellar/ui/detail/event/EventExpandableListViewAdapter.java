@@ -13,13 +13,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.ConsensusEventLayoutBinding;
 import com.github.dedis.popstellar.databinding.ElectionDisplayLayoutBinding;
 import com.github.dedis.popstellar.databinding.EventCategoryLayoutBinding;
 import com.github.dedis.popstellar.databinding.EventLayoutBinding;
 import com.github.dedis.popstellar.databinding.RollCallEventLayoutBinding;
+import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
@@ -260,10 +263,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     layoutEventBinding.setEvent(event);
 
     EventCategory category = (EventCategory) getGroup(groupPosition);
-    if (event.getType() == EventType.ELECTION) {
-      return setupElectionElement((Election) event, category, layoutEventBinding);
-    } else if (event.getType() == EventType.ROLL_CALL) {
-      return setupRollCallElement((RollCall) event, layoutEventBinding);
+    switch (event.getType()) {
+      case ELECTION:
+        return setupElectionElement((Election) event, category, layoutEventBinding);
+      case ROLL_CALL:
+        return setupRollCallElement((RollCall) event, layoutEventBinding);
+      case CONSENSUS:
+        return setupConsensusElement((Consensus) event, layoutEventBinding);
     }
 
     layoutEventBinding.setLifecycleOwner(lifecycleOwner);
@@ -424,6 +430,56 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         clicked ->
             viewModel.enterRollCall(rollCall.getPersistentId())
     );
+    binding.setLifecycleOwner(lifecycleOwner);
+
+    binding.executePendingBindings();
+    return layoutEventBinding.getRoot();
+  }
+
+  /**
+   * Setup the text and buttons that appear for a consensus in the list
+   *
+   * @param consensus          the consensus Event
+   * @param layoutEventBinding the binding of the generic layoutEvent that we use to display events
+   * @return the View corresponding to the child at the specified position
+   */
+  private View setupConsensusElement(Consensus consensus, EventLayoutBinding layoutEventBinding) {
+    viewModel.setCurrentConsensus(consensus);
+
+    ConsensusEventLayoutBinding binding = layoutEventBinding.includeLayoutConsensus;
+
+    //TODO add more info to display
+    binding.consensusTitle.setText("Consensus");
+    binding.consensusType.setText("Type: " + consensus.getConsensusType());
+    //binding.consensusObjectId.setText("id: " + consensus.getObjId());
+
+    boolean isAcceptor = viewModel.isOrganizer().getValue() || viewModel.isWitness().getValue();
+    boolean isVoteOpen = isAcceptor && consensus.getState() == EventState.OPENED;
+    boolean isStatusOpen = isAcceptor && consensus.getState() == RESULTS_READY;
+
+    Button voteButton = binding.consensusVoteButton;
+    Button statusButton = binding.consensusStatusButton;
+
+    voteButton.setVisibility(isVoteOpen ? View.VISIBLE : View.GONE);
+    statusButton.setVisibility(isStatusOpen ? View.VISIBLE : View.GONE);
+
+    voteButton.setEnabled(isVoteOpen);
+    statusButton.setEnabled(isStatusOpen);
+
+    voteButton.setOnClickListener(
+        clicked -> {
+          viewModel.setCurrentConsensus(consensus);
+          viewModel.openConsensusVote(true);
+        }
+    );
+
+    statusButton.setOnClickListener(
+        clicked -> {
+          viewModel.setCurrentConsensus(consensus);
+          //TODO open a view with the consensus status
+        }
+    );
+
     binding.setLifecycleOwner(lifecycleOwner);
 
     binding.executePendingBindings();
