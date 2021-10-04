@@ -30,6 +30,7 @@ public final class Lao {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
+  private Map<String, Consensus> consensuses;
 
   public Lao(String id) {
     if (id == null) {
@@ -41,6 +42,7 @@ public final class Lao {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
+    this.consensuses = new HashMap<>();
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
@@ -83,6 +85,15 @@ public final class Lao {
     elections.put(newId, election);
   }
 
+  public void updateConsensus(String prevId, Consensus consensus) {
+    if (consensus == null) {
+      throw new IllegalArgumentException("The consensus is null");
+    }
+
+    consensuses.remove(prevId);
+    String newId = consensus.getId();
+    consensuses.put(newId, consensus);
+  }
 
   /**
    * Update the list of messages that have to be signed by witnesses. If the list of messages
@@ -106,6 +117,10 @@ public final class Lao {
 
   public Optional<Election> getElection(String id) {
     return Optional.ofNullable(elections.get(id));
+  }
+
+  public Optional<Consensus> getConsensus(String id) {
+    return Optional.ofNullable(consensuses.get(id));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(String id) {
@@ -133,6 +148,10 @@ public final class Lao {
   public boolean removeRollCall(String id) {
     return (rollCalls.remove(id) != null);
 
+  }
+
+  public boolean removeConsensus(String id) {
+    return (consensuses.remove(id) != null);
   }
 
   public Long getLastModified() {
@@ -235,6 +254,10 @@ public final class Lao {
 
   public Map<String, RollCall> getRollCalls() {
     return rollCalls;
+  }
+
+  public Map<String, Consensus> getConsensuses() {
+    return consensuses;
   }
 
   public Map<String, WitnessMessage> getWitnessMessages() {

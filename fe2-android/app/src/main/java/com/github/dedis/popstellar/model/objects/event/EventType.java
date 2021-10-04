@@ -6,6 +6,7 @@ package com.github.dedis.popstellar.model.objects.event;
 public enum EventType {
   ROLL_CALL("R"),
   ELECTION("Election"),
+  CONSENSUS("Consensus"),
   MEETING("M"),
   POLL("P"),
   DISCUSSION("D");

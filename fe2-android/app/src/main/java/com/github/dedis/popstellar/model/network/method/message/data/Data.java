@@ -5,12 +5,16 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.PHASE_1_ELECT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.PHASE_1_ELECT_ACCEPT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.PHASE_1_LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.REOPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.RESULT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.SETUP;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.STATE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.UPDATE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.WITNESS;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CONSENSUS;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ELECTION;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.LAO;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MEETING;
@@ -18,6 +22,9 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Obje
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ROLL_CALL;
 
 import android.util.Log;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusVote;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.CreateConsensus;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.LearnConsensus;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
@@ -88,6 +95,11 @@ public abstract class Data {
     messagesMap.put(pair(ELECTION, CAST_VOTE), CastVote.class);
     messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
     messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
+
+    // Consensus
+    messagesMap.put(pair(CONSENSUS, PHASE_1_ELECT), CreateConsensus.class);
+    messagesMap.put(pair(CONSENSUS, PHASE_1_ELECT_ACCEPT), ConsensusVote.class);
+    //messagesMap.put(pair(CONSENSUS, PHASE_1_LEARN), LearnConsensus.class);
 
     return Collections.unmodifiableMap(messagesMap);
   }
