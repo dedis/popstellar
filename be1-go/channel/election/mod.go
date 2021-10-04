@@ -360,8 +360,7 @@ func (c *Channel) publishEndElection(msg message.Message) error {
 
 	err := msg.UnmarshalData(&endElection)
 	if err != nil {
-		// !!!!! change error ?
-		return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
+		return xerrors.Errorf("failed to unmarshal publish end election: %v", err)
 	}
 
 	if endElection.CreatedAt < c.end {
