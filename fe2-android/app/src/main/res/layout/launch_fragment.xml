@@ -67,6 +67,7 @@
           android:layout_height="wrap_content"
           android:layout_marginEnd="@dimen/margin_button"
           android:gravity="center"
+          android:enabled="@{entryBoxLaunch.text.length() > 0}"
           android:text="@string/text_button_launch"
           style="@style/Theme.AppCompat" />
 
