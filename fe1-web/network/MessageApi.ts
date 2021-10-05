@@ -29,6 +29,7 @@ const ONE_MINUTE = 60;
 /**
  * Checks if start < creation. If it is the case, start time will be creation time.
  * Otherwise, start time is simply returned.
+ *
  * @param creation
  * @param start
  */
@@ -38,6 +39,7 @@ const adaptStartTime = (creation: Timestamp, start: Timestamp) : Timestamp => ((
 /**
  * Checks if end <= start. If it is the case, end time will be start time + 60 seconds.
  * Otherwise, end time is simply returned.
+ *
  * @param start
  * @param end
  */
