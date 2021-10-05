@@ -6,11 +6,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
-import DatePicker, { dateToTimestamp } from 'components/DatePicker';
+import DatePicker, { dateToTimestamp, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
-  Hash, Lao, Timestamp, Question, EventTags,
+  Hash, Lao, Question, EventTags,
 } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
@@ -21,7 +21,6 @@ import { OpenedLaoStore } from 'store';
 /**
  * UI to create an Election Event
  */
-
 const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
@@ -38,31 +37,6 @@ const CreateElection = ({ route }: any) => {
   const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
   const [questions, setQuestions] = useState([emptyQuestion]);
 
-  const onChangeStartTime = (date: Date) => {
-    const dateStamp = dateToTimestamp(date);
-    const now = new Date();
-    if (dateStamp > dateToTimestamp(now)) {
-      setStartDate(dateStamp);
-      const newEndDate = new Date(date.getTime());
-      newEndDate.setHours(date.getHours() + 1);
-      setEndDate(dateToTimestamp(newEndDate));
-    } else {
-      setStartDate(dateToTimestamp(now));
-      const newEndDate = new Date(now.getTime());
-      newEndDate.setHours(now.getHours() + 1);
-      setEndDate(dateToTimestamp(newEndDate));
-    }
-  };
-
-  const onChangeEndTime = (date: Date) => {
-    const dateStamp: Timestamp = dateToTimestamp(date);
-    if (dateStamp < startDate) {
-      setEndDate(startDate);
-    } else {
-      setEndDate(dateStamp);
-    }
-  };
-
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
     const endTime = new Date(1);
@@ -75,14 +49,14 @@ const CreateElection = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
             selected={startTime}
-            onChange={(date: Date) => onChangeStartTime(date)}
+            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate)}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
             selected={endTime}
-            onChange={(date: Date) => onChangeEndTime(date)}
+            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
           />
         </View>
       </View>
