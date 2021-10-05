@@ -49,6 +49,9 @@ public class MessageHandler {
     } else if (data.getObject().equals(Objects.ELECTION.getObject())) {
       enqueue = ElectionHandler
           .handleElectionMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
+    } else if (data.getObject().equals(Objects.CONSENSUS.getObject())) {
+      enqueue = ConsensusHandler
+          .handleConsensusMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
     } else if (data.getObject().equals(Objects.MESSAGE.getObject())) {
       enqueue = WitnessMessageHandler
           .handleWitnessMessage(laoRepository, channel, senderPk, (WitnessMessageSignature) data);

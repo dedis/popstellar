@@ -22,7 +22,7 @@ public class Consensus extends Event {
   private long end;
 
   private EventState state;
-  private Boolean isAccepted;
+  private boolean isAccepted;
 
   private String proposer;
   private Set<String> acceptors;
@@ -37,6 +37,7 @@ public class Consensus extends Event {
     this.property = property;
     this.value = value;
 
+    this.isAccepted = false;
     this.acceptorsResponses = new HashMap<>();
   }
 
@@ -167,7 +168,7 @@ public class Consensus extends Event {
     acceptorsResponses.put(acceptor, accept);
   }
 
-  public Boolean isAccepted() {
+  public boolean isAccepted() {
     return isAccepted;
   }
 

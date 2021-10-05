@@ -42,6 +42,7 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.github.dedis.popstellar.utility.security.Signature;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -62,7 +63,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -495,43 +495,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       MessageGeneral msg = new MessageGeneral(sender, createConsensus, signer, mGson);
 
       // TODO remove (only for testing)
-      Consensus consensus = new Consensus(
-          createConsensus.getType(),
-          createConsensus.getObjId(),
-          createConsensus.getCreation(),
-          createConsensus.getProperty(),
-          createConsensus.getValue()
-      );
-      consensus.setProposer(publicKey);
-      consensus.setChannel(channel + "/consensus");
-      consensus.setEnd(Long.MAX_VALUE);
-
-      Set<String> acceptors = new HashSet<>();
-      acceptors.add(publicKey);
-      acceptors.add("aaaaaaaaaaaaaaaaaaaaaaaabbbbbb");
-      acceptors.add("ZFUkguyyBwfsSDn8QWIfrSXVDkGhHroMoFo0SHHe9ePH");
-      acceptors.add("pvq74r9VfTNSpUBMo9oGdXxnGM6MVnmD60SUMFsKdVWf");
-      acceptors.add("40di1HiBlo7OfUSOSUUlJOq0BjivevjmXDZspXDfdL0P");
-      acceptors.add("s5rxC09ju1rxQBHNf8rnOi8NWqcu8VwalM3JQgW8yrfWddddsgerherh");
-      acceptors.add("fmabt53tgya77IhUbcrF6hrr9Hv6LRfp3C3BddddYePd");
-      acceptors.add("EhU4rzfgOohCEqkQMjsjUAuA7CMjKgW2U8lxqloa6zox");
-      acceptors.add("wE5bP8XVmgjcegTCRobAz0Mq8Ebpvh8mtU1Md4xrOGOZ");
-      acceptors.add("gPZIJ6lskujHQYK2FEzlaOZfCcZHz4kvMnuWr0KPsY2l");
-      acceptors.add("R8BFeTxnyy75f7sMIRPgLdJqVzgp4V7BTAmUb");
-      acceptors.add("gKuPpS6jLsc6BU40de2KuJbBQ2OF1cZskPEmusnw9BbM");
-      Random rng = new Random();
-      for (String s : acceptors) {
-        if (rng.nextBoolean()) {
-          consensus.putAcceptorResponse(s, rng.nextBoolean());
-        } //else null
-      }
-
-      consensus.setAcceptors(acceptors);
-      consensus.setEventState(EventState.OPENED);
-      lao.updateConsensus(consensus.getId(), consensus);
-      setCurrentConsensus(consensus);
-      newLaoEventCreation(EventType.CONSENSUS);
-      // TODO remove (only for testing)
+      MessageHandler.handleMessage(mLAORepository, channel+"/consensus", msg);
 
       Disposable disposable =
           mLAORepository
@@ -578,6 +542,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, consensusVote, signer, mGson);
+
+      // TODO remove (only for testing)
+      MessageHandler.handleMessage(mLAORepository, lao.getChannel()+"/consensus", msg);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =

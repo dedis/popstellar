@@ -131,6 +131,10 @@ public class GenericHandler {
     // Send subscribe and catchup after creating a LAO
     laoRepository.sendSubscribe(channel);
     laoRepository.sendCatchup(channel);
+
+    String consensusChannel = channel + "/consensus";
+    laoRepository.sendSubscribe(consensusChannel);
+    laoRepository.sendCatchup(consensusChannel);
   }
 
   /**
