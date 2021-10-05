@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
   <data>
     <import type="android.view.View" />
@@ -13,39 +14,40 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal_tab"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+        android:id="@+id/guideline_horizontal_tab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab_second_row" />
 
     <LinearLayout
-      android:id="@+id/welcome_screen"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:gravity="center_vertical"
-      android:orientation="vertical"
-      android:visibility="visible"
-      app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab">
+        android:id="@+id/welcome_screen"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab"
+        tools:layout_editor_absoluteX="0dp">
 
       <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
-        android:text="@string/text_title_welcome"
-        android:textSize="@dimen/size_title"
-        android:textStyle="bold" />
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:gravity="center"
+          android:text="@string/text_title_welcome"
+          android:textSize="@dimen/size_title"
+          android:textStyle="bold" />
 
 
       <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
-        android:text="@string/text_body_welcome"
-        android:textSize="@dimen/size_body"
-        android:textStyle="bold" />
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/margin_text"
+          android:gravity="center"
+          android:text="@string/text_body_welcome"
+          android:textSize="@dimen/size_body"
+          android:textStyle="bold" />
 
     </LinearLayout>
 

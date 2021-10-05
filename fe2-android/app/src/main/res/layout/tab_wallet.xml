@@ -10,7 +10,7 @@
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:orientation="horizontal"
-      app:layout_constraintGuide_begin="59dp" />
+      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
   <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_vertical_tab_wallet"
@@ -25,13 +25,10 @@
       android:layout_width="0dp"
       android:layout_height="0dp"
       android:text="@string/tab_wallet"
-      app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_wallet"
       app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintHorizontal_bias="1.0"
       app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_wallet"
-      app:layout_constraintTop_toTopOf="parent"
-      app:layout_constraintVertical_bias="1.0" />
+      app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

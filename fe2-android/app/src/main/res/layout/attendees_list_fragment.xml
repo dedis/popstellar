@@ -7,11 +7,11 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal_tab"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+        android:id="@+id/guideline_horizontal_tab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab_second_row" />
 
     <LinearLayout
       android:layout_width="match_parent"
@@ -46,11 +46,11 @@
           android:background="@color/categoryTab" />
 
         <ListView
-          android:id="@+id/attendees_list"
-          android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:divider="@color/categoryTab"
-          android:dividerHeight="@dimen/wallet_divider_height" />
+            android:id="@+id/attendees_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/categoryTab"
+            android:dividerHeight="@dimen/wallet_divider_height" />
       </LinearLayout>
 
     </LinearLayout>

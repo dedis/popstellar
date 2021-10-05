@@ -13,11 +13,11 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.Guideline
-      android:id="@+id/guideline_horizontal_tab"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:orientation="horizontal"
-      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+        android:id="@+id/guideline_horizontal_tab"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab_second_row" />
 
     <TextView
       android:id="@+id/title_wallet"

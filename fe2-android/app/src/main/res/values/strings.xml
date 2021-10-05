@@ -192,4 +192,7 @@
 
   <!-- Social Media -->
   <string name="chirp">CHIRP</string>
+  <string name="socialmedia_home">HOME</string>
+  <string name="send_chirp">SEND</string>
+
 </resources>

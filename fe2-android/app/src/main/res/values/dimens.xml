@@ -3,6 +3,7 @@
 
   <!-- Tabs -->
   <dimen name="guideline_horizontal_tab">0.08</dimen>
+  <dimen name="guideline_horizontal_tab_second_row">0.16</dimen>
   <dimen name="guideline_horizontal_bottom">0.92</dimen>
   <dimen name="guideline_vertical_tab_home">0.25</dimen>
   <dimen name="guideline_vertical_tab_connect">0.50</dimen>

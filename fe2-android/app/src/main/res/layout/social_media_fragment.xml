@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="view_model"
+            type="com.github.dedis.popstellar.ui.home.HomeViewModel" />
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_socialmedia"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_horizontal_tab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/guideline_horizontal_tab"
+        tools:layout_editor_absoluteX="0dp">
+
+        <TextView
+            android:id="@+id/Home"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/socialmedia_home"
+            android:textColor="#BC0505"
+            android:textSize="@dimen/size_title"
+            android:textStyle="bold" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp" />
+
+        <ListView
+            android:id="@+id/chirps_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@color/categoryTab"
+            android:dividerHeight="1dp" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/send_chirp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_constraintRight_toRightOf="parent"
+        tools:layout_editor_absoluteX="323dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
