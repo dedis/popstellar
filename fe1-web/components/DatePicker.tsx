@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DatePickerElement from 'react-datepicker';
+import {Timestamp} from "../model/objects";
 
 const DatePicker = (props: IPropTypes) => {
   const { selected } = props;
@@ -32,3 +33,7 @@ DatePicker.defaultProps = {
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default DatePicker;
+
+export function dateToTimestamp(date: Date): Timestamp {
+  return new Timestamp(Math.floor(date.getTime() / 1000));
+}

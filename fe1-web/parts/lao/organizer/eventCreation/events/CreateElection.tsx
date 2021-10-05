@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
-import DatePicker from 'components/DatePicker';
+import DatePicker, { dateToTimestamp } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
@@ -17,10 +17,6 @@ import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
-
-function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
-}
 
 /**
  * UI to create an Election Event

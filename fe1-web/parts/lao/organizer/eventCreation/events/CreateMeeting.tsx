@@ -3,7 +3,7 @@ import {
   View, Platform, TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import DatePicker from 'components/DatePicker';
+import DatePicker, { dateToTimestamp } from 'components/DatePicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import STRINGS from 'res/strings';
@@ -19,10 +19,6 @@ const ONE_MINUTE = 60;
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
  */
-function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
-}
-
 const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 

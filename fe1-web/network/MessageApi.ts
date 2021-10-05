@@ -26,14 +26,24 @@ import { publish } from './JsonRpcApi';
 
 const ONE_MINUTE = 60;
 
-// Checks if start < creation and handles it accordingly
+/**
+ * Checks if start < creation. If it is the case, start time will be creation time.
+ * Otherwise, start time is simply returned.
+ * @param creation
+ * @param start
+ */
 const adaptStartTime = (creation: Timestamp, start: Timestamp) : Timestamp => ((start
   .before(creation)) ? creation : start);
 
-// Checks if end < start and handles it accordingly
+/**
+ * Checks if end <= start. If it is the case, end time will be start time + 60 seconds.
+ * Otherwise, end time is simply returned.
+ * @param start
+ * @param end
+ */
 const adaptEndTime = (start: Timestamp, end: Timestamp | undefined) : Timestamp | undefined => {
   if (end != null) {
-    return ((end.before(start)) ? (start.addSeconds(ONE_MINUTE)) : end);
+    return (end <= start) ? start.addSeconds(ONE_MINUTE) : end;
   }
   return end;
 };

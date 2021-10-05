@@ -7,14 +7,10 @@ import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
 import { requestCreateRollCall } from 'network/MessageApi';
-import DatePicker from 'components/DatePicker';
+import DatePicker, { dateToTimestamp } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
-
-function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
-}
 
 /**
  * Screen to create a roll-call event
