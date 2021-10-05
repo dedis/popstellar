@@ -123,10 +123,12 @@ public class LAORepository {
       LAODataSource.Remote laoRemoteDataSource,
       LAODataSource.Local localDataSource,
       AndroidKeysetManager keysetManager,
-      Gson gson, SchedulerProvider schedulerProvider) {
+      Gson gson,
+      SchedulerProvider schedulerProvider) {
     if (INSTANCE == null) {
-      INSTANCE = new LAORepository(laoRemoteDataSource, localDataSource, keysetManager, gson,
-          schedulerProvider);
+      INSTANCE =
+          new LAORepository(
+              laoRemoteDataSource, localDataSource, keysetManager, gson, schedulerProvider);
     }
     return INSTANCE;
   }
@@ -136,17 +138,19 @@ public class LAORepository {
   }
 
   private void subscribeToWebsocketEvents() {
+    Log.d(TAG, "Subscribing to websocket events for the LAO Repository");
     websocketEvents
         .subscribeOn(schedulerProvider.io())
         .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
         .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
   }
 
-  private void startSubscription() {
+  private void subscribeToUpstream() {
+    Log.d(TAG, "Subscribing to messages upstream");
     // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
     // higher priority
-    Observable
-        .merge(upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
+    Observable.merge(
+            upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
         .subscribeOn(schedulerProvider.newThread())
         .subscribe(this::handleGenericMessage);
   }
@@ -181,10 +185,10 @@ public class LAORepository {
   /**
    * Helper method that sends a StateLao message if we are the organizer
    *
-   * @param lao       Lao of the message being signed
-   * @param msg       Object of type MessageGeneral representing the current message being signed
+   * @param lao Lao of the message being signed
+   * @param msg Object of type MessageGeneral representing the current message being signed
    * @param messageId Base 64 URL encoded Id of the message to sign
-   * @param channel   Represents the channel on which to send the stateLao message
+   * @param channel Represents the channel on which to send the stateLao message
    */
   public void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
     try {
@@ -204,8 +208,7 @@ public class LAORepository {
                 msg.getWitnessSignatures());
 
         byte[] ourPkBuf = Base64.getUrlDecoder().decode(ourKey);
-        PublicKeySign signer =
-            mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+        PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
         MessageGeneral stateLaoMsg = new MessageGeneral(ourPkBuf, stateLao, signer, mGson);
 
         sendPublish(channel, stateLaoMsg);
@@ -229,7 +232,8 @@ public class LAORepository {
   }
 
   public Single<Answer> sendPublish(String channel, MessageGeneral message) {
-    Log.d(TAG, "sending a publish " + message.getData().getClass() + " to the channel " + channel);
+    Log.d(
+        TAG, "sending a publish with message " + message.toString() + " to the channel " + channel);
     int id = mRemoteDataSource.incrementAndGetRequestId();
     Single<Answer> answer = createSingle(id);
 
@@ -252,7 +256,6 @@ public class LAORepository {
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(subscribe);
-    Log.d(TAG, "sending subscribe");
 
     subscribedChannels.add(channel);
 
@@ -283,8 +286,7 @@ public class LAORepository {
               if (genericMessage instanceof Answer) {
                 Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
               }
-              return genericMessage instanceof Answer
-                  && ((Answer) genericMessage).getId() == id;
+              return genericMessage instanceof Answer && ((Answer) genericMessage).getId() == id;
             })
         .map(Answer.class::cast)
         .firstOrError()
@@ -302,15 +304,11 @@ public class LAORepository {
     return channel.split("/").length == 3;
   }
 
-  /**
-   * Set allLaoSubject to contain all LAOs
-   */
+  /** Set allLaoSubject to contain all LAOs */
   public void setAllLaoSubject() {
     Log.d(TAG, "posted allLaos to allLaoSubject");
     allLaoSubject.onNext(
-        laoById.entrySet().stream()
-            .map(x -> x.getValue().getLao())
-            .collect(Collectors.toList()));
+        laoById.entrySet().stream().map(x -> x.getValue().getLao()).collect(Collectors.toList()));
   }
 
   /**
@@ -320,6 +318,11 @@ public class LAORepository {
    * @return the election corresponding to this channel
    */
   public Election getElectionByChannel(String channel) {
+    Log.d(TAG, "querying election for channel " + channel);
+
+    if (channel.split("/").length < 4)
+      throw new IllegalArgumentException("invalid channel for an election : " + channel);
+
     Lao lao = getLaoByChannel(channel);
     Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
     if (!electionOption.isPresent()) {
@@ -335,8 +338,22 @@ public class LAORepository {
    * @return the Lao corresponding to this channel
    */
   public Lao getLaoByChannel(String channel) {
+    Log.d(TAG, "querying lao for channel " + channel);
+
+    if (channel.split("/").length < 3)
+      throw new IllegalArgumentException("invalid channel for a lao : " + channel);
+
     String[] split = channel.split("/");
-    return laoById.get(ROOT + split[2]).getLao();
+    LAOState state = laoById.get(ROOT + split[2]);
+
+    if (state == null)
+      throw new IllegalArgumentException(
+          "no LAO found for channel : "
+              + channel
+              + " currently available LAOs are :\n"
+              + laoById.keySet());
+
+    return state.getLao();
   }
 
   public Observable<List<Lao>> getAllLaos() {

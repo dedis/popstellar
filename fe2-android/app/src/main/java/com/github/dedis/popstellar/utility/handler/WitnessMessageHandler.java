@@ -14,9 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Witness messages handler class
- */
+/** Witness messages handler class */
 public class WitnessMessageHandler {
 
   private static final String TAG = WitnessMessage.class.getSimpleName();
@@ -29,16 +27,17 @@ public class WitnessMessageHandler {
    * Process a WitnessMessageSignature message
    *
    * @param laoRepository the repository to access the LAO of the channel
-   * @param channel       the channel on which the message was received
-   * @param senderPk      the public key of the sender
-   * @param message       the message that was received
+   * @param channel the channel on which the message was received
+   * @param senderPk the public key of the sender
+   * @param message the message that was received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleWitnessMessage(LAORepository laoRepository,
+  public static boolean handleWitnessMessage(
+      LAORepository laoRepository,
       String channel,
       String senderPk,
       WitnessMessageSignature message) {
-    Log.d(TAG, "Received Witness Message Signature Broadcast");
+    Log.d(TAG, "Received Witness Message Signature Broadcast with id : " + message.getMessageId());
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
@@ -47,7 +46,13 @@ public class WitnessMessageHandler {
 
     // Verify signature
     if (!Signature.verifySignature(messageId, senderPkBuf, signatureBuf)) {
-      return false;
+      Log.w(
+          TAG,
+          "Failed to very signature of Witness Message Signature id="
+              + messageId
+              + ", signature="
+              + signature);
+      return true;
     }
 
     if (laoRepository.getMessageById().containsKey(messageId)) {
@@ -59,11 +64,11 @@ public class WitnessMessageHandler {
       Lao lao = laoRepository.getLaoByChannel(channel);
       if (lao == null) {
         Log.d(TAG, "failed to retrieve the lao with channel " + channel);
-        return false;
+        return true;
       }
       // Update WitnessMessage of the corresponding lao
-      if (!updateWitnessMessage(lao, messageId, senderPk)) {
-        return false;
+      if (updateWitnessMessage(lao, messageId, senderPk)) {
+        return true;
       }
       Log.d(TAG, "WitnessMessage successfully updated");
 
@@ -94,8 +99,8 @@ public class WitnessMessageHandler {
    * Helper method to update the WitnessMessage of the lao with the new witness signing
    *
    * @param messageId Base 64 URL encoded Id of the message to sign
-   * @param senderPk  Base 64 URL encoded public key of the signer
-   * @return false if there was a problem updating WitnessMessage
+   * @param senderPk Base 64 URL encoded public key of the signer
+   * @return true if there was a problem updating WitnessMessage
    */
   private static boolean updateWitnessMessage(Lao lao, String messageId, String senderPk) {
     Optional<WitnessMessage> optionalWitnessMessage = lao.getWitnessMessage(messageId);
