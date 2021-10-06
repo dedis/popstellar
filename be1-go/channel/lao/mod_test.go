@@ -3,6 +3,7 @@ package lao
 import (
 	"fmt"
 	"popstellar/channel"
+	"popstellar/channel/generalChriping"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"testing"
@@ -18,11 +19,11 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	messages := make([]message.Message, numMessages)
 
 	messages[0] = message.Message{MessageID: "0"}
-
+	general := generalChriping.NewChannel("/root/XXX/social/posts/", fakeHubFunctionalities{})
 	// Create the channel
-	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0])
+	cha := NewChannel("channel0", fakeHubFunctionalities{}, messages[0], &general)
 
-	laoChannel, ok := channel.(*Channel)
+	laoChannel, ok := cha.(*Channel)
 	require.True(t, ok)
 
 	time.Sleep(time.Millisecond)
@@ -41,7 +42,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := cha.Catchup(method.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"log"
 	"popstellar/channel"
 	"popstellar/channel/lao"
@@ -28,6 +29,7 @@ import (
 
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
+const socialGeneral = "/social/posts/"
 
 const (
 	// numWorkers denote the number of worker go-routines
@@ -194,6 +196,14 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 		socket.SendError(&publish.ID, err)
 		return
 	}
+
+	//err = h.createGeneralChirpingChannel(laoCreate.ID)
+	//fmt.Printf("creation du lao et general")
+	//if err != nil {
+		//h.log.Err(err).Msg("failed to create a general")
+		//socket.SendError(&publish.ID, err)
+		//return
+	//}
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
@@ -399,7 +409,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
 // createLao creates a new LAO using the data in the publish parameter.
 func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate) error {
 	h.Lock()
-	defer h.Unlock()
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
@@ -407,8 +416,13 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 		h.log.Error().Msgf("failed to create lao: duplicate lao path: %q", laoChannelPath)
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
-
+	fmt.Printf("test1")
+	h.Unlock()
 	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message)
+	h.Lock()
+	defer h.Unlock()
+	fmt.Printf("test2")
+
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
@@ -433,9 +447,16 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 
 // RegisterNewChannel implements channel.HubFunctionalities
 func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
+	fmt.Printf("aaaaaaa")
 	h.Lock()
+	fmt.Printf("bbbb")
+
 	h.channelByID[channeID] = channel
+	fmt.Printf("cccc")
+
 	h.Unlock()
+	fmt.Printf("ddddd")
+
 }
 
 // ---
@@ -519,3 +540,5 @@ func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
 
 	return result, nil
 }
+
+

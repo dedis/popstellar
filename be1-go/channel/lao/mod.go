@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"log"
 	"popstellar/channel"
+	"popstellar/channel/chirp"
 	"popstellar/channel/election"
+	"popstellar/channel/generalChriping"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
@@ -35,6 +37,7 @@ const (
 // Channel defines a LAO channel
 type Channel struct {
 	sockets channel.Sockets
+	general generalChriping.Channel
 
 	inbox *inbox.Inbox
 
@@ -59,6 +62,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	return &Channel{
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
+		general:   createGeneralChirpingChannel(channelID, hub),
 		inbox:     inbox,
 		hub:       hub,
 		rollCall:  rollCall{},
@@ -66,6 +70,21 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	}
 }
 
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) generalChriping.Channel {
+	fmt.Printf("test100")
+	generalChannelPath := "/root/" + laoID + "/social/posts/"
+	fmt.Printf("genral has been created1")
+
+	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub)
+	fmt.Printf("genral has been created2")
+
+	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel) // cette ligne qui bug
+	fmt.Printf("genral has been created3")
+
+	fmt.Printf("genral has been created")
+
+	return generalChirpingChannel
+}
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)
@@ -92,6 +111,12 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	log.Printf("received a catchup with id: %d", catchup.ID)
 
 	return c.inbox.GetSortedMessages()
+}
+
+// Broadcast is used to handle a broadcast message.
+func (c *Channel) Broadcast(msg method.Broadcast) error {
+	log.Printf("a lao shouldn't need to broadcast a message")
+	return xerrors.Errorf("a lao shouldn't need to broadcast a message")
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -416,6 +441,13 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		if err != nil {
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
+
+		err = c.createChirpingChannels(rollCallClose)
+
+
+
+
+
 	default:
 		return answer.NewInvalidActionError(action)
 	}
@@ -546,6 +578,22 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 	c.rollCall.state = Open
 	return nil
 }
+
+
+func (c *Channel) createChirpingChannels(msg messagedata.RollCallClose) error {
+
+	for _, s := range msg.Attendees {
+		chirpingChannelPath := c.channelID + s + "/"
+		cha := chirp.NewChannel(chirpingChannelPath, s, c.hub, &c.general)
+		c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
+	}
+	return nil
+}
+
+
+
+
+
 
 // processCloseRollCall processes a close roll call message.
 func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {

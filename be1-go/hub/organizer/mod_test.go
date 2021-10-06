@@ -454,6 +454,7 @@ type fakeChannel struct {
 	unsubscribe method.Unsubscribe
 	publish     method.Publish
 	catchup     method.Catchup
+	broadcast	method.Broadcast
 
 	// set by the subscribe
 	socket socket.Socket
@@ -488,6 +489,11 @@ func (f *fakeChannel) Publish(msg method.Publish) error {
 func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 	f.catchup = msg
 	return f.msgs
+}
+
+func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
+	f.broadcast = msg
+	return nil
 }
 
 // fakeSocket is a fake implementation of a socket
