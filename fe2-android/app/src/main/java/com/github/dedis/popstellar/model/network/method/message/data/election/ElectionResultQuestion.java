@@ -6,8 +6,8 @@ import java.util.Objects;
 
 public class ElectionResultQuestion {
 
-  private String id;
-  private List<QuestionResult> result;
+  private final String id;
+  private final List<QuestionResult> result;
 
   public ElectionResultQuestion(String id, List<QuestionResult> result) {
     if (id == null || result == null || result.isEmpty()) {

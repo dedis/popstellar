@@ -65,32 +65,32 @@ public class LAORepository {
   private final SchedulerProvider schedulerProvider;
 
   // A subject that represents unprocessed messages
-  private Subject<GenericMessage> unprocessed;
+  private final Subject<GenericMessage> unprocessed;
 
   // State for LAO
-  private Map<String, LAOState> laoById;
+  private final Map<String, LAOState> laoById;
 
   // State for Messages
-  private Map<String, MessageGeneral> messageById;
+  private final Map<String, MessageGeneral> messageById;
 
   // Outstanding subscribes
-  private Map<Integer, String> subscribeRequests;
+  private final Map<Integer, String> subscribeRequests;
 
-  private Set<String> subscribedChannels;
+  private final Set<String> subscribedChannels;
 
   // Outstanding catchups
-  private Map<Integer, String> catchupRequests;
+  private final Map<Integer, String> catchupRequests;
 
   // Outstanding create laos
-  private Map<Integer, String> createLaoRequests;
+  private final Map<Integer, String> createLaoRequests;
 
   // Observable for view models that need access to all LAO Names
-  private BehaviorSubject<List<Lao>> allLaoSubject;
+  private final BehaviorSubject<List<Lao>> allLaoSubject;
 
   // Observable to subscribe to LAOs on reconnection
-  private Observable<WebSocket.Event> websocketEvents;
+  private final Observable<WebSocket.Event> websocketEvents;
 
-  private Observable<GenericMessage> upstream;
+  private final Observable<GenericMessage> upstream;
 
   private final Disposable disposable;
 
@@ -123,10 +123,7 @@ public class LAORepository {
     this.schedulerProvider = schedulerProvider;
 
     // Create the disposable of the LAO repository
-    disposable =
-        new CompositeDisposable(
-            // subscribe to incoming messages and the unprocessed message queue
-            subscribeToUpstream(), subscribeToWebsocketEvents());
+    disposable = new CompositeDisposable(subscribeToUpstream(), subscribeToWebsocketEvents());
   }
 
   public static synchronized LAORepository getInstance(
@@ -319,7 +316,7 @@ public class LAORepository {
   public void setAllLaoSubject() {
     Log.d(TAG, "posted allLaos to allLaoSubject");
     allLaoSubject.onNext(
-        laoById.entrySet().stream().map(x -> x.getValue().getLao()).collect(Collectors.toList()));
+        laoById.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
   }
 
   /**

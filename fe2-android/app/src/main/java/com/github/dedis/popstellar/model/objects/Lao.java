@@ -19,7 +19,7 @@ public final class Lao {
   private String organizer;
   private String modificationId;
   private Set<String> witnesses;
-  private Map<String, WitnessMessage> witnessMessages;
+  private final Map<String, WitnessMessage> witnessMessages;
   /**
    * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
    * witnesses
@@ -63,9 +63,7 @@ public final class Lao {
       throw new IllegalArgumentException("The roll call is null");
     }
 
-    if (rollCalls.containsKey(prevId)) {
-      rollCalls.remove(prevId);
-    }
+    rollCalls.remove(prevId);
     String newId = rollCall.getId();
     rollCalls.put(newId, rollCall);
   }
@@ -74,9 +72,7 @@ public final class Lao {
     if (election == null) {
       throw new IllegalArgumentException("The election is null");
     }
-    if (elections.containsKey(prevId)) {
-      elections.remove(prevId);
-    }
+    elections.remove(prevId);
     String newId = election.getId();
     elections.put(newId, election);
   }
@@ -90,9 +86,7 @@ public final class Lao {
    * @param witnessMessage the object representing the message needing to be signed
    */
   public void updateWitnessMessage(String prevId, WitnessMessage witnessMessage) {
-    if (witnessMessages.containsKey(prevId)) {
-      witnessMessages.remove(prevId);
-    }
+    witnessMessages.remove(prevId);
     String newId = witnessMessage.getMessageId();
     witnessMessages.put(newId, witnessMessage);
   }

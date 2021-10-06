@@ -6,20 +6,24 @@ import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class ElectionResultTest {
 
-  private List<QuestionResult> results = Arrays.asList(new QuestionResult("Candidate1", 40));
-  private List<ElectionResultQuestion> questions = Arrays
-      .asList(new ElectionResultQuestion("question id", results));
-  private ElectionResult electionResult = new ElectionResult(questions);
+  private final List<QuestionResult> results =
+      Collections.singletonList(new QuestionResult("Candidate1", 40));
+  private final List<ElectionResultQuestion> questions =
+      Collections.singletonList(new ElectionResultQuestion("question id", results));
+  private final ElectionResult electionResult = new ElectionResult(questions);
 
   @Test
   public void questionsCantBeNull() {
+    //noinspection ConstantConditions
     assertThrows(IllegalArgumentException.class, () -> new ElectionResult(null));
   }
 

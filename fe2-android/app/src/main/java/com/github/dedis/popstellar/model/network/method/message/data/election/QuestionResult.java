@@ -7,9 +7,9 @@ import java.util.Objects;
 public class QuestionResult {
 
   @SerializedName(value = "ballot_option")
-  private String ballotOption;
+  private final String ballotOption;
 
-  private int count;
+  private final int count;
 
   public QuestionResult(String ballotOption, int count) {
     if (ballotOption == null) {

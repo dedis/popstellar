@@ -6,14 +6,15 @@ import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+
 import org.junit.Test;
 
 public class ElectionEndTest {
 
-  private String electionId = "electionId";
-  private String laoId = "laoId";
-  private String registeredVotes = "hashed";
-  private ElectionEnd electionEnd = new ElectionEnd(electionId, laoId, registeredVotes);
+  private final String electionId = "electionId";
+  private final String laoId = "laoId";
+  private final String registeredVotes = "hashed";
+  private final ElectionEnd electionEnd = new ElectionEnd(electionId, laoId, registeredVotes);
 
   @Test
   public void electionEndGetterReturnsCorrectElectionId() {
@@ -40,13 +41,13 @@ public class ElectionEndTest {
     assertThat(electionEnd.getAction(), is(Action.END.getAction()));
   }
 
+  @SuppressWarnings("ConstantConditions")
   @Test
   public void fieldsCantBeNull() {
-    assertThrows(IllegalArgumentException.class,
-        () -> new ElectionEnd(null, laoId, registeredVotes));
-    assertThrows(IllegalArgumentException.class,
-        () -> new ElectionEnd(electionId, null, registeredVotes));
+    assertThrows(
+        IllegalArgumentException.class, () -> new ElectionEnd(null, laoId, registeredVotes));
+    assertThrows(
+        IllegalArgumentException.class, () -> new ElectionEnd(electionId, null, registeredVotes));
     assertThrows(IllegalArgumentException.class, () -> new ElectionEnd(electionId, laoId, null));
   }
-
 }

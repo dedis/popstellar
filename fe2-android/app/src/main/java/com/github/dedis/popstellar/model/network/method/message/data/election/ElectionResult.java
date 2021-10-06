@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ElectionResult extends Data {
 
-  private List<ElectionResultQuestion> questions;
+  private final List<ElectionResultQuestion> questions;
 
   public ElectionResult(List<ElectionResultQuestion> questions) {
     if (questions == null || questions.isEmpty()) {

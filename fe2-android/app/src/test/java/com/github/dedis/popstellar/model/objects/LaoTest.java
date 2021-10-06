@@ -9,17 +9,14 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import android.util.ArraySet;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
-import com.github.dedis.popstellar.utility.security.Hash;
+import org.junit.Test;
+
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.junit.Test;
 
 public class LaoTest {
 
@@ -32,57 +29,69 @@ public class LaoTest {
   private static final String electionId2 = "electionId2";
   private static final String electionId3 = "electionId3";
   private static final Set<String> WITNESSES = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
-  private static final Set<String> WITNESSES_WITH_NULL = new HashSet<>(
-      Arrays.asList("0x3939", null, "0x4747"));
+  private static final Set<String> WITNESSES_WITH_NULL =
+      new HashSet<>(Arrays.asList("0x3939", null, "0x4747"));
 
   private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
-  private static final Map<String, RollCall> rollCalls = new HashMap<String, RollCall>() {{
-    put(rollCallId1, new RollCall(rollCallId1));
-    put(rollCallId2, new RollCall(rollCallId2));
-    put(rollCallId3, new RollCall(rollCallId3));
-  }};
-  private static final Map<String, Election> elections = new HashMap<String, Election>() {{
-    put(electionId1, new Election(LAO_1.getId(), 2L, "name 1"));
-    put(electionId2, new Election(LAO_1.getId(), 2L, "name 2"));
-    put(electionId3, new Election(LAO_1.getId(), 2L, "name 3"));
-  }};
+  private static final Map<String, RollCall> rollCalls =
+      new HashMap<String, RollCall>() {
+        {
+          put(rollCallId1, new RollCall(rollCallId1));
+          put(rollCallId2, new RollCall(rollCallId2));
+          put(rollCallId3, new RollCall(rollCallId3));
+        }
+      };
+  private static final Map<String, Election> elections =
+      new HashMap<String, Election>() {
+        {
+          put(electionId1, new Election(LAO_1.getId(), 2L, "name 1"));
+          put(electionId2, new Election(LAO_1.getId(), 2L, "name 2"));
+          put(electionId3, new Election(LAO_1.getId(), 2L, "name 3"));
+        }
+      };
 
   @Test
   public void removeRollCallTest() {
     LAO_1.setRollCalls(new HashMap<>(rollCalls));
-    assertTrue(LAO_1.removeRollCall(
-        rollCallId3)); // we want to assert that we can remove rollCallId3 successfully
+    assertTrue(
+        LAO_1.removeRollCall(
+            rollCallId3)); // we want to assert that we can remove rollCallId3 successfully
     assertEquals(2, LAO_1.getRollCalls().size());
     assertTrue(LAO_1.getRollCalls().containsKey(rollCallId1));
     assertTrue(LAO_1.getRollCalls().containsKey(rollCallId2));
     assertFalse(LAO_1.getRollCalls().containsKey(rollCallId3));
 
-    LAO_1.setRollCalls(new HashMap<String, RollCall>() {{
-                         put(rollCallId1, new RollCall(rollCallId1));
-                         put(null, new RollCall(null));
-                         put(rollCallId3, new RollCall(rollCallId3));
-                       }}
-    );
+    LAO_1.setRollCalls(
+        new HashMap<String, RollCall>() {
+          {
+            put(rollCallId1, new RollCall(rollCallId1));
+            put(null, new RollCall(null));
+            put(rollCallId3, new RollCall(rollCallId3));
+          }
+        });
     assertFalse(LAO_1.removeRollCall(rollCallId2));
   }
 
   @Test
   public void removeElectionTest() {
     LAO_1.setElections(new HashMap<>(elections));
-    assertTrue(LAO_1.removeElection(
-        electionId3)); // we want to assert that we can remove electionId3 successfully
+    assertTrue(
+        LAO_1.removeElection(
+            electionId3)); // we want to assert that we can remove electionId3 successfully
     assertEquals(2, LAO_1.getElections().size());
     assertTrue(LAO_1.getElections().containsKey(electionId1));
     assertTrue(LAO_1.getElections().containsKey(electionId2));
     assertFalse(LAO_1.getElections().containsKey(electionId3));
 
     // we remove electionId2
-    LAO_1.setElections(new HashMap<String, Election>() {{
-                         put(electionId1, new Election(LAO_1.getId(), 2L, "name 1"));
-                         put(null, new Election(LAO_1.getId(), 2L, "name 1"));
-                         put(electionId3, new Election(LAO_1.getId(), 2L, "name 3"));
-                       }}
-    );
+    LAO_1.setElections(
+        new HashMap<String, Election>() {
+          {
+            put(electionId1, new Election(LAO_1.getId(), 2L, "name 1"));
+            put(null, new Election(LAO_1.getId(), 2L, "name 1"));
+            put(electionId3, new Election(LAO_1.getId(), 2L, "name 3"));
+          }
+        });
     // now the removal of electionId2 can't be done
     assertFalse(LAO_1.removeElection(electionId2));
   }
@@ -105,11 +114,10 @@ public class LaoTest {
     LAO_1.updateRollCall(r1.getId(), r2);
     assertNotSame(LAO_1.getRollCalls().get(r1.getId()), r1);
     assertSame(LAO_1.getRollCalls().get(r1.getId()), r2);
-
-
   }
 
   @Test
+  @SuppressWarnings("ConstantConditions")
   public void updateRollCallWithNull() {
     assertThrows(IllegalArgumentException.class, () -> LAO_1.updateRollCall("random", null));
   }
@@ -133,14 +141,12 @@ public class LaoTest {
     LAO_1.updateElection(e1.getId(), e2);
     assertNotSame(LAO_1.getElections().get(e1.getId()), e1);
     assertSame(LAO_1.getElections().get(e1.getId()), e2);
-
   }
 
   @Test
   public void updateElectionCallWithNull() {
     assertThrows(IllegalArgumentException.class, () -> LAO_1.updateElection("random", null));
   }
-
 
   @Test
   public void createLaoNullParametersTest() {
@@ -181,10 +187,13 @@ public class LaoTest {
   public void getRollCall() {
     RollCall r1 = new RollCall(rollCallId1);
     RollCall r2 = new RollCall(rollCallId1);
-    LAO_1.setRollCalls(new HashMap<String, RollCall>() {{
-      put(rollCallId1, r1);
-      put(rollCallId2, r2);
-    }});
+    LAO_1.setRollCalls(
+        new HashMap<String, RollCall>() {
+          {
+            put(rollCallId1, r1);
+            put(rollCallId2, r2);
+          }
+        });
     assertThat(LAO_1.getRollCall(rollCallId1).get(), is(r1));
   }
 
@@ -198,10 +207,13 @@ public class LaoTest {
   public void getElection() {
     Election e1 = new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1");
     Election e2 = new Election(LAO_1.getId(), Instant.now().getEpochSecond(), "name 1");
-    LAO_1.setElections(new HashMap<String, Election>() {{
-      put(electionId1, e1);
-      put(electionId2, e2);
-    }});
+    LAO_1.setElections(
+        new HashMap<String, Election>() {
+          {
+            put(electionId1, e1);
+            put(electionId2, e2);
+          }
+        });
     assertThat(LAO_1.getElection(electionId1).get(), is(e1));
   }
 
@@ -211,7 +223,6 @@ public class LaoTest {
     LAO_1.setWitnesses(WITNESSES);
     assertThat(LAO_1.getWitnesses(), is(WITNESSES));
   }
-
 
   @Test
   public void setNullNameTest() {

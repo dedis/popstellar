@@ -7,13 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.util.ArrayList;
 
 public class WitnessMessageFragment extends Fragment {
@@ -35,10 +38,10 @@ public class WitnessMessageFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mWitnessMessageFragBinding = WitnessMessageFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     mWitnessMessageFragBinding.setViewmodel(mLaoDetailViewModel);
-    mWitnessMessageFragBinding.setLifecycleOwner(getActivity());
+    mWitnessMessageFragBinding.setLifecycleOwner(requireActivity());
 
     return mWitnessMessageFragBinding.getRoot();
   }
@@ -48,9 +51,8 @@ public class WitnessMessageFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
     setupListAdapter();
     setupListUpdates();
-    Button back = (Button) getActivity().findViewById(R.id.tab_back);
-    back.setOnClickListener(c ->
-        mLaoDetailViewModel.openLaoDetail());
+    Button back = requireActivity().findViewById(R.id.tab_back);
+    back.setOnClickListener(c -> mLaoDetailViewModel.openLaoDetail());
   }
 
   private void setupListAdapter() {
@@ -66,11 +68,10 @@ public class WitnessMessageFragment extends Fragment {
     mLaoDetailViewModel
         .getWitnessMessages()
         .observe(
-            getActivity(),
+            requireActivity(),
             messages -> {
               Log.d(TAG, "witness messages updated");
               mWitnessMessageListViewAdapter.replaceList(messages);
             });
   }
-
 }

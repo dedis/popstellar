@@ -10,16 +10,16 @@ import java.time.Instant;
 public class ElectionEnd extends Data {
 
   @SerializedName(value = "election")
-  private String electionId;
+  private final String electionId;
 
   @SerializedName(value = "created_at")
-  private long createdAt;
+  private final long createdAt;
 
   @SerializedName(value = "lao")
-  private String laoId;
+  private final String laoId;
 
   @SerializedName(value = "registered_votes")
-  private String registeredVotes; // hashed
+  private final String registeredVotes; // hashed
 
   public ElectionEnd(String electionId, String laoId, String registeredVotes) {
     if (electionId == null || laoId == null || registeredVotes == null) {

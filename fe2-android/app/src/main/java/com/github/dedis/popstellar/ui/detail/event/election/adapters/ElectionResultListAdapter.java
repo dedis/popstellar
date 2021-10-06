@@ -6,14 +6,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import com.github.dedis.popstellar.R;
+
 import java.util.List;
 
-public class ElectionResultListAdapter extends
-    ArrayAdapter<ElectionResultListAdapter.ElectionResult> {
+public class ElectionResultListAdapter
+    extends ArrayAdapter<ElectionResultListAdapter.ElectionResult> {
 
-  private Context mContext;
-  private int mResource;
+  private final Context mContext;
+  private final int mResource;
 
   public ElectionResultListAdapter(Context context, int resource, List<ElectionResult> objects) {
     super(context, resource, objects);
@@ -21,15 +23,14 @@ public class ElectionResultListAdapter extends
     this.mResource = resource;
   }
 
-
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
     LayoutInflater inflater = LayoutInflater.from(mContext);
     View view = inflater.inflate(mResource, parent, false);
     String ballotOption = getItem(position).getBallotOption();
-    TextView ballotView = (TextView) view.findViewById(R.id.election_result_ballot_option);
+    TextView ballotView = view.findViewById(R.id.election_result_ballot_option);
     ballotView.setText(ballotOption);
-    TextView votesView = (TextView) view.findViewById(R.id.election_result_vote_number);
+    TextView votesView = view.findViewById(R.id.election_result_vote_number);
     String numberOfVotes = String.valueOf(getItem(position).getVotes());
     votesView.setText(numberOfVotes);
     return view;

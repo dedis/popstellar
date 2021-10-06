@@ -10,17 +10,17 @@ import java.util.Objects;
 
 public class ElectionQuestion {
 
-  private String id;
-  private String question;
+  private final String id;
+  private final String question;
 
   @SerializedName(value = "voting_method")
-  private String votingMethod;
+  private final String votingMethod;
 
   @SerializedName(value = "ballot_options")
-  private List<String> ballotOptions;
+  private final List<String> ballotOptions;
 
   @SerializedName(value = "write_in")
-  private boolean writeIn;
+  private final boolean writeIn;
 
   /** Constructor for a data Question, for the election setup */
   public ElectionQuestion(

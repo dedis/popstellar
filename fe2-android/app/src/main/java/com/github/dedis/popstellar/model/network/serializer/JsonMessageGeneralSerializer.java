@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -14,11 +14,11 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Iterator;
 import java.util.List;
 
 public class JsonMessageGeneralSerializer
@@ -37,7 +37,7 @@ public class JsonMessageGeneralSerializer
     byte[] sender = Base64.getUrlDecoder().decode(root.get("sender").getAsString());
     byte[] signature = Base64.getUrlDecoder().decode(root.get(SIG).getAsString());
 
-    //TODO: not working with results from backend, temporarly deactivated
+    // TODO: not working with results from backend, temporarly deactivated
     /*PublicKeyVerify verifier = new Ed25519Verify(sender);
     try {
       verifier.verify(signature, dataBuf);
@@ -47,14 +47,14 @@ public class JsonMessageGeneralSerializer
 
     List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
     JsonArray arr = root.get("witness_signatures").getAsJsonArray();
-    Iterator<JsonElement> it = arr.iterator();
-    while (it.hasNext()) {
-      JsonElement element = it.next();
+    for (JsonElement element : arr) {
       String witness = element.getAsJsonObject().get("witness").getAsString();
       String sig = element.getAsJsonObject().get(SIG).getAsString();
-      witnessSignatures.add(new PublicKeySignaturePair(Base64.getUrlDecoder().decode(witness),
-          Base64.getUrlDecoder().decode(sig)));
+      witnessSignatures.add(
+          new PublicKeySignaturePair(
+              Base64.getUrlDecoder().decode(witness), Base64.getUrlDecoder().decode(sig)));
     }
+
     JsonElement dataElement = JsonParser.parseString(new String(dataBuf));
     Data data = context.deserialize(dataElement, Data.class);
 

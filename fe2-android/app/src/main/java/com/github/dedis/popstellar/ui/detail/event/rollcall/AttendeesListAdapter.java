@@ -5,16 +5,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.databinding.AttendeeLayoutBinding;
-import java.util.List;
+
 import net.glxn.qrgen.android.QRCode;
+
+import java.util.List;
 
 public class AttendeesListAdapter extends BaseAdapter {
 
   private List<String> attendees;
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
 
   public AttendeesListAdapter(List<String> attendees, LifecycleOwner activity) {
     setList(attendees);
@@ -51,6 +55,10 @@ public class AttendeesListAdapter extends BaseAdapter {
       binding = AttendeeLayoutBinding.inflate(inflater, viewGroup, false);
     } else {
       binding = DataBindingUtil.getBinding(view);
+
+      if (binding == null) {
+        throw new IllegalStateException("Cannot find binding");
+      }
     }
 
     String attendee = attendees.get(position);

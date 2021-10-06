@@ -8,11 +8,12 @@ import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
 import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
 import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
 import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
+
 import java.util.List;
 
 public class LAOLocalDataSource implements Local {
 
-  private LAODao laoDao;
+  private final LAODao laoDao;
 
   private static LAOLocalDataSource INSTANCE;
 
@@ -43,22 +44,18 @@ public class LAOLocalDataSource implements Local {
   }
 
   @Override
-  public void updateLAO(LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
-  }
+  public void updateLAO(
+      LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {}
 
   @Override
-  public void addRollCall(LAOEntity lao, RollCallEntity rollCall) {
-  }
+  public void addRollCall(LAOEntity lao, RollCallEntity rollCall) {}
 
   @Override
-  public void updateRollCall(RollCallEntity rollCall) {
-  }
+  public void updateRollCall(RollCallEntity rollCall) {}
 
   @Override
-  public void addMeeting(LAOEntity lao, MeetingEntity meeting) {
-  }
+  public void addMeeting(LAOEntity lao, MeetingEntity meeting) {}
 
   @Override
-  public void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures) {
-  }
+  public void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures) {}
 }

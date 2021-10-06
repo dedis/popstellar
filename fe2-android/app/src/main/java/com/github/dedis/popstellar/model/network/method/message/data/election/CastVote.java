@@ -13,15 +13,15 @@ import java.util.List;
 public class CastVote extends Data {
 
   @SerializedName(value = "created_at")
-  private long createdAt; // time the votes were submitted
+  private final long createdAt; // time the votes were submitted
 
   @SerializedName(value = "lao")
-  private String laoId; // Id of the lao
+  private final String laoId; // Id of the lao
 
   @SerializedName(value = "election")
-  private String electionId; // Id of the election
+  private final String electionId; // Id of the election
 
-  private List<ElectionVote> votes;
+  private final List<ElectionVote> votes;
 
   /**
    * @param votes list of the Election Vote where an ElectionVote Object represents the

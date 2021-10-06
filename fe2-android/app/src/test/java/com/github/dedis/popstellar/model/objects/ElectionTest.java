@@ -10,30 +10,35 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
 
 public class ElectionTest {
 
-  private ElectionQuestion electionQuestion = new ElectionQuestion("my question", "Plurality",
-      false, Arrays.asList("candidate1", "candidate2"), "my election id");
-  private String name = "my election name";
-  private String id = "my election id";
-  private long startTime = 0;
-  private long endTime = 1;
-  private String channel = "channel id";
-  private Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
-
+  private final ElectionQuestion electionQuestion =
+      new ElectionQuestion(
+          "my question",
+          "Plurality",
+          false,
+          Arrays.asList("candidate1", "candidate2"),
+          "my election id");
+  private final String name = "my election name";
+  private final String id = "my election id";
+  private final long startTime = 0;
+  private final long endTime = 1;
+  private final String channel = "channel id";
+  private final Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
 
   @Test
   public void settingNullParametersThrowsException() {
     assertThrows(IllegalArgumentException.class, () -> election.setName(null));
     assertThrows(IllegalArgumentException.class, () -> election.setId(null));
   }
-
 
   @Test
   public void settingAndGettingReturnsCorrespondingName() {
@@ -91,18 +96,24 @@ public class ElectionTest {
 
   @Test
   public void settingSameRegisteredVotesAndComparingReturnsTrue() {
-    List<ElectionVote> votes1 = Arrays
-        .asList(new ElectionVote("b", Arrays.asList(1), false, "", "my election id"),
+    List<ElectionVote> votes1 =
+        Arrays.asList(
+            new ElectionVote("b", Arrays.asList(1), false, "", "my election id"),
             new ElectionVote("a", Arrays.asList(2), false, "", "my election id"));
-    List<ElectionVote> votes2 = Arrays
-        .asList(new ElectionVote("c", Arrays.asList(3), false, "", "my election id"),
+    List<ElectionVote> votes2 =
+        Arrays.asList(
+            new ElectionVote("c", Arrays.asList(3), false, "", "my election id"),
             new ElectionVote("d", Arrays.asList(4), false, "", "my election id"));
     election.putVotesBySender("sender2", votes2);
     election.putSenderByMessageId("sender1", "message1");
     election.putSenderByMessageId("sender2", "message2");
     election.putVotesBySender("sender1", votes1);
-    String hash = Hash.hash(votes1.get(1).getId(), votes1.get(0).getId(), votes2.get(0).getId(),
-        votes2.get(1).getId());
+    String hash =
+        Hash.hash(
+            votes1.get(1).getId(),
+            votes1.get(0).getId(),
+            votes2.get(0).getId(),
+            votes2.get(1).getId());
     assertThat(election.computerRegisteredVotes(), is(hash));
   }
 
@@ -113,8 +124,8 @@ public class ElectionTest {
     unsortedResults.add(new QuestionResult("Candidate2", 23));
     unsortedResults.add(new QuestionResult("Candidate3", 16));
     unsortedResults.add(new QuestionResult("Candidate4", 43));
-    List<ElectionResultQuestion> resultQuestion = Arrays
-        .asList(new ElectionResultQuestion("question_id", unsortedResults));
+    List<ElectionResultQuestion> resultQuestion =
+        Arrays.asList(new ElectionResultQuestion("question_id", unsortedResults));
     election.setResults(resultQuestion);
     List<QuestionResult> sortedResults = election.getResultsForQuestionId("question_id");
 
@@ -133,6 +144,5 @@ public class ElectionTest {
     QuestionResult fourthResult = sortedResults.get(3);
     assertThat(fourthResult.getBallot(), is("Candidate3"));
     assertThat(fourthResult.getCount(), is(16));
-
   }
 }

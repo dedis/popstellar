@@ -14,19 +14,19 @@ import java.util.Optional;
 /** Data sent to create a Roll-Call */
 public class CreateRollCall extends Data {
 
-  private String id;
-  private String name;
-  private long creation;
+  private final String id;
+  private final String name;
+  private final long creation;
 
   @SerializedName("proposed_start")
-  private long proposedStart;
+  private final long proposedStart;
 
   @SerializedName("proposed_end")
-  private long proposedEnd;
+  private final long proposedEnd;
 
-  private String location;
+  private final String location;
 
-  @Nullable private transient String description;
+  @Nullable private final transient String description;
 
   /**
    * Constructor for a data Create Roll-Call Event
@@ -47,16 +47,8 @@ public class CreateRollCall extends Data {
       String laoId) {
     this.name = name;
     this.creation = Instant.now().getEpochSecond();
-    if (proposedStart <= this.creation) {
-      this.proposedStart = this.creation;
-    } else {
-      this.proposedStart = proposedStart;
-    }
-    if (proposedEnd == 0) {
-      this.proposedEnd = proposedStart + 3600;
-    } else {
-      this.proposedEnd = proposedEnd;
-    }
+    this.proposedStart = Math.max(proposedStart, this.creation);
+    this.proposedEnd = proposedEnd == 0 ? proposedStart + 3600 : proposedEnd;
     this.location = location;
     this.description = description;
     this.id = RollCall.generateCreateRollCallId(laoId, creation, name);
@@ -69,7 +61,7 @@ public class CreateRollCall extends Data {
       long proposedStart,
       long proposedEnd,
       String location,
-      String description) {
+      @Nullable String description) {
     this.id = id;
     this.name = name;
     this.creation = creation;
