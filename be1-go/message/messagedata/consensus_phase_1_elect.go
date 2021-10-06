@@ -9,7 +9,7 @@ import (
 )
 
 // ConsensusStart defines a message data
-type ConsensusStart struct {
+type ConsensusPhase1Elect struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
 	InstanceID string `json:"instance_id"`
@@ -26,7 +26,7 @@ type Key struct {
 	Property string `json:"property"`
 }
 
-func (message ConsensusStart) Verify() error {
+func (message ConsensusPhase1Elect) Verify() error {
 
 	h := sha256.New()
 	h.Write([]byte(message.Object))

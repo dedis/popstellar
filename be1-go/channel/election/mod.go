@@ -3,7 +3,8 @@ package election
 import (
 	"encoding/base64"
 	"encoding/json"
-	"log"
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
@@ -15,10 +16,11 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+	"strconv"
 	"sync"
-
-	"golang.org/x/xerrors"
 )
+
+const msgID		 = "msg id"
 
 // attendees represents the attendees in an election.
 type attendees struct {
@@ -66,9 +68,10 @@ func (a *attendees) Copy() *attendees {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, terminated bool,
-	questions []messagedata.ElectionSetupQuestion, attendeesMap map[string]struct{},
-	msg message.Message, hub channel.HubFunctionalities) Channel {
+func NewChannel(channelPath string, start, end int64, terminated bool, questions []messagedata.ElectionSetupQuestion,
+	attendeesMap map[string]struct{}, msg message.Message, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+
+	log = log.With().Str("channel", "election").Logger()
 
 	// Saving on election channel too so it self-contains the entire election history
 	// electionCh.inbox.storeMessage(msg)
@@ -87,6 +90,8 @@ func NewChannel(channelPath string, start, end int64, terminated bool,
 		},
 
 		hub: hub,
+
+		log: log,
 	}
 }
 
@@ -115,6 +120,8 @@ type Channel struct {
 	attendees *attendees
 
 	hub channel.HubFunctionalities
+
+	log zerolog.Logger
 }
 
 // question represents a question in an election.
@@ -198,7 +205,9 @@ func (c *Channel) Publish(publish method.Publish) error {
 
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
-	log.Printf("received a subscribe with id: %d", msg.ID)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received a subscribe")
 	c.sockets.Upsert(socket)
 
 	return nil
@@ -206,7 +215,9 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 
 // Unsubscribe is used to handle an unsubscribe message.
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
-	log.Printf("received an unsubscribe with id: %d", msg.ID)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received an unsubscribe")
 
 	ok := c.sockets.Delete(socketID)
 
@@ -219,7 +230,9 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 
 // Catchup is used to handle a catchup message.
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
-	log.Printf("received a catchup with id: %d", catchup.ID)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(catchup.ID)).
+		Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
 }
@@ -227,6 +240,10 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *Channel) broadcastToAllClients(msg message.Message) {
+	c.log.Info().
+		Str(msgID, msg.MessageID).
+		Msg("broadcasting message to all clients")
+
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -245,7 +262,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		log.Printf("failed to marshal broadcast query: %v", err)
+		c.log.Err(err).Msg("failed to marshal broadcast query")
 	}
 
 	c.sockets.SendToAll(buf)
@@ -253,7 +270,9 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 // VerifyPublishMessage checks if a Publish message is valid
 func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
-	log.Printf("received a publish with id: %d", publish.ID)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
 
 	// Check if the structure of the message is correct
 	msg := publish.Params.Message
@@ -432,7 +451,9 @@ func (c *Channel) publishResultElection(msg message.Message) error {
 
 			resultElection.Questions = append(resultElection.Questions, electResult)
 
-			log.Printf("Appending a question id:%s with the count and result", id)
+			c.log.Info().
+				Str("question id", id).
+				Msg("appending a question with the count and result")
 		}
 	}
 

@@ -7,6 +7,9 @@ import (
 )
 
 const (
+	ConsensusObject            = "consensus"
+	ConsensusActionPhase1Elect = "phase-1-elect"
+
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"

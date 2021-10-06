@@ -1,16 +1,23 @@
 package consensus
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"popstellar/channel"
 	"popstellar/channel/inbox"
+	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
+	"popstellar/message/messagedata"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
+	"popstellar/validation"
 	"strconv"
 	"sync"
 
 	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -37,7 +44,7 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized consensus channel
-func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
+func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
 	inbox := inbox.NewInbox(channelID)
 
 	log = log.With().Str("channel", "consensus").Logger()
@@ -78,4 +85,122 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	c.log.Info().Str(msgID, strconv.Itoa(catchup.ID)).Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
+}
+
+// BroadcastToAllWitnesses is a helper message to broadcast a message to all
+// witnesses.
+func (c *Channel) BroadcastToAllWitnesses(msg message.Message) {
+	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all witnesses")
+
+	rpcMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			c.channelID,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(&rpcMessage)
+	if err != nil {
+		c.log.Err(err).Msg("failed to marshal broadcast query")
+	}
+
+	c.sockets.SendToAll(buf)
+}
+
+// Publish handles publish messages for the consensus channel
+func (c *Channel) Publish(publish method.Publish) error {
+	err := c.VerifyPublishMessage(publish)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message: %w", err)
+	}
+
+	msg := publish.Params.Message
+
+	data := msg.Data
+
+	jsonData, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+
+	switch object {
+	case messagedata.ConsensusObject:
+		err = c.processConsensusObject(action, msg)
+	}
+
+	if err != nil {
+		return xerrors.Errorf("failed to process %q object: %w", object, err)
+	}
+
+	c.BroadcastToAllWitnesses(msg)
+	return nil
+}
+
+// VerifyPublishMessage checks if a Publish message is valid
+func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	// Check if the structure of the message is correct
+	msg := publish.Params.Message
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
+}
+
+// ProcessConsensusObject processes a Consensus Object.
+func (c *Channel) processConsensusObject(action string, msg message.Message) error {
+	switch action {
+	case messagedata.ConsensusActionPhase1Elect:
+		var consensusPhase1Elect messagedata.ConsensusPhase1Elect
+
+		err := msg.UnmarshalData(&consensusPhase1Elect)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal consensus#phase-1-elect: %v", err)
+		}
+
+		err = c.processConsensusPhase1Elect(consensusPhase1Elect)
+		if err != nil {
+			return xerrors.Errorf("failed to process phase 1 elect action: %w", err)
+		}
+	default:
+		return answer.NewInvalidActionError(action)
+	}
+
+	return nil
+}
+
+//processConsensusPhase1Elect processes a phase 1 elect action.
+func (c *Channel) processConsensusPhase1Elect(data messagedata.ConsensusPhase1Elect) error {
+
+	err := data.Verify()
+
+	return err
 }

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"log"
+	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
 	"popstellar/db/sqlite"
@@ -65,7 +65,7 @@ type Hub struct {
 // NewHub returns a Organizer Hub.
 func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator()
+	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
@@ -85,11 +85,11 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 	}
 
 	if sqlite.GetDBPath() != "" {
-		log.Printf("loading channels from db at %s", sqlite.GetDBPath())
+		log.Info().Msgf("loading channels from db at %s", sqlite.GetDBPath())
 
 		channels, err := getChannelsFromDB(&hub)
 		if err != nil {
-			log.Printf("error: failed to load channels from db: %v", err)
+			log.Err(err).Msg("failed to load channels from db")
 		} else {
 			hub.channelByID = channels
 		}
@@ -111,7 +111,7 @@ func (h *Hub) Start() {
 			case incomingMessage := <-h.messageChan:
 				ok := h.workers.TryAcquire(1)
 				if !ok {
-					log.Print("warn: worker pool full, waiting...")
+					h.log.Warn().Msg("worker pool full, waiting...")
 					h.workers.Acquire(context.Background(), 1)
 				}
 
@@ -124,7 +124,7 @@ func (h *Hub) Start() {
 				}
 				h.RUnlock()
 			case <-h.stop:
-				log.Println("Stopping the hub")
+				h.log.Info().Msg("stopping the hub")
 				return
 			}
 		}
@@ -134,7 +134,7 @@ func (h *Hub) Start() {
 // Stop implements hub.Hub
 func (h *Hub) Stop() {
 	close(h.stop)
-	log.Println("Waiting for existing workers to finish...")
+	h.log.Info().Msg("waiting for existing workers to finish...")
 	h.workers.Acquire(context.Background(), numWorkers)
 }
 
@@ -408,7 +408,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message)
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
@@ -443,7 +443,9 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 // --
 
 func saveChannel(channelPath string) error {
-	log.Printf("trying to save the channel in db at %s", sqlite.GetDBPath())
+	log := be1_go.Logger
+
+	log.Info().Msgf("trying to save the channel in db at %s", sqlite.GetDBPath())
 
 	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 	if err != nil {
@@ -467,6 +469,7 @@ func saveChannel(channelPath string) error {
 
 	_, err = stmt.Exec(channelPath)
 	if err != nil {
+		log.Err(err).Msg("failed to save channel in db")
 		return xerrors.Errorf("failed to insert channel: %v", err)
 	}
 
@@ -504,7 +507,7 @@ func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
 			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		channel, err := lao.CreateChannelFromDB(db, channelPath, h)
+		channel, err := lao.CreateChannelFromDB(db, channelPath, h, h.log)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to create channel from db: %v", err)
 		}
