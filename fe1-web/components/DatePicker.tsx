@@ -4,6 +4,7 @@ import DatePickerElement from 'react-datepicker';
 import { Timestamp } from '../model/objects';
 
 const ONE_MINUTE_IN_SECONDS = 60;
+const ONE_SECOND_IN_MILLIS = 1000;
 
 const DatePicker = (props: IPropTypes) => {
   const { selected } = props;
@@ -39,10 +40,10 @@ export default DatePicker;
 /**
  * Transforms a date into a Timestamp.
  *
- * @param date the date to transform
+ * @param date - The date to transform
  */
 export function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
+  return new Timestamp(Math.floor(date.getTime() / ONE_SECOND_IN_MILLIS));
 }
 
 /**
@@ -50,48 +51,50 @@ export function dateToTimestamp(date: Date): Timestamp {
  * the start time will be set accordingly. Otherwise, the start date will be replaced by the
  * actual time. In both cases, end time is automatically set to start time + 1 hour.
  *
- * @param newStartDate the date the user wants the event to start
- * @param setStartDate function to set the start date of the event
- * @param setEndDate function to set the end date of the event
+ * @param newStartDate - The date the user wants the event to start
+ * @param setStartDate - Function to set the start date of the event
+ * @param setEndDate - Function to set the end date of the event
  */
 export function onChangeStartTime(
   newStartDate: Date,
-  setStartDate: (value: (((prevState: Timestamp) => Timestamp) | Timestamp)) => void,
-  setEndDate: (value: (((prevState: Timestamp) => Timestamp) | Timestamp)) => void,
+  setStartDate: React.Dispatch<React.SetStateAction<Timestamp>>,
+  setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
 ) {
-  const dateStamp: Timestamp = dateToTimestamp(newStartDate);
-  const now = new Date();
+  const newStartTimestamp: Timestamp = dateToTimestamp(newStartDate);
+  const dateNow = new Date();
+  const timestampNow = dateToTimestamp(dateNow);
+  let actualStartDate: Date;
 
-  if (dateStamp > dateToTimestamp(now)) {
-    setStartDate(dateStamp);
-    const newEndDate = new Date(newStartDate.getTime());
-    newEndDate.setHours(newStartDate.getHours() + 1);
-    setEndDate(dateToTimestamp(newEndDate));
+  if (newStartTimestamp > timestampNow) {
+    setStartDate(newStartTimestamp);
+    actualStartDate = newStartDate;
   } else {
-    setStartDate(dateToTimestamp(now));
-    const newEndDate = new Date(now.getTime());
-    newEndDate.setHours(now.getHours() + 1);
-    setEndDate(dateToTimestamp(newEndDate));
+    setStartDate(timestampNow);
+    actualStartDate = dateNow;
   }
+
+  const newEndDate = new Date(actualStartDate.getTime());
+  newEndDate.setHours(actualStartDate.getHours() + 1);
+  setEndDate(dateToTimestamp(newEndDate));
 }
 
 /**
  * Function called when the user changes the end time. If the end time is before the start time,
  * it will be set to start time + 60 seconds. Otherwise, the end time of the user will be kept.
  *
- * @param newEndDate the date the user wants the event to end
- * @param startTime the actual start time
- * @param setEndDate function to set the end date of the event
+ * @param newEndDate - The date the user wants the event to end
+ * @param startTime - The actual start time
+ * @param setEndDate - Function to set the end date of the event
  */
 export function onChangeEndTime(
   newEndDate: Date,
   startTime: Timestamp,
-  setEndDate: (value: (((prevState: Timestamp) => Timestamp) | Timestamp)) => void,
+  setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
 ) {
-  const dateTimeStamp: Timestamp = dateToTimestamp(newEndDate);
-  if (dateTimeStamp < startTime) {
+  const newEndTimestamp: Timestamp = dateToTimestamp(newEndDate);
+  if (newEndTimestamp < startTime) {
     setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS));
   } else {
-    setEndDate(dateTimeStamp);
+    setEndDate(newEndTimestamp);
   }
 }
