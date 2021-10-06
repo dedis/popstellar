@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"popstellar/channel"
+	"popstellar/channel/consensus.go"
 	"popstellar/channel/election"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
@@ -49,12 +50,16 @@ type Channel struct {
 	hub channel.HubFunctionalities
 
 	attendees map[string]struct{}
+
+	consensus consensus.Channel
 }
 
 // NewChannel returns a new initialized LAO channel
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message) channel.Channel {
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
+
+	consensusID := fmt.Sprintf("%s/consensus", channelID)
 
 	return &Channel{
 		channelID: channelID,
@@ -63,6 +68,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
+		consensus: consensus.NewChannel(consensusID, hub, )),
 	}
 }
 
