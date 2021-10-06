@@ -270,12 +270,11 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         return setupRollCallElement((RollCall) event, layoutEventBinding);
       case CONSENSUS:
         return setupConsensusElement((Consensus) event, layoutEventBinding);
+      default:
+        layoutEventBinding.setLifecycleOwner(lifecycleOwner);
+        layoutEventBinding.executePendingBindings();
+        return layoutEventBinding.getRoot();
     }
-
-    layoutEventBinding.setLifecycleOwner(lifecycleOwner);
-    layoutEventBinding.executePendingBindings();
-    return layoutEventBinding.getRoot();
-
   }
 
 

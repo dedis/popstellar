@@ -26,8 +26,6 @@ public class ConsensusStatusFragment extends Fragment {
   private static final String TAG = ConsensusStatusFragment.class.getSimpleName();
   private static final String EXTRA_ID = "CONSENSUS_ID";
 
-  private LaoDetailViewModel mLaoDetailViewModel;
-  private ConsensusAcceptorAdapter acceptorAdapter;
   private Consensus consensus;
 
   public ConsensusStatusFragment() {
@@ -49,7 +47,7 @@ public class ConsensusStatusFragment extends Fragment {
     ConsensusStatusFragmentBinding binding =
         ConsensusStatusFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
     String id = getArguments().getString(EXTRA_ID);
     Optional<Consensus> optConsensus = mLaoDetailViewModel.getCurrentLaoValue().getConsensus(id);
@@ -62,7 +60,7 @@ public class ConsensusStatusFragment extends Fragment {
 
     ListView listView = binding.consensusResponsesList;
     List<String> acceptors = new ArrayList<>(consensus.getAcceptors());
-    acceptorAdapter =
+    ConsensusAcceptorAdapter acceptorAdapter =
         new ConsensusAcceptorAdapter(acceptors, consensus.getAcceptorsResponses(), getActivity());
     listView.setAdapter(acceptorAdapter);
 
