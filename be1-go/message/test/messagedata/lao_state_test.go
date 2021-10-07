@@ -29,18 +29,18 @@ func Test_Lao_State(t *testing.T) {
 
 	require.Equal(t, "lao", msg.Object)
 	require.Equal(t, "state", msg.Action)
-	require.Equal(t, "XXX", msg.ID)
-	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, int64(123), msg.Creation)
-	require.Equal(t, int64(123), msg.LastModified)
-	require.Equal(t, "XXX", msg.Organizer)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.ID)
+	require.Equal(t, "LAO", msg.Name)
+	require.Equal(t, int64(1633098234), msg.Creation)
+	require.Equal(t, int64(1633099140), msg.LastModified)
+	require.Equal(t, "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=", msg.Organizer)
 
 	require.Len(t, msg.Witnesses, 1)
-	require.Equal(t, "XXX", msg.Witnesses[0])
+	require.Equal(t, "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", msg.Witnesses[0])
 
-	require.Equal(t, "XXX", msg.ModificationID)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.ModificationID)
 
 	require.Len(t, msg.ModificationSignatures, 1)
-	require.Equal(t, "XXX", msg.ModificationSignatures[0].Witness)
+	require.Equal(t, "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", msg.ModificationSignatures[0].Witness)
 	require.Equal(t, "XXX", msg.ModificationSignatures[0].Signature)
 }
