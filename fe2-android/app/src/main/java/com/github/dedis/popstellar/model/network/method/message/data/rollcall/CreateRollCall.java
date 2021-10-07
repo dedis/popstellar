@@ -1,11 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
 import androidx.annotation.Nullable;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Optional;
 
 /**
@@ -152,9 +154,9 @@ public class CreateRollCall extends Data {
         + '\''
         + ", creation="
         + creation
-        + ", start="
+        + ", proposedStart="
         + proposedStart
-        + ", startType="
+        + ", proposedEnd="
         + proposedEnd
         + ", location='"
         + location

@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.answer;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -38,5 +39,10 @@ public final class Result extends Answer {
 
   public Optional<List<MessageGeneral>> getMessages() {
     return messages;
+  }
+
+  @Override
+  public String toString() {
+    return "Result{" + "general=" + general + ", messages=" + messages + '}';
   }
 }
