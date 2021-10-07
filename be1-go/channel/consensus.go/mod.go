@@ -14,7 +14,6 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
-	"sync"
 
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
@@ -32,9 +31,6 @@ type Channel struct {
 
 	// /root/<lao_id>/<id>
 	channelID string
-
-	witnessMu sync.Mutex
-	witnesses []string
 
 	hub channel.HubFunctionalities
 
