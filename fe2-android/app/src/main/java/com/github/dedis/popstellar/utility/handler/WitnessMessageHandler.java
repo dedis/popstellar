@@ -1,14 +1,16 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
+
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
+import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.utility.security.Signature;
+
 import java.util.Base64;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +40,7 @@ public class WitnessMessageHandler {
       String channel,
       String senderPk,
       WitnessMessageSignature message) {
-    Log.d(TAG, "Received Witness Message Signature Broadcast");
+    Log.d(TAG, "Received Witness Message Signature Broadcast with id : " + message.getMessageId());
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
@@ -47,6 +49,12 @@ public class WitnessMessageHandler {
 
     // Verify signature
     if (!Signature.verifySignature(messageId, senderPkBuf, signatureBuf)) {
+      Log.w(
+          TAG,
+          "Failed to very signature of Witness Message Signature id="
+              + messageId
+              + ", signature="
+              + signature);
       return false;
     }
 

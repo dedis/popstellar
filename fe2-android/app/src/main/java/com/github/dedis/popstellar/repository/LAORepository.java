@@ -7,9 +7,9 @@ import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleE
 import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleSubscribe;
 
 import android.util.Log;
+
 import androidx.annotation.NonNull;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -22,6 +22,8 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
@@ -29,11 +31,7 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
@@ -45,6 +43,12 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class LAORepository {
 
@@ -255,7 +259,6 @@ public class LAORepository {
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(subscribe);
-    Log.d(TAG, "sending subscribe");
 
     subscribedChannels.add(channel);
 
@@ -323,6 +326,11 @@ public class LAORepository {
    * @return the election corresponding to this channel
    */
   public Election getElectionByChannel(String channel) {
+    Log.d(TAG, "querying election for channel " + channel);
+
+    if (channel.split("/").length < 4)
+      throw new IllegalArgumentException("invalid channel for an election : " + channel);
+
     Lao lao = getLaoByChannel(channel);
     Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
     if (!electionOption.isPresent()) {
@@ -338,6 +346,8 @@ public class LAORepository {
    * @return the Lao corresponding to this channel
    */
   public Lao getLaoByChannel(String channel) {
+    Log.d(TAG, "querying lao for channel " + channel);
+
     String[] split = channel.split("/");
     return laoById.get(ROOT + split[2]).getLao();
   }
