@@ -12,7 +12,6 @@
     },
     "text": {
       "type": "string",
-      "contentEncoding": "UTF-8"
     },
     "timestamp": {
       "description": "UNIX Timestamp in UTC of this creation request",
