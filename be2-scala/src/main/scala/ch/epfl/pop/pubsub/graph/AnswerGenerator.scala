@@ -30,6 +30,7 @@ object AnswerGenerator extends AskPatternConstants {
         Await.result(ask, duration)
 
 
+      // Note: this is not going to remain true when server-to-server communication gets implemented
       case Broadcast(_, _) => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         "Server received a Broadcast message which should never happen (broadcast messages are only emitted by server)",

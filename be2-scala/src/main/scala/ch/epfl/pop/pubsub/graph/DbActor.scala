@@ -159,7 +159,7 @@ object DbActor extends AskPatternConstants {
     private val channelsMap: mutable.Map[Channel, DB] = initialChannelsMap.to(collection.mutable.Map)
 
     override def preStart(): Unit = {
-      log.debug(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
+      log.info(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
       if (initialChannelsMap.size > DATABASE_MAX_CHANNELS) {
         log.warning(s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)")
       }
@@ -189,25 +189,26 @@ object DbActor extends AskPatternConstants {
       val messageId: Hash = message.message_id
       Try(channelDb.put(messageId.getBytes, message.toJsonString.getBytes)) match {
         case Success(_) =>
-          log.debug(s"Actor $self (db) wrote message_id '$messageId' on channel '$channel'")
+          log.info(s"Actor $self (db) wrote message_id '$messageId' on channel '$channel'")
           DbActorWriteAck
         case Failure(exception) =>
-          log.debug(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
+          log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
           DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
       }
     }
 
     private def read(channel: Channel, messageId: Hash): DbActorMessage = {
-      if (channelsMap.contains(channel)) {
+      if (!channelsMap.contains(channel)) {
+        DbActorReadAck(None)
+      } else {
         val channelDb: DB = channelsMap(channel)
         Try(channelDb.get(messageId.getBytes)) match {
           case Success(bytes) if bytes != null =>
-            DbActorReadAck(Some(Message.buildFromJson(new String(bytes, StandardCharsets.UTF_8))))
+            val json = new String(bytes, StandardCharsets.UTF_8)
+            DbActorReadAck(Some(Message.buildFromJson(json)))
           case _ =>
             DbActorNAck(ErrorCodes.SERVER_ERROR.id, "Unknown read database error")
         }
-      } else {
-        DbActorReadAck(None)
       }
     }
 
@@ -215,8 +216,8 @@ object DbActor extends AskPatternConstants {
       @scala.annotation.tailrec
       def buildCatchupList(iterator: DBIterator, acc: List[Message]): List[Message] = {
         if (iterator.hasNext) {
-          val value: Message = Message.buildFromJson(new String(iterator.next().getValue, StandardCharsets.UTF_8))
-          buildCatchupList(iterator, value :: acc)
+          val json = new String(iterator.next().getValue, StandardCharsets.UTF_8)
+          buildCatchupList(iterator, Message.buildFromJson(json) :: acc)
         } else {
           acc
         }
