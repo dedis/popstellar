@@ -13,7 +13,7 @@ import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.socialmedia.SocialMediaFragment;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
@@ -123,7 +123,7 @@ public class HomeActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                setupSocialMediaFragment();
+                openSocialMediaActivity();
               }
             });
   }
@@ -309,11 +309,10 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
-  private void setupSocialMediaFragment() {
-    SocialMediaFragment socialMediaFragment =
-            (SocialMediaFragment) getSupportFragmentManager()
-              .findFragmentById(R.id.fragment_socialmedia);
-
+  private void openSocialMediaActivity() {
+    Intent intent = new Intent(this, SocialMediaActivity.class);
+    Log.d(TAG, "Trying to open social media");
+    startActivity(intent);
   }
 
   private void openLaoDetails(String laoId) {

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -62,6 +63,18 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     } else if (modelClass.isAssignableFrom(LaoDetailViewModel.class)) {
       return (T)
           new LaoDetailViewModel(
+              application,
+              Injection.provideLAORepository(
+                  application,
+                  Injection.provideLAOService(
+                      Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
+                  keysetManager,
+                  gson),
+              gson,
+              keysetManager);
+    } else if (modelClass.isAssignableFrom(SocialMediaViewModel.class)) {
+      return (T)
+          new SocialMediaViewModel(
               application,
               Injection.provideLAORepository(
                   application,
