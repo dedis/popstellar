@@ -65,7 +65,7 @@ public class LaoHandler {
    */
   public static boolean handleCreateLao(LAORepository laoRepository, String channel,
       CreateLao createLao) {
-    Log.d(TAG, "handleCreateLao: channel " + channel + "msg=" + createLao);
+    Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     lao.setName(createLao.getName());

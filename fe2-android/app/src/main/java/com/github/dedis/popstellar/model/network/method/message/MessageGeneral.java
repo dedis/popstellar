@@ -142,18 +142,11 @@ public final class MessageGeneral {
   @Override
   public String toString() {
     return "MessageGeneral{"
-        + "sender="
-        + getSender()
-        + ", data="
-        + getData()
-        + ", signature="
-        + getSignature()
-        + ", messageId="
-        + getMessageId()
-        + ", witnessSignatures="
-        + Arrays.toString(witnessSignatures.toArray())
-        + ", verifier="
-        + verifier
+        + "sender=" + getSender() + '\''
+        + ", data=" + getData()
+        + ", signature=" + getSignature() + '\''
+        + ", messageId='" + getMessageId() + '\''
+        + ", witnessSignatures=" + Arrays.toString(witnessSignatures.toArray())
         + '}';
   }
 }

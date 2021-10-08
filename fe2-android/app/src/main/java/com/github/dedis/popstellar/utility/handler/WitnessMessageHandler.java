@@ -51,7 +51,7 @@ public class WitnessMessageHandler {
     if (!Signature.verifySignature(messageId, senderPkBuf, signatureBuf)) {
       Log.w(
           TAG,
-          "Failed to very signature of Witness Message Signature id="
+          "Failed to verify signature of Witness Message Signature id="
               + messageId
               + ", signature="
               + signature);

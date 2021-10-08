@@ -62,12 +62,9 @@ public final class Publish extends Query {
   @Override
   public String toString() {
     return "Publish{"
-        + "id="
-        + getRequestId()
-        + "channel="
-        + getChannel()
-        + "message="
-        + message
+        + "id=" + getRequestId()
+        + ", channel='" + getChannel() + '\''
+        + ", message=" + message
         + '}';
   }
 }

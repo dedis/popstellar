@@ -52,12 +52,9 @@ public abstract class Query extends Message {
   public String toString() {
     return getClass().getSimpleName()
         + '{'
-        + "id="
-        + id
-        + "channel="
-        + getChannel()
-        + "method="
-        + getMethod()
+        + "id=" + id
+        + ", channel='" + getChannel() + '\''
+        + ", method='" + getMethod() + '\''
         + '}';
   }
 }

@@ -62,6 +62,6 @@ public final class Broadcast extends Message {
 
   @Override
   public String toString() {
-    return "Broadcast{" + "channel=" + getChannel() + "method=" + getMethod() + '}';
+    return "Broadcast{" + "channel='" + getChannel() + "', method='" + getMethod() + "'}";
   }
 }

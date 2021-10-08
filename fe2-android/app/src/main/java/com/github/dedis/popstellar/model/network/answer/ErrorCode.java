@@ -54,6 +54,6 @@ public final class ErrorCode {
 
   @Override
   public String toString() {
-    return "ErrorCode{code=" + code + ", description='" + description + '}';
+    return "ErrorCode{code=" + code + ", description='" + description + "'}";
   }
 }
