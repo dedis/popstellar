@@ -342,3 +342,5 @@ A simple way to have a coherent style across the codebase is to use the IDE feat
 
 Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
 
+Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
+
