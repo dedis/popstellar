@@ -322,6 +322,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    * <p>Publish a GeneralMessage containing ElectionSetup data.
    *
    * @param name          the name of the election
+   * @param creation      the creation time of the election
    * @param start         the start time of the election
    * @param end           the end time of the election
    * @param votingMethod  the type of voting method (e.g Plurality)
@@ -329,7 +330,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    * @param question      the question associated to the election
    * @return the id of the newly created election event, null if fails to create the event
    */
-  public String createNewElection(String name, long start, long end, List<String> votingMethod,
+  public String createNewElection(String name, long creation, long start, long end, List<String> votingMethod,
       List<Boolean> writeIn, List<List<String>> ballotOptions, List<String> question) {
     Log.d(TAG, "creating a new election with name " + name);
 
@@ -343,7 +344,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     ElectionSetup electionSetup;
     String laoId = channel.substring(6);
 
-    electionSetup = new ElectionSetup(name, start, end, votingMethod, writeIn, ballotOptions,
+    electionSetup = new ElectionSetup(name, creation, start, end, votingMethod, writeIn, ballotOptions,
         question, laoId);
 
     try {
@@ -393,12 +394,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    *
    * @param title         the title of the roll call
    * @param description   the description of the roll call, can be empty
+   * @param creation      the creation time of the roll call
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd   the proposed end time of the roll call
    * @param open          true if we want to directly open the roll call
    * @return the id of the newly created roll call event, null if fails to create the event
    */
-  public void createNewRollCall(String title, String description, long proposedStart,
+  public void createNewRollCall(String title, String description, long creation, long proposedStart,
       long proposedEnd, boolean open) {
     Log.d(TAG, "creating a new roll call with title " + title);
     Lao lao = getCurrentLaoValue();
@@ -409,8 +411,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String channel = lao.getChannel();
     CreateRollCall createRollCall;
     String laoId = channel.substring(6); // removing /root/ prefix
-    createRollCall = new CreateRollCall(title, proposedStart, proposedEnd, "Lausanne", description,
-        laoId);
+    createRollCall = new CreateRollCall(title, creation, proposedStart, proposedEnd, "Lausanne",
+        description, laoId);
 
     try {
 
