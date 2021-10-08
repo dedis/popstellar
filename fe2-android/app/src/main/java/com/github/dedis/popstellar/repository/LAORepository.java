@@ -96,7 +96,7 @@ public class LAORepository {
   private Observable<GenericMessage> upstream;
 
   // Disposable of with the lifetime of an LAORepository instance
-  private final Disposable disposable;
+  private final Disposable disposables;
 
   private LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
@@ -127,7 +127,7 @@ public class LAORepository {
     this.schedulerProvider = schedulerProvider;
 
     // subscribe to incoming messages and the unprocessed message queue
-    disposable = new CompositeDisposable(
+    disposables = new CompositeDisposable(
             subscribeToUpstream(),
             subscribeToWebsocketEvents()
     );
@@ -374,6 +374,6 @@ public class LAORepository {
   }
 
   private void dispose() {
-    disposable.dispose();
+    disposables.dispose();
   }
 }

@@ -82,7 +82,7 @@ public class HomeViewModel extends AndroidViewModel
   private final AndroidKeysetManager mKeysetManager;
   private Wallet wallet;
 
-  private CompositeDisposable disposable = new CompositeDisposable();
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public HomeViewModel(
       @NonNull Application application,
@@ -122,7 +122,7 @@ public class HomeViewModel extends AndroidViewModel
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     String channel = "/root/" + barcode.rawValue;
-    disposable.add(
+    disposables.add(
             mLAORepository
                     .sendSubscribe(channel)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -152,10 +152,9 @@ public class HomeViewModel extends AndroidViewModel
    */
   @Override
   protected void onCleared() {
-    if (disposable != null) {
-      disposable.dispose();
-    }
     super.onCleared();
+
+    disposables.dispose();
   }
 
   /**
@@ -177,7 +176,7 @@ public class HomeViewModel extends AndroidViewModel
 
       MessageGeneral msg = new MessageGeneral(organizerBuf, createLao, signer, mGson);
 
-      disposable.add(
+      disposables.add(
               mLAORepository
                       .sendPublish("/root", msg)
                       .observeOn(AndroidSchedulers.mainThread())
