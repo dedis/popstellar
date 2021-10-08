@@ -264,7 +264,7 @@ If you rather want to make a copy of branch `x` (e.g. a branch that is currently
 
 ```bash
 git checkout <x>
-git chekcout -b <branchName>
+git checkout -b <branchName>
 ```
 
 ---
@@ -274,7 +274,7 @@ git chekcout -b <branchName>
 When pushing changes, you first want to **commit** the changes you've applied using
 
 ```bash
-git add -A									# add all modified and new files to the commit
+git add <fileName>					# add file <fileName> to the commit
 git commit -m"<message>"    # add a title to the commit (switch <message> for the actual message)
 
 ## Note: You may also add files separately using
@@ -284,7 +284,7 @@ git add <fileName>
 git commit -am"<message>"
 
 ## Note: You may also set a title and description for a specific commit using your favorite IDE (obviously doom emacs ^^). Then save and quit
-git add -A
+git add <fileName>
 git commit
 ```
 
@@ -293,6 +293,8 @@ git commit
 </div>
 
 :information_source: Do not create a commit with 2.000 lines of codes! Short commit with meaningful titles/description are way better and way easier to review
+
+:information_source: There are faster ways to add multiple files in the commit such as `git commit <-u|.>`. You can check the corresponding man page for more information 
 
 You then finally want to pull/push the changes
 
@@ -337,4 +339,6 @@ The best way to "intercept" a `GraphMessage` being processed in the graph is to 
 ## 6.	Coding Styles
 
 A simple way to have a coherent style across the codebase is to use the IDE features of "code cleanup". For example, in IntelliJ, click on the `src/main/scala` folder and then on `Code -> Reformat Code`. You can then check "include subdirectories", "optimize imports", and "cleanup code" checkbox options. Be careful to not apply these changes to `src/test` folder as it transforms the scalatest syntax into a mess difficult to understand.
+
+Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
 
