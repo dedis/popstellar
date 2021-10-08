@@ -61,7 +61,6 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
 
 
   /*
@@ -282,10 +281,6 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenSocialMediaEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getSendNewChirpEvent() {
-    return mSendNewChirpEvent;
-  }
-
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -347,10 +342,6 @@ public class HomeViewModel extends AndroidViewModel
 
   public void cancelNewLao() {
     mCancelNewLaoEvent.setValue(new SingleEvent<>(true));
-  }
-
-  public void sendNewChirp() {
-    mSendNewChirpEvent.setValue(new SingleEvent<>(true));
   }
 
   public void cancelConnect() {
