@@ -53,7 +53,7 @@ type Channel struct {
 
 	attendees map[string]struct{}
 
-	consensus consensus.Channel
+	consensus *consensus.Channel
 	log       zerolog.Logger
 }
 
@@ -65,7 +65,11 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
 
-	consensusID := fmt.Sprintf("%s/consensus", channelID)
+	consensusPath := fmt.Sprintf("%s/consensus", channelID)
+
+	consensusCh := consensus.NewChannel(consensusPath, hub, log)
+
+	hub.RegisterNewChannel(consensusPath, &consensusCh)
 
 	return &Channel{
 		channelID: channelID,
@@ -74,7 +78,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
-		consensus: consensus.NewChannel(consensusID, hub, log),
+		consensus: &consensusCh,
 		log:       log,
 	}
 }
