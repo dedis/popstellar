@@ -35,6 +35,7 @@ public class Consensus extends Event {
     this.id = generateConsensusId(creation, key.getType(), key.getId(), key.getProperty(), value);
     this.key = key;
     this.value = value;
+    this.creation = creation;
 
     this.isAccepted = false;
     this.acceptorsResponses = new HashMap<>();

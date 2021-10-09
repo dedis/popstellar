@@ -10,7 +10,7 @@
     <LinearLayout
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text"
+      android:layout_marginHorizontal="@dimen/margin_text_small"
       android:orientation="vertical">
 
       <TextView
@@ -27,10 +27,10 @@
         android:textSize="@dimen/size_body" />
 
       <TextView
-        android:id="@+id/consensus_object_id"
+        android:id="@+id/consensus_start"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/size_small" />
+        android:textSize="@dimen/size_body" />
 
     </LinearLayout>
 

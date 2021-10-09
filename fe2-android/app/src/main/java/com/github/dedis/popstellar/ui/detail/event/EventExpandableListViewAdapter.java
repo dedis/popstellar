@@ -447,10 +447,9 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     ConsensusEventLayoutBinding binding = layoutEventBinding.includeLayoutConsensus;
 
-    //TODO add more info to display
     binding.consensusTitle.setText("Consensus");
     binding.consensusType.setText("Type: " + consensus.getKey().getType());
-    //binding.consensusObjectId.setText("id: " + consensus.getObjId());
+    binding.consensusStart.setText("Start: " + DATE_FORMAT.format(new Date(consensus.getStartTimestamp() * 1000L)));
 
     boolean isAcceptor = viewModel.isOrganizer().getValue() || viewModel.isWitness().getValue();
     boolean isVoteOpen = isAcceptor && consensus.getState() == EventState.OPENED;

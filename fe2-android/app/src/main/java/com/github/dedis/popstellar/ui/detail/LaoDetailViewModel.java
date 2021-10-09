@@ -42,7 +42,6 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.github.dedis.popstellar.utility.security.Signature;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -494,9 +493,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       Log.d(TAG, PUBLISH_MESSAGE);
       MessageGeneral msg = new MessageGeneral(sender, createConsensus, signer, mGson);
 
-      // TODO remove (only for testing)
-      MessageHandler.handleMessage(mLAORepository, channel+"/consensus", msg);
-
       Disposable disposable =
           mLAORepository
               .sendPublish(channel, msg)
@@ -542,9 +538,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, consensusVote, signer, mGson);
-
-      // TODO remove (only for testing)
-      MessageHandler.handleMessage(mLAORepository, lao.getChannel()+"/consensus", msg);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
