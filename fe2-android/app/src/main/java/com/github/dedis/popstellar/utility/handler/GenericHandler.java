@@ -3,16 +3,16 @@ package com.github.dedis.popstellar.utility.handler;
 import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
 
 import android.util.Log;
+import com.github.dedis.popstellar.model.network.GenericMessage;
+import com.github.dedis.popstellar.model.network.answer.Error;
+import com.github.dedis.popstellar.model.network.answer.ResultMessages;
+import com.github.dedis.popstellar.model.network.method.Broadcast;
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Error;
-import com.github.dedis.popstellar.model.network.answer.Result;
-import com.github.dedis.popstellar.model.network.method.Broadcast;
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import io.reactivex.subjects.Subject;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -96,8 +96,11 @@ public class GenericHandler {
     String channel = catchupRequests.get(id);
     catchupRequests.remove(id);
 
-    List<MessageGeneral> messages = ((Result) genericMessage).getMessages()
-        .orElse(new ArrayList<>());
+    List<MessageGeneral> messages = Collections.emptyList();
+    if (genericMessage instanceof ResultMessages) {
+      messages = ((ResultMessages) genericMessage).getMessages();
+    }
+
     Log.d(TAG, "messages length: " + messages.size());
     // Handle all received messages from the catchup
     for (MessageGeneral msg : messages) {
