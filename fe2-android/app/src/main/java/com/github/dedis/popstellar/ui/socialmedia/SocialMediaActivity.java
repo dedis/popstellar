@@ -15,7 +15,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class SocialMediaActivity extends AppCompatActivity {
-    
+
     private SocialMediaViewModel mViewModel;
 
     @Override
