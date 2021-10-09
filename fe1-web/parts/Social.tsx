@@ -1,11 +1,11 @@
 import React from 'react';
 import {
+  Button,
   StyleSheet, TextInput, TextStyle, View, ViewStyle,
 } from 'react-native';
 
 import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
-import WideButtonView from 'components/WideButtonView';
 
 const maxChirpChars = 280;
 
@@ -50,7 +50,7 @@ const Social = () => (
         onChange={onChangeText}
       />
       <TextBlock text={charsLeft.toString()} />
-      <WideButtonView
+      <Button
         title={STRINGS.button_publish}
         onPress={publishChirp}
       />
