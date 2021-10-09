@@ -25,7 +25,6 @@ public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeseria
     JsonObject root = json.getAsJsonObject();
 
     int id = root.get("id").getAsInt();
-    Result result = new Result(id);
 
     JsonElement resultElement = root.get("result");
     if (resultElement.isJsonPrimitive()) {
