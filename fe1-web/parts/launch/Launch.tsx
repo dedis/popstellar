@@ -52,7 +52,7 @@ const Launch = ({ navigation }: IPropTypes) => {
       return;
     }
 
-    getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
+    getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client'); // TODO: Have to change that
     requestCreateLao(laoName)
       .then((channel: Channel) => subscribeToChannel(channel)
         .then(() => {
@@ -65,7 +65,7 @@ const Launch = ({ navigation }: IPropTypes) => {
   };
 
   const onTestOpenConnection = () => {
-    const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
+    const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client'); // TODO: Have to change that
     nc.setRpcHandler(() => {
       console.info('Using custom test rpc handler: does nothing');
     });
