@@ -10,7 +10,7 @@ import WideButtonView from 'components/WideButtonView';
 import {
   LaoEventType, RollCall, PopToken, Wallet,
 } from 'model/objects';
-import CopiableTextBlock from 'components/CopiableTextBlock';
+import CopiableTextInput from '../../components/CopiableTextInput';
 import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
@@ -125,11 +125,11 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       <View style={styleContainer.centered}>
         <View style={styles.smallPadding} />
         <TextBlock bold text={STRINGS.lao_id} />
-        <CopiableTextBlock text={lao.name} visibility />
+        <CopiableTextInput text={lao.name} visibility />
         <TextBlock bold text={STRINGS.roll_call_name} />
         <TextBlock text={rollCall.name} visibility />
         <View style={styles.smallPadding} />
-        <CopiableTextBlock text={tokenPk.valueOf()} visibility={showPublicKey} />
+        <CopiableTextInput text={tokenPk.valueOf()} visibility={showPublicKey} />
         <View style={styles.smallPadding} />
         <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey} />
       </View>

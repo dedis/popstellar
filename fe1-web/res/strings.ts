@@ -162,6 +162,7 @@ const STRINGS = {
   import_seed_button: 'I OWN A SEED',
   type_seed_info: 'Type the 12 word seed',
   show_seed_info: 'This is the only backup seed for your PoP tokens - store it securely',
+  copy_to_clipboard: 'Copy to clipboard',
   type_seed_example: 'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol',
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
