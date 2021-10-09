@@ -10,12 +10,12 @@ import WideButtonView from 'components/WideButtonView';
 import {
   LaoEventType, RollCall, PopToken, Wallet,
 } from 'model/objects';
-import CopiableTextInput from '../../components/CopiableTextInput';
 import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import { makeEventByTypeSelector, makeLaosMap } from 'store';
 import { useSelector } from 'react-redux';
+import CopiableTextInput from '../../components/CopiableTextInput';
 
 const styles = StyleSheet.create({
   smallPadding: {
