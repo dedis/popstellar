@@ -67,10 +67,10 @@ public class ElectionStartAcceptorsFragment extends Fragment {
     Consensus consensus = laoDetailViewModel.getCurrentConsensus();
     String proposer = consensus.getProposer();
 
-    Optional<Election> electionOpt = lao.getElection(consensus.getObjId());
+    Optional<Election> electionOpt = lao.getElection(consensus.getKey().getId());
     long electionStart = 0;
     if (!electionOpt.isPresent()) {
-      Log.d(TAG, "election not found : "+consensus.getObjId());
+      Log.d(TAG, "election not found : "+consensus.getKey().getId());
     } else {
       Election election = electionOpt.get();
       electionStart = election.getStartTimestamp() * 1000L;

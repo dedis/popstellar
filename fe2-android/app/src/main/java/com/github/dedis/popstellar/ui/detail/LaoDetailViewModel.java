@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusVote;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.CreateConsensus;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.LearnConsensus;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -532,7 +533,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       return;
     }
 
-    ConsensusVote consensusVote = new ConsensusVote(consensus.getId(), accept);
+    ConsensusVote consensusVote = new ConsensusVote(consensus.getMessageId(), accept);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -568,6 +569,49 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                     openLaoDetail();
                   },
                   throwable -> Log.d(TAG, "timed out waiting for result on consensus/vote", throwable));
+
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
+  }
+
+  public void sendConsensusLearn() {
+    Consensus consensus = mCurrentConsensus.getValue();
+    if (consensus == null) {
+      Log.d(TAG, "failed to retrieve current consensus");
+      return;
+    }
+    Log.d(TAG, "sending a consensus learn for : " + consensus.getId());
+
+    List<String> acceptorsMessageIds = new ArrayList<>(consensus.getAcceptorsToMessageId().values());
+    LearnConsensus learnConsensus = new LearnConsensus(consensus.getMessageId(), acceptorsMessageIds);
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, learnConsensus, signer, mGson);
+
+      Log.d(TAG, PUBLISH_MESSAGE);
+      Disposable disposable =
+          mLAORepository
+              .sendPublish(consensus.getChannel(), msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "sent a consensus learn successfully");
+                    } else {
+                      Log.d(TAG, "failed to send the learn");
+                    }
+                    openLaoDetail();
+                  },
+                  throwable -> Log.d(TAG, "timed out waiting for result on consensus/learn", throwable));
 
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {

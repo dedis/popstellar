@@ -66,10 +66,7 @@ public class ConsensusStatusFragment extends Fragment {
 
     binding.confirmButton.setEnabled(
         consensus.getState() == EventState.RESULTS_READY && consensus.isAccepted());
-    binding.confirmButton.setOnClickListener(
-        v -> {
-          /** TODO send learn message * */
-        });
+    binding.confirmButton.setOnClickListener(v -> mLaoDetailViewModel.sendConsensusLearn());
     binding
         .backLayout
         .findViewById(R.id.tab_back)

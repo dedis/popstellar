@@ -449,7 +449,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     //TODO add more info to display
     binding.consensusTitle.setText("Consensus");
-    binding.consensusType.setText("Type: " + consensus.getConsensusType());
+    binding.consensusType.setText("Type: " + consensus.getKey().getType());
     //binding.consensusObjectId.setText("id: " + consensus.getObjId());
 
     boolean isAcceptor = viewModel.isOrganizer().getValue() || viewModel.isWitness().getValue();
