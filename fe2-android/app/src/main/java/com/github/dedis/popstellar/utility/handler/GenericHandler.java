@@ -5,6 +5,7 @@ import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleM
 import android.util.Log;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Error;
+import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.model.network.method.Broadcast;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -83,13 +84,13 @@ public class GenericHandler {
    *
    * @param laoRepository   the repository to access the LAOs
    * @param id              the id of the catchup request
-   * @param genericMessage  the generic message received
+   * @param result          the result message received
    * @param catchupRequests the pending catchup requests
    * @param unprocessed     the unprocessed messages
    */
   public static void handleCatchup(
       LAORepository laoRepository, int id,
-      GenericMessage genericMessage,
+      Result result,
       Map<Integer, String> catchupRequests,
       Subject<GenericMessage> unprocessed) {
     Log.d(TAG, "got a catchup request in response to request id " + id);
@@ -97,8 +98,8 @@ public class GenericHandler {
     catchupRequests.remove(id);
 
     List<MessageGeneral> messages = Collections.emptyList();
-    if (genericMessage instanceof ResultMessages) {
-      messages = ((ResultMessages) genericMessage).getMessages();
+    if (result instanceof ResultMessages) {
+      messages = ((ResultMessages) result).getMessages();
     }
 
     Log.d(TAG, "messages length: " + messages.size());
@@ -106,7 +107,7 @@ public class GenericHandler {
     for (MessageGeneral msg : messages) {
       boolean enqueue = handleMessage(laoRepository, channel, msg);
       if (enqueue) {
-        unprocessed.onNext(genericMessage);
+        unprocessed.onNext(result);
       }
     }
   }

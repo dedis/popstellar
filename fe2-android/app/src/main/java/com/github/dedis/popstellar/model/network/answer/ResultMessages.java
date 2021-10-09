@@ -8,6 +8,7 @@ import java.util.Objects;
 public final class ResultMessages extends Result {
 
   private final List<MessageGeneral> messages;
+
   /**
    * Constructor of a ResultMessages
    *
