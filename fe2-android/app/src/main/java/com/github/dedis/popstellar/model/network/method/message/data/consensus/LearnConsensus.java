@@ -4,25 +4,25 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
-import java.util.Set;
+import java.util.List;
 
-public class LearnConsensus extends Data {
+public final class LearnConsensus extends Data {
 
   @SerializedName("message_id")
   private final String messageId;
-  private final Set<String> acceptors;
 
-  public LearnConsensus(String messageId, Set<String> acceptors) {
+  private final List<String> acceptors;
+
+  public LearnConsensus(String messageId, List<String> acceptors) {
     this.messageId = messageId;
     this.acceptors = acceptors;
   }
-
 
   public String getMessageId() {
     return messageId;
   }
 
-  public Set<String> getAcceptors() {
+  public List<String> getAcceptors() {
     return acceptors;
   }
 
@@ -36,4 +36,26 @@ public class LearnConsensus extends Data {
     return Action.PHASE_1_LEARN.getAction();
   }
 
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(messageId, acceptors);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    LearnConsensus that = (LearnConsensus) o;
+
+    return messageId.equals(that.messageId) && acceptors.equals(that.acceptors);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("LearnConsensus{message_id='%s', acceptors=%s}", messageId, acceptors);
+  }
 }

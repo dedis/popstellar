@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
@@ -10,12 +11,11 @@ import java.util.Set;
 
 public class Consensus extends Event {
 
+  private String messageId;
   private String channel;
   private String id;
 
-  private String type;
-  private String objId;
-  private String property;
+  private ConsensusKey key;
   private Object value;
 
   private long creation;
@@ -26,21 +26,28 @@ public class Consensus extends Event {
 
   private String proposer;
   private Set<String> acceptors;
-  private Map<String, Boolean> acceptorsResponses;
+  private Map<String, Boolean> acceptorsResponses;  // map the public key of acceptors response
+  private Map<String, String> acceptorsToMessageId; // map the public key of acceptors to the id of their message
 
 
 
-  public Consensus(String type, String objId, long creation, String property, Object value) {
-    this.id = generateConsensusId(creation, type, objId, property, value);
-    this.type = type;
-    this.objId = objId;
-    this.property = property;
+  public Consensus(long creation, ConsensusKey key, Object value) {
+    this.id = generateConsensusId(creation, key.getType(), key.getId(), key.getProperty(), value);
+    this.key = key;
     this.value = value;
 
     this.isAccepted = false;
     this.acceptorsResponses = new HashMap<>();
+    this.acceptorsToMessageId = new HashMap<>();
   }
 
+  public String getMessageId() {
+    return messageId;
+  }
+
+  public void setMessageId(String messageId) {
+    this.messageId = messageId;
+  }
 
   public String getChannel() {
     return channel;
@@ -64,37 +71,15 @@ public class Consensus extends Event {
     this.id = id;
   }
 
-  public String getConsensusType() {
-    return type;
+  public ConsensusKey getKey() {
+    return key;
   }
 
-  public void setType(String type) {
-    if (type == null) {
-      throw new IllegalArgumentException("consensus type shouldn't be null");
+  public void setKey(ConsensusKey key) {
+    if (key == null) {
+      throw new IllegalArgumentException("consensus key shouldn't be null");
     }
-    this.type = type;
-  }
-
-  public String getObjId() {
-    return objId;
-  }
-
-  public void setObjId(String objId) {
-    if (objId == null) {
-      throw new IllegalArgumentException("consensus object id shouldn't be null");
-    }
-    this.objId = objId;
-  }
-
-  public String getProperty() {
-    return property;
-  }
-
-  public void setProperty(String property) {
-    if (property == null) {
-      throw new IllegalArgumentException("consensus property shouldn't be null");
-    }
-    this.property = property;
+    this.key = key;
   }
 
   public Object getValue() {
@@ -157,15 +142,20 @@ public class Consensus extends Event {
     return acceptorsResponses;
   }
 
-  public void setAcceptorsResponses(Map<String, Boolean> acceptorsResponses) {
-    this.acceptorsResponses = acceptorsResponses;
+  public Map<String, String> getAcceptorsToMessageId() {
+    return acceptorsToMessageId;
   }
 
-  public void putAcceptorResponse(String acceptor, boolean accept) {
+
+  public void putAcceptorResponse(String acceptor, String messageId, boolean accept) {
     if (acceptor == null) {
       throw new IllegalArgumentException("Acceptor public key cannot be null.");
     }
+    if (messageId == null) {
+      throw new IllegalArgumentException("Message id cannot be null.");
+    }
     acceptorsResponses.put(acceptor, accept);
+    acceptorsToMessageId.put(acceptor, messageId);
   }
 
   public boolean isAccepted() {

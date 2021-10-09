@@ -6,7 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.google.gson.annotations.SerializedName;
 
-public class CreateConsensus extends Data {
+public final class CreateConsensus extends Data {
 
   @SerializedName("instance_id")
   private final String instanceId;
@@ -14,9 +14,7 @@ public class CreateConsensus extends Data {
   @SerializedName("created_at")
   private final long creation;
 
-  private final String objId;
-  private final String type;
-  private final String property;
+  private final ConsensusKey key;
 
   private final Object value;
 
@@ -24,10 +22,7 @@ public class CreateConsensus extends Data {
     this.instanceId =
         Consensus.generateConsensusId(creation, type, objId, property, String.valueOf(value));
     this.creation = creation;
-
-    this.objId = objId;
-    this.type = type;
-    this.property = property;
+    this.key = new ConsensusKey(type, objId, property);
     this.value = value;
   }
 
@@ -39,16 +34,8 @@ public class CreateConsensus extends Data {
     return creation;
   }
 
-  public String getObjId() {
-    return objId;
-  }
-
-  public String getType() {
-    return type;
-  }
-
-  public String getProperty() {
-    return property;
+  public ConsensusKey getKey() {
+    return key;
   }
 
   public Object getValue() {
@@ -67,7 +54,7 @@ public class CreateConsensus extends Data {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(instanceId, creation, objId, type, property, value);
+    return java.util.Objects.hash(instanceId, creation, key, value);
   }
 
   @Override
@@ -82,9 +69,14 @@ public class CreateConsensus extends Data {
 
     return instanceId.equals(that.instanceId)
         && creation == that.creation
-        && objId.equals(that.objId)
-        && type.equals(that.type)
-        && property.equals(that.property)
+        && key.equals(that.key)
         && java.util.Objects.equals(value, that.value);
+  }
+
+  @Override
+  public String toString() {
+    return String.format(
+        "CreateConsensus{instance_id='%s', created_at=%s, key='%s', value='%s'}",
+        instanceId, creation, key, value);
   }
 }
