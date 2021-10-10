@@ -1,7 +1,5 @@
 package messagedata
 
-import "golang.org/x/xerrors"
-
 // LaoUpdate defines a message data
 type LaoUpdate struct {
 	Object string `json:"object"`
@@ -16,14 +14,9 @@ type LaoUpdate struct {
 }
 
 // Verifiy that the LaoUpdate message is valid
-func (message LaoUpdate) Verifiy(originLaoID string) error {
+func (message LaoUpdate) Verifiy() error {
 
-	laoPathID := RootPrefix + message.ID
-
-	// Check that the message has the ID of the correct channel
-	if laoPathID != originLaoID {
-		return xerrors.Errorf("invalid LaoUpdate message: invalid ID")
-	}
+	// TODO verify LaoUpdate message once consensus is done
 
 	return nil
 }

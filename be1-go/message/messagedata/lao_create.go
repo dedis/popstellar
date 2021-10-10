@@ -32,7 +32,7 @@ func (message LaoCreate) Verify() error {
 	testLaoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
 	if message.ID != testLaoID {
-		return xerrors.Errorf("invalid LaoCreate message: invalid ID")
+		return xerrors.Errorf("ID %s do not correspond with message data", message.ID)
 	}
 
 	return nil

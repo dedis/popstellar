@@ -1,7 +1,5 @@
 package messagedata
 
-import "golang.org/x/xerrors"
-
 // LaoState defines a message data
 type LaoState struct {
 	Object string `json:"object"`
@@ -25,17 +23,4 @@ type LaoState struct {
 type ModificationSignature struct {
 	Witness   string `json:"witness"`
 	Signature string `json:"signature"`
-}
-
-// Verify that a LaoState message is valid
-func (message LaoState) Verify(originLaoID string) error {
-
-	laoPathID := RootPrefix + message.ID
-
-	// Check that the message has the ID of the correct channel
-	if laoPathID != originLaoID {
-		return xerrors.Errorf("invalid LaoState message: invalid ID")
-	}
-
-	return nil
 }
