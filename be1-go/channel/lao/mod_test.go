@@ -152,3 +152,79 @@ func (h *fakeHub) GetPubkey() kyber.Point {
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
+
+var nolog = zerolog.New(io.Discard)
+var suite = crypto.Suite
+func generateKeyPair(t *testing.T) keypair {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Pick(suite.RandomStream())
+	point = point.Mul(secret, point)
+
+	pkbuf, err := point.MarshalBinary()
+	require.NoError(t, err)
+
+	return keypair{point, pkbuf, secret}
+}
+
+
+type fakeHub struct {
+	messageChan chan socket.IncomingMessage
+
+	sync.RWMutex
+	channelByID map[string]channel.Channel
+
+	closedSockets chan string
+
+	public kyber.Point
+
+	schemaValidator *validation.SchemaValidator
+
+	stop chan struct{}
+
+	workers *semaphore.Weighted
+
+	log zerolog.Logger
+
+	laoFac channel.LaoFactory
+}
+// NewHub returns a Organizer Hub.
+func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+
+	schemaValidator, err := validation.NewSchemaValidator()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
+	}
+
+	log = log.With().Str("role", "base hub").Logger()
+
+	hub := fakeHub{
+		messageChan:     make(chan socket.IncomingMessage),
+		channelByID:     make(map[string]channel.Channel),
+		closedSockets:   make(chan string),
+		public:          public,
+		schemaValidator: schemaValidator,
+		stop:            make(chan struct{}),
+		workers:         semaphore.NewWeighted(10),
+		log:             log,
+		laoFac:          laoFac,
+	}
+
+
+	return &hub, nil
+}
+
+
+func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+	h.Lock()
+	h.channelByID[channeID] = channel
+	fmt.Printf("cccc")
+	h.Unlock()
+}
+
+func (h *fakeHub) GetPubkey() kyber.Point {
+	return h.public
+}
+
+func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
+	return *h.schemaValidator
+}
