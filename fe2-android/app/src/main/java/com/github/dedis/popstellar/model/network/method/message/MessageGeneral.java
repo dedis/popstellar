@@ -144,7 +144,7 @@ public final class MessageGeneral {
     return "MessageGeneral{"
         + "sender=" + getSender() + '\''
         + ", data=" + getData()
-        + ", signature=" + getSignature() + '\''
+        + ", signature='" + getSignature() + '\''
         + ", messageId='" + getMessageId() + '\''
         + ", witnessSignatures=" + Arrays.toString(witnessSignatures.toArray())
         + '}';

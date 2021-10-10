@@ -43,6 +43,6 @@ public final class Result extends Answer {
 
   @Override
   public String toString() {
-    return "Result{" + "general='" + general + "', messages='" + messages + '}';
+    return "Result{" + "general='" + general + "', messages='" + messages + "'}";
   }
 }
