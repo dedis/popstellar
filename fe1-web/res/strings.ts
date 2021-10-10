@@ -29,7 +29,7 @@ const STRINGS = {
   witness_navigation_tab_video: 'Witness Video',
 
   /* --- Launch Navigation Strings --- */
-  launch_navigation_tab_main: 'Launch',
+  launch_navigation_tab_main: 'Launch home',
   launch_navigation_tab_confirm: 'Launch confirm',
 
   /* --- Organizer Navigation Strings --- */

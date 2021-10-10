@@ -99,6 +99,10 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
     }
   };
 
+  const selectText = (e) => {
+    e.target.select();
+  };
+
   return (
     <View style={styleContainer.flex}>
       <View style={styles.viewCenter}>
@@ -108,6 +112,7 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
           placeholder={STRINGS.connect_server_uri}
           onChangeText={(input: string) => setServerUrl(input)}
           defaultValue={serverUrl}
+          onClick={selectText}
         />
         <TextInput
           style={styles.textInput}

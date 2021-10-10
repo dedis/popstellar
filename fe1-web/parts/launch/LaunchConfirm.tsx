@@ -8,7 +8,6 @@ import STRINGS from '../../res/strings';
 import styleContainer from '../../styles/stylesheets/container';
 import TextBlock from '../../components/TextBlock';
 import WideButtonView from '../../components/WideButtonView';
-import ConnectConfirm, { connectTo, validateLaoId } from '../connect/ConnectConfirm';
 import { Spacing, Typography } from '../../styles';
 import { getNetworkManager, requestCreateLao } from '../../network';
 import { Channel } from '../../model/objects';
@@ -32,28 +31,18 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const LaunchConfirm = ({ navigation, route }: IPropTypes, laoName: string) => {
+const LaunchConfirm = ({ navigation }: IPropTypes) => {
   const initialAddress = 'ws://127.0.0.1:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(initialAddress);
-  const [laoId, setLaoId] = useState('');
+  const laoName = localStorage.getItem('laoName');
 
-  if (route.params && laoId === '') {
-    setLaoId(route.params.laoIdIn);
-    console.log(laoId);
+  if (!laoName) {
+    return;
   }
 
   const onButtonConfirm = async () => {
-    if (!connectTo(serverUrl)) {
-      return;
-    }
-
-    const channel = validateLaoId(laoId);
-    if (channel === undefined) {
-      return;
-    }
-
     getNetworkManager().connect(serverUrl);
-    requestCreateLao(laoName)
+    requestCreateLao(localStorage.getItem('laoName')!)
       .then((channel: Channel) => subscribeToChannel(channel)
         .then(() => {
           // navigate to the newly created LAO
@@ -62,6 +51,10 @@ const LaunchConfirm = ({ navigation, route }: IPropTypes, laoName: string) => {
       .catch(
         ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
       );
+  };
+
+  const selectText = (e) => {
+    e.target.select();
   };
 
   return (
@@ -73,6 +66,7 @@ const LaunchConfirm = ({ navigation, route }: IPropTypes, laoName: string) => {
           placeholder={STRINGS.connect_server_uri}
           onChangeText={(input: string) => setServerUrl(input)}
           defaultValue={serverUrl}
+          onClick={selectText}
         />
       </View>
       <WideButtonView
@@ -95,4 +89,4 @@ LaunchConfirm.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-export default ConnectConfirm;
+export default LaunchConfirm;

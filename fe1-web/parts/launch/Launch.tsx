@@ -5,10 +5,10 @@ import {
 import PropTypes from 'prop-types';
 
 import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
-import { getNetworkManager, requestCreateLao } from 'network';
+import { getNetworkManager } from 'network';
 
 import {
-  Hash, Lao, Timestamp, Channel,
+  Hash, Lao, Timestamp,
 } from 'model/objects';
 
 import WideButtonView from 'components/WideButtonView';
@@ -18,7 +18,6 @@ import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
-import { subscribeToChannel } from 'network/CommunicationApi';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -47,13 +46,13 @@ const styles = StyleSheet.create({
 const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
 
-  /* const onButtonLaunchPress = (laoName: string) => {
+  const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
       return;
     }
-
+    localStorage.setItem('laoName', laoName);
     navigation.navigate(STRINGS.launch_navigation_tab_confirm);
-
+    /*
     getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client'); // TODO: Have to change that
     requestCreateLao(laoName)
       .then((channel: Channel) => subscribeToChannel(channel)
@@ -63,11 +62,11 @@ const Launch = ({ navigation }: IPropTypes) => {
         }))
       .catch(
         ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
-      );
-  }; */
+      ); */
+  };
 
   const onTestOpenConnection = () => {
-    const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client'); // TODO: Have to change that
+    const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
     nc.setRpcHandler(() => {
       console.info('Using custom test rpc handler: does nothing');
     });
@@ -103,7 +102,7 @@ const Launch = ({ navigation }: IPropTypes) => {
       <View style={styles.viewBottom}>
         <WideButtonView
           title={`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}
-          onPress={navigation.navigate(STRINGS.launch_navigation_tab_confirm)}
+          onPress={onButtonLaunchPress}
         />
         <WideButtonView
           title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
