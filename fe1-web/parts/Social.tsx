@@ -1,13 +1,12 @@
 import React from 'react';
 import {
-  Button,
-  StyleSheet, TextInput, TextStyle, View, ViewStyle,
+  Button, StyleSheet, TextInput, TextStyle, View, ViewStyle,
 } from 'react-native';
 
 import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
 
-const maxChirpChars = 280;
+const MAX_CHIRP_CHARS = 280;
 
 /**
  * UI for the Social Media component
@@ -29,14 +28,14 @@ const styles = StyleSheet.create({
 });
 
 let charCounter = 0;
-let charsLeft = maxChirpChars;
+let charsLeft = MAX_CHIRP_CHARS;
 
 // TODO: Implement this method, so that it sends a test chirp to the network
 const publishChirp = () => {};
 
 const onChangeText = (text: String) => {
   charCounter = text.length;
-  charsLeft = maxChirpChars - charCounter;
+  charsLeft = MAX_CHIRP_CHARS - charCounter;
 };
 
 const Social = () => (
