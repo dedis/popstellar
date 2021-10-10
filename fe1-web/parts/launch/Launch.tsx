@@ -47,10 +47,12 @@ const styles = StyleSheet.create({
 const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
 
-  const onButtonLaunchPress = (laoName: string) => {
+  /* const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
       return;
     }
+
+    navigation.navigate(STRINGS.launch_navigation_tab_confirm);
 
     getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client'); // TODO: Have to change that
     requestCreateLao(laoName)
@@ -62,7 +64,7 @@ const Launch = ({ navigation }: IPropTypes) => {
       .catch(
         ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
       );
-  };
+  }; */
 
   const onTestOpenConnection = () => {
     const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client'); // TODO: Have to change that
@@ -101,7 +103,7 @@ const Launch = ({ navigation }: IPropTypes) => {
       <View style={styles.viewBottom}>
         <WideButtonView
           title={`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}
-          onPress={() => onButtonLaunchPress(inputLaoName)}
+          onPress={navigation.navigate(STRINGS.launch_navigation_tab_confirm)}
         />
         <WideButtonView
           title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"

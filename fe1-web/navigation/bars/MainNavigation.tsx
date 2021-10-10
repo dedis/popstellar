@@ -5,9 +5,9 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import STRINGS from 'res/strings';
 
 import Home from 'parts/Home';
-import Launch from 'parts/launch/Launch';
 import ConnectNavigation from 'navigation/bars/ConnectNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
+import LaunchNavigation from './LaunchNavigation';
 
 /**
  * The main tab navigation component
@@ -43,7 +43,7 @@ export default function MainNavigation() {
       />
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_launch}
-        component={Launch}
+        component={LaunchNavigation}
       />
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_wallet}

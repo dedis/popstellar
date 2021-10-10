@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import {
   StyleSheet, TextInput, TextStyle, View, ViewStyle,
 } from 'react-native';
+import PropTypes from 'prop-types';
 import { subscribeToChannel } from '../../network/CommunicationApi';
 import STRINGS from '../../res/strings';
 import styleContainer from '../../styles/stylesheets/container';
 import TextBlock from '../../components/TextBlock';
 import WideButtonView from '../../components/WideButtonView';
-import { connectTo, validateLaoId } from '../connect/ConnectConfirm';
+import ConnectConfirm, { connectTo, validateLaoId } from '../connect/ConnectConfirm';
 import { Spacing, Typography } from '../../styles';
+import { getNetworkManager, requestCreateLao } from '../../network';
+import { Channel } from '../../model/objects';
+import PROPS_TYPE from '../../res/Props';
 
 /**
  * UI to ask the address where you want to connect after having launched an LAO.
@@ -28,7 +32,7 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
+const LaunchConfirm = ({ navigation, route }: IPropTypes, laoName: string) => {
   const initialAddress = 'ws://127.0.0.1:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(initialAddress);
   const [laoId, setLaoId] = useState('');
@@ -48,31 +52,27 @@ const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
       return;
     }
 
-    try {
-      await subscribeToChannel(channel);
-      navigation.navigate(STRINGS.app_navigation_tab_organizer, {
-        screen: 'Attendee',
-      });
-    } catch (err) {
-      console.error(`Failed to establish lao connection: ${err}`);
-    }
+    getNetworkManager().connect(serverUrl);
+    requestCreateLao(laoName)
+      .then((channel: Channel) => subscribeToChannel(channel)
+        .then(() => {
+          // navigate to the newly created LAO
+          navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
+        }))
+      .catch(
+        ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
+      );
   };
 
   return (
     <View style={styleContainer.flex}>
       <View style={styles.viewCenter}>
-        <TextBlock text={STRINGS.connect_confirm_description} />
+        <TextBlock text={STRINGS.launch_confirm_description} />
         <TextInput
           style={styles.textInput}
           placeholder={STRINGS.connect_server_uri}
           onChangeText={(input: string) => setServerUrl(input)}
           defaultValue={serverUrl}
-        />
-        <TextInput
-          style={styles.textInput}
-          placeholder={STRINGS.connect_lao_id}
-          onChangeText={(input: string) => setLaoId(input)}
-          defaultValue={laoId}
         />
       </View>
       <WideButtonView
@@ -81,8 +81,18 @@ const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
       />
       <WideButtonView
         title={STRINGS.general_button_cancel}
-        onPress={() => navigation.navigate(STRINGS.connect_unapproved_title)}
+        onPress={() => navigation.navigate(STRINGS.launch_navigation_tab_main)}
       />
     </View>
   );
 };
+
+const propTypes = {
+  navigation: PROPS_TYPE.navigation.isRequired,
+};
+
+LaunchConfirm.propTypes = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
+export default ConnectConfirm;
