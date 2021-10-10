@@ -41,7 +41,7 @@ public final class ConsensusKey {
     }
     ConsensusKey that = (ConsensusKey) o;
     return java.util.Objects.equals(getType(), that.getType())
-        && java.util.Objects.equals(getId(), that.getType())
+        && java.util.Objects.equals(getId(), that.getId())
         && java.util.Objects.equals(getProperty(), that.getProperty());
   }
 
