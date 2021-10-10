@@ -481,7 +481,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
-    String channel = lao.getChannel();
+    String channel = lao.getChannel() + "/consensus";
 
     CreateConsensus createConsensus = new CreateConsensus(creation, objId, type, property, value);
 
