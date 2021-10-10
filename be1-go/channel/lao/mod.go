@@ -66,6 +66,21 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	}
 }
 
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) generalChriping.Channel {
+	fmt.Printf("test100")
+	generalChannelPath := "/root/" + laoID + "/social/chirps/"
+	fmt.Printf("genral has been created1")
+
+	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub)
+	fmt.Printf("genral has been created2")
+
+	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel) // cette ligne qui bug
+	fmt.Printf("genral has been created3")
+
+	fmt.Printf("genral has been created")
+
+	return generalChirpingChannel
+}
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	log.Printf("received a subscribe with id: %d", msg.ID)

@@ -434,8 +434,11 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 // RegisterNewChannel implements channel.HubFunctionalities
 func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Lock()
+
 	h.channelByID[channeID] = channel
+
 	h.Unlock()
+
 }
 
 // ---
