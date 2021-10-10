@@ -44,10 +44,10 @@
             "$ref": "dataWitnessMessage.json"
         },
         {
-            "$ref": "dataAddPost.json"
+            "$ref": "dataAddChirp.json"
         },
         {
-            "$ref": "dataAddPostBroadcast.json"
-        }
+            "$ref": "dataAddChirpBroadcast.json"
+	}        
     ]
 }
