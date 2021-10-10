@@ -100,6 +100,8 @@ public class GenericHandler {
     List<MessageGeneral> messages = Collections.emptyList();
     if (result instanceof ResultMessages) {
       messages = ((ResultMessages) result).getMessages();
+    } else {
+      Log.w(TAG, "Invalid type of Result '"+result.getClass().getSimpleName()+"' for catchup with id : "+id);
     }
 
     Log.d(TAG, "messages length: " + messages.size());
