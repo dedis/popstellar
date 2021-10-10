@@ -447,15 +447,11 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 
 // RegisterNewChannel implements channel.HubFunctionalities
 func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
-	fmt.Printf("aaaaaaa")
 	h.Lock()
-	fmt.Printf("bbbb")
 
 	h.channelByID[channeID] = channel
-	fmt.Printf("cccc")
 
 	h.Unlock()
-	fmt.Printf("ddddd")
 
 }
 

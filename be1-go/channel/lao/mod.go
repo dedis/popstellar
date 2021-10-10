@@ -72,7 +72,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) generalChriping.Channel {
 	fmt.Printf("test100")
-	generalChannelPath := "/root/" + laoID + "/social/posts/"
+	generalChannelPath := "/root/" + laoID + "/social/chirps/"
 	fmt.Printf("genral has been created1")
 
 	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub)

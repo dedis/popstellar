@@ -42,6 +42,12 @@
         },
         {
             "$ref": "dataWitnessMessage.json"
+        },
+        {
+            "$ref": "dataAddPost.json"
+        },
+        {
+            "$ref": "dataAddPostBroadcast.json"
         }
     ]
 }
