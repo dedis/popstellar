@@ -28,7 +28,7 @@ const publishChirp = () => {
       <TextBlock text={STRINGS.add_chirp_test} />
     ))
     .catch((err) => {
-      console.error('Could not ass chirp, error:', err);
+      console.error('Could not add chirp, error:', err);
     });
 };
 
