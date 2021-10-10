@@ -136,11 +136,11 @@ test("message data: message", () => {
 })
 
 test("message data: chirp", () => {
-    election_end = require("../examples/messageData/chirp_add_publish.json")
-    expect(election_end).toBeValid(messageDataSchema)
+    chirp_add = require("../examples/messageData/chirp_add_publish.json")
+    expect(chirp_add).toBeValid(messageDataSchema)
 
-    election_result = require("../examples/messageData/chirp_add_broadcast.json")
-    expect(election_result).toBeValid(messageDataSchema)
+    chirp_add_broadcast = require("../examples/messageData/chirp_add_broadcast.json")
+    expect(chirp_add_broadcast).toBeValid(messageDataSchema)
 
 })
 
