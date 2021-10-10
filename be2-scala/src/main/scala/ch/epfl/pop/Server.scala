@@ -24,9 +24,8 @@ object Server {
 
   private final def PATH: String = ""
 
-  /**
-   * Create a WebServer that handles http requests and WebSockets requests.
-   */
+  /** Create a WebServer that handles http requests and WebSockets requests.
+    */
   def main(args: Array[String]): Unit = {
 
     val system = akka.actor.ActorSystem("pop-be2-inner-actor-system")
@@ -44,22 +43,38 @@ object Server {
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(PATH) {
         handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef)(system))
       }
+     
+      implicit val executionContext: ExecutionContextExecutor =
+        typedSystem.executionContext
+      val bindingFuture = Http()
+        .newServerAt("localhost", PORT)
+        .bind(publishSubscribeRoute)
 
-      implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
-      val bindingFuture = Http().newServerAt("localhost", PORT).bind(publishSubscribeRoute)
       bindingFuture.onComplete {
         case Success(_) => println(s"ch.epfl.pop.Server online at ws://localhost:$PORT/$PATH")
         case Failure(_) =>
-          println("ch.epfl.pop.Server failed to start. Terminating actor system")
+          println(
+            "ch.epfl.pop.Server failed to start. Terminating actor system"
+          )
           system.terminate()
           typedSystem.terminate()
       }
 
+      /* Server terminating logic */
+      StdIn.readLine // let it run until user presses return
+      bindingFuture
+        .flatMap(_.unbind()) // trigger unbinding from the port
+        .onComplete(_ => {
+          println("Server terminated !")
+          system.terminate()
+          typedSystem.terminate()
+        }) // and shutdown when done
+
       Behaviors.empty
     }
 
+    //Deploys system actor with root behavior
     ActorSystem[Nothing](root, "pop-be2-actor-system")
 
-    StdIn.readLine() // let it run until user presses return
   }
 }
