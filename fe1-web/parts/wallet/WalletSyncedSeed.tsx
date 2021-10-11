@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import {
   ScrollView,
   StyleSheet, View, ViewStyle,
@@ -14,8 +14,8 @@ import CopiableTextBlock from 'components/CopiableTextBlock';
 import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
-import { makeEventByTypeSelector, makeLaosMap } from 'store';
-import { useSelector } from 'react-redux';
+import {makeEventByTypeSelector, makeLaosMap} from 'store';
+import {useSelector} from 'react-redux';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -31,12 +31,12 @@ const styles = StyleSheet.create({
  * wallet UI once the wallet is synced
  * @constructor
  */
-const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
+const WalletSyncedSeed = ({navigation}: IPropTypes) => {
   /* boolean set to true if the token recover process is finished */
   const [showTokens, setShowTokens] = useState(false);
   const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
-  const [showPOPToken , setShowPOPToken]=useState(true);
+  const [showPOPToken, setShowPOPToken] = useState(true);
 
   const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
   const rollCalls = useSelector(rollCallSelector);
@@ -49,12 +49,11 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   Wallet.recoverWalletPoPTokens()
     .then((kp) => {
       tokensByLaoRollCall = kp;
-      if(Object.keys(tokensByLaoRollCall).length == 0){
+      if (Object.keys(tokensByLaoRollCall).length == 0) {
         setShowPOPToken(false);
       }
     })
     .catch((err) => console.debug(err));
-
 
 
   /* the below 4 functions are to manage user interaction with buttons */
@@ -106,8 +105,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   function displayNoTokens() {
     return (
       <View>
-        <TextBlock text={STRINGS.no_tokens_in_wallet} />
-        <View style={styles.largePadding} />
+        <TextBlock text={STRINGS.no_tokens_in_wallet}/>
+        <View style={styles.largePadding}/>
         <WideButtonView
           title={STRINGS.back_to_wallet_home}
           onPress={() => setShowTokens(false)}
@@ -130,15 +129,15 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
 
     return (
       <View style={styleContainer.centered}>
-        <View style={styles.smallPadding} />
-        <TextBlock bold text={STRINGS.lao_id} />
-        <CopiableTextBlock text={lao.name} visibility />
-        <TextBlock bold text={STRINGS.roll_call_name} />
-        <TextBlock text={rollCall.name} visibility />
-        <View style={styles.smallPadding} />
-        <CopiableTextBlock text={tokenPk.valueOf()} visibility={showPublicKey} />
-        <View style={styles.smallPadding} />
-        <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey} />
+        <View style={styles.smallPadding}/>
+        <TextBlock bold text={STRINGS.lao_id}/>
+        <CopiableTextBlock text={lao.name} visibility/>
+        <TextBlock bold text={STRINGS.roll_call_name}/>
+        <TextBlock text={rollCall.name} visibility/>
+        <View style={styles.smallPadding}/>
+        <CopiableTextBlock text={tokenPk.valueOf()} visibility={showPublicKey}/>
+        <View style={styles.smallPadding}/>
+        <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey}/>
       </View>
     );
   }
@@ -151,8 +150,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     return (
       <ScrollView>
         <View style={styles.largePadding}/>
-        <TextBlock bold text={STRINGS.your_tokens_title} />
-        <View style={styles.smallPadding} />
+        <TextBlock bold text={STRINGS.your_tokens_title}/>
+        <View style={styles.smallPadding}/>
         <View>
           {
             Object.keys(tokensByLaoRollCall).map(
@@ -170,7 +169,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
           title={STRINGS.back_to_wallet_home}
           onPress={() => setShowTokens(false)}
         />
-        <View style={styles.largePadding} />
+        <View style={styles.largePadding}/>
       </ScrollView>
     );
   }
@@ -178,8 +177,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   function recoverTokens() {
     return (
       <View>
-        <TextBlock bold text={STRINGS.wallet_synced_info} />
-        <View style={styles.largePadding} />
+        <TextBlock bold text={STRINGS.wallet_synced_info}/>
+        <View style={styles.largePadding}/>
         <WideButtonView
           title={STRINGS.show_tokens_title}
           onPress={() => {
