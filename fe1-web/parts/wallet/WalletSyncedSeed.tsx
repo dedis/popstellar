@@ -36,6 +36,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const [showTokens, setShowTokens] = useState(false);
   const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
+  const [showPOPToken , setShowPOPToken]=useState(true);
 
   const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
   const rollCalls = useSelector(rollCallSelector);
@@ -48,8 +49,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   Wallet.recoverWalletPoPTokens()
     .then((kp) => {
       tokensByLaoRollCall = kp;
+      if(Object.keys(tokensByLaoRollCall).length == 0){
+        setShowPOPToken(false);
+      }
     })
     .catch((err) => console.debug(err));
+
+
 
   /* the below 4 functions are to manage user interaction with buttons */
   function hidePublicKeyButton() {
@@ -93,6 +99,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
           setShowQRPublicKey(true);
         }}
       />
+
     );
   }
 
@@ -137,13 +144,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   }
 
   function displayTokens() {
-    if (Object.keys(tokensByLaoRollCall).length === 0) {
+    if (!showPOPToken) {
       return displayNoTokens();
     }
 
     return (
       <ScrollView>
-        <View style={styles.largePadding} />
+        <View style={styles.largePadding}/>
         <TextBlock bold text={STRINGS.your_tokens_title} />
         <View style={styles.smallPadding} />
         <View>
