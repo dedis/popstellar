@@ -1,39 +1,42 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
 import androidx.annotation.Nullable;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.Optional;
 
-/**
- * Data sent to create a Roll-Call
- */
+/** Data sent to create a Roll-Call */
 public class CreateRollCall extends Data {
 
   private String id;
   private String name;
   private long creation;
+
   @SerializedName("proposed_start")
   private long proposedStart;
+
   @SerializedName("proposed_end")
   private long proposedEnd;
+
   private String location;
 
-  @Nullable
-  private transient String description;
+  @Nullable private transient String description;
 
   /**
    * Constructor for a data Create Roll-Call Event
-   *  @param name         name of the Roll-Call
-   * @param creation      of the Roll-Call
+   *
+   * @param name name of the Roll-Call
+   * @param creation of the Roll-Call
    * @param proposedStart of the Roll-Call
-   * @param proposedEnd   of the Roll-Call
-   * @param location      location of the Roll-Call
-   * @param description   can be null
-   * @param laoId         ID of the LAO
+   * @param proposedEnd of the Roll-Call
+   * @param location location of the Roll-Call
+   * @param description can be null
+   * @param laoId ID of the LAO
    */
   public CreateRollCall(
       String name,

@@ -1,12 +1,15 @@
 package com.github.dedis.popstellar;
 
 import android.app.Application;
+
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 

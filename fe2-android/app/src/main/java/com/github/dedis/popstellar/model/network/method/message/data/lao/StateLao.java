@@ -6,23 +6,26 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Data received to track the state of a lao
- */
+/** Data received to track the state of a lao */
 public class StateLao extends Data {
 
   private final String id;
   private final String name;
   private final long creation;
+
   @SerializedName("last_modified")
   private final long lastModified;
+
   private final String organizer;
+
   @SerializedName("modification_id")
   private final String modificationId;
+
   private final Set<String> witnesses;
 
   @SerializedName("modification_signatures")
@@ -31,12 +34,12 @@ public class StateLao extends Data {
   /**
    * Constructor for a data State LAO
    *
-   * @param id           of the LAO state message, Hash(organizer||creation||name)
-   * @param name         name of the LAO
-   * @param creation     time of creation
+   * @param id of the LAO state message, Hash(organizer||creation||name)
+   * @param name name of the LAO
+   * @param creation time of creation
    * @param lastModified time of last modification
-   * @param organizer    id of the LAO's organizer
-   * @param witnesses    list of witnesses of the LAO
+   * @param organizer id of the LAO's organizer
+   * @param witnesses list of witnesses of the LAO
    * @throws IllegalArgumentException if the id is not valid
    */
   public StateLao(

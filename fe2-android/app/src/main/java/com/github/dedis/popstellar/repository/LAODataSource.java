@@ -1,16 +1,18 @@
 package com.github.dedis.popstellar.repository;
 
+import com.github.dedis.popstellar.model.network.GenericMessage;
+import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
 import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
 import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
 import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
 import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.method.Message;
 import com.tinder.scarlet.WebSocket;
-import io.reactivex.Observable;
+
 import java.util.List;
+
+import io.reactivex.Observable;
 
 public interface LAODataSource {
 
@@ -35,7 +37,8 @@ public interface LAODataSource {
 
     void addLao(LAOEntity lao);
 
-    void updateLAO(LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures);
+    void updateLAO(
+        LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures);
 
     void addRollCall(LAOEntity lao, RollCallEntity rollCall);
 

@@ -4,13 +4,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Data sent when creating a new LAO
- */
+/** Data sent when creating a new LAO */
 public class CreateLao extends Data {
 
   private final String id;
@@ -22,9 +21,9 @@ public class CreateLao extends Data {
   /**
    * Constructor for a data Create LAO
    *
-   * @param id        of the LAO creation message, Hash(organizer||creation||name)
-   * @param name      name of the LAO
-   * @param creation  time of creation
+   * @param id of the LAO creation message, Hash(organizer||creation||name)
+   * @param name name of the LAO
+   * @param creation time of creation
    * @param organizer id of the LAO's organizer
    * @param witnesses list of witnesses of the LAO
    * @throws IllegalArgumentException if the id is not valid

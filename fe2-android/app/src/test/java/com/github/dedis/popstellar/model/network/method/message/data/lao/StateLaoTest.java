@@ -10,11 +10,13 @@ import com.github.dedis.popstellar.model.network.method.message.PublicKeySignatu
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.Test;
 
 public class StateLaoTest {
 
@@ -25,17 +27,33 @@ public class StateLaoTest {
   private final String modificationId = " modification id";
   private final Set<String> witnesses = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
   private final String id = Lao.generateLaoId(organizer, creation, name);
-  private final List<PublicKeySignaturePair> modificationSignatures = Arrays
-      .asList(new PublicKeySignaturePair(
-          new byte[10], new byte[10]));
-  private final StateLao stateLao = new StateLao(id, name, creation, lastModified, organizer,
-      modificationId, witnesses, modificationSignatures);
+  private final List<PublicKeySignaturePair> modificationSignatures =
+      Arrays.asList(new PublicKeySignaturePair(new byte[10], new byte[10]));
+  private final StateLao stateLao =
+      new StateLao(
+          id,
+          name,
+          creation,
+          lastModified,
+          organizer,
+          modificationId,
+          witnesses,
+          modificationSignatures);
 
   @Test
   public void wrongIdTest() {
-    assertThrows(IllegalArgumentException.class,
-        () -> new StateLao("wrong id", name, creation, lastModified, organizer, modificationId,
-            witnesses, modificationSignatures));
+    assertThrows(
+        IllegalArgumentException.class,
+        () ->
+            new StateLao(
+                "wrong id",
+                name,
+                creation,
+                lastModified,
+                organizer,
+                modificationId,
+                witnesses,
+                modificationSignatures));
   }
 
   @Test
@@ -90,35 +108,91 @@ public class StateLaoTest {
 
   @Test
   public void isEqualTest() {
-    assertEquals(stateLao,
-        new StateLao(id, name, creation, lastModified, organizer, modificationId, witnesses,
+    assertEquals(
+        stateLao,
+        new StateLao(
+            id,
+            name,
+            creation,
+            lastModified,
+            organizer,
+            modificationId,
+            witnesses,
             modificationSignatures));
     // The modification id isn't taken into account to know if they are equal
-    assertEquals(stateLao,
-        new StateLao(id, name, creation, lastModified, organizer, "random", witnesses,
+    assertEquals(
+        stateLao,
+        new StateLao(
+            id,
+            name,
+            creation,
+            lastModified,
+            organizer,
+            "random",
+            witnesses,
             modificationSignatures));
     // same goes for modification signatures
-    assertEquals(stateLao,
+    assertEquals(
+        stateLao,
         new StateLao(id, name, creation, lastModified, organizer, modificationId, witnesses, null));
     String random = " random string";
     String newId = Lao.generateLaoId(organizer, creation, random);
-    assertNotEquals(stateLao,
-        new StateLao(newId, random, creation, lastModified, organizer, modificationId, witnesses,
+    assertNotEquals(
+        stateLao,
+        new StateLao(
+            newId,
+            random,
+            creation,
+            lastModified,
+            organizer,
+            modificationId,
+            witnesses,
             modificationSignatures));
     newId = Lao.generateLaoId(random, creation, name);
-    assertNotEquals(stateLao,
-        new StateLao(newId, name, creation, lastModified, random, modificationId, witnesses,
+    assertNotEquals(
+        stateLao,
+        new StateLao(
+            newId,
+            name,
+            creation,
+            lastModified,
+            random,
+            modificationId,
+            witnesses,
             modificationSignatures));
     newId = Lao.generateLaoId(organizer, 99, name);
-    assertNotEquals(stateLao,
-        new StateLao(newId, name, 99, lastModified, organizer, modificationId, witnesses,
+    assertNotEquals(
+        stateLao,
+        new StateLao(
+            newId,
+            name,
+            99,
+            lastModified,
+            organizer,
+            modificationId,
+            witnesses,
             modificationSignatures));
-    assertNotEquals(stateLao,
-        new StateLao(id, name, creation, 1000, organizer, modificationId, witnesses,
+    assertNotEquals(
+        stateLao,
+        new StateLao(
+            id,
+            name,
+            creation,
+            1000,
+            organizer,
+            modificationId,
+            witnesses,
             modificationSignatures));
-    assertNotEquals(stateLao,
-        new StateLao(id, name, creation, lastModified, organizer, modificationId,
-            new HashSet<>(Arrays.asList("0x3434")), modificationSignatures));
+    assertNotEquals(
+        stateLao,
+        new StateLao(
+            id,
+            name,
+            creation,
+            lastModified,
+            organizer,
+            modificationId,
+            new HashSet<>(Arrays.asList("0x3434")),
+            modificationSignatures));
   }
-
 }

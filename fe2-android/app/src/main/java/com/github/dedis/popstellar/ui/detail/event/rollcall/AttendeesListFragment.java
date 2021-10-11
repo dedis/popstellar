@@ -6,13 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.databinding.AttendeesListFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -65,15 +68,15 @@ public class AttendeesListFragment extends Fragment {
 
     setupAttendeesListAdapter();
 
-    mAttendeesListBinding.backButton
-        .setOnClickListener(clicked -> mLaoDetailViewModel.openLaoWallet());
+    mAttendeesListBinding.backButton.setOnClickListener(
+        clicked -> mLaoDetailViewModel.openLaoWallet());
   }
 
   private void setupAttendeesListAdapter() {
     ListView listView = mAttendeesListBinding.attendeesList;
 
-    mAttendeesListAdapter = new AttendeesListAdapter(new ArrayList<>(rollCall.getAttendees()),
-        getActivity());
+    mAttendeesListAdapter =
+        new AttendeesListAdapter(new ArrayList<>(rollCall.getAttendees()), getActivity());
     listView.setAdapter(mAttendeesListAdapter);
   }
 }

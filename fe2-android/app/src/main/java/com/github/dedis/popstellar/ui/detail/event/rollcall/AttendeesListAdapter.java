@@ -5,11 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.databinding.AttendeeLayoutBinding;
-import java.util.List;
+
 import net.glxn.qrgen.android.QRCode;
+
+import java.util.List;
 
 public class AttendeesListAdapter extends BaseAdapter {
 

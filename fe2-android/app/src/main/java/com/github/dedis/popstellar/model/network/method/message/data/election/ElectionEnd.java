@@ -4,18 +4,22 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
 
 public class ElectionEnd extends Data {
 
   @SerializedName(value = "election")
   private String electionId;
+
   @SerializedName(value = "created_at")
   private long createdAt;
+
   @SerializedName(value = "lao")
   private String laoId;
+
   @SerializedName(value = "registered_votes")
-  private String registeredVotes; //hashed
+  private String registeredVotes; // hashed
 
   public ElectionEnd(String electionId, String laoId, String registeredVotes) {
     if (electionId == null || laoId == null || registeredVotes == null) {
@@ -26,7 +30,6 @@ public class ElectionEnd extends Data {
     this.laoId = laoId;
     this.registeredVotes = registeredVotes;
   }
-
 
   @Override
   public String getObject() {

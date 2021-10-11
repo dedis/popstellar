@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.model.network.answer;
 
 import java.util.Objects;
 
-/**
- * Error of a failed request
- */
+/** Error of a failed request */
 public final class ErrorCode {
 
   private final int code;
@@ -13,7 +11,7 @@ public final class ErrorCode {
   /**
    * Constructor of an ErrorCode
    *
-   * @param code        the code of the error, as an integer
+   * @param code the code of the error, as an integer
    * @param description the description of the error
    */
   public ErrorCode(int code, String description) {
@@ -21,16 +19,12 @@ public final class ErrorCode {
     this.description = description;
   }
 
-  /**
-   * Returns the code of the error.
-   */
+  /** Returns the code of the error. */
   public int getCode() {
     return code;
   }
 
-  /**
-   * Returns the description of the error.
-   */
+  /** Returns the description of the error. */
   public String getDescription() {
     return description;
   }

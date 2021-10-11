@@ -10,6 +10,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,7 @@ public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeseria
     if (resultElement.isJsonPrimitive()) {
       result.setGeneral();
     } else {
-      Type listType = new TypeToken<ArrayList<MessageGeneral>>() {
-      }.getType();
+      Type listType = new TypeToken<ArrayList<MessageGeneral>>() {}.getType();
       List<MessageGeneral> messages = context.deserialize(resultElement.getAsJsonArray(), listType);
       result.setMessages(messages);
     }

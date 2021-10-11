@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.repository;
 
 import com.github.dedis.popstellar.model.objects.Lao;
+
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.Subject;
@@ -33,9 +34,7 @@ public class LAOState {
     return publisher;
   }
 
-  /**
-   * publish is used to publish a LAO state update to all observers.
-   */
+  /** publish is used to publish a LAO state update to all observers. */
   public void publish() {
     publisher.onNext(lao);
   }

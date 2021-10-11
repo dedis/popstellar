@@ -14,16 +14,14 @@ public abstract class Query extends Message {
    * Constructor for a Query
    *
    * @param channel name of the channel
-   * @param id      request ID of the query
+   * @param id request ID of the query
    */
   protected Query(String channel, int id) {
     super(channel);
     this.id = id;
   }
 
-  /**
-   * Returns the request ID.
-   */
+  /** Returns the request ID. */
   public int getRequestId() {
     return id;
   }

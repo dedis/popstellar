@@ -1,11 +1,10 @@
 package com.github.dedis.popstellar.model.network.method;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+
 import java.util.Objects;
 
-/**
- * Publish a message on a channel
- */
+/** Publish a message on a channel */
 public final class Publish extends Query {
 
   private final MessageGeneral message;
@@ -14,7 +13,7 @@ public final class Publish extends Query {
    * Constructor for a Publish
    *
    * @param channel name of the channel
-   * @param id      request ID
+   * @param id request ID
    * @param message message to publish
    * @throws IllegalArgumentException if any parameter is null
    */
@@ -26,9 +25,7 @@ public final class Publish extends Query {
     this.message = message;
   }
 
-  /**
-   * Returns the message to publish.
-   */
+  /** Returns the message to publish. */
   public MessageGeneral getMessage() {
     return message;
   }

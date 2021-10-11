@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+
 import java.util.List;
 
 public class ElectionResult extends Data {

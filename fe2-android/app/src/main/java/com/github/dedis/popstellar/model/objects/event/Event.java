@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.objects.event;
 
-/**
- * Class modeling an Event
- */
+/** Class modeling an Event */
 public abstract class Event implements Comparable<Event> {
 
   public abstract long getStartTimestamp();
@@ -20,5 +18,4 @@ public abstract class Event implements Comparable<Event> {
 
     return Long.compare(this.getEndTimestamp(), o.getEndTimestamp());
   }
-
 }

@@ -7,9 +7,9 @@ import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleE
 import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleSubscribe;
 
 import android.util.Log;
+
 import androidx.annotation.NonNull;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -22,6 +22,8 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
@@ -29,11 +31,7 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
@@ -46,6 +44,12 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
+
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
@@ -54,6 +58,7 @@ public class LAORepository {
 
   @SuppressWarnings("Implementation of LAOLocalDataSource is not complete.")
   private final LAODataSource.Local mLocalDataSource;
+
   private final LAODataSource.Remote mRemoteDataSource;
   private final AndroidKeysetManager mKeysetManager;
   private final SchedulerProvider schedulerProvider;
@@ -126,10 +131,12 @@ public class LAORepository {
       LAODataSource.Remote laoRemoteDataSource,
       LAODataSource.Local localDataSource,
       AndroidKeysetManager keysetManager,
-      Gson gson, SchedulerProvider schedulerProvider) {
+      Gson gson,
+      SchedulerProvider schedulerProvider) {
     if (INSTANCE == null) {
-      INSTANCE = new LAORepository(laoRemoteDataSource, localDataSource, keysetManager, gson,
-          schedulerProvider);
+      INSTANCE =
+          new LAORepository(
+              laoRemoteDataSource, localDataSource, keysetManager, gson, schedulerProvider);
     }
     return INSTANCE;
   }
@@ -148,8 +155,8 @@ public class LAORepository {
   private void startSubscription() {
     // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
     // higher priority
-    Observable
-        .merge(upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
+    Observable.merge(
+            upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
         .subscribeOn(schedulerProvider.newThread())
         .subscribe(this::handleGenericMessage);
   }
@@ -184,10 +191,10 @@ public class LAORepository {
   /**
    * Helper method that sends a StateLao message if we are the organizer
    *
-   * @param lao       Lao of the message being signed
-   * @param msg       Object of type MessageGeneral representing the current message being signed
+   * @param lao Lao of the message being signed
+   * @param msg Object of type MessageGeneral representing the current message being signed
    * @param messageId Base 64 URL encoded Id of the message to sign
-   * @param channel   Represents the channel on which to send the stateLao message
+   * @param channel Represents the channel on which to send the stateLao message
    */
   public void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
     try {
@@ -207,8 +214,7 @@ public class LAORepository {
                 msg.getWitnessSignatures());
 
         byte[] ourPkBuf = Base64.getUrlDecoder().decode(ourKey);
-        PublicKeySign signer =
-            mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+        PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
         MessageGeneral stateLaoMsg = new MessageGeneral(ourPkBuf, stateLao, signer, mGson);
 
         sendPublish(channel, stateLaoMsg);
@@ -286,8 +292,7 @@ public class LAORepository {
               if (genericMessage instanceof Answer) {
                 Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
               }
-              return genericMessage instanceof Answer
-                  && ((Answer) genericMessage).getId() == id;
+              return genericMessage instanceof Answer && ((Answer) genericMessage).getId() == id;
             })
         .map(Answer.class::cast)
         .firstOrError()
@@ -305,15 +310,11 @@ public class LAORepository {
     return channel.split("/").length == 3;
   }
 
-  /**
-   * Set allLaoSubject to contain all LAOs
-   */
+  /** Set allLaoSubject to contain all LAOs */
   public void setAllLaoSubject() {
     Log.d(TAG, "posted allLaos to allLaoSubject");
     allLaoSubject.onNext(
-        laoById.entrySet().stream()
-            .map(x -> x.getValue().getLao())
-            .collect(Collectors.toList()));
+        laoById.entrySet().stream().map(x -> x.getValue().getLao()).collect(Collectors.toList()));
   }
 
   /**

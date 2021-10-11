@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.repository;
 
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.Event;
+
 import java.util.ArrayList;
 import java.util.List;
 
