@@ -85,14 +85,6 @@ public final class ConsensusHandler {
     Consensus consensus = consensusOpt.get();
     consensus.putAcceptorResponse(senderPk, messageId, consensusVote.isAccept());
 
-    //Part 1 : all acceptors need to accept
-    long countAccepted = consensus.getAcceptorsResponses().values().stream().filter(b -> b).count();
-    boolean isAccepted = countAccepted == consensus.getAcceptors().size();
-
-    consensus.setAccepted(isAccepted);
-    if (isAccepted) {
-      consensus.setEventState(EventState.RESULTS_READY);
-    }
     lao.updateConsensus(consensus.getId(), consensus);
 
     return false;

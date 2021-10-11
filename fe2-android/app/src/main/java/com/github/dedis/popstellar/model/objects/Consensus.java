@@ -167,6 +167,12 @@ public class Consensus extends Event {
     isAccepted = accepted;
   }
 
+  public boolean canBeAccepted() {
+    //Part 1 : all acceptors need to accept
+    long countAccepted = acceptorsResponses.values().stream().filter(b -> b).count();
+    return countAccepted == acceptors.size();
+  }
+
 
   @Override
   public long getStartTimestamp() {

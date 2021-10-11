@@ -65,7 +65,7 @@ public class ConsensusStatusFragment extends Fragment {
     listView.setAdapter(acceptorAdapter);
 
     binding.confirmButton.setEnabled(
-        consensus.getState() == EventState.RESULTS_READY && consensus.isAccepted());
+        consensus.getState() == EventState.OPENED && consensus.canBeAccepted());
     binding.confirmButton.setOnClickListener(v -> mLaoDetailViewModel.sendConsensusLearn());
     binding
         .backLayout
