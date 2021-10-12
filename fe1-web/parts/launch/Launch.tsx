@@ -50,19 +50,8 @@ const Launch = ({ navigation }: IPropTypes) => {
     if (!laoName) {
       return;
     }
-    localStorage.setItem('laoName', laoName);
-    navigation.navigate(STRINGS.launch_navigation_tab_confirm);
-    /*
-    getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client'); // TODO: Have to change that
-    requestCreateLao(laoName)
-      .then((channel: Channel) => subscribeToChannel(channel)
-        .then(() => {
-          // navigate to the newly created LAO
-          navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
-        }))
-      .catch(
-        ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
-      ); */
+    // Navigate into launch confirm screen, and pass the lao name entered by the user.
+    navigation.navigate(STRINGS.launch_navigation_tab_confirm, { laoName: inputLaoName });
   };
 
   const onTestOpenConnection = () => {

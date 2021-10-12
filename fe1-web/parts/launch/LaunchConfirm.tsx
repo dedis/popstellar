@@ -31,18 +31,14 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const LaunchConfirm = ({ navigation }: IPropTypes) => {
+const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
   const initialAddress = 'ws://127.0.0.1:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(initialAddress);
-  const laoName = localStorage.getItem('laoName');
-
-  if (!laoName) {
-    return;
-  }
+  const { laoName } = route.params;
 
   const onButtonConfirm = async () => {
     getNetworkManager().connect(serverUrl);
-    requestCreateLao(localStorage.getItem('laoName')!)
+    requestCreateLao(laoName)
       .then((channel: Channel) => subscribeToChannel(channel)
         .then(() => {
           // navigate to the newly created LAO
@@ -53,7 +49,7 @@ const LaunchConfirm = ({ navigation }: IPropTypes) => {
       );
   };
 
-  const selectText = (e) => {
+  const selectText = (e: any) => {
     e.target.select();
   };
 
