@@ -36,7 +36,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	// Create the channel
 	cha := NewChannel("channel0", fakeHub, messages[0])
 
-	laoChannel, ok := channel.(*Channel)
+	laoChannel, ok := cha.(*Channel)
 	require.True(t, ok)
 
 	_, found := fakeHub.channelByID["/root/channel0/social/chirps/"]
@@ -58,7 +58,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := cha.Catchup(method.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -148,6 +148,11 @@ func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
 func (h *fakeHub) GetPubkey() kyber.Point {
 	return h.public
 }
+
+func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
+	return *h.schemaValidator
+}
+
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator

@@ -14,9 +14,10 @@ public class CreateRollCallTest {
 
   private final String laoId = Hash.hash("laoId");
   private final String name = "name";
-  private final long time = Instant.now().getEpochSecond();
+  private final long now = Instant.now().getEpochSecond();
+  private final long end = now + 30L;
   private final String location = "Location";
-  private final CreateRollCall createRollCall = new CreateRollCall(name, time, time, location, null, laoId);
+  private final CreateRollCall createRollCall = new CreateRollCall(name, now, now, end, location, null, laoId);
 
   @Test
   public void generateCreateRollCallIdTest() {
@@ -44,12 +45,12 @@ public class CreateRollCallTest {
 
   @Test
   public void getProposedStartTest() {
-    assertThat(createRollCall.getProposedStart(), is(time));
+    assertThat(createRollCall.getProposedStart(), is(now));
   }
 
   @Test
   public void getProposedEndTest() {
-    assertThat(createRollCall.getProposedEnd(), is(time));
+    assertThat(createRollCall.getProposedEnd(), is(end));
   }
 
   @Test

@@ -1,0 +1,6 @@
+{
+    "object": "post",
+    "action": "delete",
+    "post_id": "XXX",
+    "timestamp": 123
+}

@@ -213,7 +213,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   + ", end time " + endTimeInSeconds + ", voting methods "
                   + votingMethodFiltered + ", writesIn " + writeIns + ", questions "
                   + questionsFiltered + ", ballotsOptions " + ballotsOptionsFiltered);
-          mLaoDetailViewModel.createNewElection(electionName, startTimeInSeconds, endTimeInSeconds,
+          mLaoDetailViewModel.createNewElection(electionName, CREATION_TIME_IN_SECONDS, startTimeInSeconds, endTimeInSeconds,
               votingMethodFiltered, writeIns,
               ballotsOptionsFiltered, questionsFiltered);
         });

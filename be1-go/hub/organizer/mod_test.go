@@ -23,6 +23,78 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 )
 
+func TestOrganizer_Post_Chirp(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	laoID := "XXX"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	data := messagedata.ChirpAdd{
+		Object:    messagedata.ChirpObject,
+		Action:    messagedata.ChirpActionAdd,
+		Text: "blabla",
+		Timestamp: time.Now().Unix(),
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.Equal(t, publish.ID, sock.resultID)
+
+	require.NoError(t, sock.err)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, publish, c.publish)
+
+
+}
+
 func TestOrganizer_Create_LAO(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -382,6 +454,7 @@ type fakeChannel struct {
 	unsubscribe method.Unsubscribe
 	publish     method.Publish
 	catchup     method.Catchup
+	broadcast	method.Broadcast
 
 	// set by the subscribe
 	socket socket.Socket
@@ -416,6 +489,11 @@ func (f *fakeChannel) Publish(msg method.Publish) error {
 func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 	f.catchup = msg
 	return f.msgs
+}
+
+func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
+	f.broadcast = msg
+	return nil
 }
 
 // fakeSocket is a fake implementation of a socket
