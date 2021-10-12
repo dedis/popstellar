@@ -152,8 +152,3 @@ func (h *fakeHub) GetPubkey() kyber.Point {
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
-
-
-func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
-	return *h.schemaValidator
-}
