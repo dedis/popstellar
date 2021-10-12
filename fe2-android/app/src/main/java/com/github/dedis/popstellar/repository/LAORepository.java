@@ -182,7 +182,7 @@ public class LAORepository {
       if (subscribeRequests.containsKey(id)) {
         handleSubscribe(this, id, subscribeRequests);
       } else if (catchupRequests.containsKey(id)) {
-        handleCatchup(this, id, genericMessage, catchupRequests, unprocessed);
+        handleCatchup(this, id, result, catchupRequests, unprocessed);
       } else if (createLaoRequests.containsKey(id)) {
         handleCreateLao(this, id, createLaoRequests);
       }
