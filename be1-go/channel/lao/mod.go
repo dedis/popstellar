@@ -415,11 +415,6 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
 		}
 
-		err = c.verifyMessageRollCallCreateID(rollCallCreate)
-		if err != nil {
-			return xerrors.Errorf("invalid rollcall#create message: %v", err)
-		}
-
 		err = c.processCreateRollCall(rollCallCreate)
 		if err != nil {
 			return xerrors.Errorf("failed to process roll call create: %v", err)
@@ -437,11 +432,6 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		err := msg.UnmarshalData(&rollCallClose)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
-		}
-
-		err = c.verifyMessageRollCallCloseID(rollCallClose)
-		if err != nil {
-			return xerrors.Errorf("invalid rollcall#close message: %v", err)
 		}
 
 		err = c.processCloseRollCall(rollCallClose)
@@ -537,6 +527,13 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 
 // processCreateRollCall processes a roll call creation object.
 func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
+
+	// Check that the ID is correct
+	err := c.verifyMessageRollCallCreateID(msg)
+	if err != nil {
+		return xerrors.Errorf("invalid rollcall#create message: %v", err)
+	}
+
 	// Check that the ProposedEnd is greater than the ProposedStart
 	if msg.ProposedStart > msg.ProposedEnd {
 		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", msg.ProposedStart, msg.ProposedEnd)
@@ -588,6 +585,12 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 
 // processCloseRollCall processes a close roll call message.
 func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
+
+	err := c.verifyMessageRollCallCloseID(msg)
+	if err != nil {
+		return xerrors.Errorf("invalid rollcall#close message: %v", err)
+	}
+
 	if c.rollCall.state != Open {
 		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
