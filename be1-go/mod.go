@@ -43,7 +43,7 @@ func init() {
 	case "":
 		level = defaultLevel
 	default:
-		level = zerolog.InfoLevel
+		level = defaultLevel
 	}
 
 	Logger = Logger.Level(level)
