@@ -7,9 +7,9 @@ import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleE
 import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleSubscribe;
 
 import android.util.Log;
+
 import androidx.annotation.NonNull;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -22,6 +22,8 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
@@ -29,11 +31,7 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
-import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Base64;
@@ -45,6 +43,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class LAORepository {
 
@@ -89,6 +95,9 @@ public class LAORepository {
   // Observable to subscribe to the incoming messages
   private Observable<GenericMessage> upstream;
 
+  // Disposable of with the lifetime of an LAORepository instance
+  private final Disposable disposables;
+
   private LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
@@ -118,8 +127,10 @@ public class LAORepository {
     this.schedulerProvider = schedulerProvider;
 
     // subscribe to incoming messages and the unprocessed message queue
-    startSubscription();
-    subscribeToWebsocketEvents();
+    disposables = new CompositeDisposable(
+            subscribeToUpstream(),
+            subscribeToWebsocketEvents()
+    );
   }
 
   public static synchronized LAORepository getInstance(
@@ -135,20 +146,23 @@ public class LAORepository {
   }
 
   public static void destroyInstance() {
-    INSTANCE = null;
+    if (INSTANCE != null) {
+      INSTANCE.dispose();
+      INSTANCE = null;
+    }
   }
 
-  private void subscribeToWebsocketEvents() {
-    websocketEvents
+  private Disposable subscribeToWebsocketEvents() {
+    return websocketEvents
         .subscribeOn(schedulerProvider.io())
         .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
         .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
   }
 
-  private void startSubscription() {
+  private Disposable subscribeToUpstream() {
     // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
     // higher priority
-    Observable
+    return Observable
         .merge(upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
         .subscribeOn(schedulerProvider.newThread())
         .subscribe(this::handleGenericMessage);
@@ -357,5 +371,9 @@ public class LAORepository {
 
   public Map<String, MessageGeneral> getMessageById() {
     return messageById;
+  }
+
+  private void dispose() {
+    disposables.dispose();
   }
 }
