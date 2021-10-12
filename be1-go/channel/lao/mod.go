@@ -630,6 +630,8 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	return nil
 }
 
+const InvalidIDMessage string = "ID %s does not correspond with message data"
+
 // verify if a lao message id is the same as the lao id
 func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
 
@@ -641,7 +643,7 @@ func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) 
 	testRollCallID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
 	if msg.ID != testRollCallID {
-		return xerrors.Errorf("ID %s does not correspond with message data", msg.ID)
+		return xerrors.Errorf(InvalidIDMessage, msg.ID)
 	}
 
 	return nil
@@ -658,7 +660,7 @@ func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) erro
 	testRollCallID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
 	if msg.UpdateID != testRollCallID {
-		return xerrors.Errorf("ID %s does not correspond with message data", msg.UpdateID)
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
 	}
 
 	return nil
@@ -675,7 +677,7 @@ func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) er
 	testRollCallID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
 	if msg.UpdateID != testRollCallID {
-		return xerrors.Errorf("ID %s does not correspond with message data", msg.UpdateID)
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
 	}
 
 	return nil
