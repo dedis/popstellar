@@ -3,7 +3,7 @@
 This repository contains the **scala server side implementation** of the PoP project.
 
 
-## Getting Started
+## 1.	Getting Started
 
 We assume that you're familiar with the PoP project. Please read the [Architecture Specifications](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4) to get an idea about all the actors and components in the system.
 
@@ -25,7 +25,7 @@ Keep in mind that the [Pre-semester work project](https://docs.google.com/docume
 The two most common Scala IDEs are VSCode and IntelliJ. Both are viable since we are using Scala version *2.13.x* (< 3.x).
 
 
-## Project Structure
+## 2.	Project Structure
 
 ```
 .
@@ -49,7 +49,7 @@ The two most common Scala IDEs are VSCode and IntelliJ. Both are viable since we
 ```
 
 
-## Architecture
+## 3.	Architecture
 
 The PoP Scala backend is used by LAO organizers and witnesses in order to store and validate LAO information/participation. A simplified version of the project is as follows: clients (either organizers, witnesses, or attendees) may connect to the server using WebSockets in order to "read" or "write" information on a database depending on their role in the LAO.
 
@@ -58,7 +58,7 @@ The PoP Scala backend is used by LAO organizers and witnesses in order to store 
 </div>
 
 
-In more details, the whole backend is a giant [DSL graph](https://doc.akka.io/docs/akka/current/stream/stream-graphs.html) (see iamge below). Whenever a new request is received (blue "Source" circle), a new `ClientActor` is automatically created for each new client. This actor *represents the fundamental link between a particular client and the server*; any message sent to the actor will arrive directly in the client's mailbox.
+In more details, the whole backend is a giant [DSL graph](https://doc.akka.io/docs/akka/current/stream/stream-graphs.html) (see image below). Whenever a new request is received (blue "Source" circle), a new `ClientActor` is automatically created for each new client. This actor *represents the fundamental link between a particular client and the server*; any message sent to the actor will arrive directly in the client's mailbox.
 
 The `ClientActor` then transmits data destined for the server directly to a partitioner for further examination. This partitioner will decide which path a particular message will follow (e.g. a JSON-rpc query will not be treated the same way as a JSON-rpc response).
 
@@ -95,7 +95,7 @@ Please note that the JSON-RPC definitions in the root of the repository are to b
 a source of truth since the validation library checks the messages against it.
 
 :information_source: When you need to create a new object, please refer to existing message types and in particular
-their `buildFromJson` method to get an idea about how to implement a new type. In order to tell the encoder/decoder how to encode/decode the new message (e.g. `buildFromJson`), its "receipe" must be added directly in the `json/MessageDataProtocol.scala` file.
+their `buildFromJson` method to get an idea about how to implement a new type. In order to tell the encoder/decoder how to encode/decode the new message (e.g. `buildFromJson`), its "recipe" must be added directly in the `json/MessageDataProtocol.scala` file.
 
 
 ### Spray-json Conversion
@@ -153,7 +153,7 @@ Once again, a lot of examples of such cases are present within the codebase
 ### Validation
 
 All the incoming messages are validated in a two-steps process using the `pubsub/graph/validators` package:
-1. Check confirmity with the custom JSON-rpc protocol using `[...]validators/Validator.scala:schemaValidator`;
+1. Check conformity with the custom JSON-rpc protocol using `[...]validators/Validator.scala:schemaValidator`;
 2. Check information validity (e.g. correct signature) using the rest of the `[...]validators` package.
 
 Each additional message constraint (e.g. in this particular case, "start_time" should always equal "end_time") is checked in the corresponding validator (e.g. `LaoValidator`) before the case class instance representing the message is created.
@@ -201,7 +201,7 @@ final case class Write(channel: Channel, message: Message) extends Event
 final case class Read(channel: Channel, id: Hash) extends Event
 ```
 
-`DbActor` will then answer using one of its predetermined answers alors defined within the same file:
+`DbActor` will then answer using one of its predetermined answers defined within the same file:
 
 ```scala
 // DbActor Events correspond to messages the actor may emit
@@ -224,7 +224,7 @@ val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
 	)
 }
 
-// Await.result waits for <duration> for the future <f> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is succesful, or throws if the Future termintes withtout being successful (i.e. either Failure or Timeout) 
+// Await.result waits for <duration> for the future <f> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is successful, or throws if the Future terminates without being successful (i.e. either Failure or Timeout) 
 Await.result(f, duration)
 ```
 
@@ -232,14 +232,113 @@ Await.result(f, duration)
 
 :information_source: the database may easily be reset/purged by either deleting a folder corresponding to a channel or by deleting the `database` folder entirely
 
-## Debugging Tips
+## 4.	Git(Hub)
+
+### Import the project
+
+`cd` where you want to have your project located and then clone the project using the following commands
+
+```bash
+git clone https://github.com/dedis/student_21_pop.git [folderProjectName]
+```
+
+We then want to navigate to the `be2-scala` subfolder
+
+```bash
+cd <folderProjectName>/be2-scala
+```
+
+You can then open the project using your favorite IDE (e.g. `idea .` for IntelliJ and `code .` for VSCode)
+
+---
+
+### Create a new branch
+
+By default, the new branch you create will be a copy of `master`
+
+```bash
+git checkout -b <branchName>
+```
+
+If you rather want to make a copy of branch `x` (e.g. a branch that is currently being reviewed, i.e. not merged), use this instead
+
+```bash
+git checkout <x>
+git checkout -b <branchName>
+```
+
+---
+
+### Push changes on the remote server
+
+When pushing changes, you first want to **commit** the changes you've applied using
+
+```bash
+git add <fileName>					# add file <fileName> to the commit
+git commit -m"<message>"    # add a title to the commit (switch <message> for the actual message)
+
+## Note: You may also add files separately using
+git add <fileName>
+
+## Note: You may also add all modified (!= new) files to the commit and set a title using
+git commit -am"<message>"
+
+## Note: You may also set a title and description for a specific commit using your favorite IDE (obviously doom emacs ^^). Then save and quit
+git add <fileName>
+git commit
+```
+
+<div align="center">
+  <img alt="Example of git commit command" src="images/example-git-commit.png" width="700" />
+</div>
+
+:information_source: Do not create a commit with 2.000 lines of codes! Short commit with meaningful titles/description are way better and way easier to review
+
+:information_source: There are faster ways to add multiple files in the commit such as `git commit <-u|.>`. You can check the corresponding man page for more information 
+
+You then finally want to pull/push the changes
+
+```bash
+git pull			# safety check to see if no one applies changes to your branch in your absence
+git push			# push the commited changes
+```
+
+Note that if you just created the branch, you'll need to tell git once where to push the changes using the following command instead of `git push`
+
+```bash
+git push -u origin <branchName>
+```
+
+:warning: You cannot directly push changes on `master`! For that, you need to go through the process of creating a pull request (see below)
+
+---
+
+### Merge a branch into another
+
+Navigate (using `git checkout <branchName>`) to the branch you want the merge **to be applied to** (i.e. the branch that we merge another into!). Then perform the following command to merge the content of branch `x` into the current checked out branch
+
+```bash
+git merge <x>
+```
+
+---
+
+### Create a pull request
+
+Creating a pull request (PR) can only be done with on the [GitHub website](https://github.com/dedis/student_21_pop/pulls) by navigating on "Pull requests". Click on the big green button titled "New pull request" and choose the receiving branch (generally `master`) as well as the branch you want to merge into the latter (e.g. `work-be2-scala-raulinn-test`). Click on "Create pull request".
+
+You can then set a title and description to your PR as well as set a label (e.g. `be2-scala`), an assignee (the person responsible for the code), a project (if any) and ask for a specific reviewer using the right side bar. Click on "Create pull request"
+
+## 5.	Debugging Tips
 
 The best way to "intercept" a `GraphMessage` being processed in the graph is to launch the server in debug mode, and then sending an isolated message to the server triggering the bug.
 
 :information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/`) is a useful tool to achieve this result
 
 
-## Coding Styles
+## 6.	Coding Styles
 
-??? link + lint?
+A simple way to have a coherent style across the codebase is to use the IDE features of "code cleanup". For example, in IntelliJ, click on the `src/main/scala` folder and then on `Code -> Reformat Code`. You can then check "include subdirectories", "optimize imports", and "cleanup code" checkbox options. Be careful to not apply these changes to `src/test` folder as it transforms the scalatest syntax into a mess difficult to understand.
+
+Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
 
