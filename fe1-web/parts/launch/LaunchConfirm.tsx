@@ -14,8 +14,9 @@ import { Channel } from '../../model/objects';
 import PROPS_TYPE from '../../res/Props';
 
 /**
- * UI to ask the address where you want to connect after having launched an LAO.
+ * UI to ask the address where you want to connect for launching an LAO.
  */
+
 const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
 const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
   const initialAddress = 'ws://127.0.0.1:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(initialAddress);
-  const { laoName } = route.params;
+  const { laoName } = route.params!!;
 
   const onButtonConfirm = async () => {
     getNetworkManager().connect(serverUrl);
@@ -49,10 +50,6 @@ const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
       );
   };
 
-  const selectText = (e: any) => {
-    e.target.select();
-  };
-
   return (
     <View style={styleContainer.flex}>
       <View style={styles.viewCenter}>
@@ -62,7 +59,7 @@ const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
           placeholder={STRINGS.connect_server_uri}
           onChangeText={(input: string) => setServerUrl(input)}
           defaultValue={serverUrl}
-          onClick={selectText}
+          selectTextOnFocus
         />
       </View>
       <WideButtonView
@@ -79,6 +76,11 @@ const LaunchConfirm = ({ navigation, route }: IPropTypes) => {
 
 const propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,
+  route: PropTypes.shape({
+    params: PropTypes.shape({
+      laoName: PropTypes.string.isRequired,
+    }),
+  }).isRequired,
 };
 
 LaunchConfirm.propTypes = propTypes;

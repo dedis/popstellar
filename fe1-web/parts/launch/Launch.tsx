@@ -20,13 +20,14 @@ import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
 
 /**
- * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
- * and cancel button
+ * Manages the Launch screen: a description string, a LAO name text input, a launch LAO button,
+ * and a cancel button. For now, it has 2 more test buttons.
  *
- * The Launch button does nothing
+ * The launch button navigates into the launch confirm tab, which asks an address to which you want
+ * to connect.
+ *
  * The cancel button clear the LAO name field and redirect to the Home screen
  *
- * TODO implement the launch button action
  */
 const styles = StyleSheet.create({
   textInput: {
@@ -112,5 +113,9 @@ const propTypes = {
 Launch.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
+
+type LaunchConfirmParams = {
+  laoName: string
+};
 
 export default Launch;
