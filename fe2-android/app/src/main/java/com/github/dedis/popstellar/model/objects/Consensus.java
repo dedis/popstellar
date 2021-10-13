@@ -26,10 +26,10 @@ public class Consensus extends Event {
 
   private String proposer;
   private Set<String> acceptors;
-  private Map<String, Boolean> acceptorsResponses;  // map the public key of acceptors response
-  private Map<String, String> acceptorsToMessageId; // map the public key of acceptors to the id of their message
-
-
+  private Map<String, Boolean>
+      acceptorsResponses; // map the public key of acceptors to their sresponse
+  private Map<String, String>
+      acceptorsToMessageId; // map the public key of acceptors to the id of their message
 
   public Consensus(long creation, ConsensusKey key, Object value) {
     this.id = generateConsensusId(creation, key.getType(), key.getId(), key.getProperty(), value);
@@ -47,6 +47,9 @@ public class Consensus extends Event {
   }
 
   public void setMessageId(String messageId) {
+    if (messageId == null) {
+      throw new IllegalArgumentException("consensus message id shouldn't be null");
+    }
     this.messageId = messageId;
   }
 
@@ -55,7 +58,7 @@ public class Consensus extends Event {
   }
 
   public void setChannel(String channel) {
-    if (id == null) {
+    if (channel == null) {
       throw new IllegalArgumentException("consensus channel shouldn't be null");
     }
     this.channel = channel;
@@ -105,7 +108,6 @@ public class Consensus extends Event {
     this.end = end;
   }
 
-
   public EventState getState() {
     return state;
   }
@@ -147,7 +149,6 @@ public class Consensus extends Event {
     return acceptorsToMessageId;
   }
 
-
   public void putAcceptorResponse(String acceptor, String messageId, boolean accept) {
     if (acceptor == null) {
       throw new IllegalArgumentException("Acceptor public key cannot be null.");
@@ -168,11 +169,10 @@ public class Consensus extends Event {
   }
 
   public boolean canBeAccepted() {
-    //Part 1 : all acceptors need to accept
+    // Part 1 : all acceptors need to accept
     long countAccepted = acceptorsResponses.values().stream().filter(b -> b).count();
     return countAccepted == acceptors.size();
   }
-
 
   @Override
   public long getStartTimestamp() {
@@ -189,7 +189,12 @@ public class Consensus extends Event {
     return end;
   }
 
-
+  @Override
+  public String toString() {
+    return String.format(
+        "Consensus{id='%s', channel='%s', messageId='%s', key=%s, value='%s', creation=%s, end=%s, state=%s, isAccepted=%b, proposer='%s'}",
+        id, channel, messageId, key, value, creation, end, state, isAccepted, proposer);
+  }
 
   public static String generateConsensusId(
       long createdAt, String type, String id, String property, Object value) {
