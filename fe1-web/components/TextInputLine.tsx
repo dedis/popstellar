@@ -1,10 +1,13 @@
+import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, TextInput, TextStyle } from 'react-native';
 import { Spacing, Typography } from '../styles';
 
 /**
- * Component which creates the typical one line text input used in the application
+ * Component which creates the typical one line text input used in the application.
+ * When we click on it, the whole text is selected to allow easier rewriting.
  */
+
 const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
@@ -14,17 +17,13 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const selectText = (e: any) => {
-  e.target.select();
-};
-
 const TextInputLine = (props: IPropTypes) => {
   const { onChangeText } = props;
   let { placeholder } = props;
   let { defaultValue } = props;
 
-  if (placeholder == null) placeholder = undefined;
-  if (defaultValue == null) defaultValue = undefined;
+  if (placeholder == null) placeholder = '';
+  if (defaultValue == null) defaultValue = '';
 
   return (
     <TextInput
@@ -32,7 +31,7 @@ const TextInputLine = (props: IPropTypes) => {
       onChangeText={onChangeText}
       placeholder={placeholder}
       defaultValue={defaultValue}
-      onClick={selectText}
+      selectTextOnFocus
     />
   );
 };
