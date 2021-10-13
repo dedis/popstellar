@@ -269,7 +269,6 @@ public class LAORepository {
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(subscribe);
-    Log.d(TAG, "sending subscribe");
 
     subscribedChannels.add(channel);
 
@@ -337,6 +336,11 @@ public class LAORepository {
    * @return the election corresponding to this channel
    */
   public Election getElectionByChannel(String channel) {
+    Log.d(TAG, "querying election for channel " + channel);
+
+    if (channel.split("/").length < 4)
+      throw new IllegalArgumentException("invalid channel for an election : " + channel);
+
     Lao lao = getLaoByChannel(channel);
     Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
     if (!electionOption.isPresent()) {
@@ -352,6 +356,8 @@ public class LAORepository {
    * @return the Lao corresponding to this channel
    */
   public Lao getLaoByChannel(String channel) {
+    Log.d(TAG, "querying lao for channel " + channel);
+
     String[] split = channel.split("/");
     return laoById.get(ROOT + split[2]).getLao();
   }

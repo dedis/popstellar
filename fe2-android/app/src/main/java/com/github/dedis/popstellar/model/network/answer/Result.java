@@ -12,4 +12,8 @@ public class Result extends Answer {
     super(id);
   }
 
+  @Override
+  public String toString() {
+    return "Result{" + "id=" + getId() + '}';
+  }
 }

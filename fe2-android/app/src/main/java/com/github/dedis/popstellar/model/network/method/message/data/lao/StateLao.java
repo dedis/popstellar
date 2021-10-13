@@ -6,6 +6,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -129,13 +131,18 @@ public class StateLao extends Data {
         + '\''
         + ", creation="
         + creation
-        + ", last_modified="
+        + ", lastModified="
         + lastModified
         + ", organizer='"
         + organizer
         + '\''
+        + ", modificationId='"
+        + modificationId
+        + '\''
         + ", witnesses="
-        + witnesses
+        + Arrays.toString(witnesses.toArray())
+        + ", modificationSignatures="
+        + Arrays.toString(modificationSignatures.toArray())
         + '}';
   }
 
