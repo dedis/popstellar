@@ -137,11 +137,15 @@ public class ElectionHandlerTest extends TestCase {
   @Test
   public void testHandleElectionSetup() {
     // Create the setup Election message
-    ElectionSetup electionSetup = new ElectionSetup("election 2", election.getStartTimestamp(),
-        election.getEndTimestamp(), Collections.singletonList(electionQuestion.getVotingMethod()),
+    ElectionSetup electionSetup = new ElectionSetup("election 2",
+        election.getCreation(),
+        election.getStartTimestamp(),
+        election.getEndTimestamp(),
+        Collections.singletonList(electionQuestion.getVotingMethod()),
         Collections.singletonList(electionQuestion.getWriteIn()),
         Collections.singletonList(electionQuestion.getBallotOptions()),
-        Collections.singletonList(electionQuestion.getQuestion()), lao.getId());
+        Collections.singletonList(electionQuestion.getQuestion()),
+        lao.getId());
     MessageGeneral message = new MessageGeneral(
         Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionSetup, signer,
         Injection.provideGson());

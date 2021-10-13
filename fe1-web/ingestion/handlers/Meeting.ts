@@ -1,4 +1,4 @@
-import { Message } from 'model/network/method/message';
+import { ExtendedMessage } from 'model/network/method/message';
 import {
   ActionType, ObjectType, CreateMeeting, StateMeeting,
 } from 'model/network/method/message/data';
@@ -10,7 +10,7 @@ import { hasWitnessSignatureQuorum, getEventFromId } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
-function handleMeetingCreateMessage(msg: Message): boolean {
+function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.MEETING
     || msg.messageData.action !== ActionType.CREATE) {
     console.warn('handleMeetingCreateMessage was called to process an unsupported message', msg);
@@ -42,7 +42,7 @@ function handleMeetingCreateMessage(msg: Message): boolean {
   return true;
 }
 
-function handleMeetingStateMessage(msg: Message): boolean {
+function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.MEETING
     || msg.messageData.action !== ActionType.STATE) {
     console.warn('handleMeetingStateMessage was called to process an unsupported message', msg);
@@ -86,7 +86,7 @@ function handleMeetingStateMessage(msg: Message): boolean {
   return true;
 }
 
-export function handleMeetingMessage(msg: Message) {
+export function handleMeetingMessage(msg: ExtendedMessage) {
   if (msg.messageData.object !== ObjectType.MEETING) {
     console.warn('handleMeetingMessage was called to process an unsupported message', msg);
     return false;

@@ -194,9 +194,6 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 		socket.SendError(&publish.ID, err)
 		return
 	}
-
-	log.Printf("sending empty result")
-	socket.SendResult(publish.ID, nil)
 }
 
 // handleMessageFromClient handles an incoming message from an end user.

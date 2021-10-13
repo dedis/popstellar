@@ -1,11 +1,11 @@
 import 'jest-extended';
 
 import { Hash } from '../Hash';
-import { channelFromId } from '../Channel';
+import { channelFromIds } from '../Channel';
 
 test('Channel should return channels properly', () => {
   const id: Hash = Hash.fromStringArray('id');
 
-  expect(channelFromId()).toEqual('/root');
-  expect(channelFromId(id)).toEqual(`/root/${id}`);
+  expect(channelFromIds()).toEqual('/root');
+  expect(channelFromIds(id)).toEqual(`/root/${id}`);
 });

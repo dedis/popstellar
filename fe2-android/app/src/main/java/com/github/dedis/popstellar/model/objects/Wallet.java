@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.model.objects;
 import android.content.Context;
 import android.util.Log;
 import androidx.core.util.Pair;
-import com.github.dedis.popstellar.model.stellar.SLIP10;
+import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AesGcmKeyManager;

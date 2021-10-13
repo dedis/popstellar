@@ -2,11 +2,12 @@ import React from 'react';
 import {
   SectionList, StyleSheet, Text, TextStyle, View, ViewStyle,
 } from 'react-native';
+import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
+import { makeIsLaoOrganizer } from 'store';
 
 import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
 
 import * as RootNavigation from 'navigation/RootNavigation';
 import TextBlock from 'components/TextBlock';
@@ -57,16 +58,18 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
 */
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
-  const { isOrganizer } = props;
+
+  const isOrganizerSelect = makeIsLaoOrganizer();
+  const isOrganizer = useSelector(isOrganizerSelect);
 
   const renderItemFn = (
-    ({ item }: any) => <Event event={item} renderItemFn={renderItemFn} />
+    ({ item }: any) => <Event event={item} isOrganizer={isOrganizer} renderItemFn={renderItemFn} />
   );
 
   return (
     <SectionList
       sections={data}
-      keyExtractor={(item, index) => `${item?.object}-${item?.id}-${index}`}
+      keyExtractor={(item) => `${item.id}`}
       renderItem={renderItemFn}
       renderSectionHeader={({ section: { title } }) => renderSectionHeader(title, !!isOrganizer)}
     />
@@ -76,14 +79,12 @@ const EventListCollapsible = (props: IPropTypes) => {
 const propTypes = {
   data: PropTypes.arrayOf(PropTypes.shape({
     title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(PROPS_TYPE.event).isRequired,
+    data: PropTypes.arrayOf(PropTypes.shape({})),
   }).isRequired).isRequired,
-  isOrganizer: PropTypes.bool,
 };
 EventListCollapsible.propTypes = propTypes;
 
 EventListCollapsible.defaultProps = {
-  isOrganizer: false,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

@@ -6,7 +6,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
-import java.time.Instant;
 import java.util.Optional;
 
 /**
@@ -28,8 +27,8 @@ public class CreateRollCall extends Data {
 
   /**
    * Constructor for a data Create Roll-Call Event
-   *
-   * @param name          name of the Roll-Call
+   *  @param name         name of the Roll-Call
+   * @param creation      of the Roll-Call
    * @param proposedStart of the Roll-Call
    * @param proposedEnd   of the Roll-Call
    * @param location      location of the Roll-Call
@@ -38,18 +37,15 @@ public class CreateRollCall extends Data {
    */
   public CreateRollCall(
       String name,
+      long creation,
       long proposedStart,
       long proposedEnd,
       String location,
       @Nullable String description,
       String laoId) {
     this.name = name;
-    this.creation = Instant.now().getEpochSecond();
-    if (proposedStart <= this.creation) {
-      this.proposedStart = this.creation;
-    } else {
-      this.proposedStart = proposedStart;
-    }
+    this.creation = creation;
+    this.proposedStart = proposedStart;
     if (proposedEnd == 0) {
       this.proposedEnd = proposedStart + 3600;
     } else {

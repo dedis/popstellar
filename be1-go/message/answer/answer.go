@@ -12,8 +12,8 @@ type Answer struct {
 	message.JSONRPCBase
 
 	ID     *int    `json:"id"`
-	Result *Result `json:"result"`
-	Error  *Error  `json:"error"`
+	Result *Result `json:"result,omitempty"`
+	Error  *Error  `json:"error,omitempty"`
 }
 
 // Result can be either a 0 int or a slice of messages

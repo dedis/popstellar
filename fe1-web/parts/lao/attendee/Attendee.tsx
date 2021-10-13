@@ -17,7 +17,6 @@ import LaoProperties from 'components/eventList/LaoProperties';
 const Attendee = () => {
   const eventList = makeEventsList();
   const events = useSelector(eventList);
-
   const now = Timestamp.EpochNow();
   const pastEvents: LaoEvent[] = [];
   const currentEvents: LaoEvent[] = [];

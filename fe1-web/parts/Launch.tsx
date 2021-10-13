@@ -87,11 +87,6 @@ const Launch = ({ navigation }: IPropTypes) => {
 
   const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
 
-  const cancelAction = () => {
-    setInputLaoName('');
-    navigation.navigate('Home');
-  };
-
   return (
     <View style={styleContainer.flex}>
       <View style={styles.viewTop}>
@@ -105,7 +100,7 @@ const Launch = ({ navigation }: IPropTypes) => {
       </View>
       <View style={styles.viewBottom}>
         <WideButtonView
-          title={`${STRINGS.launch_button_launch} -- Connect to port 8080, Create LAO & Open UI`}
+          title={`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}
           onPress={() => onButtonLaunchPress(inputLaoName)}
         />
         <WideButtonView
@@ -115,14 +110,6 @@ const Launch = ({ navigation }: IPropTypes) => {
         <WideButtonView
           title="[TEST] Clear (persistent) storage"
           onPress={onTestClearStorage}
-        />
-        <WideButtonView
-          title="[TEST] GoTo newly created LAO"
-          onPress={() => navigation.navigate(STRINGS.app_navigation_tab_organizer, {})}
-        />
-        <WideButtonView
-          title={STRINGS.general_button_cancel}
-          onPress={cancelAction}
         />
       </View>
     </View>

@@ -135,6 +135,15 @@ test("message data: message", () => {
     expect(message_witness).toBeValid(messageDataSchema)
 })
 
+test("message data: chirp", () => {
+    chirp_add = require("../examples/messageData/chirp_add_publish.json")
+    expect(chirp_add).toBeValid(messageDataSchema)
+
+    chirp_add_broadcast = require("../examples/messageData/chirp_add_broadcast.json")
+    expect(chirp_add_broadcast).toBeValid(messageDataSchema)
+
+})
+
 function printError(errors) {
     return errors
         .map((e) => JSON.stringify(e, null, "  "))

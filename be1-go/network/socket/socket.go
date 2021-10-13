@@ -169,28 +169,29 @@ func (s *baseSocket) Send(msg []byte) {
 // SendError is a utility method that allows sending an `error` as a
 // `message.Error` message to the socket.
 func (s *baseSocket) SendError(id *int, err error) {
-	log.Printf("Error: %v", err)
 	msgError := &answer.Error{}
 
-	if xerrors.As(err, &msgError) {
-		answer := answer.Answer{
-			ID:    id,
-			Error: msgError,
-		}
-
-		answerBuf, err := json.Marshal(answer)
-		if err != nil {
-			s.log.Err(err).Msg("failed to marshal answer")
-			return
-		}
-
-		s.log.Info().
-			Str("to", s.conn.RemoteAddr().String()).
-			Str("msg", string(answerBuf)).
-			Msg("send error")
-
-		s.send <- answerBuf
+	if !xerrors.As(err, &msgError) {
+		msgError = answer.NewError(-6, err.Error())
 	}
+
+	answer := answer.Answer{
+		ID:    id,
+		Error: msgError,
+	}
+
+	answerBuf, err := json.Marshal(answer)
+	if err != nil {
+		s.log.Err(err).Msg("failed to marshal answer")
+		return
+	}
+
+	s.log.Info().
+		Str("to", s.conn.RemoteAddr().String()).
+		Str("msg", string(answerBuf)).
+		Msg("send error")
+
+	s.send <- answerBuf
 }
 
 // SendResult is a utility method that allows sending a `message.Result` to the
