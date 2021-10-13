@@ -341,6 +341,7 @@ func (c *Channel) verifyMessageLaoID(id string) error {
 	if c.channelID != id {
 		return xerrors.Errorf("lao id is %s, should be %s", id, c.channelID)
 	}
+
 	return nil
 }
 
@@ -640,9 +641,9 @@ func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) 
 	h.Write([]byte(c.channelID))
 	h.Write([]byte(fmt.Sprintf("%d", msg.Creation)))
 	h.Write([]byte(msg.Name))
-	testRollCallID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
-	if msg.ID != testRollCallID {
+	if msg.ID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.ID)
 	}
 
@@ -657,9 +658,9 @@ func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) erro
 	h.Write([]byte(c.channelID))
 	h.Write([]byte(msg.Opens))
 	h.Write([]byte(fmt.Sprintf("%d", msg.OpenedAt)))
-	testRollCallID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
-	if msg.UpdateID != testRollCallID {
+	if msg.UpdateID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
 	}
 
@@ -674,9 +675,9 @@ func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) er
 	h.Write([]byte(c.channelID))
 	h.Write([]byte(msg.Closes))
 	h.Write([]byte(fmt.Sprintf("%d", msg.ClosedAt)))
-	testRollCallID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
-	if msg.UpdateID != testRollCallID {
+	if msg.UpdateID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
 	}
 

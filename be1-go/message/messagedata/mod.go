@@ -33,7 +33,8 @@ const (
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
 
-	// RootPrefix denotes the prefix for the root channel, used to verify the channel of origin of some message
+	// RootPrefix denotes the prefix for the root channel, used to verify the
+	// channel of origin of some message
 	RootPrefix = "/root/"
 )
 
