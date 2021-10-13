@@ -40,13 +40,13 @@ case object LaoHandler extends MessageHandler {
         // we are using the lao id instead of the message_id at lao creation
         val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
 
-        val f: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
+        val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
           case DbActorWriteAck => Left(rpcMessage)
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
 
-        Await.result(f, duration)
+        Await.result(ask, duration)
 
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
@@ -58,18 +58,11 @@ case object LaoHandler extends MessageHandler {
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
-    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
-    val ask = dbActor.ask("TODO").map {
-      case Some(_) => dbAskWritePropagate(rpcMessage)
-      // TODO careful about asynchrony and the fact that the network may reorder some messages
-      case _ => Right(PipelineError(
-        ErrorCodes.INVALID_DATA.id,
-        s"Unable to request lao state: invalid modification_id '$modificationId' (no message associated to this id)",
-        rpcMessage.id
-      ))
-    }
-    Await.result(ask, duration)
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateMeeting is not implemented", rpcMessage.id))
   }
 
-  def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
+  def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
 }

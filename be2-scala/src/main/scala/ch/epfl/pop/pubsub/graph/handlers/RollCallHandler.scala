@@ -32,20 +32,22 @@ case object RollCallHandler extends MessageHandler {
   }
 
   def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val message: Message = rpcMessage.getParamsMessage.get
-
-    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
-      case DbActor.DbActorWriteAck => Left(rpcMessage)
-      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
-    }
-
-    Await.result(f, duration)
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
-  def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
+  def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
 
-  def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
+  def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
 
-  def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = dbAskWritePropagate(rpcMessage)
+  def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
 }
