@@ -20,13 +20,14 @@ import scala.io.StdIn
 import scala.util.{Failure, Success}
 
 object Server {
+  private final def PORT: Int = 8000
+
+  private final def PATH: String = ""
 
   /**
    * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
-    val PORT = 8000
-    val PATH = ""
 
     val system = akka.actor.ActorSystem("pop-be2-inner-actor-system")
     implicit val typedSystem: ActorSystem[Nothing] = system.toTyped
@@ -37,17 +38,17 @@ object Server {
       val options: Options = new Options()
       options.createIfMissing(true)
 
-      val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor()), "DbActor")
-      val pubSubMediator: ActorRef = system.actorOf(PubSubMediator.props(dbActorRef))
+      val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
+      val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef)), "DbActor")
 
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(PATH) {
-        handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediator, dbActorRef)(system))
+        handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef)(system))
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
       val bindingFuture = Http().newServerAt("localhost", PORT).bind(publishSubscribeRoute)
       bindingFuture.onComplete {
-        case Success(_) => println("ch.epfl.pop.Server online at ws://localhost:" + PORT + "/" + PATH)
+        case Success(_) => println(s"ch.epfl.pop.Server online at ws://localhost:$PORT/$PATH")
         case Failure(_) =>
           println("ch.epfl.pop.Server failed to start. Terminating actor system")
           system.terminate()

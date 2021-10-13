@@ -46,6 +46,8 @@ import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
@@ -93,6 +95,9 @@ public class LAORepository {
   // Observable to subscribe to the incoming messages
   private Observable<GenericMessage> upstream;
 
+  // Disposable of with the lifetime of an LAORepository instance
+  private final Disposable disposables;
+
   private LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
@@ -122,8 +127,10 @@ public class LAORepository {
     this.schedulerProvider = schedulerProvider;
 
     // subscribe to incoming messages and the unprocessed message queue
-    startSubscription();
-    subscribeToWebsocketEvents();
+    disposables = new CompositeDisposable(
+            subscribeToUpstream(),
+            subscribeToWebsocketEvents()
+    );
   }
 
   public static synchronized LAORepository getInstance(
@@ -139,20 +146,23 @@ public class LAORepository {
   }
 
   public static void destroyInstance() {
-    INSTANCE = null;
+    if (INSTANCE != null) {
+      INSTANCE.dispose();
+      INSTANCE = null;
+    }
   }
 
-  private void subscribeToWebsocketEvents() {
-    websocketEvents
+  private Disposable subscribeToWebsocketEvents() {
+    return websocketEvents
         .subscribeOn(schedulerProvider.io())
         .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
         .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
   }
 
-  private void startSubscription() {
+  private Disposable subscribeToUpstream() {
     // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
     // higher priority
-    Observable
+    return Observable
         .merge(upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
         .subscribeOn(schedulerProvider.newThread())
         .subscribe(this::handleGenericMessage);
@@ -172,7 +182,7 @@ public class LAORepository {
       if (subscribeRequests.containsKey(id)) {
         handleSubscribe(this, id, subscribeRequests);
       } else if (catchupRequests.containsKey(id)) {
-        handleCatchup(this, id, genericMessage, catchupRequests, unprocessed);
+        handleCatchup(this, id, result, catchupRequests, unprocessed);
       } else if (createLaoRequests.containsKey(id)) {
         handleCreateLao(this, id, createLaoRequests);
       }
@@ -367,5 +377,9 @@ public class LAORepository {
 
   public Map<String, MessageGeneral> getMessageById() {
     return messageById;
+  }
+
+  private void dispose() {
+    disposables.dispose();
   }
 }

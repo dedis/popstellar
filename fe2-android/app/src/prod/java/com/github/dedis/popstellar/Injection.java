@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.util.Log;
+import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.repository.local.LAODatabase;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
@@ -108,6 +109,7 @@ public class Injection {
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
+        .registerTypeAdapter(ResultMessages.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
         .disableHtmlEscaping()
