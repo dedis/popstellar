@@ -8,7 +8,7 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ConsensusStart defines a message data
+// ConsensusPhase1Elect defines a message data
 type ConsensusPhase1Elect struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
@@ -36,9 +36,9 @@ func (message ConsensusPhase1Elect) Verify() error {
 	h.Write([]byte(message.Key.Property))
 	h.Write([]byte(message.Value))
 
-	testConsensusId := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
-	if message.InstanceID != testConsensusId {
+	if message.InstanceID != expectedID {
 		return xerrors.Errorf("invalid ConsensusStart message: invalid ID")
 	}
 

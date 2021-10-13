@@ -7,8 +7,10 @@ import (
 )
 
 const (
-	ConsensusObject            = "consensus"
-	ConsensusActionPhase1Elect = "phase-1-elect"
+	ConsensusObject                  = "consensus"
+	ConsensusActionPhase1Elect       = "phase-1-elect"
+	ConsensusActionPhase1ElectAccept = "phase-1-elect-accept"
+	ConsensuisActionPhase1Learn      = "phase-1-learn"
 
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"
