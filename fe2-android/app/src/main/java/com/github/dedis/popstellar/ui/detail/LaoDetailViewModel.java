@@ -630,7 +630,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, PUBLISH_MESSAGE);
       signatureMessage = new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
       MessageGeneral msg = new MessageGeneral(sender, signatureMessage, signer, mGson);
-      Disposable disposable =
+      disposables.add(
           mLAORepository
               .sendPublish(channel, msg)
               .subscribeOn(Schedulers.io())
@@ -646,8 +646,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                     }
                   },
                   throwable ->
-                      Log.d(TAG, "timed out waiting for result on sign message", throwable));
-      disposables.add(disposable);
+                      Log.d(TAG, "timed out waiting for result on sign message", throwable)));
+
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
@@ -1140,20 +1140,21 @@ public class LaoDetailViewModel extends AndroidViewModel
             updateLao.getWitnesses(),
             new ArrayList<>());
     MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
-    mLAORepository
-        .sendPublish(channel, stateMsg)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .timeout(5, TimeUnit.SECONDS)
-        .subscribe(
-            answer2 -> {
-              if (answer2 instanceof Result) {
-                Log.d(TAG, "updated " + s);
-              } else {
-                Log.d(TAG, "failed to update " + s);
-              }
-            },
-            throwable -> Log.d(TAG, "timed out waiting for result on update " + s, throwable));
+    disposables.add(
+        mLAORepository
+            .sendPublish(channel, stateMsg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer2 -> {
+                  if (answer2 instanceof Result) {
+                    Log.d(TAG, "updated " + s);
+                  } else {
+                    Log.d(TAG, "failed to update " + s);
+                  }
+                },
+                throwable -> Log.d(TAG, "timed out waiting for result on update " + s, throwable)));
   }
 
   public void cancelEdit() {

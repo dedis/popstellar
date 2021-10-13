@@ -9,6 +9,7 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -109,6 +110,7 @@ public class Injection {
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
+        .registerTypeAdapter(ResultMessages.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
         .disableHtmlEscaping()

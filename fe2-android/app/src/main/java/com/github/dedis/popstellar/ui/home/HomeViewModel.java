@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.disposables.CompositeDisposable;
 
 public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
@@ -82,7 +82,7 @@ public class HomeViewModel extends AndroidViewModel
   private final AndroidKeysetManager mKeysetManager;
   private Wallet wallet;
 
-  private Disposable disposable;
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public HomeViewModel(
       @NonNull Application application,
@@ -120,26 +120,27 @@ public class HomeViewModel extends AndroidViewModel
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     String channel = "/root/" + barcode.rawValue;
-    mLAORepository
-        .sendSubscribe(channel)
-        .observeOn(AndroidSchedulers.mainThread())
-        .timeout(3, TimeUnit.SECONDS)
-        .subscribe(
-            answer -> {
-              if (answer instanceof Result) {
-                Log.d(TAG, "got success result for subscribe to lao");
-              } else {
-                Log.d(
-                    TAG,
-                    "got failure result for subscribe to lao: "
-                        + ((Error) answer).getError().getDescription());
-              }
-              openHome();
-            },
-            throwable -> {
-              Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable);
-              openHome(); // so that it doesn't load forever
-            });
+    disposables.add(
+        mLAORepository
+            .sendSubscribe(channel)
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(3, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "got success result for subscribe to lao");
+                  } else {
+                    Log.d(
+                        TAG,
+                        "got failure result for subscribe to lao: "
+                            + ((Error) answer).getError().getDescription());
+                  }
+                  openHome();
+                },
+                throwable -> {
+                  Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable);
+                  openHome(); // so that it doesn't load forever
+                }));
     setConnectingLao(channel);
     openConnecting();
   }
@@ -147,10 +148,9 @@ public class HomeViewModel extends AndroidViewModel
   /** onCleared is used to cancel all subscriptions to observables. */
   @Override
   protected void onCleared() {
-    if (disposable != null) {
-      disposable.dispose();
-    }
     super.onCleared();
+
+    disposables.dispose();
   }
 
   /**
@@ -172,25 +172,26 @@ public class HomeViewModel extends AndroidViewModel
 
       MessageGeneral msg = new MessageGeneral(organizerBuf, createLao, signer, mGson);
 
-      mLAORepository
-          .sendPublish("/root", msg)
-          .observeOn(AndroidSchedulers.mainThread())
-          .timeout(5, TimeUnit.SECONDS)
-          .subscribe(
-              answer -> {
-                if (answer instanceof Result) {
-                  Log.d(TAG, "got success result for create lao");
-                  openHome();
-                } else {
-                  Log.d(
-                      TAG,
-                      "got failure result for create lao: "
-                          + ((Error) answer).getError().getDescription());
-                }
-              },
-              throwable -> {
-                Log.d(TAG, "timed out waiting for a response for create lao", throwable);
-              });
+      disposables.add(
+          mLAORepository
+              .sendPublish("/root", msg)
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "got success result for create lao");
+                      openHome();
+                    } else {
+                      Log.d(
+                          TAG,
+                          "got failure result for create lao: "
+                              + ((Error) answer).getError().getDescription());
+                    }
+                  },
+                  throwable -> {
+                    Log.d(TAG, "timed out waiting for a response for create lao", throwable);
+                  }));
 
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to get public key", e);

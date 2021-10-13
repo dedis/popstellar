@@ -7,13 +7,14 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.model.network.method.Broadcast;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -83,28 +84,38 @@ public class GenericHandler {
    *
    * @param laoRepository the repository to access the LAOs
    * @param id the id of the catchup request
-   * @param genericMessage the generic message received
+   * @param result the result message received
    * @param catchupRequests the pending catchup requests
    * @param unprocessed the unprocessed messages
    */
   public static void handleCatchup(
       LAORepository laoRepository,
       int id,
-      GenericMessage genericMessage,
+      Result result,
       Map<Integer, String> catchupRequests,
       Subject<GenericMessage> unprocessed) {
     Log.d(TAG, "got a catchup request in response to request id " + id);
     String channel = catchupRequests.get(id);
     catchupRequests.remove(id);
 
-    List<MessageGeneral> messages =
-        ((Result) genericMessage).getMessages().orElse(new ArrayList<>());
+    List<MessageGeneral> messages = Collections.emptyList();
+    if (result instanceof ResultMessages) {
+      messages = ((ResultMessages) result).getMessages();
+    } else {
+      Log.w(
+          TAG,
+          "Invalid type of Result '"
+              + result.getClass().getSimpleName()
+              + "' for catchup with id : "
+              + id);
+    }
+
     Log.d(TAG, "messages length: " + messages.size());
     // Handle all received messages from the catchup
     for (MessageGeneral msg : messages) {
       boolean enqueue = handleMessage(laoRepository, channel, msg);
       if (enqueue) {
-        unprocessed.onNext(genericMessage);
+        unprocessed.onNext(result);
       }
     }
   }
