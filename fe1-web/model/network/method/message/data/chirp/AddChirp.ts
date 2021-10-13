@@ -16,11 +16,17 @@ export class AddChirp implements MessageData {
   public readonly timestamp: Timestamp;
 
   constructor(msg: Partial<AddChirp>) {
-    if (!msg.text) throw new ProtocolError('Undefined \'text\' parameter encountered during \'AddChirp\'');
-    if (msg.text.length > 280) throw new ProtocolError('Max 280 characters');
+    if (!msg.text) {
+      throw new ProtocolError('Undefined \'text\' parameter encountered during \'AddChirp\'');
+    }
+    if (msg.text.length > 280) {
+      throw new ProtocolError('Max 280 characters');
+    }
     this.text = msg.text;
 
-    if (!msg.timestamp) throw new ProtocolError('Undifined \'timestamp\' parameter encountered during \'AddChirp\'');
+    if (!msg.timestamp) {
+      throw new ProtocolError('Undifined \'timestamp\' parameter encountered during \'AddChirp\'');
+    }
     checkTimestampStaleness(msg.timestamp);
     this.timestamp = msg.timestamp;
 
