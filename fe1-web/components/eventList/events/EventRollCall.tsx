@@ -9,6 +9,9 @@ import {
 } from 'model/objects';
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
+import STRINGS from 'res/strings';
+import PROPS_TYPE from 'res/Props';
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * Component used to display a RollCall event in the LAO event list
@@ -20,6 +23,7 @@ const EventRollCall = (props: IPropTypes) => {
   const { isOrganizer } = props;
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
+  const navigation = useNavigation();
 
   if (!lao) {
     console.warn('no LAO is currently active');
@@ -45,7 +49,9 @@ const EventRollCall = (props: IPropTypes) => {
         (e) => console.debug('Unable to send Roll call re-open request', e),
       );
     } else {
-      requestOpenRollCall(event.id).then().catch(
+      requestOpenRollCall(event.id).then(() => {
+        navigation.navigate(STRINGS.roll_call_open);
+      }).catch(
         (e) => console.debug('Unable to send Roll call open request', e),
       );
     }

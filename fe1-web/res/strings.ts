@@ -127,6 +127,9 @@ const STRINGS = {
   roll_call_create_location: 'Location*',
   roll_call_create_name: 'Name*',
 
+  /* --- Roll-call open page Strings --- */
+  roll_call_open: 'Open Roll-Call',
+
   /* --- Roll-call scanning Strings --- */
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',
   roll_call_scan_participant: 'participants scanned',
