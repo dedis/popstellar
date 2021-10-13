@@ -111,15 +111,96 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
 	}
 
 	socket.SendResult(id, nil)
-	panic("handleMessageFromOrganizer not implemented")
 }
 
 func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
-	panic("handleMessageFromClient not implemented")
+	socket := incMsg.Socket
+	byteMessage := incMsg.Message
+
+	// validate against json schema
+	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
+	if err != nil {
+		h.log.Err(err).Msg("message is not valid against json schema")
+		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
+		return
+	}
+
+	var queryBase query.Base
+
+	err = json.Unmarshal(byteMessage, &queryBase)
+	if err != nil {
+		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
+	}
+
+	var id int
+	var msgs []message.Message
+	var handlerErr error
+
+	switch queryBase.Method {
+	// TODO : treat the different message that the witness can get
+	}
+
+	if handlerErr != nil {
+		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
+	}
+
+	if queryBase.Method == query.MethodCatchUp {
+		socket.SendResult(id, msgs)
+		return
+	}
+
+	socket.SendResult(id, nil)
 }
 
 func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
-	panic("handleMessageFromWitness not implemented")
+	socket := incMsg.Socket
+	byteMessage := incMsg.Message
+
+	// validate against json schema
+	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
+	if err != nil {
+		h.log.Err(err).Msg("message is not valid against json schema")
+		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
+		return
+	}
+
+	var queryBase query.Base
+
+	err = json.Unmarshal(byteMessage, &queryBase)
+	if err != nil {
+		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
+	}
+
+	var id int
+	var msgs []message.Message
+	var handlerErr error
+
+	switch queryBase.Method {
+	// TODO : treat the different message that the witness can get
+	}
+
+	if handlerErr != nil {
+		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
+	}
+
+	if queryBase.Method == query.MethodCatchUp {
+		socket.SendResult(id, msgs)
+		return
+	}
+
+	socket.SendResult(id, nil)
 }
 
 func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) {

@@ -186,6 +186,30 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		if err != nil {
 			return xerrors.Errorf("failed to process phase 1 elect action: %w", err)
 		}
+	case messagedata.ConsensusActionPhase1ElectAccept:
+		var consensusPhase1ElectAccept messagedata.ConsensusPhase1ElectAccept
+
+		err := msg.UnmarshalData(&consensusPhase1ElectAccept)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal consensus#phase-1-elect-accept: %v", err)
+		}
+
+		err = c.processConsensusPhase1ElectAccept(consensusPhase1ElectAccept)
+		if err != nil {
+			return xerrors.Errorf("failed to process phase 1 elect accept action: %w", err)
+		}
+	case messagedata.ConsensuisActionPhase1Learn:
+		var consensusPhase1Learn messagedata.ConsensusPhase1Learn
+
+		err := msg.UnmarshalData(&consensusPhase1Learn)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal consensus#phase-1-learn: %v", err)
+		}
+
+		err = c.processConsensusPhase1Learn(consensusPhase1Learn)
+		if err != nil {
+			return xerrors.Errorf("failed to process phase 1 learn action: %w", err)
+		}
 	default:
 		return answer.NewInvalidActionError(action)
 	}
@@ -193,10 +217,34 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 	return nil
 }
 
-//processConsensusPhase1Elect processes a phase 1 elect action.
+// process ConsensusPhase1Elect processes a phase 1 elect action.
 func (c *Channel) processConsensusPhase1Elect(data messagedata.ConsensusPhase1Elect) error {
 
 	err := data.Verify()
 
 	return err
+}
+
+// process ConsensusPhase1ElectAccept processes a phase 1 elect accept action.
+func (c *Channel) processConsensusPhase1ElectAccept(data messagedata.ConsensusPhase1ElectAccept) error {
+
+	// check wether a message with the correct ID was received previously
+	_, valid := c.inbox.GetMessage(data.MessageID)
+
+	if !valid {
+		return xerrors.Errorf("message doesn't correspond to any received message")
+	}
+	return nil
+}
+
+// process ConsensusPhase1ElectAccept processes a phase 1 elect accept action.
+func (c *Channel) processConsensusPhase1Learn(data messagedata.ConsensusPhase1Learn) error {
+
+	// check wether a message with the correct ID was received previously
+	_, valid := c.inbox.GetMessage(data.MessageID)
+
+	if !valid {
+		return xerrors.Errorf("message doesn't correspond to any received message")
+	}
+	return nil
 }
