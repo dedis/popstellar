@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddChirpBroadcast.json",
+  "description": "Match a add chirp broadcast query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "chirp"
+    },
+    "action": {
+      "const": "add"
+    },
+    "chirp_id": {
+      "description": "message_id of the chirp message above",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "channel": {
+      "description": "[String] name of the channel",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC of this deletion request",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "chirp_id", "channel", "timestamp"]
+}

@@ -26,7 +26,7 @@ object Validator {
     rpcId
   )
 
-  // FIXME implement schema
+  // FIXME implement json-schema
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = Left(jsonString)
 
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {

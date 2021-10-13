@@ -8,7 +8,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 case object MeetingHandler extends MessageHandler {
@@ -32,7 +32,9 @@ case object MeetingHandler extends MessageHandler {
 
   def handleCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsChannel.decodeSubChannel match {
-      case Some(_) => dbAskWritePropagate(rpcMessage)
+      case Some(_) =>
+        val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+        Await.result(ask, duration)
       case _ => Right(PipelineError(
         ErrorCodes.INVALID_DATA.id,
         s"Unable to create meeting: invalid encoded laoId '${rpcMessage.getParamsChannel}'",
@@ -43,16 +45,6 @@ case object MeetingHandler extends MessageHandler {
 
   def handleStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateMeeting].modification_id
-    // val ask = dbActor.ask(ref => DbActor.Read(rpcMessage.getParamsChannel, modificationId, ref)).map {
-    val ask = dbActor.ask("TODO").map {
-      case Some(_) => dbAskWritePropagate(rpcMessage)
-      // TODO careful about asynchrony and the fact that the network may reorder some messages
-      case _ => Right(PipelineError(
-        ErrorCodes.INVALID_DATA.id,
-        s"Unable to request meeting state: invalid modification_id '$modificationId' (no message associated to this id)",
-        rpcMessage.id
-      ))
-    }
-    Await.result(ask, duration)
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateMeeting is not implemented", rpcMessage.id))
   }
 }

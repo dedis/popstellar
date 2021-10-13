@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ElectionResultQuestion {
@@ -22,5 +23,15 @@ public class ElectionResultQuestion {
   public List<QuestionResult> getResult() {
     return result;
   }
-}
 
+  @Override
+  public String toString() {
+    return "ElectionResultQuestion{"
+        + "id='"
+        + id
+        + '\''
+        + ", result="
+        + Arrays.toString(result.toArray())
+        + '}';
+  }
+}

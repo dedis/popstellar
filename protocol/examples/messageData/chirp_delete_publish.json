@@ -1,0 +1,6 @@
+{
+    "object": "chirp",
+    "action": "delete",
+    "chirp_id": "XXX",
+    "timestamp": 123
+}

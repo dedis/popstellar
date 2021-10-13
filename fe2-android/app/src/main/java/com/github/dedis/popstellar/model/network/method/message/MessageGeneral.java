@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.utility.security.Hash;
@@ -9,9 +10,11 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.PublicKeyVerify;
 import com.google.crypto.tink.subtle.Ed25519Verify;
 import com.google.gson.Gson;
+
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -134,5 +137,16 @@ public final class MessageGeneral {
       Log.d(TAG, "failed to verify signature", e);
       return false;
     }
+  }
+
+  @Override
+  public String toString() {
+    return "MessageGeneral{"
+        + "sender=" + getSender() + '\''
+        + ", data=" + getData()
+        + ", signature='" + getSignature() + '\''
+        + ", messageId='" + getMessageId() + '\''
+        + ", witnessSignatures=" + Arrays.toString(witnessSignatures.toArray())
+        + '}';
   }
 }

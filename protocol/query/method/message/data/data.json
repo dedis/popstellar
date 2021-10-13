@@ -42,6 +42,12 @@
         },
         {
             "$ref": "dataWitnessMessage.json"
+        },
+        {
+            "$ref": "dataAddChirp.json"
+        },
+        {
+            "$ref": "dataAddChirpBroadcast.json"
         }
     ]
 }
