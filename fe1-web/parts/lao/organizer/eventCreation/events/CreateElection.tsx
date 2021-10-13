@@ -6,7 +6,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
-import DatePicker, { fromDate, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
+import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
