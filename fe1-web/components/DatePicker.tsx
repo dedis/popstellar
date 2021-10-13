@@ -4,7 +4,6 @@ import DatePickerElement from 'react-datepicker';
 import { Timestamp } from '../model/objects';
 
 const ONE_MINUTE_IN_SECONDS = 60;
-const ONE_SECOND_IN_MILLIS = 1000;
 
 const DatePicker = (props: IPropTypes) => {
   const { selected } = props;
@@ -42,9 +41,7 @@ export default DatePicker;
  *
  * @param date - The date to transform
  */
-export function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / ONE_SECOND_IN_MILLIS));
-}
+export const fromDate = (date: Date) => Timestamp.dateToTimestamp(date);
 
 /**
  * Function called when the user changes the start time. If the date is valid (not in the past),
@@ -60,22 +57,21 @@ export function onChangeStartTime(
   setStartDate: React.Dispatch<React.SetStateAction<Timestamp>>,
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
 ) {
-  const newStartTimestamp: Timestamp = dateToTimestamp(newStartDate);
-  const dateNow = new Date();
-  const timestampNow = dateToTimestamp(dateNow);
+  const newStart = fromDate(newStartDate);
+  const now = Timestamp.EpochNow();
   let actualStartDate: Date;
 
-  if (newStartTimestamp > timestampNow) {
-    setStartDate(newStartTimestamp);
+  if (newStart.after(now)) {
+    setStartDate(newStart);
     actualStartDate = newStartDate;
   } else {
-    setStartDate(timestampNow);
-    actualStartDate = dateNow;
+    setStartDate(now);
+    actualStartDate = new Date();
   }
 
   const newEndDate = new Date(actualStartDate.getTime());
   newEndDate.setHours(actualStartDate.getHours() + 1);
-  setEndDate(dateToTimestamp(newEndDate));
+  setEndDate(fromDate(newEndDate));
 }
 
 /**
@@ -91,10 +87,10 @@ export function onChangeEndTime(
   startTime: Timestamp,
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
 ) {
-  const newEndTimestamp: Timestamp = dateToTimestamp(newEndDate);
-  if (newEndTimestamp < startTime) {
+  const newEnd = fromDate(newEndDate);
+  if (newEnd.before(startTime)) {
     setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS));
   } else {
-    setEndDate(newEndTimestamp);
+    setEndDate(newEnd);
   }
 }

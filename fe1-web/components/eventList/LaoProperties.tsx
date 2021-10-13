@@ -13,9 +13,8 @@ import { makeCurrentLao } from 'store/reducers';
 import QRCode from '../QRCode';
 
 function renderProperties(lao: Lao) {
-  const creationDate = new Date(Number(lao.creation) * 1000);
-  // Remove the timezone text
-  const creationDateString = creationDate.toString().split('G')[0];
+  const creationDateString = lao.creation.timestampToString();
+
   return (
     <>
       <ParagraphBlock text={`Lao name: ${lao.name}`} />

@@ -7,9 +7,11 @@ import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
 import { requestCreateRollCall } from 'network/MessageApi';
-import DatePicker, { dateToTimestamp, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
+import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
+import { Timestamp } from '../../../../../model/objects';
+import { ONE_HOUR_IN_SECONDS } from './CreateElection';
 
 /**
  * Screen to create a roll-call event
@@ -20,14 +22,10 @@ import WideButtonView from 'components/WideButtonView';
 const CreateRollCall = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
-  const initialStartDate = new Date();
-  const initialEndDate = new Date();
 
-  // Sets initial end date to 1 hour later than start date
-  initialEndDate.setHours(initialStartDate.getHours() + 1);
-
-  const [proposedStartDate, setProposedStartDate] = useState(dateToTimestamp(initialStartDate));
-  const [proposedEndDate, setProposedEndDate] = useState(dateToTimestamp(initialEndDate));
+  const [proposedStartDate, setProposedStartDate] = useState(Timestamp.EpochNow());
+  const [proposedEndDate, setProposedEndDate] = useState(Timestamp.EpochNow()
+    .addSeconds(ONE_HOUR_IN_SECONDS));
 
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');

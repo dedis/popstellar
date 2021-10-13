@@ -6,11 +6,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
-import DatePicker, { dateToTimestamp, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
+import DatePicker, { fromDate, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
-  Hash, Lao, Question, EventTags,
+  Hash, Lao, Question, EventTags, Timestamp,
 } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
@@ -18,18 +18,17 @@ import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
 
+export const ONE_HOUR_IN_SECONDS = 3600;
+
 /**
  * UI to create an Election Event
  */
 const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
-  const initialStartDate = new Date();
-  const initialEndDate = new Date();
-  initialEndDate.setHours(initialStartDate.getHours() + 1);
 
-  const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(dateToTimestamp(initialEndDate));
+  const [startDate, setStartDate] = useState(Timestamp.EpochNow());
+  const [endDate, setEndDate] = useState(Timestamp.EpochNow().addSeconds(ONE_HOUR_IN_SECONDS));
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;

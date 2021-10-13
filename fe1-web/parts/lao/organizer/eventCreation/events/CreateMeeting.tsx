@@ -3,7 +3,7 @@ import {
   View, Platform, TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import DatePicker, { dateToTimestamp, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
+import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import STRINGS from 'res/strings';
@@ -11,6 +11,8 @@ import { requestCreateMeeting } from 'network/MessageApi';
 import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
+import { Timestamp } from '../../../../../model/objects';
+import { ONE_HOUR_IN_SECONDS } from './CreateElection';
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
@@ -20,13 +22,10 @@ const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
   const navigation = useNavigation();
-  const initialStartDate = new Date();
-  const initialEndDate = new Date();
-  initialEndDate.setHours(initialStartDate.getHours() + 1);
 
   const [meetingName, setMeetingName] = useState('');
-  const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(dateToTimestamp(initialEndDate));
+  const [startDate, setStartDate] = useState(Timestamp.EpochNow());
+  const [endDate, setEndDate] = useState(Timestamp.EpochNow().addSeconds(ONE_HOUR_IN_SECONDS));
 
   const [location, setLocation] = useState('');
 
