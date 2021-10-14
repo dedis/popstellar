@@ -36,7 +36,7 @@ func TestConnectToWitnessSocket(t *testing.T) {
 	wh.Start()
 
 	wg := &sync.WaitGroup{}
-	err = connectToWitnessSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone, log)
+	err = connectToWitnessSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
 	require.NoError(t, err)
 
 	err = witnessSrv.Shutdown()
