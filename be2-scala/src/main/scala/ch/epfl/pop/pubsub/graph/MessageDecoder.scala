@@ -12,6 +12,7 @@ import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcR
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
+import ch.epfl.pop.model.network.requests.socialMedia.JsonRpcRequestAddChirp
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import spray.json._
 
@@ -87,6 +88,7 @@ object MessageDecoder {
       case (ObjectType.ELECTION, ActionType.RESULT) => request.toTypedRequest(JsonRpcRequestResultElection)
       case (ObjectType.ELECTION, ActionType.END) => request.toTypedRequest(JsonRpcRequestEndElection)
       case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
+      case (ObjectType.SOCIAL_MEDIA, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddChirp)
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
     }
     case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")

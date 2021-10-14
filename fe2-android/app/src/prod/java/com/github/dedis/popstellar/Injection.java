@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.util.Log;
+import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.repository.local.LAODatabase;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
@@ -44,6 +45,9 @@ import java.security.GeneralSecurityException;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
+/**
+ * Injection is used to provide the services needed to the application.
+ */
 public class Injection {
 
   private static String SERVER_URL = "ws://10.0.2.2:9000/organizer/client";
@@ -105,6 +109,7 @@ public class Injection {
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
+        .registerTypeAdapter(ResultMessages.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
         .disableHtmlEscaping()

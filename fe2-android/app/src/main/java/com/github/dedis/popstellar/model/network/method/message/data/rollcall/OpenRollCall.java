@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -66,5 +66,22 @@ public class OpenRollCall extends Data {
 
   public long getOpenedAt() {
     return openedAt;
+  }
+
+  @Override
+  public String toString() {
+    return "OpenRollCall{"
+        + "updateId='"
+        + updateId
+        + '\''
+        + ", opens='"
+        + opens
+        + '\''
+        + ", openedAt="
+        + openedAt
+        + ", action='"
+        + action
+        + '\''
+        + '}';
   }
 }

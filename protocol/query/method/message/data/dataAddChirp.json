@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddChirp.json",
+    "description": "Match an add chirp query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "chirp"
+        },
+        "action": {
+            "const": "add"
+        },
+        "text": {
+            "type": "string",
+            "$comment": "text in the chirp"
+        },
+        "parent_id": {
+            "description": "message_id of parent chirp",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "optional (only in case the chirp is a reply)"
+        },
+        "timestamp": {
+            "description": "UNIX Timestamp in UTC of this deletion request",
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "text", "timestamp"]
+}

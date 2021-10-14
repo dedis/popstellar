@@ -8,6 +8,7 @@ import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcR
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
+import ch.epfl.pop.model.network.requests.socialMedia.JsonRpcRequestAddChirp
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph.validators.ElectionValidator._
 import ch.epfl.pop.pubsub.graph.validators.LaoValidator._
@@ -17,9 +18,11 @@ import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
 import ch.epfl.pop.pubsub.graph.validators.RollCallValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
 import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
+import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator._
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.core.JsonProcessingException
 
 import com.networknt.schema.JsonSchema
 import com.networknt.schema.JsonSchemaFactory
@@ -31,7 +34,7 @@ import scala.util.{Failure, Success, Try}
 
 import spray.json._
 
-import java.io.File
+import java.io.{File, IOException}
 
 
 object Validator {
@@ -42,13 +45,35 @@ object Validator {
     rpcId
   )
 
-  // FIXME implement schema
+  final val addressQuery = "../protocol/query/query.json"
+
+  // Method to yield a PipelineError with the right rpcId
+  private def rpcIdCheck(jsonString: JsonString): Option[Int] = {
+    Try(jsonString.parseJson.asJsObject.getFields("id")) match {
+        case Success(Seq(optId)) =>
+          optId match {
+            case JsNumber(id) => Some(id.toInt)
+            case _ => None
+          }
+        case Success(_) => None
+        case Failure(_) => None
+      }
+  }
+
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
 
     val objectMapper: ObjectMapper = new ObjectMapper()
     // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
-    val jsonSchemaNode: JsonNode = objectMapper.readTree(new File("../protocol/query/query.json"))
+    // Creation of a JsonNode from the given address
+    val jsonSchemaNode: JsonNode = objectMapper.readTree(new File(addressQuery))
+    /*val jsonSchemaNodeTry: Try[JsonNode] = Try {
+      objectMapper.readTree(new File(addressQuery))
+    } match {
+      case Failure(exc) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Error with the creation of a JsonNode", rpcIdCheck(jsonString)))
+      case Success(node) => node
+    }*/
+    // Creation of the schema itself using the factory and the node
     val schema: JsonSchema = factory.getSchema(jsonSchemaNode)
 
     // Creation of a JsonNode containing the information from the input jsonString
@@ -60,16 +85,8 @@ object Validator {
       Left(jsonString)
     }
     else {
-      val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
-        case Success(Seq(optId)) =>
-          optId match {
-            case JsNumber(id) => Some(id.toInt)
-            case _ => None
-          }
-        case Success(_) => None
-        case Failure(_) => None
-      }
-      Right(PipelineError(-4, "The Json Schema is invalid.", rpcId))
+      val rpcId = rpcIdCheck(jsonString)
+      Right(PipelineError(ErrorCodes.INVALID_DATA.id, "The Json Schema is invalid.", rpcId))
     }
 
   }
@@ -142,6 +159,7 @@ object Validator {
       case message@(_: JsonRpcRequestResultElection) => validateResultElection(message)
       case message@(_: JsonRpcRequestEndElection) => validateEndElection(message)
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
+      case message@(_: JsonRpcRequestAddChirp) => validateAddChirp(message)
       case _ => Right(validationError(jsonRpcMessage match {
         case r: JsonRpcRequest => r.id
         case r: JsonRpcResponse => r.id

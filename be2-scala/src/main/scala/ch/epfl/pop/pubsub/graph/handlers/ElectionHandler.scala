@@ -38,7 +38,7 @@ object ElectionHandler extends MessageHandler {
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.SEPARATOR}$electionId")
 
-    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+    val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
       case DbActor.DbActorWriteAck => Await.result((dbActor ? DbActor.CreateChannel(electionChannel)).map {
         case DbActor.DbActorAck => Left(rpcMessage)
         case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -47,18 +47,23 @@ object ElectionHandler extends MessageHandler {
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
 
-    Await.result(f, duration)
+    Await.result(ask, duration)
   }
 
-  def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
-    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle CastVoteElection messages yet", rpcMessage.id)
-  )
+  def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    // no need to propagate here
+    val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
+    Await.result(ask, duration)
+  }
 
   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
   )
 
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+    //val resultElection: 
+    // basically, what we need to do is get? /ask the election votes (CastVoteElections) from the server, then we can normally group 
+    // them by question and ballotOption and message them with the count or something
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle EndElection messages yet", rpcMessage.id)
   )
 }

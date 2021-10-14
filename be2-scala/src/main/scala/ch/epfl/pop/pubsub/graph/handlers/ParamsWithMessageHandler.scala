@@ -19,7 +19,8 @@ object ParamsWithMessageHandler {
       val portRollCall = 3
       val portElection = 4
       val portWitness = 5
-      val totalPorts = 6
+      val portSocialMedia = 6
+      val totalPorts = 7
 
       /* building blocks */
       val messageDecoder = builder.add(MessageDecoder.dataParser)
@@ -32,6 +33,7 @@ object ParamsWithMessageHandler {
           case (ObjectType.ROLL_CALL, _) => portRollCall
           case (ObjectType.ELECTION, _) => portElection
           case (ObjectType.MESSAGE, _) => portWitness
+          case (ObjectType.SOCIAL_MEDIA, _) => portSocialMedia
         }
         case _ => portPipelineError // Pipeline error goes directly in handlerMerger
       }))
@@ -41,6 +43,7 @@ object ParamsWithMessageHandler {
       val rollCallHandler = builder.add(RollCallHandler.handler)
       val electionHandler = builder.add(ElectionHandler.handler)
       val witnessHandler = builder.add(WitnessHandler.handler)
+      val socialMediaHandler = builder.add(SocialMediaHandler.handler)
 
       val handlerMerger = builder.add(Merge[GraphMessage](totalPorts))
 
@@ -53,6 +56,7 @@ object ParamsWithMessageHandler {
       handlerPartitioner.out(portRollCall) ~> rollCallHandler ~> handlerMerger
       handlerPartitioner.out(portElection) ~> electionHandler ~> handlerMerger
       handlerPartitioner.out(portWitness) ~> witnessHandler ~> handlerMerger
+      handlerPartitioner.out(portSocialMedia)~> socialMediaHandler ~> handlerMerger
 
       /* close the shape */
       FlowShape(messageDecoder.in, handlerMerger.out)

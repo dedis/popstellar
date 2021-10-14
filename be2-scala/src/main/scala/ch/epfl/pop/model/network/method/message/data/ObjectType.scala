@@ -13,6 +13,7 @@ object ObjectType extends Enumeration {
   val MEETING: Value with Matching = MatchingValue("meeting")
   val ROLL_CALL: Value with Matching = MatchingValue("roll_call")
   val ELECTION: Value with Matching = MatchingValue("election")
+  val SOCIAL_MEDIA: Value with Matching = MatchingValue("social_media")
 
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
 
