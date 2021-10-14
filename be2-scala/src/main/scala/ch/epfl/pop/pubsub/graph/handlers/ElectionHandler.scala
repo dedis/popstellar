@@ -38,7 +38,7 @@ object ElectionHandler extends MessageHandler {
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.SEPARATOR}$electionId")
 
-    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+    val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
       case DbActor.DbActorWriteAck => Await.result((dbActor ? DbActor.CreateChannel(electionChannel)).map {
         case DbActor.DbActorAck => Left(rpcMessage)
         case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -47,7 +47,7 @@ object ElectionHandler extends MessageHandler {
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
 
-    Await.result(f, duration)
+    Await.result(ask, duration)
   }
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(

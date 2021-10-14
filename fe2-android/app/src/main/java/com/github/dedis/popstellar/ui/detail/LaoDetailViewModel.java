@@ -5,36 +5,38 @@ import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-import com.github.dedis.popstellar.SingleEvent;
+
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.Wallet;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -45,10 +47,7 @@ import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -62,6 +61,11 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class LaoDetailViewModel extends AndroidViewModel implements CameraPermissionViewModel,
     QRCodeScanningViewModel {
@@ -322,6 +326,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    * <p>Publish a GeneralMessage containing ElectionSetup data.
    *
    * @param name          the name of the election
+   * @param creation      the creation time of the election
    * @param start         the start time of the election
    * @param end           the end time of the election
    * @param votingMethod  the type of voting method (e.g Plurality)
@@ -329,7 +334,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    * @param question      the question associated to the election
    * @return the id of the newly created election event, null if fails to create the event
    */
-  public String createNewElection(String name, long start, long end, List<String> votingMethod,
+  public String createNewElection(String name, long creation, long start, long end, List<String> votingMethod,
       List<Boolean> writeIn, List<List<String>> ballotOptions, List<String> question) {
     Log.d(TAG, "creating a new election with name " + name);
 
@@ -343,7 +348,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     ElectionSetup electionSetup;
     String laoId = channel.substring(6);
 
-    electionSetup = new ElectionSetup(name, start, end, votingMethod, writeIn, ballotOptions,
+    electionSetup = new ElectionSetup(name, creation, start, end, votingMethod, writeIn, ballotOptions,
         question, laoId);
 
     try {
@@ -393,12 +398,13 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    *
    * @param title         the title of the roll call
    * @param description   the description of the roll call, can be empty
+   * @param creation      the creation time of the roll call
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd   the proposed end time of the roll call
    * @param open          true if we want to directly open the roll call
    * @return the id of the newly created roll call event, null if fails to create the event
    */
-  public void createNewRollCall(String title, String description, long proposedStart,
+  public void createNewRollCall(String title, String description, long creation, long proposedStart,
       long proposedEnd, boolean open) {
     Log.d(TAG, "creating a new roll call with title " + title);
     Lao lao = getCurrentLaoValue();
@@ -409,8 +415,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     String channel = lao.getChannel();
     CreateRollCall createRollCall;
     String laoId = channel.substring(6); // removing /root/ prefix
-    createRollCall = new CreateRollCall(title, proposedStart, proposedEnd, "Lausanne", description,
-        laoId);
+    createRollCall = new CreateRollCall(title, creation, proposedStart, proposedEnd, "Lausanne",
+        description, laoId);
 
     try {
 
@@ -584,24 +590,24 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       Log.d(TAG, PUBLISH_MESSAGE);
       signatureMessage = new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
       MessageGeneral msg = new MessageGeneral(sender, signatureMessage, signer, mGson);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "Verifying the signature of  message  with id: " + messageId);
+      disposables.add(
+              mLAORepository
+                      .sendPublish(channel, msg)
+                      .subscribeOn(Schedulers.io())
+                      .observeOn(AndroidSchedulers.mainThread())
+                      .timeout(5, TimeUnit.SECONDS)
+                      .subscribe(
+                              answer -> {
+                                if (answer instanceof Result) {
+                                  Log.d(TAG, "Verifying the signature of  message  with id: " + messageId);
 
-                    } else {
-                      Log.d(TAG, "failed to sign message ");
-                    }
-                  },
-                  throwable -> Log
-                      .d(TAG, "timed out waiting for result on sign message", throwable));
-      disposables.add(disposable);
+                                } else {
+                                  Log.d(TAG, "failed to sign message ");
+                                }
+                              },
+                              throwable ->
+                                      Log.d(TAG, "timed out waiting for result on sign message", throwable)));
+
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
@@ -1083,22 +1089,21 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
         updateLao.getLastModified(), publicKey, msg.getMessageId(), updateLao.getWitnesses(),
         new ArrayList<>());
     MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
-    mLAORepository
-        .sendPublish(channel, stateMsg)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .timeout(5, TimeUnit.SECONDS)
-        .subscribe(
-            answer2 -> {
-              if (answer2 instanceof Result) {
-                Log.d(TAG, "updated " + s);
-              } else {
-                Log.d(TAG, "failed to update " + s);
-              }
-            },
-            throwable -> Log.d(TAG, "timed out waiting for result on update " + s, throwable)
-
-        );
+    disposables.add(
+            mLAORepository
+                    .sendPublish(channel, stateMsg)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .timeout(5, TimeUnit.SECONDS)
+                    .subscribe(
+                            answer2 -> {
+                              if (answer2 instanceof Result) {
+                                Log.d(TAG, "updated " + s);
+                              } else {
+                                Log.d(TAG, "failed to update " + s);
+                              }
+                            },
+                            throwable -> Log.d(TAG, "timed out waiting for result on update " + s, throwable)));
   }
 
   public void cancelEdit() {

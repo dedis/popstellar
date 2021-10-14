@@ -123,8 +123,13 @@ public class RollCallHandlerTest {
   @Test
   public void testHandleCreateRollCall() {
     // Create the create Roll Call message
-    CreateRollCall createRollCall = new CreateRollCall("roll call 2", rollCall.getStart(),
-        rollCall.getEnd(), rollCall.getLocation(), rollCall.getDescription(), CREATE_LAO.getId());
+    CreateRollCall createRollCall = new CreateRollCall("roll call 2",
+        rollCall.getCreation(),
+        rollCall.getStart(),
+        rollCall.getEnd(),
+        rollCall.getLocation(),
+        rollCall.getDescription(),
+        CREATE_LAO.getId());
     MessageGeneral message = new MessageGeneral(
         Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), createRollCall, signer,
         Injection.provideGson());

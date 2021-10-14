@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
 
 public class ElectionEnd extends Data {
@@ -52,5 +53,15 @@ public class ElectionEnd extends Data {
 
   public long getCreatedAt() {
     return createdAt;
+  }
+
+  @Override
+  public String toString() {
+    return "ElectionEnd{"
+        + "electionId='" + electionId + '\''
+        + ", createdAt=" + createdAt
+        + ", laoId='" + laoId + '\''
+        + ", registeredVotes='" + registeredVotes + '\''
+        + '}';
   }
 }

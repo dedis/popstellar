@@ -39,7 +39,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-function connectTo(serverUrl: string): boolean {
+/**
+ * Connects to the given server URL.
+ *
+ * @param serverUrl
+ */
+export function connectTo(serverUrl: string): boolean {
   try {
     const { href } = new URL(serverUrl); // validate
     getNetworkManager().connect(href);
@@ -50,7 +55,12 @@ function connectTo(serverUrl: string): boolean {
   return true;
 }
 
-function validateLaoId(laoId: string): Channel | undefined {
+/**
+ * Checks if the LAO exists by trying to find its id in created channels.
+ *
+ * @param laoId the id of the LAO we want to validate
+ */
+export function validateLaoId(laoId: string): Channel | undefined {
   try {
     const h = new Hash(laoId);
     return channelFromIds(h);
@@ -98,6 +108,7 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
           placeholder={STRINGS.connect_server_uri}
           onChangeText={(input: string) => setServerUrl(input)}
           defaultValue={serverUrl}
+          selectTextOnFocus
         />
         <TextInput
           style={styles.textInput}
