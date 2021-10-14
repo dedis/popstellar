@@ -72,8 +72,9 @@ const STRINGS = {
   connect_confirm_description: 'Connect to this local organization?',
 
   /* --- Launch Strings --- */
-  launch_description: 'To launch a new organization please enter a name for the organization (you can change it later)',
+  launch_description: 'To launch a new organization, please enter a name and an address',
   launch_organization_name: 'Organization name',
+  launch_address: 'Address',
   launch_button_launch: 'Launch',
 
   /* --- Organizer Strings --- */
