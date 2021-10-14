@@ -505,6 +505,11 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Unlock()
 }
 
+// RegisterNewChannelNoLock implements channel.HubFunctionalities without lock
+func (h *Hub) RegisterNewChannelNoLock(channeID string, channel channel.Channel) {
+	h.channelByID[channeID] = channel
+}
+
 // ---
 // DB operations
 // --

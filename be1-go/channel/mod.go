@@ -1,12 +1,13 @@
 package channel
 
 import (
-	"github.com/rs/zerolog"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"sync"
+
+	"github.com/rs/zerolog"
 
 	"go.dedis.ch/kyber/v3"
 )
@@ -82,4 +83,5 @@ type HubFunctionalities interface {
 	GetPubkey() kyber.Point
 	GetSchemaValidator() validation.SchemaValidator
 	RegisterNewChannel(channelID string, channel Channel)
+	RegisterNewChannelNoLock(channelID string, channel Channel)
 }

@@ -69,7 +69,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
-	hub.RegisterNewChannel(consensusPath, &consensusCh)
+	hub.RegisterNewChannelNoLock(consensusPath, &consensusCh)
 
 	return &Channel{
 		channelID: channelID,
@@ -81,6 +81,10 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		consensus: &consensusCh,
 		log:       log,
 	}
+}
+
+func (c *Channel) GetConsensusChan() *consensus.Channel {
+	return c.consensus
 }
 
 // Subscribe is used to handle a subscribe message from the client.
