@@ -5,9 +5,10 @@ import {
 import PropTypes from 'prop-types';
 
 import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
-import { getNetworkManager } from 'network';
+import { getNetworkManager, requestCreateLao } from 'network';
 
 import {
+  Channel,
   Hash, Lao, Timestamp,
 } from 'model/objects';
 
@@ -18,6 +19,7 @@ import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
+import { subscribeToChannel } from '../network/CommunicationApi';
 
 /**
  * Manages the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -46,13 +48,23 @@ const styles = StyleSheet.create({
 
 const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
+  const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
 
   const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
       return;
     }
-    // Navigate into launch confirm screen, and pass the lao name entered by the user.
-    navigation.navigate(STRINGS.launch_navigation_tab_confirm, { laoName: inputLaoName });
+
+    getNetworkManager().connect(inputAddress);
+    requestCreateLao(laoName)
+      .then((channel: Channel) => subscribeToChannel(channel)
+        .then(() => {
+          // navigate to the newly created LAO
+          navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
+        }))
+      .catch(
+        ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
+      );
   };
 
   const onTestOpenConnection = () => {
@@ -88,11 +100,18 @@ const Launch = ({ navigation }: IPropTypes) => {
           onChangeText={(input: string) => setInputLaoName(input)}
           defaultValue={inputLaoName}
         />
+        <TextInput
+          style={styles.textInput}
+          placeholder={STRINGS.launch_address}
+          onChangeText={(input: string) => setInputAddress(input)}
+          defaultValue={inputAddress}
+          selectTextOnFocus
+        />
       </View>
       <View style={styles.viewBottom}>
         <WideButtonView
           title={`${STRINGS.launch_button_launch} -- Connect, Create LAO & Open UI`}
-          onPress={onButtonLaunchPress}
+          onPress={() => onButtonLaunchPress(inputLaoName)}
         />
         <WideButtonView
           title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
