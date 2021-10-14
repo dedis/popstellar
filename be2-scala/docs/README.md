@@ -224,7 +224,7 @@ val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map 
 	)
 }
 
-// Await.result waits for <duration> for the future <ask> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is successful, or throws if the Future terminates without being successful (i.e. either Failure or Timeout) 
+// Await.result waits for <duration> for the future <ask> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is successful, or throws if the Future terminates without being successful (i.e. either Failure or Timeout)
 Await.result(ask, duration)
 ```
 
@@ -294,7 +294,7 @@ git commit
 
 :information_source: Do not create a commit with 2.000 lines of codes! Short commit with meaningful titles/description are way better and way easier to review
 
-:information_source: There are faster ways to add multiple files in the commit such as `git commit <-u|.>`. You can check the corresponding man page for more information 
+:information_source: There are faster ways to add multiple files in the commit such as `git commit <-u|.>`. You can check the corresponding man page for more information
 
 You then finally want to pull/push the changes
 
@@ -342,3 +342,13 @@ A simple way to have a coherent style across the codebase is to use the IDE feat
 
 Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
 
+
+## 7. Server `.jar` release
+
+We have installed a simple but powerful plugin ([sbt-assembly](https://github.com/sbt/sbt-assembly)) to help build the "über-jar" version of the project. In the project folder, simply execute
+
+```bash
+sbt assembly
+```
+
+The all-in-one jar will automatically be created and located at `target/scala-x.xx/pop-assembly-0.x.jar`.
