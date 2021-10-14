@@ -32,7 +32,7 @@ const CopiableTextInput = (props: IPropTypes) => {
 
   return (
     <View style={styles.view}>
-      <TextInput value={text} style={styles.textInput} />
+      <TextInput value={text} style={styles.textInput} selectTextOnFocus />
       <CopyButton data={text} />
     </View>
   );
