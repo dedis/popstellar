@@ -64,19 +64,19 @@ func NewHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
 	return &witnessHub, nil
 }
 
-func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
 	panic("handleMessageFromOrganizer not implemented")
 }
 
-func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) error {
 	panic("handleMessageFromClient not implemented")
 }
 
-func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
 	panic("handleMessageFromWitness not implemented")
 }
 
-func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error{
 	defer h.workers.Release(1)
 
 	h.log.Info().Str("msg", fmt.Sprintf("%v", incMsg.Message)).
@@ -85,14 +85,14 @@ func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) {
 
 	switch incMsg.Socket.Type() {
 	case socket.OrganizerSocketType:
-		h.handleMessageFromOrganizer(incMsg)
-		return
+		return h.handleMessageFromOrganizer(incMsg)
 	case socket.ClientSocketType:
-		h.handleMessageFromClient(incMsg)
-		return
+		return h.handleMessageFromClient(incMsg)
 	case socket.WitnessSocketType:
-		h.handleMessageFromWitness(incMsg)
-		return
+		return h.handleMessageFromWitness(incMsg)
+	default:
+		h.log.Error().Msg("invalid socket type")
+		return xerrors.Errorf("invalid socket type")
 	}
 }
 
@@ -110,7 +110,10 @@ func (h *Hub) Start() {
 					h.workers.Acquire(context.Background(), 1)
 				}
 
-				h.handleIncomingMessage(&incMsg)
+				err := h.handleIncomingMessage(&incMsg)
+				if err != nil {
+					h.log.Err(err).Msg("problem handling incoming message")
+				}
 			case id := <-h.closedSockets:
 				h.RLock()
 				for _, channel := range h.channelByID {
