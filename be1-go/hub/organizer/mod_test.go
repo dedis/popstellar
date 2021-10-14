@@ -372,6 +372,7 @@ func (c *fakeChannelFac) newChannel(channelID string,
 
 	c.chanID = channelID
 	c.msg = msg
+	c.log = log
 	return c.c
 }
 
