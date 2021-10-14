@@ -42,18 +42,6 @@ object Validator {
     rpcId
   )
 
-  final val EXAMPLES_DIRECTORY_PATH: String = "../protocol"
-  final val NAMESPACE = "https://github.com/dedis/student_21_pop/protocol/"
-
-  // path is the path with protocol/examples as base directory
-  private def getExampleMessage(path: String): String = {
-      val bufferedSource: BufferedSource = Source.fromFile(s"$EXAMPLES_DIRECTORY_PATH/$path")
-      val example: String = bufferedSource.getLines().mkString
-      bufferedSource.close()
-
-      example
-  }
-
   // FIXME implement schema
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
 
