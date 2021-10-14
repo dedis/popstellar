@@ -59,7 +59,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/lao_create.json")
     val messageData = CreateLao.buildFromJson(example)
 
-    val expected = CreateLao(Hash(Base64Data("XXX")), "XXX", Timestamp(123L), PublicKey(Base64Data("XXX")), PublicKey(Base64Data("XXX")) :: Nil)
+    val expected = CreateLao(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "LAO", Timestamp(1633098234L), PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")), Nil)
 
     messageData shouldBe a [CreateLao]
     messageData should equal (expected)
@@ -69,8 +69,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/election_setup.json")
     val messageData = SetupElection.buildFromJson(example)
 
-    val question = ElectionQuestion(Hash(Base64Data("XXX")), "XXX", "Plurality", "XXX" :: "YYY" :: Nil, write_in = false)
-    val expected = SetupElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), "XXX", "XXX", Timestamp(123L), Timestamp(123L), Timestamp(123L), question :: Nil)
+    val question = ElectionQuestion(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), "Is this project fun?", "Plurality", "Yes" :: "No" :: Nil, write_in = false)
+    val expected = SetupElection(Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "Election", "1.0.0", Timestamp(1633098941L), Timestamp(1633098941L), Timestamp(1633099812L), question :: Nil)
 
     messageData shouldBe a [SetupElection]
     messageData should equal (expected)
@@ -81,9 +81,10 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
     val messageData = ResultElection.buildFromJson(example)
 
-    val result = ElectionBallotVotes("XXX", 123)
-    val questionResult = ElectionQuestionResult(Hash(Base64Data("XXX")), result :: Nil)
-    val expected = ResultElection(questionResult :: Nil, Signature(Base64Data("XXX")) :: Nil)
+    val result1 = ElectionBallotVotes("Yes", 1)
+    val result2 = ElectionBallotVotes("No", 0)
+    val questionResult = ElectionQuestionResult(Hash(Base64Data("2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=")), result1 :: result2 :: Nil)
+    val expected = ResultElection(questionResult :: Nil, Nil)
 
     messageData shouldBe a [ResultElection]
     messageData should equal (expected)
@@ -93,7 +94,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/election_end.json")
     val messageData = EndElection.buildFromJson(example)
 
-    val expected = EndElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), Timestamp(123L), Hash(Base64Data("XXX")))
+    val expected = EndElection(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), Hash(Base64Data("zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=")), Timestamp(1633099883L), Hash(Base64Data("tAUYpZDc7lOfrxyviK6V9UsezeubGUZR-TpwF52pzWU=")))
 
     messageData shouldBe a [EndElection]
     messageData should equal (expected)
@@ -103,8 +104,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     val example: String = getExampleMessage("messageData/vote_cast_write_in.json")
     val messageData = CastVoteElection.buildFromJson(example)
 
-    val votes = VoteElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), "XXX")
-    val expected = CastVoteElection(Hash(Base64Data("XXX")), Hash(Base64Data("XXX")), Timestamp(123L), votes :: Nil)
+    val votes = VoteElection(Hash(Base64Data("DtIsj7nQ0Y4iLJ4ETKv2D0uah7IYGyEVW7aCLFjaL0w=")), Hash(Base64Data("WBVsWJI-C5YkD0wdE4DxnLa0lJzjnHEd67XPFVB9v3g=")), "Computer Science")
+    val expected = CastVoteElection(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), Hash(Base64Data("QWTmcWMMMiUdWdZX7ib7GyqH6A5ifDYwPaMpKxIZm1k=")), Timestamp(1633098996L), votes :: Nil)
 
     messageData shouldBe a [CastVoteElection]
     messageData shouldEqualTo (expected)
