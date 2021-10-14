@@ -57,5 +57,15 @@ libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
 
+// Jackson Databind (for Json Schema Validation)
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
+
+// Json Schema Validator
+//libraryDependencies -= "com.github.fge" % "json-schema-validator" % "2.2.6"
+
+// New try for Validator
+libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
+
+
 
 conflictManager := ConflictManager.latestCompatible

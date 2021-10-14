@@ -4,19 +4,7 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **:book: Table of Contents**
 
-- [High-level ("Message data") messages](#high-level-message-data-messages)
-- [Introduction](#introduction)
-  - [Creating a LAO (lao#create)](#creating-a-lao-laocreate)
-  - [Update LAO properties (lao#update_properties)](#update-lao-properties-laoupdate_properties)
-  - [LAO state broadcast (lao#state)](#lao-state-broadcast-laostate)
-  - [Witness a message (message#witness)](#witness-a-message-messagewitness)
-  - [Creating a Meeting (meeting#create)](#creating-a-meeting-meetingcreate)
-  - [Meeting state broadcast (meeting#state)](#meeting-state-broadcast-meetingstate)
-  - [Roll Calls (introduction)](#roll-calls-introduction)
-  - [Creating a Roll-Call (roll_call#create)](#creating-a-roll-call-roll_callcreate)
-  - [Opening a Roll-Call (roll_call#open)](#opening-a-roll-call-roll_callopen)
-  - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
-  - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
+- [](#)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -47,6 +35,12 @@ Here are the existing `Message data`, identified by their unique
 * roll_call#open
 * roll_call#close
 * roll_call#reopen
+* post#user_post
+* post#server_post
+* post#user_remove
+* post#server_remove
+
+# LAO
 
 ## Creating a LAO (lao#create)
 
@@ -73,7 +67,7 @@ broadcast”).
     "action": "create",
     "id": "XXX",
     "name": "XXX",
-    "creation": 1234,
+    "creation": 123,
     "organizer": "XXX",
     "witnesses": ["XXX"]
 }
@@ -369,6 +363,8 @@ the required number of witness signatures.
 
 ```
 
+# Message
+
 ## Witness a message (message#witness)
 
 By sending the message/witness message to the LAO’s main channel (LAO's “id”), a
@@ -433,6 +429,8 @@ populated with all the witness signatures received by the server.
 }
 
 ```
+
+# Meeting
 
 ## Creating a Meeting (meeting#create)
 
@@ -677,7 +675,7 @@ expected to publish the meeting/state message to the LAO’s main channel (LAO's
 
 ```
 
-## Roll Calls (introduction)
+# Roll Calls (introduction)
 
 A roll call has the following state transitions:
 
@@ -1025,3 +1023,100 @@ the organizer forgets to scan an attendee’s public key.
 }
 
 ```
+
+# Social Media
+
+## Posting a post by a user (post#user_post)
+
+A post may be posted by a user on their own channel, only with an active PoP token. It consists of text (max. 280 Unicode code points), a Parent Id (if it is not the top level post) and of a timestamp (an UNIX stamp in UTC of the time the post is published).
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_user_post.json
+
+{
+  "object": "post",
+  "action": "add",
+  "text": "My new tweet!", /* UTF-8 encoded post */
+  "parent_id": "message_id", /* Either message_id of parent post, optional */
+  "timestamp": 1631280815 /* UNIX Timestamp in UTC */
+}
+
+```
+
+</details>
+
+## Posting a post by a server (post#server_post)
+
+After validating the post, the organizer's server propagates the message on the channel it is meant for, but also will create and send the following message to the universal post channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_server_post.json
+
+{
+  "object": "post",
+  "action": "add",
+  "post_id": "message_id", /* message_id of the post message above */
+  "channel": "<channel>", /* The channel where the post is located (absolute path) */
+  "timestamp": 1631280815 /* UNIX Timestamp in UTC given by the post message above */
+}
+
+```
+
+</details>
+
+## Removing a post by a user (post#user_remove)
+
+A user may also remove their own post from their channel, only with an active PoP token.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_user_remove.json
+
+{
+  "object": "post",
+  "action": "delete",
+  "post_id": "message_id", /* Message id of the post published */
+  "timestamp": 1631280815 /* UNIX Timestamp in UTC of this deletion request */
+}
+
+```
+
+</details>
+
+## Removing a post by a server (post#server_remove)
+
+After a user has sent the message to remove their post, the server will propagate it to the channel it is meant for, but also will create and send the following message to the universal post channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/post_server_remove.json
+
+{
+  "object": "post",
+  "action": "delete",
+  "post_id": "message_id", /* message_id of the post message above */
+  "channel": "<channel>", /* The channel where the post is located (starting from social/ inclusive) */
+  "timestamp": 1631280815 /* UNIX Timestamp in UTC given by the message above */
+}
+
+```
+
+</details>

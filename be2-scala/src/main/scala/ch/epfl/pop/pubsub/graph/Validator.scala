@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
@@ -18,6 +18,22 @@ import ch.epfl.pop.pubsub.graph.validators.RollCallValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
 import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
 
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+
+import com.networknt.schema.JsonSchema
+import com.networknt.schema.JsonSchemaFactory
+import com.networknt.schema.ValidationMessage
+import com.networknt.schema.SpecVersion
+
+import scala.io.{BufferedSource, Source}
+import scala.util.{Failure, Success, Try}
+
+import spray.json._
+
+import java.io.File
+
+
 object Validator {
 
   private def validationError(rpcId: Option[Int]): PipelineError = PipelineError(
@@ -26,8 +42,49 @@ object Validator {
     rpcId
   )
 
+  final val EXAMPLES_DIRECTORY_PATH: String = "../protocol"
+  final val NAMESPACE = "https://github.com/dedis/student_21_pop/protocol/"
+
+  // path is the path with protocol/examples as base directory
+  private def getExampleMessage(path: String): String = {
+      val bufferedSource: BufferedSource = Source.fromFile(s"$EXAMPLES_DIRECTORY_PATH/$path")
+      val example: String = bufferedSource.getLines().mkString
+      bufferedSource.close()
+
+      example
+  }
+
   // FIXME implement schema
-  def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = Left(jsonString)
+  def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
+
+    val objectMapper: ObjectMapper = new ObjectMapper()
+    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
+    val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
+    val jsonSchemaNode: JsonNode = objectMapper.readTree(new File("../protocol/query/query.json"))
+    val schema: JsonSchema = factory.getSchema(jsonSchemaNode)
+
+    // Creation of a JsonNode containing the information from the input jsonString
+    val jsonNode: JsonNode = objectMapper.readTree(jsonString)
+    // Validation of the input, the result is a set of errors (if no errors, size == 0)
+    val errors = schema.validate(jsonNode)
+
+    if (errors.size == 0){
+      Left(jsonString)
+    }
+    else {
+      val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
+        case Success(Seq(optId)) =>
+          optId match {
+            case JsNumber(id) => Some(id.toInt)
+            case _ => None
+          }
+        case Success(_) => None
+        case Failure(_) => None
+      }
+      Right(PipelineError(-4, "The Json Schema is invalid.", rpcId))
+    }
+
+  }
 
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
@@ -93,6 +150,7 @@ object Validator {
       case message@(_: JsonRpcRequestReopenRollCall) => validateReopenRollCall(message)
       case message@(_: JsonRpcRequestCloseRollCall) => validateCloseRollCall(message)
       case message@(_: JsonRpcRequestSetupElection) => validateSetupElection(message)
+      case message@(_: JsonRpcRequestCastVoteElection) => validateCastVoteElection(message)
       case message@(_: JsonRpcRequestResultElection) => validateResultElection(message)
       case message@(_: JsonRpcRequestEndElection) => validateEndElection(message)
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)

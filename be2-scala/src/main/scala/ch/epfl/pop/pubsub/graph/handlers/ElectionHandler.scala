@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
@@ -19,6 +19,7 @@ object ElectionHandler extends MessageHandler {
       case message@(_: JsonRpcRequestSetupElection) => handleSetupElection(message)
       case message@(_: JsonRpcRequestResultElection) => handleResultElection(message)
       case message@(_: JsonRpcRequestEndElection) => handleEndElection(message)
+      case message@(_: JsonRpcRequestCastVoteElection) => handleCastVoteElection(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         "Internal server fault: LaoHandler was given a message it could not recognize",
@@ -48,6 +49,10 @@ object ElectionHandler extends MessageHandler {
 
     Await.result(f, duration)
   }
+
+  def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
+    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle CastVoteElection messages yet", rpcMessage.id)
+  )
 
   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
