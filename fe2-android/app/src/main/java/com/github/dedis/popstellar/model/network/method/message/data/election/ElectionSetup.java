@@ -5,7 +5,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ElectionSetup extends Data {
@@ -149,20 +151,17 @@ public class ElectionSetup extends Data {
         + ", lao='"
         + lao
         + '\''
-        + ", creation='"
+        + ", createdAt="
         + createdAt
-        + '\''
-        + ", start='"
+        + ", startTime="
         + startTime
-        + '\''
-        + ", end="
+        + ", endTime="
         + endTime
-        + '\''
         + ", version='"
         + version
         + '\''
-        + questions.get(0).toString()
+        + ", questions="
+        + Arrays.toString(questions.toArray())
         + '}';
   }
-
 }

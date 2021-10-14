@@ -4,7 +4,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -88,29 +90,11 @@ public class CastVote extends Data {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
-    for (ElectionVote vote : votes) {
-      builder.append(vote.toString());
-    }
     return "CastVote{"
-        + "lao='"
-        + laoId
-        + '\''
-        + ", creation='"
-        + createdAt
-        + '\''
-        + ", election='"
-        + '\''
-        + ", votes = { '"
-        + builder
-        + '\''
-        + '}'
-        + '\''
-        + electionId
-        + '\''
-        + ", votes = { '"
-        + builder.toString()
+        + "createdAt=" + createdAt
+        + ", laoId='" + laoId + '\''
+        + ", electionId='" + electionId + '\''
+        + ", votes=" + Arrays.toString(votes.toArray())
         + '}';
   }
-
 }

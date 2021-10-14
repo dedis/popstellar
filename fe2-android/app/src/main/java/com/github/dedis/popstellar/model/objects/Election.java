@@ -1,15 +1,17 @@
 package com.github.dedis.popstellar.model.objects;
 
 
-import com.github.dedis.popstellar.model.objects.event.Event;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
+import com.github.dedis.popstellar.model.objects.event.Event;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -243,5 +245,36 @@ public class Election extends Event {
     // If write_in is not enabled the id is formed with the vote indexes (formatted as [int1, int2, ...])
     return Hash.hash("Vote", electionId, questionId,
         writeInEnabled ? writeIn : voteIndex.toString());
+  }
+
+  @Override
+  public String toString() {
+    return "Election{"
+            + "channel='"
+            + channel
+            + '\''
+            + ", id='"
+            + id
+            + '\''
+            + ", name='"
+            + name
+            + '\''
+            + ", creation="
+            + creation
+            + ", start="
+            + start
+            + ", end="
+            + end
+            + ", electionQuestions="
+            + Arrays.toString(electionQuestions.toArray())
+            + ", voteMap="
+            + voteMap
+            + ", messageMap="
+            + messageMap
+            + ", state="
+            + state
+            + ", results="
+            + results
+            + '}';
   }
 }

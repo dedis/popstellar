@@ -6,7 +6,8 @@ import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
-import ch.epfl.pop.pubsub.graph.PipelineError
+import ch.epfl.pop.json.HighLevelProtocol._
+import spray.json._
 
 import scala.util.{Success, Try}
 
@@ -15,8 +16,7 @@ class JsonRpcRequest(
                       val method: MethodType.MethodType,
                       val params: Params,
                       val id: Option[Int]
-                    ) extends JsonRpcMessage with Validatable {
-  override def validateContent(): Option[PipelineError] = ??? // params.validateContent() // define recursively?s
+                    ) extends JsonRpcMessage {
 
   // defensive methods in case protocol structure changes
   def getParams: Params = params
@@ -77,5 +77,5 @@ object JsonRpcRequest extends Parsable {
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
 
-  override def buildFromJson(payload: String): JsonRpcRequest = ???
+  override def buildFromJson(payload: String): JsonRpcRequest = payload.parseJson.asJsObject.convertTo[JsonRpcRequest]
 }

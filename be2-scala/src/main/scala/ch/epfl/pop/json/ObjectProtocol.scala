@@ -59,12 +59,6 @@ object ObjectProtocol extends DefaultJsonProtocol {
     override def write(obj: Timestamp): JsValue = obj.time.toJson
   }
 
-  implicit object OptionalTimestampFormat extends JsonFormat[Option[Timestamp]] {
-    override def read(json: JsValue): Option[Timestamp] = ???
-
-    override def write(obj: Option[Timestamp]): JsValue = ???
-  }
-
   implicit object WitnessSignaturePairFormat extends JsonFormat[WitnessSignaturePair] {
     final private val PARAM_WITNESS: String = "witness"
     final private val PARAM_SIGNATURE: String = "signature"
