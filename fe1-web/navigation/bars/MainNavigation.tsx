@@ -5,9 +5,9 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import STRINGS from 'res/strings';
 
 import Home from 'parts/Home';
+import Launch from 'parts/Launch';
 import ConnectNavigation from 'navigation/bars/ConnectNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
-import Launch from '../../parts/Launch';
 
 /**
  * The main tab navigation component

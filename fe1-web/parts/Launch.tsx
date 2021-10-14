@@ -8,8 +8,7 @@ import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager, requestCreateLao } from 'network';
 
 import {
-  Channel,
-  Hash, Lao, Timestamp,
+  Channel, Hash, Lao, Timestamp,
 } from 'model/objects';
 
 import WideButtonView from 'components/WideButtonView';
@@ -19,12 +18,13 @@ import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
-import { subscribeToChannel } from '../network/CommunicationApi';
+import { subscribeToChannel } from 'network/CommunicationApi';
 
 /**
  * Manages the Launch screen, where the user enters a name and an address to launch and connect
  * to an LAO.
  */
+
 const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
