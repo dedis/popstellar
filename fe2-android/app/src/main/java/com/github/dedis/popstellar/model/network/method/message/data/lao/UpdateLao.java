@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -86,13 +87,16 @@ public class UpdateLao extends Data {
   @Override
   public String toString() {
     return "UpdateLao{"
-        + "name='"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
         + name
         + '\''
-        + ", last_modified="
+        + ", lastModified="
         + lastModified
         + ", witnesses="
-        + witnesses
+        + Arrays.toString(witnesses.toArray())
         + '}';
   }
 }

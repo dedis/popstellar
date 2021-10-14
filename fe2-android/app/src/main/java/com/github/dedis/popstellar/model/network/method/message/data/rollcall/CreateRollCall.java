@@ -155,9 +155,9 @@ public class CreateRollCall extends Data {
         + '\''
         + ", creation="
         + creation
-        + ", start="
+        + ", proposedStart="
         + proposedStart
-        + ", startType="
+        + ", proposedEnd="
         + proposedEnd
         + ", location='"
         + location

@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -142,5 +143,24 @@ public final class MessageGeneral {
       Log.d(TAG, "failed to verify signature", e);
       return false;
     }
+  }
+
+  @Override
+  public String toString() {
+    return "MessageGeneral{"
+        + "sender="
+        + getSender()
+        + '\''
+        + ", data="
+        + getData()
+        + ", signature='"
+        + getSignature()
+        + '\''
+        + ", messageId='"
+        + getMessageId()
+        + '\''
+        + ", witnessSignatures="
+        + Arrays.toString(witnessSignatures.toArray())
+        + '}';
   }
 }

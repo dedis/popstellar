@@ -68,4 +68,21 @@ public class OpenRollCall extends Data {
   public long getOpenedAt() {
     return openedAt;
   }
+
+  @Override
+  public String toString() {
+    return "OpenRollCall{"
+        + "updateId='"
+        + updateId
+        + '\''
+        + ", opens='"
+        + opens
+        + '\''
+        + ", openedAt="
+        + openedAt
+        + ", action='"
+        + action
+        + '\''
+        + '}';
+  }
 }

@@ -45,4 +45,19 @@ public abstract class Query extends Message {
   public int hashCode() {
     return Objects.hash(super.hashCode(), id);
   }
+
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()
+        + '{'
+        + "id="
+        + id
+        + ", channel='"
+        + getChannel()
+        + '\''
+        + ", method='"
+        + getMethod()
+        + '\''
+        + '}';
+  }
 }

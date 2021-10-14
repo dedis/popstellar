@@ -63,7 +63,7 @@ public class LaoHandler {
    */
   public static boolean handleCreateLao(
       LAORepository laoRepository, String channel, CreateLao createLao) {
-    Log.d(TAG, "handleCreateLao: channel " + channel + "LAO name " + createLao.getName());
+    Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     lao.setName(createLao.getName());
@@ -72,15 +72,6 @@ public class LaoHandler {
     lao.setOrganizer(createLao.getOrganizer());
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
-
-    Log.d(
-        TAG,
-        "Setting name as "
-            + createLao.getName()
-            + " creation time as "
-            + createLao.getCreation()
-            + " lao channel is "
-            + channel);
 
     return false;
   }
@@ -96,7 +87,7 @@ public class LaoHandler {
    */
   public static boolean handleUpdateLao(
       LAORepository laoRepository, String channel, String messageId, UpdateLao updateLao) {
-    Log.d(TAG, " Receive Update Lao Broadcast");
+    Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     if (lao.getLastModified() > updateLao.getLastModified()) {
@@ -110,7 +101,7 @@ public class LaoHandler {
     } else if (!updateLao.getWitnesses().equals(lao.getWitnesses())) {
       message = updateLaoWitnessesWitnessMessage(messageId, updateLao, lao);
     } else {
-      Log.d(TAG, " Problem to set the witness message title for update lao");
+      Log.d(TAG, " Cannot set the witness message title to update lao");
       return true;
     }
 
@@ -133,6 +124,8 @@ public class LaoHandler {
    */
   public static boolean handleStateLao(
       LAORepository laoRepository, String channel, StateLao stateLao) {
+    Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
+
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     Log.d(TAG, "Receive State Lao Broadcast " + stateLao.getName());

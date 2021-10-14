@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -253,5 +254,36 @@ public class Election extends Event {
     // ...])
     return Hash.hash(
         "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
+  }
+
+  @Override
+  public String toString() {
+    return "Election{"
+        + "channel='"
+        + channel
+        + '\''
+        + ", id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", creation="
+        + creation
+        + ", start="
+        + start
+        + ", end="
+        + end
+        + ", electionQuestions="
+        + Arrays.toString(electionQuestions.toArray())
+        + ", voteMap="
+        + voteMap
+        + ", messageMap="
+        + messageMap
+        + ", state="
+        + state
+        + ", results="
+        + results
+        + '}';
   }
 }

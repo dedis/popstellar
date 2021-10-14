@@ -57,4 +57,9 @@ public final class Broadcast extends Message {
   public int hashCode() {
     return Objects.hash(super.hashCode(), getMessage());
   }
+
+  @Override
+  public String toString() {
+    return "Broadcast{" + "channel='" + getChannel() + "', method='" + getMethod() + "'}";
+  }
 }

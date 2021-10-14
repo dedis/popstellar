@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ElectionVote {
@@ -83,28 +84,20 @@ public class ElectionVote {
 
   @Override
   public String toString() {
-    if (writeInEnabled) {
-      return "ElectionQuestion{"
-          + "id='"
-          + id
-          + '\''
-          + ", question ID='"
-          + questionId
-          + '\''
-          + ", write in='"
-          + writeIn
-          + '}';
-    } else {
-      return "ElectionQuestion{"
-          + "id='"
-          + id
-          + '\''
-          + ", question ID='"
-          + questionId
-          + '\''
-          + ", votes='"
-          + vote.toString()
-          + '}';
-    }
+    return "ElectionVote{"
+        + "id='"
+        + id
+        + '\''
+        + ", questionId='"
+        + questionId
+        + '\''
+        + ", vote="
+        + Arrays.toString(vote.toArray())
+        + ", writeInEnabled="
+        + writeInEnabled
+        + ", writeIn='"
+        + writeIn
+        + '\''
+        + '}';
   }
 }

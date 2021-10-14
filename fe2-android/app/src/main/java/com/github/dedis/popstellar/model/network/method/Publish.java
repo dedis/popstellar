@@ -54,4 +54,17 @@ public final class Publish extends Query {
   public int hashCode() {
     return Objects.hash(super.hashCode(), getMessage());
   }
+
+  @Override
+  public String toString() {
+    return "Publish{"
+        + "id="
+        + getRequestId()
+        + ", channel='"
+        + getChannel()
+        + '\''
+        + ", message="
+        + message
+        + '}';
+  }
 }

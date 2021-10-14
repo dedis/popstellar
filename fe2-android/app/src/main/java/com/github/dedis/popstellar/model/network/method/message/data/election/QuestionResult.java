@@ -24,4 +24,9 @@ public class QuestionResult {
   public Integer getCount() {
     return count;
   }
+
+  @Override
+  public String toString() {
+    return "QuestionResult{" + "ballotOption='" + ballotOption + '\'' + ", count=" + count + '}';
+  }
 }

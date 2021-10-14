@@ -39,7 +39,7 @@ public class WitnessMessageHandler {
       String channel,
       String senderPk,
       WitnessMessageSignature message) {
-    Log.d(TAG, "Received Witness Message Signature Broadcast");
+    Log.d(TAG, "Received Witness Message Signature Broadcast with id : " + message.getMessageId());
     String messageId = message.getMessageId();
     String signature = message.getSignature();
 
@@ -48,6 +48,12 @@ public class WitnessMessageHandler {
 
     // Verify signature
     if (!Signature.verifySignature(messageId, senderPkBuf, signatureBuf)) {
+      Log.w(
+          TAG,
+          "Failed to verify signature of Witness Message Signature id="
+              + messageId
+              + ", signature="
+              + signature);
       return false;
     }
 

@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
 import java.util.List;
 
 /** Data sent to close a Roll-Call */
@@ -61,5 +62,21 @@ public class CloseRollCall extends Data {
 
   public List<String> getAttendees() {
     return attendees;
+  }
+
+  @Override
+  public String toString() {
+    return "CloseRollCall{"
+        + "updateId='"
+        + updateId
+        + '\''
+        + ", closes='"
+        + closes
+        + '\''
+        + ", closedAt="
+        + closedAt
+        + ", attendees="
+        + Arrays.toString(attendees.toArray())
+        + '}';
   }
 }

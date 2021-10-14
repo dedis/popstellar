@@ -11,4 +11,9 @@ public class Result extends Answer {
   public Result(int id) {
     super(id);
   }
+
+  @Override
+  public String toString() {
+    return "Result{" + "id=" + getId() + '}';
+  }
 }

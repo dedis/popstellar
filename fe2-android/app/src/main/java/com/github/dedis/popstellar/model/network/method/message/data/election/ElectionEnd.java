@@ -56,4 +56,21 @@ public class ElectionEnd extends Data {
   public long getCreatedAt() {
     return createdAt;
   }
+
+  @Override
+  public String toString() {
+    return "ElectionEnd{"
+        + "electionId='"
+        + electionId
+        + '\''
+        + ", createdAt="
+        + createdAt
+        + ", laoId='"
+        + laoId
+        + '\''
+        + ", registeredVotes='"
+        + registeredVotes
+        + '\''
+        + '}';
+  }
 }

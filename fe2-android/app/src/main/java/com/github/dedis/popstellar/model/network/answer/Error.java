@@ -42,4 +42,9 @@ public final class Error extends Answer {
   public int hashCode() {
     return Objects.hash(super.hashCode(), getError());
   }
+
+  @Override
+  public String toString() {
+    return "Error{error=" + error + '}';
+  }
 }

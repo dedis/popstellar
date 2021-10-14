@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class ElectionResult extends Data {
@@ -29,5 +30,10 @@ public class ElectionResult extends Data {
 
   public List<ElectionResultQuestion> getElectionQuestionResults() {
     return questions;
+  }
+
+  @Override
+  public String toString() {
+    return "ElectionResult{questions=" + Arrays.toString(questions.toArray()) + '}';
   }
 }

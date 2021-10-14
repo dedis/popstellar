@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
 import java.util.List;
 
 /** Data received to track the state of a meeting */
@@ -175,7 +176,7 @@ public class StateMeeting extends Data {
         + modificationId
         + '\''
         + ", modificationSignatures="
-        + modificationSignatures
+        + Arrays.toString(modificationSignatures.toArray())
         + '}';
   }
 }

@@ -57,4 +57,21 @@ public class WitnessMessage {
   public void setDescription(String description) {
     this.description = description;
   }
+
+  @Override
+  public String toString() {
+    return "WitnessMessage{"
+        + "messageId='"
+        + messageId
+        + '\''
+        + ", witnesses="
+        + witnesses
+        + ", title='"
+        + title
+        + '\''
+        + ", description='"
+        + description
+        + '\''
+        + '}';
+  }
 }

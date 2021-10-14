@@ -108,7 +108,7 @@ public class ElectionHandler {
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
     if (resultsQuestions.isEmpty()) {
-      throw new IllegalArgumentException("the questions results shouldn't be empty");
+      throw new IllegalArgumentException("the questions results is empty");
     }
     Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
     election.setResults(resultsQuestions);

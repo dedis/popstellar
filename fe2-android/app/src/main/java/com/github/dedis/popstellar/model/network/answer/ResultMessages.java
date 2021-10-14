@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.answer;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -40,5 +41,10 @@ public final class ResultMessages extends Result {
   @Override
   public int hashCode() {
     return Objects.hash(getId(), messages);
+  }
+
+  @Override
+  public String toString() {
+    return "ResultMessages{" + "messages=" + Arrays.toString(messages.toArray()) + '}';
   }
 }

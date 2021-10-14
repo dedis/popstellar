@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Data sent when creating a new LAO */
@@ -115,7 +116,7 @@ public class CreateLao extends Data {
         + organizer
         + '\''
         + ", witnesses="
-        + witnesses
+        + Arrays.toString(witnesses.toArray())
         + '}';
   }
 }

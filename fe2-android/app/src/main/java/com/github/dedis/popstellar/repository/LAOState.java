@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.repository;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.objects.Lao;
 
 import io.reactivex.Observable;
@@ -36,6 +38,7 @@ public class LAOState {
 
   /** publish is used to publish a LAO state update to all observers. */
   public void publish() {
+    Log.d("LAOState", "pushing update to observer. New LAO : " + lao.toString());
     publisher.onNext(lao);
   }
 

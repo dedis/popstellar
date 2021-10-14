@@ -45,4 +45,9 @@ public final class ErrorCode {
   public int hashCode() {
     return Objects.hash(getCode(), getDescription());
   }
+
+  @Override
+  public String toString() {
+    return "ErrorCode{code=" + code + ", description='" + description + "'}";
+  }
 }

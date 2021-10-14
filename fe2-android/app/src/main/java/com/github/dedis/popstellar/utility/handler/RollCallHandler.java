@@ -39,7 +39,7 @@ public class RollCallHandler {
    */
   public static boolean handleRollCallMessage(
       LAORepository laoRepository, String channel, Data data, String messageId) {
-    Log.d(TAG, "handle Roll Call message");
+    Log.d(TAG, "handle Roll Call message id=" + messageId);
 
     switch (Objects.requireNonNull(Action.find(data.getAction()))) {
       case CREATE:
@@ -99,14 +99,14 @@ public class RollCallHandler {
   public static boolean handleOpenRollCall(
       LAORepository laoRepository, String channel, OpenRollCall openRollCall, String messageId) {
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Log.d(TAG, "handleOpenRollCall: " + channel);
-    Log.d(TAG, openRollCall.getOpens());
+    Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
 
     Optional<RollCall> rollCallOptional = lao.getRollCall(opens);
     if (!rollCallOptional.isPresent()) {
+      Log.w(TAG, "Cannot find roll call to open : " + opens);
       return true;
     }
 
@@ -141,6 +141,7 @@ public class RollCallHandler {
 
     Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
+      Log.w(TAG, "Cannot find roll call to close : " + closes);
       return true;
     }
 

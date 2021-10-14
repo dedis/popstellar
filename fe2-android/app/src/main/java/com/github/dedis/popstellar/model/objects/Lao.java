@@ -256,4 +256,35 @@ public final class Lao {
   public static String generateLaoId(String organizer, long creation, String name) {
     return Hash.hash(organizer, Long.toString(creation), name);
   }
+
+  @Override
+  public String toString() {
+    return "Lao{"
+        + "name='"
+        + name
+        + '\''
+        + ", id='"
+        + id
+        + '\''
+        + ", channel='"
+        + channel
+        + '\''
+        + ", creation="
+        + creation
+        + ", organizer='"
+        + organizer
+        + '\''
+        + ", lastModified="
+        + lastModified
+        + ", modificationId='"
+        + modificationId
+        + '\''
+        + ", witnesses="
+        + witnesses
+        + ", rollCalls="
+        + rollCalls
+        + ", elections="
+        + elections
+        + '}';
+  }
 }
