@@ -188,6 +188,12 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 		return
 	}
 
+	err = laoCreate.Verify()
+	if err != nil {
+		h.log.Err(err).Msg("invalid lao#create message")
+		socket.SendError(&publish.ID, err)
+	}
+
 	err = h.createLao(publish, laoCreate)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")

@@ -1,6 +1,7 @@
 package lao
 
 import (
+	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
@@ -237,6 +238,11 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
+		err = c.verifyMessageLaoID(msg.MessageID)
+		if err != nil {
+			return xerrors.Errorf("invalid lao#state message: %v", err)
+		}
+
 		err = c.processLaoState(laoState)
 		if err != nil {
 			return xerrors.Errorf("failed to process state action: %w", err)
@@ -299,6 +305,14 @@ func (c *Channel) processLaoState(data messagedata.LaoState) error {
 		}
 	}
 
+	err = updateMsgData.Verifiy()
+	if err != nil {
+		return &answer.Error{
+			Code:        -4,
+			Description: fmt.Sprintf("invalid lao#update message: %v", err),
+		}
+	}
+
 	err = compareLaoUpdateAndState(updateMsgData, data)
 	if err != nil {
 		return xerrors.Errorf("failed to compare lao/update and existing state: %w", err)
@@ -336,6 +350,15 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 
 	if match != M {
 		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to match but %d matched", M, match)
+	}
+
+	return nil
+}
+
+// verify if a lao message id is the same as the lao id
+func (c *Channel) verifyMessageLaoID(id string) error {
+	if c.channelID != id {
+		return xerrors.Errorf("lao id is %s, should be %s", id, c.channelID)
 	}
 
 	return nil
@@ -448,6 +471,8 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	return nil
 }
 
+// verify
+
 // processElectionObject handles an election object.
 func (c *Channel) processElectionObject(action string, msg message.Message) error {
 	expectedAction := messagedata.ElectionActionSetup
@@ -522,6 +547,13 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 
 // processCreateRollCall processes a roll call creation object.
 func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
+
+	// Check that the ID is correct
+	err := c.verifyMessageRollCallCreateID(msg)
+	if err != nil {
+		return xerrors.Errorf("invalid rollcall#create message: %v", err)
+	}
+
 	// Check that the ProposedEnd is greater than the ProposedStart
 	if msg.ProposedStart > msg.ProposedEnd {
 		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", msg.ProposedStart, msg.ProposedEnd)
@@ -557,6 +589,11 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 		return xerrors.Errorf("failed to unmarshal roll call open: %v", err)
 	}
 
+	err = c.verifyMessageRollCallOpenID(rollCallOpen)
+	if err != nil {
+		return xerrors.Errorf("invalid rollcall#open message: %v", err)
+	}
+
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
 		return answer.NewError(-1, "The field `opens` does not correspond to the id of the previous roll call message")
 	}
@@ -568,6 +605,12 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 
 // processCloseRollCall processes a close roll call message.
 func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
+
+	err := c.verifyMessageRollCallCloseID(msg)
+	if err != nil {
+		return xerrors.Errorf("invalid rollcall#close message: %v", err)
+	}
+
 	if c.rollCall.state != Open {
 		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
@@ -602,6 +645,59 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 				c.log.Err(err).Msgf("failed to insert attendee %s into db", attendee)
 			}
 		}
+	}
+
+	return nil
+}
+
+const InvalidIDMessage string = "ID %s does not correspond with message data"
+
+// verify if a lao message id is the same as the lao id
+func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
+
+	h := sha256.New()
+	h.Write([]byte("R"))
+	h.Write([]byte(c.channelID))
+	h.Write([]byte(fmt.Sprintf("%d", msg.Creation)))
+	h.Write([]byte(msg.Name))
+	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	if msg.ID != expectedID {
+		return xerrors.Errorf(InvalidIDMessage, msg.ID)
+	}
+
+	return nil
+}
+
+// verify if a lao message id is the same as the lao id
+func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
+
+	h := sha256.New()
+	h.Write([]byte("R"))
+	h.Write([]byte(c.channelID))
+	h.Write([]byte(msg.Opens))
+	h.Write([]byte(fmt.Sprintf("%d", msg.OpenedAt)))
+	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	if msg.UpdateID != expectedID {
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
+	}
+
+	return nil
+}
+
+// verify if a lao message id is the same as the lao id
+func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
+
+	h := sha256.New()
+	h.Write([]byte("R"))
+	h.Write([]byte(c.channelID))
+	h.Write([]byte(msg.Closes))
+	h.Write([]byte(fmt.Sprintf("%d", msg.ClosedAt)))
+	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	if msg.UpdateID != expectedID {
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
 	}
 
 	return nil
