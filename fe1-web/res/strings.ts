@@ -28,10 +28,6 @@ const STRINGS = {
   witness_navigation_tab_home: 'Witness',
   witness_navigation_tab_video: 'Witness Video',
 
-  /* --- Launch Navigation Strings --- */
-  launch_navigation_tab_main: 'Launch home',
-  launch_navigation_tab_confirm: 'Launch confirm',
-
   /* --- Organizer Navigation Strings --- */
   organizer_navigation_tab_home: 'Organizer Home',
   organizer_navigation_tab_create_event: 'Create Event',
@@ -80,7 +76,6 @@ const STRINGS = {
   launch_organization_name: 'Organization name',
   launch_address: 'Address',
   launch_button_launch: 'Launch',
-  launch_confirm_description: 'At which address would you like to launch it ?',
 
   /* --- Organizer Strings --- */
   organization_name: 'Organization name',

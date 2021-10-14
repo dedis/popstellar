@@ -7,9 +7,14 @@ import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
 import { requestCreateRollCall } from 'network/MessageApi';
-import DatePicker, { dateToTimestamp, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
+import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
+import { Timestamp } from 'model/objects';
+
+function dateToTimestamp(date: Date): Timestamp {
+  return new Timestamp(Math.floor(date.getTime() / 1000));
+}
 
 /**
  * Screen to create a roll-call event
@@ -22,9 +27,10 @@ const CreateRollCall = ({ route }: any) => {
   const navigation = useNavigation();
   const initialStartDate = new Date();
   const initialEndDate = new Date();
-
+  // Sets initial start date 5 minutes in the future to avoid: proposed_start < creation
+  initialStartDate.setMinutes(initialStartDate.getMinutes() + 5);
   // Sets initial end date to 1 hour later than start date
-  initialEndDate.setHours(initialStartDate.getHours() + 1);
+  initialEndDate.setHours(initialEndDate.getHours() + 1);
 
   const [proposedStartDate, setProposedStartDate] = useState(dateToTimestamp(initialStartDate));
   const [proposedEndDate, setProposedEndDate] = useState(dateToTimestamp(initialEndDate));
@@ -44,13 +50,12 @@ const CreateRollCall = ({ route }: any) => {
         <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
         <DatePicker
           selected={startTime}
-          onChange={(date: Date) => onChangeStartTime(date, setProposedStartDate,
-            setProposedEndDate)}
+          onChange={(date: Date) => setProposedStartDate(dateToTimestamp(date))}
         />
         <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
         <DatePicker
           selected={endTime}
-          onChange={(date: Date) => onChangeEndTime(date, proposedStartDate, setProposedEndDate)}
+          onChange={(date: Date) => setProposedEndDate(dateToTimestamp(date))}
         />
       </View>
     );

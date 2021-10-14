@@ -24,32 +24,6 @@ import {
 import { Question, Vote } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
 
-const ONE_MINUTE = 60;
-
-/**
- * Checks if start < creation. If it is the case, start time will be creation time.
- * Otherwise, start time is simply returned.
- *
- * @param creation
- * @param start
- */
-const adaptStartTime = (creation: Timestamp, start: Timestamp) : Timestamp => ((start
-  .before(creation)) ? creation : start);
-
-/**
- * Checks if end <= start. If it is the case, end time will be start time + 60 seconds.
- * Otherwise, end time is simply returned.
- *
- * @param start
- * @param end
- */
-const adaptEndTime = (start: Timestamp, end: Timestamp | undefined) : Timestamp | undefined => {
-  if (end != null) {
-    return (end <= start) ? start.addSeconds(ONE_MINUTE) : end;
-  }
-  return end;
-};
-
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {
   const time = Timestamp.EpochNow();
@@ -110,17 +84,16 @@ export function requestCreateMeeting(
 ): Promise<void> {
   const time = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-  const newStart = adaptStartTime(time, startTime);
 
   const message = new CreateMeeting({
     id: Hash.fromStringArray(
       EventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name,
     ),
-    name: name,
-    start: newStart,
+    name,
+    start: startTime,
     creation: time,
-    location: location,
-    end: adaptEndTime(newStart, endTime),
+    location,
+    end: endTime,
     extra,
   });
 
@@ -153,7 +126,6 @@ export function requestCreateRollCall(
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-  const newProposedStart = adaptStartTime(time, proposedStart);
 
   const message = new CreateRollCall({
     id: Hash.fromStringArray(
@@ -162,8 +134,8 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    proposed_start: newProposedStart,
-    proposed_end: adaptEndTime(newProposedStart, proposedEnd),
+    proposed_start: proposedStart,
+    proposed_end: proposedEnd,
     description: description,
   });
 
@@ -252,8 +224,7 @@ export function requestCreateElection(
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
-  const newStart = adaptStartTime(time, start);
-
+  const timeBuffer = 60;
   const message = new SetupElection({
     lao: currentLao.id,
     id: Hash.fromStringArray(
@@ -262,8 +233,8 @@ export function requestCreateElection(
     name: name,
     version: version,
     created_at: time,
-    start_time: newStart,
-    end_time: adaptEndTime(newStart, end),
+    start_time: ((start.before(time)) ? time : start),
+    end_time: ((end.before(start)) ? (start.addSeconds(timeBuffer)) : end),
     questions: questions,
   });
 

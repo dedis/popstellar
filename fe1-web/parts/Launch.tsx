@@ -22,14 +22,8 @@ import styleContainer from 'styles/stylesheets/container';
 import { subscribeToChannel } from '../network/CommunicationApi';
 
 /**
- * Manages the Launch screen: a description string, a LAO name text input, a launch LAO button,
- * and a cancel button. For now, it has 2 more test buttons.
- *
- * The launch button navigates into the launch confirm tab, which asks an address to which you want
- * to connect.
- *
- * The cancel button clear the LAO name field and redirect to the Home screen
- *
+ * Manages the Launch screen, where the user enters a name and an address to launch and connect
+ * to an LAO.
  */
 const styles = StyleSheet.create({
   textInput: {

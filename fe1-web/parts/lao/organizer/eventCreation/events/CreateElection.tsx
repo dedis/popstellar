@@ -6,11 +6,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
-import DatePicker, { dateToTimestamp, onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
+import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
-  Hash, Lao, Question, EventTags,
+  Hash, Lao, Timestamp, Question, EventTags,
 } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
@@ -21,15 +21,17 @@ import { OpenedLaoStore } from 'store';
 /**
  * UI to create an Election Event
  */
+
 const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
   const initialStartDate = new Date();
   const initialEndDate = new Date();
-  initialEndDate.setHours(initialStartDate.getHours() + 1);
+  // Sets initial end date to 1 hour later than start date
+  initialEndDate.setMinutes(initialEndDate.getMinutes() + 15);
 
-  const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(dateToTimestamp(initialEndDate));
+  const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
+  const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
@@ -49,14 +51,14 @@ const CreateElection = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
             selected={startTime}
-            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate)}
+            onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
             selected={endTime}
-            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
+            onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
           />
         </View>
       </View>
