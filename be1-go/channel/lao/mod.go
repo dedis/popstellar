@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"popstellar/channel"
-	"popstellar/channel/consensus.go"
+	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
