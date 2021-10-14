@@ -114,8 +114,4 @@ Launch.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
-type LaunchConfirmParams = {
-  laoName: string
-};
-
 export default Launch;
