@@ -29,9 +29,9 @@ func Test_Roll_Call_Close(t *testing.T) {
 
 	require.Equal(t, "roll_call", msg.Object)
 	require.Equal(t, "close", msg.Action)
-	require.Equal(t, "XXX", msg.UpdateID)
-	require.Equal(t, "XXX", msg.Closes)
-	require.Equal(t, int64(123), msg.ClosedAt)
+	require.Equal(t, "WxoPg4wLpmog0Q5eQewQ5AAD19RW-8-6aSZ2mGIJRO8=", msg.UpdateID)
+	require.Equal(t, "krCHh6OFWIjSHQiUSrWyx1FV0Jp8deC3zUyelhPG-Yk=", msg.Closes)
+	require.Equal(t, int64(1633099135), msg.ClosedAt)
 	require.Len(t, msg.Attendees, 1)
-	require.Equal(t, "XXX", msg.Attendees[0])
+	require.Equal(t, "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=", msg.Attendees[0])
 }

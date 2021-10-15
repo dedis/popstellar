@@ -1,14 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  StyleSheet, View, ViewStyle,
+  StyleSheet, View, ViewStyle, TextInput, TextStyle,
 } from 'react-native';
 import CopyButton from 'components/CopyButton';
-import TextBlock from './TextBlock';
-import { Views } from '../styles';
+import { Typography, Views } from '../styles';
 
 /**
- * This is a TextBlock component which data is copiable
+ * This is a TextInput component which data is copiable
  * to clipboard by clicking the copy button.
  */
 
@@ -18,35 +17,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     zIndex: 3,
   } as ViewStyle,
+  textInput: {
+    ...Typography.base,
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    width: 750,
+  } as TextStyle,
 });
 
-const CopiableTextBlock = (props: IPropTypes) => {
+const CopiableTextInput = (props: IPropTypes) => {
   const { text } = props;
-  const { visibility } = props;
 
   return (
     <View style={styles.view}>
+      <TextInput value={text} style={styles.textInput} selectTextOnFocus />
       <CopyButton data={text} />
-      <TextBlock text={text} visibility={visibility} />
     </View>
   );
 };
 
 const propTypes = {
   text: PropTypes.string,
-  visibility: PropTypes.bool,
 };
 
-CopiableTextBlock.propTypes = propTypes;
+CopiableTextInput.propTypes = propTypes;
 
-CopiableTextBlock.defaultProps = {
+CopiableTextInput.defaultProps = {
   text: '',
-  visibility: false,
 };
 
 type IPropTypes = {
   text: string,
-  visibility: boolean,
 };
 
-export default CopiableTextBlock;
+export default CopiableTextInput;

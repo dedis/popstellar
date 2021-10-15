@@ -5,16 +5,18 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.util.Log;
+
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
-import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
-import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -110,7 +112,7 @@ public class ElectionHandler {
 
     List<ElectionResultQuestion> resultsQuestions = electionResult.getElectionQuestionResults();
     if (resultsQuestions.isEmpty()) {
-      throw new IllegalArgumentException("the questions results shouldn't be empty");
+      throw new IllegalArgumentException("the questions results is empty");
     }
     Log.d(TAG, "size of resultsQuestions is " + resultsQuestions.size());
     election.setResults(resultsQuestions);

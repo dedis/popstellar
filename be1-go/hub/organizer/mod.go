@@ -115,7 +115,12 @@ func (h *Hub) Start() {
 					h.workers.Acquire(context.Background(), 1)
 				}
 
-				go h.handleIncomingMessage(&incomingMessage)
+				go func() {
+					err := h.handleIncomingMessage(&incomingMessage)
+					if err != nil {
+						h.log.Err(err).Msg("problem handling incoming message")
+					}
+				}()
 			case id := <-h.closedSockets:
 				h.RLock()
 				for _, channel := range h.channelByID {
@@ -149,25 +154,28 @@ func (h *Hub) OnSocketClose() chan<- string {
 }
 
 // handleRootChannelMesssage handles an incoming message on the root channel.
-func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) {
+func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		socket.SendError(&publish.ID, xerrors.Errorf("failed to decode message data: %v", err))
-		return
+		err := xerrors.Errorf("failed to decode message data: %v", err)
+		socket.SendError(&publish.ID, err)
+		return err
 	}
 
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
+		err := xerrors.Errorf("failed to validate message against json schema: %v", err)
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
+		err := xerrors.Errorf("failed to get object#action: %v", err)
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	// must be "lao#create"
@@ -176,7 +184,7 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 			"but found %s#%s", object, action)
 		h.log.Err(err)
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	var laoCreate messagedata.LaoCreate
@@ -185,19 +193,27 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	if err != nil {
 		h.log.Err(err).Msg("failed to unmarshal lao#create")
 		socket.SendError(&publish.ID, err)
-		return
+		return err
+	}
+
+	err = laoCreate.Verify()
+	if err != nil {
+		h.log.Err(err).Msg("invalid lao#create message")
+		socket.SendError(&publish.ID, err)
 	}
 
 	err = h.createLao(publish, laoCreate)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
-func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) error {
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
 
@@ -205,22 +221,25 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
-		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
-		return
+		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
+		socket.SendError(nil, schemaErr)
+		return schemaErr
 	}
 
 	rpctype, err := jsonrpc.GetType(byteMessage)
 	if err != nil {
 		h.log.Err(err).Msg("failed to get rpc type")
-		socket.SendError(nil, err)
-		return
+		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
+		socket.SendError(nil, rpcErr)
+		return rpcErr
 	}
 
 	// check type (answer or query), we expect a query
 	if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msgf("jsonRPC message is not of type query")
-		socket.SendError(nil, xerrors.New("jsonRPC message is not of type query"))
-		return
+		h.log.Error().Msg("jsonRPC message is not of type query")
+		rpcErr := xerrors.New("jsonRPC message is not of type query")
+		socket.SendError(nil, rpcErr)
+		return rpcErr
 	}
 
 	var queryBase query.Base
@@ -230,7 +249,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	var id int
@@ -250,22 +269,23 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
 		socket.SendResult(id, msgs)
-		return
+		return nil
 	}
 
 	socket.SendResult(id, nil)
+	return nil
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
@@ -277,7 +297,10 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	if publish.Params.Channel == "/root" {
-		h.handleRootChannelMesssage(socket, publish)
+		err := h.handleRootChannelMesssage(socket, publish)
+		if err != nil {
+			return -1, xerrors.Errorf("failed to handle root channel message: %v", err)
+		}
 		return publish.ID, nil
 	}
 
@@ -443,22 +466,24 @@ func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) 
 	}
 
 	socket.SendResult(id, nil)
+	return nil
 }
 
 // handleIncomingMessage handles an incoming message based on the socket it
 // originates from.
-func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
+func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) error {
 	defer h.workers.Release(1)
 
 	h.log.Info().Str("msg", string(incomingMessage.Message)).Msg("handle incoming message")
 
 	switch incomingMessage.Socket.Type() {
 	case socket.ClientSocketType:
-		h.handleMessageFromClient(incomingMessage)
+		return h.handleMessageFromClient(incomingMessage)
 	case socket.WitnessSocketType:
-		h.handleMessageFromWitness(incomingMessage)
+		return h.handleMessageFromWitness(incomingMessage)
 	default:
-		h.log.Error().Msg("error: invalid socket type")
+		h.log.Error().Msg("invalid socket type")
+		return xerrors.Errorf("invalid socket type")
 	}
 
 }

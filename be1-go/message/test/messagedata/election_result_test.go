@@ -31,9 +31,11 @@ func Test_Election_Result(t *testing.T) {
 	require.Equal(t, "result", msg.Action)
 
 	require.Len(t, msg.Questions, 1)
-	require.Equal(t, "XXX", msg.Questions[0].ID)
+	require.Equal(t, "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=", msg.Questions[0].ID)
 
-	require.Len(t, msg.Questions[0].Result, 1)
-	require.Equal(t, "XXX", msg.Questions[0].Result[0].BallotOption)
-	require.Equal(t, 123, msg.Questions[0].Result[0].Count)
+	require.Len(t, msg.Questions[0].Result, 2)
+	require.Equal(t, "Yes", msg.Questions[0].Result[0].BallotOption)
+	require.Equal(t, 1, msg.Questions[0].Result[0].Count)
+	require.Equal(t, "No", msg.Questions[0].Result[1].BallotOption)
+	require.Equal(t, 0, msg.Questions[0].Result[1].Count)
 }
