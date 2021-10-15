@@ -56,6 +56,6 @@ public final class ConsensusLearn extends Data {
 
   @Override
   public String toString() {
-    return String.format("LearnConsensus{message_id='%s', acceptors=%s}", messageId, acceptors);
+    return String.format("ConsensusLearn{message_id='%s', acceptors=%s}", messageId, acceptors);
   }
 }

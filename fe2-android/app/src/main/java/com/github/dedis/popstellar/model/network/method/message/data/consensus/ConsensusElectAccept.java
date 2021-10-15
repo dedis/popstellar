@@ -55,6 +55,6 @@ public final class ConsensusElectAccept extends Data {
 
   @Override
   public String toString() {
-    return String.format("ConsensusVote{message_id='%s', accept=%b}", messageId, accept);
+    return String.format("ConsensusElectAccept{message_id='%s', accept=%b}", messageId, accept);
   }
 }

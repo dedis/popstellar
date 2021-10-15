@@ -76,7 +76,7 @@ public final class ConsensusElect extends Data {
   @Override
   public String toString() {
     return String.format(
-        "CreateConsensus{instance_id='%s', created_at=%s, key='%s', value='%s'}",
+        "ConsensusElect{instance_id='%s', created_at=%s, key='%s', value='%s'}",
         instanceId, creation, key, value);
   }
 }
