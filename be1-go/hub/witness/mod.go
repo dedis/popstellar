@@ -2,11 +2,13 @@ package witness
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"popstellar/channel"
 	"popstellar/hub"
 	"popstellar/message/answer"
+	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -19,6 +21,10 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 )
+
+// rootPrefix denotes the prefix for the root channel
+// used to keep an image of the laos
+const rootPrefix = "/root/"
 
 const (
 	numWorkers = 10
@@ -42,10 +48,13 @@ type Hub struct {
 	workers *semaphore.Weighted
 
 	log zerolog.Logger
+
+	// laoFac is there to allow a similar implementation to the organizer
+	laoFac channel.LaoFactory
 }
 
 // NewHub returns a new Witness Hub.
-func NewHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
+func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -63,6 +72,7 @@ func NewHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(numWorkers),
 		log:             log,
+		laoFac:          laoFac,
 	}
 
 	return &witnessHub, nil
@@ -95,7 +105,19 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
 	var handlerErr error
 
 	switch queryBase.Method {
-	// TODO : treat the different message that the witness can get
+	case query.MethodPublish:
+		id, handlerErr = h.handlePublish(socket, byteMessage)
+	case query.MethodSubscribe:
+		id, handlerErr = h.handleSubscribe(socket, byteMessage)
+	case query.MethodUnsubscribe:
+		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
+	case query.MethodCatchUp:
+		msgs, id, handlerErr = h.handleCatchup(byteMessage)
+	default:
+		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
 	}
 
 	if handlerErr != nil {
@@ -140,7 +162,19 @@ func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
 	var handlerErr error
 
 	switch queryBase.Method {
-	// TODO : treat the different message that the witness can get
+	case query.MethodPublish:
+		id, handlerErr = h.handlePublish(socket, byteMessage)
+	case query.MethodSubscribe:
+		id, handlerErr = h.handleSubscribe(socket, byteMessage)
+	case query.MethodUnsubscribe:
+		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
+	case query.MethodCatchUp:
+		msgs, id, handlerErr = h.handleCatchup(byteMessage)
+	default:
+		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
 	}
 
 	if handlerErr != nil {
@@ -185,7 +219,19 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
 	var handlerErr error
 
 	switch queryBase.Method {
-	// TODO : treat the different message that the witness can get
+	case query.MethodPublish:
+		id, handlerErr = h.handlePublish(socket, byteMessage)
+	case query.MethodSubscribe:
+		id, handlerErr = h.handleSubscribe(socket, byteMessage)
+	case query.MethodUnsubscribe:
+		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
+	case query.MethodCatchUp:
+		msgs, id, handlerErr = h.handleCatchup(byteMessage)
+	default:
+		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		h.log.Err(err)
+		socket.SendError(nil, err)
+		return
 	}
 
 	if handlerErr != nil {
@@ -273,4 +319,196 @@ func (h *Hub) OnSocketClose() chan<- string {
 // Type implements hub.Hub
 func (h *Hub) Type() hub.HubType {
 	return hub.WitnessHubType
+}
+
+// For now the witnesses work the same as organizer, the following functions are
+// tied to this particular comportement.
+
+// GetPubkey implements channel.HubFunctionalities
+func (h *Hub) GetPubkey() kyber.Point {
+	return h.public
+}
+
+// GetSchemaValidator implements channel.HubFunctionalities
+func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
+	return *h.schemaValidator
+}
+
+// createLao creates a new LAO using the data in the publish parameter.
+func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate) error {
+
+	laoChannelPath := rootPrefix + laoCreate.ID
+
+	if _, ok := h.channelByID[laoChannelPath]; ok {
+		h.log.Error().Msgf("failed to create lao: duplicate lao path: %q", laoChannelPath)
+		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
+	}
+
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log)
+
+	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
+
+	h.RegisterNewChannel(laoChannelPath, laoCh)
+
+	return nil
+}
+
+// RegisterNewChannel implements channel.HubFunctionalities
+func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
+	h.Lock()
+	h.channelByID[channeID] = channel
+	h.Unlock()
+}
+
+// handleRootChannelMesssage handles an incoming message on the root channel.
+func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) {
+	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
+	if err != nil {
+		socket.SendError(&publish.ID, xerrors.Errorf("failed to decode message data: %v", err))
+		return
+	}
+
+	// validate message data against the json schema
+	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		socket.SendError(&publish.ID, err)
+		return
+	}
+
+	// get object#action
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		socket.SendError(&publish.ID, err)
+		return
+	}
+
+	// must be "lao#create"
+	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
+		err := answer.NewErrorf(-1, "only lao#create is allowed on root, "+
+			"but found %s#%s", object, action)
+		h.log.Err(err)
+		socket.SendError(&publish.ID, err)
+		return
+	}
+
+	var laoCreate messagedata.LaoCreate
+
+	err = publish.Params.Message.UnmarshalData(&laoCreate)
+	if err != nil {
+		h.log.Err(err).Msg("failed to unmarshal lao#create")
+		socket.SendError(&publish.ID, err)
+		return
+	}
+
+	err = h.createLao(publish, laoCreate)
+	if err != nil {
+		h.log.Err(err).Msg("failed to create lao")
+		socket.SendError(&publish.ID, err)
+		return
+	}
+}
+
+func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
+	var publish method.Publish
+
+	err := json.Unmarshal(byteMessage, &publish)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
+	}
+
+	if publish.Params.Channel == "/root" {
+		h.handleRootChannelMesssage(socket, publish)
+		return publish.ID, nil
+	}
+
+	channel, err := h.getChan(publish.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get channel: %v", err)
+	}
+
+	err = channel.Publish(publish)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to publish: %v", err)
+	}
+
+	return publish.ID, nil
+}
+
+func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
+	var subscribe method.Subscribe
+
+	err := json.Unmarshal(byteMessage, &subscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal subscribe message: %v", err)
+	}
+
+	channel, err := h.getChan(subscribe.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get subscribe channel: %v", err)
+	}
+
+	err = channel.Subscribe(socket, subscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to publish: %v", err)
+	}
+
+	return subscribe.ID, nil
+}
+
+func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
+	var unsubscribe method.Unsubscribe
+
+	err := json.Unmarshal(byteMessage, &unsubscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unmarshal unsubscribe message: %v", err)
+	}
+
+	channel, err := h.getChan(unsubscribe.Params.Channel)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
+	}
+
+	err = channel.Unsubscribe(socket.ID(), unsubscribe)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to unsubscribe: %v", err)
+	}
+
+	return unsubscribe.ID, nil
+}
+
+func (h *Hub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) {
+	var catchup method.Catchup
+
+	err := json.Unmarshal(byteMessage, &catchup)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
+	}
+
+	channel, err := h.getChan(catchup.Params.Channel)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to get catchup channel: %v", err)
+	}
+
+	msg := channel.Catchup(catchup)
+	if err != nil {
+		return nil, -1, xerrors.Errorf("failed to catchup: %v", err)
+	}
+
+	return msg, catchup.ID, nil
+}
+
+func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
+	if channelPath[:6] != rootPrefix {
+		return nil, xerrors.Errorf("channel id must begin with \"/root/\", got: %q", channelPath[:6])
+	}
+
+	h.RLock()
+	defer h.RUnlock()
+
+	channel, ok := h.channelByID[channelPath]
+	if !ok {
+		return nil, xerrors.Errorf("channel %s does not exist", channelPath)
+	}
+
+	return channel, nil
 }

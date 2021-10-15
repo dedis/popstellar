@@ -26,7 +26,7 @@ func createWitnessHub() (hub.Hub, error) {
 		return nil, err
 	}
 
-	h, err := NewHub(point, log)
+	h, err := NewHub(point, log, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +50,7 @@ func TestNewWitnessHub(t *testing.T) {
 	err = point.UnmarshalBinary(pkBuf)
 	require.NoError(t, err)
 
-	_, err = NewHub(point, log)
+	_, err = NewHub(point, log, nil)
 	require.NoError(t, err)
 }
 
