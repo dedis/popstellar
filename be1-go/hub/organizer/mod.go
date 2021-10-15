@@ -465,8 +465,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
 
 // createLao creates a new LAO using the data in the publish parameter.
 func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate) error {
-	h.Lock()
-	defer h.Unlock()
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
@@ -479,7 +477,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
-	h.channelByID[laoChannelPath] = laoCh
+	h.RegisterNewChannel(laoChannelPath, laoCh)
 
 	if sqlite.GetDBPath() != "" {
 		saveChannel(laoChannelPath)
@@ -503,11 +501,6 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
-}
-
-// RegisterNewChannelNoLock implements channel.HubFunctionalities without lock
-func (h *Hub) RegisterNewChannelNoLock(channeID string, channel channel.Channel) {
-	h.channelByID[channeID] = channel
 }
 
 // ---

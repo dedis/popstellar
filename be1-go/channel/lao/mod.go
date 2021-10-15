@@ -69,7 +69,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
-	hub.RegisterNewChannelNoLock(consensusPath, &consensusCh)
+	hub.RegisterNewChannel(consensusPath, &consensusCh)
 
 	return &Channel{
 		channelID: channelID,

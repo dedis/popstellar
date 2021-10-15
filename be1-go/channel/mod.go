@@ -83,5 +83,4 @@ type HubFunctionalities interface {
 	GetPubkey() kyber.Point
 	GetSchemaValidator() validation.SchemaValidator
 	RegisterNewChannel(channelID string, channel Channel)
-	RegisterNewChannelNoLock(channelID string, channel Channel)
 }
