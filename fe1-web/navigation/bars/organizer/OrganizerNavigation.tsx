@@ -9,7 +9,7 @@ import WitnessScanning from 'components/WitnessScanning';
 import CreateMeeting from 'parts/lao/organizer/eventCreation/events/CreateMeeting';
 import CreateRollCall from 'parts/lao/organizer/eventCreation/events/CreateRollCall';
 import CreateElection from 'parts/lao/organizer/eventCreation/events/CreateElection';
-import RollCall from 'parts/lao/organizer/RollCall';
+import RollCallOpened from '../../../parts/lao/organizer/RollCallOpened';
 
 /**
  * Define the Organizer stack navigation
@@ -53,7 +53,7 @@ export default function OrganizerNavigation() {
       />
       <Stack.Screen
         name={STRINGS.roll_call_open}
-        component={RollCall}
+        component={RollCallOpened}
       />
     </Stack.Navigator>
   );

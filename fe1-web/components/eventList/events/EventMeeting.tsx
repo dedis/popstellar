@@ -1,6 +1,5 @@
 import React from 'react';
 
-import PROPS_TYPE from 'res/Props';
 import ParagraphBlock from 'components/ParagraphBlock';
 import TimeDisplay from 'components/TimeDisplay';
 import PropTypes from 'prop-types';

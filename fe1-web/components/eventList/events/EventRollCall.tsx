@@ -10,7 +10,6 @@ import {
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
 import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
 import { useNavigation } from '@react-navigation/native';
 
 /**
@@ -50,7 +49,8 @@ const EventRollCall = (props: IPropTypes) => {
       );
     } else {
       requestOpenRollCall(event.id).then(() => {
-        navigation.navigate(STRINGS.roll_call_open);
+        // @ts-ignore
+        navigation.navigate(STRINGS.roll_call_open, { rollCall: event });
       }).catch(
         (e) => console.debug('Unable to send Roll call open request', e),
       );
@@ -99,7 +99,6 @@ const EventRollCall = (props: IPropTypes) => {
         return (
           <>
             <Text>Closed</Text>
-            {console.log('attendees are: ', rollCallFromStore.attendees)}
             <Text>Attendees are:</Text>
             {rollCallFromStore.attendees.map((attendee: string) => (
               <Text>{attendee}</Text>
