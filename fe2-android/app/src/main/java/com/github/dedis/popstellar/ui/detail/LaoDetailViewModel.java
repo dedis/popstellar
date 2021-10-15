@@ -18,9 +18,9 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusVote;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.CreateConsensus;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.LearnConsensus;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -489,7 +489,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
     String channel = lao.getChannel() + "/consensus";
 
-    CreateConsensus createConsensus = new CreateConsensus(creation, objId, type, property, value);
+    ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -497,7 +497,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       byte[] sender = Base64.getUrlDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(sender, createConsensus, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(sender, consensusElect, signer, mGson);
 
       Disposable disposable =
           mLAORepository
@@ -508,7 +508,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "created a consensus with id: " + createConsensus.getInstanceId());
+                      Log.d(TAG, "created a consensus with id: " + consensusElect.getInstanceId());
                       mCreatedConsensusEvent.postValue(new SingleEvent<>(true));
                     } else {
                       Log.d(TAG, "failed to create a consensus");
@@ -535,7 +535,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       return;
     }
 
-    ConsensusVote consensusVote = new ConsensusVote(consensus.getMessageId(), accept);
+    ConsensusElectAccept consensusElectAccept = new ConsensusElectAccept(consensus.getMessageId(), accept);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -543,7 +543,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       byte[] sender = Base64.getUrlDecoder().decode(publicKey);
 
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, consensusVote, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(sender, consensusElectAccept, signer, mGson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
@@ -584,7 +584,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     Log.d(TAG, "sending a consensus learn for : " + consensus.getId());
 
     List<String> acceptorsMessageIds = new ArrayList<>(consensus.getAcceptorsToMessageId().values());
-    LearnConsensus learnConsensus = new LearnConsensus(consensus.getMessageId(), acceptorsMessageIds);
+    ConsensusLearn consensusLearn = new ConsensusLearn(consensus.getMessageId(), acceptorsMessageIds);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -592,7 +592,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       byte[] sender = Base64.getUrlDecoder().decode(publicKey);
 
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, learnConsensus, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(sender, consensusLearn, signer, mGson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =

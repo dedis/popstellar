@@ -6,14 +6,14 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
 
-public final class LearnConsensus extends Data {
+public final class ConsensusLearn extends Data {
 
   @SerializedName("message_id")
   private final String messageId;
 
   private final List<String> acceptors;
 
-  public LearnConsensus(String messageId, List<String> acceptors) {
+  public ConsensusLearn(String messageId, List<String> acceptors) {
     this.messageId = messageId;
     this.acceptors = acceptors;
   }
@@ -33,7 +33,7 @@ public final class LearnConsensus extends Data {
 
   @Override
   public String getAction() {
-    return Action.PHASE_1_LEARN.getAction();
+    return Action.LEARN.getAction();
   }
 
   @Override
@@ -49,7 +49,7 @@ public final class LearnConsensus extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    LearnConsensus that = (LearnConsensus) o;
+    ConsensusLearn that = (ConsensusLearn) o;
 
     return messageId.equals(that.messageId) && acceptors.equals(that.acceptors);
   }

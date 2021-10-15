@@ -6,7 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.google.gson.annotations.SerializedName;
 
-public final class CreateConsensus extends Data {
+public final class ConsensusElect extends Data {
 
   @SerializedName("instance_id")
   private final String instanceId;
@@ -18,7 +18,7 @@ public final class CreateConsensus extends Data {
 
   private final Object value;
 
-  public CreateConsensus(long creation, String objId, String type, String property, Object value) {
+  public ConsensusElect(long creation, String objId, String type, String property, Object value) {
     this.instanceId =
         Consensus.generateConsensusId(creation, type, objId, property, String.valueOf(value));
     this.creation = creation;
@@ -49,7 +49,7 @@ public final class CreateConsensus extends Data {
 
   @Override
   public String getAction() {
-    return Action.PHASE_1_ELECT.getAction();
+    return Action.ELECT.getAction();
   }
 
   @Override
@@ -65,7 +65,7 @@ public final class CreateConsensus extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    CreateConsensus that = (CreateConsensus) o;
+    ConsensusElect that = (ConsensusElect) o;
 
     return instanceId.equals(that.instanceId)
         && creation == that.creation

@@ -130,6 +130,7 @@ public class ManageElectionFragment extends Fragment {
             Election election = laoDetailViewModel.getCurrentElection();
             long creation = System.currentTimeMillis() / 1000L;
             laoDetailViewModel.createNewConsensus(creation, election.getId(), "election", "state", "started");
+            laoDetailViewModel.openLaoDetail();
             break;
           }
           case CANCEL_CODE: {

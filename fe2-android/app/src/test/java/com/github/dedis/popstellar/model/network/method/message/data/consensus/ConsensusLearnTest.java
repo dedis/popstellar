@@ -12,39 +12,39 @@ import java.util.Collections;
 import java.util.List;
 import org.junit.Test;
 
-public class LearnConsensusTest {
+public class ConsensusLearnTest {
 
   private final String messageId = Hash.hash("aaa");
   private final List<String> acceptors = Arrays.asList("aaa", "bbb");
-  private final LearnConsensus learnConsensus = new LearnConsensus(messageId, acceptors);
+  private final ConsensusLearn consensusLearn = new ConsensusLearn(messageId, acceptors);
 
 
   @Test
   public void getMessageIdTest() {
-    assertEquals(messageId, learnConsensus.getMessageId());
+    assertEquals(messageId, consensusLearn.getMessageId());
   }
 
   @Test
   public void getAcceptorsTest() {
-    assertEquals(acceptors, learnConsensus.getAcceptors());
+    assertEquals(acceptors, consensusLearn.getAcceptors());
   }
 
   @Test
   public void getObjectTest() {
-    assertEquals(Objects.CONSENSUS.getObject(), learnConsensus.getObject());
+    assertEquals(Objects.CONSENSUS.getObject(), consensusLearn.getObject());
   }
 
   @Test
   public void getActionTest() {
-    assertEquals(Action.PHASE_1_LEARN.getAction(), learnConsensus.getAction());
+    assertEquals(Action.LEARN.getAction(), consensusLearn.getAction());
   }
 
   @Test
   public void equalsTest() {
-    assertEquals(learnConsensus, new LearnConsensus(messageId, new ArrayList<>(acceptors)));
+    assertEquals(consensusLearn, new ConsensusLearn(messageId, new ArrayList<>(acceptors)));
 
-    assertNotEquals(learnConsensus, new LearnConsensus("random", acceptors));
-    assertNotEquals(learnConsensus, new LearnConsensus(messageId, Collections.emptyList()));
+    assertNotEquals(consensusLearn, new ConsensusLearn("random", acceptors));
+    assertNotEquals(consensusLearn, new ConsensusLearn(messageId, Collections.emptyList()));
   }
 
 

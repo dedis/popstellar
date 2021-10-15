@@ -5,14 +5,14 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
-public final class ConsensusVote extends Data {
+public final class ConsensusElectAccept extends Data {
 
   @SerializedName("message_id")
   private final String messageId;
 
   private final boolean accept;
 
-  public ConsensusVote(String messageId, boolean accept) {
+  public ConsensusElectAccept(String messageId, boolean accept) {
     this.messageId = messageId;
     this.accept = accept;
   }
@@ -32,7 +32,7 @@ public final class ConsensusVote extends Data {
 
   @Override
   public String getAction() {
-    return Action.PHASE_1_ELECT_ACCEPT.getAction();
+    return Action.ELECT_ACCEPT.getAction();
   }
 
   @Override
@@ -48,7 +48,7 @@ public final class ConsensusVote extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ConsensusVote that = (ConsensusVote) o;
+    ConsensusElectAccept that = (ConsensusElectAccept) o;
 
     return messageId.equals(that.messageId) && accept == that.accept;
   }

@@ -19,9 +19,9 @@ public enum Action {
   REOPEN("reopen"),
   CLOSE("close"),
   CAST_VOTE("cast_vote"),
-  PHASE_1_ELECT("phase_1_elect"),
-  PHASE_1_ELECT_ACCEPT("phase_1_elect_accept"),
-  PHASE_1_LEARN("phase_1_learn");
+  ELECT("elect"),
+  ELECT_ACCEPT("elect-accept"),
+  LEARN("learn");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;

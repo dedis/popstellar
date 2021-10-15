@@ -52,6 +52,7 @@ public class MessageHandler {
     } else if (data.getObject().equals(Objects.CONSENSUS.getObject())) {
       enqueue = ConsensusHandler
           .handleConsensusMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
+      channel = channel.replace("/consensus", ""); // used to trigger an lao update
     } else if (data.getObject().equals(Objects.MESSAGE.getObject())) {
       enqueue = WitnessMessageHandler
           .handleWitnessMessage(laoRepository, channel, senderPk, (WitnessMessageSignature) data);

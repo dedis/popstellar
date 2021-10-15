@@ -4,9 +4,9 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusVote;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.CreateConsensus;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.LearnConsensus;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -29,12 +29,12 @@ public final class ConsensusHandler {
     Log.d(TAG, "handle Consensus message");
 
     switch (Objects.requireNonNull(Action.find(data.getAction()))) {
-      case PHASE_1_ELECT:
-        return handleConsensusCreate(laoRepository, channel, (CreateConsensus) data, messageId, senderPk);
-      case PHASE_1_ELECT_ACCEPT:
-        return handleConsensusVote(laoRepository, channel, (ConsensusVote) data, messageId, senderPk);
-      case PHASE_1_LEARN:
-        return handleConsensusLearn(laoRepository, channel, (LearnConsensus) data);
+      case ELECT:
+        return handleConsensusCreate(laoRepository, channel, (ConsensusElect) data, messageId, senderPk);
+      case ELECT_ACCEPT:
+        return handleConsensusVote(laoRepository, channel, (ConsensusElectAccept) data, messageId, senderPk);
+      case LEARN:
+        return handleConsensusLearn(laoRepository, channel, (ConsensusLearn) data);
       default:
         return true;
     }
@@ -43,7 +43,7 @@ public final class ConsensusHandler {
   public static boolean handleConsensusCreate(
       LAORepository laoRepository,
       String channel,
-      CreateConsensus createConsensus,
+      ConsensusElect consensusElect,
       String messageId,
       String senderPk
   ) {
@@ -52,9 +52,9 @@ public final class ConsensusHandler {
     acceptors.add(lao.getOrganizer());
 
     Consensus consensus = new Consensus(
-      createConsensus.getCreation(),
-      createConsensus.getKey(),
-      createConsensus.getValue()
+      consensusElect.getCreation(),
+      consensusElect.getKey(),
+      consensusElect.getValue()
     );
 
     consensus.setMessageId(messageId);
@@ -72,18 +72,19 @@ public final class ConsensusHandler {
   public static boolean handleConsensusVote(
       LAORepository laoRepository,
       String channel,
-      ConsensusVote consensusVote,
+      ConsensusElectAccept consensusElectAccept,
       String messageId,
       String senderPk
   ) {
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Optional<Consensus> consensusOpt = getConsensusByMessageId(laoRepository, lao, consensusVote.getMessageId());
+    Optional<Consensus> consensusOpt = getConsensusByMessageId(laoRepository, lao, consensusElectAccept
+        .getMessageId());
     if (!consensusOpt.isPresent()) {
       return true;
     }
 
     Consensus consensus = consensusOpt.get();
-    consensus.putAcceptorResponse(senderPk, messageId, consensusVote.isAccept());
+    consensus.putAcceptorResponse(senderPk, messageId, consensusElectAccept.isAccept());
 
     lao.updateConsensus(consensus.getId(), consensus);
 
@@ -93,10 +94,10 @@ public final class ConsensusHandler {
   public static boolean handleConsensusLearn(
       LAORepository laoRepository,
       String channel,
-      LearnConsensus learnConsensus
+      ConsensusLearn consensusLearn
   ) {
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Optional<Consensus> consensusOpt = getConsensusByMessageId(laoRepository, lao, learnConsensus.getMessageId());
+    Optional<Consensus> consensusOpt = getConsensusByMessageId(laoRepository, lao, consensusLearn.getMessageId());
 
     if (!consensusOpt.isPresent()) {
       return true;
@@ -118,13 +119,13 @@ public final class ConsensusHandler {
   private static Optional<Consensus> getConsensusByMessageId(LAORepository laoRepository, Lao lao, String messageId) {
     MessageGeneral createMsg = laoRepository.getMessageById().get(messageId);
 
-    if (createMsg == null || !(createMsg.getData() instanceof CreateConsensus)) {
+    if (createMsg == null || !(createMsg.getData() instanceof ConsensusElect)) {
       Log.d(TAG, "Invalid message id for a CreateConsensus : " + messageId);
       return Optional.empty();
     }
 
-    CreateConsensus createConsensus = (CreateConsensus) createMsg.getData();
-    String consensusId = createConsensus.getInstanceId();
+    ConsensusElect consensusElect = (ConsensusElect) createMsg.getData();
+    String consensusId = consensusElect.getInstanceId();
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusId);
 
     if (!consensusOpt.isPresent()) {
