@@ -64,8 +64,8 @@ public class WitnessMessageSignature extends Data {
 
   @Override
   public String toString() {
-    return "WitnessMessage{"
-        + "message_id='"
+    return "WitnessMessageSignature{"
+        + "messageId='"
         + messageId
         + '\''
         + ", signature='"

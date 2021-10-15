@@ -14,13 +14,14 @@ public class ElectionQuestionTest {
 
   private final String laoId = Hash.hash("laoId");
   private final String name = "name";
-  private final long time = Instant.now().getEpochSecond();
+  private final long now = Instant.now().getEpochSecond();
+  private final long end = now + 30L;
   private final String votingMethod = "Plurality";
   private final String question = "Question";
   private final List<String> allMethods = Arrays.asList("Plurality", "Plurality");
   private final List<String> allQuestions = Arrays.asList("Question", "Question2");
   private final List<Boolean> allWriteIns = Arrays.asList(false, false);
-  private final ElectionSetup electionSetup = new ElectionSetup(name, time, time, allMethods, allWriteIns,
+  private final ElectionSetup electionSetup = new ElectionSetup(name, now, now, end, allMethods, allWriteIns,
       Arrays.asList(new ArrayList<>(), new ArrayList<>()), allQuestions, laoId);
   private final ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
 

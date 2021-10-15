@@ -29,13 +29,13 @@ func Test_Vote_Cast_Vote(t *testing.T) {
 
 	require.Equal(t, "election", msg.Object)
 	require.Equal(t, "cast_vote", msg.Action)
-	require.Equal(t, "XXX", msg.Lao)
-	require.Equal(t, "XXX", msg.Election)
-	require.Equal(t, int64(123), msg.CreatedAt)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.Lao)
+	require.Equal(t, "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=", msg.Election)
+	require.Equal(t, int64(1633098941), msg.CreatedAt)
 
 	require.Len(t, msg.Votes, 1)
-	require.Equal(t, "XXX", msg.Votes[0].ID)
-	require.Equal(t, "XXX", msg.Votes[0].Question)
+	require.Equal(t, "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=", msg.Votes[0].ID)
+	require.Equal(t, "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=", msg.Votes[0].Question)
 
 	require.Len(t, msg.Votes[0].Vote, 1)
 	require.Equal(t, 0, msg.Votes[0].Vote[0])

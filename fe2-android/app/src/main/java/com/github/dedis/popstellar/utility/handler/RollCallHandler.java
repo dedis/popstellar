@@ -1,16 +1,18 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.model.objects.event.EventState;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.repository.LAORepository;
+
 import java.util.Objects;
 import java.util.Optional;
 
@@ -40,7 +42,7 @@ public class RollCallHandler {
   public static boolean handleRollCallMessage(LAORepository laoRepository, String channel,
       Data data,
       String messageId) {
-    Log.d(TAG, "handle Roll Call message");
+    Log.d(TAG, "handle Roll Call message id=" + messageId);
 
     switch (Objects.requireNonNull(Action.find(data.getAction()))) {
       case CREATE:
@@ -98,14 +100,14 @@ public class RollCallHandler {
   public static boolean handleOpenRollCall(LAORepository laoRepository, String channel,
       OpenRollCall openRollCall, String messageId) {
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Log.d(TAG, "handleOpenRollCall: " + channel);
-    Log.d(TAG, openRollCall.getOpens());
+    Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
 
     Optional<RollCall> rollCallOptional = lao.getRollCall(opens);
     if (!rollCallOptional.isPresent()) {
+      Log.w(TAG, "Cannot find roll call to open : " + opens);
       return true;
     }
 
@@ -141,6 +143,7 @@ public class RollCallHandler {
 
     Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
+      Log.w(TAG, "Cannot find roll call to close : " + closes);
       return true;
     }
 

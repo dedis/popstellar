@@ -18,7 +18,7 @@ public class CloseRollCallTest {
   private final String name = "name";
   private final long time = Instant.now().getEpochSecond();
   private final String location = "Location";
-  private final CreateRollCall createRollCall = new CreateRollCall(name, time, time, location, null, laoId);
+  private final CreateRollCall createRollCall = new CreateRollCall(name, time, time, time, location, null, laoId);
   private final OpenRollCall openRollCall = new OpenRollCall(laoId, createRollCall.getId(), time, EventState.CREATED);
   private final CloseRollCall closeRollCall = new CloseRollCall(laoId, openRollCall.getUpdateId(), time, new ArrayList<>());
 

@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+
 import java.util.Objects;
 
 /**
@@ -57,5 +58,10 @@ public final class Broadcast extends Message {
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), getMessage());
+  }
+
+  @Override
+  public String toString() {
+    return "Broadcast{" + "channel='" + getChannel() + "', method='" + getMethod() + "'}";
   }
 }
