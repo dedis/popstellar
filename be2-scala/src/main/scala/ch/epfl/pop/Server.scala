@@ -30,6 +30,7 @@ object Server {
 
     val system = akka.actor.ActorSystem("pop-be2-inner-actor-system")
     implicit val typedSystem: ActorSystem[Nothing] = system.toTyped
+    val logger = system.log
 
     val root = Behaviors.setup[Nothing] { _ =>
       implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
@@ -51,9 +52,15 @@ object Server {
         .bind(publishSubscribeRoute)
 
       bindingFuture.onComplete {
-        case Success(_) => println(s"ch.epfl.pop.Server online at ws://localhost:$PORT/$PATH")
+        case Success(_) =>
+          logger.info(
+            "ch.epfl.pop.Server online at ws://localhost:{}/{}\nPress RETURN to stop",
+            PORT,
+            PATH
+          )
+
         case Failure(_) =>
-          println(
+          logger.error(
             "ch.epfl.pop.Server failed to start. Terminating actor system"
           )
           system.terminate()
@@ -65,7 +72,7 @@ object Server {
       bindingFuture
         .flatMap(_.unbind()) // trigger unbinding from the port
         .onComplete(_ => {
-          println("Server terminated !")
+          logger.info("Server terminated !")
           system.terminate()
           typedSystem.terminate()
         }) // and shutdown when done
