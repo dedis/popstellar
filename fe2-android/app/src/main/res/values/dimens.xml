@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Tabs -->
-    <dimen name="guideline_horizontal_tab">0.08</dimen>
+    <dimen name="guideline_horizontal_tab">0.09</dimen>
     <dimen name="guideline_horizontal_bottom">0.92</dimen>
     <dimen name="guideline_vertical_tab_home">0.20</dimen>
     <dimen name="guideline_vertical_tab_connect">0.40</dimen>
