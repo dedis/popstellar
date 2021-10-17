@@ -61,7 +61,6 @@ public final class ConsensusHandler {
     consensus.setChannel(channel);
     consensus.setEnd(Long.MAX_VALUE);
     consensus.setAcceptors(acceptors);
-    consensus.setEventState(EventState.OPENED);
 
     lao.updateConsensus(consensus.getId(), consensus);
 
@@ -104,7 +103,6 @@ public final class ConsensusHandler {
     //TODO check acceptors message_ids ?
 
     consensus.setAccepted(true);
-    consensus.setEventState(EventState.RESULTS_READY);
     consensus.setEnd(System.currentTimeMillis() / 1000L);
 
     lao.updateConsensus(consensus.getId(), consensus);

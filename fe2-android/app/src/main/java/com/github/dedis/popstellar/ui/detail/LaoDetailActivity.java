@@ -13,20 +13,19 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
-import com.github.dedis.popstellar.ui.detail.event.consensus.ConsensusStatusFragment;
-import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartAcceptorsFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
+import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ManageElectionFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.AttendeesListFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallDetailFragment;
+import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
-import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
-import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -131,11 +130,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     //Subscribe to "open manage election" event
     setupManageElectionFragment();
 
-    //Subscribe to "open consensus vote" event
-    setupConsensusVoteFragment();
-
-    //Subscribe to "open consensus status" event
-    setupConsensusStatusFragment();
+    // Subscribe to "open start election" event
+    setupElectionStartFragment();
   }
 
   private void subscribeWalletEvents() {
@@ -506,56 +502,25 @@ public class LaoDetailActivity extends AppCompatActivity {
         );
   }
 
-  private void setupElectionStartAcceptorsFragment() {
-    ElectionStartAcceptorsFragment electionStartAcceptorsFragment =
-        (ElectionStartAcceptorsFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_election_start_acceptors);
-    if (electionStartAcceptorsFragment == null) {
-      electionStartAcceptorsFragment = ElectionStartAcceptorsFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(),
-          electionStartAcceptorsFragment,
-          R.id.fragment_container_lao_detail
-      );
-    }
-  }
 
-  private void setupConsensusVoteFragment() {
+  private void setupElectionStartFragment() {
     mViewModel
-        .getOpenConsensusVoteEvent()
+        .getOpenStartElectionEvent()
         .observe(
             this,
             booleanSingleEvent -> {
               Boolean event = booleanSingleEvent.getContentIfNotHandled();
               if (event != null) {
-                setupElectionStartAcceptorsFragment();
-              }
-            }
-        );
-  }
-
-  private void setupConsensusStatusFragment() {
-    mViewModel
-        .getOpenConsensusStatusEvent()
-        .observe(
-            this,
-            booleanSingleEvent -> {
-              Boolean event = booleanSingleEvent.getContentIfNotHandled();
-              if (event != null) {
-                ConsensusStatusFragment consensusStatusFragment =
-                    (ConsensusStatusFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_consensus_status);
-                if (consensusStatusFragment == null) {
-                  consensusStatusFragment = ConsensusStatusFragment.newInstance(mViewModel.getCurrentConsensus().getId());
+                ElectionStartFragment fragment =
+                    (ElectionStartFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.fragment_election_start);
+                if (fragment == null) {
+                  fragment = ElectionStartFragment.newInstance();
                   ActivityUtils.replaceFragmentInActivity(
-                      getSupportFragmentManager(),
-                      consensusStatusFragment,
-                      R.id.fragment_container_lao_detail
-                  );
+                      getSupportFragmentManager(), fragment, R.id.fragment_container_lao_detail);
                 }
               }
-            }
-        );
+            });
   }
 
 }

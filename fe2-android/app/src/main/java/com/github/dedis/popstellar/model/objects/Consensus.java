@@ -1,15 +1,12 @@
 package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
-import com.github.dedis.popstellar.model.objects.event.Event;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Consensus extends Event {
+public class Consensus {
 
   private String messageId;
   private String channel;
@@ -21,7 +18,6 @@ public class Consensus extends Event {
   private long creation;
   private long end;
 
-  private EventState state;
   private boolean isAccepted;
 
   private String proposer;
@@ -94,6 +90,10 @@ public class Consensus extends Event {
     this.value = value;
   }
 
+  public long getCreation() {
+    return creation;
+  }
+
   public void setCreation(long creation) {
     if (creation < 0) {
       throw new IllegalArgumentException();
@@ -106,17 +106,6 @@ public class Consensus extends Event {
       throw new IllegalArgumentException();
     }
     this.end = end;
-  }
-
-  public EventState getState() {
-    return state;
-  }
-
-  public void setEventState(EventState state) {
-    if (state == null) {
-      throw new IllegalArgumentException("consensus state shouldn't be null");
-    }
-    this.state = state;
   }
 
   public String getProposer() {
@@ -175,25 +164,10 @@ public class Consensus extends Event {
   }
 
   @Override
-  public long getStartTimestamp() {
-    return creation;
-  }
-
-  @Override
-  public EventType getType() {
-    return EventType.CONSENSUS;
-  }
-
-  @Override
-  public long getEndTimestamp() {
-    return end;
-  }
-
-  @Override
   public String toString() {
     return String.format(
-        "Consensus{id='%s', channel='%s', messageId='%s', key=%s, value='%s', creation=%s, end=%s, state=%s, isAccepted=%b, proposer='%s'}",
-        id, channel, messageId, key, value, creation, end, state, isAccepted, proposer);
+        "Consensus{id='%s', channel='%s', messageId='%s', key=%s, value='%s', creation=%s, end=%s, isAccepted=%b, proposer='%s'}",
+        id, channel, messageId, key, value, creation, end, isAccepted, proposer);
   }
 
   public static String generateConsensusId(

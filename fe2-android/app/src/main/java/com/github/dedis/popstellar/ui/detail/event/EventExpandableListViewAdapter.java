@@ -13,16 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.Button;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.ConsensusEventLayoutBinding;
 import com.github.dedis.popstellar.databinding.ElectionDisplayLayoutBinding;
 import com.github.dedis.popstellar.databinding.EventCategoryLayoutBinding;
 import com.github.dedis.popstellar.databinding.EventLayoutBinding;
 import com.github.dedis.popstellar.databinding.RollCallEventLayoutBinding;
-import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
@@ -268,8 +265,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         return setupElectionElement((Election) event, category, layoutEventBinding);
       case ROLL_CALL:
         return setupRollCallElement((RollCall) event, layoutEventBinding);
-      case CONSENSUS:
-        return setupConsensusElement((Consensus) event, layoutEventBinding);
       default:
         layoutEventBinding.setLifecycleOwner(lifecycleOwner);
         layoutEventBinding.executePendingBindings();
@@ -376,6 +371,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
           viewModel.openManageElection(true);
         }
     );
+
+    electionBinding.detailsButton.setOnClickListener(
+        clicked -> {
+          viewModel.setCurrentElection(election);
+          viewModel.openStartElection(true);
+        });
+
     electionBinding.setEventCategory(category);
     electionBinding.setViewModel(viewModel);
     electionBinding.setLifecycleOwner(lifecycleOwner);
@@ -429,54 +431,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         clicked ->
             viewModel.enterRollCall(rollCall.getPersistentId())
     );
-    binding.setLifecycleOwner(lifecycleOwner);
-
-    binding.executePendingBindings();
-    return layoutEventBinding.getRoot();
-  }
-
-  /**
-   * Setup the text and buttons that appear for a consensus in the list
-   *
-   * @param consensus          the consensus Event
-   * @param layoutEventBinding the binding of the generic layoutEvent that we use to display events
-   * @return the View corresponding to the child at the specified position
-   */
-  private View setupConsensusElement(Consensus consensus, EventLayoutBinding layoutEventBinding) {
-    viewModel.setCurrentConsensus(consensus);
-
-    ConsensusEventLayoutBinding binding = layoutEventBinding.includeLayoutConsensus;
-
-    binding.consensusTitle.setText("Consensus");
-    binding.consensusType.setText("Type: " + consensus.getKey().getType());
-    binding.consensusStart.setText("Start: " + DATE_FORMAT.format(new Date(consensus.getStartTimestamp() * 1000L)));
-
-    boolean isAcceptor = viewModel.isOrganizer().getValue() || viewModel.isWitness().getValue();
-    boolean isVoteOpen = isAcceptor && consensus.getState() == EventState.OPENED;
-
-    Button voteButton = binding.consensusVoteButton;
-    Button statusButton = binding.consensusStatusButton;
-
-    voteButton.setVisibility(isVoteOpen ? View.VISIBLE : View.GONE);
-    statusButton.setVisibility(isAcceptor ? View.VISIBLE : View.GONE);
-
-    voteButton.setEnabled(isVoteOpen);
-    statusButton.setEnabled(isAcceptor);
-
-    voteButton.setOnClickListener(
-        clicked -> {
-          viewModel.setCurrentConsensus(consensus);
-          viewModel.openConsensusVote(true);
-        }
-    );
-
-    statusButton.setOnClickListener(
-        clicked -> {
-          viewModel.setCurrentConsensus(consensus);
-          viewModel.openConsensusStatus(true);
-        }
-    );
-
     binding.setLifecycleOwner(lifecycleOwner);
 
     binding.executePendingBindings();

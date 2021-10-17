@@ -118,9 +118,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
 
-  private final MutableLiveData<SingleEvent<Boolean>> mCreatedConsensusEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenConsensusVoteEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenConsensusStatusEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -144,13 +142,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
   private final LiveData<List<com.github.dedis.popstellar.model.objects.event.Event>> mLaoEvents = Transformations
       .map(mCurrentLao,
           lao -> lao == null ? new ArrayList<>() :
-              Stream.concat(
-                  Stream.concat(
-                    lao.getRollCalls().values().stream(),
-                    lao.getElections().values().stream()
-                  ),
-                  lao.getConsensuses().values().stream()
-              ).collect(Collectors.toList()));
+              Stream.concat(lao.getRollCalls().values().stream(),
+                  lao.getElections().values().stream()).collect(Collectors.toList()));
   private final LiveData<List<WitnessMessage>> mWitnessMessages =
       Transformations.map(
           mCurrentLao,
@@ -509,7 +502,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
                   answer -> {
                     if (answer instanceof Result) {
                       Log.d(TAG, "created a consensus with id: " + consensusElect.getInstanceId());
-                      mCreatedConsensusEvent.postValue(new SingleEvent<>(true));
                     } else {
                       Log.d(TAG, "failed to create a consensus");
                     }
@@ -521,13 +513,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
   }
 
-  public void sendConsensusVote(boolean accept) {
-    Consensus consensus = mCurrentConsensus.getValue();
-    if (consensus == null) {
-      Log.d(TAG, "failed to retrieve current consensus");
-      return;
-    }
-    Log.d(TAG, "sending a new vote in consensus : " + consensus.getId() + " with value " + accept);
+  public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
+    Log.d(TAG, "sending a new elect-accept for consensus : " + consensus.getId() + " with value " + accept);
 
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -979,16 +966,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     return mCreatedRollCallEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getCreatedConsensusEvent() {
-    return mCreatedConsensusEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenConsensusVoteEvent() {
-    return mOpenConsensusVoteEvent;
-  }
-
-  public LiveData<SingleEvent<Boolean>> getOpenConsensusStatusEvent() {
-    return mOpenConsensusStatusEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenStartElectionEvent() {
+    return mOpenStartElectionEvent;
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
@@ -1162,12 +1141,8 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     mOpenManageElectionEvent.postValue(new SingleEvent<>(open));
   }
 
-  public void openConsensusVote(Boolean open) {
-    mOpenConsensusVoteEvent.postValue(new SingleEvent<>(open));
-  }
-
-  public void openConsensusStatus(Boolean open) {
-    mOpenConsensusStatusEvent.postValue(new SingleEvent<>(open));
+  public void openStartElection(Boolean open) {
+    mOpenStartElectionEvent.postValue(new SingleEvent<>(open));
   }
 
   public void confirmEdit() {

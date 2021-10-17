@@ -39,7 +39,6 @@ public class ManageElectionFragment extends Fragment {
   private static final int START_DATE_CODE = 5;
   private static final int END_DATE_CODE = 6;
   private static final int CANCEL_CODE = 7;
-  private static final int START_CODE = 8;
   private final Calendar calendar = Calendar.getInstance();
   int newHour;
   int newMinute;
@@ -51,7 +50,6 @@ public class ManageElectionFragment extends Fragment {
   private int requestCode;
   private String newName;
   private String newQuestion;
-  private Button startButton;
   private Button terminate;
   private Button editName;
   private Button editQuestion;
@@ -76,7 +74,6 @@ public class ManageElectionFragment extends Fragment {
         ElectionManageFragmentBinding.inflate(inflater, container, false);
 
     laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
-    startButton = mManageElectionFragBinding.startElection;
     terminate = mManageElectionFragBinding.terminateElection;
     editStartTimeButton = mManageElectionFragBinding.editStartTime;
     editEndTimeButton = mManageElectionFragBinding.editEndTime;
@@ -126,13 +123,6 @@ public class ManageElectionFragment extends Fragment {
       //Yes button clicked
       if (which == DialogInterface.BUTTON_POSITIVE) {
         switch (requestCode) {
-          case START_CODE: {
-            Election election = laoDetailViewModel.getCurrentElection();
-            long creation = System.currentTimeMillis() / 1000L;
-            laoDetailViewModel.createNewConsensus(creation, election.getId(), "election", "state", "started");
-            laoDetailViewModel.openLaoDetail();
-            break;
-          }
           case CANCEL_CODE: {
             // TODO : In the future send a UpdateElection message with a modified end time as the current time
             laoDetailViewModel.openLaoDetail();
@@ -333,13 +323,6 @@ public class ManageElectionFragment extends Fragment {
           builder.show();
 
         });
-
-    startButton.setOnClickListener(
-        v -> {
-          setupRequestCode(START_CODE);
-          builder.show();
-        }
-    );
 
   }
 
