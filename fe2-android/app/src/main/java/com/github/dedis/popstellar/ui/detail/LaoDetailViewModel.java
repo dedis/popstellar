@@ -125,7 +125,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
    */
   private final MutableLiveData<Lao> mCurrentLao = new MutableLiveData<>();
   private final MutableLiveData<Election> mCurrentElection = new MutableLiveData<>(); // Represents the current election being managed/opened in a fragment
-  private final MutableLiveData<Consensus> mCurrentConsensus = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsOrganizer = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWitness = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsSignedByCurrentWitness = new MutableLiveData<>();
@@ -562,12 +561,7 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     }
   }
 
-  public void sendConsensusLearn() {
-    Consensus consensus = mCurrentConsensus.getValue();
-    if (consensus == null) {
-      Log.d(TAG, "failed to retrieve current consensus");
-      return;
-    }
+  public void sendConsensusLearn(Consensus consensus) {
     Log.d(TAG, "sending a consensus learn for : " + consensus.getId());
 
     List<String> acceptorsMessageIds = new ArrayList<>(consensus.getAcceptorsToMessageId().values());
@@ -970,6 +964,10 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     return mOpenStartElectionEvent;
   }
 
+  public LiveData<SingleEvent<Consensus>> getUpdateConsensusEvent() {
+    return mLAORepository.getUpdateConsensusEvent();
+  }
+
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
     return mAttendeeScanConfirmEvent;
   }
@@ -996,14 +994,6 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
 
   public void setCurrentElection(Election e) {
     mCurrentElection.setValue(e);
-  }
-
-  public Consensus getCurrentConsensus() {
-    return mCurrentConsensus.getValue();
-  }
-
-  public void setCurrentConsensus(Consensus consensus) {
-    mCurrentConsensus.setValue(consensus);
   }
 
   public MutableLiveData<List<List<Integer>>> getCurrentElectionVotes() {

@@ -38,13 +38,11 @@ import java.util.stream.Collectors;
 public class ElectionStartFragment extends Fragment {
 
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
-  private static final String EXTRA_ELECTION_ID = "ELECTION_ID";
 
   private final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("yyyy/MM/dd HH:mm z", Locale.ENGLISH);
 
   private final CompositeDisposable disposables = new CompositeDisposable();
-
 
   public ElectionStartFragment() {
     // Required empty public constructor
@@ -57,11 +55,7 @@ public class ElectionStartFragment extends Fragment {
    * @return A new instance of fragment ElectionStartFragment.
    */
   public static ElectionStartFragment newInstance() {
-    ElectionStartFragment fragment = new ElectionStartFragment();
-    //    Bundle bundle = new Bundle();
-    //    bundle.putString(EXTRA_ELECTION_ID, electionId);
-    //    fragment.setArguments(bundle);
-    return fragment;
+    return new ElectionStartFragment();
   }
 
   @Override
@@ -98,36 +92,37 @@ public class ElectionStartFragment extends Fragment {
                   }
 
                   @Override
-                  public void onError(@NonNull Throwable e) {}
+                  public void onError(@NonNull Throwable e) {
+                    Log.w(TAG, e);
+                  }
 
                   @Override
-                  public void onComplete() {}
+                  public void onComplete() {
+                    // Do nothing
+                  }
                 });
     disposables.add(disposable);
 
     binding.electionStart.setOnClickListener(
-        clicked -> mLaoDetailViewModel.createNewConsensus(
-            Instant.now().getEpochSecond(), election.getId(), "election", "state", "started"));
+        clicked ->
+            mLaoDetailViewModel.createNewConsensus(
+                Instant.now().getEpochSecond(), election.getId(), "election", "state", "started"));
 
     List<ConsensusNode> nodes = getNodes(mLaoDetailViewModel, election.getId());
     NodesAcceptorAdapter adapter = new NodesAcceptorAdapter(nodes, getActivity());
     GridView gridView = binding.nodesGrid;
     gridView.setAdapter(adapter);
 
-//    mLaoDetailViewModel
-//        .getCreatedConsensusEvent()
-//        .observe(
-//            this,
-//            pairSingleEvent -> {
-//              Pair<String, String> event = pairSingleEvent.getContentIfNotHandled();
-//              if (event != null) {
-//                String publicKey = event.first;
-//                String instanceId = event.second;
-
-//                adapter.updateItem(publicKey, State.STARTING, consensus);
-//              }
-//            }
-//        );
+    mLaoDetailViewModel
+        .getUpdateConsensusEvent()
+        .observe(
+            this,
+            consensusSingleEvent -> {
+              Consensus consensus = consensusSingleEvent.getContentIfNotHandled();
+              if (consensus != null && consensus.getKey().getId().equals(election.getId())) {
+                adapter.updateList(getNodes(mLaoDetailViewModel, election.getId()));
+              }
+            });
 
     binding
         .backLayout
@@ -147,35 +142,31 @@ public class ElectionStartFragment extends Fragment {
 
   private List<ConsensusNode> getNodes(LaoDetailViewModel mLaoDetailViewModel, String electionId) {
     List<ConsensusNode> nodes = new ArrayList<>();
-    List<String> publicKeys = mLaoDetailViewModel.getWitnesses().getValue();
-    Log.d(TAG, "witness : "+publicKeys);
+    List<String> publicKeys = new ArrayList<>(mLaoDetailViewModel.getWitnesses().getValue());
     publicKeys.add(mLaoDetailViewModel.getCurrentLaoValue().getOrganizer());
     for (String key : publicKeys) {
       nodes.add(new ConsensusNode(key));
     }
 
     Map<String, List<Consensus>> proposerToConsensuses =
-        mLaoDetailViewModel
-            .getCurrentLaoValue()
-            .getConsensuses()
-            .values()
-            .stream()
+        mLaoDetailViewModel.getCurrentLaoValue().getConsensuses().values().stream()
             .filter(consensus -> consensus.getKey().getId().equals(electionId))
             .sorted((c1, c2) -> (int) (c1.getCreation() - c2.getCreation()))
             .collect(Collectors.groupingBy(Consensus::getProposer));
 
     // If a node tried multiple times to start a consensus and failed, only consider last one
-    proposerToConsensuses.forEach((proposer, consensuses) -> {
-      if (consensuses.size() > 0) {
-        for (ConsensusNode node : nodes) {
-          if (node.getPublicKey().equals(proposer)) {
-            Consensus lastConsensus = consensuses.get(consensuses.size() - 1);
-            node.setState(State.STARTING);
-            node.setConsensus(lastConsensus);
+    proposerToConsensuses.forEach(
+        (proposer, consensuses) -> {
+          if (!consensuses.isEmpty()) {
+            for (ConsensusNode node : nodes) {
+              if (node.getPublicKey().equals(proposer)) {
+                Consensus lastConsensus = consensuses.get(consensuses.size() - 1);
+                node.setState(State.STARTING);
+                node.setConsensus(lastConsensus);
+              }
+            }
           }
-        }
-      }
-    });
+        });
 
     return nodes;
   }
