@@ -35,5 +35,5 @@ func Test_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "broadcast", broadcast.Method)
-	require.Equal(t, "/root/XXX", broadcast.Params.Channel)
+	require.Equal(t, "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=", broadcast.Params.Channel)
 }
