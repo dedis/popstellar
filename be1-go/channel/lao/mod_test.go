@@ -2,6 +2,8 @@ package lao
 
 import (
 	"fmt"
+	"github.com/rs/zerolog"
+	"io"
 	"popstellar/channel"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -20,7 +22,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0])
+	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0], nolog)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -53,6 +55,8 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 
 // -----------------------------------------------------------------------------
 // Utility functions
+
+var nolog = zerolog.New(io.Discard)
 
 type fakeHubFunctionalities struct {
 	channel.HubFunctionalities

@@ -12,3 +12,11 @@ type LaoUpdate struct {
 
 	Witnesses []string `json:"witnesses"`
 }
+
+// Verifiy that the LaoUpdate message is valid
+func (message LaoUpdate) Verifiy() error {
+
+	// TODO verify LaoUpdate message once consensus is done
+
+	return nil
+}
