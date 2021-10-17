@@ -16,7 +16,6 @@ public class Consensus {
   private Object value;
 
   private long creation;
-  private long end;
 
   private boolean isAccepted;
 
@@ -101,13 +100,6 @@ public class Consensus {
     this.creation = creation;
   }
 
-  public void setEnd(long end) {
-    if (end < creation) {
-      throw new IllegalArgumentException();
-    }
-    this.end = end;
-  }
-
   public String getProposer() {
     return proposer;
   }
@@ -166,8 +158,8 @@ public class Consensus {
   @Override
   public String toString() {
     return String.format(
-        "Consensus{id='%s', channel='%s', messageId='%s', key=%s, value='%s', creation=%s, end=%s, isAccepted=%b, proposer='%s'}",
-        id, channel, messageId, key, value, creation, end, isAccepted, proposer);
+        "Consensus{id='%s', channel='%s', messageId='%s', key=%s, value='%s', creation=%s, isAccepted=%b, proposer='%s'}",
+        id, channel, messageId, key, value, creation, isAccepted, proposer);
   }
 
   public static String generateConsensusId(

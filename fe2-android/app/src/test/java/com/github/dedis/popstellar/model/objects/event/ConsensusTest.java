@@ -6,8 +6,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 import java.time.Instant;
 import java.util.HashSet;
@@ -69,26 +67,12 @@ public class ConsensusTest {
   }
 
   @Test
-  public void setAndGetCreationAndEndTest() {
-    assertEquals(creation, consensus.getStartTimestamp());
+  public void setAndGetCreationTest() {
+    assertEquals(creation, consensus.getCreation());
 
     long newCreation = creation + 10;
     consensus.setCreation(newCreation);
-    assertEquals(newCreation, consensus.getStartTimestamp());
-
-    long end = newCreation + 1;
-    consensus.setEnd(end);
-    assertEquals(end, consensus.getEndTimestamp());
-
-    assertThrows(IllegalArgumentException.class, () -> consensus.setEnd(newCreation - 1));
-  }
-
-  @Test
-  public void getAndSetStateTest() {
-    consensus.setEventState(EventState.OPENED);
-    assertEquals(EventState.OPENED, consensus.getState());
-
-    assertThrows(IllegalArgumentException.class, () -> consensus.setEventState(null));
+    assertEquals(newCreation, consensus.getCreation());
   }
 
   @Test
@@ -144,11 +128,6 @@ public class ConsensusTest {
 
     consensus.setAccepted(false);
     assertFalse(consensus.isAccepted());
-  }
-
-  @Test
-  public void getTypeTest() {
-    assertEquals(EventType.CONSENSUS, consensus.getType());
   }
 
   @Test

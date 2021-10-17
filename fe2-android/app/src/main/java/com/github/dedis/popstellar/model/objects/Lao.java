@@ -86,14 +86,11 @@ public final class Lao {
     elections.put(newId, election);
   }
 
-  public void updateConsensus(String prevId, Consensus consensus) {
+  public void updateConsensus(Consensus consensus) {
     if (consensus == null) {
       throw new IllegalArgumentException("The consensus is null");
     }
-
-    consensuses.remove(prevId);
-    String newId = consensus.getId();
-    consensuses.put(newId, consensus);
+    consensuses.put(consensus.getMessageId(), consensus);
   }
 
   /**
@@ -120,8 +117,8 @@ public final class Lao {
     return Optional.ofNullable(elections.get(id));
   }
 
-  public Optional<Consensus> getConsensus(String id) {
-    return Optional.ofNullable(consensuses.get(id));
+  public Optional<Consensus> getConsensus(String messageId) {
+    return Optional.ofNullable(consensuses.get(messageId));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(String id) {
@@ -151,8 +148,8 @@ public final class Lao {
 
   }
 
-  public boolean removeConsensus(String id) {
-    return (consensuses.remove(id) != null);
+  public boolean removeConsensus(String messageId) {
+    return (consensuses.remove(messageId) != null);
   }
 
   public Long getLastModified() {
