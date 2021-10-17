@@ -169,17 +169,11 @@
   <!-- Consensus -->
   <string name="start_election">Start Election</string>
   <string name="election_start">Election Start</string>
-  <string name="proposed_by">Proposed by :</string>
-  <string name="planned_start_time">Planned start :</string>
-  <string name="yes">Yes</string>
-  <string name="no">No</string>
-  <string name="accept">Accept</string>
-  <string name="reject">Reject</string>
-  <string name="accepted">Accepted</string>
-  <string name="rejected">Rejected</string>
-  <string name="vote">Vote</string>
-  <string name="status">Status</string>
-  <string name="status_election_start">Status: Election Start</string>
+
+  <string name="waiting_scheduled_time">Waiting scheduled time</string>
+  <string name="ready_to_start">Ready to start</string>
+  <string name="election_start_title">Election \"%s\"</string>
+  <string name="election_scheduled">Election scheduled to start at\n%s</string>
 
   <!-- Wallet -->
   <string name="button_own_seed">I own a seed</string>
