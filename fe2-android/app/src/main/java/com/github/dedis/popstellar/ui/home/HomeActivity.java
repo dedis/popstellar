@@ -5,25 +5,25 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
+import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
-import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
-import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-/**
- * HomeActivity represents the entry point for the application.
- */
+/** HomeActivity represents the entry point for the application. */
 public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
@@ -44,9 +44,11 @@ public class HomeActivity extends AppCompatActivity {
     setupLaunchButton();
     setupConnectButton();
     setupWalletButton();
+    setupServerUrlButton();
 
     // Subscribe to "open lao" event
-    mViewModel.getOpenLaoEvent()
+    mViewModel
+        .getOpenLaoEvent()
         .observe(
             this,
             stringEvent -> {
@@ -108,6 +110,18 @@ public class HomeActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupLaunchFragment();
+              }
+            });
+
+    // Subscribe to "open server url" event
+    mViewModel
+        .getOpenServerUrl()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupServerUrlFragment();
               }
             });
 
@@ -182,20 +196,22 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupConnectButton() {
     Button connectButton = (Button) findViewById(R.id.tab_connect);
-    connectButton.setOnClickListener(v ->
-        mViewModel.openConnect());
+    connectButton.setOnClickListener(v -> mViewModel.openConnect());
   }
 
   public void setupLaunchButton() {
     Button launchButton = (Button) findViewById(R.id.tab_launch);
-    launchButton.setOnClickListener(v ->
-        mViewModel.openLaunch());
+    launchButton.setOnClickListener(v -> mViewModel.openLaunch());
   }
 
   public void setupWalletButton() {
     Button launchButton = (Button) findViewById(R.id.tab_wallet);
-    launchButton.setOnClickListener(v ->
-        mViewModel.openWallet());
+    launchButton.setOnClickListener(v -> mViewModel.openWallet());
+  }
+
+  public void setupServerUrlButton() {
+    Button serverUrlButton = (Button) findViewById(R.id.tab_server_url);
+    serverUrlButton.setOnClickListener(v -> mViewModel.openServerUrl());
   }
 
   private void setupHomeFragment() {
@@ -269,8 +285,8 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupContentWalletFragment() {
     ContentWalletFragment contentWalletFragment =
-        (ContentWalletFragment) getSupportFragmentManager()
-            .findFragmentById(R.id.fragment_content_wallet);
+        (ContentWalletFragment)
+            getSupportFragmentManager().findFragmentById(R.id.fragment_content_wallet);
     if (contentWalletFragment == null) {
       contentWalletFragment = ContentWalletFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
@@ -280,12 +296,22 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSeedWalletFragment() {
     SeedWalletFragment seedWalletFragment =
-        (SeedWalletFragment) getSupportFragmentManager()
-            .findFragmentById(R.id.fragment_seed_wallet);
+        (SeedWalletFragment)
+            getSupportFragmentManager().findFragmentById(R.id.fragment_seed_wallet);
     if (seedWalletFragment == null) {
       seedWalletFragment = SeedWalletFragment.newInstance();
       ActivityUtils.replaceFragmentInActivity(
           getSupportFragmentManager(), seedWalletFragment, R.id.fragment_container_home);
+    }
+  }
+
+  private void setupServerUrlFragment() {
+    ServerUrlFragment serverUrlFragment =
+        (ServerUrlFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_server_url);
+    if (serverUrlFragment == null) {
+      serverUrlFragment = ServerUrlFragment.newInstance();
+      ActivityUtils.replaceFragmentInActivity(
+          getSupportFragmentManager(), serverUrlFragment, R.id.fragment_container_home);
     }
   }
 
