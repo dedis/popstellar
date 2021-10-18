@@ -127,7 +127,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     viewPagerAdapter
         .isAnInputValid()
         .observe(
-            this, aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
+            getViewLifecycleOwner(),
+            aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
 
     Button addQuestion = mSetupElectionFragBinding.addQuestion;
     addQuestion.setOnClickListener(
@@ -164,7 +165,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     mLaoDetailViewModel
         .getElectionCreated()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

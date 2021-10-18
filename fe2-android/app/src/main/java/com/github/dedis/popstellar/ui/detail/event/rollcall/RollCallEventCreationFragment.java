@@ -90,7 +90,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getNewLaoEventCreationEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             eventTypeEvent -> {
               EventType eventType = eventTypeEvent.getContentIfNotHandled();
               if (eventType == EventType.ROLL_CALL) {
@@ -102,7 +102,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getOpenNewRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -113,7 +113,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getCreatedRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

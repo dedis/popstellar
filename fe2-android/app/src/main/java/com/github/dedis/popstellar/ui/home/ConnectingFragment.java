@@ -56,7 +56,7 @@ public final class ConnectingFragment extends Fragment {
     mHomeViewModel
         .getCancelConnectEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

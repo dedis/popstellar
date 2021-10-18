@@ -222,7 +222,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getScanWarningEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
@@ -235,7 +235,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getNbAttendeesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             integerEvent -> {
               Integer event = integerEvent.getContentIfNotHandled();
               if (event != null) {
@@ -249,7 +249,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getWitnessScanConfirmEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
@@ -262,7 +262,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getAttendeeScanConfirmEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
@@ -276,7 +276,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getAskCloseRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             integerEvent -> {
               Integer nextFragment = integerEvent.getContentIfNotHandled();
               if (nextFragment != null) {

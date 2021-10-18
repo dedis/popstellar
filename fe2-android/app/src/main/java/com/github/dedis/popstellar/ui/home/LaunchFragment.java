@@ -51,7 +51,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel
         .getLaunchNewLaoEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -63,7 +63,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel
         .getCancelNewLaoEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

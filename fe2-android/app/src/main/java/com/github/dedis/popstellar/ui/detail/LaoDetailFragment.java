@@ -78,7 +78,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getShowPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -90,7 +90,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getEditPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
