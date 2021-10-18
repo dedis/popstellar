@@ -23,8 +23,10 @@ public class ElectionVoteTest {
       new ArrayList<>(
           Arrays.asList(2, 1, 0)); // we vote for ballot option in position 2, then posiion 1 and 0
   private final String writeIn = "My write in ballot option";
-  ElectionVote electionVote1 = new ElectionVote(questionId, votes, false, writeIn, electionId);
-  ElectionVote electionVote2 = new ElectionVote(questionId, votes, true, writeIn, electionId);
+  private final ElectionVote electionVote1 =
+      new ElectionVote(questionId, votes, false, writeIn, electionId);
+  private final ElectionVote electionVote2 =
+      new ElectionVote(questionId, votes, true, writeIn, electionId);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {

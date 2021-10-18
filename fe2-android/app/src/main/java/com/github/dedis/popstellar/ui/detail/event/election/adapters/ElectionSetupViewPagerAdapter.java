@@ -34,7 +34,7 @@ public class ElectionSetupViewPagerAdapter
     extends RecyclerView.Adapter<ElectionSetupViewPagerAdapter.ViewHolder> {
 
   public static final String TAG = ElectionSetupViewPagerAdapter.class.getSimpleName();
-  LaoDetailViewModel mLaoDetailViewModel;
+  private final LaoDetailViewModel mLaoDetailViewModel;
   private final List<String> votingMethod;
   private final List<List<String>> ballotOptions;
   private final List<Integer> numberBallotOptions;

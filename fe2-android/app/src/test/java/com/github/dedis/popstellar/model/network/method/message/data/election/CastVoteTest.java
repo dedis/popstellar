@@ -36,7 +36,7 @@ public class CastVoteTest {
   private final List<ElectionVote> electionVotes =
       new ArrayList<>(Arrays.asList(electionVote1, electionVote2));
 
-  CastVote castVote = new CastVote(electionVotes, electionId, laoId);
+  private final CastVote castVote = new CastVote(electionVotes, electionId, laoId);
 
   @Test
   public void castVoteGetterReturnsCorrectLaoId() {

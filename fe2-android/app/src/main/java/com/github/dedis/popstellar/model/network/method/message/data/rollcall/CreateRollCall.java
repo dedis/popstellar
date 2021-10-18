@@ -66,7 +66,7 @@ public class CreateRollCall extends Data {
       long proposedStart,
       long proposedEnd,
       String location,
-      String description) {
+      @Nullable String description) {
     this.id = id;
     this.name = name;
     this.creation = creation;
