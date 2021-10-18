@@ -25,7 +25,6 @@ public class ElectionResultPagerAdapter
   private ElectionResultListAdapter adapter;
 
   public ElectionResultPagerAdapter(LaoDetailViewModel mLaoDetailViewModel) {
-    super();
     this.mLaoDetailViewModel = mLaoDetailViewModel;
   }
 

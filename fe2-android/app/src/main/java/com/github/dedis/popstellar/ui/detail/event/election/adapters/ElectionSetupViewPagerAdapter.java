@@ -46,7 +46,6 @@ public class ElectionSetupViewPagerAdapter
   private final MutableLiveData<Boolean> isAnInputValid;
 
   public ElectionSetupViewPagerAdapter(LaoDetailViewModel mLaoDetailViewModel) {
-    super();
     this.mLaoDetailViewModel = mLaoDetailViewModel;
     votingMethod = new ArrayList<>();
     ballotOptions = new ArrayList<>();

@@ -31,7 +31,6 @@ public final class AddAttendeeFragment extends Fragment {
   private BarcodeDetector detector;
 
   public AddAttendeeFragment(String eventId, CameraSource camera, BarcodeDetector detector) {
-    super();
     this.eventId = eventId;
     this.camera = camera;
     this.detector = detector;

@@ -42,7 +42,6 @@ public final class QRCodeScanningFragment extends Fragment {
 
   /** Fragment constructor */
   public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
-    super();
     this.camera = camera;
     this.barcodeDetector = detector;
   }

@@ -29,10 +29,6 @@ public final class HomeFragment extends Fragment {
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
 
-  public HomeFragment() {
-    super();
-  }
-
   public static HomeFragment newInstance() {
     return new HomeFragment();
   }

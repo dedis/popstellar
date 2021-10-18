@@ -32,7 +32,6 @@ public class CastVoteViewPagerAdapter
 
   public CastVoteViewPagerAdapter(
       LaoDetailViewModel mLaoDetailViewModel, CastVoteFragmentBinding castVoteBinding) {
-    super();
     this.mLaoDetailViewModel = mLaoDetailViewModel;
     this.castVoteBinding = castVoteBinding;
   }
