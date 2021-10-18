@@ -1,8 +1,6 @@
 package messagedata
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 
 	"golang.org/x/xerrors"
@@ -27,17 +25,14 @@ type Key struct {
 }
 
 func (message ConsensusPhase1Elect) Verify() error {
-
-	expectedStringID := message.Object
-	expectedStringID = expectedStringID + fmt.Sprintf("%d", message.CreatedAt)
-	expectedStringID = expectedStringID + message.Key.Type
-	expectedStringID = expectedStringID + message.Key.ID
-	expectedStringID = expectedStringID + message.Key.Property
-	expectedStringID = expectedStringID + message.Value
-	h := sha256.New()
-	h.Write([]byte(expectedStringID))
-
-	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := Hash([]string{
+		message.Object,
+		fmt.Sprintf("%d", message.CreatedAt),
+		message.Key.Type,
+		message.Key.ID,
+		message.Key.Property,
+		message.Value,
+	})
 
 	if message.InstanceID != expectedID {
 		return xerrors.Errorf("invalid ConsensusStart message: invalid ID")
