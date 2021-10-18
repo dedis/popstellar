@@ -28,13 +28,14 @@ type Key struct {
 
 func (message ConsensusPhase1Elect) Verify() error {
 
+	expectedStringID := message.Object
+	expectedStringID = expectedStringID + fmt.Sprintf("%d", message.CreatedAt)
+	expectedStringID = expectedStringID + message.Key.Type
+	expectedStringID = expectedStringID + message.Key.ID
+	expectedStringID = expectedStringID + message.Key.Property
+	expectedStringID = expectedStringID + message.Value
 	h := sha256.New()
-	h.Write([]byte(message.Object))
-	h.Write([]byte(fmt.Sprintf("%d", message.CreatedAt)))
-	h.Write([]byte(message.Key.Type))
-	h.Write([]byte(message.Key.ID))
-	h.Write([]byte(message.Key.Property))
-	h.Write([]byte(message.Value))
+	h.Write([]byte(expectedStringID))
 
 	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
 
