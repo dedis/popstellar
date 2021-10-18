@@ -121,7 +121,7 @@ public class CastVoteViewPagerAdapter
     return true;
   }
 
-  class Pager2ViewHolder extends RecyclerView.ViewHolder {
+  protected static class Pager2ViewHolder extends RecyclerView.ViewHolder {
 
     private final ListView ballotsListView;
     private final TextView questionView;

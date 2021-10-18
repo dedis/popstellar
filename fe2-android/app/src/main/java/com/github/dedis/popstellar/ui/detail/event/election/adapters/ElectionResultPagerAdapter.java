@@ -70,7 +70,7 @@ public class ElectionResultPagerAdapter
     return mLaoDetailViewModel.getCurrentElection().getElectionQuestions().size();
   }
 
-  class Pager2ViewHolder extends RecyclerView.ViewHolder {
+  protected static class Pager2ViewHolder extends RecyclerView.ViewHolder {
 
     private final ListView resultListView;
     private final TextView questionView;
