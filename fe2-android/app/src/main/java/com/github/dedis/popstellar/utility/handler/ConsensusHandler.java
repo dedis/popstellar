@@ -60,7 +60,7 @@ public final class ConsensusHandler {
     consensus.setAcceptors(acceptors);
 
     lao.updateConsensus(consensus);
-    publishUpdate(laoRepository, consensus);
+    laoRepository.updateConsensus(consensus);
 
     return false;
   }
@@ -82,7 +82,7 @@ public final class ConsensusHandler {
     consensus.putAcceptorResponse(senderPk, messageId, consensusElectAccept.isAccept());
 
     lao.updateConsensus(consensus);
-    publishUpdate(laoRepository, consensus);
+    laoRepository.updateConsensus(consensus);
 
     return false;
   }
@@ -99,17 +99,11 @@ public final class ConsensusHandler {
 
     Consensus consensus = consensusOpt.get();
 
-    // TODO check acceptors message_ids ?
-
     consensus.setAccepted(true);
 
     lao.updateConsensus(consensus);
-    publishUpdate(laoRepository, consensus);
+    laoRepository.updateConsensus(consensus);
 
     return false;
-  }
-
-  private static void publishUpdate(LAORepository laoRepository, Consensus consensus) {
-    laoRepository.updateConsensus(consensus);
   }
 }

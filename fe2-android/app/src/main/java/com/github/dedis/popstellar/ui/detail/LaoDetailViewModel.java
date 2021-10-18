@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
@@ -52,6 +53,7 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
+import io.reactivex.BackpressureStrategy;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -201,6 +203,16 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
       return false;
     }
     return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
+  }
+
+  public String getPublicKey() {
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      return Keys.getEncodedKey(publicKeysetHandle);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+      return null;
+    }
   }
 
   @Override
@@ -964,8 +976,9 @@ public class LaoDetailViewModel extends AndroidViewModel implements CameraPermis
     return mOpenStartElectionEvent;
   }
 
-  public LiveData<SingleEvent<Consensus>> getUpdateConsensusEvent() {
-    return mLAORepository.getUpdateConsensusEvent();
+  public LiveData<Consensus> getUpdateConsensusEvent() {
+    return LiveDataReactiveStreams.fromPublisher(
+        mLAORepository.getConsensusObservable().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {

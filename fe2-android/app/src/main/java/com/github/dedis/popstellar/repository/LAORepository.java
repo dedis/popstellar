@@ -10,9 +10,6 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Error;
@@ -93,6 +90,9 @@ public class LAORepository {
   // Observable for view models that need access to all LAO Names
   private BehaviorSubject<List<Lao>> allLaoSubject;
 
+  // Observable for view models that need to know when a consensus is created/updated
+  private BehaviorSubject<Consensus> consensusSubject;
+
   // Observable to subscribe to LAOs on reconnection
   private Observable<WebSocket.Event> websocketEvents;
 
@@ -122,6 +122,8 @@ public class LAORepository {
     unprocessed = PublishSubject.create();
 
     allLaoSubject = BehaviorSubject.create();
+
+    consensusSubject = BehaviorSubject.create();
 
     upstream = mRemoteDataSource.observeMessage().share();
 
@@ -379,15 +381,14 @@ public class LAORepository {
     return laoById;
   }
 
-  //TODO remove temp code
-  private final MutableLiveData<SingleEvent<Consensus>> mUpdateConsensusEvent = new MutableLiveData<>();
-  public LiveData<SingleEvent<Consensus>> getUpdateConsensusEvent() {
-    return mUpdateConsensusEvent;
+  public Observable<Consensus> getConsensusObservable() {
+    return consensusSubject;
   }
+
   public void updateConsensus(Consensus consensus) {
-    mUpdateConsensusEvent.postValue(new SingleEvent<>(consensus));
+    consensusSubject.onNext(consensus);
   }
-  //TODO remove temp code
+
   public Map<String, MessageGeneral> getMessageById() {
     return messageById;
   }
