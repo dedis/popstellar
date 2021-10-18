@@ -210,7 +210,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
     // find out if user has attended the rollcall
     String firstLaoId = lao.getChannel().substring(6);
-    String pk = "";
+    String pk;
     try {
       pk =
           Base64.getUrlEncoder()
