@@ -30,7 +30,7 @@ public class LAOLocalDataSource implements Local {
 
   @Override
   public List<LAOEntity> getAll() {
-    return null;
+    return laoDao.getAll();
   }
 
   @Override
@@ -45,17 +45,28 @@ public class LAOLocalDataSource implements Local {
 
   @Override
   public void updateLAO(
-      LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {}
+      LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
+    laoDao.updateLAO(lao, witnesses, signatures);
+  }
 
   @Override
-  public void addRollCall(LAOEntity lao, RollCallEntity rollCall) {}
+  public void addRollCall(LAOEntity lao, RollCallEntity rollCall) {
+    laoDao.addRollCall(lao, rollCall);
+  }
 
   @Override
-  public void updateRollCall(RollCallEntity rollCall) {}
+  public void updateRollCall(RollCallEntity rollCall) {
+    // TODO to be implemented
+    throw new UnsupportedOperationException("To be implemented");
+  }
 
   @Override
-  public void addMeeting(LAOEntity lao, MeetingEntity meeting) {}
+  public void addMeeting(LAOEntity lao, MeetingEntity meeting) {
+    laoDao.addMeeting(lao, meeting);
+  }
 
   @Override
-  public void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures) {}
+  public void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures) {
+    laoDao.updateMeeting(meeting, signatures);
+  }
 }
