@@ -65,11 +65,11 @@ public class ElectionQuestion {
       return false;
     }
     ElectionQuestion that = (ElectionQuestion) o;
-    return getQuestion() == that.getQuestion()
+    return java.util.Objects.equals(getQuestion(), that.getQuestion())
         && getWriteIn() == that.getWriteIn()
         && java.util.Objects.equals(getId(), that.getId())
         && java.util.Objects.equals(getBallotOptions(), that.getBallotOptions())
-        && getVotingMethod() == that.getVotingMethod();
+        && java.util.Objects.equals(getVotingMethod(), that.getVotingMethod());
   }
 
   @Override

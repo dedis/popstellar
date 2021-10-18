@@ -71,7 +71,7 @@ public class ElectionVote {
       return false;
     }
     ElectionVote that = (ElectionVote) o;
-    return getQuestionId() == that.getQuestionId()
+    return java.util.Objects.equals(getQuestionId(), that.getQuestionId())
         && java.util.Objects.equals(getWriteIn(), that.getWriteIn())
         && java.util.Objects.equals(getId(), that.getId())
         && java.util.Objects.equals(getVotes(), that.getVotes());

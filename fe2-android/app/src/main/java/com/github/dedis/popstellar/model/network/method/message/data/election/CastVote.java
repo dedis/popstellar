@@ -73,8 +73,8 @@ public class CastVote extends Data {
     CastVote that = (CastVote) o;
     return java.util.Objects.equals(getLaoId(), that.getLaoId())
         && createdAt == that.getCreation()
-        && electionId == that.getElectionId()
-        && laoId == that.getLaoId()
+        && java.util.Objects.equals(electionId, that.getElectionId())
+        && java.util.Objects.equals(laoId, that.getLaoId())
         && java.util.Objects.equals(votes, that.getVotes());
   }
 
