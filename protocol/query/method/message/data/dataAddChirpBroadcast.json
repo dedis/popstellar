@@ -17,6 +17,7 @@
     },
     "channel": {
       "description": "[String] name of the channel",
+      "pattern": "^/root/([^/]+)/social/([^/]+)/",
       "type": "string"
     },
     "timestamp": {
