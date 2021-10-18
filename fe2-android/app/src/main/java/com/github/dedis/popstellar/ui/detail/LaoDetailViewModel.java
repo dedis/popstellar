@@ -757,7 +757,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void setCurrentLaoName(String laoName) {
-    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName())) {
+    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName().getValue())) {
       Log.d(TAG, "New name for current LAO: " + laoName);
       mLaoName.setValue(laoName);
     }

@@ -68,6 +68,8 @@ public class WalletListAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(view);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     RollCall rollCall = rollCalls.get(position);
     binding.rollcallDate.setText(
         "Ended: " + DATE_FORMAT.format(new Date(1000 * rollCall.getEnd())));

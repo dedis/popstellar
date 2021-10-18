@@ -100,6 +100,8 @@ public class WitnessListViewAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setViewModel(viewModel);
     binding.setPosition(position + 1);

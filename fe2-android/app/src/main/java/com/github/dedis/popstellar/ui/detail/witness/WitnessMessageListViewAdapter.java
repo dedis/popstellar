@@ -72,6 +72,9 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     } else {
       binding = DataBindingUtil.getBinding(convertView);
     }
+
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     Context context = parent.getContext();
     View.OnClickListener listener =
         v -> {

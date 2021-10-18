@@ -74,7 +74,7 @@ public class ManageElectionFragment extends Fragment {
     ElectionManageFragmentBinding mManageElectionFragBinding =
         ElectionManageFragmentBinding.inflate(inflater, container, false);
 
-    laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    laoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     terminate = mManageElectionFragBinding.terminateElection;
     editStartTimeButton = mManageElectionFragBinding.editStartTime;
     editEndTimeButton = mManageElectionFragBinding.editEndTime;
@@ -119,7 +119,7 @@ public class ManageElectionFragment extends Fragment {
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    Button back = getActivity().findViewById(R.id.tab_back);
+    Button back = requireActivity().findViewById(R.id.tab_back);
     back.setOnClickListener(v -> laoDetailViewModel.openLaoDetail());
 
     DialogInterface.OnClickListener dialogClickListener =

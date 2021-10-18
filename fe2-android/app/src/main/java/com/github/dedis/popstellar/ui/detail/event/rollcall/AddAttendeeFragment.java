@@ -42,7 +42,6 @@ public final class AddAttendeeFragment extends Fragment {
     return new AddAttendeeFragment(eventId, camera, detector);
   }
 
-  @Nullable
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,
@@ -60,7 +59,7 @@ public final class AddAttendeeFragment extends Fragment {
               .setPositiveButton(
                   getString(R.string.confirm),
                   (dialog, id) -> {
-                    getActivity()
+                    requireActivity()
                         .getSupportFragmentManager()
                         .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                   })
