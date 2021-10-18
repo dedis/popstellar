@@ -19,7 +19,7 @@ public final class Lao {
   private String organizer;
   private String modificationId;
   private Set<String> witnesses;
-  private Map<String, WitnessMessage> witnessMessages;
+  private final Map<String, WitnessMessage> witnessMessages;
   /**
    * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
    * witnesses

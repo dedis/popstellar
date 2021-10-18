@@ -18,18 +18,18 @@ import java.util.List;
 
 public class ElectionSetupTest {
 
-  private String electionSetupName = "new election setup";
-  private long creation = 0;
-  private long start = 0;
-  private long end = 1;
-  private List<String> votingMethod = Arrays.asList("Plurality", "Plurality");
-  private List<Boolean> writeIn = Arrays.asList(false, false);
-  private List<List<String>> ballotOptions =
+  private final String electionSetupName = "new election setup";
+  private final long creation = 0;
+  private final long start = 0;
+  private final long end = 1;
+  private final List<String> votingMethod = Arrays.asList("Plurality", "Plurality");
+  private final List<Boolean> writeIn = Arrays.asList(false, false);
+  private final List<List<String>> ballotOptions =
       Arrays.asList(
           Arrays.asList("candidate1", "candidate2"), Arrays.asList("Option a", "Option b"));
-  private List<String> question = Arrays.asList("which is the best ?", "who is best ?");
-  private String laoId = "my lao id";
-  private ElectionSetup electionSetup =
+  private final List<String> question = Arrays.asList("which is the best ?", "who is best ?");
+  private final String laoId = "my lao id";
+  private final ElectionSetup electionSetup =
       new ElectionSetup(
           electionSetupName,
           creation,

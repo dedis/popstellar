@@ -20,19 +20,19 @@ import java.util.List;
 
 public class ElectionTest {
 
-  private ElectionQuestion electionQuestion =
+  private final ElectionQuestion electionQuestion =
       new ElectionQuestion(
           "my question",
           "Plurality",
           false,
           Arrays.asList("candidate1", "candidate2"),
           "my election id");
-  private String name = "my election name";
-  private String id = "my election id";
-  private long startTime = 0;
-  private long endTime = 1;
-  private String channel = "channel id";
-  private Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
+  private final String name = "my election name";
+  private final String id = "my election id";
+  private final long startTime = 0;
+  private final long endTime = 1;
+  private final String channel = "channel id";
+  private final Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
 
   @Test
   public void settingNullParametersThrowsException() {

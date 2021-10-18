@@ -33,7 +33,7 @@ public class CastVoteFragment extends Fragment {
   private Button voteButton;
   private LaoDetailViewModel mLaoDetailViewModel;
 
-  private View.OnClickListener buttonListener =
+  private final View.OnClickListener buttonListener =
       v -> {
         voteButton.setEnabled(false);
         List<ElectionVote> electionVotes = new ArrayList<>();

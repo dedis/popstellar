@@ -21,7 +21,7 @@ import java.util.List;
 public class ElectionResultPagerAdapter
     extends RecyclerView.Adapter<ElectionResultPagerAdapter.Pager2ViewHolder> {
 
-  private LaoDetailViewModel mLaoDetailViewModel;
+  private final LaoDetailViewModel mLaoDetailViewModel;
   private ElectionResultListAdapter adapter;
 
   public ElectionResultPagerAdapter(LaoDetailViewModel mLaoDetailViewModel) {
@@ -72,8 +72,8 @@ public class ElectionResultPagerAdapter
 
   class Pager2ViewHolder extends RecyclerView.ViewHolder {
 
-    private ListView resultListView;
-    private TextView questionView;
+    private final ListView resultListView;
+    private final TextView questionView;
 
     public Pager2ViewHolder(View itemView) {
       super(itemView);

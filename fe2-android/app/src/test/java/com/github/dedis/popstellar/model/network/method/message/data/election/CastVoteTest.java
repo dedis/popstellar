@@ -13,27 +13,27 @@ import java.util.List;
 
 public class CastVoteTest {
 
-  private String questionId1 = " myQuestion1";
-  private String questionId2 = " myQuestion2";
-  private String laoId = "myLao";
-  private String electionId = " myElection";
-  private boolean writeInEnabled = false;
-  private String write_in = "My write in ballot option";
-  private ElectionVote electionVote1 =
+  private final String questionId1 = " myQuestion1";
+  private final String questionId2 = " myQuestion2";
+  private final String laoId = "myLao";
+  private final String electionId = " myElection";
+  private final boolean writeInEnabled = false;
+  private final String write_in = "My write in ballot option";
+  private final ElectionVote electionVote1 =
       new ElectionVote(
           questionId1,
           new ArrayList<>(Arrays.asList(2, 1, 0)),
           writeInEnabled,
           write_in,
           electionId);
-  private ElectionVote electionVote2 =
+  private final ElectionVote electionVote2 =
       new ElectionVote(
           questionId2,
           new ArrayList<>(Arrays.asList(0, 1, 2)),
           writeInEnabled,
           write_in,
           electionId);
-  private List<ElectionVote> electionVotes =
+  private final List<ElectionVote> electionVotes =
       new ArrayList<>(Arrays.asList(electionVote1, electionVote2));
 
   CastVote castVote = new CastVote(electionVotes, electionId, laoId);

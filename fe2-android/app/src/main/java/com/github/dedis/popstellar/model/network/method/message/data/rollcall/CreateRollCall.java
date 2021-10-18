@@ -13,19 +13,19 @@ import java.util.Optional;
 /** Data sent to create a Roll-Call */
 public class CreateRollCall extends Data {
 
-  private String id;
-  private String name;
-  private long creation;
+  private final String id;
+  private final String name;
+  private final long creation;
 
   @SerializedName("proposed_start")
-  private long proposedStart;
+  private final long proposedStart;
 
   @SerializedName("proposed_end")
-  private long proposedEnd;
+  private final long proposedEnd;
 
-  private String location;
+  private final String location;
 
-  @Nullable private transient String description;
+  @Nullable private final transient String description;
 
   /**
    * Constructor for a data Create Roll-Call Event

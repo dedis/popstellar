@@ -269,10 +269,10 @@ public class ElectionSetupViewPagerAdapter
 
   public static class ViewHolder extends RecyclerView.ViewHolder {
 
-    private EditText electionQuestionText;
-    private Spinner spinner;
-    private Button addOptionButton;
-    private LinearLayout linearLayout;
+    private final EditText electionQuestionText;
+    private final Spinner spinner;
+    private final Button addOptionButton;
+    private final LinearLayout linearLayout;
 
     public ViewHolder(@NonNull View itemView) {
       super(itemView);

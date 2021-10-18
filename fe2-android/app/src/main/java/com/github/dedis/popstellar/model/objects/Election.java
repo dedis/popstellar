@@ -29,14 +29,14 @@ public class Election extends Event {
   private List<ElectionQuestion> electionQuestions;
 
   // Map that associates each sender pk to their votes
-  private Map<String, List<ElectionVote>> voteMap;
+  private final Map<String, List<ElectionVote>> voteMap;
   // Map that associates each messageId to its sender
-  private Map<String, String> messageMap;
+  private final Map<String, String> messageMap;
 
   private EventState state;
 
   // Results of an election (associated to a question id)
-  private Map<String, List<QuestionResult>> results;
+  private final Map<String, List<QuestionResult>> results;
 
   public Election(String laoId, long creation, String name) {
     this.id = Election.generateElectionSetupId(laoId, creation, name);
