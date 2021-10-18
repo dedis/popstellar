@@ -397,7 +397,7 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 }
 
 // handleMessageFromWitness handles an incoming message from a witness server.
-func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) error {
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
 
@@ -406,21 +406,21 @@ func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) 
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
 		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
-		return
+		return err
 	}
 
 	rpctype, err := jsonrpc.GetType(byteMessage)
 	if err != nil {
 		h.log.Err(err).Msg("failed to get rpc type")
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	// check type (answer or query), we expect a query
 	if rpctype != jsonrpc.RPCTypeQuery {
 		h.log.Error().Msgf("jsonRPC message is not of type query")
 		socket.SendError(nil, xerrors.New("jsonRPC message is not of type query"))
-		return
+		return err
 	}
 
 	var queryBase query.Base
@@ -430,7 +430,7 @@ func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) 
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	var id int
@@ -450,19 +450,19 @@ func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) 
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
 		socket.SendResult(id, msgs)
-		return
+		return err
 	}
 
 	socket.SendResult(id, nil)

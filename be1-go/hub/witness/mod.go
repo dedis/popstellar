@@ -78,7 +78,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 	return &witnessHub, nil
 }
 
-func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
 	socket := incMsg.Socket
 	byteMessage := incMsg.Message
 
@@ -87,7 +87,7 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
 		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
-		return
+		return err
 	}
 
 	var queryBase query.Base
@@ -97,7 +97,7 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	var id int
@@ -117,25 +117,26 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
 		socket.SendResult(id, msgs)
-		return
+		return err
 	}
 
 	socket.SendResult(id, nil)
+	return nil
 }
 
-func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) error {
 	socket := incMsg.Socket
 	byteMessage := incMsg.Message
 
@@ -144,7 +145,7 @@ func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
 		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
-		return
+		return err
 	}
 
 	var queryBase query.Base
@@ -154,7 +155,7 @@ func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	var id int
@@ -174,25 +175,26 @@ func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
 		socket.SendResult(id, msgs)
-		return
+		return err
 	}
 
 	socket.SendResult(id, nil)
+	return nil
 }
 
-func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
 	socket := incMsg.Socket
 	byteMessage := incMsg.Message
 
@@ -201,7 +203,7 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
 		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
-		return
+		return err
 	}
 
 	var queryBase query.Base
@@ -211,7 +213,7 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	var id int
@@ -231,26 +233,26 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
 		socket.SendResult(id, msgs)
-		return
+		return err
 	}
 
 	socket.SendResult(id, nil)
-  return nil
+	return nil
 }
 
-func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error{
+func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error {
 	defer h.workers.Release(1)
 
 	h.log.Info().Str("msg", fmt.Sprintf("%v", incMsg.Message)).
