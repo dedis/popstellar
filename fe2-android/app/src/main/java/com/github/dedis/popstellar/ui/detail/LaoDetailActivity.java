@@ -199,8 +199,6 @@ public class LaoDetailActivity extends AppCompatActivity {
             });
   }
 
-  private void setupCreatePollFragment() {}
-
   public void setupHomeButton() {
     Button homeButton = (Button) findViewById(R.id.tab_home);
     homeButton.setOnClickListener(v -> mViewModel.openHome());
