@@ -10,13 +10,14 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Qu
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ElectionQuestionResultTest {
 
   private String questionId = "questionId";
-  private List<QuestionResult> results = Arrays.asList(new QuestionResult("Candidate1", 30));
+  private List<QuestionResult> results =
+      Collections.singletonList(new QuestionResult("Candidate1", 30));
   private ElectionResultQuestion electionQuestionResult =
       new ElectionResultQuestion(questionId, results);
 

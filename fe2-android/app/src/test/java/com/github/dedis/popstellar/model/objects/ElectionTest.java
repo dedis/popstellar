@@ -16,6 +16,7 @@ import org.junit.Test;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ElectionTest {
@@ -60,7 +61,7 @@ public class ElectionTest {
 
   @Test
   public void settingAndGettingReturnsCorrespondingElectionQuestion() {
-    election.setElectionQuestions(Arrays.asList(electionQuestion));
+    election.setElectionQuestions(Collections.singletonList(electionQuestion));
     assertThat(election.getElectionQuestions().get(0), is(electionQuestion));
   }
 
@@ -98,12 +99,12 @@ public class ElectionTest {
   public void settingSameRegisteredVotesAndComparingReturnsTrue() {
     List<ElectionVote> votes1 =
         Arrays.asList(
-            new ElectionVote("b", Arrays.asList(1), false, "", "my election id"),
-            new ElectionVote("a", Arrays.asList(2), false, "", "my election id"));
+            new ElectionVote("b", Collections.singletonList(1), false, "", "my election id"),
+            new ElectionVote("a", Collections.singletonList(2), false, "", "my election id"));
     List<ElectionVote> votes2 =
         Arrays.asList(
-            new ElectionVote("c", Arrays.asList(3), false, "", "my election id"),
-            new ElectionVote("d", Arrays.asList(4), false, "", "my election id"));
+            new ElectionVote("c", Collections.singletonList(3), false, "", "my election id"),
+            new ElectionVote("d", Collections.singletonList(4), false, "", "my election id"));
     election.putVotesBySender("sender2", votes2);
     election.putSenderByMessageId("sender1", "message1");
     election.putSenderByMessageId("sender2", "message2");
@@ -125,7 +126,7 @@ public class ElectionTest {
     unsortedResults.add(new QuestionResult("Candidate3", 16));
     unsortedResults.add(new QuestionResult("Candidate4", 43));
     List<ElectionResultQuestion> resultQuestion =
-        Arrays.asList(new ElectionResultQuestion("question_id", unsortedResults));
+        Collections.singletonList(new ElectionResultQuestion("question_id", unsortedResults));
     election.setResults(resultQuestion);
     List<QuestionResult> sortedResults = election.getResultsForQuestionId("question_id");
 

@@ -320,7 +320,7 @@ public class LAORepository {
   public void setAllLaoSubject() {
     Log.d(TAG, "posted allLaos to allLaoSubject");
     allLaoSubject.onNext(
-        laoById.entrySet().stream().map(x -> x.getValue().getLao()).collect(Collectors.toList()));
+        laoById.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
   }
 
   /**

@@ -9,6 +9,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CastVoteTest {
@@ -58,11 +59,14 @@ public class CastVoteTest {
     assertEquals(castVote, new CastVote(electionVotes, electionId, laoId));
     assertEquals(castVote, castVote);
     assertNotEquals(
-        castVote, new CastVote(new ArrayList<>(Arrays.asList(electionVote1)), electionId, laoId));
-    assertNotEquals(
-        castVote, new CastVote(new ArrayList<>(Arrays.asList(electionVote1)), "random", laoId));
+        castVote,
+        new CastVote(new ArrayList<>(Collections.singletonList(electionVote1)), electionId, laoId));
     assertNotEquals(
         castVote,
-        new CastVote(new ArrayList<>(Arrays.asList(electionVote1)), electionId, "random"));
+        new CastVote(new ArrayList<>(Collections.singletonList(electionVote1)), "random", laoId));
+    assertNotEquals(
+        castVote,
+        new CastVote(
+            new ArrayList<>(Collections.singletonList(electionVote1)), electionId, "random"));
   }
 }

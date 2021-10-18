@@ -316,11 +316,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     electionBinding.setElection(election);
     Date dStart =
         new java.util.Date(
-            Long.valueOf(election.getStartTimestamp())
-                * 1000); // *1000 because it needs to be in milisecond
+            election.getStartTimestamp() * 1000); // *1000 because it needs to be in milisecond
     String dateStart = DATE_FORMAT.format(dStart);
     electionBinding.electionStartDate.setText("Start date : " + dateStart);
-    Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp()) * 1000);
+    Date dEnd = new java.util.Date(election.getEndTimestamp() * 1000);
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
     viewModel.setCurrentElection(election);
@@ -344,7 +343,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     } else if (category == PAST) {
 
       electionBinding.electionActionButton.setEnabled(true);
-      if (!viewModel.isOrganizer().getValue().booleanValue()) {
+      if (!viewModel.isOrganizer().getValue()) {
         electionBinding.electionActionButton.setEnabled(false);
       }
 

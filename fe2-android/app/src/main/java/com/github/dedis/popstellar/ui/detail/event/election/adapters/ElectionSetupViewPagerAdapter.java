@@ -53,7 +53,7 @@ public class ElectionSetupViewPagerAdapter
     questions = new ArrayList<>();
     listOfValidBallots = new HashSet<>();
     listOfValidQuestions = new HashSet<>();
-    isAnInputValid = new MutableLiveData<>(Boolean.valueOf(false));
+    isAnInputValid = new MutableLiveData<>(Boolean.FALSE);
     addQuestion();
   }
 

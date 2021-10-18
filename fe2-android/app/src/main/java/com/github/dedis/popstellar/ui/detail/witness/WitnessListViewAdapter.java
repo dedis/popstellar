@@ -115,9 +115,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
           adb.setNegativeButton(context.getString(R.string.button_cancel), null);
           adb.setPositiveButton(
               context.getString(R.string.button_confirm),
-              (dialog, which) -> {
-                viewModel.removeWitness(witness);
-              });
+              (dialog, which) -> viewModel.removeWitness(witness));
           adb.show();
         };
 

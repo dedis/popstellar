@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +29,7 @@ public class StateLaoTest {
   private final Set<String> witnesses = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
   private final String id = Lao.generateLaoId(organizer, creation, name);
   private final List<PublicKeySignaturePair> modificationSignatures =
-      Arrays.asList(new PublicKeySignaturePair(new byte[10], new byte[10]));
+      Collections.singletonList(new PublicKeySignaturePair(new byte[10], new byte[10]));
   private final StateLao stateLao =
       new StateLao(
           id,
@@ -192,7 +193,7 @@ public class StateLaoTest {
             lastModified,
             organizer,
             modificationId,
-            new HashSet<>(Arrays.asList("0x3434")),
+            new HashSet<>(Collections.singletonList("0x3434")),
             modificationSignatures));
   }
 }
