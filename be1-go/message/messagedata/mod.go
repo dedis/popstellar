@@ -8,9 +8,9 @@ import (
 
 const (
 	ConsensusObject                  = "consensus"
-	ConsensusActionPhase1Elect       = "phase-1-elect"
-	ConsensusActionPhase1ElectAccept = "phase-1-elect-accept"
-	ConsensuisActionPhase1Learn      = "phase-1-learn"
+	ConsensusActionPhase1Elect       = "elect"
+	ConsensusActionPhase1ElectAccept = "elect-accept"
+	ConsensuisActionPhase1Learn      = "learn"
 
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"
