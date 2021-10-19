@@ -6,8 +6,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ConsensusPhase1Elect defines a message data
-type ConsensusPhase1Elect struct {
+// ConsensusElect defines a message data
+type ConsensusElect struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
 	InstanceID string `json:"instance_id"`
@@ -24,7 +24,7 @@ type Key struct {
 	Property string `json:"property"`
 }
 
-func (message ConsensusPhase1Elect) Verify() error {
+func (message ConsensusElect) Verify() error {
 	expectedID := Hash([]string{
 		message.Object,
 		fmt.Sprintf("%d", message.CreatedAt),

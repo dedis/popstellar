@@ -1,7 +1,7 @@
 package messagedata
 
-// ConsensusPhase1Learn defines a message data
-type ConsensusPhase1Learn struct {
+// ConsensusLearn defines a message data
+type ConsensusLearn struct {
 	Object    string   `json:"object"`
 	Action    string   `json:"action"`
 	MessageID string   `json:"message_id"`

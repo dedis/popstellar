@@ -10,10 +10,10 @@ import (
 )
 
 const (
-	ConsensusObject                  = "consensus"
-	ConsensusActionPhase1Elect       = "elect"
-	ConsensusActionPhase1ElectAccept = "elect-accept"
-	ConsensuisActionPhase1Learn      = "learn"
+	ConsensusObject            = "consensus"
+	ConsensusActionElect       = "elect"
+	ConsensusActionElectAccept = "elect-accept"
+	ConsensuisActionLearn      = "learn"
 
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"

@@ -1,7 +1,7 @@
 package messagedata
 
-// ConsensusPhase1ElectAccept defines a message data
-type ConsensusPhase1ElectAccept struct {
+// ConsensusElectAccept defines a message data
+type ConsensusElectAccept struct {
 	Object    string `json:"object"`
 	Action    string `json:"action"`
 	MessageID string `json:"message_id"`
