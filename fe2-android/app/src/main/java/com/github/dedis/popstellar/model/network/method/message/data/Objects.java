@@ -4,9 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Enumerates all possible messages objects
- */
+/** Enumerates all possible messages objects */
 public enum Objects {
   LAO("lao"),
   MEETING("meeting"),
@@ -27,9 +25,7 @@ public enum Objects {
     this.object = object;
   }
 
-  /**
-   * Returns the name of the Object.
-   */
+  /** Returns the name of the Object. */
   public String getObject() {
     return object;
   }

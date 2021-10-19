@@ -38,25 +38,22 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * An abstract high level message
- */
+/** An abstract high level message */
 public abstract class Data {
 
-  /**
-   * A mapping of (object, action) -> class
-   */
+  /** A mapping of (object, action) -> class */
   private static final Map<EntryPair, Class<? extends Data>> messages = buildMessagesMap();
 
   /**
    * Create an entry pair given obj and action
    *
-   * @param obj    of the pair
+   * @param obj of the pair
    * @param action of the pair
    * @return the pair
    */
@@ -107,7 +104,7 @@ public abstract class Data {
   /**
    * Return the class assigned to the pair (obj, action)
    *
-   * @param obj    of the entry
+   * @param obj of the entry
    * @param action of the entry
    * @return the class assigned to the pair of empty if none are defined
    */
@@ -116,19 +113,13 @@ public abstract class Data {
     return Optional.ofNullable(messages.get(pair(obj, action)));
   }
 
-  /**
-   * Returns the object the message is referring to.
-   */
+  /** Returns the object the message is referring to. */
   public abstract String getObject();
 
-  /**
-   * Returns the action the message is handling.
-   */
+  /** Returns the action the message is handling. */
   public abstract String getAction();
 
-  /**
-   * Entry of the messages map. A pair of (Objects, Action)
-   */
+  /** Entry of the messages map. A pair of (Objects, Action) */
   private static final class EntryPair {
 
     private final Objects object;

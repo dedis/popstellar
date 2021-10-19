@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar;
 
-
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -42,7 +41,6 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import okhttp3.OkHttpClient;
 
-
 public class Injection {
 
   private static final String KEYSET_NAME = "POP_KEYSET";
@@ -53,9 +51,7 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private Injection() {
-  }
-
+  private Injection() {}
 
   @SuppressWarnings("unused")
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
@@ -144,7 +140,7 @@ public class Injection {
     return new LAOService() {
       @Override
       public void sendMessage(Message msg) {
-        //"mock" method
+        // "mock" method
       }
 
       @Override
@@ -152,7 +148,7 @@ public class Injection {
         return new Observable<GenericMessage>() {
           @Override
           protected void subscribeActual(Observer<? super GenericMessage> observer) {
-            //"mock" method
+            // "mock" method
           }
         };
       }
@@ -162,12 +158,10 @@ public class Injection {
         return new Observable<WebSocket.Event>() {
           @Override
           protected void subscribeActual(Observer<? super WebSocket.Event> observer) {
-            //"mock" method
+            // "mock" method
           }
         };
       }
     };
   }
-
 }
-

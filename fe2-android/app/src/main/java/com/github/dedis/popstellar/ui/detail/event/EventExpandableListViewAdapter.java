@@ -13,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionDisplayLayoutBinding;
 import com.github.dedis.popstellar.databinding.EventCategoryLayoutBinding;
@@ -27,6 +29,7 @@ import com.github.dedis.popstellar.model.objects.event.EventCategory;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -35,7 +38,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-
 
 public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
@@ -72,9 +74,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     notifyDataSetChanged();
   }
 
-  /**
-   * @return the amount of categories
-   */
+  /** @return the amount of categories */
   @Override
   public int getGroupCount() {
     return this.categories.length;
@@ -120,7 +120,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     }
 
     return this.eventsMap.get(categories[groupPosition]).get(childPosition);
-
   }
 
   /**
@@ -166,14 +165,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    * ViewGroup)}.
    *
    * @param groupPosition the position of the group for which the View is returned
-   * @param isExpanded    whether the group is expanded or collapsed
-   * @param convertView   the old view to reuse, if possible. You should check that this view is
-   *                      non-null and of an appropriate type before using. If it is not possible to
-   *                      convert this view to display the correct data, this method can create a
-   *                      new view. It is not guaranteed that the convertView will have been
-   *                      previously created by {@link #getGroupView(int, boolean, View,
-   *                      ViewGroup)}.
-   * @param parent        the parent that this view will eventually be attached to
+   * @param isExpanded whether the group is expanded or collapsed
+   * @param convertView the old view to reuse, if possible. You should check that this view is
+   *     non-null and of an appropriate type before using. If it is not possible to convert this
+   *     view to display the correct data, this method can create a new view. It is not guaranteed
+   *     that the convertView will have been previously created by {@link #getGroupView(int,
+   *     boolean, View, ViewGroup)}.
+   * @param parent the parent that this view will eventually be attached to
    * @return the View corresponding to the group at the specified position
    */
   @Override
@@ -230,15 +228,14 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
    *
    * @param groupPosition the position of the group that contains the child
    * @param childPosition the position of the child (for which the View is returned) within the
-   *                      group
-   * @param isLastChild   Whether the child is the last child within the group
-   * @param convertView   the old view to reuse, if possible. You should check that this view is
-   *                      non-null and of an appropriate type before using. If it is not possible to
-   *                      convert this view to display the correct data, this method can create a
-   *                      new view. It is not guaranteed that the convertView will have been
-   *                      previously created by {@link #getChildView(int, int, boolean, View,
-   *                      ViewGroup)}.
-   * @param parent        the parent that this view will eventually be attached to
+   *     group
+   * @param isLastChild Whether the child is the last child within the group
+   * @param convertView the old view to reuse, if possible. You should check that this view is
+   *     non-null and of an appropriate type before using. If it is not possible to convert this
+   *     view to display the correct data, this method can create a new view. It is not guaranteed
+   *     that the convertView will have been previously created by {@link #getChildView(int, int,
+   *     boolean, View, ViewGroup)}.
+   * @param parent the parent that this view will eventually be attached to
    * @return the View corresponding to the child at the specified position
    */
   @Override
@@ -271,7 +268,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         return layoutEventBinding.getRoot();
     }
   }
-
 
   /**
    * A helper method that places the events in the correct key-value pair according to their times
@@ -310,27 +306,33 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
   /**
    * A helper method used to handle the display of the elections
    *
-   * @param election           the election Event
-   * @param category           the event category ( Past,Present or Future)
+   * @param election the election Event
+   * @param category the event category ( Past,Present or Future)
    * @param layoutEventBinding the binding of the generic layoutEvent that we use to display events
    * @return the View corresponding to the child at the specified position
    */
-  private View setupElectionElement(Election election, EventCategory category,
-      EventLayoutBinding layoutEventBinding) {
+  private View setupElectionElement(
+      Election election, EventCategory category, EventLayoutBinding layoutEventBinding) {
     ElectionDisplayLayoutBinding electionBinding = layoutEventBinding.includeLayoutElection;
     electionBinding.setElection(election);
-    Date dStart = new java.util.Date(Long.valueOf(election.getStartTimestamp())
-        * 1000);// *1000 because it needs to be in milisecond
+    Date dStart =
+        new java.util.Date(
+            Long.valueOf(election.getStartTimestamp())
+                * 1000); // *1000 because it needs to be in milisecond
     String dateStart = DATE_FORMAT.format(dStart);
     electionBinding.electionStartDate.setText("Start date : " + dateStart);
     Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp()) * 1000);
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
     viewModel.setCurrentElection(election);
-    viewModel.getEndElectionEvent().observe(lifecycleOwner, end -> {
-      electionBinding.electionActionButton.setText(R.string.election_ended);
-      electionBinding.electionActionButton.setEnabled(false);
-    });
+    viewModel
+        .getEndElectionEvent()
+        .observe(
+            lifecycleOwner,
+            end -> {
+              electionBinding.electionActionButton.setText(R.string.election_ended);
+              electionBinding.electionActionButton.setEnabled(false);
+            });
 
     if (category == PRESENT) {
       electionBinding.electionActionButton.setText(R.string.cast_vote);
@@ -353,24 +355,25 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       } else if (election.getState() == RESULTS_READY) {
         electionBinding.electionActionButton.setText(R.string.show_results);
         electionBinding.electionActionButton.setEnabled(true);
-        electionBinding.electionActionButton.setOnClickListener(clicked -> {
-          viewModel.setCurrentElection(election);
-          viewModel.openElectionResults(true);
-        });
+        electionBinding.electionActionButton.setOnClickListener(
+            clicked -> {
+              viewModel.setCurrentElection(election);
+              viewModel.openElectionResults(true);
+            });
       } else {
         electionBinding.electionActionButton.setText(R.string.tally_votes);
-        electionBinding.electionActionButton.setOnClickListener(clicked -> {
-          viewModel.setCurrentElection(election);
-          viewModel.endElection(election);
-        });
+        electionBinding.electionActionButton.setOnClickListener(
+            clicked -> {
+              viewModel.setCurrentElection(election);
+              viewModel.endElection(election);
+            });
       }
-
     }
-    electionBinding.electionEditButton.setOnClickListener(clicked -> {
+    electionBinding.electionEditButton.setOnClickListener(
+        clicked -> {
           viewModel.setCurrentElection(election);
           viewModel.openManageElection(true);
-        }
-    );
+        });
 
     electionBinding.detailsButton.setOnClickListener(
         clicked -> {
@@ -389,15 +392,15 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
   /**
    * Setup the text and buttons that appear for a roll call in the list
    *
-   * @param rollCall           the rollCall Event
+   * @param rollCall the rollCall Event
    * @param layoutEventBinding the binding of the generic layoutEvent that we use to display events
    * @return the View corresponding to the child at the specified position
    */
   private View setupRollCallElement(RollCall rollCall, EventLayoutBinding layoutEventBinding) {
     RollCallEventLayoutBinding binding = layoutEventBinding.includeLayoutRollCall;
 
-    binding.rollcallDate
-        .setText("Start: " + DATE_FORMAT.format(new Date(1000 * rollCall.getStart())));
+    binding.rollcallDate.setText(
+        "Start: " + DATE_FORMAT.format(new Date(1000 * rollCall.getStart())));
     binding.rollcallTitle.setText("Roll Call: " + rollCall.getName());
     binding.rollcallLocation.setText("Location: " + rollCall.getLocation());
 
@@ -422,16 +425,11 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     }
 
     binding.rollcallOpenButton.setOnClickListener(
-        clicked -> viewModel.openRollCall(rollCall.getId())
-    );
+        clicked -> viewModel.openRollCall(rollCall.getId()));
     binding.rollcallReopenButton.setOnClickListener(
-        clicked ->
-            viewModel.openRollCall(rollCall.getId())
-    );
+        clicked -> viewModel.openRollCall(rollCall.getId()));
     binding.rollcallEnterButton.setOnClickListener(
-        clicked ->
-            viewModel.enterRollCall(rollCall.getPersistentId())
-    );
+        clicked -> viewModel.enterRollCall(rollCall.getPersistentId()));
     binding.setLifecycleOwner(lifecycleOwner);
 
     binding.executePendingBindings();

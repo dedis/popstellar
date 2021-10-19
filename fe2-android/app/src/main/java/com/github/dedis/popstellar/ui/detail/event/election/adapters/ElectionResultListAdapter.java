@@ -6,11 +6,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import com.github.dedis.popstellar.R;
+
 import java.util.List;
 
-public class ElectionResultListAdapter extends
-    ArrayAdapter<ElectionResultListAdapter.ElectionResult> {
+public class ElectionResultListAdapter
+    extends ArrayAdapter<ElectionResultListAdapter.ElectionResult> {
 
   private Context mContext;
   private int mResource;
@@ -20,7 +22,6 @@ public class ElectionResultListAdapter extends
     this.mContext = context;
     this.mResource = resource;
   }
-
 
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {

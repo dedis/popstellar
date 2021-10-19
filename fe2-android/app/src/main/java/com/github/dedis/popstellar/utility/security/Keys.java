@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.security;
 
 import android.util.Base64;
+
 import com.google.crypto.tink.CleartextKeysetHandle;
 import com.google.crypto.tink.JsonKeysetWriter;
 import com.google.crypto.tink.KeysetHandle;
@@ -8,6 +9,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

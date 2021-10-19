@@ -11,12 +11,15 @@ public class ElectionEnd extends Data {
 
   @SerializedName(value = "election")
   private String electionId;
+
   @SerializedName(value = "created_at")
   private long createdAt;
+
   @SerializedName(value = "lao")
   private String laoId;
+
   @SerializedName(value = "registered_votes")
-  private String registeredVotes; //hashed
+  private String registeredVotes; // hashed
 
   public ElectionEnd(String electionId, String laoId, String registeredVotes) {
     if (electionId == null || laoId == null || registeredVotes == null) {
@@ -27,7 +30,6 @@ public class ElectionEnd extends Data {
     this.laoId = laoId;
     this.registeredVotes = registeredVotes;
   }
-
 
   @Override
   public String getObject() {
@@ -58,10 +60,17 @@ public class ElectionEnd extends Data {
   @Override
   public String toString() {
     return "ElectionEnd{"
-        + "electionId='" + electionId + '\''
-        + ", createdAt=" + createdAt
-        + ", laoId='" + laoId + '\''
-        + ", registeredVotes='" + registeredVotes + '\''
+        + "electionId='"
+        + electionId
+        + '\''
+        + ", createdAt="
+        + createdAt
+        + ", laoId='"
+        + laoId
+        + '\''
+        + ", registeredVotes='"
+        + registeredVotes
+        + '\''
         + '}';
   }
 }

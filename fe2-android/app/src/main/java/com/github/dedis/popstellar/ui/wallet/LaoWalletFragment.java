@@ -7,13 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoWalletFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.util.ArrayList;
 
 public class LaoWalletFragment extends Fragment {
@@ -61,8 +64,8 @@ public class LaoWalletFragment extends Fragment {
               mWalletListAdapter.replaceList(rollCalls);
             });
 
-    mLaoWalletFragmentBinding.backButton
-        .setOnClickListener(clicked -> mLaoDetailViewModel.openHome());
+    mLaoWalletFragmentBinding.backButton.setOnClickListener(
+        clicked -> mLaoDetailViewModel.openHome());
   }
 
   private void setupPropertiesButton() {
@@ -74,8 +77,8 @@ public class LaoWalletFragment extends Fragment {
   private void setupWalletListAdapter() {
     ListView listView = mLaoWalletFragmentBinding.walletList;
 
-    mWalletListAdapter = new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel,
-        getActivity());
+    mWalletListAdapter =
+        new WalletListAdapter(new ArrayList<>(0), mLaoDetailViewModel, getActivity());
 
     listView.setAdapter(mWalletListAdapter);
   }
@@ -88,7 +91,6 @@ public class LaoWalletFragment extends Fragment {
             rollCalls -> {
               Log.d(TAG, "Got a wallet list update");
               mWalletListAdapter.replaceList(rollCalls);
-            }
-        );
+            });
   }
 }
