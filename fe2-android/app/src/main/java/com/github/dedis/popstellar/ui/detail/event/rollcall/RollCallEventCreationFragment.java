@@ -66,7 +66,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
-    setDateAndTimeView(mFragBinding.getRoot(), this, getFragmentManager());
+    setDateAndTimeView(mFragBinding.getRoot(), this, getParentFragmentManager());
     addStartDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;
@@ -79,8 +79,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupConfirmButton();
     setupOpenButton();

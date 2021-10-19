@@ -93,7 +93,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
     // Set the view for the date and time
-    setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
+    setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getParentFragmentManager());
     // Make the textWatcher listen to changes in the start and end date/time
     addEndDateAndTimeListener(submitTextWatcher);
     addStartDateAndTimeListener(submitTextWatcher);
@@ -155,8 +155,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupElectionCancelButton();
     setupElectionSubmitButton();
