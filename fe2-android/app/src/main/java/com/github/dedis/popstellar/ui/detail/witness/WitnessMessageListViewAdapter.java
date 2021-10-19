@@ -6,16 +6,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.databinding.WitnessMessageLayoutBinding;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.util.List;
 
-/**
- * Adapter to show the messages that have to be signed by the witnesses
- */
+/** Adapter to show the messages that have to be signed by the witnesses */
 public class WitnessMessageListViewAdapter extends BaseAdapter {
 
   private final LaoDetailViewModel viewModel;
@@ -50,7 +51,6 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     return messages != null ? messages.size() : 0;
   }
 
-
   @Override
   public Object getItem(int position) {
     return messages.get(position);
@@ -73,29 +73,26 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
     Context context = parent.getContext();
-    View.OnClickListener listener = v -> {
-      AlertDialog.Builder adb = new AlertDialog.Builder(context);
-      boolean isWitness = viewModel.isWitness().getValue();
-      if (isWitness) {
-        adb.setTitle("Sign Message");
-        adb.setMessage(" Are you sure you want to sign message with ID : " + messages.get(position)
-            .getMessageId());
-        adb.setNegativeButton("Cancel", null);
-        adb.setPositiveButton(
-            "Confirm",
-            (dialog, which) -> viewModel.signMessage(messages.get(position)));
-      } else {
-        adb.setTitle("You are not a witness");
-        adb.setMessage("You need to be a witness in order to sign this message");
-        adb.setCancelable(false);
-        adb.setPositiveButton("Ok", (dialog, which) -> {
-        });
-
-      }
-      adb.show();
-
-
-    };
+    View.OnClickListener listener =
+        v -> {
+          AlertDialog.Builder adb = new AlertDialog.Builder(context);
+          boolean isWitness = viewModel.isWitness().getValue();
+          if (isWitness) {
+            adb.setTitle("Sign Message");
+            adb.setMessage(
+                " Are you sure you want to sign message with ID : "
+                    + messages.get(position).getMessageId());
+            adb.setNegativeButton("Cancel", null);
+            adb.setPositiveButton(
+                "Confirm", (dialog, which) -> viewModel.signMessage(messages.get(position)));
+          } else {
+            adb.setTitle("You are not a witness");
+            adb.setMessage("You need to be a witness in order to sign this message");
+            adb.setCancelable(false);
+            adb.setPositiveButton("Ok", (dialog, which) -> {});
+          }
+          adb.show();
+        };
     binding.signMessageButton.setOnClickListener(listener);
 
     binding.setMessage(messages.get(position));
@@ -105,7 +102,5 @@ public class WitnessMessageListViewAdapter extends BaseAdapter {
     binding.executePendingBindings();
 
     return binding.getRoot();
-
-
   }
 }

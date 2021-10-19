@@ -4,10 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.databinding.HomeLaoLayoutBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
+
 import java.util.List;
 
 public class LAOListAdapter extends BaseAdapter {
@@ -20,8 +23,8 @@ public class LAOListAdapter extends BaseAdapter {
 
   private boolean openLaoDetail;
 
-  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity,
-      boolean openLaoDetail) {
+  public LAOListAdapter(
+      List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity, boolean openLaoDetail) {
     this.homeViewModel = homeViewModel;
     setList(laos);
     lifecycleOwner = activity;

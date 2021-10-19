@@ -5,15 +5,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.hardware.Camera;
 import android.util.Log;
-import com.github.dedis.popstellar.model.network.answer.ResultMessages;
-import com.github.dedis.popstellar.repository.local.LAODatabase;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.remote.LAOService;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -23,6 +19,11 @@ import com.github.dedis.popstellar.model.network.serializer.JsonGenericMessageDe
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageGeneralSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonResultSerializer;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.local.LAODatabase;
+import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.LAOService;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.android.gms.vision.CameraSource;
@@ -40,14 +41,14 @@ import com.tinder.scarlet.lifecycle.android.AndroidLifecycle;
 import com.tinder.scarlet.messageadapter.gson.GsonMessageAdapter;
 import com.tinder.scarlet.streamadapter.rxjava2.RxJava2StreamAdapterFactory;
 import com.tinder.scarlet.websocket.okhttp.OkHttpClientUtils;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 
-/**
- * Injection is used to provide the services needed to the application.
- */
+/** Injection is used to provide the services needed to the application. */
 public class Injection {
 
   private static String SERVER_URL = "ws://10.0.2.2:9000/organizer/client";
@@ -154,7 +155,6 @@ public class Injection {
               .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
               // .backoffStrategy(new ExponentialBackoffStrategy())
               .build();
-
     }
     return SCARLET_INSTANCE;
   }

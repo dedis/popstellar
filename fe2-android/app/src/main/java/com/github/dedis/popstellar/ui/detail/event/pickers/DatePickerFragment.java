@@ -6,12 +6,16 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.DatePicker;
+
 import androidx.appcompat.app.AppCompatDialogFragment;
+
 import com.github.dedis.popstellar.R;
+
 import java.util.Calendar;
 
 /**
- * Help found here : https://brandonlehr.com/android/learn-to-code/2018/08/19/callling-android-datepicker-fragment-from-a-fragment-and-getting-the-date
+ * Help found here :
+ * https://brandonlehr.com/android/learn-to-code/2018/08/19/callling-android-datepicker-fragment-from-a-fragment-and-getting-the-date
  */
 public final class DatePickerFragment extends AppCompatDialogFragment
     implements DatePickerDialog.OnDateSetListener {

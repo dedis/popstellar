@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+
 import org.junit.Test;
 
 public class ElectionEndTest {
@@ -42,11 +43,10 @@ public class ElectionEndTest {
 
   @Test
   public void fieldsCantBeNull() {
-    assertThrows(IllegalArgumentException.class,
-        () -> new ElectionEnd(null, laoId, registeredVotes));
-    assertThrows(IllegalArgumentException.class,
-        () -> new ElectionEnd(electionId, null, registeredVotes));
+    assertThrows(
+        IllegalArgumentException.class, () -> new ElectionEnd(null, laoId, registeredVotes));
+    assertThrows(
+        IllegalArgumentException.class, () -> new ElectionEnd(electionId, null, registeredVotes));
     assertThrows(IllegalArgumentException.class, () -> new ElectionEnd(electionId, laoId, null));
   }
-
 }

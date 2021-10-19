@@ -6,8 +6,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import androidx.test.espresso.matcher.BoundedMatcher;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;

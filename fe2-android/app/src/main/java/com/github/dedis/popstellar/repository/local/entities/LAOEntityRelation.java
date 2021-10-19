@@ -3,12 +3,12 @@ package com.github.dedis.popstellar.repository.local.entities;
 import androidx.room.Embedded;
 import androidx.room.Junction;
 import androidx.room.Relation;
+
 import java.util.List;
 
 public class LAOEntityRelation {
 
-  @Embedded
-  public LAOEntity lao;
+  @Embedded public LAOEntity lao;
 
   @Relation(
       parentColumn = "channel",
