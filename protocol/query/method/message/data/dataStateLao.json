@@ -13,7 +13,7 @@
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256(organizer||creation||name)"
+            "$comment": "Hash : SHA256(organizer, creation, name)"
         },
         "name": {
             "type": "string"
