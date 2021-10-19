@@ -14,8 +14,6 @@ import java.util.List;
 
 public class NodesAcceptorAdapter extends BaseAdapter {
 
-  private static final String TAG = NodesAcceptorAdapter.class.getSimpleName();
-
   private final List<ConsensusNode> nodes;
   private final String ownPublicKey;
   private final LaoDetailViewModel laoDetailViewModel;

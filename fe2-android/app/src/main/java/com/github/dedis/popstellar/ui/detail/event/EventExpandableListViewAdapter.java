@@ -377,6 +377,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
           viewModel.setCurrentElection(election);
           viewModel.openStartElection(true);
         });
+    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
 
     electionBinding.setEventCategory(category);
     electionBinding.setViewModel(viewModel);

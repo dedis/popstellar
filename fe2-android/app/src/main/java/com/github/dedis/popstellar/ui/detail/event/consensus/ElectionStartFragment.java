@@ -33,6 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -131,11 +132,14 @@ public class ElectionStartFragment extends Fragment {
     for (String key : publicKeys) {
       nodes.add(new ConsensusNode(key));
     }
-    ownNode =
-        nodes.stream()
-            .filter(node -> node.getPublicKey().equals(ownPublicKey))
-            .findAny()
-            .get(); // should always be present
+    Optional<ConsensusNode> ownNodeOpt =
+        nodes.stream().filter(node -> node.getPublicKey().equals(ownPublicKey)).findAny();
+    if (ownNodeOpt.isPresent()) {
+      ownNode = ownNodeOpt.get();
+    } else {
+      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
+      Log.e(TAG, "Couldn't find our own Node with public key : " + ownPublicKey);
+    }
 
     updateNodes(mLaoDetailViewModel.getCurrentLaoValue(), electionId);
 
@@ -145,7 +149,7 @@ public class ElectionStartFragment extends Fragment {
     gridView.setAdapter(adapter);
 
     if (isElectionStartTimePassed(election)) {
-      updateApproved(lao, election, adapter);
+      updateApproved(election, adapter);
     }
 
     mLaoDetailViewModel
@@ -157,7 +161,7 @@ public class ElectionStartFragment extends Fragment {
                 // There was an update for at least one consensus for this election => update all
                 updateNodes(lao, election.getId());
                 adapter.notifyDataSetChanged();
-                updateApproved(lao, election, adapter);
+                updateApproved(election, adapter);
               }
             });
 
@@ -217,7 +221,7 @@ public class ElectionStartFragment extends Fragment {
   }
 
   // check if some nodes have a consensus that was approved by enough nodes and update fragment
-  private void updateApproved(Lao lao, Election election, BaseAdapter adapter) {
+  private void updateApproved(Election election, BaseAdapter adapter) {
     List<ConsensusNode> approvedNodes = getApprovedNodes();
     if (approvedNodes.size() > 1) {
       // multiple attempts collided
