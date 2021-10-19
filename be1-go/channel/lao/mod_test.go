@@ -1,14 +1,19 @@
 package lao
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
+	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
 
 	"github.com/stretchr/testify/require"
 )
@@ -51,6 +56,42 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 		require.Equal(t, messages[i].MessageID, catchupAnswer[i].MessageID,
 			catchupAnswer)
 	}
+}
+
+func Test_Verify_Functions(t *testing.T) {
+
+	// Create the channel
+	numMessages := 1
+
+	messages := make([]message.Message, numMessages)
+
+	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0], nolog)
+
+	laoChannel, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	// Get the JSON
+	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
+		"examples", "messageData")
+	file := filepath.Join(relativeExamplePath, "roll_call_open.json")
+
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	object, action, err := messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, "roll_call", object)
+	require.Equal(t, "open", action)
+
+	var msg messagedata.RollCallOpen
+
+	err = json.Unmarshal(buf, &msg)
+	require.NoError(t, err)
+
+	// Test the function
+	err = laoChannel.verifyMessageRollCallOpenID(msg)
+	require.NoError(t, err)
 }
 
 // -----------------------------------------------------------------------------
