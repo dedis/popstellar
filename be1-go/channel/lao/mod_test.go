@@ -65,7 +65,7 @@ func Test_Verify_Functions(t *testing.T) {
 
 	messages := make([]message.Message, numMessages)
 
-	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0], nolog)
+	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHubFunctionalities{}, messages[0], nolog)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
