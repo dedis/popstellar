@@ -7,14 +7,14 @@ import styleContainer from 'styles/stylesheets/container';
 
 import QrReader from 'react-qr-reader';
 import STRINGS from 'res/strings';
-import PropTypes from 'prop-types';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Badge } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/core';
-import { requestCloseRollCall } from '../../../network';
-import { PublicKey, RollCall } from '../../../model/objects';
+import { requestCloseRollCall } from 'network';
+import { EventTags, Hash, PublicKey } from 'model/objects';
+import { OpenedLaoStore } from 'store';
 
 const styles = StyleSheet.create({
   viewCenter: {
@@ -27,10 +27,11 @@ const styles = StyleSheet.create({
 
 const RollCallOpened = () => {
   const route = useRoute();
-  const { rollCall } = route.params;
+  const { rollCall, time } = route.params;
   const navigation = useNavigation();
   const [, setQrWasScanned] = useState(false);
-  const [attendees, updateAttendees] = useState<string[]>([]);
+  const [attendeesSet, updateAttendeesSet] = useState(new Set<string>());
+  const attendees = Array.from(attendeesSet);
 
   const handleError = (err: string) => {
     console.error(err);
@@ -39,7 +40,8 @@ const RollCallOpened = () => {
   const handleScan = (data: string) => {
     if (data) {
       setQrWasScanned(true);
-      updateAttendees((arr) => [...arr, data]);
+      updateAttendeesSet((prev) => new Set<string>(prev.add(data)));
+      alert(STRINGS.roll_call_scan_participant);
     }
   };
 
@@ -49,7 +51,11 @@ const RollCallOpened = () => {
     .then((token) => setPopToken(token.publicKey.valueOf())); */
 
   const onCloseRollCall = () => {
-    requestCloseRollCall(rollCall.id, attendees.map((key: string) => new PublicKey(key)))
+    const updateId = Hash.fromStringArray(
+      EventTags.ROLL_CALL, OpenedLaoStore.get().id.toString(),
+      rollCall.id.toString(), time.toString(),
+    );
+    requestCloseRollCall(updateId, attendees.map((key: string) => new PublicKey(key)))
       .then(() => {
         // @ts-ignore
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
@@ -69,7 +75,7 @@ const RollCallOpened = () => {
           onError={handleError}
           style={{ width: '30%' }}
         />
-        <Badge value={attendees.length} status="success" />
+        <Badge value={attendeesSet.size} status="success" />
         <WideButtonView
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}
@@ -84,12 +90,5 @@ const RollCallOpened = () => {
     </View>
   );
 };
-
-/* const propTypes = {
-  rollCall: PropTypes.instanceOf(RollCall).isRequired,
-};
-RollCallOpened.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>; */
 
 export default RollCallOpened;
