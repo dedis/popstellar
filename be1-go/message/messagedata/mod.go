@@ -67,6 +67,7 @@ func GetObjectAndAction(buf []byte) (string, string, error) {
 	return object, action, nil
 }
 
+// GetTime returns the time of a JSON RPC message.
 func GetTime(buf []byte) (int64, error) {
 	var objmap map[string]json.RawMessage
 
