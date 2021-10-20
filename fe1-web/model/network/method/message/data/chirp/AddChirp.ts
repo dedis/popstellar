@@ -4,6 +4,8 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
+const MAX_CHIRP_CHARS = 280;
+
 export class AddChirp implements MessageData {
   public readonly object: ObjectType = ObjectType.CHIRP;
 
@@ -19,13 +21,13 @@ export class AddChirp implements MessageData {
     if (!msg.text) {
       throw new ProtocolError('Undefined \'text\' parameter encountered during \'AddChirp\'');
     }
-    if (msg.text.length > 280) {
-      throw new ProtocolError('Max 280 characters');
+    if (msg.text.length > MAX_CHIRP_CHARS) {
+      throw new ProtocolError('exceed maximum characters');
     }
     this.text = msg.text;
 
     if (!msg.timestamp) {
-      throw new ProtocolError('Undifined \'timestamp\' parameter encountered during \'AddChirp\'');
+      throw new ProtocolError('Undefined \'timestamp\' parameter encountered during \'AddChirp\'');
     }
     checkTimestampStaleness(msg.timestamp);
     this.timestamp = msg.timestamp;

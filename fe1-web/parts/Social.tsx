@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-// TODO: Implement this method, so that it sends a test chirp to the network
 const publishChirp = () => {
   requestAddChirp('chirp chirp', undefined)
     .then(() => (
