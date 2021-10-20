@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.election;
 
 import android.view.View;
+
 import androidx.viewpager2.widget.ViewPager2;
 
 /**
@@ -37,9 +38,7 @@ public class ZoomOutTransformer implements ViewPager2.PageTransformer {
       view.setScaleY(scaleFactor);
 
       // Fade the page relative to its size.
-      view.setAlpha(MIN_ALPHA +
-          (scaleFactor - MIN_SCALE) /
-              (1 - MIN_SCALE) * (1 - MIN_ALPHA));
+      view.setAlpha(MIN_ALPHA + (scaleFactor - MIN_SCALE) / (1 - MIN_SCALE) * (1 - MIN_ALPHA));
 
     } else { // (1,+Infinity]
       // This page is way off-screen to the right.
@@ -47,4 +46,3 @@ public class ZoomOutTransformer implements ViewPager2.PageTransformer {
     }
   }
 }
-

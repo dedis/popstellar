@@ -17,13 +17,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_connect" />
+    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_connect_laodetail" />
 
   <Button
     android:id="@+id/tab_back"
     android:layout_width="0dp"
     android:layout_height="0dp"
     android:text="@string/back"
+    android:textSize="@dimen/size_small"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_back"
     app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_back"

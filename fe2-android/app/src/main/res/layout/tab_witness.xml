@@ -17,15 +17,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_connect" />
-
+    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_connect_laodetail" />
 
   <androidx.constraintlayout.widget.Guideline
     android:id="@+id/guideline_vertical_tab_properties2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_wallet" />
+    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_wallet_laodetail" />
 
   <Button
     android:id="@+id/tab_witness_message_button"

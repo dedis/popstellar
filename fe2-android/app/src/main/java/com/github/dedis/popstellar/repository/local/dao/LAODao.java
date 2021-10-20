@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
 import androidx.room.Update;
+
 import com.github.dedis.popstellar.repository.local.entities.Channel;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntity;
 import com.github.dedis.popstellar.repository.local.entities.LAOEntityRelation;
@@ -15,12 +16,11 @@ import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
 import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
 import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
 import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * LAODao represents a Data Access Object, it defines the database interactions.
- */
+/** LAODao represents a Data Access Object, it defines the database interactions. */
 @Dao
 public abstract class LAODao {
 
@@ -35,7 +35,8 @@ public abstract class LAODao {
   public abstract void addLao(LAOEntity lao);
 
   @Transaction
-  public void updateLAO(LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
+  public void updateLAO(
+      LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
     // update the LAO
     _updateLAO(lao);
 

@@ -4,8 +4,10 @@ import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.repository.LAODataSource.Remote;
 import com.tinder.scarlet.WebSocket;
-import io.reactivex.Observable;
+
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.Observable;
 
 public class LAORemoteDataSource implements Remote {
 

@@ -1,128 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto">
-  <ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <androidx.constraintlayout.widget.ConstraintLayout
-      android:id="@+id/fragment_setup_election_event"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-      <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/election_setup_guideline_horizontal"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="@dimen/guideline_tab" />
+        android:layout_height="match_parent">
 
-      <TextView
-        android:id="@+id/election_setup_lao_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/size_title"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/election_setup_guideline_horizontal" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/fragment_setup_election_event"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-      <TextView
-        android:id="@+id/election_setup_presentation_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/election_setup"
-        android:textSize="@dimen/size_body"
-        android:textStyle="italic"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/election_setup_lao_name" />
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/election_setup_guideline_horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="@dimen/guideline_tab" />
 
-      <include
-        android:id="@+id/election_setup_date"
-        layout="@layout/event_enter_date_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constrainedHeight="true"
-        android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/election_setup_name" />
+            <TextView
+                android:id="@+id/election_setup_lao_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="@dimen/size_title"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/election_setup_guideline_horizontal" />
 
-      <Button
-        android:id="@+id/add_question"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
-        android:text="@string/add_question_button_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/election_setup_date" />
+            <TextView
+                android:id="@+id/election_setup_presentation_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/election_setup"
+                android:textSize="@dimen/size_body"
+                android:textStyle="italic"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/election_setup_lao_name" />
 
-      <include
-        android:id="@+id/election_setup_time"
-        layout="@layout/event_enter_time_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
-        app:layout_constrainedHeight="true"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/election_setup_date" />
+            <include
+                android:id="@+id/election_setup_date"
+                layout="@layout/event_enter_date_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constrainedHeight="true"
+                android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/election_setup_name" />
 
-      <EditText
-        android:id="@+id/election_setup_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:autofillHints="false"
-        android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
-        android:hint="@string/election_setup_name_hint"
-        android:inputType="text"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/election_setup_presentation_title" />
+            <Button
+                android:id="@+id/add_question"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
+                android:text="@string/add_question_button_text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/election_setup_date" />
 
+            <include
+                android:id="@+id/election_setup_time"
+                layout="@layout/event_enter_time_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/election_setup_date" />
 
-      <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/election_setup_view_pager2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/election_cancel_button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/election_setup_swipe_indicator">
+            <EditText
+                android:id="@+id/election_setup_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:autofillHints="false"
+                android:layout_marginLeft="@dimen/election_setup_text_field_margin_lateral"
+                android:hint="@string/election_setup_name_hint"
+                android:inputType="text"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/election_setup_presentation_title" />
 
-      </androidx.viewpager2.widget.ViewPager2>
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/election_setup_view_pager2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/election_cancel_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/election_setup_swipe_indicator">
 
-      <me.relex.circleindicator.CircleIndicator3
-        android:id="@+id/election_setup_swipe_indicator"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/swipe_indicator_height"
-        android:layout_marginTop="@dimen/election_setup_question_margin"
-        android:background="@color/colorPrimaryDark"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/election_setup_time" />
+            </androidx.viewpager2.widget.ViewPager2>
 
-      <Button
-        android:id="@+id/election_cancel_button"
-        style="@style/Theme.AppCompat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:text="@string/cancel"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/election_submit_button" />
+            <me.relex.circleindicator.CircleIndicator3
+                android:id="@+id/election_setup_swipe_indicator"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/swipe_indicator_height"
+                android:layout_marginTop="@dimen/election_setup_question_margin"
+                android:background="@color/colorPrimaryDark"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/election_setup_time" />
 
-      <Button
-        android:id="@+id/election_submit_button"
-        style="@style/Theme.AppCompat"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:enabled="false"
-        android:text="@string/submit"
-        android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <Button
+                android:id="@+id/election_cancel_button"
+                style="@style/Theme.AppCompat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:text="@string/cancel"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/election_submit_button" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-  </ScrollView>
+            <Button
+                android:id="@+id/election_submit_button"
+                style="@style/Theme.AppCompat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:enabled="false"
+                android:text="@string/submit"
+                android:layout_marginRight="@dimen/election_setup_text_field_margin_lateral"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </layout>

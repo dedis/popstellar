@@ -1,55 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto">
-  <data>
-    <import type="android.view.View.OnClickListener" />
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <variable
-      name="lao"
-      type="com.github.dedis.popstellar.model.objects.Lao" />
+    <data>
 
-    <variable
-      name="listener"
-      type="com.github.dedis.popstellar.ui.home.LAOItemUserActionsListener" />
-  </data>
+        <import type="android.view.View.OnClickListener" />
 
-  <androidx.constraintlayout.widget.ConstraintLayout
-    android:id="@+id/layout_lao_home"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/lao"
-    android:onClick="@{() -> listener.onLAOClicked(lao)}">
+        <variable
+            name="lao"
+            type="com.github.dedis.popstellar.model.objects.Lao" />
 
-    <TextView
-      android:id="@+id/lao_name"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text"
-      android:textSize="@dimen/size_body"
-      android:textStyle="bold"
-      android:text="@{lao.name}"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+        <variable
+            name="listener"
+            type="com.github.dedis.popstellar.ui.home.LAOItemUserActionsListener" />
+    </data>
 
-    <TextView
-      android:id="@+id/date"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text"
-      android:textSize="@dimen/size_small"
-      android:textStyle="italic"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_lao_home"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lao"
+        android:onClick="@{() -> listener.onLAOClicked(lao)}">
 
-    <TextView
-      android:id="@+id/role"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginHorizontal="@dimen/margin_text"
-      android:textSize="@dimen/size_small"
-      app:layout_constraintStart_toStartOf="parent"
-      app:layout_constraintTop_toBottomOf="@+id/lao_name" />
+        <TextView
+            android:id="@+id/lao_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_text"
+            android:textSize="@dimen/size_body"
+            android:textStyle="bold"
+            android:text="@{lao.name}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-  </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_text"
+            android:textSize="@dimen/size_small"
+            android:textStyle="italic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/margin_text"
+            android:textSize="@dimen/size_small"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lao_name" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

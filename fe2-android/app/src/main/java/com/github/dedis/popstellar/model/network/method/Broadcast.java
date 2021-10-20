@@ -33,9 +33,7 @@ public final class Broadcast extends Message {
     return Method.MESSAGE.getMethod();
   }
 
-  /**
-   * Returns the message of the Broadcast.
-   */
+  /** Returns the message of the Broadcast. */
   public MessageGeneral getMessage() {
     return message;
   }
