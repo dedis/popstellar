@@ -29,6 +29,9 @@ import (
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
 
+// rpcNotQueryError is an error message
+const rpcNotQueryError = "jsonRPC message is not of type query"
+
 const (
 	// numWorkers denote the number of worker go-routines
 	// allowed to process requests concurrently.
@@ -236,8 +239,8 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 
 	// check type (answer or query), we expect a query
 	if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msg("jsonRPC message is not of type query")
-		rpcErr := xerrors.New("jsonRPC message is not of type query")
+		h.log.Error().Msg(rpcNotQueryError)
+		rpcErr := xerrors.New(rpcNotQueryError)
 		socket.SendError(nil, rpcErr)
 		return rpcErr
 	}
@@ -418,8 +421,8 @@ func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) 
 
 	// check type (answer or query), we expect a query
 	if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msgf("jsonRPC message is not of type query")
-		socket.SendError(nil, xerrors.New("jsonRPC message is not of type query"))
+		h.log.Error().Msgf(rpcNotQueryError)
+		socket.SendError(nil, xerrors.New(rpcNotQueryError))
 		return err
 	}
 

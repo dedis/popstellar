@@ -26,6 +26,12 @@ import (
 // used to keep an image of the laos
 const rootPrefix = "/root/"
 
+// Strings used to return error messages
+const jsonNotValidError = "message is not valid against json schema"
+const unmarshalError = "failed to unmarshal incoming message %v"
+const unexpectedMethodError = "unexpected method: '%s'"
+const failedMethodHandling = "failed to handle method: %v"
+
 const (
 	numWorkers = 10
 )
@@ -85,8 +91,8 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
 	// validate against json schema
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
-		h.log.Err(err).Msg("message is not valid against json schema")
-		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
+		h.log.Err(err).Msg(jsonNotValidError)
+		socket.SendError(nil, xerrors.Errorf(jsonNotValidError+": %v", err))
 		return err
 	}
 
@@ -94,7 +100,7 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := answer.NewErrorf(-4, unmarshalError, err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
@@ -114,14 +120,14 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(byteMessage)
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		err = answer.NewErrorf(-2, unexpectedMethodError, queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		err := answer.NewErrorf(-4, failedMethodHandling, handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
@@ -143,8 +149,8 @@ func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) error {
 	// validate against json schema
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
-		h.log.Err(err).Msg("message is not valid against json schema")
-		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
+		h.log.Err(err).Msg(jsonNotValidError)
+		socket.SendError(nil, xerrors.Errorf(jsonNotValidError+": %v", err))
 		return err
 	}
 
@@ -152,7 +158,7 @@ func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) error {
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := answer.NewErrorf(-4, unmarshalError, err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
@@ -172,14 +178,14 @@ func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) error {
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(byteMessage)
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		err = answer.NewErrorf(-2, unexpectedMethodError, queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		err := answer.NewErrorf(-4, failedMethodHandling, handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
@@ -201,8 +207,8 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
 	// validate against json schema
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
-		h.log.Err(err).Msg("message is not valid against json schema")
-		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
+		h.log.Err(err).Msg(jsonNotValidError)
+		socket.SendError(nil, xerrors.Errorf(jsonNotValidError+": %v", err))
 		return err
 	}
 
@@ -210,7 +216,7 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
 
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
+		err := answer.NewErrorf(-4, unmarshalError, err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
@@ -230,14 +236,14 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(byteMessage)
 	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
+		err = answer.NewErrorf(-2, unexpectedMethodError, queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
+		err := answer.NewErrorf(-4, failedMethodHandling, handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
