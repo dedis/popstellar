@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.objects.Consensus;
+import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
@@ -90,6 +91,9 @@ public class LAORepository {
 
   // Observable for view models that need access to all LAO Names
   private BehaviorSubject<List<Lao>> allLaoSubject;
+
+  // Observable for view models that need access to all Nodes
+  private BehaviorSubject<List<ConsensusNode>> nodesSubject;
 
   // Observable for view models that need to know when a consensus is created/updated
   private BehaviorSubject<Consensus> consensusSubject;
@@ -373,6 +377,10 @@ public class LAORepository {
 
   public Map<String, LAOState> getLaoById() {
     return laoById;
+  }
+
+  public Observable<List<ConsensusNode>> getNodes() {
+    return nodesSubject;
   }
 
   public Observable<Consensus> getConsensusObservable() {

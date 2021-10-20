@@ -2,8 +2,10 @@ package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -29,6 +31,7 @@ public final class Lao {
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
   private Map<String, Consensus> consensuses;
+  private List<ConsensusNode> nodes;
 
   public Lao(String id) {
     if (id == null) {
@@ -40,6 +43,7 @@ public final class Lao {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
+    this.nodes = new ArrayList<>();
     this.consensuses = new HashMap<>();
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
@@ -88,6 +92,14 @@ public final class Lao {
       throw new IllegalArgumentException("The consensus is null");
     }
     consensuses.put(consensus.getMessageId(), consensus);
+    Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
+    nodes.stream()
+        .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
+        .forEach(node -> node.addAcceptedMessageIds(acceptorsToMessageId.get(node.getPublicKey())));
+    // add the consensus to node if it is proposer
+    nodes.stream()
+        .filter(node -> node.getPublicKey().equals(consensus.getProposer()))
+        .forEach(node -> node.addConsensus(consensus));
   }
 
   /**

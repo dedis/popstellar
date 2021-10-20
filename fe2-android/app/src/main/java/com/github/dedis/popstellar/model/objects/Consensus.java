@@ -18,6 +18,7 @@ public class Consensus {
   private long creation;
 
   private boolean isAccepted;
+  private boolean isFailed;
 
   private String proposer;
   private Set<String> acceptors;
@@ -147,6 +148,14 @@ public class Consensus {
 
   public void setAccepted(boolean accepted) {
     isAccepted = accepted;
+  }
+
+  public boolean isFailed() {
+    return isFailed;
+  }
+
+  public void setFailed(boolean failed) {
+    this.isFailed = failed;
   }
 
   public boolean canBeAccepted() {

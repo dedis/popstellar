@@ -5,12 +5,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Consensus;
@@ -20,23 +21,22 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
@@ -124,14 +124,9 @@ public class ElectionStartFragment extends Fragment {
             mLaoDetailViewModel.createNewConsensus(
                 Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
 
-    String ownPublicKey = mLaoDetailViewModel.getPublicKey();
-    Set<String> publicKeys = new HashSet<>(lao.getWitnesses());
-    publicKeys.add(lao.getOrganizer());
+    nodes = mLaoDetailViewModel.getNodes().getValue();
 
-    nodes = new ArrayList<>();
-    for (String key : publicKeys) {
-      nodes.add(new ConsensusNode(key));
-    }
+    String ownPublicKey = mLaoDetailViewModel.getPublicKey();
     Optional<ConsensusNode> ownNodeOpt =
         nodes.stream().filter(node -> node.getPublicKey().equals(ownPublicKey)).findAny();
     if (ownNodeOpt.isPresent()) {
@@ -141,28 +136,22 @@ public class ElectionStartFragment extends Fragment {
       Log.e(TAG, "Couldn't find our own Node with public key : " + ownPublicKey);
     }
 
-    updateNodes(mLaoDetailViewModel.getCurrentLaoValue(), electionId);
-
     NodesAcceptorAdapter adapter =
-        new NodesAcceptorAdapter(nodes, ownPublicKey, this, mLaoDetailViewModel);
+        new NodesAcceptorAdapter(nodes, ownNode, electionId, this, mLaoDetailViewModel);
     GridView gridView = binding.nodesGrid;
     gridView.setAdapter(adapter);
 
     if (isElectionStartTimePassed(election)) {
-      updateApproved(election, adapter);
+      updateStartAndStatus(nodes, election);
     }
 
     mLaoDetailViewModel
-        .getUpdateConsensusEvent()
+        .getNodes()
         .observe(
             this,
-            updatedConsensus -> {
-              if (updatedConsensus.getKey().getId().equals(election.getId())) {
-                // There was an update for at least one consensus for this election => update all
-                updateNodes(lao, election.getId());
-                adapter.notifyDataSetChanged();
-                updateApproved(election, adapter);
-              }
+            consensusNodes -> {
+              adapter.setList(consensusNodes);
+              updateStartAndStatus(consensusNodes, election);
             });
 
     binding
@@ -185,58 +174,23 @@ public class ElectionStartFragment extends Fragment {
     return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
-  // Update the state and consensus (if multiple, keep only last one) of all nodes
-  private void updateNodes(Lao lao, String electionId) {
-    Map<String, List<Consensus>> proposerToConsensuses =
-        lao.getConsensuses().values().stream()
-            .filter(consensus -> consensus.getKey().getId().equals(electionId))
-            .sorted((c1, c2) -> (int) (c1.getCreation() - c2.getCreation()))
-            .collect(Collectors.groupingBy(Consensus::getProposer));
-
-    // If a node tried multiple times to start a consensus and failed, only consider last one
-    proposerToConsensuses.forEach(
-        (proposer, consensuses) -> {
-          if (!consensuses
-              .isEmpty()) { // should not be possible (if it is in the map, there is at least one)
-            for (ConsensusNode node : nodes) {
-              if (node.getPublicKey().equals(proposer)) {
-                Consensus lastConsensus = consensuses.get(consensuses.size() - 1);
-                node.setState(State.STARTING);
-                node.setConsensus(lastConsensus);
-              }
-            }
-          }
-        });
-  }
-
-  // get the list of all node where the consensus can be accepted
-  private List<ConsensusNode> getApprovedNodes() {
-    List<ConsensusNode> approved = new ArrayList<>();
-    for (ConsensusNode node : nodes) {
-      if (node.getConsensus() != null && node.getConsensus().canBeAccepted()) {
-        approved.add(node);
-      }
-    }
-    return approved;
-  }
-
-  // check if some nodes have a consensus that was approved by enough nodes and update fragment
-  private void updateApproved(Election election, BaseAdapter adapter) {
-    List<ConsensusNode> approvedNodes = getApprovedNodes();
-    if (approvedNodes.size() > 1) {
-      // multiple attempts collided
-      approvedNodes.forEach(node -> node.setState(State.FAILED));
-      adapter.notifyDataSetChanged();
-
-    } else if (!approvedNodes.isEmpty()) {
+  private void updateStartAndStatus(List<ConsensusNode> nodes, Election election) {
+    Optional<Consensus> acceptedConsensus =
+        nodes.stream()
+            .map(node -> node.getLastConsensus(election.getId()))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .filter(Consensus::isAccepted)
+            .findAny();
+    if (acceptedConsensus.isPresent()) {
       // assuming the election start time was updated from scheduled to real start time
       String startedDate = dateFormat.format(new Date(election.getStartTimestamp() * 1000));
       electionStatus.setText(R.string.started);
       electionStart.setText(getString(R.string.election_started_at, startedDate));
       electionStart.setEnabled(false);
-      return;
+    } else {
+      State ownState = ownNode.getState();
+      electionStart.setEnabled(ownState == State.WAITING || ownState == State.FAILED);
     }
-    // avoid creating multiple consensus
-    electionStart.setEnabled(ownNode.getState() != State.STARTING);
   }
 }

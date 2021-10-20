@@ -4,30 +4,43 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.databinding.ConsensusNodeLayoutBinding;
+import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ConsensusNode.State;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.util.List;
+import java.util.Optional;
 
 public class NodesAcceptorAdapter extends BaseAdapter {
 
-  private final List<ConsensusNode> nodes;
-  private final String ownPublicKey;
+  private List<ConsensusNode> nodes;
+  private final ConsensusNode ownNode;
+  private final String electionId;
   private final LaoDetailViewModel laoDetailViewModel;
   private final LifecycleOwner lifecycleOwner;
 
   public NodesAcceptorAdapter(
       List<ConsensusNode> nodes,
-      String ownPublicKey,
+      ConsensusNode ownNode,
+      String electionId,
       LifecycleOwner lifecycleOwner,
       LaoDetailViewModel laoDetailViewModel) {
     this.nodes = nodes;
-    this.ownPublicKey = ownPublicKey;
+    this.ownNode = ownNode;
+    this.electionId = electionId;
     this.laoDetailViewModel = laoDetailViewModel;
     this.lifecycleOwner = lifecycleOwner;
+  }
+
+  public void setList(List<ConsensusNode> nodes) {
+    this.nodes = nodes;
+    notifyDataSetChanged();
   }
 
   @Override
@@ -56,7 +69,13 @@ public class NodesAcceptorAdapter extends BaseAdapter {
     }
 
     ConsensusNode node = getItem(position);
-    State state = node.getState();
+    Optional<Consensus> lastConsensus = node.getLastConsensus(electionId);
+    State state = node.getState(electionId);
+    boolean alreadyAccepted =
+        lastConsensus
+            .map(consensus -> ownNode.getAcceptedMessageIds().contains(consensus.getMessageId()))
+            .orElse(false);
+
     String text = "";
     switch (state) {
       case FAILED:
@@ -68,17 +87,17 @@ public class NodesAcceptorAdapter extends BaseAdapter {
       case WAITING:
         text = "Waiting\n";
         break;
+      case ACCEPTED:
+        text = "Started by\n";
     }
     text += node.getPublicKey();
 
     binding.nodeButton.setText(text);
-    binding.nodeButton.setEnabled(state == State.STARTING);
-    binding.nodeButton.setOnClickListener(
-        clicked -> {
-          if (!node.getPublicKey().equals(ownPublicKey)) {
-            laoDetailViewModel.sendConsensusElectAccept(node.getConsensus(), true);
-          }
-        });
+    binding.nodeButton.setEnabled(state == State.STARTING && !alreadyAccepted);
+    lastConsensus.ifPresent(
+        consensus ->
+            binding.nodeButton.setOnClickListener(
+                clicked -> laoDetailViewModel.sendConsensusElectAccept(consensus, true)));
 
     binding.setLifecycleOwner(lifecycleOwner);
     binding.executePendingBindings();

@@ -19,8 +19,8 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
@@ -33,6 +33,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cl
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.popstellar.model.objects.Consensus;
+import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -53,7 +54,6 @@ import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
-import io.reactivex.BackpressureStrategy;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
@@ -68,6 +68,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -135,7 +136,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
 
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
+      new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -519,14 +521,19 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * <p>Publish a GeneralMessage containing CreateConsensus data.
    *
-   * @param creation    the creation time of the consensus
-   * @param objId       the id of the object the consensus refers to (e.g. election_id)
-   * @param type        the type of object the consensus refers to (e.g. election)
-   * @param property    the property the value refers to (e.g. "state")
-   * @param value       the proposed new value for the property (e.g. "started")
+   * @param creation the creation time of the consensus
+   * @param objId the id of the object the consensus refers to (e.g. election_id)
+   * @param type the type of object the consensus refers to (e.g. election)
+   * @param property the property the value refers to (e.g. "state")
+   * @param value the proposed new value for the property (e.g. "started")
    */
-  public void createNewConsensus(long creation, String objId, String type, String property, Object value) {
-    Log.d(TAG, String.format("creating a new consensus for type: %s, property: %s, value: %s", type, property, value));
+  public void createNewConsensus(
+      long creation, String objId, String type, String property, Object value) {
+    Log.d(
+        TAG,
+        String.format(
+            "creating a new consensus for type: %s, property: %s, value: %s",
+            type, property, value));
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
@@ -558,7 +565,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                       Log.d(TAG, "failed to create a consensus");
                     }
                   },
-                  throwable -> Log.d(TAG, "timed out waiting for result on consensus/create", throwable));
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on consensus/create", throwable));
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -566,7 +574,12 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
-    Log.d(TAG, "sending a new elect-accept for consensus : " + consensus.getId() + " with value " + accept);
+    Log.d(
+        TAG,
+        "sending a new elect-accept for consensus : "
+            + consensus.getId()
+            + " with value "
+            + accept);
 
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -574,7 +587,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
 
-    ConsensusElectAccept consensusElectAccept = new ConsensusElectAccept(consensus.getMessageId(), accept);
+    ConsensusElectAccept consensusElectAccept =
+        new ConsensusElectAccept(consensus.getMessageId(), accept);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -606,7 +620,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                     }
                     openLaoDetail();
                   },
-                  throwable -> Log.d(TAG, "timed out waiting for result on consensus/vote", throwable));
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on consensus/vote", throwable));
 
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
@@ -617,8 +632,10 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void sendConsensusLearn(Consensus consensus) {
     Log.d(TAG, "sending a consensus learn for : " + consensus.getId());
 
-    List<String> acceptorsMessageIds = new ArrayList<>(consensus.getAcceptorsToMessageId().values());
-    ConsensusLearn consensusLearn = new ConsensusLearn(consensus.getMessageId(), acceptorsMessageIds);
+    List<String> acceptorsMessageIds =
+        new ArrayList<>(consensus.getAcceptorsToMessageId().values());
+    ConsensusLearn consensusLearn =
+        new ConsensusLearn(consensus.getMessageId(), acceptorsMessageIds);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -644,7 +661,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                     }
                     openLaoDetail();
                   },
-                  throwable -> Log.d(TAG, "timed out waiting for result on consensus/learn", throwable));
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on consensus/learn", throwable));
 
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
@@ -1014,6 +1032,11 @@ public class LaoDetailViewModel extends AndroidViewModel
   public LiveData<Consensus> getUpdateConsensusEvent() {
     return LiveDataReactiveStreams.fromPublisher(
         mLAORepository.getConsensusObservable().toFlowable(BackpressureStrategy.BUFFER));
+  }
+
+  public LiveData<List<ConsensusNode>> getNodes() {
+    return LiveDataReactiveStreams.fromPublisher(
+        mLAORepository.getNodes().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
