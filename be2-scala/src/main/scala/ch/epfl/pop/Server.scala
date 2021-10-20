@@ -18,6 +18,10 @@ import org.iq80.leveldb.Options
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.io.StdIn
 import scala.util.{Failure, Success}
+import com.typesafe.config.ConfigFactory
+import java.io.File
+import ch.epfl.pop.config.RuntimeEnvironment
+import ch.epfl.pop.config.ServerConf
 
 object Server {
   private final def PORT: Int = 8000
@@ -29,7 +33,11 @@ object Server {
    */
   def main(args: Array[String]): Unit = {
 
-    val system = akka.actor.ActorSystem("pop-be2-inner-actor-system")
+    /* Get configuration object for akka actor/http*/
+    val appConf = RuntimeEnvironment.appConf
+   
+    val system = akka.actor.ActorSystem("pop-be2-inner-actor-system", appConf)
+    
     implicit val typedSystem: ActorSystem[Nothing] = system.toTyped
 
     val root = Behaviors.setup[Nothing] { _ =>
@@ -46,7 +54,14 @@ object Server {
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
-      val bindingFuture = Http().newServerAt("localhost", PORT).bind(publishSubscribeRoute)
+      
+      /* Get Setup configuration*/ 
+      println("Loading configuration from file...")
+      val config = ServerConf(appConf)
+
+      /* Setup http server with bind and route config*/ 
+      val bindingFuture = Http().bindAndHandle(publishSubscribeRoute, config.interface, config.port)
+
       bindingFuture.onComplete {
         case Success(_) => println(s"ch.epfl.pop.Server online at ws://localhost:$PORT/$PATH")
         case Failure(_) =>
