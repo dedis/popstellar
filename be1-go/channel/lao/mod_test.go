@@ -67,6 +67,32 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	}
 }
 
+func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the messages
+	numMessages := 1
+
+	messages := make([]message.Message, numMessages)
+
+	messages[0] = message.Message{MessageID: "0"}
+
+	// Create the channel
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog)
+
+	laoChannel, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	time.Sleep(time.Millisecond)
+
+	consensus := laoChannel.GetConsensusChan()
+	require.NotEqual(t, nil, consensus)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
