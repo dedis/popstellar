@@ -51,7 +51,7 @@ import okhttp3.logging.HttpLoggingInterceptor;
 /** Injection is used to provide the services needed to the application. */
 public class Injection {
 
-  private static String SERVER_URL = "ws://10.0.2.2:9000/organizer/client";
+  private static String serverUrl = "ws://10.0.2.2:9000/organizer/client";
 
   private static final String TAG = "INJECTION";
 
@@ -68,6 +68,8 @@ public class Injection {
   private static LAOService LAO_SERVICE_INSTANCE;
 
   private static AndroidKeysetManager KEYSET_MANAGER;
+
+  private static Boolean modifiedServerUrl = false;
 
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
@@ -105,11 +107,19 @@ public class Injection {
   }
 
   public static void setServerUrl(String name) {
-    SERVER_URL = name;
+    serverUrl = name;
   }
 
   public static String getServerUrl() {
-    return SERVER_URL;
+    return serverUrl;
+  }
+
+  public static void setModifiedServerUrl(Boolean bool) {
+    modifiedServerUrl = bool;
+  }
+
+  public static Boolean getModifiedServerUrl() {
+    return modifiedServerUrl;
   }
 
   public static Gson provideGson() {
@@ -157,7 +167,7 @@ public class Injection {
       Log.d(TAG, "creating new Scarlet");
       SCARLET_INSTANCE =
           new Scarlet.Builder()
-              .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, SERVER_URL))
+              .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, serverUrl))
               .addMessageAdapterFactory(new GsonMessageAdapter.Factory(gson))
               .addStreamAdapterFactory(new RxJava2StreamAdapterFactory())
               .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
