@@ -1029,14 +1029,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenStartElectionEvent;
   }
 
-  public LiveData<Consensus> getUpdateConsensusEvent() {
-    return LiveDataReactiveStreams.fromPublisher(
-        mLAORepository.getConsensusObservable().toFlowable(BackpressureStrategy.BUFFER));
-  }
-
   public LiveData<List<ConsensusNode>> getNodes() {
     return LiveDataReactiveStreams.fromPublisher(
-        mLAORepository.getNodes().toFlowable(BackpressureStrategy.BUFFER));
+        mLAORepository
+            .getNodesByChannel(getCurrentLaoValue().getChannel())
+            .toFlowable(BackpressureStrategy.LATEST));
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {

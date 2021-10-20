@@ -30,8 +30,8 @@ public final class Lao {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
-  private Map<String, Consensus> consensuses;
-  private List<ConsensusNode> nodes;
+  private final Map<String, Consensus> messageIdToConsensus;
+  private final List<ConsensusNode> nodes;
 
   public Lao(String id) {
     if (id == null) {
@@ -44,7 +44,7 @@ public final class Lao {
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
     this.nodes = new ArrayList<>();
-    this.consensuses = new HashMap<>();
+    this.messageIdToConsensus = new HashMap<>();
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
@@ -91,11 +91,11 @@ public final class Lao {
     if (consensus == null) {
       throw new IllegalArgumentException("The consensus is null");
     }
-    consensuses.put(consensus.getMessageId(), consensus);
+    messageIdToConsensus.put(consensus.getMessageId(), consensus);
     Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
     nodes.stream()
         .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
-        .forEach(node -> node.addAcceptedMessageIds(acceptorsToMessageId.get(node.getPublicKey())));
+        .forEach(node -> node.addAcceptedMessageId(acceptorsToMessageId.get(node.getPublicKey())));
     // add the consensus to node if it is proposer
     nodes.stream()
         .filter(node -> node.getPublicKey().equals(consensus.getProposer()))
@@ -127,7 +127,7 @@ public final class Lao {
   }
 
   public Optional<Consensus> getConsensus(String messageId) {
-    return Optional.ofNullable(consensuses.get(messageId));
+    return Optional.ofNullable(messageIdToConsensus.get(messageId));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(String id) {
@@ -155,7 +155,7 @@ public final class Lao {
   }
 
   public boolean removeConsensus(String messageId) {
-    return (consensuses.remove(messageId) != null);
+    return (messageIdToConsensus.remove(messageId) != null);
   }
 
   public Long getLastModified() {
@@ -225,6 +225,9 @@ public final class Lao {
 
   public void setOrganizer(String organizer) {
     this.organizer = organizer;
+    if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(organizer))) {
+      nodes.add(new ConsensusNode(organizer));
+    }
   }
 
   public String getModificationId() {
@@ -246,10 +249,20 @@ public final class Lao {
       }
     }
     this.witnesses = witnesses;
+    witnesses.forEach(
+        w -> {
+          if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(w))) {
+            nodes.add(new ConsensusNode(w));
+          }
+        });
   }
 
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
+  }
+
+  public List<ConsensusNode> getNodes() {
+    return nodes;
   }
 
   public Map<String, Election> getElections() {
@@ -260,8 +273,8 @@ public final class Lao {
     return rollCalls;
   }
 
-  public Map<String, Consensus> getConsensuses() {
-    return consensuses;
+  public Map<String, Consensus> getMessageIdToConsensus() {
+    return messageIdToConsensus;
   }
 
   public Map<String, WitnessMessage> getWitnessMessages() {
