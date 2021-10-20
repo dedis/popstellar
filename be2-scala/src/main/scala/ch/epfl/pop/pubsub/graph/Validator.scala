@@ -42,13 +42,30 @@ object Validator {
     rpcId
   )
 
-  // FIXME implement schema
+  private def checkRpcId(jsonString: JsonString): Option[Int] = {
+    Try(jsonString.parseJson.asJsObject.getFields("id")) match {
+      case Success(Seq(optId)) =>
+        optId match {
+          case JsNumber(id) => Some(id.toInt)
+          case _ => None
+        }
+      case Success(_) => None
+      case Failure(_) => None
+    }
+  }
+
+  // contains the relative path to our "main" query JsonSchema file
+  final val queryPath = "../protocol/query/query.json"
+
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
 
     val objectMapper: ObjectMapper = new ObjectMapper()
     // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
-    val jsonSchemaNode: JsonNode = objectMapper.readTree(new File("../protocol/query/query.json"))
+    // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
+    // FIXME: error handling for queryPath
+    val jsonSchemaNode: JsonNode = objectMapper.readTree(new File(queryPath))
+    // Creation of a JsonSchema from the previously created factory and JsonNode
     val schema: JsonSchema = factory.getSchema(jsonSchemaNode)
 
     // Creation of a JsonNode containing the information from the input jsonString
@@ -60,16 +77,8 @@ object Validator {
       Left(jsonString)
     }
     else {
-      val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
-        case Success(Seq(optId)) =>
-          optId match {
-            case JsNumber(id) => Some(id.toInt)
-            case _ => None
-          }
-        case Success(_) => None
-        case Failure(_) => None
-      }
-      Right(PipelineError(-4, "The Json Schema is invalid.", rpcId))
+      val rpcId = checkRpcId(jsonString)
+      Right(PipelineError(-ErrorCodes.INVALID_DATA.id, "The Json Schema is invalid.", rpcId))
     }
 
   }
