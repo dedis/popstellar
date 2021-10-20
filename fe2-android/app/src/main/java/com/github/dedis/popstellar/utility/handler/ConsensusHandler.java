@@ -47,8 +47,8 @@ public final class ConsensusHandler {
       String messageId,
       String senderPk) {
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Set<String> acceptors = new HashSet<>(lao.getWitnesses());
-    acceptors.add(lao.getOrganizer());
+    Set<String> nodes = new HashSet<>(lao.getWitnesses());
+    nodes.add(lao.getOrganizer());
 
     Consensus consensus =
         new Consensus(
@@ -57,10 +57,9 @@ public final class ConsensusHandler {
     consensus.setMessageId(messageId);
     consensus.setProposer(senderPk);
     consensus.setChannel(channel);
-    consensus.setAcceptors(acceptors);
+    consensus.setNodes(nodes);
 
     lao.updateConsensus(consensus);
-    laoRepository.updateConsensus(consensus);
 
     return false;
   }
@@ -82,7 +81,6 @@ public final class ConsensusHandler {
     consensus.putAcceptorResponse(senderPk, messageId, consensusElectAccept.isAccept());
 
     lao.updateConsensus(consensus);
-    laoRepository.updateConsensus(consensus);
 
     return false;
   }
@@ -102,7 +100,6 @@ public final class ConsensusHandler {
     consensus.setAccepted(true);
 
     lao.updateConsensus(consensus);
-    laoRepository.updateConsensus(consensus);
 
     return false;
   }

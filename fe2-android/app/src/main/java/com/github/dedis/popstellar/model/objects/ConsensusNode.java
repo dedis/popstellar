@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -16,10 +16,22 @@ public final class ConsensusNode {
   }
 
   private final String publicKey;
-  private State state;
-  private Consensus consensus; // is null if this node has not created a consensus
-  private List<Consensus> consensuses;
   private final Set<String> acceptedMessageIds;
+  private final List<Consensus> consensuses;
+
+  public ConsensusNode(String publicKey) {
+    this.publicKey = publicKey;
+    this.consensuses = new ArrayList<>();
+    this.acceptedMessageIds = new HashSet<>();
+  }
+
+  public String getPublicKey() {
+    return publicKey;
+  }
+
+  public Set<String> getAcceptedMessageIds() {
+    return acceptedMessageIds;
+  }
 
   public Optional<Consensus> getLastConsensus(String keyId) {
     // get the consensus for the given key id, with the largest creation time
@@ -44,51 +56,20 @@ public final class ConsensusNode {
     }
   }
 
-  public Set<String> getAcceptedMessageIds() {
-    return acceptedMessageIds;
-  }
-
   public void addConsensus(Consensus consensus) {
     if (consensuses.stream().noneMatch(c2 -> c2.getMessageId().equals(consensus.getMessageId()))) {
       consensuses.add(consensus);
     }
   }
 
-  public void addAcceptedMessageIds(String messageId) {
+  public void addAcceptedMessageId(String messageId) {
     this.acceptedMessageIds.add(messageId);
-  }
-
-  public ConsensusNode(String publicKey) {
-    this.publicKey = publicKey;
-    this.state = State.WAITING;
-    this.consensus = null;
-    this.consensuses = Collections.emptyList();
-    this.acceptedMessageIds = new HashSet<>();
-  }
-
-  public String getPublicKey() {
-    return publicKey;
-  }
-
-  public State getState() {
-    return state;
-  }
-
-  public void setState(State state) {
-    this.state = state;
-  }
-
-  public Consensus getConsensus() {
-    return consensus;
-  }
-
-  public void setConsensus(Consensus consensus) {
-    this.consensus = consensus;
   }
 
   @Override
   public String toString() {
     return String.format(
-        "ConsensusNode{publicKey='%s', state='%s', consensus='%s'}", publicKey, state, consensus);
+        "ConsensusNode{publicKey='%s', acceptedMessageIds='%s', consensuses='%s'}",
+        publicKey, acceptedMessageIds, consensuses);
   }
 }

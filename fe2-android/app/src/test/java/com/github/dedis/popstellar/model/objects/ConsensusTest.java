@@ -85,12 +85,12 @@ public class ConsensusTest {
   }
 
   @Test
-  public void setAndGetAcceptorsTest() {
-    Set<String> acceptors = new HashSet<>();
-    consensus.setAcceptors(acceptors);
-    assertEquals(acceptors, consensus.getAcceptors());
+  public void setAndGetNodesTest() {
+    Set<String> nodes = new HashSet<>();
+    consensus.setNodes(nodes);
+    assertEquals(nodes, consensus.getNodes());
 
-    assertThrows(IllegalArgumentException.class, () -> consensus.setAcceptors(null));
+    assertThrows(IllegalArgumentException.class, () -> consensus.setNodes(null));
   }
 
   @Test
@@ -102,15 +102,9 @@ public class ConsensusTest {
     consensus.putAcceptorResponse(acceptor1, messageId1, true);
     consensus.putAcceptorResponse(acceptor2, messageId2, false);
 
-    Map<String, Boolean> responses = consensus.getAcceptorsResponses();
-    assertEquals(2, responses.size());
-    assertTrue(responses.get(acceptor1));
-    assertFalse(responses.get(acceptor2));
-
     Map<String, String> messageIds = consensus.getAcceptorsToMessageId();
-    assertEquals(2, messageIds.size());
+    assertEquals(1, messageIds.size());
     assertEquals(messageId1, messageIds.get(acceptor1));
-    assertEquals(messageId2, messageIds.get(acceptor2));
 
     assertThrows(
         IllegalArgumentException.class, () -> consensus.putAcceptorResponse(acceptor1, null, true));
@@ -128,6 +122,17 @@ public class ConsensusTest {
 
     consensus.setAccepted(false);
     assertFalse(consensus.isAccepted());
+  }
+
+  @Test
+  public void setAndGetFailedTest() {
+    assertFalse(consensus.isFailed());
+
+    consensus.setFailed(true);
+    assertTrue(consensus.isFailed());
+
+    consensus.setFailed(false);
+    assertFalse(consensus.isFailed());
   }
 
   @Test

@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.utility.security.Hash;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,11 +22,9 @@ public class Consensus {
   private boolean isFailed;
 
   private String proposer;
-  private Set<String> acceptors;
-  private Map<String, Boolean>
-      acceptorsResponses; // map the public key of acceptors to their sresponse
-  private Map<String, String>
-      acceptorsToMessageId; // map the public key of acceptors to the id of their message
+  private Set<String> nodes;
+  private final Map<String, String>
+      acceptorToMessageId; // map the public key of acceptors to the id of their message
 
   public Consensus(long creation, ConsensusKey key, Object value) {
     this.id = generateConsensusId(creation, key.getType(), key.getId(), key.getProperty(), value);
@@ -34,8 +33,7 @@ public class Consensus {
     this.creation = creation;
 
     this.isAccepted = false;
-    this.acceptorsResponses = new HashMap<>();
-    this.acceptorsToMessageId = new HashMap<>();
+    this.acceptorToMessageId = new HashMap<>();
   }
 
   public String getMessageId() {
@@ -112,23 +110,19 @@ public class Consensus {
     this.proposer = proposer;
   }
 
-  public Set<String> getAcceptors() {
-    return acceptors;
+  public Set<String> getNodes() {
+    return nodes;
   }
 
-  public void setAcceptors(Set<String> acceptors) {
-    if (acceptors == null) {
-      throw new IllegalArgumentException("consensus acceptors shouldn't be null");
+  public void setNodes(Set<String> nodes) {
+    if (nodes == null) {
+      throw new IllegalArgumentException("consensus nodes shouldn't be null");
     }
-    this.acceptors = acceptors;
-  }
-
-  public Map<String, Boolean> getAcceptorsResponses() {
-    return acceptorsResponses;
+    this.nodes = nodes;
   }
 
   public Map<String, String> getAcceptorsToMessageId() {
-    return acceptorsToMessageId;
+    return acceptorToMessageId;
   }
 
   public void putAcceptorResponse(String acceptor, String messageId, boolean accept) {
@@ -138,8 +132,9 @@ public class Consensus {
     if (messageId == null) {
       throw new IllegalArgumentException("Message id cannot be null.");
     }
-    acceptorsResponses.put(acceptor, accept);
-    acceptorsToMessageId.put(acceptor, messageId);
+    if (accept) {
+      acceptorToMessageId.put(acceptor, messageId);
+    }
   }
 
   public boolean isAccepted() {
@@ -160,15 +155,15 @@ public class Consensus {
 
   public boolean canBeAccepted() {
     // Part 1 : all acceptors need to accept
-    long countAccepted = acceptorsResponses.values().stream().filter(b -> b).count();
-    return countAccepted == acceptors.size();
+    long countAccepted = acceptorToMessageId.size();
+    return countAccepted == nodes.size();
   }
 
   @Override
   public String toString() {
     return String.format(
-        "Consensus{id='%s', channel='%s', messageId='%s', key=%s, value='%s', creation=%s, isAccepted=%b, proposer='%s'}",
-        id, channel, messageId, key, value, creation, isAccepted, proposer);
+        "Consensus{id='%s', channel='%s', messageId='%s', key=%s, value='%s', creation=%s, isAccepted=%b, isFailed=%b, proposer='%s'}",
+        id, channel, messageId, key, value, creation, isAccepted, isFailed, proposer);
   }
 
   public static String generateConsensusId(

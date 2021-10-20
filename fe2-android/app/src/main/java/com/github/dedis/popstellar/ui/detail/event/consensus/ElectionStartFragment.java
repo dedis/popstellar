@@ -18,18 +18,15 @@ import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ConsensusNode.State;
 import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
@@ -50,7 +47,6 @@ public class ElectionStartFragment extends Fragment {
       new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.ENGLISH);
 
   private final CompositeDisposable disposables = new CompositeDisposable();
-  private List<ConsensusNode> nodes;
   private ConsensusNode ownNode;
   private Button electionStart;
   private TextView electionStatus;
@@ -71,7 +67,7 @@ public class ElectionStartFragment extends Fragment {
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     ElectionStartFragmentBinding binding =
         ElectionStartFragmentBinding.inflate(inflater, container, false);
 
@@ -81,7 +77,6 @@ public class ElectionStartFragment extends Fragment {
     LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
 
     Election election = mLaoDetailViewModel.getCurrentElection();
-    Lao lao = mLaoDetailViewModel.getCurrentLaoValue();
 
     String scheduledDate = dateFormat.format(new Date(election.getStartTimestamp() * 1000));
     String electionId = election.getId();
@@ -124,7 +119,7 @@ public class ElectionStartFragment extends Fragment {
             mLaoDetailViewModel.createNewConsensus(
                 Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
 
-    nodes = mLaoDetailViewModel.getNodes().getValue();
+    List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
 
     String ownPublicKey = mLaoDetailViewModel.getPublicKey();
     Optional<ConsensusNode> ownNodeOpt =
@@ -150,8 +145,11 @@ public class ElectionStartFragment extends Fragment {
         .observe(
             this,
             consensusNodes -> {
+              Log.d(TAG, "got an update for nodes : " + consensusNodes);
               adapter.setList(consensusNodes);
-              updateStartAndStatus(consensusNodes, election);
+              if (isElectionStartTimePassed(election)) {
+                updateStartAndStatus(consensusNodes, election);
+              }
             });
 
     binding
@@ -189,7 +187,7 @@ public class ElectionStartFragment extends Fragment {
       electionStart.setText(getString(R.string.election_started_at, startedDate));
       electionStart.setEnabled(false);
     } else {
-      State ownState = ownNode.getState();
+      State ownState = ownNode.getState(election.getId());
       electionStart.setEnabled(ownState == State.WAITING || ownState == State.FAILED);
     }
   }
