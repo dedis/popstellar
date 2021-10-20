@@ -341,6 +341,3 @@ The best way to "intercept" a `GraphMessage` being processed in the graph is to 
 A simple way to have a coherent style across the codebase is to use the IDE features of "code cleanup". For example, in IntelliJ, click on the `src/main/scala` folder and then on `Code -> Reformat Code`. You can then check "include subdirectories", "optimize imports", and "cleanup code" checkbox options. Be careful to not apply these changes to `src/test` folder as it transforms the scalatest syntax into a mess difficult to understand.
 
 Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
-
-Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
-
