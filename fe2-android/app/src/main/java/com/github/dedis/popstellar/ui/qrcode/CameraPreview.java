@@ -150,6 +150,8 @@ public class CameraPreview extends ViewGroup {
     }
 
     @Override
-    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {}
+    public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+      // Do nothing because the preview doesn't have to change
+    }
   }
 }
