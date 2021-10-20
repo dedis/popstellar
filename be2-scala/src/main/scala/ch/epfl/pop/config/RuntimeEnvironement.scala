@@ -18,14 +18,14 @@ import java.util.regex.Pattern
 object RuntimeEnvironment {
   
   private lazy val sp = new SystemProperties()
-
+  
   private def getConfDir: String = {
 
     val path_wd = sp("user.dir")
     val wd = path_wd.split(Pattern.quote(File.separator)).last
     
     if( wd != "be2-scala"){
-        throw new Error("Please that your working directory is path\\to\\be2-scala\\ ")
+        throw new Error("Please check that your current working directory is path\\to\\be2-scala\\")
     }
 
     /*Build config directory path based be2-scala*/
