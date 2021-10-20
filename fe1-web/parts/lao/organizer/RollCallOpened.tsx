@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
 
 const RollCallOpened = () => {
   const route = useRoute();
-  const { rollCall, time } = route.params;
+  const { rollCallID, time } = route.params;
   const navigation = useNavigation();
   const [, setQrWasScanned] = useState(false);
   const [attendeesSet, updateAttendeesSet] = useState(new Set<string>());
@@ -41,19 +41,19 @@ const RollCallOpened = () => {
     if (data) {
       setQrWasScanned(true);
       updateAttendeesSet((prev) => new Set<string>(prev.add(data)));
+      // eslint-disable-next-line no-alert
       alert(STRINGS.roll_call_scan_participant);
     }
   };
 
   // Here we get the pop-token to display in the QR code
-  // @ts-ignore
   /* Wallet.generateToken(lao.id, rollCall.id)
     .then((token) => setPopToken(token.publicKey.valueOf())); */
 
   const onCloseRollCall = () => {
     const updateId = Hash.fromStringArray(
       EventTags.ROLL_CALL, OpenedLaoStore.get().id.toString(),
-      rollCall.id.toString(), time.toString(),
+      rollCallID, time,
     );
     requestCloseRollCall(updateId, attendees.map((key: string) => new PublicKey(key)))
       .then(() => {

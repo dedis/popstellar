@@ -51,15 +51,12 @@ const EventRollCall = (props: IPropTypes) => {
       const time = Timestamp.EpochNow();
       requestOpenRollCall(event.id, time).then(() => {
         // @ts-ignore
-        navigation.navigate(STRINGS.roll_call_open, { rollCall: event, time: time });
+        navigation.navigate(STRINGS.roll_call_open,
+          { rollCallID: event.id.toString(), time: time.toString() });
       }).catch(
         (e) => console.debug('Unable to send Roll call open request', e),
       );
     }
-  };
-
-  const onCloseRollCall = () => {
-    console.log('Closing Roll Call not yet implemented');
   };
 
   // Here we get the pop-token to display in the QR code
@@ -81,13 +78,7 @@ const EventRollCall = (props: IPropTypes) => {
       case RollCallStatus.OPENED:
         return (
           <>
-            <Text>Open</Text>
-            {isOrganizer && (
-              <>
-                <Text>Scan the tokens</Text>
-                <WideButtonView title="Close Roll Call" onPress={onCloseRollCall} />
-              </>
-            )}
+            {}
             {!isOrganizer && (
               <>
                 <Text>Let the organizer scan your Pop token</Text>
@@ -102,7 +93,7 @@ const EventRollCall = (props: IPropTypes) => {
             <Text>Closed</Text>
             <Text>Attendees are:</Text>
             {rollCallFromStore.attendees.map((attendee: string) => (
-              <Text key="{attendee}">{attendee}</Text>
+              <Text key={attendee}>{attendee}</Text>
             ))}
             {isOrganizer && (
               <WideButtonView title="Re-open Roll Call" onPress={() => onOpenRollCall(true)} />
