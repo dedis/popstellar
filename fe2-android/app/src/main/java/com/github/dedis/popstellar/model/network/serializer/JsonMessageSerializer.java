@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.Method;
 import com.github.dedis.popstellar.model.network.method.Query;
@@ -11,11 +12,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import java.lang.reflect.Type;
 
-/**
- * Json serializer and deserializer for the low level messages
- */
+/** Json serializer and deserializer for the low level messages */
 public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeserializer<Message> {
 
   @Override

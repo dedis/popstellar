@@ -10,10 +10,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import org.junit.Test;
 
 public class CreateLaoTest {
 
@@ -26,7 +28,8 @@ public class CreateLaoTest {
 
   @Test
   public void wrongIdTest() {
-    assertThrows(IllegalArgumentException.class,
+    assertThrows(
+        IllegalArgumentException.class,
         () -> new CreateLao("wrong Id", name, creation, organizer, witnesses));
   }
 
@@ -34,8 +37,9 @@ public class CreateLaoTest {
   public void generateCreateLaoIdTest() {
     CreateLao createLao = new CreateLao(name, organizer);
     // Hash(organizer||creation||name)
-    String expectedId = Hash.hash(createLao.getOrganizer(), Long.toString(createLao.getCreation()),
-        createLao.getName());
+    String expectedId =
+        Hash.hash(
+            createLao.getOrganizer(), Long.toString(createLao.getCreation()), createLao.getName());
     assertThat(createLao.getId(), is(expectedId));
   }
 
@@ -81,5 +85,4 @@ public class CreateLaoTest {
     assertNotEquals(createLao1, new CreateLao("random", organizer));
     assertNotEquals(createLao1, new CreateLao(name, "random"));
   }
-
 }

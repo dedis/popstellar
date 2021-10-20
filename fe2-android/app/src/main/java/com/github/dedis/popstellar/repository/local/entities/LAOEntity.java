@@ -7,9 +7,7 @@ import androidx.room.PrimaryKey;
 @Entity
 public class LAOEntity {
 
-  @PrimaryKey
-  @NonNull
-  public String channel;
+  @PrimaryKey @NonNull public String channel;
 
   public String id;
 

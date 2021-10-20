@@ -8,17 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 
-/**
- * Fragment that shows up when user wants to create a Roll-Call Event
- */
+/** Fragment that shows up when user wants to create a Roll-Call Event */
 public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
@@ -140,7 +140,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
-    mLaoDetailViewModel
-        .createNewRollCall(title, description, CREATION_TIME_IN_SECONDS, startTimeInSeconds, endTimeInSeconds, open);
+    mLaoDetailViewModel.createNewRollCall(
+        title, description, CREATION_TIME_IN_SECONDS, startTimeInSeconds, endTimeInSeconds, open);
   }
 }

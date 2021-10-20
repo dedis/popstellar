@@ -6,6 +6,7 @@ public class QuestionResult {
 
   @SerializedName(value = "ballot_option")
   private String ballotOption;
+
   private int count;
 
   public QuestionResult(String ballotOption, int count) {
