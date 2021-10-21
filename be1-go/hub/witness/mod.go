@@ -84,7 +84,10 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 	return &witnessHub, nil
 }
 
-func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
+// As the Witness for now imitate the organizer when getting message, this
+// function is there while waiting a correct witness implementation. Function
+// there to reduce code duplication
+func (h *Hub) tempHandleMessage(incMsg *socket.IncomingMessage) error {
 	socket := incMsg.Socket
 	byteMessage := incMsg.Message
 
@@ -140,122 +143,19 @@ func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
 
 	socket.SendResult(id, nil)
 	return nil
+}
+
+//
+func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
+	return h.tempHandleMessage(incMsg)
 }
 
 func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) error {
-	socket := incMsg.Socket
-	byteMessage := incMsg.Message
-
-	// validate against json schema
-	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
-	if err != nil {
-		h.log.Err(err).Msg(jsonNotValidError)
-		socket.SendError(nil, xerrors.Errorf(jsonNotValidError+": %v", err))
-		return err
-	}
-
-	var queryBase query.Base
-
-	err = json.Unmarshal(byteMessage, &queryBase)
-	if err != nil {
-		err := answer.NewErrorf(-4, unmarshalError, err)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	var id int
-	var msgs []message.Message
-	var handlerErr error
-
-	switch queryBase.Method {
-	case query.MethodPublish:
-		id, handlerErr = h.handlePublish(socket, byteMessage)
-	case query.MethodSubscribe:
-		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
-		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(byteMessage)
-	default:
-		err = answer.NewErrorf(-2, unexpectedMethodError, queryBase.Method)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if handlerErr != nil {
-		err := answer.NewErrorf(-4, failedMethodHandling, handlerErr)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
-		return err
-	}
-
-	socket.SendResult(id, nil)
-	return nil
+	return h.tempHandleMessage(incMsg)
 }
 
 func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
-	socket := incMsg.Socket
-	byteMessage := incMsg.Message
-
-	// validate against json schema
-	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
-	if err != nil {
-		h.log.Err(err).Msg(jsonNotValidError)
-		socket.SendError(nil, xerrors.Errorf(jsonNotValidError+": %v", err))
-		return err
-	}
-
-	var queryBase query.Base
-
-	err = json.Unmarshal(byteMessage, &queryBase)
-	if err != nil {
-		err := answer.NewErrorf(-4, unmarshalError, err)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	var id int
-	var msgs []message.Message
-	var handlerErr error
-
-	switch queryBase.Method {
-	case query.MethodPublish:
-		id, handlerErr = h.handlePublish(socket, byteMessage)
-	case query.MethodSubscribe:
-		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
-		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(byteMessage)
-	default:
-		err = answer.NewErrorf(-2, unexpectedMethodError, queryBase.Method)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if handlerErr != nil {
-		err := answer.NewErrorf(-4, failedMethodHandling, handlerErr)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
-		return err
-	}
-
-	socket.SendResult(id, nil)
-	return nil
+	return h.tempHandleMessage(incMsg)
 }
 
 func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error {
@@ -333,7 +233,7 @@ func (h *Hub) Type() hub.HubType {
 	return hub.WitnessHubType
 }
 
-// For now the witnesses work the same as organizer, the following functions are
+// For now the witnesses work the same as organizer, all following functions are
 // tied to this particular comportement.
 
 // GetPubkey implements channel.HubFunctionalities

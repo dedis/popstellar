@@ -400,6 +400,7 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 }
 
 // handleMessageFromWitness handles an incoming message from a witness server.
+// this may change once the witness are correctly implemented
 func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) error {
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
