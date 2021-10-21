@@ -8,6 +8,7 @@
   <string name="tab_wallet">Wallet</string>
   <string name="tab_identity">Identity</string>
   <string name="tab_properties">Show/Hide Properties</string>
+  <string name="tab_social_media">Chirp</string>
 
   <!-- Home -->
   <string name="text_title_welcome">Welcome to Personhood.Online!</string>
@@ -190,7 +191,6 @@
   <string name="delete_a_witness">delete a witness</string>
 
   <!-- Social Media -->
-  <string name="chirp">CHIRP</string>
   <string name="social_media_home">HOME</string>
   <string name="social_media_send">SEND</string>
   <string name="social_media_following">FOLLOWING</string>
