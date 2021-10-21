@@ -214,6 +214,8 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		return answer.NewInvalidActionError(action)
 	}
 
+	c.inbox.StoreMessage(msg)
+
 	return nil
 }
 
