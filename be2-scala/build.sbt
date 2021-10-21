@@ -11,7 +11,7 @@ mainClass in (Compile, packageBin) := Some("ch.epfl.pop.Server")
 
 coverageEnabled in Compile := true
 lazy val scoverageSettings = Seq(
-  coverageEnabled in Compile: true,
+  coverageEnabled in Compile := true,
   coverageEnabled in Test := true,
   coverageEnabled in packageBin := false,
   
