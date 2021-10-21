@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+  xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragment_election_result"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_election_result"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-        <include
-            android:id="@+id/election_result_tab_back"
-            layout="@layout/tab_back"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+    <include
+      android:id="@+id/election_result_tab_back"
+      layout="@layout/tab_back"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/election_result_guideline"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/election_result_guideline"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
-        <TextView
-            android:id="@+id/election_result_lao_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/size_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/election_result_guideline" />
+    <TextView
+      android:id="@+id/election_result_lao_name"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="@dimen/size_title"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toTopOf="@id/election_result_guideline" />
 
-        <TextView
-            android:id="@+id/election_result_presentation_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/size_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/election_result_lao_name" />
+    <TextView
+      android:id="@+id/election_result_presentation_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:textSize="@dimen/size_title"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/election_result_lao_name" />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/electionResultPager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="@id/swipe_indicator_election_results"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/election_result_presentation_title"
-            app:layout_constraintVertical_bias="0.0">
+    <androidx.viewpager2.widget.ViewPager2
+      android:id="@+id/electionResultPager"
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      app:layout_constraintBottom_toBottomOf="@id/swipe_indicator_election_results"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintHorizontal_bias="0.0"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/election_result_presentation_title"
+      app:layout_constraintVertical_bias="0.0">
 
-        </androidx.viewpager2.widget.ViewPager2>
+    </androidx.viewpager2.widget.ViewPager2>
 
-        <me.relex.circleindicator.CircleIndicator3
-            android:id="@+id/swipe_indicator_election_results"
-            android:layout_width="match_parent"
-            android:layout_height="25dp"
-            android:background="@color/colorPrimaryDark"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <me.relex.circleindicator.CircleIndicator3
+      android:id="@+id/swipe_indicator_election_results"
+      android:layout_width="match_parent"
+      android:layout_height="25dp"
+      android:background="@color/colorPrimaryDark"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
