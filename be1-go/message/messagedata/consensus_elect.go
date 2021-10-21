@@ -24,6 +24,7 @@ type Key struct {
 	Property string `json:"property"`
 }
 
+// Verify that a consensus#elect message is correct
 func (message ConsensusElect) Verify() error {
 	expectedID := Hash([]string{
 		message.Object,

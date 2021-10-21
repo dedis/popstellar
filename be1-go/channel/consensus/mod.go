@@ -23,13 +23,13 @@ const (
 	msgID = "msg id"
 )
 
-// Channel defins a consensus channel
+// Channel defines a consensus channel
 type Channel struct {
 	sockets channel.Sockets
 
 	inbox *inbox.Inbox
 
-	// /root/<lao_id>/<id>
+	// /root/<lao_id>/consensus
 	channelID string
 
 	hub channel.HubFunctionalities

@@ -83,7 +83,8 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	}
 }
 
-func (c *Channel) GetConsensusChan() *consensus.Channel {
+// Get the consensus channel linked with the LAO channel
+func (c *Channel) GetConsensusChannel() *consensus.Channel {
 	return c.consensus
 }
 

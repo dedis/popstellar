@@ -89,7 +89,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 
 	time.Sleep(time.Millisecond)
 
-	consensus := laoChannel.GetConsensusChan()
+	consensus := laoChannel.GetConsensusChannel()
 	require.NotEqual(t, nil, consensus)
 }
 
