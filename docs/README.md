@@ -98,3 +98,12 @@ git merge <x>
 Creating a pull request (PR) can only be done with on the [GitHub website](https://github.com/dedis/student_21_pop/pulls) by navigating on "Pull requests". Click on the big green button titled "New pull request" and choose the receiving branch (generally `master`) as well as the branch you want to merge into the latter (e.g. `work-be2-scala-raulinn-test`). Click on "Create pull request".
 
 You can then set a title and description to your PR as well as set a label (e.g. `be2-scala`), an assignee (the person responsible for the code), a project (if any) and ask for a specific reviewer using the right side bar. Click on "Create pull request"
+
+
+---
+
+### Other useful commands
+
+- `git cherry-pick` : apply the changes introduced by some existing commits
+- `git rebase` : reapply commits on top of another base tip
+
