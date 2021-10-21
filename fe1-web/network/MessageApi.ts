@@ -22,7 +22,7 @@ import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
 import { Question, Vote } from 'model/objects/Election';
-import { AddChirp } from '../model/network/method/message/data/chirp/AddChirp';
+import { AddChirp } from 'model/network/method/message/data/chirp/AddChirp';
 import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -280,7 +280,7 @@ export function terminateElection(
 }
 
 export function requestAddChirp(
-  text: string, parent_id?: Hash,
+  text: string, parent_id: Hash = undefined,
 ): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();

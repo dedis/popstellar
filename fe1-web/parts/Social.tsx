@@ -22,10 +22,8 @@ const styles = StyleSheet.create({
 });
 
 const publishChirp = () => {
-  requestAddChirp('chirp chirp', undefined)
-    .then(() => (
-      <TextBlock text={STRINGS.add_chirp_test} />
-    ))
+  requestAddChirp('chirp chirp')
+    .then()
     .catch((err) => {
       console.error('Could not add chirp, error:', err);
     });
