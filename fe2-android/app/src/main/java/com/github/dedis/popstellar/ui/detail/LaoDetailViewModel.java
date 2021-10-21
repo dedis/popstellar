@@ -609,16 +609,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                   answer -> {
                     if (answer instanceof Result) {
                       Log.d(TAG, "sent a consensus vote successfully");
-                      Toast.makeText(
-                              getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
-                          .show();
                     } else {
                       Log.d(TAG, "failed to send the vote");
-                      Toast.makeText(
-                              getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
-                          .show();
                     }
-                    openLaoDetail();
                   },
                   throwable ->
                       Log.d(TAG, "timed out waiting for result on consensus/vote", throwable));

@@ -47,7 +47,6 @@ public class CreateLao extends Data {
     this.creation = Instant.now().getEpochSecond();
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.witnesses = new ArrayList<>();
-    witnesses.add("M3w5gnWkaEQ7TXhAP30e2OS-8-i8DOzKxsBxQlhZokY=");
   }
 
   @Override

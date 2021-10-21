@@ -62,8 +62,8 @@ public final class ConsensusNode {
     }
   }
 
-  public void addAcceptedMessageId(String messageId) {
-    this.acceptedMessageIds.add(messageId);
+  public void addMessageIdOfAnAcceptedConsensus(String consensusMessageId) {
+    this.acceptedMessageIds.add(consensusMessageId);
   }
 
   @Override

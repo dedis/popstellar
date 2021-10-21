@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 public final class ConsensusLearn extends Data {
@@ -51,7 +52,8 @@ public final class ConsensusLearn extends Data {
     }
     ConsensusLearn that = (ConsensusLearn) o;
 
-    return messageId.equals(that.messageId) && acceptors.equals(that.acceptors);
+    return java.util.Objects.equals(messageId, that.messageId)
+        && java.util.Objects.equals(acceptors, that.acceptors);
   }
 
   @Override

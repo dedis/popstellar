@@ -95,7 +95,7 @@ public final class Lao {
     Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
     nodes.stream()
         .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
-        .forEach(node -> node.addAcceptedMessageId(acceptorsToMessageId.get(node.getPublicKey())));
+        .forEach(node -> node.addMessageIdOfAnAcceptedConsensus(consensus.getMessageId()));
     // add the consensus to node if it is proposer
     nodes.stream()
         .filter(node -> node.getPublicKey().equals(consensus.getProposer()))

@@ -68,6 +68,10 @@ public class NodesAcceptorAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
+    if (binding == null) {
+      throw new IllegalStateException("Binding could not be find in the view");
+    }
+
     ConsensusNode node = getItem(position);
     Optional<Consensus> lastConsensus = node.getLastConsensus(electionId);
     State state = node.getState(electionId);

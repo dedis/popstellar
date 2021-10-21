@@ -74,7 +74,7 @@ public class ElectionStartFragment extends Fragment {
     electionStart = binding.electionStart;
     electionStatus = binding.electionStatus;
 
-    LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     Election election = mLaoDetailViewModel.getCurrentElection();
 
@@ -129,6 +129,7 @@ public class ElectionStartFragment extends Fragment {
     } else {
       // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
       Log.e(TAG, "Couldn't find our own Node with public key : " + ownPublicKey);
+      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
     }
 
     NodesAcceptorAdapter adapter =

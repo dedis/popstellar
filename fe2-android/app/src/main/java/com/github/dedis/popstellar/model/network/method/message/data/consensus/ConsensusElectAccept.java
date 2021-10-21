@@ -50,7 +50,7 @@ public final class ConsensusElectAccept extends Data {
     }
     ConsensusElectAccept that = (ConsensusElectAccept) o;
 
-    return messageId.equals(that.messageId) && accept == that.accept;
+    return java.util.Objects.equals(messageId, that.messageId) && accept == that.accept;
   }
 
   @Override

@@ -67,9 +67,9 @@ public final class ConsensusElect extends Data {
     }
     ConsensusElect that = (ConsensusElect) o;
 
-    return instanceId.equals(that.instanceId)
+    return java.util.Objects.equals(instanceId, that.instanceId)
         && creation == that.creation
-        && key.equals(that.key)
+        && java.util.Objects.equals(key, that.key)
         && java.util.Objects.equals(value, that.value);
   }
 
