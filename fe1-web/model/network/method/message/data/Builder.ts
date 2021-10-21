@@ -9,6 +9,7 @@ import { WitnessMessage } from './witness';
 import {
   CastVote, ElectionResult, EndElection, SetupElection,
 } from './election';
+import { AddChirp } from './chirp/AddChirp';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -69,6 +70,15 @@ function buildRollCallMessage(msgData: MessageData): MessageData {
   }
 }
 
+function buildChirpMessage(msgData: MessageData): MessageData {
+  switch (msgData.action) {
+    case ActionType.ADD:
+      return AddChirp.fromJson(msgData);
+    default:
+      throw new Error(`Unknown action '${msgData.action}' encountered while adding a chirp MessageData`);
+  }
+}
+
 function buildWitnessMessage(msgData: MessageData): MessageData {
   return WitnessMessage.fromJson(msgData);
 }
@@ -89,6 +99,9 @@ export function buildMessageData(msgData: MessageData): MessageData {
 
     case ObjectType.ROLL_CALL:
       return buildRollCallMessage(msgData);
+
+    case ObjectType.CHIRP:
+      return buildChirpMessage(msgData);
 
     default:
       throw new Error(`Unknown object '${msgData.object}' encountered while creating a MessageData`);

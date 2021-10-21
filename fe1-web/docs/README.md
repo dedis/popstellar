@@ -56,15 +56,15 @@ The project is organized into different modules as follows
 │
 ├── parts                      # module containing the application's unique screens
 │
-├── platform                   # platform-specific implementation of system functionality
-│
 ├── res                        # resources (assets, images, etc.)
 │
 ├── store                      # module dealing with application state (Redux-based)
 │    ├── reducers              # module containing the reducers (Redux)
 │    └── stores                # module to access states outside the React environment
 │
-└── styles                     # stylesheets
+├── styles                     # stylesheets
+└── utils                      # interfaces to system libraries
+     └── __mocks__             # mocks of those libraries, to be used in tests
 ```
 
 ## Architecture
@@ -164,10 +164,7 @@ this translates to the use of the
 to generate non-extractable key material, and the
 [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 to store it reasonably securely.
-This is abstracted away in the
-[WalletStore](https://github.com/dedis/student_21_pop/tree/master/fe1-web/stores/WalletStore.ts),
-while the platform implementation is in
-[platform/crypto](https://github.com/dedis/student_21_pop/tree/master/fe1-web/platform/crypto/).
+This is implemented in [WalletCryptographyHandler](TBD).
 
 Support for mobile devices is planned and the architecture allows it,
 but secret management is not yet implemented.

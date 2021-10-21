@@ -10,12 +10,12 @@ import WideButtonView from 'components/WideButtonView';
 import {
   LaoEventType, RollCall, PopToken, Wallet,
 } from 'model/objects';
+import CopiableTextBlock from 'components/CopiableTextBlock';
 import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import { makeEventByTypeSelector, makeLaosMap } from 'store';
 import { useSelector } from 'react-redux';
-import CopiableTextInput from '../../components/CopiableTextInput';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -125,11 +125,11 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       <View style={styleContainer.centered}>
         <View style={styles.smallPadding} />
         <TextBlock bold text={STRINGS.lao_id} />
-        <CopiableTextInput text={lao.name} visibility />
+        <CopiableTextBlock text={lao.name} visibility />
         <TextBlock bold text={STRINGS.roll_call_name} />
         <TextBlock text={rollCall.name} visibility />
         <View style={styles.smallPadding} />
-        <CopiableTextInput text={tokenPk.valueOf()} visibility={showPublicKey} />
+        <CopiableTextBlock text={tokenPk.valueOf()} visibility={showPublicKey} />
         <View style={styles.smallPadding} />
         <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey} />
       </View>

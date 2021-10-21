@@ -8,7 +8,7 @@ import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager, requestCreateLao } from 'network';
 
 import {
-  Channel, Hash, Lao, Timestamp,
+  Hash, Lao, Timestamp, Channel,
 } from 'model/objects';
 
 import WideButtonView from 'components/WideButtonView';
@@ -21,10 +21,14 @@ import styleContainer from 'styles/stylesheets/container';
 import { subscribeToChannel } from 'network/CommunicationApi';
 
 /**
- * Manages the Launch screen, where the user enters a name and an address to launch and connect
- * to an LAO.
+ * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
+ * and cancel button
+ *
+ * The Launch button does nothing
+ * The cancel button clear the LAO name field and redirect to the Home screen
+ *
+ * TODO implement the launch button action
  */
-
 const styles = StyleSheet.create({
   textInput: {
     ...Typography.base,
@@ -42,14 +46,13 @@ const styles = StyleSheet.create({
 
 const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
-  const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
 
   const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
       return;
     }
 
-    getNetworkManager().connect(inputAddress);
+    getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
     requestCreateLao(laoName)
       .then((channel: Channel) => subscribeToChannel(channel)
         .then(() => {
@@ -93,13 +96,6 @@ const Launch = ({ navigation }: IPropTypes) => {
           placeholder={STRINGS.launch_organization_name}
           onChangeText={(input: string) => setInputLaoName(input)}
           defaultValue={inputLaoName}
-        />
-        <TextInput
-          style={styles.textInput}
-          placeholder={STRINGS.launch_address}
-          onChangeText={(input: string) => setInputAddress(input)}
-          defaultValue={inputAddress}
-          selectTextOnFocus
         />
       </View>
       <View style={styles.viewBottom}>
