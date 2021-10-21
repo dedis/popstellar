@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/social_media_home"
-        android:icon="@drawable/ic_social_media_home_foreground"
-        android:title="@string/social_media_home" />
-    <item
-        android:id="@+id/social_media_send"
-        android:icon="@drawable/ic_social_media_send_foreground"
-        android:title="@string/social_media_send" />
-    <item
-        android:id="@+id/social_media_following"
-        android:icon="@drawable/ic_social_media_following_foreground"
-        android:title="@string/social_media_following" />
-    <item
-        android:id="@+id/social_media_profile"
-        android:icon="@drawable/ic_social_media_profile_foreground"
-        android:title="@string/social_media_profile" />
+  <item
+    android:id="@+id/social_media_home"
+    android:icon="@drawable/ic_social_media_home_foreground"
+    android:title="@string/social_media_home" />
+  <item
+    android:id="@+id/social_media_send"
+    android:icon="@drawable/ic_social_media_send_foreground"
+    android:title="@string/social_media_send" />
+  <item
+    android:id="@+id/social_media_following"
+    android:icon="@drawable/ic_social_media_following_foreground"
+    android:title="@string/social_media_following" />
+  <item
+    android:id="@+id/social_media_profile"
+    android:icon="@drawable/ic_social_media_profile_foreground"
+    android:title="@string/social_media_profile" />
 
 </menu>

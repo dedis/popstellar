@@ -1,38 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <data>
+  <data>
 
-        <import type="android.view.View" />
+    <import type="android.view.View" />
 
-        <import type="com.github.dedis.popstellar.model.objects.event.EventType" />
+    <import type="com.github.dedis.popstellar.model.objects.event.EventType" />
 
-        <variable
-            name="event"
-            type="com.github.dedis.popstellar.model.objects.event.Event" />
-    </data>
+    <variable
+      name="event"
+      type="com.github.dedis.popstellar.model.objects.event.Event" />
+  </data>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/event_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/event_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-        <!-- Display for a Roll Call -->
-        <include
-            android:id="@+id/include_layout_roll_call"
-            layout="@layout/roll_call_event_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="@{event.getType() == EventType.ROLL_CALL ? View.VISIBLE : View.GONE}" />
+    <!-- Display for a Roll Call -->
+    <include
+      android:id="@+id/include_layout_roll_call"
+      layout="@layout/roll_call_event_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="@{event.getType() == EventType.ROLL_CALL ? View.VISIBLE : View.GONE}" />
 
-        <!-- Display for an Election -->
-        <include
-            android:id="@+id/include_layout_election"
-            layout="@layout/election_display_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="@{event.getType() == EventType.ELECTION ? View.VISIBLE : View.GONE}" />
+    <!-- Display for an Election -->
+    <include
+      android:id="@+id/include_layout_election"
+      layout="@layout/election_display_layout"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="@{event.getType() == EventType.ELECTION ? View.VISIBLE : View.GONE}" />
 
-    </LinearLayout>
+  </LinearLayout>
 </layout>

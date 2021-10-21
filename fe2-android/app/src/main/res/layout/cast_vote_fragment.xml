@@ -1,80 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragment_cast_vote"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ui.detail.event.election.fragments.CastVoteFragment">
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_cast_vote"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.detail.event.election.fragments.CastVoteFragment">
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_tab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="@dimen/guideline_tab" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline_tab"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_begin="@dimen/guideline_tab" />
 
-        <TextView
-            android:id="@+id/castVoteLaoName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/size_title"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/guideline_tab" />
+    <TextView
+      android:id="@+id/castVoteLaoName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="TextView"
+      android:textAlignment="center"
+      android:textColor="@color/black"
+      android:textSize="@dimen/size_title"
+      android:textStyle="bold"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/guideline_tab" />
 
-        <TextView
-            android:id="@+id/castVoteElectionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TextView"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textSize="@dimen/size_body"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/castVoteLaoName" />
+    <TextView
+      android:id="@+id/castVoteElectionName"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="TextView"
+      android:textAlignment="center"
+      android:textColor="@color/black"
+      android:textSize="@dimen/size_body"
+      android:textStyle="bold"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"
+      app:layout_constraintTop_toBottomOf="@+id/castVoteLaoName" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintGuide_begin="@dimen/guideline_titles"
-            app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintGuide_begin="@dimen/guideline_titles"
+      app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/castVotePager"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/cast_vote_dynamic_height"
-            app:layout_constraintBottom_toTopOf="@+id/swipe_indicator"
-            app:layout_constraintTop_toBottomOf="@id/guideline_title"></androidx.viewpager2.widget.ViewPager2>
+    <androidx.viewpager2.widget.ViewPager2
+      android:id="@+id/castVotePager"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/cast_vote_dynamic_height"
+      app:layout_constraintBottom_toTopOf="@+id/swipe_indicator"
+      app:layout_constraintTop_toBottomOf="@id/guideline_title"></androidx.viewpager2.widget.ViewPager2>
 
-        <me.relex.circleindicator.CircleIndicator3
-            android:id="@+id/swipe_indicator"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/swipe_indicator_height"
-            android:background="@color/colorPrimaryDark"
-            app:layout_constraintBottom_toTopOf="@+id/castVoteButton" />
+    <me.relex.circleindicator.CircleIndicator3
+      android:id="@+id/swipe_indicator"
+      android:layout_width="match_parent"
+      android:layout_height="@dimen/swipe_indicator_height"
+      android:background="@color/colorPrimaryDark"
+      app:layout_constraintBottom_toTopOf="@+id/castVoteButton" />
 
-        <Button
-            android:id="@+id/castVoteButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center"
-            android:gravity="bottom"
-            android:text="@string/button_text"
-            app:layout_constraintBottom_toBottomOf="@+id/fragment_cast_vote"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+    <Button
+      android:id="@+id/castVoteButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal|center"
+      android:gravity="bottom"
+      android:text="@string/button_text"
+      app:layout_constraintBottom_toBottomOf="@+id/fragment_cast_vote"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

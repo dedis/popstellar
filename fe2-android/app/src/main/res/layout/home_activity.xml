@@ -18,17 +18,17 @@
     tools:layout_editor_absoluteY="0dp" />
 
   <include
-      layout="@layout/tab_wallet"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      tools:layout_editor_absoluteX="0dp"
-      tools:layout_editor_absoluteY="0dp" />
+    layout="@layout/tab_wallet"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="0dp" />
 
   <include
-      layout="@layout/tab_socialmedia"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      tools:layout_editor_absoluteX="0dp"
-      tools:layout_editor_absoluteY="0dp" />
+    layout="@layout/tab_socialmedia"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:layout_editor_absoluteX="0dp"
+    tools:layout_editor_absoluteY="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
