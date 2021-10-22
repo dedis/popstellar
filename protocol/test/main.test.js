@@ -85,7 +85,7 @@ test("message data: lao", () => {
     lao_state = require("../examples/messageData/lao_state/lao_state.json")
     expect(lao_state).toBeValid(messageDataSchema);
 
-    lao_update = require("../examples/messageData/lao_update.json")
+    lao_update = require("../examples/messageData/lao_update/lao_update.json")
     expect(lao_update).toBeValid(messageDataSchema);
 })
 
