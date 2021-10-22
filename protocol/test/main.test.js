@@ -82,7 +82,7 @@ test("message data: lao", () => {
     lao_create = require("../examples/messageData/lao_create/lao_create.json")
     expect(lao_create).toBeValid(messageDataSchema);
 
-    lao_state = require("../examples/messageData/lao_state.json")
+    lao_state = require("../examples/messageData/lao_state/lao_state.json")
     expect(lao_state).toBeValid(messageDataSchema);
 
     lao_update = require("../examples/messageData/lao_update.json")
