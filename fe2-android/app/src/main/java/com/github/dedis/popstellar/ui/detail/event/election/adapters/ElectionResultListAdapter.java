@@ -14,8 +14,8 @@ import java.util.List;
 public class ElectionResultListAdapter
     extends ArrayAdapter<ElectionResultListAdapter.ElectionResult> {
 
-  private Context mContext;
-  private int mResource;
+  private final Context mContext;
+  private final int mResource;
 
   public ElectionResultListAdapter(Context context, int resource, List<ElectionResult> objects) {
     super(context, resource, objects);

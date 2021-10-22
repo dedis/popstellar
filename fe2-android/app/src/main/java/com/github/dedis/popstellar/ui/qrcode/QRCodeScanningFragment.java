@@ -34,9 +34,9 @@ public final class QRCodeScanningFragment extends Fragment {
   private static final int HANDLE_GMS = 9001;
   private QrcodeFragmentBinding mQrCodeFragBinding;
   private QRCodeScanningViewModel mQRCodeScanningViewModel;
-  private CameraSource camera;
+  private final CameraSource camera;
   private CameraPreview mPreview;
-  private BarcodeDetector barcodeDetector;
+  private final BarcodeDetector barcodeDetector;
   private Integer nbAttendees = 0;
   private AlertDialog closeRollCallAlert;
 
