@@ -18,7 +18,7 @@ import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import TextInputLine from '../components/TextInputLine';
+import TextInputLine from 'components/TextInputLine';
 
 /**
  * Manages the Launch screen, where the user enters a name and an address to launch and connect
@@ -87,12 +87,10 @@ const Launch = ({ navigation }: IPropTypes) => {
           onChangeText={(input: string) => setInputLaoName(input)}
           defaultValue={inputLaoName}
         />
-        <TextInput
-          style={styles.textInput}
+        <TextInputLine
           placeholder={STRINGS.launch_address}
           onChangeText={(input: string) => setInputAddress(input)}
           defaultValue={inputAddress}
-          selectTextOnFocus
         />
       </View>
       <View style={styles.viewBottom}>
