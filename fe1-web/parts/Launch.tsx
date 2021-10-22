@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, TextInput, TextStyle, ViewStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -14,11 +14,11 @@ import {
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
 
-import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
 import { subscribeToChannel } from 'network/CommunicationApi';
+import TextInputLine from '../components/TextInputLine';
 
 /**
  * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
@@ -30,12 +30,6 @@ import { subscribeToChannel } from 'network/CommunicationApi';
  * TODO implement the launch button action
  */
 const styles = StyleSheet.create({
-  textInput: {
-    ...Typography.base,
-    borderBottomWidth: 2,
-    marginVertical: Spacing.s,
-    marginHorizontal: Spacing.xl,
-  } as TextStyle,
   viewTop: {
     justifyContent: 'flex-start',
   } as ViewStyle,
@@ -91,8 +85,7 @@ const Launch = ({ navigation }: IPropTypes) => {
     <View style={styleContainer.flex}>
       <View style={styles.viewTop}>
         <TextBlock text={STRINGS.launch_description} />
-        <TextInput
-          style={styles.textInput}
+        <TextInputLine
           placeholder={STRINGS.launch_organization_name}
           onChangeText={(input: string) => setInputLaoName(input)}
           defaultValue={inputLaoName}
