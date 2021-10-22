@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
-/**
- * Class handling connect fragment tests
- */
+/** Class handling connect fragment tests */
 public class QRCodeScanningFragmentTest {
 
   //  private static final String TEST_URL = "Test url";

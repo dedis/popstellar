@@ -6,8 +6,11 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TimePicker;
+
 import androidx.appcompat.app.AppCompatDialogFragment;
+
 import com.github.dedis.popstellar.R;
+
 import java.util.Calendar;
 
 public final class TimePickerFragment extends AppCompatDialogFragment
@@ -27,9 +30,9 @@ public final class TimePickerFragment extends AppCompatDialogFragment
   /**
    * Called when the user is done setting a new time and the dialog has closed.
    *
-   * @param view      the view associated with this listener
+   * @param view the view associated with this listener
    * @param hourOfDay the hour that was set
-   * @param minute    the minute that was set
+   * @param minute the minute that was set
    */
   @Override
   public void onTimeSet(TimePicker view, int hourOfDay, int minute) {

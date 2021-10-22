@@ -4,9 +4,9 @@ import java.util.Base64;
 
 public class PublicKeySignaturePair {
 
-  private byte[] witness;
+  private final byte[] witness;
 
-  private byte[] signature;
+  private final byte[] signature;
 
   public PublicKeySignaturePair(byte[] witness, byte[] signature) {
     this.witness = witness;
@@ -27,5 +27,15 @@ public class PublicKeySignaturePair {
 
   public String getSignatureEncoded() {
     return Base64.getUrlEncoder().encodeToString(this.signature);
+  }
+
+  @Override
+  public String toString() {
+    return "PublicKeySignaturePair{"
+        + "witness="
+        + getWitnessEncoded()
+        + ", signature="
+        + getSignatureEncoded()
+        + '}';
   }
 }

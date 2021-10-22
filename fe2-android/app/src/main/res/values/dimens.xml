@@ -20,7 +20,6 @@
   <dimen name="event_displayed_name">15sp</dimen>
   <dimen name="date_text_event">15sp</dimen>
 
-
   <!-- Camera preview -->
   <integer name="camera_preview_width">240</integer>
   <integer name="camera_preview_height">320</integer>
@@ -36,7 +35,6 @@
 
   <!-- Button -->
   <dimen name="margin_button">16dp</dimen>
-
 
   <!-- QR code -->
   <dimen name="qr_code_size">200dp</dimen>

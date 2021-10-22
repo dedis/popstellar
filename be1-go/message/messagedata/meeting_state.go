@@ -1,6 +1,8 @@
 package messagedata
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // MeetingState defines a message data
 type MeetingState struct {

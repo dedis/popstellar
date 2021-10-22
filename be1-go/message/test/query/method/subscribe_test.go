@@ -35,6 +35,6 @@ func Test_Subscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "subscribe", subscribe.Method)
-	require.Equal(t, "/root/XXX", subscribe.Params.Channel)
-	require.Equal(t, 999, subscribe.ID)
+	require.Equal(t, "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=", subscribe.Params.Channel)
+	require.Equal(t, 2, subscribe.ID)
 }

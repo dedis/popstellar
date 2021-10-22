@@ -2,6 +2,7 @@
 <layout xmlns:tools="http://schemas.android.com/tools"
   xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
+
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_manage_election"
     android:layout_width="match_parent"
@@ -20,7 +21,6 @@
       android:orientation="horizontal"
       app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
-
     <ScrollView
       android:id="@+id/manage_election_scrollview"
       android:layout_width="match_parent"
@@ -36,7 +36,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:layout_constraintTop_toBottomOf="@id/manage_election_scrollview">
-
 
         <TextView
           android:id="@+id/manage_election_lao_name"
@@ -62,14 +61,12 @@
           android:textSize="@dimen/size_body"
           android:textStyle="italic" />
 
-
         <LinearLayout
           android:id="@+id/manage_election_details"
           android:layout_width="match_parent"
           android:layout_height="@dimen/manage_election_linear_layout"
           android:orientation="vertical"
           app:layout_constraintTop_toBottomOf="@id/manage_election_title">
-
 
           <TextView
             android:id="@+id/manage_election_title"
@@ -180,9 +177,7 @@
             app:layout_constrainedHeight="true"
             app:layout_constraintLeft_toLeftOf="parent" />
 
-
         </LinearLayout>
-
 
         <Button
           android:id="@+id/edit_name"
@@ -226,18 +221,15 @@
           android:layout_height="wrap_content"
           android:text="Edit Election End Date" />
 
-
         <Button
           android:id="@+id/terminate_election"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:text="@string/cancel_election" />
 
-
       </LinearLayout>
 
     </ScrollView>
-
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

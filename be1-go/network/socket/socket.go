@@ -2,7 +2,6 @@ package socket
 
 import (
 	"encoding/json"
-	"log"
 	"sync"
 	"time"
 
@@ -72,7 +71,7 @@ func (s *baseSocket) ReadPump() {
 		s.closedSockets <- s.ID()
 	}()
 
-	log.Printf("listening for messages from %s", s.socketType)
+	s.log.Info().Msgf("listening for messages from %s", s.socketType)
 
 	s.conn.SetReadLimit(maxMessageSize)
 	s.conn.SetReadDeadline(time.Now().Add(pongWait))
@@ -85,9 +84,11 @@ func (s *baseSocket) ReadPump() {
 		_, message, err := s.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				log.Printf("connection dropped unexpectedly: %v", err)
+				s.log.Err(err).
+					Str("socket", s.conn.RemoteAddr().String()).
+					Msg("connection dropped unexpectedly")
 			} else {
-				log.Printf("closing the read pump")
+				s.log.Info().Msg("closing the read pump")
 			}
 			break
 		}
@@ -133,24 +134,24 @@ func (s *baseSocket) WritePump() {
 
 			w, err := s.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
-				log.Printf("failed to retrieve writer: %v", err)
+				s.log.Err(err).Msg("failed to retrieve writer")
 				return
 			}
 
 			w.Write(message)
 
 			if err := w.Close(); err != nil {
-				log.Printf("failed to close writer: %v", err)
+				s.log.Err(err).Msg("failed to close writer")
 				return
 			}
 		case <-ticker.C:
 			s.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := s.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-				log.Printf("failed to send ping: %v", err)
+				s.log.Err(err).Msg("failed to send ping")
 				return
 			}
 		case <-s.done:
-			log.Println("closing the write pump")
+			s.log.Info().Msg("closing the write pump")
 			s.conn.WriteMessage(websocket.CloseGoingAway, []byte{})
 			return
 		}

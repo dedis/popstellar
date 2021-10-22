@@ -9,7 +9,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.detail.event.election.fragments.CastVoteFragment">
 
-
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_tab"
       android:layout_width="wrap_content"
@@ -51,7 +50,6 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintGuide_begin="@dimen/guideline_titles"
       app:layout_constraintTop_toTopOf="parent" />
-
 
     <androidx.viewpager2.widget.ViewPager2
       android:id="@+id/castVotePager"
