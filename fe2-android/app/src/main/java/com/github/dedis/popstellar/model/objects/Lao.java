@@ -87,15 +87,23 @@ public final class Lao {
     elections.put(newId, election);
   }
 
+  /**
+   * Store the given consensus and update all nodes concerned by it.
+   *
+   * @param consensus the consensus
+   */
   public void updateConsensus(Consensus consensus) {
     if (consensus == null) {
       throw new IllegalArgumentException("The consensus is null");
     }
     messageIdToConsensus.put(consensus.getMessageId(), consensus);
+
     Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
+    // add to each node the messageId of the consensus if they accept it
     nodes.stream()
         .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
         .forEach(node -> node.addMessageIdOfAnAcceptedConsensus(consensus.getMessageId()));
+
     // add the consensus to node if it is proposer
     nodes.stream()
         .filter(node -> node.getPublicKey().equals(consensus.getProposer()))
@@ -331,6 +339,8 @@ public final class Lao {
         + rollCalls
         + ", elections="
         + elections
+        + ", consensuses="
+        + messageIdToConsensus.values()
         + '}';
   }
 }

@@ -16,7 +16,9 @@ public final class ConsensusNode {
   }
 
   private final String publicKey;
+  // contains messageId of consensus that this node has accepted
   private final Set<String> acceptedMessageIds;
+  // list of all consensus that this node has created
   private final List<Consensus> consensuses;
 
   public ConsensusNode(String publicKey) {
@@ -56,12 +58,22 @@ public final class ConsensusNode {
     }
   }
 
+  /**
+   * Add the given consensus to this node. If it was already present, do nothing.
+   *
+   * @param consensus the consensus to add
+   */
   public void addConsensus(Consensus consensus) {
     if (consensuses.stream().noneMatch(c2 -> c2.getMessageId().equals(consensus.getMessageId()))) {
       consensuses.add(consensus);
     }
   }
 
+  /**
+   * Add the given messageId to the list of accepted consensus.
+   *
+   * @param consensusMessageId the messageId of the consensus to add
+   */
   public void addMessageIdOfAnAcceptedConsensus(String consensusMessageId) {
     this.acceptedMessageIds.add(consensusMessageId);
   }

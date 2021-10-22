@@ -234,6 +234,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
   }
 
+  /**
+   * Returns the public key or null if an error occurred.
+   *
+   * @return the public key
+   */
   public String getPublicKey() {
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -517,9 +522,9 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   /**
-   * Creates new consensus event.
+   * Creates new consensus.
    *
-   * <p>Publish a GeneralMessage containing CreateConsensus data.
+   * <p>Publish a GeneralMessage containing ConsensusElect data.
    *
    * @param creation the creation time of the consensus
    * @param objId the id of the object the consensus refers to (e.g. election_id)
@@ -560,24 +565,32 @@ public class LaoDetailViewModel extends AndroidViewModel
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "created a consensus with id: " + consensusElect.getInstanceId());
+                      Log.d(TAG, "created a consensus with messageId: " + msg.getMessageId());
                     } else {
                       Log.d(TAG, "failed to create a consensus");
                     }
                   },
                   throwable ->
-                      Log.d(TAG, "timed out waiting for result on consensus/create", throwable));
+                      Log.d(TAG, "timed out waiting for result on consensus/elect", throwable));
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
   }
 
+  /**
+   * Sends an ConsensusElectAccept message.
+   *
+   * <p>Publish a GeneralMessage containing ConsensusElectAccept data.
+   *
+   * @param consensus the corresponding consensus
+   * @param accept true if accepted, false if rejected
+   */
   public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
     Log.d(
         TAG,
-        "sending a new elect-accept for consensus : "
-            + consensus.getId()
+        "sending a new elect-accept for consensus with messageId : "
+            + consensus.getMessageId()
             + " with value "
             + accept);
 
@@ -608,13 +621,19 @@ public class LaoDetailViewModel extends AndroidViewModel
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "sent a consensus vote successfully");
+                      Log.d(TAG, "sent an elect-accept successfully");
                     } else {
-                      Log.d(TAG, "failed to send the vote");
+                      Log.d(
+                          TAG,
+                          "failed to send the elect-accept for consensus with messageId : "
+                              + consensus.getMessageId());
                     }
                   },
                   throwable ->
-                      Log.d(TAG, "timed out waiting for result on consensus/vote", throwable));
+                      Log.d(
+                          TAG,
+                          "timed out waiting for result on consensus/elect-accept",
+                          throwable));
 
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
@@ -622,8 +641,17 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
   }
 
+  /**
+   * Sends a ConsensusLearn
+   *
+   * <p>Publish a GeneralMessage containing ConsensusLearn data.
+   *
+   * @param consensus the corresponding consensus
+   */
   public void sendConsensusLearn(Consensus consensus) {
-    Log.d(TAG, "sending a consensus learn for : " + consensus.getId());
+    Log.d(
+        TAG,
+        "sending a consensus learn for consensus with messageId : " + consensus.getMessageId());
 
     List<String> acceptorsMessageIds =
         new ArrayList<>(consensus.getAcceptorsToMessageId().values());
@@ -648,11 +676,16 @@ public class LaoDetailViewModel extends AndroidViewModel
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "sent a consensus learn successfully");
+                      Log.d(
+                          TAG,
+                          "sent a consensus learn successfully for consensus with messageId : "
+                              + consensusLearn.getMessageId());
                     } else {
-                      Log.d(TAG, "failed to send the learn");
+                      Log.d(
+                          TAG,
+                          "failed to send the learn for consensus with messageId : "
+                              + consensusLearn.getMessageId());
                     }
-                    openLaoDetail();
                   },
                   throwable ->
                       Log.d(TAG, "timed out waiting for result on consensus/learn", throwable));

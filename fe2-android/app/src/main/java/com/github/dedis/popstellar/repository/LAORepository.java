@@ -375,10 +375,22 @@ public class LAORepository {
     return laoById;
   }
 
+  /**
+   * Return an Observable to the list of nodes in a given channel.
+   *
+   * @param channel the lao channel.
+   * @return an Observable to the list of nodes
+   */
   public Observable<List<ConsensusNode>> getNodesByChannel(String channel) {
     return channelToNodesSubject.get(channel);
   }
 
+  /**
+   * Emit an update to the observer of nodes for the given lao channel. Create the BehaviorSubject
+   * if absent (first update).
+   *
+   * @param channel the lao channel
+   */
   public void updateNodes(String channel) {
     List<ConsensusNode> nodes = getLaoByChannel(channel).getNodes();
     channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create());

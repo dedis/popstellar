@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
@@ -9,6 +10,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
