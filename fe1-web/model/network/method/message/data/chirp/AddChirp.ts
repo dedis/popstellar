@@ -4,7 +4,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
-const MAX_CHIRP_CHARS = 280;
+const MAX_CHIRP_CHARS = 300;
 
 export class AddChirp implements MessageData {
   public readonly object: ObjectType = ObjectType.CHIRP;
