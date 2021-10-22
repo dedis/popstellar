@@ -115,9 +115,18 @@ public class ElectionStartFragment extends Fragment {
     disposables.add(disposable);
 
     electionStart.setOnClickListener(
-        clicked ->
+        clicked -> {
+          Optional<Consensus> acceptedConsensus =
+              ownNode
+                  .getLastConsensus(electionId)
+                  .filter(consensus -> consensus.canBeAccepted() && !consensus.isFailed());
+          if (acceptedConsensus.isPresent()) {
+            mLaoDetailViewModel.sendConsensusLearn(acceptedConsensus.get());
+          } else {
             mLaoDetailViewModel.createNewConsensus(
-                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
+                Instant.now().getEpochSecond(), electionId, "election", "state", "started");
+          }
+        });
 
     List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
 
@@ -189,7 +198,14 @@ public class ElectionStartFragment extends Fragment {
       electionStart.setEnabled(false);
     } else {
       State ownState = ownNode.getState(election.getId());
-      electionStart.setEnabled(ownState == State.WAITING || ownState == State.FAILED);
+      boolean canAccept =
+          ownState == State.STARTING
+              && ownNode
+                  .getLastConsensus(election.getId())
+                  .map(Consensus::canBeAccepted)
+                  .orElse(false);
+      boolean canClick = canAccept || ownState == State.WAITING || ownState == State.FAILED;
+      electionStart.setEnabled(canClick);
     }
   }
 }
