@@ -252,7 +252,7 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
-		err = c.verifyMessageLaoID(msg.MessageID)
+		err = c.verifyMessageLaoID(laoState.ID)
 		if err != nil {
 			return xerrors.Errorf("invalid lao#state message: %v", err)
 		}
