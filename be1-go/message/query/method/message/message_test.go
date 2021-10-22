@@ -12,7 +12,7 @@ import (
 
 func Test_UnmarshalData(t *testing.T) {
 	messageDataPath := filepath.Join("..", "..", "..", "..", "..", "protocol",
-		"examples", "messageData", "lao_create.json")
+		"examples", "messageData", "lao_create/lao_create.json")
 
 	messageDataBuf, err := os.ReadFile(messageDataPath)
 	require.NoError(t, err)
