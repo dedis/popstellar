@@ -79,7 +79,7 @@ describe("Check files", () => {
 });
 
 test("message data: lao", () => {
-    lao_create = require("../examples/messageData/lao_create.json")
+    lao_create = require("../examples/messageData/lao_create/lao_create.json")
     expect(lao_create).toBeValid(messageDataSchema);
 
     lao_state = require("../examples/messageData/lao_state.json")
