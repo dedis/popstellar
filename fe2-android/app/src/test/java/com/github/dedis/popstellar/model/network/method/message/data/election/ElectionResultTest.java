@@ -15,11 +15,11 @@ import java.util.List;
 
 public class ElectionResultTest {
 
-  private List<QuestionResult> results =
+  private final List<QuestionResult> results =
       Collections.singletonList(new QuestionResult("Candidate1", 40));
-  private List<ElectionResultQuestion> questions =
+  private final List<ElectionResultQuestion> questions =
       Collections.singletonList(new ElectionResultQuestion("question id", results));
-  private ElectionResult electionResult = new ElectionResult(questions);
+  private final ElectionResult electionResult = new ElectionResult(questions);
 
   @Test
   public void questionsCantBeNull() {

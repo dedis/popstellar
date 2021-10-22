@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
+
   <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/fragment_create_roll_call_event"
     android:layout_width="match_parent"
@@ -37,7 +38,6 @@
         android:hint="@string/roll_call_title_required"
         android:inputType="text"
         android:autofillHints="false" />
-
 
       <include
         android:id="@+id/roll_call_date"
@@ -111,7 +111,6 @@
         android:enabled="false"
         android:text="@string/roll_call_open_attendees" />
     </LinearLayout>
-
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -21,9 +21,9 @@
     <include
       android:id="@+id/qr_code_tab_back"
       layout="@layout/tab_back"
-      android:visibility="@{(scanningAction == ScanningAction.ADD_WITNESS) ? View.VISIBLE : View.GONE}"
       android:layout_width="match_parent"
-      android:layout_height="match_parent" />
+      android:layout_height="match_parent"
+      android:visibility="@{(scanningAction == ScanningAction.ADD_WITNESS) ? View.VISIBLE : View.GONE}" />
 
     <androidx.constraintlayout.widget.Guideline
       android:id="@+id/guideline_horizontal"
@@ -31,7 +31,6 @@
       android:layout_height="match_parent"
       android:orientation="horizontal"
       app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
-    p
 
     <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_width="match_parent"
@@ -50,8 +49,8 @@
           android:id="@+id/scan_description"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:paddingTop="@dimen/camera_preview_text_padding_top"
           android:gravity="center"
+          android:paddingTop="@dimen/camera_preview_text_padding_top"
           android:text="@string/qrcode_scanning_add_attendee"
           android:textSize="@dimen/size_title"
           android:textStyle="bold"
@@ -82,8 +81,8 @@
       android:id="@+id/add_attendee_confirm"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:visibility="gone"
       android:text="@string/close_roll_call"
+      android:visibility="gone"
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintRight_toRightOf="parent" />
 
@@ -100,21 +99,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/margin_text_small"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
         android:text="@string/total"
-        android:textSize="@dimen/size_title" />
+        android:textSize="@dimen/size_title"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
       <TextView
         android:id="@+id/add_attendee_number_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
         android:text=""
-        android:textSize="@dimen/size_title" />
+        android:textSize="@dimen/size_title"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

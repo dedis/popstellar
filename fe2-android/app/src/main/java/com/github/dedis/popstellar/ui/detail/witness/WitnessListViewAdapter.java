@@ -23,7 +23,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
 
   private List<String> witnesses;
 
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
 
   public WitnessListViewAdapter(
       List<String> witness, LaoDetailViewModel viewModel, LifecycleOwner activity) {

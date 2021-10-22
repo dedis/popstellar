@@ -19,9 +19,9 @@ public class LAOListAdapter extends BaseAdapter {
 
   private List<Lao> laos;
 
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
 
-  private boolean openLaoDetail;
+  private final boolean openLaoDetail;
 
   public LAOListAdapter(
       List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity, boolean openLaoDetail) {

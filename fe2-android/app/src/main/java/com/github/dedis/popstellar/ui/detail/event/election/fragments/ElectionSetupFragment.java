@@ -43,7 +43,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   // Enum of all voting methods, associated to a string desc for protocol and spinner display
   public enum VotingMethods {
     PLURALITY("Plurality");
-    private String desc;
+    private final String desc;
 
     VotingMethods(String desc) {
       this.desc = desc;

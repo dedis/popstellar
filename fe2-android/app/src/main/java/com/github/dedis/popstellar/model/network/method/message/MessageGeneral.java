@@ -31,7 +31,7 @@ public final class MessageGeneral {
 
   private final byte[] dataBuf;
 
-  private Data data;
+  private final Data data;
 
   private byte[] signature;
 
@@ -39,7 +39,7 @@ public final class MessageGeneral {
 
   private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
 
-  private PublicKeyVerify verifier;
+  private final PublicKeyVerify verifier;
 
   public MessageGeneral(byte[] sender, Data data, PublicKeySign signer, Gson gson) {
     this.sender = sender;

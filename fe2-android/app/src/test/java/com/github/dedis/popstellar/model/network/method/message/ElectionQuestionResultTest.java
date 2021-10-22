@@ -15,10 +15,10 @@ import java.util.List;
 
 public class ElectionQuestionResultTest {
 
-  private String questionId = "questionId";
-  private List<QuestionResult> results =
+  private final String questionId = "questionId";
+  private final List<QuestionResult> results =
       Collections.singletonList(new QuestionResult("Candidate1", 30));
-  private ElectionResultQuestion electionQuestionResult =
+  private final ElectionResultQuestion electionQuestionResult =
       new ElectionResultQuestion(questionId, results);
 
   @Test

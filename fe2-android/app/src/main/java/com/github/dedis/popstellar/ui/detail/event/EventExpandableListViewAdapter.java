@@ -46,7 +46,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       new SimpleDateFormat("dd/MM/yyyy HH:mm ", Locale.ENGLISH);
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
-  protected HashMap<EventCategory, List<Event>> eventsMap;
+  protected final HashMap<EventCategory, List<Event>> eventsMap;
 
   /**
    * Constructor for the expandable list view adapter to display the events in the attendee UI

@@ -18,7 +18,7 @@ import java.util.List;
 public class AttendeesListAdapter extends BaseAdapter {
 
   private List<String> attendees;
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
 
   public AttendeesListAdapter(List<String> attendees, LifecycleOwner activity) {
     setList(attendees);
