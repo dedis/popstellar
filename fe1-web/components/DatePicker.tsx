@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DatePickerElement from 'react-datepicker';
-import { Timestamp } from '../model/objects';
+import { Timestamp } from 'model/objects';
 
 const ONE_MINUTE_IN_SECONDS = 60;
 
@@ -22,8 +22,7 @@ const DatePicker = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types
-  selected: PropTypes.any,
+  selected: PropTypes.instanceOf(Date),
   onChange: PropTypes.func.isRequired,
 };
 DatePicker.propTypes = propTypes;
@@ -35,13 +34,6 @@ DatePicker.defaultProps = {
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default DatePicker;
-
-/**
- * Transforms a date into a Timestamp.
- *
- * @param date - The date to transform
- */
-export const fromDate = (date: Date) => Timestamp.dateToTimestamp(date);
 
 /**
  * Function called when the user changes the start time. If the date is valid (not in the past),
@@ -57,7 +49,7 @@ export function onChangeStartTime(
   setStartDate: React.Dispatch<React.SetStateAction<Timestamp>>,
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
 ) {
-  const newStart = fromDate(newStartDate);
+  const newStart = Timestamp.dateToTimestamp(newStartDate);
   const now = Timestamp.EpochNow();
   let actualStartDate: Date;
 
@@ -71,7 +63,7 @@ export function onChangeStartTime(
 
   const newEndDate = new Date(actualStartDate.getTime());
   newEndDate.setHours(actualStartDate.getHours() + 1);
-  setEndDate(fromDate(newEndDate));
+  setEndDate(Timestamp.dateToTimestamp(newEndDate));
 }
 
 /**
@@ -87,7 +79,7 @@ export function onChangeEndTime(
   startTime: Timestamp,
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
 ) {
-  const newEnd = fromDate(newEndDate);
+  const newEnd = Timestamp.dateToTimestamp(newEndDate);
   if (newEnd.before(startTime)) {
     setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS));
   } else {
