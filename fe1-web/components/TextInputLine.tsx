@@ -22,8 +22,12 @@ const TextInputLine = (props: IPropTypes) => {
   let { placeholder } = props;
   let { defaultValue } = props;
 
-  if (placeholder == null) placeholder = '';
-  if (defaultValue == null) defaultValue = '';
+  if (placeholder == null) {
+    placeholder = '';
+  }
+  if (defaultValue == null) {
+    defaultValue = '';
+  }
 
   return (
     <TextInput
