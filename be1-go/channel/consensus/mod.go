@@ -219,7 +219,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 	return nil
 }
 
-// process ConsensusElect processes an elect action.
+// ProcessConsensusElect processes an elect action.
 func (c *Channel) processConsensusElect(data messagedata.ConsensusElect) error {
 
 	err := data.Verify()
@@ -227,7 +227,7 @@ func (c *Channel) processConsensusElect(data messagedata.ConsensusElect) error {
 	return err
 }
 
-// process ConsensusElectAccept processes an elect accept action.
+// ProcessConsensusElectAccept processes an elect accept action.
 func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAccept) error {
 
 	// check wether a message with the correct ID was received previously
@@ -239,7 +239,7 @@ func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAcc
 	return nil
 }
 
-// process ConsensusElectAccept processes a elect accept action.
+// ProcessConsensusElectAccept processes a elect accept action.
 func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 
 	// check wether a message with the correct ID was received previously

@@ -84,6 +84,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 	return &witnessHub, nil
 }
 
+// tempHandleMessage lets a witness handle message.
 // As the Witness for now imitate the organizer when getting message, this
 // function is there while waiting a correct witness implementation. Function
 // there to reduce code duplication
@@ -320,6 +321,7 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	}
 }
 
+// handlePublish let a witness handle a publish message
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
 	var publish method.Publish
 
@@ -346,6 +348,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	return publish.ID, nil
 }
 
+// handleSubscribe let a witness handle a subscribe message
 func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
 	var subscribe method.Subscribe
 
@@ -367,6 +370,7 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 	return subscribe.ID, nil
 }
 
+// handleUnsubscribe let a witness handle an unsubscribe message
 func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, error) {
 	var unsubscribe method.Unsubscribe
 
@@ -388,6 +392,7 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 	return unsubscribe.ID, nil
 }
 
+// handleCatchup let a witness handle a catchup message
 func (h *Hub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
@@ -409,6 +414,7 @@ func (h *Hub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) 
 	return msg, catchup.ID, nil
 }
 
+// getChan finds a channel based on its path
 func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 	if channelPath[:6] != rootPrefix {
 		return nil, xerrors.Errorf("channel id must begin with \"/root/\", got: %q", channelPath[:6])

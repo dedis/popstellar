@@ -20,7 +20,7 @@ type LaoCreate struct {
 	Witnesses []string `json:"witnesses"`
 }
 
-// Verify that the LaoCreate message is valid
+// Verify verify that the LaoCreate message is valid
 func (message LaoCreate) Verify() error {
 	expectedLaoID := Hash([]string{
 		message.Organizer,

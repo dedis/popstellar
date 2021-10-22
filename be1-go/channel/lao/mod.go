@@ -83,7 +83,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	}
 }
 
-// Get the consensus channel linked with the LAO channel
+// GetConsensusChannel returns the consensus channel linked with the LAO channel
 func (c *Channel) GetConsensusChannel() *consensus.Channel {
 	return c.consensus
 }
@@ -666,7 +666,7 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 
 const InvalidIDMessage string = "ID %s does not correspond with message data"
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallCreateID verify the id of a message
 func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
 	expectedID := messagedata.Hash([]string{
 		"R",
@@ -682,7 +682,7 @@ func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) 
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallOpenID verify the id of a message
 func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
 	expectedID := messagedata.Hash([]string{
 		"R",
@@ -698,7 +698,7 @@ func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) erro
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallCloseID verify the id of a message
 func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
 	expectedID := messagedata.Hash([]string{
 		"R",
