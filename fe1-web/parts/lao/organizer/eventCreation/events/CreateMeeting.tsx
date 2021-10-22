@@ -11,7 +11,7 @@ import { requestCreateMeeting } from 'network/MessageApi';
 import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
-import { Timestamp } from '../../../../../model/objects';
+import { Timestamp } from 'model/objects';
 import { ONE_HOUR_IN_SECONDS } from './CreateElection';
 
 /**
