@@ -13,6 +13,10 @@ import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 import { ONE_HOUR_IN_SECONDS } from './CreateElection';
 
+function dateToTimestamp(date: Date): Timestamp {
+  return new Timestamp(Math.floor(date.getTime() / 1000));
+}
+
 /**
  * Screen to create a roll-call event
  *
@@ -42,13 +46,12 @@ const CreateRollCall = ({ route }: any) => {
         <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
         <DatePicker
           selected={startTime}
-          onChange={(date: Date) => onChangeStartTime(date, setProposedStartDate,
-            setProposedEndDate)}
+          onChange={(date: Date) => setProposedStartDate(dateToTimestamp(date))}
         />
         <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
         <DatePicker
           selected={endTime}
-          onChange={(date: Date) => onChangeEndTime(date, proposedStartDate, setProposedEndDate)}
+          onChange={(date: Date) => setProposedEndDate(dateToTimestamp(date))}
         />
       </View>
     );

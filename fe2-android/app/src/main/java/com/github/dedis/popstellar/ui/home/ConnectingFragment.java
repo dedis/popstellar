@@ -4,9 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
 import com.github.dedis.popstellar.databinding.ConnectingFragmentBinding;
 
 /**
@@ -20,16 +23,14 @@ public final class ConnectingFragment extends Fragment {
   private ConnectingFragmentBinding mConnectingFragBinding;
   private HomeViewModel mHomeViewModel;
 
-  /**
-   * Create a new instance of the connecting fragment.
-   */
+  /** Create a new instance of the connecting fragment. */
   public static ConnectingFragment newInstance() {
     return new ConnectingFragment();
   }
 
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
     mConnectingFragBinding = ConnectingFragmentBinding.inflate(inflater, container, false);
 

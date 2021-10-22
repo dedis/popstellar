@@ -15,8 +15,6 @@ const DatePicker = (props: IPropTypes) => {
       onChange={(date: any) => onChange(date)}
       dateFormat="MM/dd/yyyy HH:mm"
       showTimeInput
-      minDate={new Date()}
-      showDisabledMonthNavigation
     />
   );
 };

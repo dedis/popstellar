@@ -32,6 +32,10 @@ const (
 
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
+
+	// RootPrefix denotes the prefix for the root channel, used to verify the
+	// channel of origin of some message
+	RootPrefix = "/root/"
 )
 
 // GetObjectAndAction returns the object and action of a JSON RPC message.

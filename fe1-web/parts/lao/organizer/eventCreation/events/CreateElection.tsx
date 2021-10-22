@@ -10,7 +10,7 @@ import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DateP
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import {
-  Hash, Lao, Question, EventTags, Timestamp,
+  Hash, Lao, Timestamp, Question, EventTags,
 } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
@@ -23,6 +23,7 @@ export const ONE_HOUR_IN_SECONDS = 3600;
 /**
  * UI to create an Election Event
  */
+
 const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
@@ -48,14 +49,14 @@ const CreateElection = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
             selected={startTime}
-            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate)}
+            onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
             selected={endTime}
-            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
+            onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
           />
         </View>
       </View>

@@ -8,9 +8,11 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import java.time.Instant;
 import java.util.ArrayList;
-import org.junit.Test;
 
 public class CloseRollCallTest {
 
@@ -18,15 +20,22 @@ public class CloseRollCallTest {
   private final String name = "name";
   private final long time = Instant.now().getEpochSecond();
   private final String location = "Location";
-  private final CreateRollCall createRollCall = new CreateRollCall(name, time, time, location, null, laoId);
-  private final OpenRollCall openRollCall = new OpenRollCall(laoId, createRollCall.getId(), time, EventState.CREATED);
-  private final CloseRollCall closeRollCall = new CloseRollCall(laoId, openRollCall.getUpdateId(), time, new ArrayList<>());
+  private final CreateRollCall createRollCall =
+      new CreateRollCall(name, time, time, time, location, null, laoId);
+  private final OpenRollCall openRollCall =
+      new OpenRollCall(laoId, createRollCall.getId(), time, EventState.CREATED);
+  private final CloseRollCall closeRollCall =
+      new CloseRollCall(laoId, openRollCall.getUpdateId(), time, new ArrayList<>());
 
   @Test
   public void generateCloseRollCallIdTest() {
     // Hash('R'||lao_id||closes||closed_at)
-    String expectedId = Hash.hash(EventType.ROLL_CALL.getSuffix(), laoId, closeRollCall.getCloses(),
-        Long.toString(closeRollCall.getClosedAt()));
+    String expectedId =
+        Hash.hash(
+            EventType.ROLL_CALL.getSuffix(),
+            laoId,
+            closeRollCall.getCloses(),
+            Long.toString(closeRollCall.getClosedAt()));
     assertThat(closeRollCall.getUpdateId(), is(expectedId));
   }
 

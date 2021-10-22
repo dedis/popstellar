@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, TextInput,
+  View, Button, Platform, TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -17,7 +17,13 @@ import { ONE_HOUR_IN_SECONDS } from './CreateElection';
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
+ *
+ * TODO makes impossible to set a finish time before the start time
  */
+function dateToTimestamp(date: Date): Timestamp {
+  return new Timestamp(Math.floor(date.getTime() / 1000));
+}
+
 const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
@@ -46,6 +52,24 @@ const CreateMeeting = ({ route }: any) => {
       });
   };
 
+  const onChangeStartTime = (date: Date) => {
+    const dateStamp: Timestamp = dateToTimestamp(date);
+    setStartDate(dateStamp);
+    if (endDate < startDate) {
+      setEndDate(dateStamp);
+    }
+  };
+
+  const onChangeEndTime = (date: Date) => {
+    const dateStamp: Timestamp = dateToTimestamp(date);
+
+    if (dateStamp < startDate) {
+      setEndDate(startDate);
+    } else {
+      setEndDate(dateStamp);
+    }
+  };
+
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
     startTime.setUTCSeconds(startDate.valueOf());
@@ -56,22 +80,25 @@ const CreateMeeting = ({ route }: any) => {
     }
 
     return (
-      <View style={styles.viewVertical}>
-        <View style={[styles.view, { padding: 5 }]}>
+      <>
+        { /* Start time */ }
+        <View style={styles.view}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
-          <DatePicker
-            selected={startTime}
-            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate)}
-          />
+          { /* zIndexBooster corrects the problem of DatePicker being other elements */ }
+          <DatePicker selected={startTime} onChange={onChangeStartTime} />
         </View>
-        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+
+        { /* End time */}
+        <View style={styles.view}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
-          <DatePicker
-            selected={endTime}
-            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
-          />
+          { /* zIndexBooster corrects the problem of DatePicker being other elements */}
+          <DatePicker selected={endTime} onChange={onChangeEndTime} />
+          <View>
+            { /* the view is there to avoid button stretching */ }
+            <Button onPress={() => setEndDate(new Timestamp(-1))} title="Clear" />
+          </View>
         </View>
-      </View>
+      </>
     );
   };
 

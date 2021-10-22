@@ -19,7 +19,6 @@
     android:orientation="vertical"
     app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_connect" />
 
-
   <androidx.constraintlayout.widget.Guideline
     android:id="@+id/guideline_vertical_tab_properties2"
     android:layout_width="match_parent"

@@ -6,18 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-/**
- * Fragment used to display the Home UI
- */
+/** Fragment used to display the Home UI */
 public final class HomeFragment extends Fragment {
 
   public static final String TAG = HomeFragment.class.getSimpleName();

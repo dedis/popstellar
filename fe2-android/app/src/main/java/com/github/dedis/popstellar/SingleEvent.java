@@ -2,7 +2,7 @@ package com.github.dedis.popstellar;
 
 public class SingleEvent<T> {
 
-  private T mContent;
+  private final T mContent;
 
   private boolean hasBeenHandled = false;
 

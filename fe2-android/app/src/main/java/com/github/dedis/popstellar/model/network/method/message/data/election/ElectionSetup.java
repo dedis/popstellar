@@ -5,8 +5,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.google.gson.annotations.SerializedName;
-import java.time.Instant;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ElectionSetup extends Data {
@@ -14,24 +15,30 @@ public class ElectionSetup extends Data {
   private final String id;
   private final String name;
   private final String lao;
+
   @SerializedName(value = "created_at")
   private final long createdAt;
+
   @SerializedName(value = "start_time")
   private final long startTime;
+
   @SerializedName(value = "end_time")
   private final long endTime;
+
   private final String version;
   private final List<ElectionQuestion> questions;
 
   /**
    * Constructor for a data setup Election Event
    *
-   * @param name  name of the Election
+   * @param name name of the Election
+   * @param creation of the Election
    * @param start of the Election
    * @param laoId id of the LAO
    */
   public ElectionSetup(
       String name,
+      long creation,
       long start,
       long end,
       List<String> votingMethod,
@@ -39,19 +46,24 @@ public class ElectionSetup extends Data {
       List<List<String>> ballotOptions,
       List<String> questionList,
       String laoId) {
-    if (name == null || votingMethod == null || writeIn == null || ballotOptions == null
-        || questionList == null || laoId == null) {
+    if (name == null
+        || votingMethod == null
+        || writeIn == null
+        || ballotOptions == null
+        || questionList == null
+        || laoId == null) {
       throw new IllegalArgumentException();
     }
-    if (end < 0 || start < 0 || end < start) {
+    if (end < 0 || start < 0 || end < start || creation > start || creation < 0) {
       throw new IllegalArgumentException("Timestamp cannot be negative");
     }
-    if (questionList.size() != votingMethod.size() || questionList.size() != writeIn.size()
+    if (questionList.size() != votingMethod.size()
+        || questionList.size() != writeIn.size()
         || questionList.size() != ballotOptions.size()) {
       throw new IllegalArgumentException("Lists are not of the same size");
     }
     this.name = name;
-    this.createdAt = Instant.now().getEpochSecond();
+    this.createdAt = creation;
     this.startTime = start;
     this.endTime = end;
     this.lao = laoId;
@@ -60,10 +72,13 @@ public class ElectionSetup extends Data {
     this.questions = new ArrayList<>();
     for (int i = 0; i < questionList.size(); i++) {
       this.questions.add(
-          new ElectionQuestion(questionList.get(i), votingMethod.get(i), writeIn.get(i),
-              ballotOptions.get(i), this.id));
+          new ElectionQuestion(
+              questionList.get(i),
+              votingMethod.get(i),
+              writeIn.get(i),
+              ballotOptions.get(i),
+              this.id));
     }
-
   }
 
   @Override
@@ -129,12 +144,7 @@ public class ElectionSetup extends Data {
   @Override
   public int hashCode() {
     return java.util.Objects.hash(
-        getId(),
-        getName(),
-        getCreation(),
-        getStartTime(),
-        getEndTime(),
-        getQuestions());
+        getId(), getName(), getCreation(), getStartTime(), getEndTime(), getQuestions());
   }
 
   @Override
@@ -149,20 +159,17 @@ public class ElectionSetup extends Data {
         + ", lao='"
         + lao
         + '\''
-        + ", creation='"
+        + ", createdAt="
         + createdAt
-        + '\''
-        + ", start='"
+        + ", startTime="
         + startTime
-        + '\''
-        + ", end="
+        + ", endTime="
         + endTime
-        + '\''
         + ", version='"
         + version
         + '\''
-        + questions.get(0).toString()
+        + ", questions="
+        + Arrays.toString(questions.toArray())
         + '}';
   }
-
 }

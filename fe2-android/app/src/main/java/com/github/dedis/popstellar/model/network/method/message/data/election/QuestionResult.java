@@ -5,8 +5,9 @@ import com.google.gson.annotations.SerializedName;
 public class QuestionResult {
 
   @SerializedName(value = "ballot_option")
-  private String ballotOption;
-  private int count;
+  private final String ballotOption;
+
+  private final int count;
 
   public QuestionResult(String ballotOption, int count) {
     if (ballotOption == null) {
@@ -22,5 +23,10 @@ public class QuestionResult {
 
   public Integer getCount() {
     return count;
+  }
+
+  @Override
+  public String toString() {
+    return "QuestionResult{" + "ballotOption='" + ballotOption + '\'' + ", count=" + count + '}';
   }
 }

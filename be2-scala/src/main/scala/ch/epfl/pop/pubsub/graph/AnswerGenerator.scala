@@ -2,9 +2,9 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.{ResultObject, _}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
+import ch.epfl.pop.model.network.{ResultObject, _}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 
@@ -19,7 +19,7 @@ object AnswerGenerator extends AskPatternConstants {
 
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getParams match {
       case Catchup(channel) =>
-        val f: Future[GraphMessage] = (DbActor.getInstance ? DbActor.Catchup(channel)).map {
+        val ask: Future[GraphMessage] = (DbActor.getInstance ? DbActor.Catchup(channel)).map {
           case DbActor.DbActorCatchupAck(list: List[Message]) =>
             val resultObject: ResultObject = new ResultObject(list)
             Left(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
@@ -27,10 +27,15 @@ object AnswerGenerator extends AskPatternConstants {
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcRequest.id))
         }
 
-        Await.result(f, duration)
+        Await.result(ask, duration)
 
 
-      case Broadcast(_, _) => ???
+      // Note: this is not going to remain true when server-to-server communication gets implemented
+      case Broadcast(_, _) => Right(PipelineError(
+        ErrorCodes.SERVER_ERROR.id,
+        "Server received a Broadcast message which should never happen (broadcast messages are only emitted by server)",
+        rpcRequest.id
+      ))
 
       // Standard answer res == 0
       case _ => Left(JsonRpcResponse(

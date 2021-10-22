@@ -3,7 +3,6 @@ package witness
 import (
 	"context"
 	"fmt"
-	"log"
 	"popstellar/channel"
 	"popstellar/hub"
 	"popstellar/message/query/method"
@@ -44,7 +43,7 @@ type Hub struct {
 // NewHub returns a new Witness Hub.
 func NewHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator()
+	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
@@ -65,19 +64,19 @@ func NewHub(public kyber.Point, log zerolog.Logger) (*Hub, error) {
 	return &witnessHub, nil
 }
 
-func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromOrganizer(incMsg *socket.IncomingMessage) error {
 	panic("handleMessageFromOrganizer not implemented")
 }
 
-func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromClient(incMsg *socket.IncomingMessage) error {
 	panic("handleMessageFromClient not implemented")
 }
 
-func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
 	panic("handleMessageFromWitness not implemented")
 }
 
-func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) {
+func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error{
 	defer h.workers.Release(1)
 
 	h.log.Info().Str("msg", fmt.Sprintf("%v", incMsg.Message)).
@@ -86,20 +85,20 @@ func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) {
 
 	switch incMsg.Socket.Type() {
 	case socket.OrganizerSocketType:
-		h.handleMessageFromOrganizer(incMsg)
-		return
+		return h.handleMessageFromOrganizer(incMsg)
 	case socket.ClientSocketType:
-		h.handleMessageFromClient(incMsg)
-		return
+		return h.handleMessageFromClient(incMsg)
 	case socket.WitnessSocketType:
-		h.handleMessageFromWitness(incMsg)
-		return
+		return h.handleMessageFromWitness(incMsg)
+	default:
+		h.log.Error().Msg("invalid socket type")
+		return xerrors.Errorf("invalid socket type")
 	}
 }
 
 // Start implements hub.Hub
 func (h *Hub) Start() {
-	log.Printf("started witness...")
+	h.log.Info().Msg("started witness...")
 
 	go func() {
 		for {
@@ -107,11 +106,14 @@ func (h *Hub) Start() {
 			case incMsg := <-h.messageChan:
 				ok := h.workers.TryAcquire(1)
 				if !ok {
-					log.Print("warn: worker pool full, waiting...")
+					h.log.Warn().Msg("worker pool full, waiting...")
 					h.workers.Acquire(context.Background(), 1)
 				}
 
-				h.handleIncomingMessage(&incMsg)
+				err := h.handleIncomingMessage(&incMsg)
+				if err != nil {
+					h.log.Err(err).Msg("problem handling incoming message")
+				}
 			case id := <-h.closedSockets:
 				h.RLock()
 				for _, channel := range h.channelByID {
@@ -120,7 +122,7 @@ func (h *Hub) Start() {
 				}
 				h.RUnlock()
 			case <-h.stop:
-				log.Println("closing the hub...")
+				h.log.Info().Msg("closing the hub...")
 				return
 			}
 		}
@@ -130,7 +132,7 @@ func (h *Hub) Start() {
 // Stop implements hub.Hub
 func (h *Hub) Stop() {
 	close(h.stop)
-	log.Println("Waiting for existing workers to finish...")
+	h.log.Info().Msg("waiting for existing workers to finish...")
 	h.workers.Acquire(context.Background(), numWorkers)
 }
 

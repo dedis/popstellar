@@ -29,11 +29,11 @@ func Test_Roll_Call_Create(t *testing.T) {
 
 	require.Equal(t, "roll_call", msg.Object)
 	require.Equal(t, "create", msg.Action)
-	require.Equal(t, "XXX", msg.ID)
-	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, int64(123), msg.Creation)
-	require.Equal(t, int64(123), msg.ProposedStart)
-	require.Equal(t, int64(123), msg.ProposedEnd)
-	require.Equal(t, "XXX", msg.Location)
-	require.Equal(t, "XXX", msg.Description)
+	require.Equal(t, "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=", msg.ID)
+	require.Equal(t, "Roll Call ", msg.Name)
+	require.Equal(t, int64(1633098853), msg.Creation)
+	require.Equal(t, int64(1633099125), msg.ProposedStart)
+	require.Equal(t, int64(1633099140), msg.ProposedEnd)
+	require.Equal(t, "EPFL", msg.Location)
+	require.Equal(t, "Food is welcome!", msg.Description)
 }

@@ -3,11 +3,13 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class ElectionResult extends Data {
 
-  private List<ElectionResultQuestion> questions;
+  private final List<ElectionResultQuestion> questions;
 
   public ElectionResult(List<ElectionResultQuestion> questions) {
     if (questions == null || questions.isEmpty()) {
@@ -28,5 +30,10 @@ public class ElectionResult extends Data {
 
   public List<ElectionResultQuestion> getElectionQuestionResults() {
     return questions;
+  }
+
+  @Override
+  public String toString() {
+    return "ElectionResult{questions=" + Arrays.toString(questions.toArray()) + '}';
   }
 }
