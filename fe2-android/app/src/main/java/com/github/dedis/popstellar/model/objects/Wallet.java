@@ -323,8 +323,7 @@ public class Wallet {
   /** Utility function to initialize the wallet with a new random seed. */
   private void setRandomSeed() {
     SecureRandom random = new SecureRandom();
-    byte[] bytes = random.generateSeed(64);
-    seed = bytes;
+    seed = random.generateSeed(64);
     isSetup = false;
     Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
   }

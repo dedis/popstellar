@@ -13,7 +13,7 @@ import java.util.List;
 
 public class LAOLocalDataSource implements Local {
 
-  private LAODao laoDao;
+  private final LAODao laoDao;
 
   private static LAOLocalDataSource INSTANCE;
 

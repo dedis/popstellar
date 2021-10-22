@@ -27,11 +27,10 @@ public final class AddAttendeeFragment extends Fragment {
 
   public static final String TAG = AddAttendeeFragment.class.getSimpleName();
   private final String eventId;
-  private CameraSource camera;
-  private BarcodeDetector detector;
+  private final CameraSource camera;
+  private final BarcodeDetector detector;
 
   public AddAttendeeFragment(String eventId, CameraSource camera, BarcodeDetector detector) {
-    super();
     this.eventId = eventId;
     this.camera = camera;
     this.detector = detector;
