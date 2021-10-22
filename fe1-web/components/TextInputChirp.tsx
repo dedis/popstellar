@@ -6,7 +6,7 @@ import {
 import STRINGS from 'res/strings';
 import TextBlock from './TextBlock';
 
-const MAX_CHIRP_CHARS = 280;
+const MAX_CHIRP_CHARS = 300;
 
 /**
  * This is a TextInput component for chirp posting, which counts the number of characters
@@ -25,8 +25,8 @@ const styles = StyleSheet.create({
     alignContent: 'flex-end',
   } as TextStyle,
   buttonView: {
-    width: 100,
     alignSelf: 'flex-end',
+    flexDirection: 'row',
   } as ViewStyle,
 });
 
@@ -51,8 +51,9 @@ const TextInputChirp = (props: IPropTypes) => {
           setCharsLeft(MAX_CHIRP_CHARS - input.length);
         }}
       />
-      <TextBlock text={charsLeft.toString()} />
       <View style={styles.buttonView}>
+        {publishIsDisabled ? <TextBlock text={charsLeft.toString()} color="red" />
+          : <TextBlock text={charsLeft.toString()} />}
         <Button
           title={STRINGS.button_publish}
           onPress={() => onPress()}
