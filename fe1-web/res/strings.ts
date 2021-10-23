@@ -9,7 +9,6 @@ const STRINGS = {
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
-  navigation_tab_social: 'Social',
   navigation_tab_connect: 'Connect',
   navigation_tab_launch: 'Launch',
   navigation_tab_wallet: 'Wallet',
@@ -50,11 +49,6 @@ const STRINGS = {
   home_connect_lao: 'To connect to a local organization (LAO), please tap to Connect above',
   home_launch_lao: 'To launch a new LAO as on organizer, please tap Launch tab above',
 
-  /* --- Social Media Strings --- */
-  feed_description: 'User feed',
-  button_publish_test_chirp: 'Publish a test chirp',
-  add_chirp_test: 'Chirp Chip',
-
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',
   connect_button_camera: 'Enable Camera Access',
@@ -78,8 +72,9 @@ const STRINGS = {
   connect_confirm_description: 'Connect to this local organization?',
 
   /* --- Launch Strings --- */
-  launch_description: 'To launch a new organization please enter a name for the organization (you can change it later)',
+  launch_description: 'To launch a new organization, please enter a name and an address',
   launch_organization_name: 'Organization name',
+  launch_address: 'Address',
   launch_button_launch: 'Launch',
 
   /* --- Organizer Strings --- */
@@ -168,6 +163,7 @@ const STRINGS = {
   import_seed_button: 'I OWN A SEED',
   type_seed_info: 'Type the 12 word seed',
   show_seed_info: 'This is the only backup seed for your PoP tokens - store it securely',
+  copy_to_clipboard: 'Copy to clipboard',
   type_seed_example: 'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol',
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
