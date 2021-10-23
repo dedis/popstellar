@@ -101,10 +101,10 @@ public class ElectionSetupViewPagerAdapter
             // and we add or remove the question from the list of filled question
             String questionText = s.toString();
             if (!electionQuestionText.getText().toString().trim().isEmpty()) {
-              questions.set(position, questionText);
-              listOfValidQuestions.add(position);
+              questions.set(holder.getAdapterPosition(), questionText);
+              listOfValidQuestions.add(holder.getAdapterPosition());
             } else {
-              listOfValidQuestions.remove(position);
+              listOfValidQuestions.remove(holder.getAdapterPosition());
             }
             checkIfAnInputIsValid();
           }
@@ -117,15 +117,15 @@ public class ElectionSetupViewPagerAdapter
           @Override
           public void onItemSelected(AdapterView<?> parent, View view, int i, long id) {
             String elementToAdd = parent.getItemAtPosition(i).toString();
-            if (votingMethod.size() <= position) {
+            if (votingMethod.size() <= holder.getAdapterPosition()) {
               votingMethod.add(elementToAdd);
             }
-            votingMethod.set(position, elementToAdd);
+            votingMethod.set(holder.getAdapterPosition(), elementToAdd);
           }
 
           @Override
           public void onNothingSelected(AdapterView<?> parent) {
-            votingMethod.set(position, "Plurality");
+            votingMethod.set(holder.getAdapterPosition(), "Plurality");
           }
         };
     setupElectionSpinner(spinner, spinnerListener);
@@ -133,7 +133,8 @@ public class ElectionSetupViewPagerAdapter
     Button addBallotOptionButton = holder.addOptionButton;
 
     LinearLayout linearLayout = holder.linearLayout;
-    addBallotOptionButton.setOnClickListener(v -> addBallotOption(linearLayout, position));
+    addBallotOptionButton.setOnClickListener(
+        v -> addBallotOption(linearLayout, holder.getAdapterPosition()));
 
     // Minimum for each question is two ballots
     addBallotOption(linearLayout, position);

@@ -41,8 +41,8 @@ public final class LaunchFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupLaunchButton();
     setupCancelButton();
@@ -51,7 +51,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel
         .getLaunchNewLaoEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -63,7 +63,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel
         .getCancelNewLaoEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
