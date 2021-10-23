@@ -195,5 +195,6 @@
   <string name="social_media_send">SEND</string>
   <string name="social_media_following">FOLLOWING</string>
   <string name="social_media_profile">PROFILE</string>
+  <string name="social_media_search">SEARCH</string>
 
 </resources>

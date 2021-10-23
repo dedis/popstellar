@@ -6,8 +6,8 @@
     android:title="@string/social_media_home" />
   <item
     android:id="@+id/social_media_send"
-    android:icon="@drawable/ic_social_media_send_foreground"
-    android:title="@string/social_media_send" />
+    android:icon="@drawable/ic_social_media_search_foreground"
+    android:title="@string/social_media_search" />
   <item
     android:id="@+id/social_media_following"
     android:icon="@drawable/ic_social_media_following_foreground"
