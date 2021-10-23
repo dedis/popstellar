@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.local.LAODatabase;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
 import com.github.dedis.popstellar.repository.remote.LAOService;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
@@ -62,6 +63,8 @@ public class Injection {
   private static final String MASTER_KEY_URI = "android-keystore://POP_MASTER_KEY";
 
   private static OkHttpClient OK_HTTP_CLIENT_INSTANCE;
+
+  private static LAORequestFactory REQUEST_FACTORY_INSTANCE;
 
   private static Scarlet SCARLET_INSTANCE;
 
@@ -104,22 +107,6 @@ public class Injection {
       KEYSET_MANAGER = keysetManager;
     }
     return KEYSET_MANAGER;
-  }
-
-  public static void setServerUrl(String name) {
-    serverUrl = name;
-  }
-
-  public static String getServerUrl() {
-    return serverUrl;
-  }
-
-  public static void setModifiedServerUrl(Boolean bool) {
-    modifiedServerUrl = bool;
-  }
-
-  public static Boolean getModifiedServerUrl() {
-    return modifiedServerUrl;
   }
 
   public static Gson provideGson() {
@@ -167,7 +154,8 @@ public class Injection {
       Log.d(TAG, "creating new Scarlet");
       SCARLET_INSTANCE =
           new Scarlet.Builder()
-              .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, serverUrl))
+              .webSocketFactory(
+                  OkHttpClientUtils.newWebSocketFactory(okHttpClient, provideRequestFactory()))
               .addMessageAdapterFactory(new GsonMessageAdapter.Factory(gson))
               .addStreamAdapterFactory(new RxJava2StreamAdapterFactory())
               .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
@@ -175,6 +163,14 @@ public class Injection {
               .build();
     }
     return SCARLET_INSTANCE;
+  }
+
+  public static LAORequestFactory provideRequestFactory() {
+    if (REQUEST_FACTORY_INSTANCE == null) {
+      REQUEST_FACTORY_INSTANCE = new LAORequestFactory(serverUrl);
+    }
+
+    return REQUEST_FACTORY_INSTANCE;
   }
 
   public static LAOService provideLAOService(Scarlet scarlet) {
