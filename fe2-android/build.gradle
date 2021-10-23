@@ -4,7 +4,6 @@ buildscript {
 
     repositories {
         google()
-        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.2'
@@ -31,8 +30,10 @@ sonarqube {
 allprojects {
     repositories {
         google()
-        jcenter()
-
+        mavenCentral()
+        maven {
+            url = uri("https://jcenter.bintray.com/")
+        }
     }
 }
 

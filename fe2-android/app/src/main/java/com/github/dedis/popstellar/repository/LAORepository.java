@@ -58,7 +58,7 @@ public class LAORepository {
   private static final String ROOT = "/root/";
   private static LAORepository INSTANCE = null;
 
-  @SuppressWarnings("Implementation of LAOLocalDataSource is not complete.")
+  @SuppressWarnings({"Implementation of LAOLocalDataSource is not complete.", "FieldCanBeLocal"})
   private final LAODataSource.Local mLocalDataSource;
 
   private final LAODataSource.Remote mRemoteDataSource;
@@ -67,34 +67,34 @@ public class LAORepository {
   private final Gson mGson;
 
   // A subject that represents unprocessed messages
-  private Subject<GenericMessage> unprocessed;
+  private final Subject<GenericMessage> unprocessed;
 
   // State for LAO
-  private Map<String, LAOState> laoById;
+  private final Map<String, LAOState> laoById;
 
   // State for Messages
-  private Map<String, MessageGeneral> messageById;
+  private final Map<String, MessageGeneral> messageById;
 
   // Outstanding subscribes
-  private Map<Integer, String> subscribeRequests;
+  private final Map<Integer, String> subscribeRequests;
 
   // set of subscribed channels
-  private Set<String> subscribedChannels;
+  private final Set<String> subscribedChannels;
 
   // Outstanding catchups
-  private Map<Integer, String> catchupRequests;
+  private final Map<Integer, String> catchupRequests;
 
   // Outstanding create laos
-  private Map<Integer, String> createLaoRequests;
+  private final Map<Integer, String> createLaoRequests;
 
   // Observable for view models that need access to all LAO Names
-  private BehaviorSubject<List<Lao>> allLaoSubject;
+  private final BehaviorSubject<List<Lao>> allLaoSubject;
 
   // Observable to subscribe to LAOs on reconnection
-  private Observable<WebSocket.Event> websocketEvents;
+  private final Observable<WebSocket.Event> websocketEvents;
 
   // Observable to subscribe to the incoming messages
-  private Observable<GenericMessage> upstream;
+  private final Observable<GenericMessage> upstream;
 
   // Disposable of with the lifetime of an LAORepository instance
   private final Disposable disposables;

@@ -185,8 +185,7 @@ public class HomeActivity extends AppCompatActivity {
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-    HomeViewModel viewModel = new ViewModelProvider(activity, factory).get(HomeViewModel.class);
-    return viewModel;
+    return new ViewModelProvider(activity, factory).get(HomeViewModel.class);
   }
 
   public void setupHomeButton() {

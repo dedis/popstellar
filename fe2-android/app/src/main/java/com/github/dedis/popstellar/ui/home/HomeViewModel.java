@@ -74,7 +74,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
-  private LiveData<List<Lao>> mLAOs;
+  private final LiveData<List<Lao>> mLAOs;
 
   /*
    * Dependencies for this class
@@ -82,7 +82,7 @@ public class HomeViewModel extends AndroidViewModel
   private final Gson mGson;
   private final LAORepository mLAORepository;
   private final AndroidKeysetManager mKeysetManager;
-  private Wallet wallet;
+  private final Wallet wallet;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
