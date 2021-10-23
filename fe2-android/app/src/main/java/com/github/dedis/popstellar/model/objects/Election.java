@@ -73,6 +73,10 @@ public class Election extends Event {
     return creation;
   }
 
+  public long getCreationInMillis() {
+    return getCreation() * 1000;
+  }
+
   public String getChannel() {
     return channel;
   }

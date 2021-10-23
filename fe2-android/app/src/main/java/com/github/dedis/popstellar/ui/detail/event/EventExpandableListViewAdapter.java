@@ -314,12 +314,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       Election election, EventCategory category, EventLayoutBinding layoutEventBinding) {
     ElectionDisplayLayoutBinding electionBinding = layoutEventBinding.includeLayoutElection;
     electionBinding.setElection(election);
-    Date dStart =
-        new java.util.Date(
-            election.getStartTimestamp() * 1000); // *1000 because it needs to be in milisecond
+    Date dStart = new java.util.Date(election.getStartTimestampInMillis());
     String dateStart = DATE_FORMAT.format(dStart);
     electionBinding.electionStartDate.setText("Start date : " + dateStart);
-    Date dEnd = new java.util.Date(election.getEndTimestamp() * 1000);
+    Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
     viewModel.setCurrentElection(election);
