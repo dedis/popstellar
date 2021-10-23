@@ -423,8 +423,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 // createLao creates a new LAO using the data in the publish parameter.
 func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate) error {
-	h.Lock()
-	defer h.Unlock()
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 

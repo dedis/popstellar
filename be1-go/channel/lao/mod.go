@@ -10,7 +10,9 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
+	"popstellar/channel/chirp"
 	"popstellar/channel/election"
+	generalChriping "popstellar/channel/generalChirping"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
@@ -39,6 +41,7 @@ type Channel struct {
 	sockets channel.Sockets
 
 	inbox *inbox.Inbox
+	general *generalChriping.Channel
 
 	// /root/<ID>
 	channelID string
@@ -67,6 +70,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
 		inbox:     inbox,
+		general:   createGeneralChirpingChannel(channelID, hub),
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
@@ -172,6 +176,16 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	}
 
 	return nil
+}
+
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) *generalChriping.Channel {
+	generalChannelPath := "/root/" + laoID + "/social/chirps/"
+
+	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub)
+
+	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel)
+
+	return &generalChirpingChannel
 }
 
 // rollCallState denotes the state of the roll call.
@@ -465,6 +479,9 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		if err != nil {
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
+
+		err = c.createChirpingChannels(rollCallClose)
+
 	default:
 		return answer.NewInvalidActionError(action)
 	}
@@ -477,6 +494,17 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 	return nil
 }
+
+func (c *Channel) createChirpingChannels(msg messagedata.RollCallClose) error {
+
+	for _, s := range msg.Attendees {
+		chirpingChannelPath := c.channelID + s + "/"
+		cha := chirp.NewChannel(chirpingChannelPath, s, c.hub, c.general)
+		c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
+	}
+	return nil
+}
+
 
 // verify
 

@@ -334,6 +334,79 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 }
 
+func TestOrganizer_Post_Chirp(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	laoID := "XXX"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	data := messagedata.ChirpAdd{
+		Object:    messagedata.ChirpObject,
+		Action:    messagedata.ChirpActionAdd,
+		Text: "blabla",
+		Timestamp: time.Now().Unix(),
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.Equal(t, publish.ID, sock.resultID)
+
+	require.NoError(t, sock.err)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, publish, c.publish)
+
+
+}
+
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
