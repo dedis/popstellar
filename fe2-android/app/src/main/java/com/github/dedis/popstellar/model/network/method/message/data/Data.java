@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ADD;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.BROADCAST;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
@@ -94,7 +93,7 @@ public abstract class Data {
 
     // Social Media
     messagesMap.put(pair(CHIRP, ADD), AddChirp.class);
-    messagesMap.put(pair(CHIRP, BROADCAST), AddChirpBroadcast.class);
+    messagesMap.put(pair(CHIRP, ADD), AddChirpBroadcast.class);
 
     return Collections.unmodifiableMap(messagesMap);
   }

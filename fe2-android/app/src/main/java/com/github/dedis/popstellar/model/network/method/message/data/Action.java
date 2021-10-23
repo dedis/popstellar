@@ -17,8 +17,7 @@ public enum Action {
   REOPEN("reopen"),
   CLOSE("close"),
   CAST_VOTE("cast_vote"),
-  ADD("add"),
-  BROADCAST("broadcast");
+  ADD("add");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;
