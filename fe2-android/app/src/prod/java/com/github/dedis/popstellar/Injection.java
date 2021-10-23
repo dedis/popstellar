@@ -69,8 +69,6 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private static Boolean modifiedServerUrl = false;
-
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
 
@@ -112,14 +110,6 @@ public class Injection {
 
   public static String getServerUrl() {
     return serverUrl;
-  }
-
-  public static void setModifiedServerUrl(Boolean bool) {
-    modifiedServerUrl = bool;
-  }
-
-  public static Boolean getModifiedServerUrl() {
-    return modifiedServerUrl;
   }
 
   public static Gson provideGson() {

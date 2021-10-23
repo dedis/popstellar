@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
@@ -45,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     setupConnectButton();
     setupWalletButton();
     setupServerUrlButton();
+    setupOptionsMenu();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -182,10 +185,25 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.options_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.server_url) {
+      mViewModel.openServerUrl();
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
+    }
+  }
+
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-    HomeViewModel viewModel = new ViewModelProvider(activity, factory).get(HomeViewModel.class);
-    return viewModel;
+    return new ViewModelProvider(activity, factory).get(HomeViewModel.class);
   }
 
   public void setupHomeButton() {
@@ -213,6 +231,8 @@ public class HomeActivity extends AppCompatActivity {
     Button serverUrlButton = (Button) findViewById(R.id.tab_server_url);
     serverUrlButton.setOnClickListener(v -> mViewModel.openServerUrl());
   }
+
+  public void setupOptionsMenu() {}
 
   private void setupHomeFragment() {
     HomeFragment homeFragment =

@@ -17,14 +17,16 @@ import java.util.List;
 
 public class ElectionVoteTest {
 
-  private String electionId = "my election id";
-  private String questionId = " my question id";
-  private List<Integer> votes =
+  private final String electionId = "my election id";
+  private final String questionId = " my question id";
+  private final List<Integer> votes =
       new ArrayList<>(
           Arrays.asList(2, 1, 0)); // we vote for ballot option in position 2, then posiion 1 and 0
-  private String writeIn = "My write in ballot option";
-  ElectionVote electionVote1 = new ElectionVote(questionId, votes, false, writeIn, electionId);
-  ElectionVote electionVote2 = new ElectionVote(questionId, votes, true, writeIn, electionId);
+  private final String writeIn = "My write in ballot option";
+  private final ElectionVote electionVote1 =
+      new ElectionVote(questionId, votes, false, writeIn, electionId);
+  private final ElectionVote electionVote2 =
+      new ElectionVote(questionId, votes, true, writeIn, electionId);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {

@@ -11,9 +11,9 @@ import io.reactivex.Observable;
 
 public class LAORemoteDataSource implements Remote {
 
-  private LAOService laoService;
+  private final LAOService laoService;
 
-  private AtomicInteger requestId;
+  private final AtomicInteger requestId;
 
   private static LAORemoteDataSource INSTANCE;
 
