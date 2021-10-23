@@ -1,11 +1,10 @@
 package com.github.dedis.popstellar.model.network.method;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
+
 import java.util.Objects;
 
-/**
- * An abstract low level message that is sent over a specific channel
- */
+/** An abstract low level message that is sent over a specific channel */
 public abstract class Message extends GenericMessage {
 
   private final String channel;
@@ -23,14 +22,10 @@ public abstract class Message extends GenericMessage {
     this.channel = channel;
   }
 
-  /**
-   * Return the Message method
-   */
+  /** Return the Message method */
   public abstract String getMethod();
 
-  /**
-   * Returnss the message channel
-   */
+  /** Returnss the message channel */
   public String getChannel() {
     return channel;
   }

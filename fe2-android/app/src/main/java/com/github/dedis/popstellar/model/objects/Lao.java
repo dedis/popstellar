@@ -8,9 +8,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * Class modeling a Local Autonomous Organization (LAO)
- */
+/** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
 
   private String channel;
@@ -21,12 +19,11 @@ public final class Lao {
   private String organizer;
   private String modificationId;
   private Set<String> witnesses;
-  private Map<String, WitnessMessage> witnessMessages;
+  private final Map<String, WitnessMessage> witnessMessages;
   /**
    * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
    * witnesses
    */
-
   private Set<PendingUpdate> pendingUpdates;
 
   private Map<String, RollCall> rollCalls;
@@ -84,13 +81,12 @@ public final class Lao {
     elections.put(newId, election);
   }
 
-
   /**
    * Update the list of messages that have to be signed by witnesses. If the list of messages
-   * contain the message with  Id prevId , it will remove this message from the list. Then it will
+   * contain the message with Id prevId , it will remove this message from the list. Then it will
    * add the new message to the list with the corresponding newId
    *
-   * @param prevId         the previous id of a message that needs to be signed
+   * @param prevId the previous id of a message that needs to be signed
    * @param witnessMessage the object representing the message needing to be signed
    */
   public void updateWitnessMessage(String prevId, WitnessMessage witnessMessage) {
@@ -113,7 +109,6 @@ public final class Lao {
     return Optional.ofNullable(witnessMessages.get(id));
   }
 
-
   /**
    * Removes an election from the list of elections.
    *
@@ -122,7 +117,6 @@ public final class Lao {
    */
   public boolean removeElection(String id) {
     return (elections.remove(id) != null);
-
   }
 
   /**
@@ -133,7 +127,6 @@ public final class Lao {
    */
   public boolean removeRollCall(String id) {
     return (rollCalls.remove(id) != null);
-
   }
 
   public Long getLastModified() {
@@ -251,12 +244,13 @@ public final class Lao {
   }
 
   /**
-   * Generate the id for dataCreateLao and dataUpdateLao. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCreateLao.json
+   * Generate the id for dataCreateLao and dataUpdateLao.
+   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCreateLao.json
    * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataUpdateLao.json
    *
    * @param organizer ID of the organizer
-   * @param creation  creation time of the LAO
-   * @param name      original or updated name of the LAO
+   * @param creation creation time of the LAO
+   * @param name original or updated name of the LAO
    * @return the ID of CreateLao or UpdateLao computed as Hash(organizer||creation||name)
    */
   public static String generateLaoId(String organizer, long creation, String name) {

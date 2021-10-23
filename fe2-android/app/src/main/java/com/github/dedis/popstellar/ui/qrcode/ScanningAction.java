@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.ui.qrcode;
 
 import androidx.annotation.NonNull;
 
-/**
- * Enum class modeling the the action we want to do when using the QR code fragment
- */
+/** Enum class modeling the the action we want to do when using the QR code fragment */
 public enum ScanningAction {
   ADD_WITNESS {
     @NonNull

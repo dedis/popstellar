@@ -9,18 +9,19 @@ import java.util.List;
 
 public class ElectionQuestion {
 
-  private String id;
-  private String question;
-  @SerializedName(value = "voting_method")
-  private String votingMethod;
-  @SerializedName(value = "ballot_options")
-  private List<String> ballotOptions;
-  @SerializedName(value = "write_in")
-  private boolean writeIn;
+  private final String id;
+  private final String question;
 
-  /**
-   * Constructor for a data Question, for the election setup
-   */
+  @SerializedName(value = "voting_method")
+  private final String votingMethod;
+
+  @SerializedName(value = "ballot_options")
+  private final List<String> ballotOptions;
+
+  @SerializedName(value = "write_in")
+  private final boolean writeIn;
+
+  /** Constructor for a data Question, for the election setup */
   public ElectionQuestion(
       String question,
       String votingMethod,
@@ -34,7 +35,6 @@ public class ElectionQuestion {
     this.votingMethod = votingMethod;
     this.id = Election.generateElectionQuestionId(electionId, question);
   }
-
 
   public String getId() {
     return id;
@@ -56,7 +56,6 @@ public class ElectionQuestion {
     return votingMethod;
   }
 
-
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -76,11 +75,7 @@ public class ElectionQuestion {
   @Override
   public int hashCode() {
     return java.util.Objects.hash(
-        getId(),
-        getVotingMethod(),
-        getWriteIn(),
-        getBallotOptions(),
-        getQuestion());
+        getId(), getVotingMethod(), getWriteIn(), getBallotOptions(), getQuestion());
   }
 
   @Override

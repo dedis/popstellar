@@ -5,6 +5,7 @@ import com.github.dedis.popstellar.model.network.method.Message;
 import com.tinder.scarlet.WebSocket;
 import com.tinder.scarlet.ws.Receive;
 import com.tinder.scarlet.ws.Send;
+
 import io.reactivex.Observable;
 
 public interface LAOService {

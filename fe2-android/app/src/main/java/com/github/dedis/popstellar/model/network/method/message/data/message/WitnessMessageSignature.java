@@ -5,9 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Data sent to attest the message as a witness
- */
+/** Data sent to attest the message as a witness */
 public class WitnessMessageSignature extends Data {
 
   @SerializedName("message_id")

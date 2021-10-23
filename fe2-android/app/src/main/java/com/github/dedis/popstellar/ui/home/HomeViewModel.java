@@ -55,7 +55,8 @@ public class HomeViewModel extends AndroidViewModel
    */
   private final MutableLiveData<SingleEvent<String>> mOpenLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenConnectEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
@@ -65,14 +66,13 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
 
-
   /*
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
-  private LiveData<List<Lao>> mLAOs;
+  private final LiveData<List<Lao>> mLAOs;
 
   /*
    * Dependencies for this class
@@ -80,7 +80,7 @@ public class HomeViewModel extends AndroidViewModel
   private final Gson mGson;
   private final LAORepository mLAORepository;
   private final AndroidKeysetManager mKeysetManager;
-  private Wallet wallet;
+  private final Wallet wallet;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -99,8 +99,6 @@ public class HomeViewModel extends AndroidViewModel
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
             mLAORepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
-
-
   }
 
   @Override
@@ -123,33 +121,31 @@ public class HomeViewModel extends AndroidViewModel
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     String channel = "/root/" + barcode.rawValue;
     disposables.add(
-            mLAORepository
-                    .sendSubscribe(channel)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .timeout(3, TimeUnit.SECONDS)
-                    .subscribe(
-                            answer -> {
-                              if (answer instanceof Result) {
-                                Log.d(TAG, "got success result for subscribe to lao");
-                              } else {
-                                Log.d(
-                                        TAG,
-                                        "got failure result for subscribe to lao: "
-                                                + ((Error) answer).getError().getDescription());
-                              }
-                              openHome();
-                            },
-                            throwable -> {
-                              Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable);
-                              openHome(); // so that it doesn't load forever
-                            }));
+        mLAORepository
+            .sendSubscribe(channel)
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(3, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "got success result for subscribe to lao");
+                  } else {
+                    Log.d(
+                        TAG,
+                        "got failure result for subscribe to lao: "
+                            + ((Error) answer).getError().getDescription());
+                  }
+                  openHome();
+                },
+                throwable -> {
+                  Log.d(TAG, "timed out waiting for a response for subscribe to lao", throwable);
+                  openHome(); // so that it doesn't load forever
+                }));
     setConnectingLao(channel);
     openConnecting();
   }
 
-  /**
-   * onCleared is used to cancel all subscriptions to observables.
-   */
+  /** onCleared is used to cancel all subscriptions to observables. */
   @Override
   protected void onCleared() {
     super.onCleared();
@@ -177,25 +173,25 @@ public class HomeViewModel extends AndroidViewModel
       MessageGeneral msg = new MessageGeneral(organizerBuf, createLao, signer, mGson);
 
       disposables.add(
-              mLAORepository
-                      .sendPublish("/root", msg)
-                      .observeOn(AndroidSchedulers.mainThread())
-                      .timeout(5, TimeUnit.SECONDS)
-                      .subscribe(
-                              answer -> {
-                                if (answer instanceof Result) {
-                                  Log.d(TAG, "got success result for create lao");
-                                  openHome();
-                                } else {
-                                  Log.d(
-                                          TAG,
-                                          "got failure result for create lao: "
-                                                  + ((Error) answer).getError().getDescription());
-                                }
-                              },
-                              throwable -> {
-                                Log.d(TAG, "timed out waiting for a response for create lao", throwable);
-                              }));
+          mLAORepository
+              .sendPublish("/root", msg)
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "got success result for create lao");
+                      openHome();
+                    } else {
+                      Log.d(
+                          TAG,
+                          "got failure result for create lao: "
+                              + ((Error) answer).getError().getDescription());
+                    }
+                  },
+                  throwable -> {
+                    Log.d(TAG, "timed out waiting for a response for create lao", throwable);
+                  }));
 
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to get public key", e);
@@ -281,7 +277,6 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenLaoWalletEvent;
   }
 
-
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -312,7 +307,7 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openConnect() {
     if (ActivityCompat.checkSelfPermission(
-        getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       openQrCodeScanning();
     } else {
