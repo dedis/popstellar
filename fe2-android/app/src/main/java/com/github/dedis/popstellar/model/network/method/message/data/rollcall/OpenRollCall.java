@@ -18,7 +18,7 @@ public class OpenRollCall extends Data {
   @SerializedName("opened_at")
   private final long openedAt;
 
-  private String action;
+  private final String action;
 
   /**
    * Constructor of a data Open Roll-Call

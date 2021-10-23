@@ -72,8 +72,6 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private static Boolean modifiedServerUrl = false;
-
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
 
@@ -107,6 +105,14 @@ public class Injection {
       KEYSET_MANAGER = keysetManager;
     }
     return KEYSET_MANAGER;
+  }
+
+  public static void setServerUrl(String name) {
+    serverUrl = name;
+  }
+
+  public static String getServerUrl() {
+    return serverUrl;
   }
 
   public static Gson provideGson() {

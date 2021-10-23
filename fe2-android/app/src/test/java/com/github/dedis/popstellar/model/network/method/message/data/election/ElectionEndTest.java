@@ -11,10 +11,10 @@ import org.junit.Test;
 
 public class ElectionEndTest {
 
-  private String electionId = "electionId";
-  private String laoId = "laoId";
-  private String registeredVotes = "hashed";
-  private ElectionEnd electionEnd = new ElectionEnd(electionId, laoId, registeredVotes);
+  private final String electionId = "electionId";
+  private final String laoId = "laoId";
+  private final String registeredVotes = "hashed";
+  private final ElectionEnd electionEnd = new ElectionEnd(electionId, laoId, registeredVotes);
 
   @Test
   public void electionEndGetterReturnsCorrectElectionId() {

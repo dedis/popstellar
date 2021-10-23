@@ -21,7 +21,7 @@ import java.util.StringJoiner;
 
 public class WalletTest {
 
-  private Context context = ApplicationProvider.getApplicationContext();
+  private final Context context = ApplicationProvider.getApplicationContext();
 
   @Test
   public void importSeedAndExportSeedAreCoherent() throws Exception {
