@@ -24,9 +24,6 @@ import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.ServerConf
 
 object Server {
-  private final def PORT: Int = 8000
-
-  private final def PATH: String = ""
 
   /**
    * Create a WebServer that handles http requests and WebSockets requests.
@@ -35,6 +32,10 @@ object Server {
 
     /* Get configuration object for akka actor/http*/
     val appConf = RuntimeEnvironment.appConf
+
+    /* Get Setup configuration*/ 
+    println("Loading configuration from file...")
+    val config = ServerConf(appConf)
    
     val system = akka.actor.ActorSystem("pop-be2-inner-actor-system", appConf)
     
@@ -49,21 +50,19 @@ object Server {
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef)), "DbActor")
 
-      def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(PATH) {
+      def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(config.path) {
         handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef)(system))
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
       
-      /* Get Setup configuration*/ 
-      println("Loading configuration from file...")
-      val config = ServerConf(appConf)
+     
 
       /* Setup http server with bind and route config*/ 
       val bindingFuture = Http().bindAndHandle(publishSubscribeRoute, config.interface, config.port)
 
       bindingFuture.onComplete {
-        case Success(_) => println(s"ch.epfl.pop.Server online at ws://localhost:$PORT/$PATH")
+        case Success(_) => println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
         case Failure(_) =>
           println("ch.epfl.pop.Server failed to start. Terminating actor system")
           system.terminate()
