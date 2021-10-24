@@ -19,9 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Lao messages handler class
- */
+/** Lao messages handler class */
 public class LaoHandler {
 
   public static final String TAG = LaoHandler.class.getSimpleName();
@@ -34,13 +32,13 @@ public class LaoHandler {
    * Process a LAO message.
    *
    * @param laoRepository the repository to access the LAO of the channel
-   * @param channel       the channel on which the message was received
-   * @param data          the data of the message received
-   * @param messageId     the ID of the message received
+   * @param channel the channel on which the message was received
+   * @param data the data of the message received
+   * @param messageId the ID of the message received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleLaoMessage(LAORepository laoRepository, String channel, Data data,
-      String messageId) {
+  public static boolean handleLaoMessage(
+      LAORepository laoRepository, String channel, Data data, String messageId) {
     Log.d(TAG, "handle LAO message");
 
     switch (Objects.requireNonNull(Action.find(data.getAction()))) {
@@ -59,12 +57,12 @@ public class LaoHandler {
    * Process a CreateLao message.
    *
    * @param laoRepository the repository to access the LAO of the channel
-   * @param channel       the channel on which the message was received
-   * @param createLao     the message that was received
+   * @param channel the channel on which the message was received
+   * @param createLao the message that was received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleCreateLao(LAORepository laoRepository, String channel,
-      CreateLao createLao) {
+  public static boolean handleCreateLao(
+      LAORepository laoRepository, String channel, CreateLao createLao) {
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
@@ -82,13 +80,13 @@ public class LaoHandler {
    * Process an UpdateLao message.
    *
    * @param laoRepository the repository to access the LAO of the channel
-   * @param channel       the channel on which the message was received
-   * @param messageId     the ID of the received message
-   * @param updateLao     the message that was received
+   * @param channel the channel on which the message was received
+   * @param messageId the ID of the received message
+   * @param updateLao the message that was received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleUpdateLao(LAORepository laoRepository, String channel,
-      String messageId, UpdateLao updateLao) {
+  public static boolean handleUpdateLao(
+      LAORepository laoRepository, String channel, String messageId, UpdateLao updateLao) {
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
@@ -109,7 +107,8 @@ public class LaoHandler {
 
     lao.updateWitnessMessage(messageId, message);
     if (!lao.getWitnesses().isEmpty()) {
-      // We send a pending update only if there are already some witness that need to sign this UpdateLao
+      // We send a pending update only if there are already some witness that need to sign this
+      // UpdateLao
       lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
     return false;
@@ -119,12 +118,12 @@ public class LaoHandler {
    * Process a StateLao message.
    *
    * @param laoRepository the repository to access the messages and LAO of the channel
-   * @param channel       the channel on which the message was received
-   * @param stateLao      the message that was received
+   * @param channel the channel on which the message was received
+   * @param stateLao the message that was received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleStateLao(LAORepository laoRepository, String channel,
-      StateLao stateLao) {
+  public static boolean handleStateLao(
+      LAORepository laoRepository, String channel, StateLao stateLao) {
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
 
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -139,8 +138,8 @@ public class LaoHandler {
     Log.d(TAG, "Verifying signatures");
     // Verify signatures
     for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
-      if (!Signature
-          .verifySignature(stateLao.getModificationId(), pair.getWitness(), pair.getSignature())) {
+      if (!Signature.verifySignature(
+          stateLao.getModificationId(), pair.getWitness(), pair.getSignature())) {
         return false;
       }
     }
@@ -162,27 +161,36 @@ public class LaoHandler {
     return false;
   }
 
-  public static WitnessMessage updateLaoNameWitnessMessage(String messageId, UpdateLao updateLao,
-      Lao lao) {
+  public static WitnessMessage updateLaoNameWitnessMessage(
+      String messageId, UpdateLao updateLao, Lao lao) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("Update Lao Name ");
     message.setDescription(
-        "Old Name : " + lao.getName() + "\n" +
-            "New Name : " + updateLao.getName() + "\n" +
-            "Message ID : " + messageId);
+        "Old Name : "
+            + lao.getName()
+            + "\n"
+            + "New Name : "
+            + updateLao.getName()
+            + "\n"
+            + "Message ID : "
+            + messageId);
     return message;
   }
 
-  public static WitnessMessage updateLaoWitnessesWitnessMessage(String messageId,
-      UpdateLao updateLao, Lao lao) {
+  public static WitnessMessage updateLaoWitnessesWitnessMessage(
+      String messageId, UpdateLao updateLao, Lao lao) {
     WitnessMessage message = new WitnessMessage(messageId);
     List<String> tempList = new ArrayList<>(updateLao.getWitnesses());
     message.setTitle("Update Lao Witnesses");
     message.setDescription(
-        "Lao Name : " + lao.getName() + "\n" +
-            "Message ID : " + messageId + "\n" +
-            "New Witness ID : " + tempList.get(tempList.size() - 1)
-    );
+        "Lao Name : "
+            + lao.getName()
+            + "\n"
+            + "Message ID : "
+            + messageId
+            + "\n"
+            + "New Witness ID : "
+            + tempList.get(tempList.size() - 1));
     return message;
   }
 }

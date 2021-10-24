@@ -232,7 +232,7 @@ Await.result(ask, duration)
 
 :information_source: the database may easily be reset/purged by either deleting a folder corresponding to a channel or by deleting the `database` folder entirely
 
-## 4.	Git(Hub)
+
 
 ### Import the project
 
@@ -336,11 +336,12 @@ The best way to "intercept" a `GraphMessage` being processed in the graph is to 
 :information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/`) is a useful tool to achieve this result
 
 
-## 6.	Coding Styles
+## 5.	Coding Styles
 
 A simple way to have a coherent style across the codebase is to use the IDE features of "code cleanup". For example, in IntelliJ, click on the `src/main/scala` folder and then on `Code -> Reformat Code`. You can then check "include subdirectories", "optimize imports", and "cleanup code" checkbox options. Be careful to not apply these changes to `src/test` folder as it transforms the scalatest syntax into a mess difficult to understand.
 
 Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
+
 
 
 ## 7. Server `.jar` release
@@ -352,3 +353,4 @@ sbt assembly
 ```
 
 The all-in-one jar will automatically be created and located at `target/scala-x.xx/pop-assembly-0.x.jar`.
+
