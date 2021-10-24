@@ -11,7 +11,7 @@ import ch.epfl.pop.pubsub.graph._
 import ch.epfl.pop.pubsub.graph.handlers.{ParamsHandler, ParamsWithMessageHandler}
 
 
-object PublishSubscribe extends App {
+object PublishSubscribe {
 
   private var dbActorRef: AskableActorRef = _
 
