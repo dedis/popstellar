@@ -58,11 +58,10 @@ public final class AddAttendeeFragment extends Fragment {
               .setCancelable(false)
               .setPositiveButton(
                   getString(R.string.confirm),
-                  (dialog, id) -> {
-                    getActivity()
-                        .getSupportFragmentManager()
-                        .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                  })
+                  (dialog, id) ->
+                      getActivity()
+                          .getSupportFragmentManager()
+                          .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE))
               .setNegativeButton(getString(R.string.cancel), (dialog, id) -> {});
 
           AlertDialog alert = builder.create();

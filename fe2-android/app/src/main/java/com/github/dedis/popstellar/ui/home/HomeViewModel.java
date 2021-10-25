@@ -189,9 +189,8 @@ public class HomeViewModel extends AndroidViewModel
                               + ((Error) answer).getError().getDescription());
                     }
                   },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for a response for create lao", throwable);
-                  }));
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for a response for create lao", throwable)));
 
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to get public key", e);

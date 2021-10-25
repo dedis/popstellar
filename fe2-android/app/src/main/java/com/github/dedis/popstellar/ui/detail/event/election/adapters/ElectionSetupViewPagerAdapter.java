@@ -46,7 +46,6 @@ public class ElectionSetupViewPagerAdapter
   private final MutableLiveData<Boolean> isAnInputValid;
 
   public ElectionSetupViewPagerAdapter(LaoDetailViewModel mLaoDetailViewModel) {
-    super();
     this.mLaoDetailViewModel = mLaoDetailViewModel;
     votingMethod = new ArrayList<>();
     ballotOptions = new ArrayList<>();
@@ -54,7 +53,7 @@ public class ElectionSetupViewPagerAdapter
     questions = new ArrayList<>();
     listOfValidBallots = new HashSet<>();
     listOfValidQuestions = new HashSet<>();
-    isAnInputValid = new MutableLiveData<>(Boolean.valueOf(false));
+    isAnInputValid = new MutableLiveData<>(Boolean.FALSE);
     addQuestion();
   }
 
