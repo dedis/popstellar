@@ -24,8 +24,8 @@ object RuntimeEnvironment {
    
    /*Get config directory path form JVM*/
     val virtualMachineParam = "scala.config"
-    val path_config = sp(virtualMachineParam)
-    if (path_config != null && !path_config.trim.isEmpty()) path_config.trim
+    val pathConfig = sp(virtualMachineParam)
+    if (pathConfig != null && !pathConfig.trim.isEmpty()) pathConfig.trim
     else
       throw new RuntimeException(s"-D$virtualMachineParam was not provided.")
 
