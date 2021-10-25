@@ -26,13 +26,12 @@ public class CastVoteViewPagerAdapter
     extends RecyclerView.Adapter<CastVoteViewPagerAdapter.Pager2ViewHolder> {
 
   private ArrayAdapter<String> ballotAdapter;
-  private LaoDetailViewModel mLaoDetailViewModel;
-  private CastVoteFragmentBinding castVoteBinding;
+  private final LaoDetailViewModel mLaoDetailViewModel;
+  private final CastVoteFragmentBinding castVoteBinding;
   private Button voteButton;
 
   public CastVoteViewPagerAdapter(
       LaoDetailViewModel mLaoDetailViewModel, CastVoteFragmentBinding castVoteBinding) {
-    super();
     this.mLaoDetailViewModel = mLaoDetailViewModel;
     this.castVoteBinding = castVoteBinding;
   }
@@ -124,10 +123,10 @@ public class CastVoteViewPagerAdapter
     return true;
   }
 
-  class Pager2ViewHolder extends RecyclerView.ViewHolder {
+  protected static class Pager2ViewHolder extends RecyclerView.ViewHolder {
 
-    private ListView ballotsListView;
-    private TextView questionView;
+    private final ListView ballotsListView;
+    private final TextView questionView;
 
     public Pager2ViewHolder(View itemView) {
       super(itemView);

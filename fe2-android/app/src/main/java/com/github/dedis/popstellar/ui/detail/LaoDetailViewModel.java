@@ -169,7 +169,7 @@ public class LaoDetailViewModel extends AndroidViewModel
           mCurrentLao,
           lao ->
               lao == null
-                  ? new ArrayList<RollCall>()
+                  ? new ArrayList<>()
                   : lao.getRollCalls().values().stream()
                       .filter(rollcall -> rollcall.getState() == EventState.CLOSED)
                       .filter(rollcall -> attendedOrOrganized(lao, rollcall))
@@ -329,14 +329,13 @@ public class LaoDetailViewModel extends AndroidViewModel
                       Toast.makeText(
                               getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
                           .show();
-                      openLaoDetail();
                     } else {
                       Log.d(TAG, "failed to send the vote");
                       Toast.makeText(
                               getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
                           .show();
-                      openLaoDetail();
                     }
+                    openLaoDetail();
                   },
                   throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
@@ -486,9 +485,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                       Log.d(TAG, "failed to create a roll call");
                     }
                   },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
-                  });
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on roll_call/create", throwable));
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);

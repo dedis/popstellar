@@ -65,7 +65,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    setDateAndTimeView(mFragBinding.getRoot(), this, getFragmentManager());
+    setDateAndTimeView(mFragBinding.getRoot(), this, getParentFragmentManager());
     addStartDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;
@@ -78,8 +78,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupConfirmButton();
     setupOpenButton();
@@ -89,7 +89,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getNewLaoEventCreationEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             eventTypeEvent -> {
               EventType eventType = eventTypeEvent.getContentIfNotHandled();
               if (eventType == EventType.ROLL_CALL) {
@@ -101,7 +101,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getOpenNewRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -112,7 +112,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getCreatedRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

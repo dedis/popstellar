@@ -30,10 +30,6 @@ public final class CameraPermissionFragment extends Fragment {
   private QrcodeCameraPermFragmentBinding mCameraPermFragBinding;
   private CameraPermissionViewModel mCameraPermissionViewModel;
 
-  public CameraPermissionFragment() {
-    super();
-  }
-
   public static CameraPermissionFragment newInstance() {
     return new CameraPermissionFragment();
   }

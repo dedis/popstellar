@@ -46,9 +46,9 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private Calendar endDate;
   private Calendar startTime;
   private Calendar endTime;
-  private Calendar today = Calendar.getInstance();
-  private Calendar completeStartTime = Calendar.getInstance();
-  private Calendar completeEndTime = Calendar.getInstance();
+  private final Calendar today = Calendar.getInstance();
+  private final Calendar completeStartTime = Calendar.getInstance();
+  private final Calendar completeEndTime = Calendar.getInstance();
   private EditText startDateEditText;
   private EditText endDateEditText;
   private EditText startTimeEditText;

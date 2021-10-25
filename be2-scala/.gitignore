@@ -2,7 +2,9 @@
 target
 *.class
 
-# sbt
+#scala metals
+.metals/
+.bloop/
 
 
 # IntelliJ

@@ -22,7 +22,7 @@ public class WalletListAdapter extends BaseAdapter {
   private List<RollCall> rollCalls;
   private final SimpleDateFormat DATE_FORMAT =
       new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
 
   public WalletListAdapter(

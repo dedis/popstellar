@@ -23,7 +23,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
 
   private List<String> witnesses;
 
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
 
   public WitnessListViewAdapter(
       List<String> witness, LaoDetailViewModel viewModel, LifecycleOwner activity) {
@@ -117,9 +117,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
           adb.setNegativeButton(context.getString(R.string.button_cancel), null);
           adb.setPositiveButton(
               context.getString(R.string.button_confirm),
-              (dialog, which) -> {
-                viewModel.removeWitness(witness);
-              });
+              (dialog, which) -> viewModel.removeWitness(witness));
           adb.show();
         };
 

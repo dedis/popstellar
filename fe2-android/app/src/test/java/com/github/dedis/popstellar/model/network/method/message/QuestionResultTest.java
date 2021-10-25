@@ -10,9 +10,9 @@ import org.junit.Test;
 
 public class QuestionResultTest {
 
-  private Integer count = 30;
-  private String name = "Candidate1";
-  private QuestionResult questionResult = new QuestionResult(name, count);
+  private final Integer count = 30;
+  private final String name = "Candidate1";
+  private final QuestionResult questionResult = new QuestionResult(name, count);
 
   @Test
   public void fieldsCantBeNull() {

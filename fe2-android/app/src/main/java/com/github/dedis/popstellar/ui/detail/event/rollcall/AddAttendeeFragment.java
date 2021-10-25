@@ -27,11 +27,10 @@ public final class AddAttendeeFragment extends Fragment {
 
   public static final String TAG = AddAttendeeFragment.class.getSimpleName();
   private final String eventId;
-  private CameraSource camera;
-  private BarcodeDetector detector;
+  private final CameraSource camera;
+  private final BarcodeDetector detector;
 
   public AddAttendeeFragment(String eventId, CameraSource camera, BarcodeDetector detector) {
-    super();
     this.eventId = eventId;
     this.camera = camera;
     this.detector = detector;
@@ -58,11 +57,10 @@ public final class AddAttendeeFragment extends Fragment {
               .setCancelable(false)
               .setPositiveButton(
                   getString(R.string.confirm),
-                  (dialog, id) -> {
-                    requireActivity()
-                        .getSupportFragmentManager()
-                        .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-                  })
+                  (dialog, id) ->
+                      requireActivity()
+                          .getSupportFragmentManager()
+                          .popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE))
               .setNegativeButton(getString(R.string.cancel), (dialog, id) -> {});
 
           AlertDialog alert = builder.create();

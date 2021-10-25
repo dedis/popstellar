@@ -57,8 +57,8 @@ public class LaoDetailFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupWitnessMessageButton();
     setupPropertiesButton();
@@ -78,7 +78,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getShowPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -90,7 +90,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getEditPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

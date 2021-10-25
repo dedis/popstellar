@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.vision.Tracker;
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -28,7 +30,7 @@ public class BarcodeTracker extends Tracker<Barcode> {
   }
 
   @Override
-  public void onNewItem(int id, Barcode barcode) {
+  public void onNewItem(int id, @NonNull Barcode barcode) {
     listener.onQRCodeDetected(barcode);
   }
 }

@@ -325,6 +325,7 @@ public class LAORepositoryTest extends TestCase {
 
     // Check the LAO is present in the laoById map of LAORepository
     valuesObserved = laoListTestObserver.getEvents().get(0);
+    //noinspection unchecked
     List<Lao> repositoryLaoList = (List<Lao>) valuesObserved.get(0);
     assertEquals(repositoryLaoList.get(0).getChannel(), laoChannel);
   }

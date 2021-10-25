@@ -43,7 +43,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   // Enum of all voting methods, associated to a string desc for protocol and spinner display
   public enum VotingMethods {
     PLURALITY("Plurality");
-    private String desc;
+    private final String desc;
 
     VotingMethods(String desc) {
       this.desc = desc;
@@ -93,7 +93,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     // Set the view for the date and time
-    setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getFragmentManager());
+    setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getParentFragmentManager());
     // Make the textWatcher listen to changes in the start and end date/time
     addEndDateAndTimeListener(submitTextWatcher);
     addStartDateAndTimeListener(submitTextWatcher);
@@ -127,7 +127,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     viewPagerAdapter
         .isAnInputValid()
         .observe(
-            this, aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
+            getViewLifecycleOwner(),
+            aBoolean -> submitButton.setEnabled(aBoolean && isElectionLevelInputValid()));
 
     Button addQuestion = mSetupElectionFragBinding.addQuestion;
     addQuestion.setOnClickListener(
@@ -154,8 +155,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupElectionCancelButton();
     setupElectionSubmitButton();
@@ -164,7 +165,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     mLaoDetailViewModel
         .getElectionCreated()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

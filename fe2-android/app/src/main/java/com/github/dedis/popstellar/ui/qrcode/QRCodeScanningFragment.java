@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,15 +35,14 @@ public final class QRCodeScanningFragment extends Fragment {
   private static final int HANDLE_GMS = 9001;
   private QrcodeFragmentBinding mQrCodeFragBinding;
   private QRCodeScanningViewModel mQRCodeScanningViewModel;
-  private CameraSource camera;
+  private final CameraSource camera;
   private CameraPreview mPreview;
-  private BarcodeDetector barcodeDetector;
+  private final BarcodeDetector barcodeDetector;
   private Integer nbAttendees = 0;
   private AlertDialog closeRollCallAlert;
 
   /** Fragment constructor */
   public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
-    super();
     this.camera = camera;
     this.barcodeDetector = detector;
   }
@@ -115,8 +115,8 @@ public final class QRCodeScanningFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
     if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
       Button back = requireActivity().findViewById(R.id.tab_back);
       back.setOnClickListener(c -> ((LaoDetailViewModel) mQRCodeScanningViewModel).openLaoDetail());
@@ -194,7 +194,7 @@ public final class QRCodeScanningFragment extends Fragment {
     AlertDialog alert = builder.create();
     mPreview.stop();
     alert.show();
-    new Handler()
+    new Handler(Looper.myLooper())
         .postDelayed(
             () -> {
               if (alert.isShowing()) {
@@ -224,7 +224,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getScanWarningEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
@@ -237,7 +237,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getNbAttendeesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             integerEvent -> {
               Integer event = integerEvent.getContentIfNotHandled();
               if (event != null) {
@@ -251,7 +251,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getWitnessScanConfirmEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
@@ -264,7 +264,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getAttendeeScanConfirmEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             stringEvent -> {
               String event = stringEvent.getContentIfNotHandled();
               if (event != null) {
@@ -278,7 +278,7 @@ public final class QRCodeScanningFragment extends Fragment {
     ((LaoDetailViewModel) mQRCodeScanningViewModel)
         .getAskCloseRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             integerEvent -> {
               Integer nextFragment = integerEvent.getContentIfNotHandled();
               if (nextFragment != null) {

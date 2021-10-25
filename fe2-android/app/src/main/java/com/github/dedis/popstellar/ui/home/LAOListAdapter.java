@@ -19,9 +19,9 @@ public class LAOListAdapter extends BaseAdapter {
 
   private List<Lao> laos;
 
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
 
-  private boolean openLaoDetail;
+  private final boolean openLaoDetail;
 
   public LAOListAdapter(
       List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity, boolean openLaoDetail) {
@@ -70,14 +70,11 @@ public class LAOListAdapter extends BaseAdapter {
     if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
 
     LAOItemUserActionsListener userActionsListener =
-        new LAOItemUserActionsListener() {
-          @Override
-          public void onLAOClicked(Lao lao) {
-            if (openLaoDetail) {
-              homeViewModel.openLAO(lao.getChannel());
-            } else {
-              homeViewModel.openLaoWallet(lao.getChannel());
-            }
+        lao -> {
+          if (openLaoDetail) {
+            homeViewModel.openLAO(lao.getChannel());
+          } else {
+            homeViewModel.openLaoWallet(lao.getChannel());
           }
         };
 

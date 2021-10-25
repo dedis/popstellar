@@ -62,16 +62,16 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
 
     case m@_ => m match {
       case Failure(exception: Exception) =>
-        println(">>> Standard Exception : " + m + exception.getMessage)
+        log.error(">>> Standard Exception : " + m + exception.getMessage)
         exception.printStackTrace()
       case akka.actor.Status.Failure(exception: Exception) =>
-        println(">>> Actor Exception : " + m + exception.getMessage)
+        log.error(">>> Actor Exception : " + m + exception.getMessage)
         exception.printStackTrace()
       case Failure(error: Error) =>
-        println(">>> Error : " + m + error.getMessage)
+        log.error(">>> Error : " + m + error.getMessage)
         error.printStackTrace()
       case akka.actor.Status.Failure(error: Error) =>
-        println(">>> Actor Error : " + m + error.getMessage)
+        log.error(">>> Actor Error : " + m + error.getMessage)
         error.printStackTrace()
       case _ => println("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
     }
