@@ -85,7 +85,7 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 
 // BroadcastToAllWitnesses is a helper message to broadcast a message to all
 // witnesses.
-func (c *Channel) BroadcastToAllWitnesses(msg message.Message) {
+func (c *Channel) BroadcastToAllWitnesses(msg message.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all witnesses")
 
 	rpcMessage := method.Broadcast{
@@ -106,10 +106,11 @@ func (c *Channel) BroadcastToAllWitnesses(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		c.log.Err(err).Msg("failed to marshal broadcast query")
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
 	}
 
 	c.sockets.SendToAll(buf)
+	return nil
 }
 
 // Publish handles publish messages for the consensus channel
@@ -144,7 +145,10 @@ func (c *Channel) Publish(publish method.Publish) error {
 		return xerrors.Errorf("failed to process %q object: %w", object, err)
 	}
 
-	c.BroadcastToAllWitnesses(msg)
+	err = c.BroadcastToAllWitnesses(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
 	return nil
 }
 
