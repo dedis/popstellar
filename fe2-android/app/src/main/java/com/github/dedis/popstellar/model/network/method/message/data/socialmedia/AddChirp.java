@@ -12,7 +12,7 @@ import java.util.Optional;
 /** Data sent to add a Chirp */
 public class AddChirp extends Data {
 
-  private final int MAX_CHIRP_CHARS = 300;
+  private static final int MAX_CHIRP_CHARS = 300;
   private final String text;
 
   @SerializedName("parent_id")
