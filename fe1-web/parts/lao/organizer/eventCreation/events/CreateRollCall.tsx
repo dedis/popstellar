@@ -24,8 +24,8 @@ const CreateRollCall = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
 
-  const [proposedStartDate, setProposedStartDate] = useState(Timestamp.EpochNow());
-  const [proposedEndDate, setProposedEndDate] = useState(Timestamp.EpochNow()
+  const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
+  const [proposedEndTime, setProposedEndTime] = useState(Timestamp.EpochNow()
     .addSeconds(DEFAULT_ROLL_CALL_DURATION));
 
   const [rollCallName, setRollCallName] = useState('');
@@ -35,8 +35,8 @@ const CreateRollCall = ({ route }: any) => {
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
     const endTime = new Date(0);
-    startTime.setUTCSeconds(proposedStartDate.valueOf());
-    endTime.setUTCSeconds(proposedEndDate.valueOf());
+    startTime.setUTCSeconds(proposedStartTime.valueOf());
+    endTime.setUTCSeconds(proposedEndTime.valueOf());
 
     return (
       <View style={styles.viewVertical}>
@@ -44,15 +44,15 @@ const CreateRollCall = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
           <DatePicker
             selected={startTime}
-            onChange={(date: Date) => onChangeStartTime(date, setProposedStartDate,
-              setProposedEndDate, DEFAULT_ROLL_CALL_DURATION)}
+            onChange={(date: Date) => onChangeStartTime(date, setProposedStartTime,
+              setProposedEndTime, DEFAULT_ROLL_CALL_DURATION)}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
           <DatePicker
             selected={endTime}
-            onChange={(date: Date) => onChangeEndTime(date, proposedStartDate, setProposedEndDate)}
+            onChange={(date: Date) => onChangeEndTime(date, proposedStartTime, setProposedEndTime)}
           />
         </View>
       </View>
@@ -64,7 +64,7 @@ const CreateRollCall = ({ route }: any) => {
   const createRollCall = () => {
     const description = (rollCallDescription === '') ? undefined : rollCallDescription;
     requestCreateRollCall(
-      rollCallName, rollCallLocation, proposedStartDate, proposedEndDate,
+      rollCallName, rollCallLocation, proposedStartTime, proposedEndTime,
       description,
     )
       .then(() => {
@@ -75,7 +75,14 @@ const CreateRollCall = ({ route }: any) => {
       });
   };
 
-  const onConfirmPress = () => createRollCall();
+  const onConfirmPress = () => {
+    if (proposedEndTime.before(Timestamp.EpochNow())) {
+      // eslint-disable-next-line no-alert
+      alert(STRINGS.alert_event_ends_in_past);
+    } else {
+      createRollCall();
+    }
+  };
 
   return (
     <ScrollView>

@@ -118,6 +118,9 @@ const STRINGS = {
   election_method_Approval: 'Approval',
   election_version_identifier: '1.0.0',
 
+  /* --- Event Creation Strings --- */
+  alert_event_ends_in_past: 'Event creation failed: your event ends in the past.',
+
   /* --- Cast Vote Strings --- */
   cast_vote: 'Cast Vote',
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, TextInput,
+  View, Platform, TextInput, Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -18,8 +18,6 @@ const DEFAULT_MEETING_DURATION = 3600;
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
- *
- * TODO makes impossible to set a finish time before the start time
  */
 
 const CreateMeeting = ({ route }: any) => {
@@ -28,35 +26,37 @@ const CreateMeeting = ({ route }: any) => {
   const navigation = useNavigation();
 
   const [meetingName, setMeetingName] = useState('');
-  const [startDate, setStartDate] = useState(Timestamp.EpochNow());
-  const [endDate, setEndDate] = useState(Timestamp.EpochNow().addSeconds(DEFAULT_MEETING_DURATION));
+  const [startTime, setStartTime] = useState(Timestamp.EpochNow());
+  const [endTime, setEndTime] = useState(Timestamp.EpochNow().addSeconds(DEFAULT_MEETING_DURATION));
 
   const [location, setLocation] = useState('');
 
   const confirmButtonVisibility: boolean = (
     meetingName !== ''
-    && Math.floor(startDate.valueOf() / 60) >= Math.floor((new Date()).getTime() / 60000)
   );
 
   const onConfirmPress = () => {
-    const endTime = (endDate.valueOf() === -1) ? undefined : endDate;
-
-    requestCreateMeeting(meetingName, startDate, location || undefined, endTime)
-      .then(() => {
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
-      })
-      .catch((err) => {
-        console.error('Could not create meeting, error:', err);
-      });
+    if (endTime.before(Timestamp.EpochNow())) {
+      // eslint-disable-next-line no-alert
+      alert(STRINGS.alert_event_ends_in_past);
+    } else {
+      requestCreateMeeting(meetingName, startTime, location, endTime)
+        .then(() => {
+          navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        })
+        .catch((err) => {
+          console.error('Could not create meeting, error:', err);
+        });
+    }
   };
 
   const buildDatePickerWeb = () => {
-    const startTime = new Date(0);
-    startTime.setUTCSeconds(startDate.valueOf());
+    const newStartTime = new Date(0);
+    newStartTime.setUTCSeconds(startTime.valueOf());
 
-    const endTime = (endDate.valueOf() !== -1) ? new Date(0) : undefined;
-    if (endTime !== undefined) {
-      endTime.setUTCSeconds(endDate.valueOf());
+    const newEndTime = (endTime.valueOf() !== -1) ? new Date(0) : undefined;
+    if (newEndTime !== undefined) {
+      newEndTime.setUTCSeconds(endTime.valueOf());
     }
 
     return (
@@ -64,16 +64,16 @@ const CreateMeeting = ({ route }: any) => {
         <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
           <DatePicker
-            selected={startTime}
-            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate,
+            selected={newStartTime}
+            onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
               DEFAULT_MEETING_DURATION)}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
           <DatePicker
-            selected={endTime}
-            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
+            selected={newEndTime}
+            onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
           />
         </View>
       </View>

@@ -28,8 +28,8 @@ const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
 
-  const [startDate, setStartDate] = useState(Timestamp.EpochNow());
-  const [endDate, setEndDate] = useState(Timestamp.EpochNow()
+  const [startTime, setStartTime] = useState(Timestamp.EpochNow());
+  const [endTime, setEndTime] = useState(Timestamp.EpochNow()
     .addSeconds(DEFAULT_ELECTION_DURATION));
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
@@ -39,26 +39,26 @@ const CreateElection = ({ route }: any) => {
   const [questions, setQuestions] = useState([emptyQuestion]);
 
   const buildDatePickerWeb = () => {
-    const startTime = new Date(0);
-    const endTime = new Date(1);
-    startTime.setUTCSeconds(startDate.valueOf());
-    endTime.setUTCSeconds(endDate.valueOf());
+    const newStartTime = new Date(0);
+    const newEndTime = new Date(1);
+    newStartTime.setUTCSeconds(newStartTime.valueOf());
+    newEndTime.setUTCSeconds(newEndTime.valueOf());
 
     return (
       <View style={styles.viewVertical}>
         <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
-            selected={startTime}
-            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate,
+            selected={newStartTime}
+            onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
               DEFAULT_ELECTION_DURATION)}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
-            selected={endTime}
-            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
+            selected={newEndTime}
+            onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
           />
         </View>
       </View>
@@ -82,20 +82,25 @@ const CreateElection = ({ route }: any) => {
     && !getQuestionObjects().some(isInvalid));
 
   const onConfirmPress = () => {
-    console.log(getQuestionObjects());
-    requestCreateElection(
-      electionName,
-      STRINGS.election_version_identifier,
-      startDate,
-      endDate,
-      getQuestionObjects(),
-    )
-      .then(() => {
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
-      })
-      .catch((err) => {
-        console.error('Could not create Election, error:', err);
-      });
+    if (endTime.before(Timestamp.EpochNow())) {
+      // eslint-disable-next-line no-alert
+      alert(STRINGS.alert_event_ends_in_past);
+    } else {
+      console.log(getQuestionObjects());
+      requestCreateElection(
+        electionName,
+        STRINGS.election_version_identifier,
+        startTime,
+        endTime,
+        getQuestionObjects(),
+      )
+        .then(() => {
+          navigation.navigate(STRINGS.organizer_navigation_tab_home);
+        })
+        .catch((err) => {
+          console.error('Could not create Election, error:', err);
+        });
+    }
   };
 
   return (

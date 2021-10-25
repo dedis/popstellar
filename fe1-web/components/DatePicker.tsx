@@ -5,6 +5,11 @@ import { Timestamp } from 'model/objects';
 
 const ONE_MINUTE_IN_SECONDS = 60;
 
+/**
+ * Component which displays a date picker that allows the user to enter a date and a time. It is
+ * impossible to select a date/time from the past.
+ */
+
 const DatePicker = (props: IPropTypes) => {
   const { selected } = props;
   const { onChange } = props;
@@ -83,7 +88,7 @@ export function onChangeEndTime(
 ) {
   const newEnd = Timestamp.dateToTimestamp(newEndDate);
   if (newEnd.before(startTime)) {
-    setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS));
+    setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS)); // Alert here ?
   } else {
     setEndDate(newEnd);
   }
