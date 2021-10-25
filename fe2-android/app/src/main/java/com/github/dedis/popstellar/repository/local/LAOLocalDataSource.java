@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.repository.local.entities.MeetingEntity;
 import com.github.dedis.popstellar.repository.local.entities.ModificationSignatureEntity;
 import com.github.dedis.popstellar.repository.local.entities.PersonEntity;
 import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
+
 import java.util.List;
 
 public class LAOLocalDataSource implements Local {
@@ -29,7 +30,7 @@ public class LAOLocalDataSource implements Local {
 
   @Override
   public List<LAOEntity> getAll() {
-    return null;
+    return laoDao.getAll();
   }
 
   @Override
@@ -43,22 +44,29 @@ public class LAOLocalDataSource implements Local {
   }
 
   @Override
-  public void updateLAO(LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
+  public void updateLAO(
+      LAOEntity lao, List<PersonEntity> witnesses, List<ModificationSignatureEntity> signatures) {
+    laoDao.updateLAO(lao, witnesses, signatures);
   }
 
   @Override
   public void addRollCall(LAOEntity lao, RollCallEntity rollCall) {
+    laoDao.addRollCall(lao, rollCall);
   }
 
   @Override
   public void updateRollCall(RollCallEntity rollCall) {
+    // TODO to be implemented
+    throw new UnsupportedOperationException("To be implemented");
   }
 
   @Override
   public void addMeeting(LAOEntity lao, MeetingEntity meeting) {
+    laoDao.addMeeting(lao, meeting);
   }
 
   @Override
   public void updateMeeting(MeetingEntity meeting, List<ModificationSignatureEntity> signatures) {
+    laoDao.updateMeeting(meeting, signatures);
   }
 }

@@ -36,9 +36,7 @@ public class LAOState {
     return publisher;
   }
 
-  /**
-   * publish is used to publish a LAO state update to all observers.
-   */
+  /** publish is used to publish a LAO state update to all observers. */
   public void publish() {
     Log.d("LAOState", "pushing update to observer. New LAO : " + lao.toString());
     publisher.onNext(lao);

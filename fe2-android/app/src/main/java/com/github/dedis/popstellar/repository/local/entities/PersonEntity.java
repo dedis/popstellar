@@ -10,7 +10,5 @@ Person represents an actual person in the system who holds a public key.
 @Entity
 public class PersonEntity {
 
-  @PrimaryKey
-  @NonNull
-  public String publicKey;
+  @PrimaryKey @NonNull public String publicKey;
 }

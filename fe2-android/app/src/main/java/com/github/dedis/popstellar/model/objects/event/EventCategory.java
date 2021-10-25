@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.model.objects.event;
 
 import androidx.annotation.NonNull;
 
-/**
- * Enum class modeling the Event Categories
- */
+/** Enum class modeling the Event Categories */
 public enum EventCategory {
   PAST {
     @NonNull

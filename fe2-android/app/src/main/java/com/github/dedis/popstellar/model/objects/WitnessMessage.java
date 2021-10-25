@@ -3,27 +3,20 @@ package com.github.dedis.popstellar.model.objects;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Class to model a message that needs to be signed by witnesses
- */
+/** Class to model a message that needs to be signed by witnesses */
 public class WitnessMessage {
 
   private String messageId;
-  /**
-   * Base 64 URL encoded ID of the message that we want to sign
-   */
+  /** Base 64 URL encoded ID of the message that we want to sign */
   private Set<String> witnesses;
-  /**
-   * Set of witnesses that have signed the message
-   */
+  /** Set of witnesses that have signed the message */
   private String title = "";
-  /**
-   * Title that will be displayed for the message
-   */
-  private String description = ""; /** Description that will be displayed for the message*/
+  /** Title that will be displayed for the message */
+  private String description = "";
+  /** Description that will be displayed for the message */
 
   /**
-   * Constructor for a  Witness Message
+   * Constructor for a Witness Message
    *
    * @param messageId ID of the message to sign
    */
@@ -35,7 +28,7 @@ public class WitnessMessage {
   /**
    * Method to add a new witness that have signed the message
    *
-   * @param pk public key of the witness that have signed  the message
+   * @param pk public key of the witness that have signed the message
    */
   public void addWitness(String pk) {
     witnesses.add(pk);

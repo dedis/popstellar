@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.answer;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
+
 import java.util.Objects;
 
 /**
@@ -21,9 +22,7 @@ public abstract class Answer extends GenericMessage {
     this.id = id;
   }
 
-  /**
-   * Returns the ID of the answer
-   */
+  /** Returns the ID of the answer */
   public int getId() {
     return id;
   }

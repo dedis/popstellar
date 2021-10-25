@@ -6,21 +6,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletContentFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.home.LAOListAdapter;
+
 import java.util.ArrayList;
 
-/**
- * Fragment used to display the content wallet UI
- */
+/** Fragment used to display the content wallet UI */
 public class ContentWalletFragment extends Fragment {
 
   public static final String TAG = ContentWalletFragment.class.getSimpleName();
@@ -59,20 +60,20 @@ public class ContentWalletFragment extends Fragment {
 
     if (Wallet.getInstance().isSetUp()) {
       mWalletContentBinding.logoutButton.setVisibility(View.VISIBLE);
-      mWalletContentBinding.logoutButton.setOnClickListener(clicked -> {
-        if (logoutAlert != null && logoutAlert.isShowing()) {
-          logoutAlert.dismiss();
-        }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.logout_title);
-        builder.setMessage(R.string.logout_message);
-        builder.setPositiveButton(R.string.confirm, (dialog, which) ->
-            mHomeViewModel.logoutWallet()
-        );
-        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
-        logoutAlert = builder.create();
-        logoutAlert.show();
-      });
+      mWalletContentBinding.logoutButton.setOnClickListener(
+          clicked -> {
+            if (logoutAlert != null && logoutAlert.isShowing()) {
+              logoutAlert.dismiss();
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.logout_title);
+            builder.setMessage(R.string.logout_message);
+            builder.setPositiveButton(
+                R.string.confirm, (dialog, which) -> mHomeViewModel.logoutWallet());
+            builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss());
+            logoutAlert = builder.create();
+            logoutAlert.show();
+          });
     }
   }
 
