@@ -28,6 +28,7 @@ import com.networknt.schema.SpecVersion
 
 import scala.io.{BufferedSource, Source}
 import scala.util.{Failure, Success, Try}
+import scala.collection.JavaConverters._
 
 import spray.json._
 
@@ -42,15 +43,10 @@ object Validator {
     rpcId
   )
 
-  private def checkRpcId(jsonString: JsonString): Option[Int] = {
+  private def extractRpcId(jsonString: JsonString): Option[Int] = {
     Try(jsonString.parseJson.asJsObject.getFields("id")) match {
-      case Success(Seq(optId)) =>
-        optId match {
-          case JsNumber(id) => Some(id.toInt)
-          case _ => None
-        }
-      case Success(_) => None
-      case Failure(_) => None
+      case Success(Seq(JsNumber(id))) => Some(id.toInt)
+      case _ => None
     }
   }
 
@@ -71,14 +67,15 @@ object Validator {
     // Creation of a JsonNode containing the information from the input jsonString
     val jsonNode: JsonNode = objectMapper.readTree(jsonString)
     // Validation of the input, the result is a set of errors (if no errors, size == 0)
-    val errors = schema.validate(jsonNode)
+    val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
 
-    if (errors.size == 0){
+    if (errors.isEmpty){
       Left(jsonString)
     }
     else {
-      val rpcId = checkRpcId(jsonString)
-      Right(PipelineError(-ErrorCodes.INVALID_DATA.id, "The Json Schema is invalid.", rpcId))
+      val rpcId = extractRpcId(jsonString)
+      // we get and concatenate all of the JsonString messages
+      Right(PipelineError(ErrorCodes.INVALID_DATA.id, errors.mkString("; "), rpcId))
     }
 
   }
