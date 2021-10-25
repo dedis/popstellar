@@ -2,8 +2,8 @@ package com.github.dedis.popstellar.model.objects;
 
 public class PendingUpdate implements Comparable<PendingUpdate> {
 
-  private long modificationTime;
-  private String messageId;
+  private final long modificationTime;
+  private final String messageId;
 
   public PendingUpdate(long modificationTime, String messageId) {
     this.modificationTime = modificationTime;

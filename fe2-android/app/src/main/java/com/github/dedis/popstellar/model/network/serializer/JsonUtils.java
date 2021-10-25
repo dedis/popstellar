@@ -9,9 +9,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
-/**
- * Json utility class
- */
+/** Json utility class */
 public final class JsonUtils {
 
   public static final String JSON_RPC = "jsonrpc";
@@ -19,15 +17,14 @@ public final class JsonUtils {
 
   public static final String JSON_REQUEST_ID = "id";
 
-  private JsonUtils() {
-  }
+  private JsonUtils() {}
 
   /**
    * Test the JsonRPC version of the given object
    *
    * @param object we want to check the version of
    * @throws JsonParseException if the version cannot be found or it does not match the expected
-   *                            value
+   *     value
    */
   public static void testRPCVersion(JsonObject object) throws JsonParseException {
     if (!object.has(JSON_RPC)) {

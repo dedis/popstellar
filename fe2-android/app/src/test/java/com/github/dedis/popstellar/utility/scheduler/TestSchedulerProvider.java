@@ -5,7 +5,7 @@ import io.reactivex.schedulers.TestScheduler;
 
 public class TestSchedulerProvider implements SchedulerProvider {
 
-  private Scheduler testScheduler;
+  private final Scheduler testScheduler;
 
   public TestSchedulerProvider() {
     testScheduler = new TestScheduler();

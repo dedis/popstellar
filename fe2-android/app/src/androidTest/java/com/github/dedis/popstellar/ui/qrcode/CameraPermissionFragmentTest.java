@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
-/**
- * Class handling camera permission fragment tests
- */
+/** Class handling camera permission fragment tests */
 public class CameraPermissionFragmentTest {
 
   //  @Rule

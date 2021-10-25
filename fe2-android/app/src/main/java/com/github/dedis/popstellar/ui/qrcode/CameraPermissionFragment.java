@@ -7,20 +7,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 
-/**
- * Fragment handling permission granting for the camera
- */
+/** Fragment handling permission granting for the camera */
 public final class CameraPermissionFragment extends Fragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
@@ -29,10 +29,6 @@ public final class CameraPermissionFragment extends Fragment {
 
   private QrcodeCameraPermFragmentBinding mCameraPermFragBinding;
   private CameraPermissionViewModel mCameraPermissionViewModel;
-
-  public CameraPermissionFragment() {
-    super();
-  }
 
   public static CameraPermissionFragment newInstance() {
     return new CameraPermissionFragment();
@@ -69,7 +65,6 @@ public final class CameraPermissionFragment extends Fragment {
     setupCameraPermissionButton();
   }
 
-
   @Override
   public void onRequestPermissionsResult(
       int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -92,6 +87,6 @@ public final class CameraPermissionFragment extends Fragment {
 
   private void setupCameraPermissionButton() {
     mCameraPermFragBinding.allowCameraButton.setOnClickListener(
-        v -> requestPermissions(new String[]{Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM));
+        v -> requestPermissions(new String[] {Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM));
   }
 }

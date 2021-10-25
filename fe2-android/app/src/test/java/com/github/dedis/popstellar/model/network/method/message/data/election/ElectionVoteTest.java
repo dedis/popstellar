@@ -8,27 +8,32 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
 
 public class ElectionVoteTest {
 
-  private String electionId = "my election id";
-  private String questionId = " my question id";
-  private List<Integer> votes = new ArrayList<>(
-      Arrays.asList(2, 1, 0)); // we vote for ballot option in position 2, then posiion 1 and 0
-  private String writeIn = "My write in ballot option";
-  ElectionVote electionVote1 = new ElectionVote(questionId, votes, false, writeIn, electionId);
-  ElectionVote electionVote2 = new ElectionVote(questionId, votes, true, writeIn, electionId);
+  private final String electionId = "my election id";
+  private final String questionId = " my question id";
+  private final List<Integer> votes =
+      new ArrayList<>(
+          Arrays.asList(2, 1, 0)); // we vote for ballot option in position 2, then posiion 1 and 0
+  private final String writeIn = "My write in ballot option";
+  private final ElectionVote electionVote1 =
+      new ElectionVote(questionId, votes, false, writeIn, electionId);
+  private final ElectionVote electionVote2 =
+      new ElectionVote(questionId, votes, true, writeIn, electionId);
 
   @Test
   public void electionVoteWriteInDisabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    String expectedId = Hash
-        .hash("Vote", electionId, electionVote1.getQuestionId(),
-            electionVote1.getVotes().toString());
+    String expectedId =
+        Hash.hash(
+            "Vote", electionId, electionVote1.getQuestionId(), electionVote1.getVotes().toString());
     assertThat(electionVote1.getId(), is(expectedId));
     assertNull(electionVote1.getWriteIn());
   }
@@ -36,9 +41,8 @@ public class ElectionVoteTest {
   @Test
   public void electionVoteWriteInEnabledReturnsCorrectId() {
     // WriteIn enabled so id is Hash('Vote'||election_id||question_id||write_in)
-    String expectedId = Hash
-        .hash("Vote", electionId, electionVote2.getQuestionId(),
-            electionVote2.getWriteIn());
+    String expectedId =
+        Hash.hash("Vote", electionId, electionVote2.getQuestionId(), electionVote2.getWriteIn());
     assertThat(electionVote2.getId(), is(expectedId));
     assertNull(electionVote2.getVotes());
   }
@@ -61,7 +65,6 @@ public class ElectionVoteTest {
     assertThat(electionVote2.getWriteIn(), is(writeIn));
   }
 
-
   @Test
   public void electionVoteGetterReturnsCorrectVotes() {
     assertThat(electionVote1.getVotes(), is(votes));
@@ -72,17 +75,21 @@ public class ElectionVoteTest {
     assertNotEquals(electionVote1, electionVote2);
     assertEquals(electionVote1, new ElectionVote(questionId, votes, false, writeIn, electionId));
     assertNotEquals(electionVote1, new ElectionVote("random", votes, false, writeIn, electionId));
-    assertNotEquals(electionVote1,
-        new ElectionVote(questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), false, writeIn,
-            electionId));
+    assertNotEquals(
+        electionVote1,
+        new ElectionVote(
+            questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), false, writeIn, electionId));
     assertNotEquals(electionVote1, new ElectionVote(questionId, votes, false, writeIn, "random"));
 
-    // here because writeInEnabled is false it will be computed as null making both elections the same even though we don't give them the same constructor
+    // here because writeInEnabled is false it will be computed as null making both elections the
+    // same even though we don't give them the same constructor
     assertEquals(electionVote1, new ElectionVote(questionId, votes, false, "random", electionId));
 
-    // here because writeInEnabled is true the list of votes should be computed as null making both election the same
-    assertEquals(electionVote2,
-        new ElectionVote(questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), true, writeIn,
-            electionId));
+    // here because writeInEnabled is true the list of votes should be computed as null making both
+    // election the same
+    assertEquals(
+        electionVote2,
+        new ElectionVote(
+            questionId, new ArrayList<>(Arrays.asList(0, 1, 2)), true, writeIn, electionId));
   }
 }
