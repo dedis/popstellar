@@ -232,8 +232,11 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 func (c *Channel) processConsensusElect(data messagedata.ConsensusElect) error {
 
 	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("failed to process consensus#elect message: %v", err)
+	}
 
-	return err
+	return nil
 }
 
 // ProcessConsensusElectAccept processes an elect accept action.
