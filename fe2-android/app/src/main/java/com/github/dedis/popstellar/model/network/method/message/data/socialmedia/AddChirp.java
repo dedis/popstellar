@@ -19,7 +19,7 @@ public class AddChirp extends Data {
   @Nullable
   private final String parentId;
 
-  private final int timestamp;
+  private final long timestamp;
 
   /**
    * Constructor for a data Add Chirp
@@ -55,7 +55,7 @@ public class AddChirp extends Data {
     return Optional.ofNullable(parentId);
   }
 
-  public int getTimestamp() {
+  public long getTimestamp() {
     return timestamp;
   }
 

@@ -12,7 +12,7 @@ public class AddChirpBroadcast extends Data {
   private final String postId;
 
   private final String channel;
-  private final int timestamp;
+  private final long timestamp;
 
   /**
    * @param postId message ID of the post
@@ -43,7 +43,7 @@ public class AddChirpBroadcast extends Data {
     return channel;
   }
 
-  public int getTimestamp() {
+  public long getTimestamp() {
     return timestamp;
   }
 
