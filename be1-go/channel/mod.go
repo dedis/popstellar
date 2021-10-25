@@ -29,7 +29,7 @@ type Channel interface {
 	// Catchup is used to handle a catchup message.
 	Catchup(msg method.Catchup) []message.Message
 
-	// Broadcast is used to handle a broadcast message. (intern message between 2 channels)
+	// Broadcast is used to handle a broadcast message.
 	Broadcast(msg method.Broadcast) error
 }
 

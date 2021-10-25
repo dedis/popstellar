@@ -13,7 +13,7 @@
         "update_id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('R', lao_id, closes, closed_at)"
+            "$comment": "Hash : HashLen('R', lao_id, closes, closed_at)"
         },
         "closes": {
             "type": "string",
