@@ -11,11 +11,8 @@ import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DateP
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
-import { ONE_HOUR_IN_SECONDS } from './CreateElection';
 
-function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
-}
+const DEFAULT_ROLL_CALL_DURATION = 3600;
 
 /**
  * Screen to create a roll-call event
@@ -29,7 +26,7 @@ const CreateRollCall = ({ route }: any) => {
 
   const [proposedStartDate, setProposedStartDate] = useState(Timestamp.EpochNow());
   const [proposedEndDate, setProposedEndDate] = useState(Timestamp.EpochNow()
-    .addSeconds(ONE_HOUR_IN_SECONDS));
+    .addSeconds(DEFAULT_ROLL_CALL_DURATION));
 
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');
@@ -42,17 +39,22 @@ const CreateRollCall = ({ route }: any) => {
     endTime.setUTCSeconds(proposedEndDate.valueOf());
 
     return (
-      <View style={styles.view}>
-        <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
-        <DatePicker
-          selected={startTime}
-          onChange={(date: Date) => setProposedStartDate(dateToTimestamp(date))}
-        />
-        <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
-        <DatePicker
-          selected={endTime}
-          onChange={(date: Date) => setProposedEndDate(dateToTimestamp(date))}
-        />
+      <View style={styles.viewVertical}>
+        <View style={[styles.view, { padding: 5 }]}>
+          <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
+          <DatePicker
+            selected={startTime}
+            onChange={(date: Date) => onChangeStartTime(date, setProposedStartDate,
+              setProposedEndDate, DEFAULT_ROLL_CALL_DURATION)}
+          />
+        </View>
+        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
+          <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
+          <DatePicker
+            selected={endTime}
+            onChange={(date: Date) => onChangeEndTime(date, proposedStartDate, setProposedEndDate)}
+          />
+        </View>
       </View>
     );
   };

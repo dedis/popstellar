@@ -18,7 +18,7 @@ import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
 
-export const ONE_HOUR_IN_SECONDS = 3600;
+const DEFAULT_ELECTION_DURATION = 3600;
 
 /**
  * UI to create an Election Event
@@ -29,7 +29,8 @@ const CreateElection = ({ route }: any) => {
   const navigation = useNavigation();
 
   const [startDate, setStartDate] = useState(Timestamp.EpochNow());
-  const [endDate, setEndDate] = useState(Timestamp.EpochNow().addSeconds(ONE_HOUR_IN_SECONDS));
+  const [endDate, setEndDate] = useState(Timestamp.EpochNow()
+    .addSeconds(DEFAULT_ELECTION_DURATION));
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
@@ -49,14 +50,15 @@ const CreateElection = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
             selected={startTime}
-            onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
+            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate,
+              DEFAULT_ELECTION_DURATION)}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
             selected={endTime}
-            onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
+            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
           />
         </View>
       </View>

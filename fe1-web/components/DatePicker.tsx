@@ -15,6 +15,8 @@ const DatePicker = (props: IPropTypes) => {
       onChange={(date: any) => onChange(date)}
       dateFormat="MM/dd/yyyy HH:mm"
       showTimeInput
+      minDate={new Date()}
+      showDisabledMonthNavigation
     />
   );
 };
@@ -36,16 +38,18 @@ export default DatePicker;
 /**
  * Function called when the user changes the start time. If the date is valid (not in the past),
  * the start time will be set accordingly. Otherwise, the start date will be replaced by the
- * actual time. In both cases, end time is automatically set to start time + 1 hour.
+ * actual time. In both cases, end time is automatically set to start time + default duration.
  *
  * @param newStartDate - The date the user wants the event to start
  * @param setStartDate - Function to set the start date of the event
  * @param setEndDate - Function to set the end date of the event
+ * @param defaultDurationMillis - The default duration of the event in milliseconds
  */
 export function onChangeStartTime(
   newStartDate: Date,
   setStartDate: React.Dispatch<React.SetStateAction<Timestamp>>,
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
+  defaultDurationMillis: number,
 ) {
   const newStart = Timestamp.dateToTimestamp(newStartDate);
   const now = Timestamp.EpochNow();
@@ -60,8 +64,8 @@ export function onChangeStartTime(
   }
 
   const newEndDate = new Date(actualStartDate.getTime());
-  newEndDate.setHours(actualStartDate.getHours() + 1);
-  setEndDate(Timestamp.dateToTimestamp(newEndDate));
+  const newEndTimestamp = Timestamp.dateToTimestamp(newEndDate).addSeconds(defaultDurationMillis);
+  setEndDate(newEndTimestamp);
 }
 
 /**

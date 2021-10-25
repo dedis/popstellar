@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Button, Platform, TextInput,
+  View, Platform, TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -12,7 +12,8 @@ import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
-import { ONE_HOUR_IN_SECONDS } from './CreateElection';
+
+const DEFAULT_MEETING_DURATION = 3600;
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
@@ -20,9 +21,6 @@ import { ONE_HOUR_IN_SECONDS } from './CreateElection';
  *
  * TODO makes impossible to set a finish time before the start time
  */
-function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
-}
 
 const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
@@ -31,7 +29,7 @@ const CreateMeeting = ({ route }: any) => {
 
   const [meetingName, setMeetingName] = useState('');
   const [startDate, setStartDate] = useState(Timestamp.EpochNow());
-  const [endDate, setEndDate] = useState(Timestamp.EpochNow().addSeconds(ONE_HOUR_IN_SECONDS));
+  const [endDate, setEndDate] = useState(Timestamp.EpochNow().addSeconds(DEFAULT_MEETING_DURATION));
 
   const [location, setLocation] = useState('');
 
@@ -52,24 +50,6 @@ const CreateMeeting = ({ route }: any) => {
       });
   };
 
-  const onChangeStartTime = (date: Date) => {
-    const dateStamp: Timestamp = dateToTimestamp(date);
-    setStartDate(dateStamp);
-    if (endDate < startDate) {
-      setEndDate(dateStamp);
-    }
-  };
-
-  const onChangeEndTime = (date: Date) => {
-    const dateStamp: Timestamp = dateToTimestamp(date);
-
-    if (dateStamp < startDate) {
-      setEndDate(startDate);
-    } else {
-      setEndDate(dateStamp);
-    }
-  };
-
   const buildDatePickerWeb = () => {
     const startTime = new Date(0);
     startTime.setUTCSeconds(startDate.valueOf());
@@ -80,25 +60,23 @@ const CreateMeeting = ({ route }: any) => {
     }
 
     return (
-      <>
-        { /* Start time */ }
-        <View style={styles.view}>
+      <View style={styles.viewVertical}>
+        <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
-          { /* zIndexBooster corrects the problem of DatePicker being other elements */ }
-          <DatePicker selected={startTime} onChange={onChangeStartTime} />
+          <DatePicker
+            selected={startTime}
+            onChange={(date: Date) => onChangeStartTime(date, setStartDate, setEndDate,
+              DEFAULT_MEETING_DURATION)}
+          />
         </View>
-
-        { /* End time */}
-        <View style={styles.view}>
+        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
-          { /* zIndexBooster corrects the problem of DatePicker being other elements */}
-          <DatePicker selected={endTime} onChange={onChangeEndTime} />
-          <View>
-            { /* the view is there to avoid button stretching */ }
-            <Button onPress={() => setEndDate(new Timestamp(-1))} title="Clear" />
-          </View>
+          <DatePicker
+            selected={endTime}
+            onChange={(date: Date) => onChangeEndTime(date, startDate, setEndDate)}
+          />
         </View>
-      </>
+      </View>
     );
   };
 
