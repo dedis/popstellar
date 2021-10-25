@@ -11,6 +11,7 @@ import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DateP
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
+import { FIVE_MINUTES_IN_MILLIS } from '../CreateEvent';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
@@ -76,9 +77,15 @@ const CreateRollCall = ({ route }: any) => {
   };
 
   const onConfirmPress = () => {
-    if (proposedEndTime.before(Timestamp.EpochNow())) {
+    const now = Timestamp.EpochNow();
+    if (proposedEndTime.before(now)) {
       // eslint-disable-next-line no-alert
       alert(STRINGS.alert_event_ends_in_past);
+    } else if (proposedStartTime.before(now.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
+      // eslint-disable-next-line no-restricted-globals
+      if (confirm(STRINGS.confirm_event_starts_in_past)) {
+        createRollCall();
+      }
     } else {
       createRollCall();
     }

@@ -11,6 +11,8 @@ import stylesContainer from 'styles/stylesheets/container';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 
+export const FIVE_MINUTES_IN_MILLIS = 300000;
+
 const styleEvents = StyleSheet.create({
   view: {
     ...Views.base,

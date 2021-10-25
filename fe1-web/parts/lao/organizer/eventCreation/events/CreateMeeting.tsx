@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, TextInput, Alert
+  View, Platform, TextInput,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -12,6 +12,7 @@ import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
+import { FIVE_MINUTES_IN_MILLIS } from '../CreateEvent';
 
 const DEFAULT_MEETING_DURATION = 3600;
 
@@ -35,18 +36,28 @@ const CreateMeeting = ({ route }: any) => {
     meetingName !== ''
   );
 
+  const createMeeting = () => {
+    requestCreateMeeting(meetingName, startTime, location, endTime)
+      .then(() => {
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      })
+      .catch((err) => {
+        console.error('Could not create meeting, error:', err);
+      });
+  };
+
   const onConfirmPress = () => {
-    if (endTime.before(Timestamp.EpochNow())) {
+    const now = Timestamp.EpochNow();
+    if (endTime.before(now)) {
       // eslint-disable-next-line no-alert
       alert(STRINGS.alert_event_ends_in_past);
+    } else if (startTime.before(now.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
+      // eslint-disable-next-line no-restricted-globals
+      if (confirm(STRINGS.confirm_event_starts_in_past)) {
+        createMeeting();
+      }
     } else {
-      requestCreateMeeting(meetingName, startTime, location, endTime)
-        .then(() => {
-          navigation.navigate(STRINGS.organizer_navigation_tab_home);
-        })
-        .catch((err) => {
-          console.error('Could not create meeting, error:', err);
-        });
+      createMeeting();
     }
   };
 

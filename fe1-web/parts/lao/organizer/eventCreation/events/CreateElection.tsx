@@ -17,6 +17,7 @@ import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
+import { FIVE_MINUTES_IN_MILLIS } from '../CreateEvent';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -81,25 +82,35 @@ const CreateElection = ({ route }: any) => {
   const buttonsVisibility: boolean = (electionName !== ''
     && !getQuestionObjects().some(isInvalid));
 
+  const createElection = () => {
+    console.log(getQuestionObjects());
+    requestCreateElection(
+      electionName,
+      STRINGS.election_version_identifier,
+      startTime,
+      endTime,
+      getQuestionObjects(),
+    )
+      .then(() => {
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      })
+      .catch((err) => {
+        console.error('Could not create Election, error:', err);
+      });
+  };
+
   const onConfirmPress = () => {
-    if (endTime.before(Timestamp.EpochNow())) {
+    const now = Timestamp.EpochNow();
+    if (endTime.before(now)) {
       // eslint-disable-next-line no-alert
       alert(STRINGS.alert_event_ends_in_past);
+    } else if (startTime.before(now.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
+      // eslint-disable-next-line no-restricted-globals
+      if (confirm(STRINGS.confirm_event_starts_in_past)) {
+        createElection();
+      }
     } else {
-      console.log(getQuestionObjects());
-      requestCreateElection(
-        electionName,
-        STRINGS.election_version_identifier,
-        startTime,
-        endTime,
-        getQuestionObjects(),
-      )
-        .then(() => {
-          navigation.navigate(STRINGS.organizer_navigation_tab_home);
-        })
-        .catch((err) => {
-          console.error('Could not create Election, error:', err);
-        });
+      createElection();
     }
   };
 

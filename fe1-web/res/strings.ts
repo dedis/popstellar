@@ -120,6 +120,8 @@ const STRINGS = {
 
   /* --- Event Creation Strings --- */
   alert_event_ends_in_past: 'Event creation failed: your event ends in the past.',
+  confirm_event_starts_in_past: 'Your event starts at least 5 minutes in the past, it will be '
+    + 'started now if you confirm.',
 
   /* --- Cast Vote Strings --- */
   cast_vote: 'Cast Vote',
