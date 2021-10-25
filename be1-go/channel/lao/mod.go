@@ -56,7 +56,8 @@ type Channel struct {
 	log zerolog.Logger
 }
 
-// NewChannel returns a new initialized LAO channel
+// NewChannel returns a new initialized LAO channel. It automatically creates
+// its associated consensus channel and register it to the hub
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
