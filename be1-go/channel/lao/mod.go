@@ -53,8 +53,7 @@ type Channel struct {
 
 	attendees map[string]struct{}
 
-	consensus *consensus.Channel
-	log       zerolog.Logger
+	log zerolog.Logger
 }
 
 // NewChannel returns a new initialized LAO channel
@@ -78,14 +77,8 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
-		consensus: &consensusCh,
 		log:       log,
 	}
-}
-
-// GetConsensusChannel returns the consensus channel linked with the LAO channel
-func (c *Channel) GetConsensusChannel() *consensus.Channel {
-	return c.consensus
 }
 
 // Subscribe is used to handle a subscribe message from the client.
