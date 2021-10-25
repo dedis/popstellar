@@ -7,13 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessMessageFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.util.ArrayList;
 
 public class WitnessMessageFragment extends Fragment {
@@ -49,8 +52,7 @@ public class WitnessMessageFragment extends Fragment {
     setupListAdapter();
     setupListUpdates();
     Button back = (Button) getActivity().findViewById(R.id.tab_back);
-    back.setOnClickListener(c ->
-        mLaoDetailViewModel.openLaoDetail());
+    back.setOnClickListener(c -> mLaoDetailViewModel.openLaoDetail());
   }
 
   private void setupListAdapter() {
@@ -72,5 +74,4 @@ public class WitnessMessageFragment extends Fragment {
               mWitnessMessageListViewAdapter.replaceList(messages);
             });
   }
-
 }

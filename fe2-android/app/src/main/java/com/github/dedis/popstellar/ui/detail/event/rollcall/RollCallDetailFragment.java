@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import net.glxn.qrgen.android.QRCode;
 
 public class RollCallDetailFragment extends Fragment {
@@ -52,7 +55,7 @@ public class RollCallDetailFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    mRollCallFragBinding.backButton
-        .setOnClickListener(clicked -> mLaoDetailViewModel.openLaoDetail());
+    mRollCallFragBinding.backButton.setOnClickListener(
+        clicked -> mLaoDetailViewModel.openLaoDetail());
   }
 }

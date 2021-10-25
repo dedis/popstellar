@@ -9,9 +9,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -20,13 +22,12 @@ import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.event.EventExpandableListViewAdapter;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessListViewAdapter;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-import java.util.ArrayList;
+
 import net.glxn.qrgen.android.QRCode;
 
+import java.util.ArrayList;
 
-/**
- * Fragment used to display the LAO Detail UI
- */
+/** Fragment used to display the LAO Detail UI */
 public class LaoDetailFragment extends Fragment {
 
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
@@ -56,8 +57,8 @@ public class LaoDetailFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupWitnessMessageButton();
     setupPropertiesButton();
@@ -77,7 +78,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getShowPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -89,7 +90,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getEditPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -116,19 +117,18 @@ public class LaoDetailFragment extends Fragment {
             });
   }
 
-
   private void setupWitnessMessageButton() {
-    Button witnessMessageButton = (Button) getActivity()
-        .findViewById(R.id.tab_witness_message_button);
+    Button witnessMessageButton =
+        (Button) getActivity().findViewById(R.id.tab_witness_message_button);
     witnessMessageButton.setOnClickListener(v -> mLaoDetailViewModel.openWitnessMessage());
   }
 
   private void setupAddWitnessButton() {
-    mLaoDetailFragBinding.addWitnessButton.setOnClickListener(v -> {
-      mLaoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
-      mLaoDetailViewModel.openScanning();
-    });
-
+    mLaoDetailFragBinding.addWitnessButton.setOnClickListener(
+        v -> {
+          mLaoDetailViewModel.setScanningAction(ScanningAction.ADD_WITNESS);
+          mLaoDetailViewModel.openScanning();
+        });
   }
 
   private void setupPropertiesButton() {
@@ -136,7 +136,6 @@ public class LaoDetailFragment extends Fragment {
 
     propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
   }
-
 
   private void setupEditPropertiesButton() {
     mLaoDetailFragBinding.editButton.setOnClickListener(
@@ -182,7 +181,6 @@ public class LaoDetailFragment extends Fragment {
     expandableListView.setAdapter(mEventListViewEventAdapter);
     expandableListView.expandGroup(0);
     expandableListView.expandGroup(1);
-
   }
 
   private void setupEventListUpdates() {
@@ -198,10 +196,8 @@ public class LaoDetailFragment extends Fragment {
                 }
               }
               mEventListViewEventAdapter.replaceList(events);
-            }
-        );
+            });
   }
-
 
   private void setupSwipeRefresh() {
     //    mLaoDetailFragBinding.swipeRefresh.setOnRefreshListener(

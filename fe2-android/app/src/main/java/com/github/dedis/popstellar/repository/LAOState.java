@@ -14,8 +14,8 @@ import io.reactivex.subjects.Subject;
  */
 public class LAOState {
 
-  private Subject<Lao> publisher;
-  private Lao lao;
+  private final Subject<Lao> publisher;
+  private final Lao lao;
 
   /**
    * Instantiates a new Lao state.
@@ -36,9 +36,7 @@ public class LAOState {
     return publisher;
   }
 
-  /**
-   * publish is used to publish a LAO state update to all observers.
-   */
+  /** publish is used to publish a LAO state update to all observers. */
   public void publish() {
     Log.d("LAOState", "pushing update to observer. New LAO : " + lao.toString());
     publisher.onNext(lao);
