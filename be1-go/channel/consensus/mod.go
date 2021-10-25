@@ -129,10 +129,15 @@ func (c *Channel) Publish(publish method.Publish) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object or action: %v", err)
+	}
 
 	switch object {
 	case messagedata.ConsensusObject:
 		err = c.processConsensusObject(action, msg)
+	default:
+		return answer.NewInvalidObjectError(object)
 	}
 
 	if err != nil {
