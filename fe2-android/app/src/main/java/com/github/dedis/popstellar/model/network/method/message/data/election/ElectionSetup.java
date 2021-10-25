@@ -54,7 +54,8 @@ public class ElectionSetup extends Data {
         || laoId == null) {
       throw new IllegalArgumentException();
     }
-    if (end < 0 || start < 0 || end < start || creation > start || creation < 0) {
+    // we don't need to check if end < 0 or start < 0 as it is already covered by other statements
+    if (creation < 0 || start < creation || end < start) {
       throw new IllegalArgumentException("Timestamp cannot be negative");
     }
     if (questionList.size() != votingMethod.size()

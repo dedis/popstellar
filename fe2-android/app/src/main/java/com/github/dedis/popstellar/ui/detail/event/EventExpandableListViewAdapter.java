@@ -46,7 +46,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       new SimpleDateFormat("dd/MM/yyyy HH:mm ", Locale.ENGLISH);
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
-  protected HashMap<EventCategory, List<Event>> eventsMap;
+  protected final HashMap<EventCategory, List<Event>> eventsMap;
 
   /**
    * Constructor for the expandable list view adapter to display the events in the attendee UI
@@ -314,13 +314,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       Election election, EventCategory category, EventLayoutBinding layoutEventBinding) {
     ElectionDisplayLayoutBinding electionBinding = layoutEventBinding.includeLayoutElection;
     electionBinding.setElection(election);
-    Date dStart =
-        new java.util.Date(
-            Long.valueOf(election.getStartTimestamp())
-                * 1000); // *1000 because it needs to be in milisecond
+    Date dStart = new java.util.Date(election.getStartTimestampInMillis());
     String dateStart = DATE_FORMAT.format(dStart);
     electionBinding.electionStartDate.setText("Start date : " + dateStart);
-    Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp()) * 1000);
+    Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
     viewModel.setCurrentElection(election);
@@ -344,7 +341,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     } else if (category == PAST) {
 
       electionBinding.electionActionButton.setEnabled(true);
-      if (!viewModel.isOrganizer().getValue().booleanValue()) {
+      if (!viewModel.isOrganizer().getValue()) {
         electionBinding.electionActionButton.setEnabled(false);
       }
 

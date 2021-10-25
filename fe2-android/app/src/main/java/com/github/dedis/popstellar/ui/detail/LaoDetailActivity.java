@@ -43,9 +43,7 @@ public class LaoDetailActivity extends AppCompatActivity {
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
     ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
-    LaoDetailViewModel viewModel =
-        new ViewModelProvider(activity, factory).get(LaoDetailViewModel.class);
-    return viewModel;
+    return new ViewModelProvider(activity, factory).get(LaoDetailViewModel.class);
   }
 
   @Override
@@ -198,8 +196,6 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
   }
-
-  private void setupCreatePollFragment() {}
 
   public void setupHomeButton() {
     Button homeButton = (Button) findViewById(R.id.tab_home);

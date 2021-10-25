@@ -26,8 +26,7 @@ import java.util.concurrent.Executors;
       PersonEntity.class,
       ModificationSignatureEntity.class
     },
-    version = 1,
-    exportSchema = true)
+    version = 1)
 public abstract class LAODatabase extends RoomDatabase {
 
   private static final String DATABASE_NAME = "lao_database";
