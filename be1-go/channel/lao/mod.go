@@ -668,12 +668,12 @@ const InvalidIDMessage string = "ID %s does not correspond with message data"
 
 // verifyMessageRollCallCreateID verify the id of a message
 func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
-	expectedID := messagedata.Hash([]string{
+	expectedID := messagedata.Hash(
 		"R",
 		c.channelID,
 		fmt.Sprintf("%d", msg.Creation),
 		msg.Name,
-	})
+	)
 
 	if msg.ID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.ID)
@@ -684,12 +684,12 @@ func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) 
 
 // verifyMessageRollCallOpenID verify the id of a message
 func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
-	expectedID := messagedata.Hash([]string{
+	expectedID := messagedata.Hash(
 		"R",
 		c.channelID,
 		msg.Opens,
 		fmt.Sprintf("%d", msg.OpenedAt),
-	})
+	)
 
 	if msg.UpdateID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
@@ -700,12 +700,12 @@ func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) erro
 
 // verifyMessageRollCallCloseID verify the id of a message
 func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
-	expectedID := messagedata.Hash([]string{
+	expectedID := messagedata.Hash(
 		"R",
 		c.channelID,
 		msg.Closes,
 		fmt.Sprintf("%d", msg.ClosedAt),
-	})
+	)
 
 	if msg.UpdateID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)

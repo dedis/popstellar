@@ -26,14 +26,14 @@ type Key struct {
 
 // Verify verify that the ConsensusElect message is correct
 func (message ConsensusElect) Verify() error {
-	expectedID := Hash([]string{
+	expectedID := Hash(
 		message.Object,
 		fmt.Sprintf("%d", message.CreatedAt),
 		message.Key.Type,
 		message.Key.ID,
 		message.Key.Property,
 		message.Value,
-	})
+	)
 
 	if message.InstanceID != expectedID {
 		return xerrors.Errorf("invalid ConsensusStart message: invalid ID")
