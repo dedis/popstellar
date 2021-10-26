@@ -30,6 +30,9 @@ func Serve(cliCtx *cli.Context) error {
 	organizerAddress := cliCtx.String("organizer-address")
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
+	if clientPort == witnessPort {
+		return xerrors.Errorf("client and witness ports must be different")
+	}
 	otherWitness := cliCtx.StringSlice("other-witness")
 
 	pk := cliCtx.String("public-key")
