@@ -20,6 +20,7 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/rs/zerolog"
@@ -365,8 +366,9 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 
 // verify if a lao message id is the same as the lao id
 func (c *Channel) verifyMessageLaoID(id string) error {
-	if c.channelID != id {
-		return xerrors.Errorf("lao id is %s, should be %s", id, c.channelID)
+	expectedID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	if expectedID != id {
+		return xerrors.Errorf("lao id is %s, should be %s", id, expectedID)
 	}
 
 	return nil
@@ -658,19 +660,19 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	return nil
 }
 
-const InvalidIDMessage string = "ID %s does not correspond with message data"
+const InvalidIDMessage string = "ID %s does not correspond with message data, should be %s"
 
 // verifyMessageRollCallCreateID verify the id of a message
 func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
 	expectedID := messagedata.Hash(
 		"R",
-		c.channelID,
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		fmt.Sprintf("%d", msg.Creation),
 		msg.Name,
 	)
 
 	if msg.ID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.ID)
+		return xerrors.Errorf(InvalidIDMessage, msg.ID, expectedID)
 	}
 
 	return nil
@@ -680,13 +682,13 @@ func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) 
 func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
 	expectedID := messagedata.Hash(
 		"R",
-		c.channelID,
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		msg.Opens,
 		fmt.Sprintf("%d", msg.OpenedAt),
 	)
 
 	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
 	}
 
 	return nil
@@ -696,13 +698,13 @@ func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) erro
 func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
 	expectedID := messagedata.Hash(
 		"R",
-		c.channelID,
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		msg.Closes,
 		fmt.Sprintf("%d", msg.ClosedAt),
 	)
 
 	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
 	}
 
 	return nil

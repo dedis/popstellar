@@ -7,7 +7,7 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestCastVoteElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
@@ -83,6 +83,7 @@ object MessageDecoder {
       case (ObjectType.ROLL_CALL, ActionType.OPEN) => request.toTypedRequest(JsonRpcRequestOpenRollCall)
       case (ObjectType.ROLL_CALL, ActionType.REOPEN) => request.toTypedRequest(JsonRpcRequestReopenRollCall)
       case (ObjectType.ELECTION, ActionType.SETUP) => request.toTypedRequest(JsonRpcRequestSetupElection)
+      case (ObjectType.ELECTION, ActionType.CAST_VOTE) => request.toTypedRequest(JsonRpcRequestCastVoteElection)
       case (ObjectType.ELECTION, ActionType.RESULT) => request.toTypedRequest(JsonRpcRequestResultElection)
       case (ObjectType.ELECTION, ActionType.END) => request.toTypedRequest(JsonRpcRequestEndElection)
       case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)

@@ -123,8 +123,7 @@ public class WalletFragmentTest {
             allOf(
                 withId(R.id.button_new_wallet),
                 withText("New wallet"),
-                withParent(
-                    withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class))),
+                withParent(withParent(IsInstanceOf.instanceOf(android.widget.LinearLayout.class))),
                 isDisplayed()));
     button3.check(matches(isDisplayed()));
 
@@ -133,8 +132,7 @@ public class WalletFragmentTest {
             allOf(
                 withId(R.id.button_own_seed),
                 withText("I own a seed"),
-                withParent(
-                    withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class))),
+                withParent(withParent(IsInstanceOf.instanceOf(android.widget.LinearLayout.class))),
                 isDisplayed()));
     button4.check(matches(isDisplayed()));
   }
@@ -206,8 +204,7 @@ public class WalletFragmentTest {
             allOf(
                 withId(R.id.button_confirm_seed),
                 withText("Confirm"),
-                withParent(
-                    withParent(IsInstanceOf.<View>instanceOf(android.widget.LinearLayout.class))),
+                withParent(withParent(IsInstanceOf.instanceOf(android.widget.LinearLayout.class))),
                 isDisplayed()));
     button2.check(matches(isDisplayed()));
 
