@@ -51,7 +51,7 @@ const CreateMeeting = ({ route }: any) => {
     if (endTime.before(now)) {
       // eslint-disable-next-line no-alert
       alert(STRINGS.alert_event_ends_in_past);
-    } else if (startTime.before(now.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
+    } else if (now.after(startTime.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
       // eslint-disable-next-line no-restricted-globals
       if (confirm(STRINGS.confirm_event_starts_in_past)) {
         createMeeting();
@@ -62,20 +62,15 @@ const CreateMeeting = ({ route }: any) => {
   };
 
   const buildDatePickerWeb = () => {
-    const newStartTime = new Date(0);
-    newStartTime.setUTCSeconds(startTime.valueOf());
-
-    const newEndTime = (endTime.valueOf() !== -1) ? new Date(0) : undefined;
-    if (newEndTime !== undefined) {
-      newEndTime.setUTCSeconds(endTime.valueOf());
-    }
+    const startDate = startTime.timestampToDate();
+    const endDate = endTime.timestampToDate();
 
     return (
       <View style={styles.viewVertical}>
         <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
           <DatePicker
-            selected={newStartTime}
+            selected={startDate}
             onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
               DEFAULT_MEETING_DURATION)}
           />
@@ -83,7 +78,7 @@ const CreateMeeting = ({ route }: any) => {
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
           <DatePicker
-            selected={newEndTime}
+            selected={endDate}
             onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
           />
         </View>

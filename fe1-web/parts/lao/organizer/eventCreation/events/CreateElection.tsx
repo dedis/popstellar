@@ -40,17 +40,15 @@ const CreateElection = ({ route }: any) => {
   const [questions, setQuestions] = useState([emptyQuestion]);
 
   const buildDatePickerWeb = () => {
-    const newStartTime = new Date(0);
-    const newEndTime = new Date(1);
-    newStartTime.setUTCSeconds(newStartTime.valueOf());
-    newEndTime.setUTCSeconds(newEndTime.valueOf());
+    const startDate = startTime.timestampToDate();
+    const endDate = endTime.timestampToDate();
 
     return (
       <View style={styles.viewVertical}>
         <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
-            selected={newStartTime}
+            selected={startDate}
             onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
               DEFAULT_ELECTION_DURATION)}
           />
@@ -58,7 +56,7 @@ const CreateElection = ({ route }: any) => {
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
-            selected={newEndTime}
+            selected={endDate}
             onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
           />
         </View>
@@ -104,7 +102,7 @@ const CreateElection = ({ route }: any) => {
     if (endTime.before(now)) {
       // eslint-disable-next-line no-alert
       alert(STRINGS.alert_event_ends_in_past);
-    } else if (startTime.before(now.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
+    } else if (now.after(startTime.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
       // eslint-disable-next-line no-restricted-globals
       if (confirm(STRINGS.confirm_event_starts_in_past)) {
         createElection();

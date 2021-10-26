@@ -34,17 +34,15 @@ const CreateRollCall = ({ route }: any) => {
   const [rollCallDescription, setRollCallDescription] = useState('');
 
   const buildDatePickerWeb = () => {
-    const startTime = new Date(0);
-    const endTime = new Date(0);
-    startTime.setUTCSeconds(proposedStartTime.valueOf());
-    endTime.setUTCSeconds(proposedEndTime.valueOf());
+    const startDate = proposedStartTime.timestampToDate();
+    const endDate = proposedEndTime.timestampToDate();
 
     return (
       <View style={styles.viewVertical}>
         <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
           <DatePicker
-            selected={startTime}
+            selected={startDate}
             onChange={(date: Date) => onChangeStartTime(date, setProposedStartTime,
               setProposedEndTime, DEFAULT_ROLL_CALL_DURATION)}
           />
@@ -52,7 +50,7 @@ const CreateRollCall = ({ route }: any) => {
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_end} />
           <DatePicker
-            selected={endTime}
+            selected={endDate}
             onChange={(date: Date) => onChangeEndTime(date, proposedStartTime, setProposedEndTime)}
           />
         </View>
@@ -81,7 +79,7 @@ const CreateRollCall = ({ route }: any) => {
     if (proposedEndTime.before(now)) {
       // eslint-disable-next-line no-alert
       alert(STRINGS.alert_event_ends_in_past);
-    } else if (proposedStartTime.before(now.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
+    } else if (now.after(proposedStartTime.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
       // eslint-disable-next-line no-restricted-globals
       if (confirm(STRINGS.confirm_event_starts_in_past)) {
         createRollCall();
