@@ -152,6 +152,13 @@ func (c *Channel) Publish(publish method.Publish) error {
 	return nil
 }
 
+// Broadcast handles broadcast messages for the consensus channel
+func (c *Channel) Broadcast(broadcast method.Broadcast) error {
+	err := xerrors.Errorf("a consensus shouldn't need to broadcast a message")
+	c.log.Err(err)
+	return err
+}
+
 // VerifyPublishMessage checks if a Publish message is valid
 func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	c.log.Info().
