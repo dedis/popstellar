@@ -2,28 +2,28 @@ package com.github.dedis.popstellar.model.objects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.utility.security.Hash;
-import java.time.Instant;
+
+import org.junit.Test;
+
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.junit.Test;
 
 public class ConsensusTest {
 
-  private final long creation = Instant.now().getEpochSecond();
-  private final String type = "TestType";
-  private final String objId = Hash.hash("TestId");
-  private final String property = "TestProperty";
+  private static final long creation = 1635277619;
+  private static final String type = "TestType";
+  private static final String objId = Hash.hash("TestId");
+  private static final String property = "TestProperty";
 
-  private final ConsensusKey key = new ConsensusKey(type, objId, property);
-  private final Object value = "TestValue";
+  private static final ConsensusKey key = new ConsensusKey(type, objId, property);
+  private static final Object value = "TestValue";
 
-  private final Consensus consensus = new Consensus(creation, key, value);
+  private static final Consensus consensus = new Consensus(creation, key, value);
 
   @Test
   public void setAndGetMessageIdTest() {
@@ -37,8 +37,6 @@ public class ConsensusTest {
     String channel = "/root/aaa/consensus";
     consensus.setChannel(channel);
     assertEquals(channel, consensus.getChannel());
-
-    assertThrows(IllegalArgumentException.class, () -> consensus.setChannel(null));
   }
 
   @Test
@@ -52,8 +50,6 @@ public class ConsensusTest {
     String newId = Hash.hash("newId");
     consensus.setId(newId);
     assertEquals(newId, consensus.getId());
-
-    assertThrows(IllegalArgumentException.class, () -> consensus.setId(null));
   }
 
   @Test
@@ -62,8 +58,6 @@ public class ConsensusTest {
     ConsensusKey newKey = new ConsensusKey("type2", "id2", "property2");
     consensus.setKey(newKey);
     assertEquals(newKey, consensus.getKey());
-
-    assertThrows(IllegalArgumentException.class, () -> consensus.setKey(null));
   }
 
   @Test
@@ -80,8 +74,6 @@ public class ConsensusTest {
     String proposer = "aaa";
     consensus.setProposer(proposer);
     assertEquals(proposer, consensus.getProposer());
-
-    assertThrows(IllegalArgumentException.class, () -> consensus.setProposer(null));
   }
 
   @Test
@@ -89,28 +81,17 @@ public class ConsensusTest {
     Set<String> nodes = new HashSet<>();
     consensus.setNodes(nodes);
     assertEquals(nodes, consensus.getNodes());
-
-    assertThrows(IllegalArgumentException.class, () -> consensus.setNodes(null));
   }
 
   @Test
   public void acceptorsResponsesTest() {
     String acceptor1 = "aaa1";
-    String acceptor2 = "aaa2";
     String messageId1 = "mmm1";
-    String messageId2 = "mmm2";
-    consensus.putAcceptorResponse(acceptor1, messageId1, true);
-    consensus.putAcceptorResponse(acceptor2, messageId2, false);
+    consensus.putPositiveAcceptorResponse(acceptor1, messageId1);
 
     Map<String, String> messageIds = consensus.getAcceptorsToMessageId();
     assertEquals(1, messageIds.size());
     assertEquals(messageId1, messageIds.get(acceptor1));
-
-    assertThrows(
-        IllegalArgumentException.class, () -> consensus.putAcceptorResponse(acceptor1, null, true));
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> consensus.putAcceptorResponse(null, messageId1, true));
   }
 
   @Test

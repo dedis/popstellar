@@ -6,21 +6,21 @@ import static org.junit.Assert.assertNotEquals;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.utility.security.Hash;
-import java.time.Instant;
+
 import org.junit.Test;
 
 public class ConsensusElectTest {
 
-  private final long time = Instant.now().getEpochSecond();
+  private static final long time = 1635277619;
 
-  private final String objId = Hash.hash("test");
-  private final String type = "TestType";
-  private final String property = "TestProperty";
-  private final Object value = "TestValue";
+  private static final String objId = Hash.hash("test");
+  private static final String type = "TestType";
+  private static final String property = "TestProperty";
+  private static final Object value = "TestValue";
 
-  private final ConsensusKey key = new ConsensusKey(type, objId, property);
+  private static final ConsensusKey key = new ConsensusKey(type, objId, property);
 
-  private final ConsensusElect consensusElect =
+  private static final ConsensusElect consensusElect =
       new ConsensusElect(time, objId, type, property, value);
 
   @Test
@@ -60,10 +60,11 @@ public class ConsensusElectTest {
   public void equalsTest() {
     assertEquals(consensusElect, new ConsensusElect(time, objId, type, property, value));
 
+    String random = "random";
     assertNotEquals(consensusElect, new ConsensusElect(time + 1, objId, type, property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, "random", type, property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, objId, "random", property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, objId, type, "random", value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, objId, type, property, "random"));
+    assertNotEquals(consensusElect, new ConsensusElect(time, random, type, property, value));
+    assertNotEquals(consensusElect, new ConsensusElect(time, objId, random, property, value));
+    assertNotEquals(consensusElect, new ConsensusElect(time, objId, type, random, value));
+    assertNotEquals(consensusElect, new ConsensusElect(time, objId, type, property, random));
   }
 }

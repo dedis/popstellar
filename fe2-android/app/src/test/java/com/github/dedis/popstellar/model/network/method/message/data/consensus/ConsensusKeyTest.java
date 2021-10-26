@@ -8,11 +8,11 @@ import org.junit.Test;
 
 public class ConsensusKeyTest {
 
-  private final String type = "TestType";
-  private final String id = Hash.hash("TestId");
-  private final String property = "TestProperty";
+  private static final String type = "TestType";
+  private static final String id = Hash.hash("TestId");
+  private static final String property = "TestProperty";
 
-  private final ConsensusKey key = new ConsensusKey(type, id, property);
+  private static final ConsensusKey key = new ConsensusKey(type, id, property);
 
 
   @Test
@@ -34,8 +34,9 @@ public class ConsensusKeyTest {
   public void equalsTest() {
     assertEquals(key, new ConsensusKey(type, id, property));
 
-    assertNotEquals(key, new ConsensusKey("random", id, property));
-    assertNotEquals(key, new ConsensusKey(type, "random", property));
-    assertNotEquals(key, new ConsensusKey(type, id, "random"));
+    String random = "random";
+    assertNotEquals(key, new ConsensusKey(random, id, property));
+    assertNotEquals(key, new ConsensusKey(type, random, property));
+    assertNotEquals(key, new ConsensusKey(type, id, random));
   }
 }

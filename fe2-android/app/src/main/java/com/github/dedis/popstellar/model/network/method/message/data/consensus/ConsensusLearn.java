@@ -5,6 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Collections;
 import java.util.List;
 
 public final class ConsensusLearn extends Data {
@@ -16,7 +17,7 @@ public final class ConsensusLearn extends Data {
 
   public ConsensusLearn(String messageId, List<String> acceptors) {
     this.messageId = messageId;
-    this.acceptors = acceptors;
+    this.acceptors = Collections.unmodifiableList(acceptors);
   }
 
   public String getMessageId() {

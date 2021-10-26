@@ -153,7 +153,7 @@ public class ElectionStartFragment extends Fragment {
     mLaoDetailViewModel
         .getNodes()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             consensusNodes -> {
               Log.d(TAG, "got an update for nodes : " + consensusNodes);
               adapter.setList(consensusNodes);

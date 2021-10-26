@@ -11,9 +11,9 @@ import org.junit.Test;
 
 public class ConsensusElectAcceptTest {
 
-  private final String messageId = "aaa";
-  private final ConsensusElectAccept consensusElectAcceptAccept = new ConsensusElectAccept(messageId, true);
-  private final ConsensusElectAccept consensusElectAcceptReject = new ConsensusElectAccept(messageId, false);
+  private static final String messageId = "aaa";
+  private static final ConsensusElectAccept consensusElectAcceptAccept = new ConsensusElectAccept(messageId, true);
+  private static final ConsensusElectAccept consensusElectAcceptReject = new ConsensusElectAccept(messageId, false);
 
   @Test
   public void getMessageIdTest() {

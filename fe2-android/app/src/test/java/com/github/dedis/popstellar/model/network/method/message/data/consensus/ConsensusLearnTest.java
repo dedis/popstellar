@@ -14,9 +14,9 @@ import org.junit.Test;
 
 public class ConsensusLearnTest {
 
-  private final String messageId = Hash.hash("aaa");
-  private final List<String> acceptors = Arrays.asList("aaa", "bbb");
-  private final ConsensusLearn consensusLearn = new ConsensusLearn(messageId, acceptors);
+  private static final String messageId = Hash.hash("aaa");
+  private static final List<String> acceptors = Arrays.asList("aaa", "bbb");
+  private static final ConsensusLearn consensusLearn = new ConsensusLearn(messageId, acceptors);
 
 
   @Test

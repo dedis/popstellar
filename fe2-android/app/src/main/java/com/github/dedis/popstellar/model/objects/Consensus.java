@@ -1,8 +1,11 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -23,8 +26,8 @@ public final class Consensus {
 
   private String proposer;
   private Set<String> nodes;
-  private final Map<String, String>
-      acceptorToMessageId; // map the public key of acceptors to the id of their message
+  // map the public key of acceptors to the id of their message
+  private final Map<String, String> acceptorToMessageId;
 
   public Consensus(long creation, ConsensusKey key, Object value) {
     this.id = generateConsensusId(creation, key.getType(), key.getId(), key.getProperty(), value);
@@ -40,10 +43,7 @@ public final class Consensus {
     return messageId;
   }
 
-  public void setMessageId(String messageId) {
-    if (messageId == null) {
-      throw new IllegalArgumentException("consensus message id shouldn't be null");
-    }
+  public void setMessageId(@NonNull String messageId) {
     this.messageId = messageId;
   }
 
@@ -51,10 +51,7 @@ public final class Consensus {
     return channel;
   }
 
-  public void setChannel(String channel) {
-    if (channel == null) {
-      throw new IllegalArgumentException("consensus channel shouldn't be null");
-    }
+  public void setChannel(@NonNull String channel) {
     this.channel = channel;
   }
 
@@ -62,10 +59,7 @@ public final class Consensus {
     return id;
   }
 
-  public void setId(String id) {
-    if (id == null) {
-      throw new IllegalArgumentException("consensus id shouldn't be null");
-    }
+  public void setId(@NonNull String id) {
     this.id = id;
   }
 
@@ -73,10 +67,7 @@ public final class Consensus {
     return key;
   }
 
-  public void setKey(ConsensusKey key) {
-    if (key == null) {
-      throw new IllegalArgumentException("consensus key shouldn't be null");
-    }
+  public void setKey(@NonNull ConsensusKey key) {
     this.key = key;
   }
 
@@ -94,7 +85,7 @@ public final class Consensus {
 
   public void setCreation(long creation) {
     if (creation < 0) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("creation time cannot be negative");
     }
     this.creation = creation;
   }
@@ -103,10 +94,7 @@ public final class Consensus {
     return proposer;
   }
 
-  public void setProposer(String proposer) {
-    if (proposer == null) {
-      throw new IllegalArgumentException("consensus proposer shouldn't be null");
-    }
+  public void setProposer(@NonNull String proposer) {
     this.proposer = proposer;
   }
 
@@ -114,27 +102,16 @@ public final class Consensus {
     return nodes;
   }
 
-  public void setNodes(Set<String> nodes) {
-    if (nodes == null) {
-      throw new IllegalArgumentException("consensus nodes shouldn't be null");
-    }
+  public void setNodes(@NonNull Set<String> nodes) {
     this.nodes = nodes;
   }
 
   public Map<String, String> getAcceptorsToMessageId() {
-    return acceptorToMessageId;
+    return Collections.unmodifiableMap(acceptorToMessageId);
   }
 
-  public void putAcceptorResponse(String acceptor, String messageId, boolean accept) {
-    if (acceptor == null) {
-      throw new IllegalArgumentException("Acceptor public key cannot be null.");
-    }
-    if (messageId == null) {
-      throw new IllegalArgumentException("Message id cannot be null.");
-    }
-    if (accept) {
-      acceptorToMessageId.put(acceptor, messageId);
-    }
+  public void putPositiveAcceptorResponse(@NonNull String acceptor, @NonNull String messageId) {
+    acceptorToMessageId.put(acceptor, messageId);
   }
 
   public boolean isAccepted() {
@@ -155,7 +132,7 @@ public final class Consensus {
 
   public boolean canBeAccepted() {
     // Part 1 : all acceptors need to accept
-    long countAccepted = acceptorToMessageId.size();
+    int countAccepted = acceptorToMessageId.size();
     return countAccepted == nodes.size();
   }
 

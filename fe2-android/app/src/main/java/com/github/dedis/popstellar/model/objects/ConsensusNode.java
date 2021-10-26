@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -32,7 +33,7 @@ public final class ConsensusNode {
   }
 
   public Set<String> getAcceptedMessageIds() {
-    return acceptedMessageIds;
+    return Collections.unmodifiableSet(acceptedMessageIds);
   }
 
   public Optional<Consensus> getLastConsensus(String keyId) {
@@ -64,7 +65,8 @@ public final class ConsensusNode {
    * @param consensus the consensus to add
    */
   public void addConsensus(Consensus consensus) {
-    if (consensuses.stream().noneMatch(c2 -> c2.getMessageId().equals(consensus.getMessageId()))) {
+    String messageId = consensus.getMessageId();
+    if (consensuses.stream().map(Consensus::getMessageId).noneMatch(messageId::equals)) {
       consensuses.add(consensus);
     }
   }

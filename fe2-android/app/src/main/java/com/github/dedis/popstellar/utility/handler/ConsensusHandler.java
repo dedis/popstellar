@@ -80,7 +80,9 @@ public final class ConsensusHandler {
     }
 
     Consensus consensus = consensusOpt.get();
-    consensus.putAcceptorResponse(senderPk, messageId, consensusElectAccept.isAccept());
+    if (consensusElectAccept.isAccept()) {
+      consensus.putPositiveAcceptorResponse(senderPk, messageId);
+    }
 
     lao.updateConsensus(consensus);
 
