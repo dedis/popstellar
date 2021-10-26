@@ -41,14 +41,10 @@ const RollCallOpened = () => {
     if (data) {
       setQrWasScanned(true);
       updateAttendeesSet((prev) => new Set<string>(prev.add(data)));
-      // eslint-disable-next-line no-alert
-      alert(STRINGS.roll_call_scan_participant);
+      // TODO: use toast to display the scanned message, instead of console.log
+      console.log(STRINGS.roll_call_scan_participant);
     }
   };
-
-  // Here we get the pop-token to display in the QR code
-  /* Wallet.generateToken(lao.id, rollCall.id)
-    .then((token) => setPopToken(token.publicKey.valueOf())); */
 
   const onCloseRollCall = () => {
     const updateId = Hash.fromStringArray(
@@ -80,12 +76,6 @@ const RollCallOpened = () => {
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}
         />
-        {/* {!isOrganizer && (
-          <>
-            <Text>Let the organizer scan your Pop token</Text>
-            <QRCode visibility value={popToken} />
-          </>
-        )} */}
       </View>
     </View>
   );

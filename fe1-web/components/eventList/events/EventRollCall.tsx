@@ -78,7 +78,6 @@ const EventRollCall = (props: IPropTypes) => {
       case RollCallStatus.OPENED:
         return (
           <>
-            {}
             {!isOrganizer && (
               <>
                 <Text>Let the organizer scan your Pop token</Text>
