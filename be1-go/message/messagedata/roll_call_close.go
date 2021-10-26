@@ -10,5 +10,6 @@ type RollCallClose struct {
 	// ClosedAt is a Unix timestamp
 	ClosedAt int64 `json:"closed_at"`
 
+	// Attendees is a list of public keys
 	Attendees []string `json:"attendees"`
 }

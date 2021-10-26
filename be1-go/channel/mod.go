@@ -29,6 +29,9 @@ type Channel interface {
 
 	// Catchup is used to handle a catchup message.
 	Catchup(msg method.Catchup) []message.Message
+
+	// Broadcast is used to handle a broadcast message.
+	Broadcast(msg method.Broadcast) error
 }
 
 // NewSockets returns a new initialized sockets
