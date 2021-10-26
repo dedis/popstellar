@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, TextInput, ScrollView,
+  View, Platform, ScrollView,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import DatePicker from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
+import TextInputLine from 'components/TextInputLine';
 
 function dateToTimestamp(date: Date): Timestamp {
   return new Timestamp(Math.floor(date.getTime() / 1000));
@@ -84,18 +85,15 @@ const CreateRollCall = ({ route }: any) => {
       { /* see archive branches for date picker used for native apps */ }
       { Platform.OS === 'web' && buildDatePickerWeb() }
 
-      <TextInput
-        style={styles.textInput}
+      <TextInputLine
         placeholder={STRINGS.roll_call_create_name}
         onChangeText={(text: string) => { setRollCallName(text); }}
       />
-      <TextInput
-        style={styles.textInput}
+      <TextInputLine
         placeholder={STRINGS.roll_call_create_location}
         onChangeText={(text: string) => { setRollCallLocation(text); }}
       />
-      <TextInput
-        style={styles.textInput}
+      <TextInputLine
         placeholder={STRINGS.roll_call_create_description}
         onChangeText={(text: string) => { setRollCallDescription(text); }}
       />
