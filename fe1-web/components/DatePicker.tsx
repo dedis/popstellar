@@ -48,13 +48,13 @@ export default DatePicker;
  * @param newStartDate - The date the user wants the event to start
  * @param setStartDate - Function to set the start date of the event
  * @param setEndDate - Function to set the end date of the event
- * @param defaultDurationMillis - The default duration of the event in milliseconds
+ * @param defaultDurationSeconds - The default duration of the event in seconds
  */
 export function onChangeStartTime(
   newStartDate: Date,
   setStartDate: React.Dispatch<React.SetStateAction<Timestamp>>,
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
-  defaultDurationMillis: number,
+  defaultDurationSeconds: number,
 ) {
   const newStart = Timestamp.dateToTimestamp(newStartDate);
   const now = Timestamp.EpochNow();
@@ -69,7 +69,7 @@ export function onChangeStartTime(
   }
 
   const newEndDate = new Date(actualStartDate.getTime());
-  const newEndTimestamp = Timestamp.dateToTimestamp(newEndDate).addSeconds(defaultDurationMillis);
+  const newEndTimestamp = Timestamp.dateToTimestamp(newEndDate).addSeconds(defaultDurationSeconds);
   setEndDate(newEndTimestamp);
 }
 

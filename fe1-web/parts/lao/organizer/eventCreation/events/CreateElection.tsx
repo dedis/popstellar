@@ -17,7 +17,7 @@ import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
-import { FIVE_MINUTES_IN_MILLIS } from '../CreateEvent';
+import { FIVE_MINUTES_IN_SECONDS } from '../CreateEvent';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -102,7 +102,7 @@ const CreateElection = ({ route }: any) => {
     if (endTime.before(now)) {
       // eslint-disable-next-line no-alert
       alert(STRINGS.alert_event_ends_in_past);
-    } else if (now.after(startTime.addSeconds(FIVE_MINUTES_IN_MILLIS))) {
+    } else if (now.after(startTime.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
       // eslint-disable-next-line no-restricted-globals
       if (confirm(STRINGS.confirm_event_starts_in_past)) {
         createElection();
