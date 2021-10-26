@@ -113,6 +113,7 @@ function LaoNavigation() {
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={tabName}
+      swipeEnabled={false}
     >
 
       <OrganizationTopTabNavigator.Screen
