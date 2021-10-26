@@ -64,14 +64,14 @@ func Serve(cliCtx *cli.Context) error {
 	done := make(chan struct{})
 
 	// connect to organizer's witness endpoint
-	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
+	err = connectToSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	// connect to other witnesses
 	for _, witness := range otherWitness {
-		err = connectToWitnessSocket(hub.WitnessHubType, witness, h, wg, done)
+		err = connectToSocket(hub.WitnessHubType, witness, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
@@ -102,7 +102,7 @@ func Serve(cliCtx *cli.Context) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
+func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
 	log := be1_go.Logger
 
 	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
