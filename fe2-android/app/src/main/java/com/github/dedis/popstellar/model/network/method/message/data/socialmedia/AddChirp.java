@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Optional;
 
-/** Data sent to add a Chirp */
+/** Data sent to add a Chirp to the user channel */
 public class AddChirp extends Data {
 
   private static final int MAX_CHIRP_CHARS = 300;

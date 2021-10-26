@@ -5,7 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
-/** Data sent to broadcast AddChirp */
+/** Data sent to broadcast AddChirp to the general channel */
 public class AddChirpBroadcast extends Data {
 
   @SerializedName("post_id")
