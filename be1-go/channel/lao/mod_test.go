@@ -90,7 +90,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	time.Sleep(time.Millisecond)
 
 	consensusID := "channel0/consensus"
-	consensus := fakeHub.GetChannel(consensusID)
+	consensus := fakeHub.channelByID[consensusID]
 	require.NotNil(t, consensus)
 }
 
@@ -176,8 +176,4 @@ func (h *fakeHub) GetPubkey() kyber.Point {
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
-}
-
-func (h *fakeHub) GetChannel(channelID string) channel.Channel {
-	return h.channelByID[channelID]
 }
