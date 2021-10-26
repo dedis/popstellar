@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"popstellar/channel"
+	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
@@ -56,13 +57,20 @@ type Channel struct {
 	log zerolog.Logger
 }
 
-// NewChannel returns a new initialized LAO channel
+// NewChannel returns a new initialized LAO channel. It automatically creates
+// its associated consensus channel and register it to the hub
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
+
+	consensusPath := fmt.Sprintf("%s/consensus", channelID)
+
+	consensusCh := consensus.NewChannel(consensusPath, hub, log)
+
+	hub.RegisterNewChannel(consensusPath, &consensusCh)
 
 	return &Channel{
 		channelID: channelID,
@@ -239,7 +247,7 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
-		err = c.verifyMessageLaoID(msg.MessageID)
+		err = c.verifyMessageLaoID(laoState.ID)
 		if err != nil {
 			return xerrors.Errorf("invalid lao#state message: %v", err)
 		}
@@ -654,14 +662,14 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 
 const InvalidIDMessage string = "ID %s does not correspond with message data, should be %s"
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallCreateID verify the id of a message
 func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
-	expectedID := messagedata.Hash([]string{
+	expectedID := messagedata.Hash(
 		"R",
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		fmt.Sprintf("%d", msg.Creation),
 		msg.Name,
-	})
+	)
 
 	if msg.ID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.ID, expectedID)
@@ -670,14 +678,14 @@ func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) 
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallOpenID verify the id of a message
 func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
-	expectedID := messagedata.Hash([]string{
+	expectedID := messagedata.Hash(
 		"R",
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		msg.Opens,
 		fmt.Sprintf("%d", msg.OpenedAt),
-	})
+	)
 
 	if msg.UpdateID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
@@ -686,14 +694,14 @@ func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) erro
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallCloseID verify the id of a message
 func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
-	expectedID := messagedata.Hash([]string{
+	expectedID := messagedata.Hash(
 		"R",
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		msg.Closes,
 		fmt.Sprintf("%d", msg.ClosedAt),
-	})
+	)
 
 	if msg.UpdateID != expectedID {
 		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)

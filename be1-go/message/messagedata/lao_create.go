@@ -20,13 +20,13 @@ type LaoCreate struct {
 	Witnesses []string `json:"witnesses"`
 }
 
-// Verify that the LaoCreate message is valid
+// Verify verifies that the LaoCreate message is valid
 func (message LaoCreate) Verify() error {
-	expectedLaoID := Hash([]string{
+	expectedLaoID := Hash(
 		message.Organizer,
 		fmt.Sprintf("%d", message.Creation),
 		message.Name,
-	})
+	)
 
 	if message.ID != expectedLaoID {
 		return xerrors.Errorf("ID %s do not correspond with message data", message.ID)
