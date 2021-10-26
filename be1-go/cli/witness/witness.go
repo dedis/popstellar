@@ -5,17 +5,19 @@ package witness
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/gorilla/websocket"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	"net/url"
 	be1_go "popstellar"
+	"popstellar/channel/lao"
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/witness"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
+
+	"github.com/gorilla/websocket"
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
@@ -49,7 +51,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create witness hub
-	h, err := witness.NewHub(point, log)
+	h, err := witness.NewHub(point, log, lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}

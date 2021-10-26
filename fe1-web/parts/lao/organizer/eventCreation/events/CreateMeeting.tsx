@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Button, Platform, TextInput,
+  View, Button, Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker from 'components/DatePicker';
@@ -12,6 +12,7 @@ import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
+import TextInputLine from 'components/TextInputLine';
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
@@ -105,8 +106,7 @@ const CreateMeeting = ({ route }: any) => {
   return (
     <>
       <TextBlock text="Create a meeting" />
-      <TextInput
-        style={styles.textInput}
+      <TextInputLine
         placeholder={STRINGS.meeting_create_name}
         onChangeText={(text: string) => { setMeetingName(text); }}
       />
@@ -114,8 +114,7 @@ const CreateMeeting = ({ route }: any) => {
       { /* see archive branches for date picker used for native apps */ }
       { Platform.OS === 'web' && buildDatePickerWeb() }
 
-      <TextInput
-        style={styles.textInput}
+      <TextInputLine
         placeholder={STRINGS.meeting_create_location}
         onChangeText={(text: string) => { setLocation(text); }}
       />
