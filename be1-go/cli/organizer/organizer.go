@@ -4,14 +4,18 @@ package organizer
 
 import (
 	"encoding/base64"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	be1_go "popstellar"
 	"popstellar/channel/lao"
+	"popstellar/cli/utility"
 	"popstellar/crypto"
+	"popstellar/hub"
 	"popstellar/hub/organizer"
 	"popstellar/network"
 	"popstellar/network/socket"
+	"sync"
+
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
@@ -20,12 +24,13 @@ func Serve(cliCtx *cli.Context) error {
 	log := be1_go.Logger
 
 	// get command line args which specify public key, port to use for clients
-	// and witnesses
+	// and witnesses, witness' address
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	if clientPort == witnessPort {
 		return xerrors.Errorf("client and witness ports must be different")
 	}
+	witness := cliCtx.StringSlice("other-witness")
 
 	pk := cliCtx.String("public-key")
 	if pk == "" {
@@ -63,6 +68,18 @@ func Serve(cliCtx *cli.Context) error {
 
 	// start the processing loop
 	h.Start()
+
+	// create wait group which waits for goroutines to finish
+	wg := &sync.WaitGroup{}
+	done := make(chan struct{})
+
+	// connect to given witness
+	for _, witnessAddress := range witness {
+		err = utility.ConnectToSocket(hub.WitnessHubType, witnessAddress, h, wg, done)
+		if err != nil {
+			return xerrors.Errorf("failed to connect to witness: %v", err)
+		}
+	}
 
 	// Wait for a Ctrl-C
 	err = network.WaitAndShutdownServers(clientSrv, witnessSrv)

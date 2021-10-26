@@ -3,6 +3,7 @@ package witness
 import (
 	"io"
 	"popstellar/channel/lao"
+	"popstellar/cli/utility"
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/organizer"
@@ -36,7 +37,7 @@ func TestConnectToWitnessSocket(t *testing.T) {
 	wh.Start()
 
 	wg := &sync.WaitGroup{}
-	err = connectToSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
+	err = utility.ConnectToSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
 	require.NoError(t, err)
 
 	err = witnessSrv.Shutdown()
