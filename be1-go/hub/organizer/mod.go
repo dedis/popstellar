@@ -402,75 +402,9 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 // handleMessageFromWitness handles an incoming message from a witness server.
 // this may change once the witness are correctly implemented
 func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) error {
-	socket := incomingMessage.Socket
-	byteMessage := incomingMessage.Message
-
-	// validate against json schema
-	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
-	if err != nil {
-		h.log.Err(err).Msg("message is not valid against json schema")
-		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
-		return err
-	}
-
-	rpctype, err := jsonrpc.GetType(byteMessage)
-	if err != nil {
-		h.log.Err(err).Msg("failed to get rpc type")
-		socket.SendError(nil, err)
-		return err
-	}
-
-	// check type (answer or query), we expect a query
-	if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msgf(rpcNotQueryError)
-		socket.SendError(nil, xerrors.New(rpcNotQueryError))
-		return err
-	}
-
-	var queryBase query.Base
-
-	err = json.Unmarshal(byteMessage, &queryBase)
-	if err != nil {
-		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	var id int
-	var msgs []message.Message
-	var handlerErr error
-
-	switch queryBase.Method {
-	case query.MethodPublish:
-		id, handlerErr = h.handlePublish(socket, byteMessage)
-	case query.MethodSubscribe:
-		id, handlerErr = h.handleSubscribe(socket, byteMessage)
-	case query.MethodUnsubscribe:
-		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
-	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(byteMessage)
-	default:
-		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if handlerErr != nil {
-		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
-		h.log.Err(err)
-		socket.SendError(nil, err)
-		return err
-	}
-
-	if queryBase.Method == query.MethodCatchUp {
-		socket.SendResult(id, msgs)
-		return err
-	}
-
-	socket.SendResult(id, nil)
-	return nil
+	// With the simplified comportement of the witness, the message should be
+	// handled same way as a client message
+	return h.handleMessageFromClient(incomingMessage)
 }
 
 // handleIncomingMessage handles an incoming message based on the socket it
