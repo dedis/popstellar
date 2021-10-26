@@ -1,0 +1,61 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataElect.json",
+    "description": "Match an elect query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "elect"
+        },
+        "instance_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : SHA256('consensus'||created_at||key:type||key:id||key:property||value)"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "key": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The object type that the consensus refers to",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The object id that the consensus refers to",
+                    "contentEncoding": "base64",
+                    "type": "string"
+                },
+                "property": {
+                    "description": "The property of the object that the value refers to",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "id",
+                "property"
+            ]
+        },
+        "value": {
+            "description": "The proposed value",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "created_at",
+        "key",
+        "value"
+    ]
+}
