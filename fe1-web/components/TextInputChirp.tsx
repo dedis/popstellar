@@ -4,6 +4,7 @@ import {
   StyleSheet, ViewStyle, TextInput, TextStyle, Button, View,
 } from 'react-native';
 import STRINGS from 'res/strings';
+import { red } from 'styles/colors';
 import TextBlock from './TextBlock';
 
 const MAX_CHIRP_CHARS = 300;
@@ -52,8 +53,7 @@ const TextInputChirp = (props: IPropTypes) => {
         }}
       />
       <View style={styles.buttonView}>
-        {publishIsDisabled ? <TextBlock text={charsLeft.toString()} color="red" />
-          : <TextBlock text={charsLeft.toString()} />}
+        <TextBlock text={charsLeft.toString()} color={publishIsDisabled ? red : undefined} />
         <Button
           title={STRINGS.button_publish}
           onPress={() => onPress()}

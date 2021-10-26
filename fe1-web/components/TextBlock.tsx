@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
 import PropTypes from 'prop-types';
 import { Typography } from 'styles';
+import { black } from 'styles/colors';
 
 /**
  * Block of text that gets displayed
@@ -15,24 +16,19 @@ const TextBlock = (props: IPropTypes) => {
   const { visibility } = props;
   const { color } = props;
 
+  if (!visibility) {
+    return null;
+  }
+
+  const fontStyle = bold ? Typography.important : Typography.base;
   const styles = StyleSheet.create({
-    textStandard: {
-      ...Typography.base,
-      color: color,
-    } as TextStyle,
-    textBold: {
-      ...Typography.important,
+    text: {
+      ...fontStyle,
       color: color,
     } as TextStyle,
   });
 
-  if (visibility) {
-    if (bold) {
-      return <Text style={styles.textBold}>{text}</Text>;
-    }
-    return <Text style={styles.textStandard}>{text}</Text>;
-  }
-  return null;
+  return <Text style={styles.text}>{text}</Text>;
 };
 
 const propTypes = {
@@ -46,7 +42,7 @@ TextBlock.propTypes = propTypes;
 TextBlock.defaultProps = {
   bold: false,
   visibility: true,
-  color: 'black',
+  color: black,
 };
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

@@ -4,8 +4,8 @@ import {
 } from 'react-native';
 
 import TextBlock from 'components/TextBlock';
+import TextInputChirp from 'components/TextInputChirp';
 import STRINGS from 'res/strings';
-import TextInputChirp from '../components/TextInputChirp';
 
 /**
  * UI for the Social Media component
