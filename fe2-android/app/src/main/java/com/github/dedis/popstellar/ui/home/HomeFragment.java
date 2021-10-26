@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,10 +27,6 @@ public final class HomeFragment extends Fragment {
   private HomeFragmentBinding mHomeFragBinding;
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
-
-  public HomeFragment() {
-    super();
-  }
 
   public static HomeFragment newInstance() {
     return new HomeFragment();
@@ -82,7 +77,7 @@ public final class HomeFragment extends Fragment {
   private void setupListAdapter() {
     ListView listView = mHomeFragBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity(), true);
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, getActivity(), true);
 
     listView.setAdapter(mListAdapter);
   }

@@ -1,12 +1,20 @@
 package messagedata
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
+	"fmt"
 
 	"golang.org/x/xerrors"
 )
 
 const (
+	ConsensusObject            = "consensus"
+	ConsensusActionElect       = "elect"
+	ConsensusActionElectAccept = "elect-accept"
+	ConsensuisActionLearn      = "learn"
+
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
@@ -61,4 +69,14 @@ func GetObjectAndAction(buf []byte) (string, string, error) {
 	}
 
 	return object, action, nil
+}
+
+// Hash returns the sha256 created from an array of strings
+func Hash(strs ...string) string {
+	h := sha256.New()
+	for _, s := range strs {
+		h.Write([]byte(fmt.Sprintf("%d", len(s))))
+		h.Write([]byte(s))
+	}
+	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }

@@ -19,7 +19,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Iterator;
 import java.util.List;
 
 public class JsonMessageGeneralSerializer
@@ -48,9 +47,7 @@ public class JsonMessageGeneralSerializer
 
     List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
     JsonArray arr = root.get("witness_signatures").getAsJsonArray();
-    Iterator<JsonElement> it = arr.iterator();
-    while (it.hasNext()) {
-      JsonElement element = it.next();
+    for (JsonElement element : arr) {
       String witness = element.getAsJsonObject().get("witness").getAsString();
       String sig = element.getAsJsonObject().get(SIG).getAsString();
       witnessSignatures.add(

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, TextInput, ScrollView,
+  View, Platform, ScrollView,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
@@ -9,12 +9,13 @@ import STRINGS from 'res/strings';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
-import {
-  Hash, Lao, Timestamp, Question, EventTags,
-} from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
+import TextInputLine from 'components/TextInputLine';
+import {
+  Hash, Lao, Timestamp, Question, EventTags,
+} from 'model/objects';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
 import { FIVE_MINUTES_IN_SECONDS } from '../CreateEvent';
@@ -115,8 +116,7 @@ const CreateElection = ({ route }: any) => {
   return (
     <ScrollView>
       <TextBlock text={STRINGS.election_create_setup} bold />
-      <TextInput
-        style={styles.textInput}
+      <TextInputLine
         placeholder={STRINGS.election_create_name}
         onChangeText={(text: string) => { setElectionName(text); }}
       />
@@ -124,8 +124,7 @@ const CreateElection = ({ route }: any) => {
       { Platform.OS === 'web' && buildDatePickerWeb() }
       { questions.map((value, idx) => (
         <View key={idx.toString()}>
-          <TextInput
-            style={styles.textInput}
+          <TextInputLine
             placeholder={STRINGS.election_create_question}
             onChangeText={(text: string) => setQuestions(
               (prev) => prev.map((item, id) => (

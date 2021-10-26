@@ -224,7 +224,7 @@ val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map 
 	)
 }
 
-// Await.result waits for <duration> for the future <ask> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is successful, or throws if the Future terminates without being successful (i.e. either Failure or Timeout) 
+// Await.result waits for <duration> for the future <ask> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is successful, or throws if the Future terminates without being successful (i.e. either Failure or Timeout)
 Await.result(ask, duration)
 ```
 
@@ -233,7 +233,103 @@ Await.result(ask, duration)
 :information_source: the database may easily be reset/purged by either deleting a folder corresponding to a channel or by deleting the `database` folder entirely
 
 
-## 4.	Debugging Tips
+
+### Import the project
+
+`cd` where you want to have your project located and then clone the project using the following commands
+
+```bash
+git clone https://github.com/dedis/student_21_pop.git [folderProjectName]
+```
+
+We then want to navigate to the `be2-scala` subfolder
+
+```bash
+cd <folderProjectName>/be2-scala
+```
+
+You can then open the project using your favorite IDE (e.g. `idea .` for IntelliJ and `code .` for VSCode)
+
+---
+
+### Create a new branch
+
+By default, the new branch you create will be a copy of `master`
+
+```bash
+git checkout -b <branchName>
+```
+
+If you rather want to make a copy of branch `x` (e.g. a branch that is currently being reviewed, i.e. not merged), use this instead
+
+```bash
+git checkout <x>
+git checkout -b <branchName>
+```
+
+---
+
+### Push changes on the remote server
+
+When pushing changes, you first want to **commit** the changes you've applied using
+
+```bash
+git add <fileName>					# add file <fileName> to the commit
+git commit -m"<message>"    # add a title to the commit (switch <message> for the actual message)
+
+## Note: You may also add files separately using
+git add <fileName>
+
+## Note: You may also add all modified (!= new) files to the commit and set a title using
+git commit -am"<message>"
+
+## Note: You may also set a title and description for a specific commit using your favorite IDE (obviously doom emacs ^^). Then save and quit
+git add <fileName>
+git commit
+```
+
+<div align="center">
+  <img alt="Example of git commit command" src="images/example-git-commit.png" width="700" />
+</div>
+
+:information_source: Do not create a commit with 2.000 lines of codes! Short commit with meaningful titles/description are way better and way easier to review
+
+:information_source: There are faster ways to add multiple files in the commit such as `git commit <-u|.>`. You can check the corresponding man page for more information
+
+You then finally want to pull/push the changes
+
+```bash
+git pull			# safety check to see if no one applies changes to your branch in your absence
+git push			# push the commited changes
+```
+
+Note that if you just created the branch, you'll need to tell git once where to push the changes using the following command instead of `git push`
+
+```bash
+git push -u origin <branchName>
+```
+
+:warning: You cannot directly push changes on `master`! For that, you need to go through the process of creating a pull request (see below)
+
+---
+
+### Merge a branch into another
+
+Navigate (using `git checkout <branchName>`) to the branch you want the merge **to be applied to** (i.e. the branch that we merge another into!). Then perform the following command to merge the content of branch `x` into the current checked out branch
+
+```bash
+git merge <x>
+```
+
+---
+
+### Create a pull request
+
+Creating a pull request (PR) can only be done with on the [GitHub website](https://github.com/dedis/student_21_pop/pulls) by navigating on "Pull requests". Click on the big green button titled "New pull request" and choose the receiving branch (generally `master`) as well as the branch you want to merge into the latter (e.g. `work-be2-scala-raulinn-test`). Click on "Create pull request".
+
+You can then set a title and description to your PR as well as set a label (e.g. `be2-scala`), an assignee (the person responsible for the code), a project (if any) and ask for a specific reviewer using the right side bar. Click on "Create pull request"
+
+## 5.	Debugging Tips
 
 The best way to "intercept" a `GraphMessage` being processed in the graph is to launch the server in debug mode, and then sending an isolated message to the server triggering the bug.
 
@@ -245,4 +341,16 @@ The best way to "intercept" a `GraphMessage` being processed in the graph is to 
 A simple way to have a coherent style across the codebase is to use the IDE features of "code cleanup". For example, in IntelliJ, click on the `src/main/scala` folder and then on `Code -> Reformat Code`. You can then check "include subdirectories", "optimize imports", and "cleanup code" checkbox options. Be careful to not apply these changes to `src/test` folder as it transforms the scalatest syntax into a mess difficult to understand.
 
 Moreover, check that your favorite editor is detecting & using the `.editorconfig` file at the root of the project
+
+
+
+## 7. Server `.jar` release
+
+We have installed a simple but powerful plugin ([sbt-assembly](https://github.com/sbt/sbt-assembly)) to help build the "über-jar" version of the project. In the project folder, simply execute
+
+```bash
+sbt assembly
+```
+
+The all-in-one jar will automatically be created and located at `target/scala-x.xx/pop-assembly-0.x.jar`.
 

@@ -1,9 +1,9 @@
 import React from 'react';
 
-import PROPS_TYPE from 'res/Props';
 import ParagraphBlock from 'components/ParagraphBlock';
 import TimeDisplay from 'components/TimeDisplay';
 import PropTypes from 'prop-types';
+import { Meeting } from 'model/objects';
 
 /**
  * Component used to display a Meeting event in the LAO event list
@@ -22,7 +22,7 @@ const EventMeeting = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  event: PROPS_TYPE.meeting.isRequired,
+  event: PropTypes.instanceOf(Meeting).isRequired,
 };
 EventMeeting.propTypes = propTypes;
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
-  StyleSheet, View, TextStyle, ViewStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
 
-import { Spacing, Typography, Views } from 'styles';
+import { Views } from 'styles';
 import STRINGS from 'res/strings';
 import stylesContainer from 'styles/stylesheets/container';
 
@@ -24,12 +24,6 @@ const styleEvents = StyleSheet.create({
     flexDirection: 'column',
     zIndex: 3,
   } as ViewStyle,
-  textInput: {
-    ...Typography.base,
-    borderBottomWidth: 2,
-    marginVertical: Spacing.s,
-    marginHorizontal: Spacing.xl,
-  } as TextStyle,
 });
 
 enum EventTypes {
