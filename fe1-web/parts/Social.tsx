@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
 
 const publishChirp = () => {
   requestAddChirp('chirp chirp')
-    .then()
     .catch((err) => {
       console.error('Could not add chirp, error:', err);
     });
