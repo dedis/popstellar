@@ -302,19 +302,19 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if publish.Params.Channel == "/root" {
 		err := h.handleRootChannelMesssage(socket, publish)
 		if err != nil {
-			return -1, xerrors.Errorf("failed to handle root channel message: %v", err)
+			return publish.ID, xerrors.Errorf("failed to handle root channel message: %v", err)
 		}
 		return publish.ID, nil
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to get channel: %v", err)
+		return publish.ID, xerrors.Errorf("failed to get channel: %v", err)
 	}
 
 	err = channel.Publish(publish)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to publish: %v", err)
+		return publish.ID, xerrors.Errorf("failed to publish: %v", err)
 	}
 
 	return publish.ID, nil
@@ -330,12 +330,12 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 
 	channel, err := h.getChan(subscribe.Params.Channel)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to get subscribe channel: %v", err)
+		return subscribe.ID, xerrors.Errorf("failed to get subscribe channel: %v", err)
 	}
 
 	err = channel.Subscribe(socket, subscribe)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to publish: %v", err)
+		return subscribe.ID, xerrors.Errorf("failed to publish: %v", err)
 	}
 
 	return subscribe.ID, nil
@@ -351,12 +351,12 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 
 	channel, err := h.getChan(unsubscribe.Params.Channel)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
+		return unsubscribe.ID, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
 	}
 
 	err = channel.Unsubscribe(socket.ID(), unsubscribe)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to unsubscribe: %v", err)
+		return unsubscribe.ID, xerrors.Errorf("failed to unsubscribe: %v", err)
 	}
 
 	return unsubscribe.ID, nil
@@ -372,12 +372,12 @@ func (h *Hub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) 
 
 	channel, err := h.getChan(catchup.Params.Channel)
 	if err != nil {
-		return nil, -1, xerrors.Errorf("failed to get catchup channel: %v", err)
+		return nil, catchup.ID, xerrors.Errorf("failed to get catchup channel: %v", err)
 	}
 
 	msg := channel.Catchup(catchup)
 	if err != nil {
-		return nil, -1, xerrors.Errorf("failed to catchup: %v", err)
+		return nil, catchup.ID, xerrors.Errorf("failed to catchup: %v", err)
 	}
 
 	return msg, catchup.ID, nil
