@@ -1,14 +1,13 @@
 package com.github.dedis.popstellar.utility.security;
 
 import android.util.Log;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-/**
- * SHA256 Hashing Class
- */
+/** SHA256 Hashing Class */
 public class Hash {
 
   public static final String TAG = Hash.class.getSimpleName();

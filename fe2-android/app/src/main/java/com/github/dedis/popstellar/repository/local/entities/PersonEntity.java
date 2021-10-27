@@ -4,13 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-/*
-Person represents an actual person in the system who holds a public key.
-*/
+/** Person represents an actual person in the system who holds a public key. */
 @Entity
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class PersonEntity {
 
-  @PrimaryKey
-  @NonNull
-  public String publicKey;
+  @PrimaryKey @NonNull public String publicKey;
 }

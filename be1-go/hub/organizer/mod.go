@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"log"
+	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
 	"popstellar/db/sqlite"
@@ -28,6 +28,9 @@ import (
 
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
+
+// rpcNotQueryError is an error message
+const rpcNotQueryError = "jsonRPC message is not of type query"
 
 const (
 	// numWorkers denote the number of worker go-routines
@@ -65,7 +68,7 @@ type Hub struct {
 // NewHub returns a Organizer Hub.
 func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
-	schemaValidator, err := validation.NewSchemaValidator()
+	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
 	}
@@ -85,11 +88,11 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 	}
 
 	if sqlite.GetDBPath() != "" {
-		log.Printf("loading channels from db at %s", sqlite.GetDBPath())
+		log.Info().Msgf("loading channels from db at %s", sqlite.GetDBPath())
 
 		channels, err := getChannelsFromDB(&hub)
 		if err != nil {
-			log.Printf("error: failed to load channels from db: %v", err)
+			log.Err(err).Msg("failed to load channels from db")
 		} else {
 			hub.channelByID = channels
 		}
@@ -111,11 +114,16 @@ func (h *Hub) Start() {
 			case incomingMessage := <-h.messageChan:
 				ok := h.workers.TryAcquire(1)
 				if !ok {
-					log.Print("warn: worker pool full, waiting...")
+					h.log.Warn().Msg("worker pool full, waiting...")
 					h.workers.Acquire(context.Background(), 1)
 				}
 
-				go h.handleIncomingMessage(&incomingMessage)
+				go func() {
+					err := h.handleIncomingMessage(&incomingMessage)
+					if err != nil {
+						h.log.Err(err).Msg("problem handling incoming message")
+					}
+				}()
 			case id := <-h.closedSockets:
 				h.RLock()
 				for _, channel := range h.channelByID {
@@ -124,7 +132,7 @@ func (h *Hub) Start() {
 				}
 				h.RUnlock()
 			case <-h.stop:
-				log.Println("Stopping the hub")
+				h.log.Info().Msg("stopping the hub")
 				return
 			}
 		}
@@ -134,7 +142,7 @@ func (h *Hub) Start() {
 // Stop implements hub.Hub
 func (h *Hub) Stop() {
 	close(h.stop)
-	log.Println("Waiting for existing workers to finish...")
+	h.log.Info().Msg("waiting for existing workers to finish...")
 	h.workers.Acquire(context.Background(), numWorkers)
 }
 
@@ -149,25 +157,28 @@ func (h *Hub) OnSocketClose() chan<- string {
 }
 
 // handleRootChannelMesssage handles an incoming message on the root channel.
-func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) {
+func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		socket.SendError(&publish.ID, xerrors.Errorf("failed to decode message data: %v", err))
-		return
+		err := xerrors.Errorf("failed to decode message data: %v", err)
+		socket.SendError(&publish.ID, err)
+		return err
 	}
 
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
+		err := xerrors.Errorf("failed to validate message against json schema: %v", err)
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
+		err := xerrors.Errorf("failed to get object#action: %v", err)
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	// must be "lao#create"
@@ -176,7 +187,7 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 			"but found %s#%s", object, action)
 		h.log.Err(err)
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	var laoCreate messagedata.LaoCreate
@@ -185,19 +196,27 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	if err != nil {
 		h.log.Err(err).Msg("failed to unmarshal lao#create")
 		socket.SendError(&publish.ID, err)
-		return
+		return err
+	}
+
+	err = laoCreate.Verify()
+	if err != nil {
+		h.log.Err(err).Msg("invalid lao#create message")
+		socket.SendError(&publish.ID, err)
 	}
 
 	err = h.createLao(publish, laoCreate)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
-func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
+func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) error {
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
 
@@ -205,22 +224,25 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
 		h.log.Err(err).Msg("message is not valid against json schema")
-		socket.SendError(nil, xerrors.Errorf("message is not valid against json schema: %v", err))
-		return
+		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
+		socket.SendError(nil, schemaErr)
+		return schemaErr
 	}
 
 	rpctype, err := jsonrpc.GetType(byteMessage)
 	if err != nil {
 		h.log.Err(err).Msg("failed to get rpc type")
-		socket.SendError(nil, err)
-		return
+		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
+		socket.SendError(nil, rpcErr)
+		return rpcErr
 	}
 
 	// check type (answer or query), we expect a query
 	if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msgf("jsonRPC message is not of type query")
-		socket.SendError(nil, xerrors.New("jsonRPC message is not of type query"))
-		return
+		h.log.Error().Msg(rpcNotQueryError)
+		rpcErr := xerrors.New(rpcNotQueryError)
+		socket.SendError(nil, rpcErr)
+		return rpcErr
 	}
 
 	var queryBase query.Base
@@ -230,7 +252,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	var id int
@@ -250,22 +272,23 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) {
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
 		socket.SendError(nil, err)
-		return
+		return err
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
 		socket.SendResult(id, msgs)
-		return
+		return nil
 	}
 
 	socket.SendResult(id, nil)
+	return nil
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
@@ -277,7 +300,10 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	if publish.Params.Channel == "/root" {
-		h.handleRootChannelMesssage(socket, publish)
+		err := h.handleRootChannelMesssage(socket, publish)
+		if err != nil {
+			return -1, xerrors.Errorf("failed to handle root channel message: %v", err)
+		}
 		return publish.ID, nil
 	}
 
@@ -374,32 +400,34 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 }
 
 // handleMessageFromWitness handles an incoming message from a witness server.
-func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) {
-	//TODO
+// this may change once the witness are correctly implemented
+func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) error {
+	// With the simplified comportement of the witness, the message should be
+	// handled same way as a client message
+	return h.handleMessageFromClient(incomingMessage)
 }
 
 // handleIncomingMessage handles an incoming message based on the socket it
 // originates from.
-func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) {
+func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) error {
 	defer h.workers.Release(1)
 
 	h.log.Info().Str("msg", string(incomingMessage.Message)).Msg("handle incoming message")
 
 	switch incomingMessage.Socket.Type() {
 	case socket.ClientSocketType:
-		h.handleMessageFromClient(incomingMessage)
+		return h.handleMessageFromClient(incomingMessage)
 	case socket.WitnessSocketType:
-		h.handleMessageFromWitness(incomingMessage)
+		return h.handleMessageFromWitness(incomingMessage)
 	default:
-		h.log.Error().Msg("error: invalid socket type")
+		h.log.Error().Msg("invalid socket type")
+		return xerrors.Errorf("invalid socket type")
 	}
 
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
 func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate) error {
-	h.Lock()
-	defer h.Unlock()
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
@@ -408,11 +436,11 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message)
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
-	h.channelByID[laoChannelPath] = laoCh
+	h.RegisterNewChannel(laoChannelPath, laoCh)
 
 	if sqlite.GetDBPath() != "" {
 		saveChannel(laoChannelPath)
@@ -443,7 +471,9 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 // --
 
 func saveChannel(channelPath string) error {
-	log.Printf("trying to save the channel in db at %s", sqlite.GetDBPath())
+	log := be1_go.Logger
+
+	log.Info().Msgf("trying to save the channel in db at %s", sqlite.GetDBPath())
 
 	db, err := sql.Open("sqlite3", sqlite.GetDBPath())
 	if err != nil {
@@ -467,6 +497,7 @@ func saveChannel(channelPath string) error {
 
 	_, err = stmt.Exec(channelPath)
 	if err != nil {
+		log.Err(err).Msg("failed to save channel in db")
 		return xerrors.Errorf("failed to insert channel: %v", err)
 	}
 
@@ -504,7 +535,7 @@ func getChannelsFromDB(h *Hub) (map[string]channel.Channel, error) {
 			return nil, xerrors.Errorf(dbParseRowErr, err)
 		}
 
-		channel, err := lao.CreateChannelFromDB(db, channelPath, h)
+		channel, err := lao.CreateChannelFromDB(db, channelPath, h, h.log)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to create channel from db: %v", err)
 		}

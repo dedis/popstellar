@@ -29,10 +29,10 @@ func Test_Meeting_Create(t *testing.T) {
 
 	require.Equal(t, "meeting", msg.Object)
 	require.Equal(t, "create", msg.Action)
-	require.Equal(t, "XXX", msg.ID)
-	require.Equal(t, "XXX", msg.Name)
-	require.Equal(t, int64(123), msg.Creation)
-	require.Equal(t, "XXX", msg.Location)
-	require.Equal(t, int64(123), msg.Start)
-	require.Equal(t, int64(123), msg.End)
+	require.Equal(t, "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=", msg.ID)
+	require.Equal(t, "Meeting", msg.Name)
+	require.Equal(t, int64(1633098331), msg.Creation)
+	require.Equal(t, "EPFL", msg.Location)
+	require.Equal(t, int64(1633098900), msg.Start)
+	require.Equal(t, int64(1633102500), msg.End)
 }

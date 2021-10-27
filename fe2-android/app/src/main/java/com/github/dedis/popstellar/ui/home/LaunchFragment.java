@@ -4,14 +4,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.databinding.LaunchFragmentBinding;
 
-/**
- * Fragment used to display the Launch UI
- */
+/** Fragment used to display the Launch UI */
 public final class LaunchFragment extends Fragment {
 
   public static final String TAG = LaunchFragment.class.getSimpleName();
@@ -23,7 +23,6 @@ public final class LaunchFragment extends Fragment {
     return new LaunchFragment();
   }
 
-  @Nullable
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,
@@ -32,7 +31,7 @@ public final class LaunchFragment extends Fragment {
 
     mLaunchFragBinding = LaunchFragmentBinding.inflate(inflater, container, false);
 
-    mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
+    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
 
     mLaunchFragBinding.setViewModel(mHomeViewModel);
     mLaunchFragBinding.setLifecycleOwner(getActivity());
@@ -41,8 +40,8 @@ public final class LaunchFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupLaunchButton();
     setupCancelButton();
@@ -51,7 +50,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel
         .getLaunchNewLaoEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -63,7 +62,7 @@ public final class LaunchFragment extends Fragment {
     mHomeViewModel
         .getCancelNewLaoEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {

@@ -7,12 +7,14 @@ import (
 	"popstellar/validation"
 	"sync"
 
+	"github.com/rs/zerolog"
+
 	"go.dedis.ch/kyber/v3"
 )
 
 // LaoFactory is the function passed to the organizer that it must use to
 // create a new lao channel.
-type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message) Channel
+type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message, log zerolog.Logger) Channel
 
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
@@ -27,6 +29,9 @@ type Channel interface {
 
 	// Catchup is used to handle a catchup message.
 	Catchup(msg method.Catchup) []message.Message
+
+	// Broadcast is used to handle a broadcast message.
+	Broadcast(msg method.Broadcast) error
 }
 
 // NewSockets returns a new initialized sockets

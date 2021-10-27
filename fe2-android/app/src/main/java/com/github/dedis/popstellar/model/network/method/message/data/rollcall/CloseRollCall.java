@@ -5,27 +5,30 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Arrays;
 import java.util.List;
 
-/**
- * Data sent to close a Roll-Call
- */
+/** Data sent to close a Roll-Call */
 public class CloseRollCall extends Data {
 
   @SerializedName("update_id")
   private final String updateId;
+
   private final String closes;
+
   @SerializedName("closed_at")
   private final long closedAt;
+
   private final List<String> attendees;
 
   /**
    * Constructor for a data Close Roll-Call Event
    *
-   * @param laoId     id of the LAO
-   * @param closes    The 'update_id' of the latest roll call open, or in its absence, the 'id'
-   *                  field of the roll call creation
-   * @param closedAt  timestamp of the roll call close
+   * @param laoId id of the LAO
+   * @param closes The 'update_id' of the latest roll call open, or in its absence, the 'id' field
+   *     of the roll call creation
+   * @param closedAt timestamp of the roll call close
    * @param attendees list of attendees of the Roll-Call
    */
   public CloseRollCall(String laoId, String closes, long closedAt, List<String> attendees) {
@@ -59,5 +62,21 @@ public class CloseRollCall extends Data {
 
   public List<String> getAttendees() {
     return attendees;
+  }
+
+  @Override
+  public String toString() {
+    return "CloseRollCall{"
+        + "updateId='"
+        + updateId
+        + '\''
+        + ", closes='"
+        + closes
+        + '\''
+        + ", closedAt="
+        + closedAt
+        + ", attendees="
+        + Arrays.toString(attendees.toArray())
+        + '}';
   }
 }

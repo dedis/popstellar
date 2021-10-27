@@ -5,12 +5,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Data sent to update the lao specifications
- */
+/** Data sent to update the lao specifications */
 public class UpdateLao extends Data {
 
   private final String id;
@@ -24,14 +24,14 @@ public class UpdateLao extends Data {
   /**
    * Constructor for a data Update LAO
    *
-   * @param organizer    public key of the LAO
-   * @param creation     creation time
-   * @param name         name of the LAO
+   * @param organizer public key of the LAO
+   * @param creation creation time
+   * @param name name of the LAO
    * @param lastModified time of last modification
-   * @param witnesses    list of witnesses of the LAO
+   * @param witnesses list of witnesses of the LAO
    */
-  public UpdateLao(String organizer, long creation, String name, long lastModified,
-      Set<String> witnesses) {
+  public UpdateLao(
+      String organizer, long creation, String name, long lastModified, Set<String> witnesses) {
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
@@ -87,13 +87,16 @@ public class UpdateLao extends Data {
   @Override
   public String toString() {
     return "UpdateLao{"
-        + "name='"
+        + "id='"
+        + id
+        + '\''
+        + ", name='"
         + name
         + '\''
-        + ", last_modified="
+        + ", lastModified="
         + lastModified
         + ", witnesses="
-        + witnesses
+        + Arrays.toString(witnesses.toArray())
         + '}';
   }
 }

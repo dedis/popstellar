@@ -9,6 +9,7 @@ import WideButtonView from 'components/WideButtonView';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import { Wallet } from 'model/objects';
+import CopiableTextInput from '../../components/CopiableTextInput';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -33,7 +34,7 @@ const WalletShowSeed = ({ navigation }: IPropTypes) => {
       <View style={styleContainer.centered}>
         <TextBlock bold text={STRINGS.show_seed_info} />
         <View style={styles.smallPadding} />
-        <TextBlock text={seed} />
+        <CopiableTextInput text={seed} />
         <View style={styles.smallPadding} />
         <WideButtonView
           title={STRINGS.back_to_wallet_home}

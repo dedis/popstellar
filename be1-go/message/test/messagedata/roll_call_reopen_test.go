@@ -29,7 +29,7 @@ func Test_Roll_Call_ReOpen(t *testing.T) {
 
 	require.Equal(t, "roll_call", msg.Object)
 	require.Equal(t, "reopen", msg.Action)
-	require.Equal(t, "XXX", msg.UpdateID)
-	require.Equal(t, "XXX", msg.Opens)
-	require.Equal(t, int64(123), msg.OpenedAt)
+	require.Equal(t, "sgMsQ4EPPwKbHw3TsiCwkyH1JvilxPn0Y9iTEcbNMl4=", msg.UpdateID)
+	require.Equal(t, "WxoPg4wLpmog0Q5eQewQ5AAD19RW-8-6aSZ2mGIJRO8=", msg.Opens)
+	require.Equal(t, int64(1633099137), msg.OpenedAt)
 }

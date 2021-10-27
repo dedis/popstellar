@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, TextInput, TextStyle, ViewStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
 import PropTypes from 'prop-types';
 
@@ -8,34 +8,24 @@ import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager, requestCreateLao } from 'network';
 
 import {
-  Hash, Lao, Timestamp, Channel,
+  Channel, Hash, Lao, Timestamp,
 } from 'model/objects';
 
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
 
-import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import styleContainer from 'styles/stylesheets/container';
 import { subscribeToChannel } from 'network/CommunicationApi';
+import TextInputLine from 'components/TextInputLine';
 
 /**
- * Manage the Launch screen: a description string, a LAO name text input, a launch LAO button,
- * and cancel button
- *
- * The Launch button does nothing
- * The cancel button clear the LAO name field and redirect to the Home screen
- *
- * TODO implement the launch button action
+ * Manages the Launch screen, where the user enters a name and an address to launch and connect
+ * to an LAO.
  */
+
 const styles = StyleSheet.create({
-  textInput: {
-    ...Typography.base,
-    borderBottomWidth: 2,
-    marginVertical: Spacing.s,
-    marginHorizontal: Spacing.xl,
-  } as TextStyle,
   viewTop: {
     justifyContent: 'flex-start',
   } as ViewStyle,
@@ -46,13 +36,14 @@ const styles = StyleSheet.create({
 
 const Launch = ({ navigation }: IPropTypes) => {
   const [inputLaoName, setInputLaoName] = useState('');
+  const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
 
   const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
       return;
     }
 
-    getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
+    getNetworkManager().connect(inputAddress);
     requestCreateLao(laoName)
       .then((channel: Channel) => subscribeToChannel(channel)
         .then(() => {
@@ -91,11 +82,15 @@ const Launch = ({ navigation }: IPropTypes) => {
     <View style={styleContainer.flex}>
       <View style={styles.viewTop}>
         <TextBlock text={STRINGS.launch_description} />
-        <TextInput
-          style={styles.textInput}
+        <TextInputLine
           placeholder={STRINGS.launch_organization_name}
           onChangeText={(input: string) => setInputLaoName(input)}
           defaultValue={inputLaoName}
+        />
+        <TextInputLine
+          placeholder={STRINGS.launch_address}
+          onChangeText={(input: string) => setInputAddress(input)}
+          defaultValue={inputAddress}
         />
       </View>
       <View style={styles.viewBottom}>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, View, ViewStyle, TextInput, TextStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
 
 import PropTypes from 'prop-types';
@@ -9,7 +9,7 @@ import { getNetworkManager } from 'network';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { Channel, channelFromIds, Hash } from 'model/objects';
 
-import { Spacing, Typography } from 'styles';
+import { Spacing } from 'styles';
 import styleContainer from 'styles/stylesheets/container';
 
 import STRINGS from 'res/strings';
@@ -17,6 +17,7 @@ import PROPS_TYPE from 'res/Props';
 
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
+import TextInputLine from 'components/TextInputLine';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -25,12 +26,6 @@ import WideButtonView from 'components/WideButtonView';
  * TODO Make the confirm button make the action require in the UI specification
  */
 const styles = StyleSheet.create({
-  textInput: {
-    ...Typography.base,
-    borderBottomWidth: 2,
-    marginVertical: Spacing.s,
-    marginHorizontal: Spacing.xl,
-  } as TextStyle,
   viewCenter: {
     flex: 8,
     justifyContent: 'center',
@@ -39,7 +34,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-function connectTo(serverUrl: string): boolean {
+/**
+ * Connects to the given server URL.
+ *
+ * @param serverUrl
+ */
+export function connectTo(serverUrl: string): boolean {
   try {
     const { href } = new URL(serverUrl); // validate
     getNetworkManager().connect(href);
@@ -50,7 +50,12 @@ function connectTo(serverUrl: string): boolean {
   return true;
 }
 
-function validateLaoId(laoId: string): Channel | undefined {
+/**
+ * Checks if the LAO exists by trying to find its id in created channels.
+ *
+ * @param laoId the id of the LAO we want to validate
+ */
+export function validateLaoId(laoId: string): Channel | undefined {
   try {
     const h = new Hash(laoId);
     return channelFromIds(h);
@@ -93,14 +98,12 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
     <View style={styleContainer.flex}>
       <View style={styles.viewCenter}>
         <TextBlock text={STRINGS.connect_confirm_description} />
-        <TextInput
-          style={styles.textInput}
+        <TextInputLine
           placeholder={STRINGS.connect_server_uri}
           onChangeText={(input: string) => setServerUrl(input)}
           defaultValue={serverUrl}
         />
-        <TextInput
-          style={styles.textInput}
+        <TextInputLine
           placeholder={STRINGS.connect_lao_id}
           onChangeText={(input: string) => setLaoId(input)}
           defaultValue={laoId}

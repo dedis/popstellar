@@ -4,36 +4,37 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
+
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public class CastVote extends Data {
 
   @SerializedName(value = "created_at")
-  private long createdAt; // time the votes were submitted
+  private final long createdAt; // time the votes were submitted
+
   @SerializedName(value = "lao")
-  private String laoId; // Id of the lao
+  private final String laoId; // Id of the lao
+
   @SerializedName(value = "election")
-  private String electionId; // Id of the election
-  private List<ElectionVote> votes;
+  private final String electionId; // Id of the election
+
+  private final List<ElectionVote> votes;
 
   /**
-   * @param votes      list of the Election Vote where an ElectionVote Object represents the
-   *                   corresponding votes for one question
+   * @param votes list of the Election Vote where an ElectionVote Object represents the
+   *     corresponding votes for one question
    * @param electionId Id of the election for which to votee
-   * @param laoId      id of the LAO
+   * @param laoId id of the LAO
    */
-  public CastVote(
-      List<ElectionVote> votes,
-      String electionId,
-      String laoId) {
+  public CastVote(List<ElectionVote> votes, String electionId, String laoId) {
     this.createdAt = Instant.now().getEpochSecond();
     this.votes = votes;
     this.electionId = electionId;
     this.laoId = laoId;
   }
-
 
   public String getLaoId() {
     return laoId;
@@ -72,45 +73,29 @@ public class CastVote extends Data {
     CastVote that = (CastVote) o;
     return java.util.Objects.equals(getLaoId(), that.getLaoId())
         && createdAt == that.getCreation()
-        && electionId == that.getElectionId()
-        && laoId == that.getLaoId()
+        && java.util.Objects.equals(electionId, that.getElectionId())
+        && java.util.Objects.equals(laoId, that.getLaoId())
         && java.util.Objects.equals(votes, that.getVotes());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(
-        getLaoId(),
-        getElectionId(),
-        getCreation(),
-        getVotes());
+    return java.util.Objects.hash(getLaoId(), getElectionId(), getCreation(), getVotes());
   }
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder();
-    for (ElectionVote vote : votes) {
-      builder.append(vote.toString());
-    }
     return "CastVote{"
-        + "lao='"
+        + "createdAt="
+        + createdAt
+        + ", laoId='"
         + laoId
         + '\''
-        + ", creation='"
-        + createdAt
-        + '\''
-        + ", election='"
-        + '\''
-        + ", votes = { '"
-        + builder
-        + '\''
-        + '}'
-        + '\''
+        + ", electionId='"
         + electionId
         + '\''
-        + ", votes = { '"
-        + builder.toString()
+        + ", votes="
+        + Arrays.toString(votes.toArray())
         + '}';
   }
-
 }

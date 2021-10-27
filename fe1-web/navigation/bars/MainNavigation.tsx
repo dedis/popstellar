@@ -5,6 +5,7 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import STRINGS from 'res/strings';
 
 import Home from 'parts/Home';
+import Social from 'parts/Social';
 import Launch from 'parts/Launch';
 import ConnectNavigation from 'navigation/bars/ConnectNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
@@ -32,10 +33,15 @@ export default function MainNavigation() {
     <HomeTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={STRINGS.navigation_tab_home}
+      swipeEnabled={false}
     >
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_home}
         component={Home}
+      />
+      <HomeTopTabNavigator.Screen
+        name={STRINGS.navigation_tab_social}
+        component={Social}
       />
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_connect}

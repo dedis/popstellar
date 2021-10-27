@@ -8,17 +8,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import com.github.dedis.popstellar.databinding.RollCallCreateFragmentBinding;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 
-/**
- * Fragment that shows up when user wants to create a Roll-Call Event
- */
+/** Fragment that shows up when user wants to create a Roll-Call Event */
 public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
@@ -55,7 +55,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     return new RollCallEventCreationFragment();
   }
 
-  @Nullable
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,
@@ -64,9 +63,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mFragBinding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    setDateAndTimeView(mFragBinding.getRoot(), this, getFragmentManager());
+    setDateAndTimeView(mFragBinding.getRoot(), this, getParentFragmentManager());
     addStartDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;
@@ -79,8 +78,8 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupConfirmButton();
     setupOpenButton();
@@ -90,7 +89,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getNewLaoEventCreationEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             eventTypeEvent -> {
               EventType eventType = eventTypeEvent.getContentIfNotHandled();
               if (eventType == EventType.ROLL_CALL) {
@@ -102,7 +101,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getOpenNewRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -113,7 +112,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     mLaoDetailViewModel
         .getCreatedRollCallEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -140,7 +139,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
-    mLaoDetailViewModel
-        .createNewRollCall(title, description, CREATION_TIME_IN_SECONDS, startTimeInSeconds, endTimeInSeconds, open);
+    mLaoDetailViewModel.createNewRollCall(
+        title, description, CREATION_TIME_IN_SECONDS, startTimeInSeconds, endTimeInSeconds, open);
   }
 }

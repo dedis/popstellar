@@ -2,9 +2,7 @@ package com.github.dedis.popstellar.model.network.answer;
 
 import java.util.Objects;
 
-/**
- * A failed query's answer
- */
+/** A failed query's answer */
 public final class Error extends Answer {
 
   private final ErrorCode error;
@@ -12,7 +10,7 @@ public final class Error extends Answer {
   /**
    * Constructor of an Error
    *
-   * @param id    of the answer
+   * @param id of the answer
    * @param error of the answer, contains its code and description
    */
   public Error(int id, ErrorCode error) {
@@ -20,9 +18,7 @@ public final class Error extends Answer {
     this.error = error;
   }
 
-  /**
-   * Returns the error code.
-   */
+  /** Returns the error code. */
   public ErrorCode getError() {
     return error;
   }
@@ -45,5 +41,10 @@ public final class Error extends Answer {
   @Override
   public int hashCode() {
     return Objects.hash(super.hashCode(), getError());
+  }
+
+  @Override
+  public String toString() {
+    return "Error{error=" + error + '}';
   }
 }

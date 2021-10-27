@@ -5,7 +5,7 @@ import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.ClientActor._
-import ch.epfl.pop.pubsub.PubSubMediator._
+import ch.epfl.pop.pubsub.PubSubMediator.{PubSubMediatorMessage, SubscribeToAck, SubscribeToNAck, UnsubscribeFromAck, UnsubscribeFromNAck}
 import ch.epfl.pop.pubsub.graph.GraphMessage
 
 import scala.collection.mutable
@@ -25,24 +25,24 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
   }
 
   override def receive: Receive = LoggingReceive {
-    case message: Event => message match {
+    case message: ClientActor.Event => message match {
       case ConnectWsHandle(wsClient: ActorRef) =>
         log.info(s"Connecting wsHandle $wsClient to actor ${this.self}")
         wsHandle = Some(wsClient)
 
-      case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! UnsubscribeFrom(channel))
+      case DisconnectWsHandle => subscribedChannels.foreach(channel => mediator ! PubSubMediator.UnsubscribeFrom(channel, this.self))
 
-      case SubscribeTo(channel) =>
-        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? SubscribeTo(channel)).map {
+      case ClientActor.SubscribeTo(channel) =>
+        val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.SubscribeTo(channel, this.self)).map {
           case m: PubSubMediatorMessage => m
         }
-        sender ! Await.result(f, duration)
+        sender ! Await.result(ask, duration)
 
-      case UnsubscribeFrom(channel) =>
-        val f: Future[PubSubMediatorMessage] = (mediatorAskable ? UnsubscribeFrom(channel)).map {
+      case ClientActor.UnsubscribeFrom(channel) =>
+        val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.UnsubscribeFrom(channel, this.self)).map {
           case m: PubSubMediatorMessage => m
         }
-        sender ! Await.result(f, duration)
+        sender ! Await.result(ask, duration)
     }
     case message: PubSubMediatorMessage => message match {
       case SubscribeToAck(channel) =>
@@ -62,16 +62,16 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
 
     case m@_ => m match {
       case Failure(exception: Exception) =>
-        println(">>> Standard Exception : " + m + exception.getMessage)
+        log.error(">>> Standard Exception : " + m + exception.getMessage)
         exception.printStackTrace()
       case akka.actor.Status.Failure(exception: Exception) =>
-        println(">>> Actor Exception : " + m + exception.getMessage)
+        log.error(">>> Actor Exception : " + m + exception.getMessage)
         exception.printStackTrace()
       case Failure(error: Error) =>
-        println(">>> Error : " + m + error.getMessage)
+        log.error(">>> Error : " + m + error.getMessage)
         error.printStackTrace()
       case akka.actor.Status.Failure(error: Error) =>
-        println(">>> Actor Error : " + m + error.getMessage)
+        log.error(">>> Actor Error : " + m + error.getMessage)
         error.printStackTrace()
       case _ => println("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
     }

@@ -4,21 +4,21 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
+	"github.com/rs/zerolog"
+	"github.com/santhosh-tekuri/jsonschema/v3"
+	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
-	"log"
 	"path/filepath"
 	"popstellar/message/answer"
 	"strings"
-
-	"github.com/santhosh-tekuri/jsonschema/v3"
-	"golang.org/x/xerrors"
 )
 
 // SchemaValidator is used to validate JSON-RPC schemas.
 type SchemaValidator struct {
 	genericMessageSchema *jsonschema.Schema
 	dataSchema           *jsonschema.Schema
+	log 				 zerolog.Logger
 }
 
 // SchemaType denotes the type of schema.
@@ -55,6 +55,8 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 	reader := bytes.NewBuffer(msg[:])
 	var schema *jsonschema.Schema
 
+	s.log.Info().Msg("verifying msg follows the schema")
+
 	switch st {
 	case GenericMessage:
 		schema = s.genericMessageSchema
@@ -66,7 +68,7 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 
 	err := schema.Validate(reader)
 	if err != nil {
-		log.Printf("failed to validate schema: %s %v", msg, err)
+		s.log.Err(err).Msg("failed to validate schema")
 		return answer.NewErrorf(-4, "failed to validate schema: %v", err)
 	}
 
@@ -74,9 +76,10 @@ func (s SchemaValidator) VerifyJSON(msg []byte, st SchemaType) error {
 }
 
 // NewSchemaValidator returns a Schema Validator
-func NewSchemaValidator() (*SchemaValidator, error) {
+func NewSchemaValidator(log zerolog.Logger) (*SchemaValidator, error) {
 	gmCompiler := jsonschema.NewCompiler()
 	dataCompiler := jsonschema.NewCompiler()
+	log = log.With().Str("role", "base hub").Logger()
 
 	// recurse over the protocol directory and load all the files
 	err := fs.WalkDir(protocolFS, "protocol", func(path string, d fs.DirEntry, err error) error {
@@ -123,6 +126,7 @@ func NewSchemaValidator() (*SchemaValidator, error) {
 	return &SchemaValidator{
 		genericMessageSchema: gmSchema,
 		dataSchema:           dataSchema,
+		log:				  log,
 	}, nil
 }
 

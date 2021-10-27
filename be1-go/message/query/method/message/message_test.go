@@ -32,11 +32,11 @@ func Test_UnmarshalData(t *testing.T) {
 
 	require.Equal(t, "lao", laoCreate.Object)
 	require.Equal(t, "create", laoCreate.Action)
-	require.Equal(t, "XXX", laoCreate.ID)
-	require.Equal(t, "XXX", laoCreate.Name)
-	require.Equal(t, int64(123), laoCreate.Creation)
-	require.Equal(t, "XXX", laoCreate.Organizer)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", laoCreate.ID)
+	require.Equal(t, "LAO", laoCreate.Name)
+	require.Equal(t, int64(1633098234), laoCreate.Creation)
+	require.Equal(t, "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=", laoCreate.Organizer)
 
-	require.Len(t, laoCreate.Witnesses, 1)
-	require.Equal(t, "XXX", laoCreate.Witnesses[0])
+	require.Len(t, laoCreate.Witnesses, 0)
+	//require.Equal(t, "XXX", laoCreate.Witnesses[0])
 }

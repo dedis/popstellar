@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method;
 
-/**
- * Subscribe to a channel
- */
+/** Subscribe to a channel */
 public final class Subscribe extends Query {
 
   public Subscribe(String channel, int id) {

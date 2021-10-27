@@ -5,11 +5,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class RollCallEntity {
 
-  @PrimaryKey
-  @NonNull
-  public String id;
+  @PrimaryKey @NonNull public String id;
 
   public String laoChannel;
 
