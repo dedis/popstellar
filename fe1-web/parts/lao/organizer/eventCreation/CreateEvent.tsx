@@ -13,7 +13,7 @@ import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 
-export const FIVE_MINUTES_IN_SECONDS = 300;
+const FIVE_MINUTES_IN_SECONDS = 300;
 
 const styleEvents = StyleSheet.create({
   view: {
