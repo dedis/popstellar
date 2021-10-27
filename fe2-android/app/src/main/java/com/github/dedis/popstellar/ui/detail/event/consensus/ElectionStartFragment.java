@@ -86,6 +86,63 @@ public class ElectionStartFragment extends Fragment {
     electionStart.setText(getString(R.string.election_scheduled, scheduledDate));
     electionStart.setEnabled(false);
 
+    setupTimerUpdate(election);
+
+    setupButtonListeners(binding, mLaoDetailViewModel, electionId);
+
+    List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
+
+    ownNode = getOwnNode(mLaoDetailViewModel.getPublicKey(), nodes);
+
+    NodesAcceptorAdapter adapter =
+        new NodesAcceptorAdapter(nodes, ownNode, electionId, this, mLaoDetailViewModel);
+    GridView gridView = binding.nodesGrid;
+    gridView.setAdapter(adapter);
+
+    if (isElectionStartTimePassed(election)) {
+      updateStartAndStatus(nodes, election);
+    }
+
+    mLaoDetailViewModel
+        .getNodes()
+        .observe(
+            getViewLifecycleOwner(),
+            consensusNodes -> {
+              Log.d(TAG, "got an update for nodes : " + consensusNodes);
+              adapter.setList(consensusNodes);
+              if (isElectionStartTimePassed(election)) {
+                updateStartAndStatus(consensusNodes, election);
+              }
+            });
+
+    binding.setLifecycleOwner(getActivity());
+
+    return binding.getRoot();
+  }
+
+  @Override
+  public void onDestroyView() {
+    super.onDestroyView();
+    disposables.dispose();
+  }
+
+  private boolean isElectionStartTimePassed(Election election) {
+    return Instant.now().getEpochSecond() >= election.getStartTimestamp();
+  }
+
+  private ConsensusNode getOwnNode(String ownPublicKey, List<ConsensusNode> nodes) {
+    Optional<ConsensusNode> ownNodeOpt =
+        nodes.stream().filter(node -> node.getPublicKey().equals(ownPublicKey)).findAny();
+    if (ownNodeOpt.isPresent()) {
+      return ownNode = ownNodeOpt.get();
+    } else {
+      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
+      Log.e(TAG, "Couldn't find our own Node with public key : " + ownPublicKey);
+      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
+    }
+  }
+
+  private void setupTimerUpdate(Election election) {
     // Check every seconds until the scheduled time, then show the "election start" button
     Disposable disposable =
         Observable.interval(0, 1, TimeUnit.SECONDS)
@@ -113,7 +170,12 @@ public class ElectionStartFragment extends Fragment {
                   }
                 });
     disposables.add(disposable);
+  }
 
+  private void setupButtonListeners(
+      ElectionStartFragmentBinding binding,
+      LaoDetailViewModel mLaoDetailViewModel,
+      String electionId) {
     electionStart.setOnClickListener(
         clicked -> {
           Optional<Consensus> acceptedConsensus =
@@ -128,58 +190,10 @@ public class ElectionStartFragment extends Fragment {
           }
         });
 
-    List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
-
-    String ownPublicKey = mLaoDetailViewModel.getPublicKey();
-    Optional<ConsensusNode> ownNodeOpt =
-        nodes.stream().filter(node -> node.getPublicKey().equals(ownPublicKey)).findAny();
-    if (ownNodeOpt.isPresent()) {
-      ownNode = ownNodeOpt.get();
-    } else {
-      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-      Log.e(TAG, "Couldn't find our own Node with public key : " + ownPublicKey);
-      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
-    }
-
-    NodesAcceptorAdapter adapter =
-        new NodesAcceptorAdapter(nodes, ownNode, electionId, this, mLaoDetailViewModel);
-    GridView gridView = binding.nodesGrid;
-    gridView.setAdapter(adapter);
-
-    if (isElectionStartTimePassed(election)) {
-      updateStartAndStatus(nodes, election);
-    }
-
-    mLaoDetailViewModel
-        .getNodes()
-        .observe(
-            getViewLifecycleOwner(),
-            consensusNodes -> {
-              Log.d(TAG, "got an update for nodes : " + consensusNodes);
-              adapter.setList(consensusNodes);
-              if (isElectionStartTimePassed(election)) {
-                updateStartAndStatus(consensusNodes, election);
-              }
-            });
-
     binding
         .backLayout
         .findViewById(R.id.tab_back)
         .setOnClickListener(clicked -> mLaoDetailViewModel.openLaoDetail());
-
-    binding.setLifecycleOwner(getActivity());
-
-    return binding.getRoot();
-  }
-
-  @Override
-  public void onDestroyView() {
-    super.onDestroyView();
-    disposables.dispose();
-  }
-
-  private boolean isElectionStartTimePassed(Election election) {
-    return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
   private void updateStartAndStatus(List<ConsensusNode> nodes, Election election) {
