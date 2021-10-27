@@ -100,6 +100,8 @@ public class WitnessListViewAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(convertView);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setViewModel(viewModel);
     binding.setPosition(position + 1);
@@ -115,9 +117,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
           adb.setNegativeButton(context.getString(R.string.button_cancel), null);
           adb.setPositiveButton(
               context.getString(R.string.button_confirm),
-              (dialog, which) -> {
-                viewModel.removeWitness(witness);
-              });
+              (dialog, which) -> viewModel.removeWitness(witness));
           adb.show();
         };
 

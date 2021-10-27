@@ -48,6 +48,15 @@
         },
         {
             "$ref": "dataAddChirpBroadcast.json"
+        },
+        {
+            "$ref": "dataElect.json"
+        },
+        {
+            "$ref": "dataElectAccept.json"
+        },
+        {
+            "$ref": "dataLearn.json"
         }
     ]
 }

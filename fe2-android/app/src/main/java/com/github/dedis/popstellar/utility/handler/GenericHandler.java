@@ -45,13 +45,10 @@ public class GenericHandler {
     Error err = (Error) genericMessage;
     int id = err.getId();
     Log.d(TAG, "got an error answer with id " + id);
-    if (subscribeRequests.containsKey(id)) {
-      subscribeRequests.remove(id);
-    } else if (catchupRequests.containsKey(id)) {
-      catchupRequests.remove(id);
-    } else if (createLaoRequests.containsKey(id)) {
-      createLaoRequests.remove(id);
-    }
+
+    subscribeRequests.remove(id);
+    catchupRequests.remove(id);
+    createLaoRequests.remove(id);
   }
 
   /**
@@ -142,6 +139,10 @@ public class GenericHandler {
     // Send subscribe and catchup after creating a LAO
     laoRepository.sendSubscribe(channel);
     laoRepository.sendCatchup(channel);
+
+    String consensusChannel = channel + "/consensus";
+    laoRepository.sendSubscribe(consensusChannel);
+    laoRepository.sendCatchup(consensusChannel);
   }
 
   /**

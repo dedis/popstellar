@@ -38,7 +38,7 @@ public class WitnessMessageFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mWitnessMessageFragBinding = WitnessMessageFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     mWitnessMessageFragBinding.setViewmodel(mLaoDetailViewModel);
     mWitnessMessageFragBinding.setLifecycleOwner(getActivity());
@@ -51,7 +51,7 @@ public class WitnessMessageFragment extends Fragment {
     super.onActivityCreated(savedInstanceState);
     setupListAdapter();
     setupListUpdates();
-    Button back = (Button) getActivity().findViewById(R.id.tab_back);
+    Button back = requireActivity().findViewById(R.id.tab_back);
     back.setOnClickListener(c -> mLaoDetailViewModel.openLaoDetail());
   }
 
@@ -68,7 +68,7 @@ public class WitnessMessageFragment extends Fragment {
     mLaoDetailViewModel
         .getWitnessMessages()
         .observe(
-            getActivity(),
+            requireActivity(),
             messages -> {
               Log.d(TAG, "witness messages updated");
               mWitnessMessageListViewAdapter.replaceList(messages);

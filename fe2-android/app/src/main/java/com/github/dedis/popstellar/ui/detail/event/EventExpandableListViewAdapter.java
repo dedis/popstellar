@@ -257,15 +257,16 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     layoutEventBinding.setEvent(event);
 
     EventCategory category = (EventCategory) getGroup(groupPosition);
-    if (event.getType() == EventType.ELECTION) {
-      return setupElectionElement((Election) event, category, layoutEventBinding);
-    } else if (event.getType() == EventType.ROLL_CALL) {
-      return setupRollCallElement((RollCall) event, layoutEventBinding);
+    switch (event.getType()) {
+      case ELECTION:
+        return setupElectionElement((Election) event, category, layoutEventBinding);
+      case ROLL_CALL:
+        return setupRollCallElement((RollCall) event, layoutEventBinding);
+      default:
+        layoutEventBinding.setLifecycleOwner(lifecycleOwner);
+        layoutEventBinding.executePendingBindings();
+        return layoutEventBinding.getRoot();
     }
-
-    layoutEventBinding.setLifecycleOwner(lifecycleOwner);
-    layoutEventBinding.executePendingBindings();
-    return layoutEventBinding.getRoot();
   }
 
   /**
@@ -314,13 +315,10 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
       Election election, EventCategory category, EventLayoutBinding layoutEventBinding) {
     ElectionDisplayLayoutBinding electionBinding = layoutEventBinding.includeLayoutElection;
     electionBinding.setElection(election);
-    Date dStart =
-        new java.util.Date(
-            Long.valueOf(election.getStartTimestamp())
-                * 1000); // *1000 because it needs to be in milisecond
+    Date dStart = new java.util.Date(election.getStartTimestampInMillis());
     String dateStart = DATE_FORMAT.format(dStart);
     electionBinding.electionStartDate.setText("Start date : " + dateStart);
-    Date dEnd = new java.util.Date(Long.valueOf(election.getEndTimestamp()) * 1000);
+    Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
     viewModel.setCurrentElection(election);
@@ -344,7 +342,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     } else if (category == PAST) {
 
       electionBinding.electionActionButton.setEnabled(true);
-      if (!viewModel.isOrganizer().getValue().booleanValue()) {
+      if (!viewModel.isOrganizer().getValue()) {
         electionBinding.electionActionButton.setEnabled(false);
       }
 
@@ -373,6 +371,14 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
           viewModel.setCurrentElection(election);
           viewModel.openManageElection(true);
         });
+
+    electionBinding.detailsButton.setOnClickListener(
+        clicked -> {
+          viewModel.setCurrentElection(election);
+          viewModel.openStartElection(true);
+        });
+    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
+
     electionBinding.setEventCategory(category);
     electionBinding.setViewModel(viewModel);
     electionBinding.setLifecycleOwner(lifecycleOwner);

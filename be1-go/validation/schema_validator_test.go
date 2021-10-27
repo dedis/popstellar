@@ -101,7 +101,6 @@ func TestSchemaValidator_ValidateCastVoteData(t *testing.T) {
 }
 
 func TestSchemaValidator_ValidatePublishChirp(t *testing.T) {
-
 	request := `{"jsonrpc":"2.0","method":"publish","id":11,"params":{"channel":"/root/krnBHWK2LtM_iQw20D_jJPObQ-NzmOHTzCGvBt7kq58=","message":{"data":"eyJvYmplY3QiOiJjaGlycCIsImFjdGlvbiI6ImFkZCIsInRleHQiOiJjaGlycCBjaGlycCIsInRpbWVzdGFtcCI6MTYzMzgxMDU1OX0=","message_id":"FaRCz2GE9ZQ_qjG171i04rhXkgB86VQ_EbWFMEN1lr0=","sender":"ljvhZLAzFaC7U8_dF9QU253DsMLC7JjPHYRi3wz-u9s=","signature":"ObqRiV4wlwAnB668FyNI9cVnxVNRpfMBHz2UhIVSw_VBxgMty33AyHkDdFs46l_5umccD3jFOIwBZpp96QY9CA==","witness_signatures":[]}}}`
 
 	validator, err := NewSchemaValidator(nolog)

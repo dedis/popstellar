@@ -32,6 +32,10 @@ const message_data_chirp_add_broadcast_schema = require("../query/method/message
 const message_data_chirp_delete_schema = require("../query/method/message/data/dataDeleteChirp.json")
 const message_data_chirp_delete_broadcast_schema = require("../query/method/message/data/dataDeleteChirpBroadcast.json")
 
+const message_data_elect_schema = require("../query/method/message/data/dataElect.json")
+const message_data_elect_accept_schema = require("../query/method/message/data/dataElectAccept.json")
+const message_data_learn_schema = require("../query/method/message/data/dataLearn.json")
+
 const ajv = new Ajv({ allErrors: true, strict: false });
 
 ajv.addSchema([
@@ -69,7 +73,11 @@ ajv.addSchema([
     message_data_chirp_add_broadcast_schema,
     message_data_chirp_add_schema,
     message_data_chirp_delete_schema,
-    message_data_chirp_delete_broadcast_schema
+    message_data_chirp_delete_broadcast_schema,
+
+    message_data_elect_schema,
+    message_data_elect_accept_schema,
+    message_data_learn_schema
 ]);
 
 module.exports = ajv;

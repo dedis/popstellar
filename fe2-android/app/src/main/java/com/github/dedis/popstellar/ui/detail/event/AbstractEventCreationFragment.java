@@ -134,6 +134,10 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     if (resultCode == Activity.RESULT_OK) {
       Calendar selection =
           (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));
+
+      if (selection == null)
+        throw new IllegalStateException("Indent does not contain extra : selection");
+
       switch (requestCode) {
         case START_DATE_REQUEST_CODE:
           startDate = selection;

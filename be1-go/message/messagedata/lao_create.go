@@ -1,8 +1,6 @@
 package messagedata
 
 import (
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 
 	"golang.org/x/xerrors"
@@ -22,16 +20,15 @@ type LaoCreate struct {
 	Witnesses []string `json:"witnesses"`
 }
 
-// Verify that the LaoCreate message is valid
+// Verify verifies that the LaoCreate message is valid
 func (message LaoCreate) Verify() error {
+	expectedLaoID := Hash(
+		message.Organizer,
+		fmt.Sprintf("%d", message.Creation),
+		message.Name,
+	)
 
-	h := sha256.New()
-	h.Write([]byte(message.Organizer))
-	h.Write([]byte(fmt.Sprintf("%d", message.Creation)))
-	h.Write([]byte(message.Name))
-	testLaoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
-
-	if message.ID != testLaoID {
+	if message.ID != expectedLaoID {
 		return xerrors.Errorf("ID %s do not correspond with message data", message.ID)
 	}
 

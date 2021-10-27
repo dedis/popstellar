@@ -1,5 +1,6 @@
 package messagedata
 
+// ChirpAdd defines a message data
 type ChirpAdd struct {
 	Object    string `json:"object"`
 	Action    string `json:"action"`

@@ -29,6 +29,9 @@ import (
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
 
+// rpcNotQueryError is an error message
+const rpcNotQueryError = "jsonRPC message is not of type query"
+
 const (
 	// numWorkers denote the number of worker go-routines
 	// allowed to process requests concurrently.
@@ -236,8 +239,8 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 
 	// check type (answer or query), we expect a query
 	if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msg("jsonRPC message is not of type query")
-		rpcErr := xerrors.New("jsonRPC message is not of type query")
+		h.log.Error().Msg(rpcNotQueryError)
+		rpcErr := xerrors.New(rpcNotQueryError)
 		socket.SendError(nil, rpcErr)
 		return rpcErr
 	}
@@ -397,9 +400,11 @@ func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 }
 
 // handleMessageFromWitness handles an incoming message from a witness server.
+// this may change once the witness are correctly implemented
 func (h *Hub) handleMessageFromWitness(incomingMessage *socket.IncomingMessage) error {
-	//TODO
-	return nil
+	// With the simplified comportement of the witness, the message should be
+	// handled same way as a client message
+	return h.handleMessageFromClient(incomingMessage)
 }
 
 // handleIncomingMessage handles an incoming message based on the socket it
@@ -435,7 +440,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
-	h.channelByID[laoChannelPath] = laoCh
+	h.RegisterNewChannel(laoChannelPath, laoCh)
 
 	if sqlite.GetDBPath() != "" {
 		saveChannel(laoChannelPath)
