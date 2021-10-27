@@ -1,23 +1,17 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, TextInput, TextStyle, View, ViewStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
 import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import { Spacing, Typography } from 'styles';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import { Wallet } from 'model/objects';
+import TextInputLine from 'components/TextInputLine';
 
 const styles = StyleSheet.create({
-  textInput: {
-    ...Typography.base,
-    borderBottomWidth: 2,
-    marginVertical: Spacing.s,
-    marginHorizontal: Spacing.xl,
-  } as TextStyle,
   smallPadding: {
     padding: '1rem',
   } as ViewStyle,
@@ -46,8 +40,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
     return (
       <View style={styleContainer.centered}>
         <TextBlock text={STRINGS.type_seed_info} />
-        <TextInput
-          style={styles.textInput}
+        <TextInputLine
           placeholder={STRINGS.type_seed_example}
           onChangeText={(input: string) => setSeed(input)}
         />

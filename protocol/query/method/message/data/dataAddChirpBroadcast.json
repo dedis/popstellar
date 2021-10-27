@@ -8,7 +8,7 @@
       "const": "chirp"
     },
     "action": {
-      "const": "add"
+      "const": "addBroadcast"
     },
     "chirp_id": {
       "description": "message_id of the chirp message above",
@@ -17,6 +17,7 @@
     },
     "channel": {
       "description": "[String] name of the channel",
+      "pattern": "^/root/([^/]+)/social/([^/]+)/",
       "type": "string"
     },
     "timestamp": {

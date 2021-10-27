@@ -11,7 +11,6 @@ import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +73,10 @@ public class Election extends Event {
     return creation;
   }
 
+  public long getCreationInMillis() {
+    return getCreation() * 1000;
+  }
+
   public String getChannel() {
     return channel;
   }
@@ -124,9 +127,7 @@ public class Election extends Event {
     }
     // The list must be sorted by order of question ids
     List<ElectionVote> votesCopy = new ArrayList<>(votes);
-    Collections.sort(
-        votesCopy,
-        (Comparator<ElectionVote>) (v1, v2) -> v1.getQuestionId().compareTo(v2.getQuestionId()));
+    votesCopy.sort(Comparator.comparing(ElectionVote::getQuestionId));
     voteMap.put(senderPk, votesCopy);
   }
 

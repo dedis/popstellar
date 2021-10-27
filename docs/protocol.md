@@ -62,9 +62,9 @@ in a dedicated branch of the project’s Github repository.
 
 ## Concatenation for hashing
 
-When concatenating strings for hashing, the following logic is applied:
+When concatenating strings for hashing, the following <code>HashLen()</code> function is applied:
 
-<code>hash(a<sub>1</sub>,a<sub>2</sub>,...,a<sub>n</sub>) = hash(
+<code>HashLen(a<sub>1</sub>,a<sub>2</sub>,...,a<sub>n</sub>) = SHA256(
 string(length(a<sub>1</sub>)) || a<sub>1</sub> || string(length(a<sub>2</sub>))
 || a<sub>2</sub> || ... || string(length(a<sub>n</sub>)) ||
 a<sub>n</sub>)</code>

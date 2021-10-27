@@ -14,6 +14,8 @@ import org.iq80.leveldb.{DB, DBIterator, Options}
 
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
+import org.slf4j.LoggerFactory
+import java.io.IOException
 
 object DbActor extends AskPatternConstants {
 
@@ -31,19 +33,20 @@ object DbActor extends AskPatternConstants {
    */
   final case class Write(channel: Channel, message: Message) extends Event
 
-  /**
-   * Request to read a specific message with id <messageId> from <channel>
-   *
-   * @param channel   the channel where the message was published
-   * @param messageId the id of the message (message_id) we want to read
-   */
+  /** Request to read a specific message with id <messageId> from <channel>
+    *
+    * @param channel
+    *   the channel where the message was published
+    * @param messageId
+    *   the id of the message (message_id) we want to read
+    */
   final case class Read(channel: Channel, messageId: Hash) extends Event
 
-  /**
-   * Request to read all messages from a specific <channel>
-   *
-   * @param channel the channel where the messages should be fetched
-   */
+  /** Request to read all messages from a specific <channel>
+    *
+    * @param channel
+    *   the channel where the messages should be fetched
+    */
   final case class Catchup(channel: Channel) extends Event
 
   /**
@@ -64,61 +67,65 @@ object DbActor extends AskPatternConstants {
    */
   final case class CreateChannel(channel: Channel) extends Event
 
-  /**
-   * Request to check if channel <channel> exists in the db
-   *
-   * @param channel targeted channel
-   * @note db answers with a simple boolean
-   */
+  /** Request to check if channel <channel> exists in the db
+    *
+    * @param channel
+    *   targeted channel
+    * @note
+    *   db answers with a simple boolean
+    */
   final case class ChannelExists(channel: Channel) extends Event
 
-  /**
-   * Request to append witness <signature> to a stored message with message_id <messageId>
-   *
-   * @param messageId message_id of the targeted message
-   * @param signature signature to append to the witness signature list of the message
-   */
-  final case class AddWitnessSignature(messageId: Hash, signature: Signature) extends Event
-
+  /** Request to append witness <signature> to a stored message with message_id
+    * <messageId>
+    *
+    * @param messageId
+    *   message_id of the targeted message
+    * @param signature
+    *   signature to append to the witness signature list of the message
+    */
+  final case class AddWitnessSignature(messageId: Hash, signature: Signature)
+      extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
-  /**
-   * Response for a [[Write]] db request
-   * Receiving [[DbActorWriteAck]] works as an acknowledgement that the write request was successful
-   */
+  /** Response for a [[Write]] db request Receiving [[DbActorWriteAck]] works as
+    * an acknowledgement that the write request was successful
+    */
   final case object DbActorWriteAck extends DbActorMessage
 
-  /**
-   * Response for a [[Read]] db request
-   * Receiving [[DbActorReadAck]] works as an acknowledgement that the read request was successful
-   *
-   * @param message requested message
-   */
-  final case class DbActorReadAck(message: Option[Message]) extends DbActorMessage
+  /** Response for a [[Read]] db request Receiving [[DbActorReadAck]] works as
+    * an acknowledgement that the read request was successful
+    *
+    * @param message
+    *   requested message
+    */
+  final case class DbActorReadAck(message: Option[Message])
+      extends DbActorMessage
 
-  /**
-   * Response for a [[Catchup]] db request
-   * Receiving [[DbActorCatchupAck]] works as an acknowledgement that the catchup request was successful
-   *
-   * @param messages requested messages
-   */
-  final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
+  /** Response for a [[Catchup]] db request Receiving [[DbActorCatchupAck]]
+    * works as an acknowledgement that the catchup request was successful
+    *
+    * @param messages
+    *   requested messages
+    */
+  final case class DbActorCatchupAck(messages: List[Message])
+      extends DbActorMessage
 
-  /**
-   * Response for a general db actor ACK
-   */
+  /** Response for a general db actor ACK
+    */
   final case class DbActorAck() extends DbActorMessage
 
-  /**
-   * Response for a negative db request
-   *
-   * @param code        error code corresponding to the error encountered
-   * @param description description of the error encountered
-   */
-  final case class DbActorNAck(code: Int, description: String) extends DbActorMessage
-
+  /** Response for a negative db request
+    *
+    * @param code
+    *   error code corresponding to the error encountered
+    * @param description
+    *   description of the error encountered
+    */
+  final case class DbActorNAck(code: Int, description: String)
+      extends DbActorMessage
 
   def getInstance: AskableActorRef = INSTANCE
 
@@ -132,10 +139,20 @@ object DbActor extends AskPatternConstants {
 
     val CHANNELS_FOLDER: String = s"$DATABASE_FOLDER/channels"
 
+    /* Create a logger for this DB actor"*/
+    val logger = LoggerFactory.getLogger("DBLogger")
+    
     val options: Options = new Options()
     options.createIfMissing(true)
-    val channelNamesDb: DB = factory.open(new File(CHANNELS_FOLDER), options)
+    val channelNamesDb: DB =
+      try { factory.open(new File(CHANNELS_FOLDER), options) }
+      catch {
+        case e: IOException => {
+          logger.error("Could not open channels folder {}", CHANNELS_FOLDER)
+          throw e
+        }
 
+      }
     val iterator: DBIterator = channelNamesDb.iterator
     val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
 
@@ -144,11 +161,22 @@ object DbActor extends AskPatternConstants {
 
     while (iterator.hasNext) {
       // open each db associated with each channel name
-      val channelName: String = new String(iterator.next().getKey, StandardCharsets.UTF_8)
-      val channelDb: DB = factory.open(new File(channelName), options)
+      val channelName: String =
+        new String(iterator.next().getKey, StandardCharsets.UTF_8)
+      val channelDb: DB =
+        try { factory.open(new File(channelName), options) }
+        catch {
+          case e: IOException => {
+            logger.error("Could not open channel {}", channelName)
+            throw e
+          }
+
+        }
 
       // store the channel name and its database in the map
-      initialChannelsMap += (Channel(channelName.toString.stripPrefix(DATABASE_FOLDER)) -> channelDb)
+      initialChannelsMap += (Channel(
+        channelName.toString.stripPrefix(DATABASE_FOLDER)
+      ) -> channelDb)
     }
 
     iterator.close()
@@ -159,9 +187,13 @@ object DbActor extends AskPatternConstants {
     private val channelsMap: mutable.Map[Channel, DB] = initialChannelsMap.to(collection.mutable.Map)
 
     override def preStart(): Unit = {
-      log.info(s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels")
+      log.info(
+        s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels"
+      )
       if (initialChannelsMap.size > DATABASE_MAX_CHANNELS) {
-        log.warning(s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)")
+        log.warning(
+          s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)"
+        )
       }
 
       super.preStart()
@@ -288,12 +320,20 @@ object DbActor extends AskPatternConstants {
         sender ! channelExists(channel)
 
       case AddWitnessSignature(messageId, _) =>
-        log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
-        sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet")
+        log.info(
+          s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'"
+        )
+        sender ! DbActorNAck(
+          ErrorCodes.SERVER_ERROR.id,
+          s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
+        )
 
-      case m@_ =>
+      case m @ _ =>
         log.info(s"Actor $self (db) received an unknown message")
-        sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"database actor received a message '$m' that it could not recognize")
+        sender ! DbActorNAck(
+          ErrorCodes.SERVER_ERROR.id,
+          s"database actor received a message '$m' that it could not recognize"
+        )
     }
   }
 

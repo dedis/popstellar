@@ -15,6 +15,7 @@ import com.github.dedis.popstellar.utility.security.Hash;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -78,6 +79,11 @@ public class UpdateLaoTest {
     // different witnesses
     assertNotEquals(
         updateLao,
-        new UpdateLao("organizer", 10, name, lastModified, new HashSet<>(Arrays.asList("0x3434"))));
+        new UpdateLao(
+            "organizer",
+            10,
+            name,
+            lastModified,
+            new HashSet<>(Collections.singletonList("0x3434"))));
   }
 }

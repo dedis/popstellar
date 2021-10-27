@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Lao;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,15 +28,10 @@ public final class HomeFragment extends Fragment {
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
 
-  public HomeFragment() {
-    super();
-  }
-
   public static HomeFragment newInstance() {
     return new HomeFragment();
   }
 
-  @Nullable
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,
@@ -45,7 +39,7 @@ public final class HomeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mHomeFragBinding = HomeFragmentBinding.inflate(inflater, container, false);
 
-    mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
+    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
 
     mHomeFragBinding.setViewmodel(mHomeViewModel);
     mHomeFragBinding.setLifecycleOwner(getActivity());
@@ -65,7 +59,7 @@ public final class HomeFragment extends Fragment {
     mHomeViewModel
         .getLAOs()
         .observe(
-            getActivity(),
+            requireActivity(),
             laos -> {
               Log.d(TAG, "Got a list update");
 
@@ -82,7 +76,7 @@ public final class HomeFragment extends Fragment {
   private void setupListAdapter() {
     ListView listView = mHomeFragBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<Lao>(0), mHomeViewModel, getActivity(), true);
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, getActivity(), true);
 
     listView.setAdapter(mListAdapter);
   }

@@ -67,15 +67,14 @@ public class LAOListAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(view);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     LAOItemUserActionsListener userActionsListener =
-        new LAOItemUserActionsListener() {
-          @Override
-          public void onLAOClicked(Lao lao) {
-            if (openLaoDetail) {
-              homeViewModel.openLAO(lao.getChannel());
-            } else {
-              homeViewModel.openLaoWallet(lao.getChannel());
-            }
+        lao -> {
+          if (openLaoDetail) {
+            homeViewModel.openLAO(lao.getChannel());
+          } else {
+            homeViewModel.openLaoWallet(lao.getChannel());
           }
         };
 

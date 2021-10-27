@@ -253,14 +253,14 @@ public class LaoTest {
 
   @Test
   public void setAndGetCreation() {
-    LAO_1.setCreation(new Long(0xFF));
-    assertThat(LAO_1.getCreation(), is(new Long(0xFF)));
+    LAO_1.setCreation(0xFFL);
+    assertThat(LAO_1.getCreation(), is(0xFFL));
   }
 
   @Test
   public void setAndGetLastModified() {
-    LAO_1.setLastModified(new Long(0xFF));
-    assertThat(LAO_1.getLastModified(), is(new Long(0xFF)));
+    LAO_1.setLastModified(0xFFL);
+    assertThat(LAO_1.getLastModified(), is(0xFFL));
   }
 
   @Test

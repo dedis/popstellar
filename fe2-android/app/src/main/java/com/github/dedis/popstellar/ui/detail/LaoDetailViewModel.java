@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 
@@ -18,6 +19,9 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Error;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -28,6 +32,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Consensus;
+import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -62,6 +68,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -128,6 +135,10 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mWitnessScanConfirmEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mScanWarningEvent = new MutableLiveData<>();
+
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
+      new MutableLiveData<>();
+
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -169,7 +180,7 @@ public class LaoDetailViewModel extends AndroidViewModel
           mCurrentLao,
           lao ->
               lao == null
-                  ? new ArrayList<RollCall>()
+                  ? new ArrayList<>()
                   : lao.getRollCalls().values().stream()
                       .filter(rollcall -> rollcall.getState() == EventState.CLOSED)
                       .filter(rollcall -> attendedOrOrganized(lao, rollcall))
@@ -210,7 +221,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
     // find out if user has attended the rollcall
     String firstLaoId = lao.getChannel().substring(6);
-    String pk = "";
+    String pk;
     try {
       pk =
           Base64.getUrlEncoder()
@@ -221,6 +232,21 @@ public class LaoDetailViewModel extends AndroidViewModel
       return false;
     }
     return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
+  }
+
+  /**
+   * Returns the public key or null if an error occurred.
+   *
+   * @return the public key
+   */
+  public String getPublicKey() {
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      return Keys.getEncodedKey(publicKeysetHandle);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+      return null;
+    }
   }
 
   @Override
@@ -329,14 +355,13 @@ public class LaoDetailViewModel extends AndroidViewModel
                       Toast.makeText(
                               getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
                           .show();
-                      openLaoDetail();
                     } else {
                       Log.d(TAG, "failed to send the vote");
                       Toast.makeText(
                               getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
                           .show();
-                      openLaoDetail();
                     }
+                    openLaoDetail();
                   },
                   throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
@@ -486,9 +511,183 @@ public class LaoDetailViewModel extends AndroidViewModel
                       Log.d(TAG, "failed to create a roll call");
                     }
                   },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable);
-                  });
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on roll_call/create", throwable));
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
+  }
+
+  /**
+   * Creates new consensus.
+   *
+   * <p>Publish a GeneralMessage containing ConsensusElect data.
+   *
+   * @param creation the creation time of the consensus
+   * @param objId the id of the object the consensus refers to (e.g. election_id)
+   * @param type the type of object the consensus refers to (e.g. election)
+   * @param property the property the value refers to (e.g. "state")
+   * @param value the proposed new value for the property (e.g. "started")
+   */
+  public void createNewConsensus(
+      long creation, String objId, String type, String property, Object value) {
+    Log.d(
+        TAG,
+        String.format(
+            "creating a new consensus for type: %s, property: %s, value: %s",
+            type, property, value));
+    Lao lao = getCurrentLaoValue();
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+    String channel = lao.getChannel() + "/consensus";
+
+    ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      Log.d(TAG, PUBLISH_MESSAGE);
+      MessageGeneral msg = new MessageGeneral(sender, consensusElect, signer, mGson);
+
+      Disposable disposable =
+          mLAORepository
+              .sendPublish(channel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "created a consensus with messageId: " + msg.getMessageId());
+                    } else {
+                      Log.d(TAG, "failed to create a consensus");
+                    }
+                  },
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on consensus/elect", throwable));
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
+  }
+
+  /**
+   * Sends an ConsensusElectAccept message.
+   *
+   * <p>Publish a GeneralMessage containing ConsensusElectAccept data.
+   *
+   * @param consensus the corresponding consensus
+   * @param accept true if accepted, false if rejected
+   */
+  public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
+    Log.d(
+        TAG,
+        "sending a new elect-accept for consensus with messageId : "
+            + consensus.getMessageId()
+            + " with value "
+            + accept);
+
+    Lao lao = getCurrentLaoValue();
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+
+    ConsensusElectAccept consensusElectAccept =
+        new ConsensusElectAccept(consensus.getMessageId(), accept);
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, consensusElectAccept, signer, mGson);
+
+      Log.d(TAG, PUBLISH_MESSAGE);
+      Disposable disposable =
+          mLAORepository
+              .sendPublish(consensus.getChannel(), msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "sent an elect-accept successfully");
+                    } else {
+                      Log.d(
+                          TAG,
+                          "failed to send the elect-accept for consensus with messageId : "
+                              + consensus.getMessageId());
+                    }
+                  },
+                  throwable ->
+                      Log.d(
+                          TAG,
+                          "timed out waiting for result on consensus/elect-accept",
+                          throwable));
+
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
+  }
+
+  /**
+   * Sends a ConsensusLearn
+   *
+   * <p>Publish a GeneralMessage containing ConsensusLearn data.
+   *
+   * @param consensus the corresponding consensus
+   */
+  public void sendConsensusLearn(Consensus consensus) {
+    Log.d(
+        TAG,
+        "sending a consensus learn for consensus with messageId : " + consensus.getMessageId());
+
+    List<String> acceptorsMessageIds =
+        new ArrayList<>(consensus.getAcceptorsToMessageId().values());
+    ConsensusLearn consensusLearn =
+        new ConsensusLearn(consensus.getMessageId(), acceptorsMessageIds);
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, consensusLearn, signer, mGson);
+
+      Log.d(TAG, PUBLISH_MESSAGE);
+      Disposable disposable =
+          mLAORepository
+              .sendPublish(consensus.getChannel(), msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(
+                          TAG,
+                          "sent a consensus learn successfully for consensus with messageId : "
+                              + consensusLearn.getMessageId());
+                    } else {
+                      Log.d(
+                          TAG,
+                          "failed to send the learn for consensus with messageId : "
+                              + consensusLearn.getMessageId());
+                    }
+                  },
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on consensus/learn", throwable));
+
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -757,7 +956,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void setCurrentLaoName(String laoName) {
-    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName())) {
+    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName().getValue())) {
       Log.d(TAG, "New name for current LAO: " + laoName);
       mLaoName.setValue(laoName);
     }
@@ -848,6 +1047,17 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public LiveData<SingleEvent<Boolean>> getCreatedRollCallEvent() {
     return mCreatedRollCallEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenStartElectionEvent() {
+    return mOpenStartElectionEvent;
+  }
+
+  public LiveData<List<ConsensusNode>> getNodes() {
+    return LiveDataReactiveStreams.fromPublisher(
+        mLAORepository
+            .getNodesByChannel(getCurrentLaoValue().getChannel())
+            .toFlowable(BackpressureStrategy.LATEST));
   }
 
   public LiveData<SingleEvent<String>> getAttendeeScanConfirmEvent() {
@@ -1011,6 +1221,10 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openManageElection(Boolean open) {
     mOpenManageElectionEvent.postValue(new SingleEvent<>(open));
+  }
+
+  public void openStartElection(Boolean open) {
+    mOpenStartElectionEvent.postValue(new SingleEvent<>(open));
   }
 
   public void confirmEdit() {
