@@ -528,7 +528,7 @@ func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 	return f.msgs
 }
 
-// Catchup implements channel.Channel
+// Broadcast implements channel.Channel
 func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
 	f.broadcast = msg
 	return nil
