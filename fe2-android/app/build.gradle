@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.sonarqube'
 apply plugin: 'jacoco'
 
 android {
@@ -63,6 +64,17 @@ android {
             getIsDefault().set(true)  // sets this flavor as default
             dimension "default"
         }
+    }
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "dedis_student_21_pop_fe2"
+        property "sonar.projectName", "PoP - Fe2-Android"
+        property "sonar.organization", "dedis"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.coverage.jacoco.xmlReportPaths", "./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.junit.reportsPath", "./build/test-results/*/TEST-*.xml"
     }
 }
 
