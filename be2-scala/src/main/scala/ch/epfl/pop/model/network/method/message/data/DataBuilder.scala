@@ -29,7 +29,7 @@ object DataBuilder {
     case ObjectType.ROLL_CALL => buildRollCallData(action, payload)
     case ObjectType.ELECTION => buildElectionData(action, payload)
     case ObjectType.MESSAGE => buildWitnessData(action, payload)
-    case ObjectType.SOCIAL_MEDIA => buildSocialMediaData(action, payload)
+    case ObjectType.CHIRP => buildSocialMediaData(action, payload)
     case _ => throw new ProtocolException(s"Unknown object '${_object}' encountered while creating a Data")
   }
 

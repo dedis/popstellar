@@ -33,7 +33,7 @@ object ParamsWithMessageHandler {
           case (ObjectType.ROLL_CALL, _) => portRollCall
           case (ObjectType.ELECTION, _) => portElection
           case (ObjectType.MESSAGE, _) => portWitness
-          case (ObjectType.SOCIAL_MEDIA, _) => portSocialMedia
+          case (ObjectType.CHIRP, _) => portSocialMedia
         }
         case _ => portPipelineError // Pipeline error goes directly in handlerMerger
       }))

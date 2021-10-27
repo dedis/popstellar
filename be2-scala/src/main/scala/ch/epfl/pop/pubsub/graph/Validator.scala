@@ -64,15 +64,15 @@ object Validator {
     }
     else {
       val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
--        case Success(Seq(optId)) =>
--          optId match {
--            case JsNumber(id) => Some(id.toInt)
--            case _ => None
--          }
--        case Success(_) => None
--        case Failure(_) => None
--      }
--      Right(PipelineError(-4, "The Json Schema is invalid.", rpcId))
+        case Success(Seq(optId)) =>
+          optId match {
+            case JsNumber(id) => Some(id.toInt)
+            case _ => None
+          }
+        case Success(_) => None
+        case Failure(_) => None
+      }
+      Right(PipelineError(-4, "The Json Schema is invalid.", rpcId))
 
     }
 
