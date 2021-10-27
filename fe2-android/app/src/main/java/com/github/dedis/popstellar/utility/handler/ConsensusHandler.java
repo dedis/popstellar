@@ -24,6 +24,16 @@ public final class ConsensusHandler {
 
   public static final String TAG = ConsensusHandler.class.getSimpleName();
 
+  /**
+   * Process a Consensus message.
+   *
+   * @param laoRepository the repository to access the LAO of the channel
+   * @param channel the channel on which the message was received
+   * @param data the data of the message that was received
+   * @param messageId the ID of the message that was received
+   * @param senderPk the public key of the sender of this message
+   * @return true if the message cannot be processed and false otherwise
+   */
   public static boolean handleConsensusMessage(
       LAORepository laoRepository, String channel, Data data, String messageId, String senderPk) {
     Log.d(TAG, "handle Consensus message");
@@ -38,6 +48,7 @@ public final class ConsensusHandler {
       case LEARN:
         return handleConsensusLearn(laoRepository, channel, (ConsensusLearn) data);
       default:
+        Log.w(TAG, "Invalid action for a consensus object : " + data.getAction());
         return true;
     }
   }
