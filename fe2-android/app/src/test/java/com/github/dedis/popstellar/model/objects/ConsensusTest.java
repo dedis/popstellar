@@ -15,7 +15,7 @@ import java.util.Set;
 
 public class ConsensusTest {
 
-  private static final long creation = 1635277619;
+  private static final long creationInSeconds = 1635277619;
   private static final String type = "TestType";
   private static final String objId = Hash.hash("TestId");
   private static final String property = "TestProperty";
@@ -23,7 +23,7 @@ public class ConsensusTest {
   private static final ConsensusKey key = new ConsensusKey(type, objId, property);
   private static final Object value = "TestValue";
 
-  private static final Consensus consensus = new Consensus(creation, key, value);
+  private static final Consensus consensus = new Consensus(creationInSeconds, key, value);
 
   @Test
   public void setAndGetMessageIdTest() {
@@ -44,7 +44,7 @@ public class ConsensusTest {
     // Hash("consensus"||created_at||key:type||key:id||key:property||value)
     String expectedId =
         Hash.hash(
-            "consensus", Long.toString(creation), type, objId, property, String.valueOf(value));
+            "consensus", Long.toString(creationInSeconds), type, objId, property, String.valueOf(value));
     assertEquals(expectedId, consensus.getId());
 
     String newId = Hash.hash("newId");
@@ -62,9 +62,9 @@ public class ConsensusTest {
 
   @Test
   public void setAndGetCreationTest() {
-    assertEquals(creation, consensus.getCreation());
+    assertEquals(creationInSeconds, consensus.getCreation());
 
-    long newCreation = creation + 10;
+    long newCreation = creationInSeconds + 10;
     consensus.setCreation(newCreation);
     assertEquals(newCreation, consensus.getCreation());
   }
@@ -121,7 +121,7 @@ public class ConsensusTest {
     // Hash("consensus"||created_at||key:type||key:id||key:property||value)
     String expectedId =
         Hash.hash(
-            "consensus", Long.toString(creation), type, objId, property, String.valueOf(value));
-    assertEquals(expectedId, Consensus.generateConsensusId(creation, type, objId, property, value));
+            "consensus", Long.toString(creationInSeconds), type, objId, property, String.valueOf(value));
+    assertEquals(expectedId, Consensus.generateConsensusId(creationInSeconds, type, objId, property, value));
   }
 }

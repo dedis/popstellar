@@ -11,7 +11,7 @@ import org.junit.Test;
 
 public class ConsensusElectTest {
 
-  private static final long time = 1635277619;
+  private static final long timeInSeconds = 1635277619;
 
   private static final String objId = Hash.hash("test");
   private static final String type = "TestType";
@@ -21,19 +21,19 @@ public class ConsensusElectTest {
   private static final ConsensusKey key = new ConsensusKey(type, objId, property);
 
   private static final ConsensusElect consensusElect =
-      new ConsensusElect(time, objId, type, property, value);
+      new ConsensusElect(timeInSeconds, objId, type, property, value);
 
   @Test
   public void getInstanceIdTest() {
     // Hash("consensus"||created_at||key:type||key:id||key:property||value)
     String expectedId =
-        Hash.hash("consensus", Long.toString(time), type, objId, property, String.valueOf(value));
+        Hash.hash("consensus", Long.toString(timeInSeconds), type, objId, property, String.valueOf(value));
     assertEquals(expectedId, consensusElect.getInstanceId());
   }
 
   @Test
   public void getCreationTest() {
-    assertEquals(time, consensusElect.getCreation());
+    assertEquals(timeInSeconds, consensusElect.getCreation());
   }
 
   @Test
@@ -58,13 +58,13 @@ public class ConsensusElectTest {
 
   @Test
   public void equalsTest() {
-    assertEquals(consensusElect, new ConsensusElect(time, objId, type, property, value));
+    assertEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, type, property, value));
 
     String random = "random";
-    assertNotEquals(consensusElect, new ConsensusElect(time + 1, objId, type, property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, random, type, property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, objId, random, property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, objId, type, random, value));
-    assertNotEquals(consensusElect, new ConsensusElect(time, objId, type, property, random));
+    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds + 1, objId, type, property, value));
+    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, random, type, property, value));
+    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, random, property, value));
+    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, type, random, value));
+    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, type, property, random));
   }
 }
