@@ -1,15 +1,12 @@
 package lao
 
 import (
-	"crypto/sha256"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
+	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
@@ -23,7 +20,12 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+	"strings"
 	"sync"
+
+	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -31,7 +33,7 @@ const (
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
-	msgID		  = "msg id"
+	msgID         = "msg id"
 )
 
 // Channel defines a LAO channel
@@ -55,13 +57,20 @@ type Channel struct {
 	log zerolog.Logger
 }
 
-// NewChannel returns a new initialized LAO channel
+// NewChannel returns a new initialized LAO channel. It automatically creates
+// its associated consensus channel and register it to the hub
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
+
+	consensusPath := fmt.Sprintf("%s/consensus", channelID)
+
+	consensusCh := consensus.NewChannel(consensusPath, hub, log)
+
+	hub.RegisterNewChannel(consensusPath, &consensusCh)
 
 	return &Channel{
 		channelID: channelID,
@@ -70,7 +79,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
-		log:	   log,
+		log:       log,
 	}
 }
 
@@ -106,6 +115,13 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 		Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
+}
+
+// Broadcast is used to handle a broadcast message.
+func (c *Channel) Broadcast(msg method.Broadcast) error {
+	err := xerrors.Errorf("a lao shouldn't need to broadcast a message")
+	c.log.Err(err)
+	return err
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -238,7 +254,7 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
-		err = c.verifyMessageLaoID(msg.MessageID)
+		err = c.verifyMessageLaoID(laoState.ID)
 		if err != nil {
 			return xerrors.Errorf("invalid lao#state message: %v", err)
 		}
@@ -357,8 +373,9 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 
 // verify if a lao message id is the same as the lao id
 func (c *Channel) verifyMessageLaoID(id string) error {
-	if c.channelID != id {
-		return xerrors.Errorf("lao id is %s, should be %s", id, c.channelID)
+	expectedID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	if expectedID != id {
+		return xerrors.Errorf("lao id is %s, should be %s", id, expectedID)
 	}
 
 	return nil
@@ -650,54 +667,51 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	return nil
 }
 
-const InvalidIDMessage string = "ID %s does not correspond with message data"
+const InvalidIDMessage string = "ID %s does not correspond with message data, should be %s"
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallCreateID verify the id of a message
 func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
-
-	h := sha256.New()
-	h.Write([]byte("R"))
-	h.Write([]byte(c.channelID))
-	h.Write([]byte(fmt.Sprintf("%d", msg.Creation)))
-	h.Write([]byte(msg.Name))
-	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := messagedata.Hash(
+		"R",
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
+		fmt.Sprintf("%d", msg.Creation),
+		msg.Name,
+	)
 
 	if msg.ID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.ID)
+		return xerrors.Errorf(InvalidIDMessage, msg.ID, expectedID)
 	}
 
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallOpenID verify the id of a message
 func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
-
-	h := sha256.New()
-	h.Write([]byte("R"))
-	h.Write([]byte(c.channelID))
-	h.Write([]byte(msg.Opens))
-	h.Write([]byte(fmt.Sprintf("%d", msg.OpenedAt)))
-	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := messagedata.Hash(
+		"R",
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
+		msg.Opens,
+		fmt.Sprintf("%d", msg.OpenedAt),
+	)
 
 	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
 	}
 
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
+// verifyMessageRollCallCloseID verify the id of a message
 func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
-
-	h := sha256.New()
-	h.Write([]byte("R"))
-	h.Write([]byte(c.channelID))
-	h.Write([]byte(msg.Closes))
-	h.Write([]byte(fmt.Sprintf("%d", msg.ClosedAt)))
-	expectedID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	expectedID := messagedata.Hash(
+		"R",
+		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
+		msg.Closes,
+		fmt.Sprintf("%d", msg.ClosedAt),
+	)
 
 	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID)
+		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
 	}
 
 	return nil
@@ -739,7 +753,7 @@ func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunction
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
-		log:	   log,
+		log:       log,
 	}
 
 	attendees, err := getAttendeesChannelFromDB(db, channelPath)

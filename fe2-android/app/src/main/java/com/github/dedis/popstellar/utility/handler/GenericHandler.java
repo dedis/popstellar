@@ -45,13 +45,10 @@ public class GenericHandler {
     Error err = (Error) genericMessage;
     int id = err.getId();
     Log.d(TAG, "got an error answer with id " + id);
-    if (subscribeRequests.containsKey(id)) {
-      subscribeRequests.remove(id);
-    } else if (catchupRequests.containsKey(id)) {
-      catchupRequests.remove(id);
-    } else if (createLaoRequests.containsKey(id)) {
-      createLaoRequests.remove(id);
-    }
+
+    subscribeRequests.remove(id);
+    catchupRequests.remove(id);
+    createLaoRequests.remove(id);
   }
 
   /**

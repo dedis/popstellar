@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ADD;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ADD_BROADCAST;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
@@ -14,6 +16,7 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.STATE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.UPDATE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.WITNESS;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CHIRP;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CONSENSUS;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ELECTION;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.LAO;
@@ -38,6 +41,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirpBroadcast;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -97,6 +102,10 @@ public abstract class Data {
     messagesMap.put(pair(CONSENSUS, ELECT), ConsensusElect.class);
     messagesMap.put(pair(CONSENSUS, ELECT_ACCEPT), ConsensusElectAccept.class);
     messagesMap.put(pair(CONSENSUS, LEARN), ConsensusLearn.class);
+
+    // Social Media
+    messagesMap.put(pair(CHIRP, ADD), AddChirp.class);
+    messagesMap.put(pair(CHIRP, ADD_BROADCAST), AddChirpBroadcast.class);
 
     return Collections.unmodifiableMap(messagesMap);
   }

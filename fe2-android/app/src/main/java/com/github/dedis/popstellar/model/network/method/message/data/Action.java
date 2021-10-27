@@ -19,7 +19,9 @@ public enum Action {
   CAST_VOTE("cast_vote"),
   ELECT("elect"),
   ELECT_ACCEPT("elect-accept"),
-  LEARN("learn");
+  LEARN("learn"),
+  ADD("add"),
+  ADD_BROADCAST("addBroadcast");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;

@@ -14,8 +14,8 @@ import io.reactivex.subjects.Subject;
  */
 public class LAOState {
 
-  private Subject<Lao> publisher;
-  private Lao lao;
+  private final Subject<Lao> publisher;
+  private final Lao lao;
 
   /**
    * Instantiates a new Lao state.

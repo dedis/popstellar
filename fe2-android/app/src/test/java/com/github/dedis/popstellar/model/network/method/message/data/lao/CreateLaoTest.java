@@ -24,7 +24,7 @@ public class CreateLaoTest {
   private final String organizer = " Organizer Id ";
   private final List<String> witnesses = Arrays.asList("0x3434", "0x4747");
   private final String id = Lao.generateLaoId(organizer, creation, name);
-  CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
+  private final CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
 
   @Test
   public void wrongIdTest() {

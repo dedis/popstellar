@@ -1,19 +1,37 @@
 package lao
 
 import (
+	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
+	"popstellar/crypto"
+	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"popstellar/network/socket"
+	"popstellar/validation"
+	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 
 	"github.com/stretchr/testify/require"
 )
 
 func TestBaseChannel_RollCallOrder(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
 	// Create the messages
 	numMessages := 5
 
@@ -22,7 +40,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHubFunctionalities{}, messages[0], nolog)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -53,11 +71,154 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	}
 }
 
+func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the messages
+	numMessages := 1
+
+	messages := make([]message.Message, numMessages)
+
+	messages[0] = message.Message{MessageID: "0"}
+
+	// Create the channel
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog)
+
+	_, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	time.Sleep(time.Millisecond)
+
+	consensusID := "channel0/consensus"
+	consensus := fakeHub.channelByID[consensusID]
+	require.NotNil(t, consensus)
+}
+
+func Test_Verify_Functions(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	numMessages := 1
+
+	messages := make([]message.Message, numMessages)
+
+	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog)
+
+	laoChannel, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	// Get the JSON
+	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
+		"examples", "messageData")
+	file := filepath.Join(relativeExamplePath, "roll_call_open.json")
+
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	object, action, err := messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, "roll_call", object)
+	require.Equal(t, "open", action)
+
+	var msg messagedata.RollCallOpen
+
+	err = json.Unmarshal(buf, &msg)
+	require.NoError(t, err)
+
+	// Test the function
+	err = laoChannel.verifyMessageRollCallOpenID(msg)
+	require.NoError(t, err)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
-var nolog = zerolog.New(io.Discard)
+type keypair struct {
+	public    kyber.Point
+	publicBuf []byte
+	private   kyber.Scalar
+}
 
-type fakeHubFunctionalities struct {
-	channel.HubFunctionalities
+var nolog = zerolog.New(io.Discard)
+var suite = crypto.Suite
+
+func generateKeyPair(t *testing.T) keypair {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Pick(suite.RandomStream())
+	point = point.Mul(secret, point)
+
+	pkbuf, err := point.MarshalBinary()
+	require.NoError(t, err)
+
+	return keypair{point, pkbuf, secret}
+}
+
+type fakeHub struct {
+	messageChan chan socket.IncomingMessage
+
+	sync.RWMutex
+	channelByID map[string]channel.Channel
+
+	closedSockets chan string
+
+	public kyber.Point
+
+	schemaValidator *validation.SchemaValidator
+
+	stop chan struct{}
+
+	workers *semaphore.Weighted
+
+	log zerolog.Logger
+
+	laoFac channel.LaoFactory
+}
+
+// NewHub returns a Organizer Hub.
+func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+
+	schemaValidator, err := validation.NewSchemaValidator(log)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
+	}
+
+	log = log.With().Str("role", "base hub").Logger()
+
+	hub := fakeHub{
+		messageChan:     make(chan socket.IncomingMessage),
+		channelByID:     make(map[string]channel.Channel),
+		closedSockets:   make(chan string),
+		public:          public,
+		schemaValidator: schemaValidator,
+		stop:            make(chan struct{}),
+		workers:         semaphore.NewWeighted(10),
+		log:             log,
+		laoFac:          laoFac,
+	}
+
+	return &hub, nil
+}
+
+func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+	h.Lock()
+	h.channelByID[channeID] = channel
+	fmt.Printf("cccc")
+	h.Unlock()
+}
+
+func (h *fakeHub) GetPubkey() kyber.Point {
+	return h.public
+}
+
+func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
+	return *h.schemaValidator
 }
