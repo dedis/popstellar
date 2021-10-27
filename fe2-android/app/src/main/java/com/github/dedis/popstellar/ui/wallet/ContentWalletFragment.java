@@ -43,10 +43,10 @@ public class ContentWalletFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mWalletContentBinding = WalletContentFragmentBinding.inflate(inflater, container, false);
 
-    mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
+    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
 
     mWalletContentBinding.setViewmodel(mHomeViewModel);
-    mWalletContentBinding.setLifecycleOwner(getActivity());
+    mWalletContentBinding.setLifecycleOwner(requireActivity());
 
     return mWalletContentBinding.getRoot();
   }
@@ -65,7 +65,7 @@ public class ContentWalletFragment extends Fragment {
             if (logoutAlert != null && logoutAlert.isShowing()) {
               logoutAlert.dismiss();
             }
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
             builder.setTitle(R.string.logout_title);
             builder.setMessage(R.string.logout_message);
             builder.setPositiveButton(
@@ -81,7 +81,7 @@ public class ContentWalletFragment extends Fragment {
     mHomeViewModel
         .getLAOs()
         .observe(
-            getActivity(),
+            requireActivity(),
             laos -> {
               Log.d(TAG, "Got a list update");
 

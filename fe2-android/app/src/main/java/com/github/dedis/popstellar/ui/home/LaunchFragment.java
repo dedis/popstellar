@@ -23,7 +23,6 @@ public final class LaunchFragment extends Fragment {
     return new LaunchFragment();
   }
 
-  @Nullable
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,
@@ -32,7 +31,7 @@ public final class LaunchFragment extends Fragment {
 
     mLaunchFragBinding = LaunchFragmentBinding.inflate(inflater, container, false);
 
-    mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
+    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
 
     mLaunchFragBinding.setViewModel(mHomeViewModel);
     mLaunchFragBinding.setLifecycleOwner(getActivity());

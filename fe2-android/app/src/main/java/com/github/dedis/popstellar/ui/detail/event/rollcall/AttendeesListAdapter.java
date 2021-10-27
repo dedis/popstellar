@@ -57,6 +57,8 @@ public class AttendeesListAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(view);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     String attendee = attendees.get(position);
 
     binding.publicKey.setText("Public key:\n" + attendee);

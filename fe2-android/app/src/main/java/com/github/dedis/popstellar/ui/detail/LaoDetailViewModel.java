@@ -221,7 +221,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
     // find out if user has attended the rollcall
     String firstLaoId = lao.getChannel().substring(6);
-    String pk = "";
+    String pk;
     try {
       pk =
           Base64.getUrlEncoder()
@@ -956,7 +956,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void setCurrentLaoName(String laoName) {
-    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName())) {
+    if (laoName != null && !laoName.isEmpty() && !laoName.equals(getCurrentLaoName().getValue())) {
       Log.d(TAG, "New name for current LAO: " + laoName);
       mLaoName.setValue(laoName);
     }

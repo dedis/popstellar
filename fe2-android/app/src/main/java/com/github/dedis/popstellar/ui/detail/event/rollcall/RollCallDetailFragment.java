@@ -40,11 +40,11 @@ public class RollCallDetailFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mRollCallFragBinding = RollCallFragmentBinding.inflate(inflater, container, false);
 
-    String pk = this.getArguments().getString(EXTRA_PK);
+    String pk = requireArguments().getString(EXTRA_PK);
     Bitmap myBitmap = QRCode.from(pk).bitmap();
     mRollCallFragBinding.pkQrCode.setImageBitmap(myBitmap);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     mRollCallFragBinding.setLifecycleOwner(getActivity());
 

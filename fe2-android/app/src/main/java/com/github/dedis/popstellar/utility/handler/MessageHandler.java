@@ -39,7 +39,7 @@ public class MessageHandler {
 
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
-    boolean enqueue = false;
+    boolean enqueue;
     if (data.getObject().equals(Objects.LAO.getObject())) {
       enqueue = LaoHandler.handleLaoMessage(laoRepository, channel, data, message.getMessageId());
       laoRepository.updateNodes(channel);
