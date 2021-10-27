@@ -30,6 +30,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
         }
       }
 
+      println("This is a dummy line of code to show that the coverage works.")
+
       val cv_1: CastVoteElection = this.cv
       val cv_2: CastVoteElection = o
 

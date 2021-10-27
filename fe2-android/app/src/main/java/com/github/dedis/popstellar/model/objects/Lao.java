@@ -46,6 +46,9 @@ public final class Lao {
 
   public Lao(String name, String organizer, long creation) {
     this(generateLaoId(organizer, creation, name));
+
+    System.out.println("This is a dummy line of code to show that the coverage works.");
+
     if (name == null) {
       throw new IllegalArgumentException("The name of the Lao is null");
     }

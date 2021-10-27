@@ -17,6 +17,8 @@ export class KeyPair {
       throw new Error('Error encountered while creating a KeyPair object : undefined/null parameters');
     }
 
+    console.log('This is a dummy line of code to show that the coverage works.')
+
     if (obj.publicKey === undefined) throw new Error('Error encountered while creating a KeyPair object : undefined publicKey');
     if (obj.privateKey === undefined) throw new Error('Error encountered while creating a KeyPair object : undefined privateKey');
 

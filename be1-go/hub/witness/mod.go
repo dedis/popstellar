@@ -183,6 +183,8 @@ func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error {
 func (h *Hub) Start() {
 	h.log.Info().Msg("started witness...")
 
+	h.log.Info().Msg("This is a dummy line of code to show that the coverage works.")
+
 	go func() {
 		for {
 			select {
