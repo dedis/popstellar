@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 30
@@ -24,8 +25,10 @@ android {
         }
 
         testOptions {
-            execution 'ANDROIDX_TEST_ORCHESTRATOR'
+            // This makes the coverage fail. Don't ask why.
+            // execution 'ANDROIDX_TEST_ORCHESTRATOR'
             unitTests.returnDefaultValues = true
+            animationsDisabled = true
         }
 
         javaCompileOptions {
@@ -38,6 +41,7 @@ android {
     buildTypes {
         debug {
             getIsDefault().set(true)  // sets this build type as default
+            testCoverageEnabled true
         }
         release {
             minifyEnabled false
@@ -45,8 +49,8 @@ android {
         }
     }
 
-    buildFeatures {
-        dataBinding true
+    dataBinding {
+        enabled = true
     }
 
     flavorDimensions "default"
@@ -60,6 +64,14 @@ android {
             dimension "default"
         }
     }
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.withType(Test) {
+    jacoco.excludes = ['jdk.internal.*']
 }
 
 //Simple library to use QR codes
@@ -127,4 +139,29 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
 
     androidTestUtil 'androidx.test:orchestrator:1.4.0'
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testMockDebugUnitTest', 'createMockDebugCoverageReport']) {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = [
+        '**/R.class',
+        '**/R$*.class',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'android/**/*.*'
+    ]
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/mockDebug/classes", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+        'outputs/unit_test_code_coverage/mockDebugUnitTest/testMockDebugUnitTest.exec',
+        'outputs/code_coverage/mockDebugAndroidTest/connected/*coverage.ec'
+    ]))
 }
