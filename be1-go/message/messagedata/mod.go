@@ -11,9 +11,13 @@ import (
 
 const (
 	ConsensusObject            = "consensus"
+	ConsensusActionAccept      = "accept"
 	ConsensusActionElect       = "elect"
 	ConsensusActionElectAccept = "elect-accept"
 	ConsensuisActionLearn      = "learn"
+	ConsensusActionPrepare     = "prepare"
+	ConsensusActionPromise     = "promise"
+	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"
@@ -41,8 +45,8 @@ const (
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
 
-	ChirpObject = "chirp"
-	ChirpActionAdd = "add"
+	ChirpObject       = "chirp"
+	ChirpActionAdd    = "add"
 	ChirpActionDelete = "delete"
 
 	// RootPrefix denotes the prefix for the root channel, used to verify the
@@ -74,7 +78,6 @@ func GetObjectAndAction(buf []byte) (string, string, error) {
 
 	return object, action, nil
 }
-
 
 // GetTime returns the time of a JSON RPC message.
 func GetTime(buf []byte) (int64, error) {

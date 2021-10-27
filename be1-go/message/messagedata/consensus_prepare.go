@@ -1,7 +1,7 @@
 package messagedata
 
-// ConsensusLearn defines a message data
-type ConsensusLearn struct {
+// ConsensusPrepare defines a message data
+type ConsensusPrepare struct {
 	Object    string `json:"object"`
 	Action    string `json:"action"`
 	MessageID string `json:"message_id"`
@@ -9,11 +9,9 @@ type ConsensusLearn struct {
 	// CreatedAt is a Unix timestamp
 	CreatedAt int64 `json:"created_at"`
 
-	Value ValueLearn `json:"value"`
-
-	Acceptors []string `json:"acceptors"`
+	Value ValuePrepare `json:"value"`
 }
 
-type ValueLearn struct {
-	Decision bool `json:"decision"`
+type ValuePrepare struct {
+	ProposedTry int64 `json:"proposed_try"`
 }
