@@ -78,8 +78,9 @@ const STRINGS = {
   connect_confirm_description: 'Connect to this local organization?',
 
   /* --- Launch Strings --- */
-  launch_description: 'To launch a new organization please enter a name for the organization (you can change it later)',
+  launch_description: 'To launch a new organization, please enter a name and an address',
   launch_organization_name: 'Organization name',
+  launch_address: 'Address',
   launch_button_launch: 'Launch',
 
   /* --- Organizer Strings --- */
@@ -168,6 +169,7 @@ const STRINGS = {
   import_seed_button: 'I OWN A SEED',
   type_seed_info: 'Type the 12 word seed',
   show_seed_info: 'This is the only backup seed for your PoP tokens - store it securely',
+  copy_to_clipboard: 'Copy to clipboard',
   type_seed_example: 'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol',
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
