@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  tools:context=".ui.detail.event.consensus.ElectionStartFragment">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_election_start"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include
+      android:id="@+id/back_layout"
+      layout="@layout/tab_back"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/election_start_guideline_horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:gravity="center"
+      app:layout_constraintTop_toBottomOf="@+id/election_start_guideline_horizontal" >
+
+      <TextView
+        android:id="@+id/election_title"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:gravity="center"
+        android:textSize="@dimen/size_title"
+        tools:text="Election title" />
+
+      <TextView
+        android:id="@+id/election_status"
+        android:textSize="@dimen/size_title"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Election status" />
+
+      <Button
+        android:id="@+id/election_start"
+        android:layout_marginHorizontal="@dimen/margin_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_body"
+        tools:text="Scheduled start time, or start button" />
+
+      <GridView
+        android:id="@+id/nodes_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="auto_fit"
+        android:columnWidth="120dp"
+        android:layout_marginBottom="?attr/actionBarSize" />
+
+    </LinearLayout>
+  </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

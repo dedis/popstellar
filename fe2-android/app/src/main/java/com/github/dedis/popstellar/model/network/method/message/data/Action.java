@@ -17,6 +17,9 @@ public enum Action {
   REOPEN("reopen"),
   CLOSE("close"),
   CAST_VOTE("cast_vote"),
+  ELECT("elect"),
+  ELECT_ACCEPT("elect-accept"),
+  LEARN("learn"),
   ADD("add"),
   ADD_BROADCAST("addBroadcast");
 

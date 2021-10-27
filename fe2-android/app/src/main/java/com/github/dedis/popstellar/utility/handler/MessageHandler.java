@@ -42,6 +42,7 @@ public class MessageHandler {
     boolean enqueue = false;
     if (data.getObject().equals(Objects.LAO.getObject())) {
       enqueue = LaoHandler.handleLaoMessage(laoRepository, channel, data, message.getMessageId());
+      laoRepository.updateNodes(channel);
     } else if (data.getObject().equals(Objects.ROLL_CALL.getObject())) {
       enqueue =
           RollCallHandler.handleRollCallMessage(
@@ -50,6 +51,11 @@ public class MessageHandler {
       enqueue =
           ElectionHandler.handleElectionMessage(
               laoRepository, channel, data, message.getMessageId(), senderPk);
+    } else if (data.getObject().equals(Objects.CONSENSUS.getObject())) {
+      enqueue =
+          ConsensusHandler.handleConsensusMessage(
+              laoRepository, channel, data, message.getMessageId(), senderPk);
+      laoRepository.updateNodes(channel.replace("/consensus", ""));
     } else if (data.getObject().equals(Objects.MESSAGE.getObject())) {
       enqueue =
           WitnessMessageHandler.handleWitnessMessage(
