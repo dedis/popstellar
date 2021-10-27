@@ -32,8 +32,8 @@ sonarProperties := Map(
   //"sonar.tests" -> "src/test/scala",
   "sonar.sourceEncoding" -> "UTF-8",
   "sonar.scala.version" -> "2.13.5",
-  "sonar.scala.scoverage.reportPath" -> "target/scala-2.13/scoverage-report/scoverage.xml",
-  "sonar.scala.scapegoat.reportPath" -> "target/scala-2.13/scapegoat-report/scapegoat.xml"
+  "sonar.scala.coverage.reportPaths" -> "./target/scala-2.13/scoverage-report/scoverage.xml",
+  "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
 )
 
 
