@@ -73,12 +73,11 @@ jobs:
 
     - name: Run code analysis
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '12.x' }}  # execute even if previous steps failed
-      uses: SonarSource/sonarcloud-github-action@master
-      with:
-        projectBaseDir: fe1-web
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE1 }}
+      run: |
+        npm install -g sonarqube-scanner
+        sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN_FE1 }}
 
     - name: Verify expo project health
       if: ${{ always() }}  # execute even if previous steps failed
