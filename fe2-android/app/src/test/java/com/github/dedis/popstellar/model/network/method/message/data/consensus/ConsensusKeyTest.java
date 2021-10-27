@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import com.github.dedis.popstellar.utility.security.Hash;
+
 import org.junit.Test;
 
 public class ConsensusKeyTest {
@@ -13,7 +14,6 @@ public class ConsensusKeyTest {
   private static final String property = "TestProperty";
 
   private static final ConsensusKey key = new ConsensusKey(type, id, property);
-
 
   @Test
   public void getTypeTest() {

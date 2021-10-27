@@ -27,7 +27,13 @@ public class ConsensusElectTest {
   public void getInstanceIdTest() {
     // Hash("consensus"||created_at||key:type||key:id||key:property||value)
     String expectedId =
-        Hash.hash("consensus", Long.toString(timeInSeconds), type, objId, property, String.valueOf(value));
+        Hash.hash(
+            "consensus",
+            Long.toString(timeInSeconds),
+            type,
+            objId,
+            property,
+            String.valueOf(value));
     assertEquals(expectedId, consensusElect.getInstanceId());
   }
 
@@ -61,10 +67,14 @@ public class ConsensusElectTest {
     assertEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, type, property, value));
 
     String random = "random";
-    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds + 1, objId, type, property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, random, type, property, value));
-    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, random, property, value));
+    assertNotEquals(
+        consensusElect, new ConsensusElect(timeInSeconds + 1, objId, type, property, value));
+    assertNotEquals(
+        consensusElect, new ConsensusElect(timeInSeconds, random, type, property, value));
+    assertNotEquals(
+        consensusElect, new ConsensusElect(timeInSeconds, objId, random, property, value));
     assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, type, random, value));
-    assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, type, property, random));
+    assertNotEquals(
+        consensusElect, new ConsensusElect(timeInSeconds, objId, type, property, random));
   }
 }

@@ -5,11 +5,11 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
-import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.REOPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.RESULT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.SETUP;
@@ -25,8 +25,9 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Obje
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ROLL_CALL;
 
 import android.util.Log;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;

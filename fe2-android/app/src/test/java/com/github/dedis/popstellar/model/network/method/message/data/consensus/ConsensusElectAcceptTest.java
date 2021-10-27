@@ -7,13 +7,16 @@ import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+
 import org.junit.Test;
 
 public class ConsensusElectAcceptTest {
 
   private static final String messageId = "aaa";
-  private static final ConsensusElectAccept consensusElectAcceptAccept = new ConsensusElectAccept(messageId, true);
-  private static final ConsensusElectAccept consensusElectAcceptReject = new ConsensusElectAccept(messageId, false);
+  private static final ConsensusElectAccept consensusElectAcceptAccept =
+      new ConsensusElectAccept(messageId, true);
+  private static final ConsensusElectAccept consensusElectAcceptReject =
+      new ConsensusElectAccept(messageId, false);
 
   @Test
   public void getMessageIdTest() {
@@ -45,5 +48,4 @@ public class ConsensusElectAcceptTest {
     assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(messageId, false));
     assertNotEquals(consensusElectAcceptReject, new ConsensusElectAccept(messageId, true));
   }
-
 }

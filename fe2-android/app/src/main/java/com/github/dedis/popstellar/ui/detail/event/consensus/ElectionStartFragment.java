@@ -134,7 +134,7 @@ public class ElectionStartFragment extends Fragment {
     Optional<ConsensusNode> ownNodeOpt =
         nodes.stream().filter(node -> node.getPublicKey().equals(ownPublicKey)).findAny();
     if (ownNodeOpt.isPresent()) {
-      return ownNode = ownNodeOpt.get();
+      return ownNodeOpt.get();
     } else {
       // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
       Log.e(TAG, "Couldn't find our own Node with public key : " + ownPublicKey);

@@ -6,18 +6,19 @@ import static org.junit.Assert.assertNotEquals;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
 
 public class ConsensusLearnTest {
 
   private static final String messageId = Hash.hash("aaa");
   private static final List<String> acceptors = Arrays.asList("aaa", "bbb");
   private static final ConsensusLearn consensusLearn = new ConsensusLearn(messageId, acceptors);
-
 
   @Test
   public void getMessageIdTest() {
@@ -46,6 +47,4 @@ public class ConsensusLearnTest {
     assertNotEquals(consensusLearn, new ConsensusLearn("random", acceptors));
     assertNotEquals(consensusLearn, new ConsensusLearn(messageId, Collections.emptyList()));
   }
-
-
 }
