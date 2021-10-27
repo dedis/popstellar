@@ -133,7 +133,7 @@ func (h *Hub) tempHandleMessage(incMsg *socket.IncomingMessage) error {
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, failedMethodHandling, handlerErr)
 		h.log.Err(err)
-		socket.SendError(nil, err)
+		socket.SendError(&id, err)
 		return err
 	}
 

@@ -278,7 +278,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
 		h.log.Err(err)
-		socket.SendError(nil, err)
+		socket.SendError(&id, err)
 		return err
 	}
 
