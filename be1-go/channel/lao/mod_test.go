@@ -118,7 +118,9 @@ func Test_Verify_Functions(t *testing.T) {
 	// Get the JSON
 	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
 		"examples", "messageData")
-	file := filepath.Join(relativeExamplePath, "roll_call_open.json")
+
+	// Test LaoState
+	file := filepath.Join(relativeExamplePath, "lao_state.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -126,16 +128,75 @@ func Test_Verify_Functions(t *testing.T) {
 	object, action, err := messagedata.GetObjectAndAction(buf)
 	require.NoError(t, err)
 
+	require.Equal(t, "lao", object)
+	require.Equal(t, "state", action)
+
+	var laoState messagedata.LaoState
+
+	err = json.Unmarshal(buf, &laoState)
+	require.NoError(t, err)
+
+	err = laoChannel.verifyMessageLaoState(laoState)
+	require.NoError(t, err)
+
+	// Test RollCallCreate
+	file = filepath.Join(relativeExamplePath, "roll_call_create.json")
+
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	object, action, err = messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, "roll_call", object)
+	require.Equal(t, "create", action)
+
+	var rollCallCreate messagedata.RollCallCreate
+
+	err = json.Unmarshal(buf, &rollCallCreate)
+	require.NoError(t, err)
+
+	err = laoChannel.verifyMessageRollCallCreate(rollCallCreate)
+	require.NoError(t, err)
+
+	// Test RollCallOpen
+	file = filepath.Join(relativeExamplePath, "roll_call_open.json")
+
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	object, action, err = messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
 	require.Equal(t, "roll_call", object)
 	require.Equal(t, "open", action)
 
-	var msg messagedata.RollCallOpen
+	var rollCallOpen messagedata.RollCallOpen
 
-	err = json.Unmarshal(buf, &msg)
+	err = json.Unmarshal(buf, &rollCallOpen)
 	require.NoError(t, err)
 
-	// Test the function
-	err = laoChannel.verifyMessageRollCallOpenID(msg)
+	err = laoChannel.verifyMessageRollCallOpen(rollCallOpen)
+	require.NoError(t, err)
+
+	// Test RollCallClose
+	file = filepath.Join(relativeExamplePath, "roll_call_close.json")
+
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	object, action, err = messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, "roll_call", object)
+	require.Equal(t, "close", action)
+
+	var rollCallClose messagedata.RollCallClose
+
+	err = json.Unmarshal(buf, &rollCallClose)
+	require.NoError(t, err)
+
+	err = laoChannel.verifyMessageRollCallClose(rollCallClose)
 	require.NoError(t, err)
 }
 

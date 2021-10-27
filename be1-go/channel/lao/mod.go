@@ -254,7 +254,7 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
-		err = c.verifyMessageLaoID(laoState.ID)
+		err = c.verifyMessageLaoState(laoState)
 		if err != nil {
 			return xerrors.Errorf("invalid lao#state message: %v", err)
 		}
@@ -371,11 +371,53 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
-func (c *Channel) verifyMessageLaoID(id string) error {
+// verifyMessageLaoState checks the lao#state message data is valid.
+func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
+	c.log.Info().Msgf("verifying lao#state message of lao %s", laoState.ID)
+
+	// verify id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(laoState.ID); err != nil {
+		return xerrors.Errorf("lao id is %s, should be base64URL encoded", laoState.ID)
+	}
+
+	// verify if a lao message id is the same as the lao id
 	expectedID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
-	if expectedID != id {
-		return xerrors.Errorf("lao id is %s, should be %s", id, expectedID)
+	if expectedID != laoState.ID {
+		return xerrors.Errorf("lao id is %s, should be %s", laoState.ID, expectedID)
+	}
+
+	// verify creation is positive
+	if laoState.Creation < 0 {
+		return xerrors.Errorf("lao creation is %d, should be minimum 0", laoState.Creation)
+	}
+
+	// verify last modified is positive
+	if laoState.LastModified < 0 {
+		return xerrors.Errorf("lao last modified is %d, should be minimum 0", laoState.LastModified)
+	}
+
+	// verify organizer is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(laoState.Organizer); err != nil {
+		return xerrors.Errorf("lao organizer is %s, should be base64URL encoded", laoState.Organizer)
+	}
+
+	// verify if all witnesses are base64URL encoded
+	for _, witness := range laoState.Witnesses {
+		if _, err := base64.URLEncoding.DecodeString(witness); err != nil {
+			return xerrors.Errorf("lao witness is %s, should be base64URL encoded", witness)
+		}
+	}
+
+	// verify modification id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(laoState.ModificationID); err != nil {
+		return xerrors.Errorf("lao modification id is %s, should be base64URL encoded", laoState.ModificationID)
+	}
+
+	// verify all witnesses in modification signatures are base64URL encoded
+	for _, mod := range laoState.ModificationSignatures {
+		if _, err := base64.URLEncoding.DecodeString(mod.Witness); err != nil {
+			return xerrors.Errorf("lao modification signature witness is %s, should be base64URL encoded", mod.Witness)
+		}
 	}
 
 	return nil
@@ -452,13 +494,13 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
 		}
 
-		err = c.processCreateRollCall(rollCallCreate)
+		err = c.processRollCallCreate(rollCallCreate)
 		if err != nil {
 			return xerrors.Errorf("failed to process roll call create: %v", err)
 		}
 
 	case messagedata.RollCallActionOpen, messagedata.RollCallActionReopen:
-		err := c.processOpenRollCall(msg, action)
+		err := c.processRollCallOpen(msg, action)
 		if err != nil {
 			return xerrors.Errorf("failed to process open roll call: %v", err)
 		}
@@ -471,7 +513,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
 		}
 
-		err = c.processCloseRollCall(rollCallClose)
+		err = c.processRollCallClose(rollCallClose)
 		if err != nil {
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
@@ -487,8 +529,6 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 	return nil
 }
-
-// verify
 
 // processElectionObject handles an election object.
 func (c *Channel) processElectionObject(action string, msg message.Message) error {
@@ -562,13 +602,13 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	return nil
 }
 
-// processCreateRollCall processes a roll call creation object.
-func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
+// processRollCallCreate processes a roll call creation object.
+func (c *Channel) processRollCallCreate(msg messagedata.RollCallCreate) error {
 
-	// Check that the ID is correct
-	err := c.verifyMessageRollCallCreateID(msg)
+	// Check that data is correct
+	err := c.verifyMessageRollCallCreate(msg)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#create message: %v", err)
+		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
@@ -581,8 +621,8 @@ func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
 	return nil
 }
 
-// processOpenRollCall processes an open roll call object.
-func (c *Channel) processOpenRollCall(msg message.Message, action string) error {
+// processRollCallOpen processes an open roll call object.
+func (c *Channel) processRollCallOpen(msg message.Message, action string) error {
 	if action == messagedata.RollCallActionOpen {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction
@@ -606,9 +646,10 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 		return xerrors.Errorf("failed to unmarshal roll call open: %v", err)
 	}
 
-	err = c.verifyMessageRollCallOpenID(rollCallOpen)
+	// check that data is correct
+	err = c.verifyMessageRollCallOpen(rollCallOpen)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#open message: %v", err)
+		return xerrors.Errorf("invalid roll_call#open message: %v", err)
 	}
 
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
@@ -620,12 +661,13 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 	return nil
 }
 
-// processCloseRollCall processes a close roll call message.
-func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
+// processRollCallClose processes a close roll call message.
+func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
 
-	err := c.verifyMessageRollCallCloseID(msg)
+	// check that data is correct
+	err := c.verifyMessageRollCallClose(msg)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#close message: %v", err)
+		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
 
 	if c.rollCall.state != Open {
@@ -667,51 +709,130 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	return nil
 }
 
-const InvalidIDMessage string = "ID %s does not correspond with message data, should be %s"
+// verifyMessageRollCallCreate checks the roll_call#create message data is valid.
+func (c *Channel) verifyMessageRollCallCreate(rollCallCreate messagedata.RollCallCreate) error {
+	c.log.Info().Msgf("verifying roll_call#create message of roll call %s", rollCallCreate.ID)
 
-// verifyMessageRollCallCreateID verify the id of a message
-func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
+	// verify id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(rollCallCreate.ID); err != nil {
+		return xerrors.Errorf("roll call id is %s, should be base64URL encoded", rollCallCreate.ID)
+	}
+
+	// verify roll call create message id
 	expectedID := messagedata.Hash(
 		"R",
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		fmt.Sprintf("%d", msg.Creation),
-		msg.Name,
+		fmt.Sprintf("%d", rollCallCreate.Creation),
+		rollCallCreate.Name,
 	)
+	if rollCallCreate.ID != expectedID {
+		return xerrors.Errorf("roll call id is %s, should be %s", rollCallCreate.ID, expectedID)
+	}
 
-	if msg.ID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.ID, expectedID)
+	// verify creation is positive
+	if rollCallCreate.Creation < 0 {
+		return xerrors.Errorf("roll call creation is %d, should be minimum 0", rollCallCreate.Creation)
+	}
+
+	// verify proposed start is positive
+	if rollCallCreate.ProposedStart < 0 {
+		return xerrors.Errorf("roll call proposed start is %d, should be minimum 0", rollCallCreate.ProposedStart)
+	}
+
+	// verify proposed end is positive
+	if rollCallCreate.ProposedEnd < 0 {
+		return xerrors.Errorf("roll call proposed end is %d, should be minimum 0", rollCallCreate.ProposedEnd)
+	}
+
+	// verify proposed start after creation
+	if rollCallCreate.ProposedStart < rollCallCreate.Creation {
+		return xerrors.Errorf("roll call proposed start is %d, should be greater or equal to creation %d",
+			rollCallCreate.ProposedStart, rollCallCreate.Creation)
+	}
+
+	// verify proposed end after creation
+	if rollCallCreate.ProposedEnd <  rollCallCreate.Creation {
+		return xerrors.Errorf("roll call proposed end is %d, should be greater or equal to creation %d",
+			rollCallCreate.ProposedEnd, rollCallCreate.Creation)
+	}
+
+	// verify proposed end after proposed start
+	if rollCallCreate.ProposedEnd <  rollCallCreate.ProposedStart {
+		return xerrors.Errorf("roll call proposed end is %d, should be greater or equal to proposed start %d",
+			rollCallCreate.ProposedEnd, rollCallCreate.ProposedStart)
 	}
 
 	return nil
 }
 
-// verifyMessageRollCallOpenID verify the id of a message
-func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
+// verifyMessageRollCallOpen checks the roll_call#open message data is valid.
+func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpen) error {
+	c.log.Info().Msgf("verifying roll_call#open message of roll call with update id %s", rollCallOpen.UpdateID)
+
+	// verify update id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(rollCallOpen.UpdateID); err != nil {
+		return xerrors.Errorf("roll call update id is %s, should be base64URL encoded", rollCallOpen.UpdateID)
+	}
+
+	// verify roll call open message update id
 	expectedID := messagedata.Hash(
 		"R",
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		msg.Opens,
-		fmt.Sprintf("%d", msg.OpenedAt),
+		rollCallOpen.Opens,
+		fmt.Sprintf("%d", rollCallOpen.OpenedAt),
 	)
+	if rollCallOpen.UpdateID != expectedID {
+		return xerrors.Errorf("roll call update id is %s, should be %s", rollCallOpen.UpdateID, expectedID)
+	}
 
-	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
+	// verify opens is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(rollCallOpen.Opens); err != nil {
+		return xerrors.Errorf("roll call opens is %s, should be base64URL encoded", rollCallOpen.Opens)
+	}
+
+	// verify opened at is positive
+	if rollCallOpen.OpenedAt < 0 {
+		return xerrors.Errorf("roll call opened at is %d, should be minimum 0", rollCallOpen.OpenedAt)
 	}
 
 	return nil
 }
 
-// verifyMessageRollCallCloseID verify the id of a message
-func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
+// verifyMessageRollCallClose checks the roll_call#close message data is valid.
+func (c *Channel) verifyMessageRollCallClose(rollCallClose messagedata.RollCallClose) error {
+	c.log.Info().Msgf("verifying roll_call#open message of roll call with update id %s", rollCallClose.UpdateID)
+
+	// verify update id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(rollCallClose.UpdateID); err != nil {
+		return xerrors.Errorf("roll call update id is %s, should be base64URL encoded", rollCallClose.UpdateID)
+	}
+
+	// verify roll call close message update id
 	expectedID := messagedata.Hash(
 		"R",
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		msg.Closes,
-		fmt.Sprintf("%d", msg.ClosedAt),
+		rollCallClose.Closes,
+		fmt.Sprintf("%d", rollCallClose.ClosedAt),
 	)
+	if rollCallClose.UpdateID != expectedID {
+		return xerrors.Errorf("roll call update id is %s, should be %s", rollCallClose.UpdateID, expectedID)
+	}
 
-	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
+	// verify closes is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(rollCallClose.Closes); err != nil {
+		return xerrors.Errorf("roll call closes is %s, should be base64URL encoded", rollCallClose.Closes)
+	}
+
+	// verify closed at is positive
+	if rollCallClose.ClosedAt < 0 {
+		return xerrors.Errorf("roll call closed at is %d, should be minimum 0", rollCallClose.ClosedAt)
+	}
+
+	// verify all attendees are base64URL encoded
+	for _, attendee := range rollCallClose.Attendees {
+		if _, err := base64.URLEncoding.DecodeString(attendee); err != nil {
+			return xerrors.Errorf("roll call attendee is %s, should be base64URL encoded", attendee)
+		}
 	}
 
 	return nil

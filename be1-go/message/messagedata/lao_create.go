@@ -1,8 +1,8 @@
 package messagedata
 
 import (
+	"encoding/base64"
 	"fmt"
-
 	"golang.org/x/xerrors"
 )
 
@@ -22,14 +22,36 @@ type LaoCreate struct {
 
 // Verify verifies that the LaoCreate message is valid
 func (message LaoCreate) Verify() error {
+	// verify id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(message.ID); err != nil {
+		return xerrors.Errorf("lao id is %s, should be base64URL encoded", message.ID)
+	}
+
+	// verify lao id
 	expectedLaoID := Hash(
 		message.Organizer,
 		fmt.Sprintf("%d", message.Creation),
 		message.Name,
 	)
-
 	if message.ID != expectedLaoID {
-		return xerrors.Errorf("ID %s do not correspond with message data", message.ID)
+		return xerrors.Errorf("lao id is %s, should be %s", message.ID, expectedLaoID)
+	}
+
+	// verify creation is positive
+	if message.Creation < 0 {
+		return xerrors.Errorf("lao creation is %d, should be minimum 0", message.Creation)
+	}
+
+	// verify organizer is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(message.Organizer); err != nil {
+		return xerrors.Errorf("lao organizer is %s, should be base64URL encoded", message.Organizer)
+	}
+
+	// verify all witnesses are base64URL encoded
+	for _, witness := range message.Witnesses {
+		if _, err := base64.URLEncoding.DecodeString(witness); err != nil {
+			return xerrors.Errorf("lao witness is %s, should be base64URL encoded", witness)
+		}
 	}
 
 	return nil
