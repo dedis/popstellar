@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, ScrollView,
+  View, Platform, ScrollView, Modal,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
@@ -11,6 +11,7 @@ import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DateP
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
+import TextBlock from 'components/TextBlock';
 import { Timestamp } from 'model/objects';
 import { onConfirmPress } from '../CreateEvent';
 
@@ -33,6 +34,8 @@ const CreateRollCall = ({ route }: any) => {
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');
   const [rollCallDescription, setRollCallDescription] = useState('');
+  const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
+  const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
 
   const buildDatePickerWeb = () => {
     const startDate = proposedStartTime.timestampToDate();
@@ -95,13 +98,47 @@ const CreateRollCall = ({ route }: any) => {
 
       <WideButtonView
         title={STRINGS.general_button_confirm}
-        onPress={() => onConfirmPress(proposedStartTime, proposedEndTime, createRollCall)}
+        onPress={() => onConfirmPress(proposedStartTime, proposedEndTime, createRollCall,
+          setModalStartIsVisible, setModalEndIsVisible)}
         disabled={!buttonsVisibility}
       />
       <WideButtonView
         title={STRINGS.general_button_cancel}
         onPress={navigation.goBack}
       />
+
+      <Modal
+        visible={modalEndIsVisible}
+        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_ends_in_past} />
+          <WideButtonView
+            title={STRINGS.general_button_ok}
+            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
+          />
+        </View>
+      </Modal>
+      <Modal
+        visible={modalStartIsVisible}
+        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_starts_in_past} />
+          <WideButtonView
+            title={STRINGS.modal_button_start_now}
+            onPress={() => createRollCall()}
+          />
+          <WideButtonView
+            title={STRINGS.modal_button_go_back}
+            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
+          />
+        </View>
+      </Modal>
     </ScrollView>
   );
 };

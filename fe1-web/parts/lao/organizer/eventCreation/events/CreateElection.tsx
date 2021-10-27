@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, ScrollView,
+  View, Platform, ScrollView, Modal,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
@@ -39,6 +39,8 @@ const CreateElection = ({ route }: any) => {
   const currentLao: Lao = OpenedLaoStore.get();
   const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
   const [questions, setQuestions] = useState([emptyQuestion]);
+  const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
+  const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
 
   const buildDatePickerWeb = () => {
     const startDate = startTime.timestampToDate();
@@ -145,10 +147,44 @@ const CreateElection = ({ route }: any) => {
         />
         <WideButtonView
           title={STRINGS.general_button_confirm}
-          onPress={() => onConfirmPress(startTime, endTime, createElection)}
+          onPress={() => onConfirmPress(startTime, endTime, createElection, setModalStartIsVisible,
+            setModalEndIsVisible)}
           disabled={!buttonsVisibility}
         />
       </View>
+
+      <Modal
+        visible={modalEndIsVisible}
+        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_ends_in_past} />
+          <WideButtonView
+            title={STRINGS.general_button_ok}
+            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
+          />
+        </View>
+      </Modal>
+      <Modal
+        visible={modalStartIsVisible}
+        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_starts_in_past} />
+          <WideButtonView
+            title={STRINGS.modal_button_start_now}
+            onPress={() => createElection()}
+          />
+          <WideButtonView
+            title={STRINGS.modal_button_go_back}
+            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
+          />
+        </View>
+      </Modal>
     </ScrollView>
   );
 };

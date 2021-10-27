@@ -4,6 +4,7 @@ const STRINGS = {
   general_button_cancel: 'Cancel',
   general_button_confirm: 'Confirm',
   general_button_open: 'Open',
+  general_button_ok: 'Ok',
   general_yes: 'Yes',
   general_no: 'No',
 
@@ -119,9 +120,11 @@ const STRINGS = {
   election_version_identifier: '1.0.0',
 
   /* --- Event Creation Strings --- */
-  alert_event_ends_in_past: 'Event creation failed: your event ends in the past.',
-  confirm_event_starts_in_past: 'Your event starts at least 5 minutes in the past, it will be '
-    + 'started now if you confirm.',
+  modal_event_creation_failed: 'Event creation failed',
+  modal_event_ends_in_past: 'The event\'s end time in the past.',
+  modal_event_starts_in_past: 'The event\'s start time is in the past.\nWhat do you want to do ?',
+  modal_button_start_now: 'Start it now',
+  modal_button_go_back: 'Cancel',
 
   /* --- Cast Vote Strings --- */
   cast_vote: 'Cast Vote',

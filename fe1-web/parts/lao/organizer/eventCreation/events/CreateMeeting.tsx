@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform,
+  View, Platform, Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -30,6 +30,8 @@ const CreateMeeting = ({ route }: any) => {
   const [meetingName, setMeetingName] = useState('');
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
   const [endTime, setEndTime] = useState(Timestamp.EpochNow().addSeconds(DEFAULT_MEETING_DURATION));
+  const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
+  const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
 
   const [location, setLocation] = useState('');
 
@@ -89,13 +91,47 @@ const CreateMeeting = ({ route }: any) => {
       />
       <WideButtonView
         title={STRINGS.general_button_confirm}
-        onPress={() => onConfirmPress(startTime, endTime, createMeeting)}
+        onPress={() => onConfirmPress(startTime, endTime, createMeeting, setModalStartIsVisible,
+          setModalEndIsVisible)}
         disabled={!confirmButtonVisibility}
       />
       <WideButtonView
         title={STRINGS.general_button_cancel}
         onPress={navigation.goBack}
       />
+
+      <Modal
+        visible={modalEndIsVisible}
+        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_ends_in_past} />
+          <WideButtonView
+            title={STRINGS.general_button_ok}
+            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
+          />
+        </View>
+      </Modal>
+      <Modal
+        visible={modalStartIsVisible}
+        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_starts_in_past} />
+          <WideButtonView
+            title={STRINGS.modal_button_start_now}
+            onPress={() => createMeeting()}
+          />
+          <WideButtonView
+            title={STRINGS.modal_button_go_back}
+            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
+          />
+        </View>
+      </Modal>
     </>
   );
 };
