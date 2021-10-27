@@ -12,7 +12,7 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
 import { Timestamp } from 'model/objects';
-import { FIVE_MINUTES_IN_SECONDS } from '../CreateEvent';
+import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
@@ -75,21 +75,6 @@ const CreateRollCall = ({ route }: any) => {
       });
   };
 
-  const onConfirmPress = () => {
-    const now = Timestamp.EpochNow();
-    if (proposedEndTime.before(now)) {
-      // eslint-disable-next-line no-alert
-      alert(STRINGS.alert_event_ends_in_past);
-    } else if (now.after(proposedStartTime.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
-      // eslint-disable-next-line no-restricted-globals
-      if (confirm(STRINGS.confirm_event_starts_in_past)) {
-        createRollCall();
-      }
-    } else {
-      createRollCall();
-    }
-  };
-
   return (
     <ScrollView>
       { /* see archive branches for date picker used for native apps */ }
@@ -110,7 +95,7 @@ const CreateRollCall = ({ route }: any) => {
 
       <WideButtonView
         title={STRINGS.general_button_confirm}
-        onPress={onConfirmPress}
+        onPress={() => onConfirmPress(proposedStartTime, proposedEndTime, createRollCall)}
         disabled={!buttonsVisibility}
       />
       <WideButtonView

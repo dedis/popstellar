@@ -18,7 +18,7 @@ import {
 } from 'model/objects';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
-import { FIVE_MINUTES_IN_SECONDS } from '../CreateEvent';
+import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -98,21 +98,6 @@ const CreateElection = ({ route }: any) => {
       });
   };
 
-  const onConfirmPress = () => {
-    const now = Timestamp.EpochNow();
-    if (endTime.before(now)) {
-      // eslint-disable-next-line no-alert
-      alert(STRINGS.alert_event_ends_in_past);
-    } else if (now.after(startTime.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
-      // eslint-disable-next-line no-restricted-globals
-      if (confirm(STRINGS.confirm_event_starts_in_past)) {
-        createElection();
-      }
-    } else {
-      createElection();
-    }
-  };
-
   return (
     <ScrollView>
       <TextBlock text={STRINGS.election_create_setup} bold />
@@ -160,7 +145,7 @@ const CreateElection = ({ route }: any) => {
         />
         <WideButtonView
           title={STRINGS.general_button_confirm}
-          onPress={onConfirmPress}
+          onPress={() => onConfirmPress(startTime, endTime, createElection)}
           disabled={!buttonsVisibility}
         />
       </View>

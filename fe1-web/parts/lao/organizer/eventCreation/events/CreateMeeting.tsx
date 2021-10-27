@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Button, Platform,
+  View, Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -13,7 +13,7 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
 import { Timestamp } from 'model/objects';
-import { FIVE_MINUTES_IN_SECONDS } from '../CreateEvent';
+import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_MEETING_DURATION = 3600;
 
@@ -45,21 +45,6 @@ const CreateMeeting = ({ route }: any) => {
       .catch((err) => {
         console.error('Could not create meeting, error:', err);
       });
-  };
-
-  const onConfirmPress = () => {
-    const now = Timestamp.EpochNow();
-    if (endTime.before(now)) {
-      // eslint-disable-next-line no-alert
-      alert(STRINGS.alert_event_ends_in_past);
-    } else if (now.after(startTime.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
-      // eslint-disable-next-line no-restricted-globals
-      if (confirm(STRINGS.confirm_event_starts_in_past)) {
-        createMeeting();
-      }
-    } else {
-      createMeeting();
-    }
   };
 
   const buildDatePickerWeb = () => {
@@ -104,7 +89,7 @@ const CreateMeeting = ({ route }: any) => {
       />
       <WideButtonView
         title={STRINGS.general_button_confirm}
-        onPress={onConfirmPress}
+        onPress={() => onConfirmPress(startTime, endTime, createMeeting)}
         disabled={!confirmButtonVisibility}
       />
       <WideButtonView

@@ -10,6 +10,7 @@ import stylesContainer from 'styles/stylesheets/container';
 
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
+import { Timestamp } from '../../../../model/objects';
 
 export const FIVE_MINUTES_IN_SECONDS = 300;
 
@@ -73,6 +74,30 @@ const CreateEvent = () => {
       />
     </View>
   );
+};
+
+/**
+ * Function called when the user confirms an event creation. If the end is in the past, the user
+ * will be warned. If the event starts more than 5 minutes in the past, it will ask if it can
+ * start now. Otherwise, the event will simply be created.
+ *
+ * @param start - The start time of the event
+ * @param end - The end time of the event
+ * @param createEvent - The function which creates the event
+ */
+export const onConfirmPress = (start: Timestamp, end: Timestamp, createEvent: Function) => {
+  const now = Timestamp.EpochNow();
+  if (end.before(now)) {
+    // eslint-disable-next-line no-alert
+    alert(STRINGS.alert_event_ends_in_past);
+  } else if (now.after(start.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm(STRINGS.confirm_event_starts_in_past)) {
+      createEvent();
+    }
+  } else {
+    createEvent();
+  }
 };
 
 export default CreateEvent;
