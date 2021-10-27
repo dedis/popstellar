@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
+	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
 	"popstellar/channel/election"
@@ -63,13 +64,13 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	log = log.With().Str("channel", "lao").Logger()
 
-	inbox := inbox.NewInbox(channelID)
-	inbox.StoreMessage(msg)
+	box := inbox.NewInbox(channelID)
+	box.StoreMessage(msg)
 
 	return &Channel{
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
-		inbox:     inbox,
+		inbox:     box,
 		general:   createGeneralChirpingChannel(channelID, hub),
 		hub:       hub,
 		rollCall:  rollCall{},
@@ -178,12 +179,17 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
+// createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) *generalChriping.Channel {
-	generalChannelPath := "/root/" + laoID + "/social/chirps/"
+	log := be1_go.Logger
 
-	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub)
+	generalChannelPath := laoID + "/social/chirps/"
+
+	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub, be1_go.Logger)
 
 	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel)
+
+	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
 
 	return &generalChirpingChannel
 }
@@ -499,7 +505,7 @@ func (c *Channel) createChirpingChannels(msg messagedata.RollCallClose) error {
 
 	for _, s := range msg.Attendees {
 		chirpingChannelPath := c.channelID + s + "/"
-		cha := chirp.NewChannel(chirpingChannelPath, s, c.hub, c.general)
+		cha := chirp.NewChannel(chirpingChannelPath, s, c.hub, c.general, c.log)
 		c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
 	}
 	return nil

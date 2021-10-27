@@ -3,9 +3,8 @@ package generalChriping
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
+	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
-	"log"
 	"popstellar/channel"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
@@ -17,49 +16,50 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+	"strconv"
 )
 
-
-// NewChannel returns a new initialized chirping channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities) Channel {
-
-	// Saving on election channel too so it self-contains the entire election history
-	// electionCh.inbox.storeMessage(msg)
-	return Channel{
-		sockets:   channel.NewSockets(),
-		inbox:     inbox.NewInbox(channelPath),
-		channelID: channelPath,
-		hub: hub,
-	}
-}
+const msgID		 = "msg id"
 
 // Channel is used to handle election messages.
 type Channel struct {
 	sockets   channel.Sockets
 	inbox     *inbox.Inbox
-	channelID string
 	hub channel.HubFunctionalities
+
+	// channel path
+	channelID string
+
+	log zerolog.Logger
 }
 
-// question represents a question in an election.
-type chirp struct {
+// NewChannel returns a new initialized chirping channel
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
 
+	return Channel{
+		sockets:   channel.NewSockets(),
+		inbox:     inbox.NewInbox(channelPath),
+		channelID: channelPath,
+		hub: hub,
+		log: log,
+	}
 }
-
 
 // Publish is used to handle a publish message.
 func (c *Channel) Publish(msg method.Publish) error {
-	log.Printf("nothing should be directly published in the general")
+	c.log.Error().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("nothing should be published in the general")
 	return xerrors.Errorf("nothing should be directly published in the general")
 }
 
 
-// Broadcast is used to handle publish messages in the election channel.
+// Broadcast is used to handle broadcast messages.
 func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 	err := c.VerifyBroadcastMessage(broadcast)
 	if err != nil {
-		return xerrors.Errorf("failed to verify publish message on an "+
-			"election channel: %w", err)
+		return xerrors.Errorf("failed to verify broadcast message on an "+
+			"generalChirping channel: %w", err)
 	}
 
 	msg := broadcast.Params.Message
@@ -102,7 +102,9 @@ func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 
 // Subscribe is used to handle a subscribe message from the client.
 func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
-	log.Printf("received a subscribe with id: %d", msg.ID)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received a subscribe")
 	c.sockets.Upsert(socket)
 
 	return nil
@@ -110,7 +112,9 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 
 // Unsubscribe is used to handle an unsubscribe message.
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
-	log.Printf("received an unsubscribe with id: %d", msg.ID)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received a unsubscribe")
 
 	ok := c.sockets.Delete(socketID)
 
@@ -122,15 +126,21 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 }
 
 // Catchup is used to handle a catchup message.
-func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
-	log.Printf("received a catchup with id: %d", catchup.ID)
-
+func (c *Channel) Catchup(msg method.Catchup) []message.Message {
+	c.log.Info().
+		Str(msgID, strconv.Itoa(msg.ID)).
+		Msg("received a catchup")
 	return c.inbox.GetSortedMessages()
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *Channel) broadcastToAllClients(msg message.Message) {
+
+	c.log.Info().
+		Str(msgID, msg.MessageID).
+		Msg("broadcast new chirp to all clients")
+
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -149,7 +159,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		log.Printf("failed to marshal broadcast query: %v", err)
+		c.log.Err(err).Msg("failed to marshal broadcast query")
 	}
 
 	c.sockets.SendToAll(buf)
@@ -157,7 +167,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 // VerifyBroadcastMessage checks if a Broadcast message is valid
 func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
-	fmt.Printf("received a brodcast msg")
+	c.log.Info().Msg("received broadcast")
 
 	// Check if the structure of the message is correct
 	msg := broadcast.Params.Message
@@ -181,25 +191,31 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	return nil
 }
 
-
+// AddChirp checks and stores an add chirp message
 func (c *Channel) AddChirp(msg message.Message) error {
-	err := c.getAndVerifyAddChirpMessage(msg)
+	err := c.verifyChirpBroadcastMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to get and verify vote message: %v", err)
+		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
 	}
 	c.inbox.StoreMessage(msg)
 
 	return nil
 }
 
+// DeleteChirp checks and stores a delete chirp message
 func (c *Channel) DeleteChirp(msg message.Message) error {
-	//todo
+	err := c.verifyChirpBroadcastMessage(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to get and verify delete chirp message: %v, err")
+	}
+	c.inbox.StoreMessage(msg)
+
 	return nil
 }
 
-
-func (c *Channel) getAndVerifyAddChirpMessage(msg message.Message) error {
-	var chirpMsg messagedata.ChirpAddBroadcast
+// verifyAddChirpMessage verify a chirp broadcast message
+func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
+	var chirpMsg messagedata.ChirpBroadcast
 
 	err := msg.UnmarshalData(&chirpMsg)
 	if err != nil {
@@ -224,3 +240,5 @@ func (c *Channel) getAndVerifyAddChirpMessage(msg message.Message) error {
 
 	return nil
 }
+
+
