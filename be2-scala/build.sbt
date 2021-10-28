@@ -6,7 +6,17 @@ version := "0.1"
 
 scalaVersion := "2.13.5"
 
-coverageEnabled := true
+mainClass in (Compile, run) := Some("ch.epfl.pop.Server")
+mainClass in (Compile, packageBin) := Some("ch.epfl.pop.Server")
+
+lazy val scoverageSettings = Seq(
+  coverageEnabled in Compile := true,
+  coverageEnabled in Test := true,
+  coverageEnabled in packageBin := false,
+  
+)
+
+
 
 scapegoatVersion in ThisBuild := "1.4.8"
 scapegoatReports := Seq("xml")
@@ -64,9 +74,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
 
 // Json Schema Validator
-//libraryDependencies -= "com.github.fge" % "json-schema-validator" % "2.2.6"
-
-// New try for Validator
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
 
 

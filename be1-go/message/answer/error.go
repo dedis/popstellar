@@ -29,10 +29,18 @@ func NewErrorf(code int, format string, values ...interface{}) *Error {
 	}
 }
 
-// NewInvalidActionError an error with the code -1 for an invalid action.
+// NewInvalidActionError returns an error with the code -1 for an invalid action.
 func NewInvalidActionError(action string) *Error {
 	return &Error{
 		Code:        -1,
 		Description: fmt.Sprintf("invalid action: %s", action),
+	}
+}
+
+// NewInvalidObjectError returns an error with the code -1 for an invalid object.
+func NewInvalidObjectError(action string) *Error {
+	return &Error{
+		Code:        -1,
+		Description: fmt.Sprintf("invalid object: %s", action),
 	}
 }

@@ -7,12 +7,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.Injection;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -20,19 +14,17 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import io.reactivex.Observable;
-import io.reactivex.schedulers.TestScheduler;
-import java.security.GeneralSecurityException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,25 +33,32 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.security.GeneralSecurityException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.schedulers.TestScheduler;
+
 @RunWith(MockitoJUnitRunner.class)
 public class LaoHandlerTest {
 
-  @Mock
-  LAORemoteDataSource remoteDataSource;
+  @Mock LAORemoteDataSource remoteDataSource;
 
-  @Mock
-  LAOLocalDataSource localDataSource;
+  @Mock LAOLocalDataSource localDataSource;
 
-  @Mock
-  AndroidKeysetManager androidKeysetManager;
+  @Mock AndroidKeysetManager androidKeysetManager;
 
-  @Mock
-  PublicKeySign signer;
+  @Mock PublicKeySign signer;
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
-  private static final CreateLao CREATE_LAO = new CreateLao("lao",
-      "Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
+  private static final CreateLao CREATE_LAO =
+      new CreateLao("lao", "Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
   private static final String CHANNEL = "/root";
   private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
 
@@ -75,20 +74,28 @@ public class LaoHandlerTest {
     // Mock the signing of of any data for the MessageGeneral constructor
     byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
-    createLaoMessage = new MessageGeneral(Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-        CREATE_LAO, signer, Injection.provideGson());
+    createLaoMessage =
+        new MessageGeneral(
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
+            CREATE_LAO,
+            signer,
+            Injection.provideGson());
 
     // Simulate a network response from the server after the response delay
-    Observable<GenericMessage> upstream = Observable.fromArray(
-        (GenericMessage) new Result(REQUEST_ID))
-        .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
+    Observable<GenericMessage> upstream =
+        Observable.fromArray((GenericMessage) new Result(REQUEST_ID))
+            .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
 
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
 
-    laoRepository = LAORepository
-        .getInstance(remoteDataSource, localDataSource, androidKeysetManager,
-            Injection.provideGson(), testSchedulerProvider);
+    laoRepository =
+        LAORepository.getInstance(
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            Injection.provideGson(),
+            testSchedulerProvider);
 
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -109,22 +116,30 @@ public class LaoHandlerTest {
   @Test
   public void testHandleUpdateLao() {
     // Create the update LAO message
-    UpdateLao updateLao = new UpdateLao(CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation(),
-        "new name", Instant.now().getEpochSecond(), new HashSet<>());
-    MessageGeneral message = new MessageGeneral(
-        Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), updateLao, signer,
-        Injection.provideGson());
+    UpdateLao updateLao =
+        new UpdateLao(
+            CREATE_LAO.getOrganizer(),
+            CREATE_LAO.getCreation(),
+            "new name",
+            Instant.now().getEpochSecond(),
+            new HashSet<>());
+    MessageGeneral message =
+        new MessageGeneral(
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
+            updateLao,
+            signer,
+            Injection.provideGson());
 
     // Create the expected WitnessMessage
-    WitnessMessage expectedMessage = updateLaoNameWitnessMessage(message.getMessageId(), updateLao,
-        lao);
+    WitnessMessage expectedMessage =
+        updateLaoNameWitnessMessage(message.getMessageId(), updateLao, lao);
 
     // Call the message handler
     assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
 
     // Check the WitnessMessage has been created
-    Optional<WitnessMessage> witnessMessage = laoRepository.getLaoByChannel(LAO_CHANNEL)
-        .getWitnessMessage(message.getMessageId());
+    Optional<WitnessMessage> witnessMessage =
+        laoRepository.getLaoByChannel(LAO_CHANNEL).getWitnessMessage(message.getMessageId());
     assertTrue(witnessMessage.isPresent());
     assertEquals(expectedMessage.getTitle(), witnessMessage.get().getTitle());
     assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
@@ -133,20 +148,32 @@ public class LaoHandlerTest {
   @Test
   public void testHandleStateLao() {
     // Create the state LAO message
-    StateLao stateLao = new StateLao(CREATE_LAO.getId(), CREATE_LAO.getName(),
-        CREATE_LAO.getCreation(), Instant.now().getEpochSecond(), CREATE_LAO.getOrganizer(),
-        createLaoMessage.getMessageId(), new HashSet<>(), new ArrayList<>());
-    MessageGeneral message = new MessageGeneral(
-        Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), stateLao, signer,
-        Injection.provideGson());
+    StateLao stateLao =
+        new StateLao(
+            CREATE_LAO.getId(),
+            CREATE_LAO.getName(),
+            CREATE_LAO.getCreation(),
+            Instant.now().getEpochSecond(),
+            CREATE_LAO.getOrganizer(),
+            createLaoMessage.getMessageId(),
+            new HashSet<>(),
+            new ArrayList<>());
+    MessageGeneral message =
+        new MessageGeneral(
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
+            stateLao,
+            signer,
+            Injection.provideGson());
 
     // Call the message handler
     assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
 
     // Check the LAO last modification time and ID was updated
-    assertEquals((Long) stateLao.getLastModified(),
+    assertEquals(
+        (Long) stateLao.getLastModified(),
         laoRepository.getLaoByChannel(LAO_CHANNEL).getLastModified());
-    assertEquals(stateLao.getModificationId(),
+    assertEquals(
+        stateLao.getModificationId(),
         laoRepository.getLaoByChannel(LAO_CHANNEL).getModificationId());
   }
 }

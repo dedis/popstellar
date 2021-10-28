@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
-
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -11,12 +10,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-/**
- * Json serializer and deserializer for the data messages
- */
+/** Json serializer and deserializer for the data messages */
 public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserializer<Data> {
 
   private static final String OBJECT = "object";

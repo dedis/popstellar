@@ -10,9 +10,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Data received to track the state of a meeting
- */
+/** Data received to track the state of a meeting */
 public class StateMeeting extends Data {
 
   private final String id;
@@ -35,15 +33,15 @@ public class StateMeeting extends Data {
   /**
    * Constructor for a data State Meeting Event
    *
-   * @param laoId                  of the LAO
-   * @param id                     of the state Meeting message, Hash("M"||laoId||creation||name)
-   * @param name                   name of the Meeting
-   * @param creation               time of creation
-   * @param lastModified           time of the last modification
-   * @param location               location of the Meeting
-   * @param start                  of the Meeting
-   * @param end                    of the Meeting
-   * @param modificationId         id of the modification (either creation/update)
+   * @param laoId of the LAO
+   * @param id of the state Meeting message, Hash("M"||laoId||creation||name)
+   * @param name name of the Meeting
+   * @param creation time of creation
+   * @param lastModified time of the last modification
+   * @param location location of the Meeting
+   * @param start of the Meeting
+   * @param end of the Meeting
+   * @param modificationId id of the modification (either creation/update)
    * @param modificationSignatures signatures of the witnesses on the modification message
    * @throws IllegalArgumentException if the id is not valid
    */
@@ -58,7 +56,8 @@ public class StateMeeting extends Data {
       long end,
       String modificationId,
       List<String> modificationSignatures) {
-    if (!id.equals(Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
+    if (!id.equals(
+        Hash.hash(EventType.MEETING.getSuffix(), laoId, Long.toString(creation), name))) {
       throw new IllegalArgumentException(
           "StateMeeting id must be Hash(\"M\"||laoId||creation||name)");
     }

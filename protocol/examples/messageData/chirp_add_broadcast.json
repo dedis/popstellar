@@ -1,6 +1,6 @@
 {
     "object": "chirp",
-    "action": "add",
+    "action": "addBroadcast",
     "chirp_id": "XXX",
     "channel": "/root/<lao_id>/social/<sender>/",
     "timestamp": 123

@@ -8,10 +8,13 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import com.github.dedis.popstellar.R;
+
 import net.glxn.qrgen.android.QRCode;
 
 /**
@@ -74,9 +77,9 @@ public class IdentityFragment extends Fragment {
           }
         });
 
-// for now we use the user's public key to generate the QR code
+    // for now we use the user's public key to generate the QR code
     // TODO: In the future use Wallet with user's token
-    String pk = this.getArguments().getString(PUBLIC_KEY);
+    String pk = this.requireArguments().getString(PUBLIC_KEY);
     identityNameEditText.setText(pk);
 
     Bitmap myBitmap = QRCode.from(pk).bitmap();
@@ -85,9 +88,7 @@ public class IdentityFragment extends Fragment {
     return view;
   }
 
-  /**
-   * Hide fields when user wants to be anonymous
-   */
+  /** Hide fields when user wants to be anonymous */
   private void hideIdentityInformation() {
     qrCode.setVisibility(View.GONE);
     identityEmailEditText.setVisibility(View.GONE);

@@ -35,6 +35,6 @@ func Test_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "unsubscribe", unsubscribe.Method)
-	require.Equal(t, "/root/XXX", unsubscribe.Params.Channel)
-	require.Equal(t, 999, unsubscribe.ID)
+	require.Equal(t, "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=", unsubscribe.Params.Channel)
+	require.Equal(t, 7, unsubscribe.ID)
 }

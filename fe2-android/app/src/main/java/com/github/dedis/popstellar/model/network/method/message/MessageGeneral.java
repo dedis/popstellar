@@ -31,7 +31,7 @@ public final class MessageGeneral {
 
   private final byte[] dataBuf;
 
-  private Data data;
+  private final Data data;
 
   private byte[] signature;
 
@@ -39,7 +39,7 @@ public final class MessageGeneral {
 
   private List<PublicKeySignaturePair> witnessSignatures = new ArrayList<>();
 
-  private PublicKeyVerify verifier;
+  private final PublicKeyVerify verifier;
 
   public MessageGeneral(byte[] sender, Data data, PublicKeySign signer, Gson gson) {
     this.sender = sender;
@@ -70,9 +70,12 @@ public final class MessageGeneral {
       byte[] messageId,
       List<PublicKeySignaturePair> witnessSignatures) {
     byte[] decodedMessageId = Base64.getUrlDecoder().decode(messageId);
-    Log.d(TAG, "new MessageGeneral with messageId encoded as: " + new String(messageId,
-        StandardCharsets.UTF_8) +
-        " decoded as: " + Hex.bytesToStringUppercase(decodedMessageId));
+    Log.d(
+        TAG,
+        "new MessageGeneral with messageId encoded as: "
+            + new String(messageId, StandardCharsets.UTF_8)
+            + " decoded as: "
+            + Hex.bytesToStringUppercase(decodedMessageId));
     this.sender = sender;
     this.messageId = messageId;
     this.dataBuf = dataBuf;
@@ -91,8 +94,11 @@ public final class MessageGeneral {
   }
 
   private void generateId() {
-    this.messageId = Hash.hash(Base64.getUrlEncoder().encodeToString(this.dataBuf),
-        Base64.getUrlEncoder().encodeToString(this.signature)).getBytes(StandardCharsets.UTF_8);
+    this.messageId =
+        Hash.hash(
+                Base64.getUrlEncoder().encodeToString(this.dataBuf),
+                Base64.getUrlEncoder().encodeToString(this.signature))
+            .getBytes(StandardCharsets.UTF_8);
   }
 
   public String getMessageId() {
@@ -142,11 +148,19 @@ public final class MessageGeneral {
   @Override
   public String toString() {
     return "MessageGeneral{"
-        + "sender=" + getSender() + '\''
-        + ", data=" + getData()
-        + ", signature='" + getSignature() + '\''
-        + ", messageId='" + getMessageId() + '\''
-        + ", witnessSignatures=" + Arrays.toString(witnessSignatures.toArray())
+        + "sender="
+        + getSender()
+        + '\''
+        + ", data="
+        + getData()
+        + ", signature='"
+        + getSignature()
+        + '\''
+        + ", messageId='"
+        + getMessageId()
+        + '\''
+        + ", witnessSignatures="
+        + Arrays.toString(witnessSignatures.toArray())
         + '}';
   }
 }

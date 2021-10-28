@@ -1,9 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data;
 
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ADD;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ADD_BROADCAST;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.REOPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.RESULT;
@@ -11,6 +16,8 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.STATE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.UPDATE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.WITNESS;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CHIRP;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CONSENSUS;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ELECTION;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.LAO;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MEETING;
@@ -18,6 +25,10 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Obje
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ROLL_CALL;
 
 import android.util.Log;
+
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
@@ -31,25 +42,24 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirpBroadcast;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * An abstract high level message
- */
+/** An abstract high level message */
 public abstract class Data {
 
-  /**
-   * A mapping of (object, action) -> class
-   */
+  /** A mapping of (object, action) -> class */
   private static final Map<EntryPair, Class<? extends Data>> messages = buildMessagesMap();
 
   /**
    * Create an entry pair given obj and action
    *
-   * @param obj    of the pair
+   * @param obj of the pair
    * @param action of the pair
    * @return the pair
    */
@@ -89,13 +99,22 @@ public abstract class Data {
     messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
     messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
 
+    // Consensus
+    messagesMap.put(pair(CONSENSUS, ELECT), ConsensusElect.class);
+    messagesMap.put(pair(CONSENSUS, ELECT_ACCEPT), ConsensusElectAccept.class);
+    messagesMap.put(pair(CONSENSUS, LEARN), ConsensusLearn.class);
+
+    // Social Media
+    messagesMap.put(pair(CHIRP, ADD), AddChirp.class);
+    messagesMap.put(pair(CHIRP, ADD_BROADCAST), AddChirpBroadcast.class);
+
     return Collections.unmodifiableMap(messagesMap);
   }
 
   /**
    * Return the class assigned to the pair (obj, action)
    *
-   * @param obj    of the entry
+   * @param obj of the entry
    * @param action of the entry
    * @return the class assigned to the pair of empty if none are defined
    */
@@ -104,19 +123,13 @@ public abstract class Data {
     return Optional.ofNullable(messages.get(pair(obj, action)));
   }
 
-  /**
-   * Returns the object the message is referring to.
-   */
+  /** Returns the object the message is referring to. */
   public abstract String getObject();
 
-  /**
-   * Returns the action the message is handling.
-   */
+  /** Returns the action the message is handling. */
   public abstract String getAction();
 
-  /**
-   * Entry of the messages map. A pair of (Objects, Action)
-   */
+  /** Entry of the messages map. A pair of (Objects, Action) */
   private static final class EntryPair {
 
     private final Objects object;

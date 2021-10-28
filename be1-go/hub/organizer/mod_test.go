@@ -171,6 +171,19 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 
 	// > check that the channel has been called with the publish message
 	require.Equal(t, publish, c.publish)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, publish.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, publish, c.publish)
 }
 
 // Check that if the organizer receives a subscribe message, it will call the
@@ -221,6 +234,19 @@ func TestOrganizer_Handle_Subscribe(t *testing.T) {
 
 	// > check that the channel has been called with the publish message
 	require.Equal(t, subscribe, c.subscribe)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, subscribe.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, subscribe, c.subscribe)
 }
 
 // Check that if the organizer receives an unsubscribe message, it will call the
@@ -261,6 +287,20 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 	sock := &fakeSocket{id: "fakeID"}
 
 	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, unsubscribe.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, unsubscribe, c.unsubscribe)
+	require.Equal(t, sock.id, c.socketID)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -332,6 +372,20 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	// > check that the channel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, catchup.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, catchup, c.catchup)
+	require.Equal(t, fakeMessages, c.msgs)
 }
 
 // -----------------------------------------------------------------------------
@@ -363,14 +417,16 @@ type fakeChannelFac struct {
 	chanID string
 	msg    message.Message
 	c      channel.Channel
+	log    zerolog.Logger
 }
 
 // newChannel implement the type channel.LaoFactory
 func (c *fakeChannelFac) newChannel(channelID string,
-	hub channel.HubFunctionalities, msg message.Message) channel.Channel {
+	hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
 
 	c.chanID = channelID
 	c.msg = msg
+	c.log = log
 	return c.c
 }
 
@@ -382,6 +438,7 @@ type fakeChannel struct {
 	unsubscribe method.Unsubscribe
 	publish     method.Publish
 	catchup     method.Catchup
+	broadcast	method.Broadcast
 
 	// set by the subscribe
 	socket socket.Socket
@@ -416,6 +473,12 @@ func (f *fakeChannel) Publish(msg method.Publish) error {
 func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 	f.catchup = msg
 	return f.msgs
+}
+
+// Broadcast implements channel.Channel
+func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
+	f.broadcast = msg
+	return nil
 }
 
 // fakeSocket is a fake implementation of a socket

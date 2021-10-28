@@ -19,7 +19,6 @@
     android:orientation="vertical"
     app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_wallet" />
 
-
   <Button
     android:id="@+id/tab_wallet"
     android:layout_width="0dp"
@@ -29,6 +28,5 @@
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_wallet"
     app:layout_constraintTop_toTopOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

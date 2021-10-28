@@ -35,5 +35,5 @@ func Test_Catchup(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "catchup", catchup.Method)
-	require.Equal(t, "/root/XXX", catchup.Params.Channel)
+	require.Equal(t, "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=", catchup.Params.Channel)
 }

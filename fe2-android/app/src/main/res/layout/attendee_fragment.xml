@@ -12,7 +12,6 @@
     android:orientation="horizontal"
     app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
-
   <LinearLayout
     android:id="@+id/linear_layout_4"
     android:layout_width="match_parent"

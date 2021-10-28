@@ -5,11 +5,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class LAOEntity {
 
-  @PrimaryKey
-  @NonNull
-  public String channel;
+  @PrimaryKey @NonNull public String channel;
 
   public String id;
 

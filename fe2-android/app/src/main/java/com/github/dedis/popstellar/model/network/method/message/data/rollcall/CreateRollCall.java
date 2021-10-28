@@ -10,32 +10,33 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Optional;
 
-/**
- * Data sent to create a Roll-Call
- */
+/** Data sent to create a Roll-Call */
 public class CreateRollCall extends Data {
 
-  private String id;
-  private String name;
-  private long creation;
-  @SerializedName("proposed_start")
-  private long proposedStart;
-  @SerializedName("proposed_end")
-  private long proposedEnd;
-  private String location;
+  private final String id;
+  private final String name;
+  private final long creation;
 
-  @Nullable
-  private transient String description;
+  @SerializedName("proposed_start")
+  private final long proposedStart;
+
+  @SerializedName("proposed_end")
+  private final long proposedEnd;
+
+  private final String location;
+
+  @Nullable private final transient String description;
 
   /**
    * Constructor for a data Create Roll-Call Event
-   *  @param name         name of the Roll-Call
-   * @param creation      of the Roll-Call
+   *
+   * @param name name of the Roll-Call
+   * @param creation of the Roll-Call
    * @param proposedStart of the Roll-Call
-   * @param proposedEnd   of the Roll-Call
-   * @param location      location of the Roll-Call
-   * @param description   can be null
-   * @param laoId         ID of the LAO
+   * @param proposedEnd of the Roll-Call
+   * @param location location of the Roll-Call
+   * @param description can be null
+   * @param laoId ID of the LAO
    */
   public CreateRollCall(
       String name,
@@ -65,7 +66,7 @@ public class CreateRollCall extends Data {
       long proposedStart,
       long proposedEnd,
       String location,
-      String description) {
+      @Nullable String description) {
     this.id = id;
     this.name = name;
     this.creation = creation;
