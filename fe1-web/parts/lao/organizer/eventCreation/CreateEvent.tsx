@@ -1,15 +1,19 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
-  StyleSheet, View, TextStyle, ViewStyle,
+  StyleSheet, View, ViewStyle,
 } from 'react-native';
 
-import { Spacing, Typography, Views } from 'styles';
+import { Views } from 'styles';
 import STRINGS from 'res/strings';
 import stylesContainer from 'styles/stylesheets/container';
+import { white } from 'styles/colors';
 
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
+import { Timestamp } from 'model/objects';
+
+const FIVE_MINUTES_IN_SECONDS = 300;
 
 const styleEvents = StyleSheet.create({
   view: {
@@ -22,12 +26,15 @@ const styleEvents = StyleSheet.create({
     flexDirection: 'column',
     zIndex: 3,
   } as ViewStyle,
-  textInput: {
-    ...Typography.base,
-    borderBottomWidth: 2,
-    marginVertical: Spacing.s,
-    marginHorizontal: Spacing.xl,
-  } as TextStyle,
+  modalView: {
+    ...Views.base,
+    backgroundColor: white,
+    borderRadius: 10,
+    borderWidth: 1,
+    margin: 'auto',
+    height: 200,
+    width: 600,
+  } as ViewStyle,
 });
 
 enum EventTypes {
@@ -77,6 +84,32 @@ const CreateEvent = () => {
       />
     </View>
   );
+};
+
+/**
+ * Function called when the user confirms an event creation. If the end is in the past, it will tell
+ * the user and cancel the creation. If the event starts more than 5 minutes in the past, it will
+ * ask if it can start now. Otherwise, the event will simply be created.
+ *
+ * @param start - The start time of the event
+ * @param end - The end time of the event
+ * @param createEvent - The function which creates the event
+ * @param setStartModalIsVisible - The function which sets the visibility of the modal on starting
+ * time being in past
+ * @param setEndModalIsVisible - The function which sets the visibility of the modal on ending time
+ * being in past
+ */
+export const onConfirmPress = (start: Timestamp, end: Timestamp, createEvent: Function,
+  setStartModalIsVisible: Function, setEndModalIsVisible: Function) => {
+  const now = Timestamp.EpochNow();
+
+  if (end.before(now)) {
+    setEndModalIsVisible(true);
+  } else if (now.after(start.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
+    setStartModalIsVisible(true);
+  } else {
+    createEvent();
+  }
 };
 
 export default CreateEvent;

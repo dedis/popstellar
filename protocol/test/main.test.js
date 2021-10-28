@@ -162,6 +162,17 @@ test("message data: chirp", () => {
 
 })
 
+test("message data: consensus", () => {
+    elect = require("../examples/messageData/elect.json");
+    expect(elect).toBeValid(messageDataSchema)
+
+    elect_accept = require("../examples/messageData/elect_accept.json");
+    expect(elect_accept).toBeValid(messageDataSchema)
+
+    learn = require("../examples/messageData/learn.json");
+    expect(learn).toBeValid(messageDataSchema)
+})
+
 function printError(errors) {
     return errors
         .map((e) => JSON.stringify(e, null, "  "))

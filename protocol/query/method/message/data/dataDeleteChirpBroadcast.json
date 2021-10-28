@@ -8,7 +8,7 @@
       "const": "chirp"
     },
     "action": {
-      "const": "delete"
+      "const": "deleteBroadcast"
     },
     "chirp_id": {
       "description": "message_id of the chirp message above",

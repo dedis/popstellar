@@ -36,4 +36,7 @@ func Test_Lao_Create(t *testing.T) {
 
 	require.Len(t, msg.Witnesses, 0)
 	//require.Equal(t, "XXX", msg.Witnesses[0])
+
+	err = msg.Verify()
+	require.NoError(t, err)
 }

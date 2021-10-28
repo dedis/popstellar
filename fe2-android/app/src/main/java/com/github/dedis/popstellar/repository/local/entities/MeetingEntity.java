@@ -6,6 +6,7 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
 @Entity
+@SuppressWarnings("NotNullFieldNotInitialized")
 public class MeetingEntity {
 
   @PrimaryKey @NonNull public String originalId;

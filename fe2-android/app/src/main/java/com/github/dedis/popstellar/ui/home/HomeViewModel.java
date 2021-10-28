@@ -120,6 +120,7 @@ public class HomeViewModel extends AndroidViewModel
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     String channel = "/root/" + barcode.rawValue;
+    String consensusChannel = channel + "/consensus";
     disposables.add(
         mLAORepository
             .sendSubscribe(channel)
@@ -129,6 +130,7 @@ public class HomeViewModel extends AndroidViewModel
                 answer -> {
                   if (answer instanceof Result) {
                     Log.d(TAG, "got success result for subscribe to lao");
+                    mLAORepository.sendSubscribe(consensusChannel);
                   } else {
                     Log.d(
                         TAG,
@@ -189,9 +191,8 @@ public class HomeViewModel extends AndroidViewModel
                               + ((Error) answer).getError().getDescription());
                     }
                   },
-                  throwable -> {
-                    Log.d(TAG, "timed out waiting for a response for create lao", throwable);
-                  }));
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for a response for create lao", throwable)));
 
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to get public key", e);

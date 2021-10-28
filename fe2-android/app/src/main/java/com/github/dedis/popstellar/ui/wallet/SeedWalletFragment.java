@@ -70,8 +70,8 @@ public class SeedWalletFragment extends Fragment {
     try {
       exportSeed = wallet.exportSeed();
     } catch (Exception e) {
-      Toast.makeText(getContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
-      Log.d(TAG, e.getMessage());
+      Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
+      Log.d(TAG, "Error while importing key", e);
     }
     if (exportSeed != null && exportSeed.length > 0) {
       StringJoiner joiner = new StringJoiner(" ");
@@ -80,7 +80,7 @@ public class SeedWalletFragment extends Fragment {
       }
       mWalletSeedFragBinding.seedWallet.setText(joiner.toString());
     } else {
-      Toast.makeText(getContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
+      Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
     }
   }
 
@@ -90,7 +90,7 @@ public class SeedWalletFragment extends Fragment {
           if (seedAlert != null && seedAlert.isShowing()) {
             seedAlert.dismiss();
           }
-          AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+          AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
           builder.setTitle("You are sure you have saved the words somewhere?");
           builder.setPositiveButton(
               "Yes",
@@ -98,7 +98,7 @@ public class SeedWalletFragment extends Fragment {
                 if (!mHomeViewModel.importSeed(
                     mWalletSeedFragBinding.seedWallet.getText().toString())) {
                   Toast.makeText(
-                          getContext().getApplicationContext(),
+                          requireContext().getApplicationContext(),
                           "Error import key, try again",
                           Toast.LENGTH_LONG)
                       .show();

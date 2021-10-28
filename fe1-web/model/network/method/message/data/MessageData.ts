@@ -8,6 +8,7 @@ export enum ObjectType {
   MEETING = 'meeting',
   ROLL_CALL = 'roll_call',
   ELECTION = 'election',
+  CHIRP = 'chirp',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */
@@ -26,6 +27,7 @@ export enum ActionType {
   REOPEN = 'reopen',
   RESULT = 'result',
   CLOSE = 'close',
+  ADD = 'add',
 }
 
 export interface MessageData {

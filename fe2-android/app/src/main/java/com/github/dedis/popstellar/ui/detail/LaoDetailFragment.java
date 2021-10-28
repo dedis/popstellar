@@ -49,16 +49,16 @@ public class LaoDetailFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mLaoDetailFragBinding = LaoDetailFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     mLaoDetailFragBinding.setViewModel(mLaoDetailViewModel);
-    mLaoDetailFragBinding.setLifecycleOwner(getActivity());
+    mLaoDetailFragBinding.setLifecycleOwner(requireActivity());
 
     return mLaoDetailFragBinding.getRoot();
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
     setupWitnessMessageButton();
     setupPropertiesButton();
@@ -78,7 +78,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getShowPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -90,7 +90,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getEditPropertiesEvent()
         .observe(
-            this,
+            getViewLifecycleOwner(),
             booleanEvent -> {
               Boolean action = booleanEvent.getContentIfNotHandled();
               if (action != null) {
@@ -101,7 +101,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getLaoEvents()
         .observe(
-            getActivity(),
+            requireActivity(),
             events -> {
               Log.d(TAG, "Got a list update for LAO events");
               mEventListViewEventAdapter.replaceList(events);
@@ -110,7 +110,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getCurrentLao()
         .observe(
-            getActivity(),
+            requireActivity(),
             lao -> {
               Bitmap myBitmap = QRCode.from(lao.getChannel().substring(6)).bitmap();
               mLaoDetailFragBinding.channelQrCode.setImageBitmap(myBitmap);
@@ -118,8 +118,7 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupWitnessMessageButton() {
-    Button witnessMessageButton =
-        (Button) getActivity().findViewById(R.id.tab_witness_message_button);
+    Button witnessMessageButton = requireActivity().findViewById(R.id.tab_witness_message_button);
     witnessMessageButton.setOnClickListener(v -> mLaoDetailViewModel.openWitnessMessage());
   }
 
@@ -132,7 +131,7 @@ public class LaoDetailFragment extends Fragment {
   }
 
   private void setupPropertiesButton() {
-    Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
+    Button propertiesButton = requireActivity().findViewById(R.id.tab_properties);
 
     propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
   }
@@ -165,7 +164,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getWitnesses()
         .observe(
-            getActivity(),
+            requireActivity(),
             witnesses -> {
               Log.d(TAG, "witnesses updated");
               mWitnessListViewAdapter.replaceList(witnesses);
@@ -187,7 +186,7 @@ public class LaoDetailFragment extends Fragment {
     mLaoDetailViewModel
         .getLaoEvents()
         .observe(
-            getActivity(),
+            requireActivity(),
             events -> {
               Log.d(TAG, "Got an event list update");
               for (Event event : events) {

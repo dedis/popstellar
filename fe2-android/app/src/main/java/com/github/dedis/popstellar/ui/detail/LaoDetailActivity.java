@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
@@ -129,6 +130,9 @@ public class LaoDetailActivity extends AppCompatActivity {
 
     // Subscribe to "open manage election" event
     setupManageElectionFragment();
+
+    // Subscribe to "open start election" event
+    setupElectionStartFragment();
   }
 
   private void subscribeWalletEvents() {
@@ -493,4 +497,25 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
   }
+
+  private void setupElectionStartFragment() {
+    mViewModel
+        .getOpenStartElectionEvent()
+        .observe(
+            this,
+            booleanSingleEvent -> {
+              Boolean event = booleanSingleEvent.getContentIfNotHandled();
+              if (event != null) {
+                ElectionStartFragment fragment =
+                    (ElectionStartFragment)
+                        getSupportFragmentManager().findFragmentById(R.id.fragment_election_start);
+                if (fragment == null) {
+                  fragment = ElectionStartFragment.newInstance();
+                  ActivityUtils.replaceFragmentInActivity(
+                      getSupportFragmentManager(), fragment, R.id.fragment_container_lao_detail);
+                }
+              }
+            });
+  }
+
 }

@@ -32,7 +32,6 @@ public class CastVoteViewPagerAdapter
 
   public CastVoteViewPagerAdapter(
       LaoDetailViewModel mLaoDetailViewModel, CastVoteFragmentBinding castVoteBinding) {
-    super();
     this.mLaoDetailViewModel = mLaoDetailViewModel;
     this.castVoteBinding = castVoteBinding;
   }
@@ -113,11 +112,14 @@ public class CastVoteViewPagerAdapter
 
   private boolean checkEachQuestion() {
     List<List<Integer>> allVotes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
-    for (List<Integer> vote : allVotes) {
-      if (vote == null || vote.isEmpty()) {
-        return false;
+    if (allVotes != null) {
+      for (List<Integer> vote : allVotes) {
+        if (vote == null || vote.isEmpty()) {
+          return false;
+        }
       }
     }
+
     return true;
   }
 

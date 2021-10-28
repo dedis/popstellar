@@ -74,7 +74,7 @@ public class ManageElectionFragment extends Fragment {
     ElectionManageFragmentBinding mManageElectionFragBinding =
         ElectionManageFragmentBinding.inflate(inflater, container, false);
 
-    laoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    laoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
     terminate = mManageElectionFragBinding.terminateElection;
     editStartTimeButton = mManageElectionFragBinding.editStartTime;
     editEndTimeButton = mManageElectionFragBinding.editEndTime;
@@ -92,11 +92,9 @@ public class ManageElectionFragment extends Fragment {
         new java.util.Date(
             System.currentTimeMillis()); // Get's the date based on the unix time stamp
     Date dStart =
-        new java.util.Date(
-            laoDetailViewModel.getCurrentElection().getStartTimestamp()
-                * 1000); // *1000 because it needs to be in milisecond
+        new java.util.Date(laoDetailViewModel.getCurrentElection().getStartTimestampInMillis());
     Date dEnd =
-        new java.util.Date(laoDetailViewModel.getCurrentElection().getEndTimestamp() * 1000);
+        new java.util.Date(laoDetailViewModel.getCurrentElection().getEndTimestampInMillis());
     currentTime.setText(
         DATE_FORMAT.format(dCurrent)); // Set's the start time in the form dd/MM/yyyy HH:mm z
     startTime.setText(DATE_FORMAT.format(dStart));
@@ -119,7 +117,7 @@ public class ManageElectionFragment extends Fragment {
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    Button back = getActivity().findViewById(R.id.tab_back);
+    Button back = requireActivity().findViewById(R.id.tab_back);
     back.setOnClickListener(v -> laoDetailViewModel.openLaoDetail());
 
     DialogInterface.OnClickListener dialogClickListener =
@@ -142,8 +140,7 @@ public class ManageElectionFragment extends Fragment {
                 {
                   Calendar startTimeCalendar = Calendar.getInstance();
                   startTimeCalendar.setTimeInMillis(
-                      laoDetailViewModel.getCurrentElection().getStartTimestamp()
-                          * 1000); // *1000 because it needs to be in milisecond
+                      laoDetailViewModel.getCurrentElection().getStartTimestampInMillis());
                   startTimeCalendar.set(Calendar.HOUR_OF_DAY, newHour);
                   startTimeCalendar.set(Calendar.MINUTE, newMinute);
 
@@ -155,8 +152,7 @@ public class ManageElectionFragment extends Fragment {
                 {
                   Calendar startTimeCalendar = Calendar.getInstance();
                   startTimeCalendar.setTimeInMillis(
-                      laoDetailViewModel.getCurrentElection().getStartTimestamp()
-                          * 1000); // *1000 because it needs to be in milisecond
+                      laoDetailViewModel.getCurrentElection().getStartTimestampInMillis());
                   startTimeCalendar.set(Calendar.YEAR, newYear);
                   startTimeCalendar.set(Calendar.MONTH, newMonth);
                   startTimeCalendar.set(Calendar.DAY_OF_MONTH, newDay);
@@ -168,7 +164,7 @@ public class ManageElectionFragment extends Fragment {
                 {
                   Calendar endTimeCalendar = Calendar.getInstance();
                   endTimeCalendar.setTimeInMillis(
-                      laoDetailViewModel.getCurrentElection().getEndTimestamp() * 1000);
+                      laoDetailViewModel.getCurrentElection().getEndTimestampInMillis());
                   endTimeCalendar.set(Calendar.HOUR_OF_DAY, newHour);
                   endTimeCalendar.set(Calendar.MINUTE, newMinute);
 
@@ -180,7 +176,7 @@ public class ManageElectionFragment extends Fragment {
                 {
                   Calendar endTimeCalendar = Calendar.getInstance();
                   endTimeCalendar.setTimeInMillis(
-                      laoDetailViewModel.getCurrentElection().getEndTimestamp() * 1000);
+                      laoDetailViewModel.getCurrentElection().getEndTimestampInMillis());
                   endTimeCalendar.set(Calendar.YEAR, newYear);
                   endTimeCalendar.set(Calendar.MONTH, newMonth);
                   endTimeCalendar.set(Calendar.DAY_OF_MONTH, newDay);
