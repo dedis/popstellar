@@ -25,7 +25,6 @@ const styles = StyleSheet.create({
 const Social = () => {
   const [inputChirp, setInputChirp] = useState('');
 
-  // TODO: Implement this method, so that it sends a test chirp to the network
   const publishChirp = () => {
     console.log(inputChirp.length);
   };
