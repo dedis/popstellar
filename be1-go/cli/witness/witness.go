@@ -6,34 +6,24 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/url"
-	"os"
+	be1_go "popstellar"
+	"popstellar/channel/lao"
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/witness"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
-	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/rs/zerolog"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
 
-const defaultLevel = zerolog.InfoLevel
-
-var logout = zerolog.ConsoleWriter{
-	Out:        os.Stdout,
-	TimeFormat: time.RFC3339,
-}
-
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
 // the witness.
 func Serve(cliCtx *cli.Context) error {
-	log := zerolog.New(logout).Level(defaultLevel).
-		With().Timestamp().Logger().
-		With().Caller().Logger()
+	log := be1_go.Logger
 
 	// get command line args which specify public key, organizer address, port
 	// for organizer, clients, witnesses, other witness' addresses
@@ -61,7 +51,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create witness hub
-	h, err := witness.NewHub(point, log)
+	h, err := witness.NewHub(point, log, lao.NewChannel)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}
@@ -74,16 +64,14 @@ func Serve(cliCtx *cli.Context) error {
 	done := make(chan struct{})
 
 	// connect to organizer's witness endpoint
-	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg,
-		done, log.With().Str("role", "witness socket").Logger())
+	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	// connect to other witnesses
 	for _, witness := range otherWitness {
-		err = connectToWitnessSocket(hub.WitnessHubType, witness, h, wg, done,
-			log.With().Str("role", "other witness socket").Logger())
+		err = connectToWitnessSocket(hub.WitnessHubType, witness, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
@@ -114,8 +102,8 @@ func Serve(cliCtx *cli.Context) error {
 
 // connectToSocket establishes a connection to another server's witness
 // endpoint.
-func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub,
-	wg *sync.WaitGroup, done chan struct{}, log zerolog.Logger) error {
+func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
+	log := be1_go.Logger
 
 	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
 	u, err := url.Parse(urlString)
@@ -128,7 +116,7 @@ func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub,
 		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
 	}
 
-	log.Printf("connected to %s at %s", otherHubType, urlString)
+	log.Info().Msgf("connected to %s at %s", otherHubType, urlString)
 
 	switch otherHubType {
 	case hub.OrganizerHubType:

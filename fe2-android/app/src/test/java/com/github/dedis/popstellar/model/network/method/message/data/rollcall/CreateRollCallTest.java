@@ -7,22 +7,29 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
-import java.time.Instant;
+
 import org.junit.Test;
+
+import java.time.Instant;
 
 public class CreateRollCallTest {
 
   private final String laoId = Hash.hash("laoId");
   private final String name = "name";
-  private final long time = Instant.now().getEpochSecond();
+  private final long now = Instant.now().getEpochSecond();
+  private final long end = now + 30L;
   private final String location = "Location";
-  private final CreateRollCall createRollCall = new CreateRollCall(name, time, time, location, null, laoId);
+  private final CreateRollCall createRollCall =
+      new CreateRollCall(name, now, now, end, location, null, laoId);
 
   @Test
   public void generateCreateRollCallIdTest() {
     // Hash('R'||lao_id||creation||name)
-    String expectedId = Hash
-        .hash(EventType.ROLL_CALL.getSuffix(), laoId, Long.toString(createRollCall.getCreation()),
+    String expectedId =
+        Hash.hash(
+            EventType.ROLL_CALL.getSuffix(),
+            laoId,
+            Long.toString(createRollCall.getCreation()),
             createRollCall.getName());
     assertThat(createRollCall.getId(), is(expectedId));
   }
@@ -44,12 +51,12 @@ public class CreateRollCallTest {
 
   @Test
   public void getProposedStartTest() {
-    assertThat(createRollCall.getProposedStart(), is(time));
+    assertThat(createRollCall.getProposedStart(), is(now));
   }
 
   @Test
   public void getProposedEndTest() {
-    assertThat(createRollCall.getProposedEnd(), is(time));
+    assertThat(createRollCall.getProposedEnd(), is(end));
   }
 
   @Test

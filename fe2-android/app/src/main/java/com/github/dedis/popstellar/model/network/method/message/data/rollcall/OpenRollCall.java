@@ -1,32 +1,33 @@
 package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Data sent to open a roll call
- */
+/** Data sent to open a roll call */
 public class OpenRollCall extends Data {
 
   @SerializedName("update_id")
   private final String updateId;
+
   private final String opens;
+
   @SerializedName("opened_at")
   private final long openedAt;
-  private String action;
+
+  private final String action;
 
   /**
    * Constructor of a data Open Roll-Call
    *
-   * @param laoId    id of lao
-   * @param opens    The 'update_id' of the latest roll call close, or in its absence, the 'id'
-   *                 field of the roll call creation
+   * @param laoId id of lao
+   * @param opens The 'update_id' of the latest roll call close, or in its absence, the 'id' field
+   *     of the roll call creation
    * @param openedAt timestamp corresponding to roll call open
-   * @param state    the state in which the roll call is when this instance is created
+   * @param state the state in which the roll call is when this instance is created
    */
   public OpenRollCall(String laoId, String opens, long openedAt, EventState state) {
     this.updateId = RollCall.generateOpenRollCallId(laoId, opens, openedAt);
@@ -66,5 +67,22 @@ public class OpenRollCall extends Data {
 
   public long getOpenedAt() {
     return openedAt;
+  }
+
+  @Override
+  public String toString() {
+    return "OpenRollCall{"
+        + "updateId='"
+        + updateId
+        + '\''
+        + ", opens='"
+        + opens
+        + '\''
+        + ", openedAt="
+        + openedAt
+        + ", action='"
+        + action
+        + '\''
+        + '}';
   }
 }

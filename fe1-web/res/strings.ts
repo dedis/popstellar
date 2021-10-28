@@ -4,6 +4,7 @@ const STRINGS = {
   general_button_cancel: 'Cancel',
   general_button_confirm: 'Confirm',
   general_button_open: 'Open',
+  general_button_ok: 'Ok',
   general_yes: 'Yes',
   general_no: 'No',
 
@@ -78,8 +79,9 @@ const STRINGS = {
   connect_confirm_description: 'Connect to this local organization?',
 
   /* --- Launch Strings --- */
-  launch_description: 'To launch a new organization please enter a name for the organization (you can change it later)',
+  launch_description: 'To launch a new organization, please enter a name and an address',
   launch_organization_name: 'Organization name',
+  launch_address: 'Address',
   launch_button_launch: 'Launch',
 
   /* --- Organizer Strings --- */
@@ -122,6 +124,13 @@ const STRINGS = {
   election_method_Plurality: 'Plurality',
   election_method_Approval: 'Approval',
   election_version_identifier: '1.0.0',
+
+  /* --- Event Creation Strings --- */
+  modal_event_creation_failed: 'Event creation failed',
+  modal_event_ends_in_past: 'The event\'s end time in the past.',
+  modal_event_starts_in_past: 'The event\'s start time is in the past.\nWhat do you want to do ?',
+  modal_button_start_now: 'Start it now',
+  modal_button_go_back: 'Cancel',
 
   /* --- Cast Vote Strings --- */
   cast_vote: 'Cast Vote',
@@ -168,6 +177,7 @@ const STRINGS = {
   import_seed_button: 'I OWN A SEED',
   type_seed_info: 'Type the 12 word seed',
   show_seed_info: 'This is the only backup seed for your PoP tokens - store it securely',
+  copy_to_clipboard: 'Copy to clipboard',
   type_seed_example: 'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol',
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',

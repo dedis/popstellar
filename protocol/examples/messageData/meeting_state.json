@@ -1,20 +1,17 @@
 {
     "object": "meeting",
     "action": "state",
-    "id": "XXX",
-    "name": "XXX",
-    "creation": 123,
-    "last_modified": 123,
-    "location": "XXX",
-    "start": 123,
-    "end": 123,
-    "extra": {
-        "anything": "XXX"
-    },
-    "modification_id": "XXX",
+    "id": "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=",
+    "name": "Meeting",
+    "creation": 1633098331,
+    "last_modified": 1633098340,
+    "location": "EPFL",
+    "start": 1633098900,
+    "end": 1633102500,
+    "modification_id": "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=",
     "modification_signatures": [
         {
-            "witness": "XXX",
+            "witness": "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=",
             "signature": "XXX"
         }
     ]

@@ -1,6 +1,8 @@
 package messagedata
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // MeetingCreate defines a message data
 type MeetingCreate struct {

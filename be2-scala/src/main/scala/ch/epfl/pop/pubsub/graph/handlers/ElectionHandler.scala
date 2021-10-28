@@ -4,7 +4,7 @@ import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
@@ -19,6 +19,7 @@ object ElectionHandler extends MessageHandler {
       case message@(_: JsonRpcRequestSetupElection) => handleSetupElection(message)
       case message@(_: JsonRpcRequestResultElection) => handleResultElection(message)
       case message@(_: JsonRpcRequestEndElection) => handleEndElection(message)
+      case message@(_: JsonRpcRequestCastVoteElection) => handleCastVoteElection(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         "Internal server fault: LaoHandler was given a message it could not recognize",
@@ -37,7 +38,7 @@ object ElectionHandler extends MessageHandler {
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.SEPARATOR}$electionId")
 
-    val f: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
+    val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
       case DbActor.DbActorWriteAck => Await.result((dbActor ? DbActor.CreateChannel(electionChannel)).map {
         case DbActor.DbActorAck => Left(rpcMessage)
         case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -46,7 +47,13 @@ object ElectionHandler extends MessageHandler {
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
 
-    Await.result(f, duration)
+    Await.result(ask, duration)
+  }
+
+  def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    // no need to propagate here, hence the use of dbAskWrite
+    val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(

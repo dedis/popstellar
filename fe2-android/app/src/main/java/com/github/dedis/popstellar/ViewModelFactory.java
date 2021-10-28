@@ -1,12 +1,17 @@
 package com.github.dedis.popstellar;
 
 import android.app.Application;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
@@ -24,6 +29,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     if (INSTANCE == null) {
       synchronized (ViewModelFactory.class) {
         if (INSTANCE == null) {
+          Log.d(
+              ViewModelFactory.class.getSimpleName(),
+              "Creating new instance of " + ViewModelFactory.class.getSimpleName());
           INSTANCE = new ViewModelFactory(application);
         }
       }
@@ -32,6 +40,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
   }
 
   public static void destroyInstance() {
+    Log.d(
+        ViewModelFactory.class.getSimpleName(),
+        "Destroying " + ViewModelFactory.class.getSimpleName() + " current instance");
     INSTANCE = null;
   }
 
@@ -45,9 +56,11 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
     }
   }
 
+  @NonNull
   @Override
-  public <T extends ViewModel> T create(Class<T> modelClass) {
-    if (modelClass.isAssignableFrom(HomeViewModel.class)) {
+  @SuppressWarnings("unchecked")
+  public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+    if (HomeViewModel.class.isAssignableFrom(modelClass)) {
       return (T)
           new HomeViewModel(
               application,
@@ -59,7 +72,7 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
                   keysetManager,
                   gson),
               keysetManager);
-    } else if (modelClass.isAssignableFrom(LaoDetailViewModel.class)) {
+    } else if (LaoDetailViewModel.class.isAssignableFrom(modelClass)) {
       return (T)
           new LaoDetailViewModel(
               application,

@@ -25,7 +25,7 @@
             "$comment": "Note: the string is encoded in Base64"
         },
         "message_id": {
-            "description": "[Base64String] message id : Hash(data||signature)",
+            "description": "[Base64String] message id : HashLen(data, signature)",
             "type": "string",
             "contentEncoding": "base64",
             "$comment": "Note: the string is encoded in Base64"

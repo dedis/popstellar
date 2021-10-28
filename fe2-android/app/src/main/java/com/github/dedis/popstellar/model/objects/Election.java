@@ -1,16 +1,16 @@
 package com.github.dedis.popstellar.model.objects;
 
-
-import com.github.dedis.popstellar.model.objects.event.Event;
-import com.github.dedis.popstellar.model.objects.event.EventState;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
+import com.github.dedis.popstellar.model.objects.event.Event;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
+
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -27,15 +27,15 @@ public class Election extends Event {
   private long end;
   private List<ElectionQuestion> electionQuestions;
 
-  //Map that associates each sender pk to their votes
-  private Map<String, List<ElectionVote>> voteMap;
-  //Map that associates each messageId to its sender
-  private Map<String, String> messageMap;
+  // Map that associates each sender pk to their votes
+  private final Map<String, List<ElectionVote>> voteMap;
+  // Map that associates each messageId to its sender
+  private final Map<String, String> messageMap;
 
   private EventState state;
 
-  //Results of an election (associated to a question id)
-  private Map<String, List<QuestionResult>> results;
+  // Results of an election (associated to a question id)
+  private final Map<String, List<QuestionResult>> results;
 
   public Election(String laoId, long creation, String name) {
     this.id = Election.generateElectionSetupId(laoId, creation, name);
@@ -71,6 +71,10 @@ public class Election extends Event {
 
   public long getCreation() {
     return creation;
+  }
+
+  public long getCreationInMillis() {
+    return getCreation() * 1000;
   }
 
   public String getChannel() {
@@ -121,10 +125,9 @@ public class Election extends Event {
     if (votes == null || votes.isEmpty()) {
       throw new IllegalArgumentException("votes cannot be null or empty");
     }
-    //The list must be sorted by order of question ids
+    // The list must be sorted by order of question ids
     List<ElectionVote> votesCopy = new ArrayList<>(votes);
-    Collections.sort(votesCopy,
-        (Comparator<ElectionVote>) (v1, v2) -> v1.getQuestionId().compareTo(v2.getQuestionId()));
+    votesCopy.sort(Comparator.comparing(ElectionVote::getQuestionId));
     voteMap.put(senderPk, votesCopy);
   }
 
@@ -164,7 +167,8 @@ public class Election extends Event {
    */
   public String computerRegisteredVotes() {
     List<String> listOfVoteIds = new ArrayList<>();
-    //Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of messageIds
+    // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
+    // messageIds
     for (String senderPk : messageMap.values()) {
       for (ElectionVote vote : voteMap.get(senderPk)) {
         listOfVoteIds.add(vote.getId());
@@ -203,11 +207,12 @@ public class Election extends Event {
   }
 
   /**
-   * Generate the id for dataElectionSetup. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionSetup.json
+   * Generate the id for dataElectionSetup.
+   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionSetup.json
    *
-   * @param laoId     ID of the LAO
+   * @param laoId ID of the LAO
    * @param createdAt creation time of the election
-   * @param name      name of the election
+   * @param name name of the election
    * @return the ID of ElectionSetup computed as Hash('Election'||lao_id||created_at||name)
    */
   public static String generateElectionSetupId(String laoId, long createdAt, String name) {
@@ -220,7 +225,7 @@ public class Election extends Event {
    * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionResult.json
    *
    * @param electionId ID of the Election
-   * @param question   question of the Election
+   * @param question question of the Election
    * @return the ID of an election question computed as Hash(“Question”||election_id||question)
    */
   public static String generateElectionQuestionId(String electionId, String question) {
@@ -228,20 +233,58 @@ public class Election extends Event {
   }
 
   /**
-   * Generate the id for a vote of dataCastVote. https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCastVote.json
+   * Generate the id for a vote of dataCastVote.
+   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCastVote.json
    *
-   * @param electionId     ID of the Election
-   * @param questionId     ID of the Election question
-   * @param voteIndex      index(es) of the vote
-   * @param writeIn        string representing the write in
+   * @param electionId ID of the Election
+   * @param questionId ID of the Election question
+   * @param voteIndex index(es) of the vote
+   * @param writeIn string representing the write in
    * @param writeInEnabled boolean representing if write enabled or not
-   * @return the ID of an election question computed as Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
+   * @return the ID of an election question computed as
+   *     Hash('Vote'||election_id||question_id||(vote_index(es)|write_in))
    */
-  public static String generateElectionVoteId(String electionId, String questionId,
-      List<Integer> voteIndex, String writeIn, boolean writeInEnabled) {
+  public static String generateElectionVoteId(
+      String electionId,
+      String questionId,
+      List<Integer> voteIndex,
+      String writeIn,
+      boolean writeInEnabled) {
     // If write_in is enabled the id is formed with the write_in string
-    // If write_in is not enabled the id is formed with the vote indexes (formatted as [int1, int2, ...])
-    return Hash.hash("Vote", electionId, questionId,
-        writeInEnabled ? writeIn : voteIndex.toString());
+    // If write_in is not enabled the id is formed with the vote indexes (formatted as [int1, int2,
+    // ...])
+    return Hash.hash(
+        "Vote", electionId, questionId, writeInEnabled ? writeIn : voteIndex.toString());
+  }
+
+  @Override
+  public String toString() {
+    return "Election{"
+        + "channel='"
+        + channel
+        + '\''
+        + ", id='"
+        + id
+        + '\''
+        + ", name='"
+        + name
+        + '\''
+        + ", creation="
+        + creation
+        + ", start="
+        + start
+        + ", end="
+        + end
+        + ", electionQuestions="
+        + Arrays.toString(electionQuestions.toArray())
+        + ", voteMap="
+        + voteMap
+        + ", messageMap="
+        + messageMap
+        + ", state="
+        + state
+        + ", results="
+        + results
+        + '}';
   }
 }

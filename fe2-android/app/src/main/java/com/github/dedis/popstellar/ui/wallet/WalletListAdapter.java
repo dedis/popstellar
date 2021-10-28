@@ -4,11 +4,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.databinding.RollCallEventLayoutBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -17,13 +20,13 @@ import java.util.Locale;
 public class WalletListAdapter extends BaseAdapter {
 
   private List<RollCall> rollCalls;
-  private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy HH:mm",
-      Locale.ENGLISH);
-  private LifecycleOwner lifecycleOwner;
+  private final SimpleDateFormat DATE_FORMAT =
+      new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.ENGLISH);
+  private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
 
-  public WalletListAdapter(List<RollCall> rollCalls, LaoDetailViewModel viewModel,
-      LifecycleOwner activity) {
+  public WalletListAdapter(
+      List<RollCall> rollCalls, LaoDetailViewModel viewModel, LifecycleOwner activity) {
     this.viewModel = viewModel;
     setList(rollCalls);
     lifecycleOwner = activity;
@@ -65,9 +68,11 @@ public class WalletListAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(view);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     RollCall rollCall = rollCalls.get(position);
-    binding.rollcallDate
-        .setText("Ended: " + DATE_FORMAT.format(new Date(1000 * rollCall.getEnd())));
+    binding.rollcallDate.setText(
+        "Ended: " + DATE_FORMAT.format(new Date(1000 * rollCall.getEnd())));
     binding.rollcallTitle.setText("Roll Call: " + rollCall.getName());
     binding.rollcallLocation.setText("Location: " + rollCall.getLocation());
 
@@ -79,15 +84,13 @@ public class WalletListAdapter extends BaseAdapter {
 
     binding.rollcallAttendeesListButton.setVisibility(View.VISIBLE);
     binding.rollcallAttendeesListButton.setOnClickListener(
-        clicked -> viewModel.openAttendeesList(rollCall.getId())
-    );
+        clicked -> viewModel.openAttendeesList(rollCall.getId()));
 
     Boolean isOrganizer = viewModel.isOrganizer().getValue();
     if (isOrganizer != null && !isOrganizer) {
       binding.rollcallTokenButton.setVisibility(View.VISIBLE);
       binding.rollcallTokenButton.setOnClickListener(
-          clicked -> viewModel.openRollCallToken(rollCall.getId())
-      );
+          clicked -> viewModel.openRollCallToken(rollCall.getId()));
     }
 
     binding.setLifecycleOwner(lifecycleOwner);

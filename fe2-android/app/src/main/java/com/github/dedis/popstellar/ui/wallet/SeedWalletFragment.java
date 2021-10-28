@@ -6,20 +6,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
+
 import java.util.StringJoiner;
 
-/**
- * Fragment used to display the new seed UI
- */
+/** Fragment used to display the new seed UI */
 public class SeedWalletFragment extends Fragment {
 
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
@@ -69,10 +70,8 @@ public class SeedWalletFragment extends Fragment {
     try {
       exportSeed = wallet.exportSeed();
     } catch (Exception e) {
-      Toast.makeText(getContext().getApplicationContext(),
-          err,
-          Toast.LENGTH_LONG).show();
-      Log.d(TAG, e.getMessage());
+      Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
+      Log.d(TAG, "Error while importing key", e);
     }
     if (exportSeed != null && exportSeed.length > 0) {
       StringJoiner joiner = new StringJoiner(" ");
@@ -81,31 +80,33 @@ public class SeedWalletFragment extends Fragment {
       }
       mWalletSeedFragBinding.seedWallet.setText(joiner.toString());
     } else {
-      Toast.makeText(getContext().getApplicationContext(),
-          err,
-          Toast.LENGTH_LONG).show();
+      Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
     }
   }
 
   private void setupConfirmSeedButton() {
-    mWalletSeedFragBinding.buttonConfirmSeed.setOnClickListener(v -> {
-      if (seedAlert != null && seedAlert.isShowing()) {
-        seedAlert.dismiss();
-      }
-      AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-      builder.setTitle("You are sure you have saved the words somewhere?");
-      builder.setPositiveButton("Yes", (dialog, which) -> {
-            if (!mHomeViewModel.importSeed(mWalletSeedFragBinding.seedWallet.getText().toString())) {
-              Toast.makeText(getContext().getApplicationContext(),
-                  "Error import key, try again",
-                  Toast.LENGTH_LONG).show();
-            }
+    mWalletSeedFragBinding.buttonConfirmSeed.setOnClickListener(
+        v -> {
+          if (seedAlert != null && seedAlert.isShowing()) {
+            seedAlert.dismiss();
           }
-      );
-      builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
-      seedAlert = builder.create();
-      seedAlert.show();
-    });
+          AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+          builder.setTitle("You are sure you have saved the words somewhere?");
+          builder.setPositiveButton(
+              "Yes",
+              (dialog, which) -> {
+                if (!mHomeViewModel.importSeed(
+                    mWalletSeedFragBinding.seedWallet.getText().toString())) {
+                  Toast.makeText(
+                          requireContext().getApplicationContext(),
+                          "Error import key, try again",
+                          Toast.LENGTH_LONG)
+                      .show();
+                }
+              });
+          builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+          seedAlert = builder.create();
+          seedAlert.show();
+        });
   }
-
 }

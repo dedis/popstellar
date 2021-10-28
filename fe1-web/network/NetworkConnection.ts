@@ -119,7 +119,7 @@ export class NetworkConnection {
       const pendingResponse = this.payloadPending.get(parsedMessage.id);
       if (pendingResponse === undefined) {
         throw new NetworkError(`Received a response whose id = ${parsedMessage.id}`
-          + 'does not match any pending requests');
+          + ' does not match any pending requests');
       }
 
       // a response was received, clear the timeout and the pending query from the pending map

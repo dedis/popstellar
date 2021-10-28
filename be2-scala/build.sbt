@@ -6,7 +6,17 @@ version := "0.1"
 
 scalaVersion := "2.13.5"
 
-coverageEnabled := true
+mainClass in (Compile, run) := Some("ch.epfl.pop.Server")
+mainClass in (Compile, packageBin) := Some("ch.epfl.pop.Server")
+
+lazy val scoverageSettings = Seq(
+  coverageEnabled in Compile := true,
+  coverageEnabled in Test := true,
+  coverageEnabled in packageBin := false,
+  
+)
+
+
 
 scapegoatVersion in ThisBuild := "1.4.8"
 scapegoatReports := Seq("xml")
@@ -40,6 +50,9 @@ libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
 // distributed pub sub cluster
 libraryDependencies += "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
 
+// Akka actor test kit
+libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test
+
 // For LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
 libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.12"
@@ -56,6 +69,13 @@ libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
+
+// Jackson Databind (for Json Schema Validation)
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
+
+// Json Schema Validator
+libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
+
 
 
 conflictManager := ConflictManager.latestCompatible

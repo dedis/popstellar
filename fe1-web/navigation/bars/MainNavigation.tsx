@@ -33,6 +33,7 @@ export default function MainNavigation() {
     <HomeTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={STRINGS.navigation_tab_home}
+      swipeEnabled={false}
     >
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_home}

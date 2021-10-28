@@ -6,14 +6,18 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import android.util.ArraySet;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.security.Hash;
+
+import org.junit.Test;
+
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
 
 public class UpdateLaoTest {
 
@@ -73,7 +77,13 @@ public class UpdateLaoTest {
     // different name
     assertNotEquals(updateLao, new UpdateLao("organizer", 10, "random", lastModified, witnesses));
     // different witnesses
-    assertNotEquals(updateLao,
-        new UpdateLao("organizer", 10, name, lastModified, new HashSet<>(Arrays.asList("0x3434"))));
+    assertNotEquals(
+        updateLao,
+        new UpdateLao(
+            "organizer",
+            10,
+            name,
+            lastModified,
+            new HashSet<>(Collections.singletonList("0x3434"))));
   }
 }

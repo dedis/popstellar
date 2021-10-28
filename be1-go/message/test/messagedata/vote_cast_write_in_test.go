@@ -29,12 +29,12 @@ func Test_Vote_Write_In(t *testing.T) {
 
 	require.Equal(t, "election", msg.Object)
 	require.Equal(t, "cast_vote", msg.Action)
-	require.Equal(t, "XXX", msg.Lao)
-	require.Equal(t, "XXX", msg.Election)
-	require.Equal(t, int64(123), msg.CreatedAt)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.Lao)
+	require.Equal(t, "QWTmcWMMMiUdWdZX7ib7GyqH6A5ifDYwPaMpKxIZm1k=", msg.Election)
+	require.Equal(t, int64(1633098996), msg.CreatedAt)
 
 	require.Len(t, msg.Votes, 1)
-	require.Equal(t, "XXX", msg.Votes[0].ID)
-	require.Equal(t, "XXX", msg.Votes[0].Question)
-	require.Equal(t, "XXX", msg.Votes[0].WriteIn)
+	require.Equal(t, "DtIsj7nQ0Y4iLJ4ETKv2D0uah7IYGyEVW7aCLFjaL0w=", msg.Votes[0].ID)
+	require.Equal(t, "WBVsWJI-C5YkD0wdE4DxnLa0lJzjnHEd67XPFVB9v3g=", msg.Votes[0].Question)
+	require.Equal(t, "Computer Science", msg.Votes[0].WriteIn)
 }

@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.network.method;
 
-/**
- * Unsubscribe from a channel
- */
+/** Unsubscribe from a channel */
 public final class Unsubscribe extends Query {
 
   public Unsubscribe(String channel, int id) {

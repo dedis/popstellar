@@ -3,14 +3,18 @@
     "action": "result",
     "questions": [
         {
-            "id": "XXX",
+            "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
             "result": [
                 {
-                    "ballot_option": "XXX",
-                    "count": 123
+                    "ballot_option": "Yes",
+                    "count": 1
+                },
+                {
+                    "ballot_option": "No",
+                    "count": 0
                 }
             ]
         }
     ],
-    "witness_signatures": ["XXX"]
+    "witness_signatures": []
 }

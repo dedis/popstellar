@@ -22,11 +22,14 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
+
 import com.github.dedis.popstellar.R;
 import com.google.android.gms.common.images.Size;
 import com.google.android.gms.vision.CameraSource;
+
 import java.io.IOException;
 
 /**
@@ -95,10 +98,8 @@ public class CameraPreview extends ViewGroup {
 
     if (mCameraSource != null) {
       Size size = mCameraSource.getPreviewSize();
-      if (size != null) {
-        height = size.getWidth();
-        width = size.getHeight();
-      }
+      height = size.getWidth();
+      width = size.getHeight();
     }
 
     final int layoutWidth = right - left;
@@ -148,6 +149,7 @@ public class CameraPreview extends ViewGroup {
 
     @Override
     public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+      // Do nothing because the preview doesn't have to change
     }
   }
 }

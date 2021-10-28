@@ -21,6 +21,10 @@ This repository contains the UI side implementation of the PoP project.
 
 We assume that you're familiar with the PoP project. Please read the [Architecture Specifications](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4) to get an idea about all the actors and components in the system.
 
+The preferred IDE for this project is [Android Studio](https://developer.android.com/studio). Make sure you have the latest stable version.
+
+Follow the steps described in [Coding Standards](#coding-standards) to make sure every you have the same coding standards as every other contributor.
+
 ## Project Structure
 
 The project is organized into different modules as follows
@@ -183,6 +187,9 @@ This project follows the [Google Java Style Guide](https://google.github.io/styl
 Please ensure that you configure Android Studio to use `google-java-format`. As of now, v1.9 of the plugin requires JDK11 which is not shipped with Android Studio 4.0. Please install the `Choose Runtime` plugin from the Marketplace and install a JDK11 runtime by double pressing shift and searching for `Choose Runtime` in the popup.
 
 `google-java-format` does not handle import orders unfortunately. Please import the [google-style scheme](https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml) in Android Studio by going to `Preferences` -> `Editor` -> `Code Style` -> `Import Scheme...` on the Gear Icon for Scheme.
+After the plugin is installed, it needs to be enabled. Go to `File -> Settings... -> Other Settings -> google-java-format Settings` and make sure `Enable google-java-format` is checked and the Code style is set to `Default Google Java style`
+
+Additionally, make sure `EditorConfig` is enabled. Go to `File -> Settings... -> Code Style` and check `Enable EditorConfig support`.
 
 Finally, you may want to install `Save Actions` plugin and configure it to `Optimise Imports` and `Reformat File` on save.
 

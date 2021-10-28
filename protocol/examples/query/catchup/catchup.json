@@ -1,8 +1,8 @@
 {
     "jsonrpc": "2.0",
-    "id": 999,
+    "id": 3,
     "method": "catchup",
     "params": {
-        "channel": "/root/XXX"
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
     }
 }

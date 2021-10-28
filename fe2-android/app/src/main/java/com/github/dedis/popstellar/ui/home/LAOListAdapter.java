@@ -4,10 +4,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+
 import com.github.dedis.popstellar.databinding.HomeLaoLayoutBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
+
 import java.util.List;
 
 public class LAOListAdapter extends BaseAdapter {
@@ -16,12 +19,12 @@ public class LAOListAdapter extends BaseAdapter {
 
   private List<Lao> laos;
 
-  private LifecycleOwner lifecycleOwner;
+  private final LifecycleOwner lifecycleOwner;
 
-  private boolean openLaoDetail;
+  private final boolean openLaoDetail;
 
-  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity,
-      boolean openLaoDetail) {
+  public LAOListAdapter(
+      List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity, boolean openLaoDetail) {
     this.homeViewModel = homeViewModel;
     setList(laos);
     lifecycleOwner = activity;
@@ -64,15 +67,14 @@ public class LAOListAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(view);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     LAOItemUserActionsListener userActionsListener =
-        new LAOItemUserActionsListener() {
-          @Override
-          public void onLAOClicked(Lao lao) {
-            if (openLaoDetail) {
-              homeViewModel.openLAO(lao.getChannel());
-            } else {
-              homeViewModel.openLaoWallet(lao.getChannel());
-            }
+        lao -> {
+          if (openLaoDetail) {
+            homeViewModel.openLAO(lao.getChannel());
+          } else {
+            homeViewModel.openLaoWallet(lao.getChannel());
           }
         };
 

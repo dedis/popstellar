@@ -1,22 +1,22 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
-import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.RollCall;
-import com.github.dedis.popstellar.model.objects.WitnessMessage;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.model.objects.event.EventState;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.RollCall;
+import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.repository.LAORepository;
+
 import java.util.Objects;
 import java.util.Optional;
 
-/**
- * Roll Call messages handler class
- */
+/** Roll Call messages handler class */
 public class RollCallHandler {
 
   public static final String TAG = RollCallHandler.class.getSimpleName();
@@ -32,15 +32,14 @@ public class RollCallHandler {
    * Process a Roll Call message.
    *
    * @param laoRepository the repository to access the LAO of the channel
-   * @param channel       the channel on which the message was received
-   * @param data          the data of the message received
-   * @param messageId     the ID of the message received
+   * @param channel the channel on which the message was received
+   * @param data the data of the message received
+   * @param messageId the ID of the message received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleRollCallMessage(LAORepository laoRepository, String channel,
-      Data data,
-      String messageId) {
-    Log.d(TAG, "handle Roll Call message");
+  public static boolean handleRollCallMessage(
+      LAORepository laoRepository, String channel, Data data, String messageId) {
+    Log.d(TAG, "handle Roll Call message id=" + messageId);
 
     switch (Objects.requireNonNull(Action.find(data.getAction()))) {
       case CREATE:
@@ -58,12 +57,14 @@ public class RollCallHandler {
   /**
    * Process a CreateRollCall message.
    *
-   * @param laoRepository  the repository to access the LAO of the channel
-   * @param channel        the channel on which the message was received
+   * @param laoRepository the repository to access the LAO of the channel
+   * @param channel the channel on which the message was received
    * @param createRollCall the message that was received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleCreateRollCall(LAORepository laoRepository, String channel,
+  public static boolean handleCreateRollCall(
+      LAORepository laoRepository,
+      String channel,
       CreateRollCall createRollCall,
       String messageId) {
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -91,21 +92,21 @@ public class RollCallHandler {
    * Process an OpenRollCall message.
    *
    * @param laoRepository the repository to access the LAO of the channel
-   * @param channel       the channel on which the message was received
-   * @param openRollCall  the message that was received
+   * @param channel the channel on which the message was received
+   * @param openRollCall the message that was received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleOpenRollCall(LAORepository laoRepository, String channel,
-      OpenRollCall openRollCall, String messageId) {
+  public static boolean handleOpenRollCall(
+      LAORepository laoRepository, String channel, OpenRollCall openRollCall, String messageId) {
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Log.d(TAG, "handleOpenRollCall: " + channel);
-    Log.d(TAG, openRollCall.getOpens());
+    Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
 
     String updateId = openRollCall.getUpdateId();
     String opens = openRollCall.getOpens();
 
     Optional<RollCall> rollCallOptional = lao.getRollCall(opens);
     if (!rollCallOptional.isPresent()) {
+      Log.w(TAG, "Cannot find roll call to open : " + opens);
       return true;
     }
 
@@ -126,13 +127,12 @@ public class RollCallHandler {
    * Process a CloseRollCall message.
    *
    * @param laoRepository the repository to access the LAO of the channel
-   * @param channel       the channel on which the message was received
+   * @param channel the channel on which the message was received
    * @param closeRollCall the message that was received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleCloseRollCall(LAORepository laoRepository, String channel,
-      CloseRollCall closeRollCall,
-      String messageId) {
+  public static boolean handleCloseRollCall(
+      LAORepository laoRepository, String channel, CloseRollCall closeRollCall, String messageId) {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCloseRollCall: " + channel);
 
@@ -141,6 +141,7 @@ public class RollCallHandler {
 
     Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
+      Log.w(TAG, "Cannot find roll call to close : " + closes);
       return true;
     }
 
@@ -160,10 +161,17 @@ public class RollCallHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("New Roll Call was created");
     message.setDescription(
-        ROLL_CALL_NAME + rollCall.getName() + "\n" +
-            "Roll Call ID : " + rollCall.getId() + "\n" +
-            "Location : " + rollCall.getLocation() + "\n" +
-            MESSAGE_ID + messageId);
+        ROLL_CALL_NAME
+            + rollCall.getName()
+            + "\n"
+            + "Roll Call ID : "
+            + rollCall.getId()
+            + "\n"
+            + "Location : "
+            + rollCall.getLocation()
+            + "\n"
+            + MESSAGE_ID
+            + messageId);
 
     return message;
   }
@@ -172,9 +180,14 @@ public class RollCallHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("A Roll Call was opened");
     message.setDescription(
-        ROLL_CALL_NAME + rollCall.getName() + "\n" +
-            "Updated ID : " + rollCall.getId() + "\n" +
-            MESSAGE_ID + messageId);
+        ROLL_CALL_NAME
+            + rollCall.getName()
+            + "\n"
+            + "Updated ID : "
+            + rollCall.getId()
+            + "\n"
+            + MESSAGE_ID
+            + messageId);
 
     return message;
   }
@@ -183,9 +196,14 @@ public class RollCallHandler {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("A Roll Call was closed");
     message.setDescription(
-        ROLL_CALL_NAME + rollCall.getName() + "\n" +
-            "Updated ID : " + rollCall.getId() + "\n" +
-            MESSAGE_ID + messageId);
+        ROLL_CALL_NAME
+            + rollCall.getName()
+            + "\n"
+            + "Updated ID : "
+            + rollCall.getId()
+            + "\n"
+            + MESSAGE_ID
+            + messageId);
 
     return message;
   }

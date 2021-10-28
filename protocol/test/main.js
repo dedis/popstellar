@@ -27,6 +27,12 @@ const message_data_meeting_create_schema = require("../query/method/message/data
 const message_data_meeting_state_schema = require("../query/method/message/data/dataStateMeeting.json")
 const message_data_message_witness_schema = require("../query/method/message/data/dataWitnessMessage.json")
 
+const message_data_chirp_add_schema = require("../query/method/message/data/dataAddChirp.json")
+const message_data_chirp_add_broadcast_schema = require("../query/method/message/data/dataAddChirpBroadcast.json")
+
+const message_data_elect_schema = require("../query/method/message/data/dataElect.json")
+const message_data_elect_accept_schema = require("../query/method/message/data/dataElectAccept.json")
+const message_data_learn_schema = require("../query/method/message/data/dataLearn.json")
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 
@@ -60,7 +66,14 @@ ajv.addSchema([
 
     message_data_meeting_create_schema,
     message_data_meeting_state_schema,
-    message_data_message_witness_schema
+    message_data_message_witness_schema,
+
+    message_data_chirp_add_broadcast_schema,
+    message_data_chirp_add_schema,
+
+    message_data_elect_schema,
+    message_data_elect_accept_schema,
+    message_data_learn_schema
 ]);
 
 module.exports = ajv;
