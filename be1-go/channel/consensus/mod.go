@@ -214,6 +214,54 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		if err != nil {
 			return xerrors.Errorf("failed to process elect accept action: %w", err)
 		}
+	case messagedata.ConsensusActionPrepare:
+		var consensusPrepare messagedata.ConsensusPrepare
+
+		err := msg.UnmarshalData(&consensusPrepare)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal consensus#prepare: %v", err)
+		}
+
+		err = c.processConsensusPrepare(consensusPrepare)
+		if err != nil {
+			return xerrors.Errorf("failed to process prepare action: %w", err)
+		}
+	case messagedata.ConsensusActionPromise:
+		var consensusPromise messagedata.ConsensusPromise
+
+		err := msg.UnmarshalData(&consensusPromise)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal consensus#promise: %v", err)
+		}
+
+		err = c.processConsensusPromise(consensusPromise)
+		if err != nil {
+			return xerrors.Errorf("failed to process promise action: %w", err)
+		}
+	case messagedata.ConsensusActionPropose:
+		var consensusPropose messagedata.ConsensusPropose
+
+		err := msg.UnmarshalData(&consensusPropose)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal consensus#propose: %v", err)
+		}
+
+		err = c.processConsensusPropose(consensusPropose)
+		if err != nil {
+			return xerrors.Errorf("failed to process propose action: %w", err)
+		}
+	case messagedata.ConsensusActionAccept:
+		var consensusAccept messagedata.ConsensusAccept
+
+		err := msg.UnmarshalData(&consensusAccept)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal consensus#accept: %v", err)
+		}
+
+		err = c.processConsensusAccept(consensusAccept)
+		if err != nil {
+			return xerrors.Errorf("failed to process accept action: %w", err)
+		}
 	case messagedata.ConsensuisActionLearn:
 		var consensusLearn messagedata.ConsensusLearn
 
@@ -253,12 +301,60 @@ func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAcc
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
-		return xerrors.Errorf("message doesn't correspond to any received message")
+		return xerrors.Errorf("message doesn't correspond to any previously received message")
 	}
 	return nil
 }
 
-// ProcessConsensusElectAccept processes a elect accept action.
+// ProcessConsensusPrepare processes a prepare action.
+func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) error {
+
+	// check wether a message with the correct ID was received previously
+	_, valid := c.inbox.GetMessage(data.MessageID)
+
+	if !valid {
+		return xerrors.Errorf("message doesn't correspond to any previously received message")
+	}
+	return nil
+}
+
+// ProcessConsensusPromise processes a promise action.
+func (c *Channel) processConsensusPromise(data messagedata.ConsensusPromise) error {
+
+	// check wether a message with the correct ID was received previously
+	_, valid := c.inbox.GetMessage(data.MessageID)
+
+	if !valid {
+		return xerrors.Errorf("message doesn't correspond to any previously received message")
+	}
+	return nil
+}
+
+// ProcessConsensusPropose processes a propose action.
+func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) error {
+
+	// check wether a message with the correct ID was received previously
+	_, valid := c.inbox.GetMessage(data.MessageID)
+
+	if !valid {
+		return xerrors.Errorf("message doesn't correspond to any previously received message")
+	}
+	return nil
+}
+
+// ProcessConsensusAccept proccesses an accept action.
+func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error {
+
+	// check wether a message with the correct ID was received previously
+	_, valid := c.inbox.GetMessage(data.MessageID)
+
+	if !valid {
+		return xerrors.Errorf("message doesn't correspond to any previously received message")
+	}
+	return nil
+}
+
+// ProcessConsensusElectAccept processes a learn action.
 func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 
 	// check wether a message with the correct ID was received previously
