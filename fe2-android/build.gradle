@@ -16,19 +16,6 @@ buildscript {
     }
 }
 
-plugins {
-    id "org.sonarqube" version "3.1.1"
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "dedis_student_21_pop_fe2"
-        property "sonar.projectName", "PoP - Fe2-Android"
-        property "sonar.organization", "dedis"
-        property "sonar.host.url", "https://sonarcloud.io"
-    }
-}
-
 allprojects {
     repositories {
         google()
