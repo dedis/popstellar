@@ -36,6 +36,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const [showTokens, setShowTokens] = useState(false);
   const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
+  const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
 
   const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
   const rollCalls = useSelector(rollCallSelector);
@@ -43,11 +44,9 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const laoSelector = makeLaosMap();
   const laos = useSelector(laoSelector);
 
-  let tokensByLaoRollCall: Record<string, Record<string, PopToken>> = {};
-
   Wallet.recoverWalletPoPTokens()
     .then((kp) => {
-      tokensByLaoRollCall = kp;
+      setTokensByLao(kp);
     })
     .catch((err) => console.debug(err));
 
@@ -117,9 +116,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   }
 
   function displayOneToken(laoId: string, rollCallId: string) {
+    if (!tokensByLao) {
+      console.warn('The tokensByLaoRollCall is undefined yet');
+      return;
+    }
     const lao = laos[laoId];
     const rollCall = rollCalls[laoId][rollCallId];
-    const tokenPk = tokensByLaoRollCall[laoId][rollCallId].publicKey;
+    const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
     return (
       <View style={styleContainer.centered}>
@@ -137,7 +140,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   }
 
   function displayTokens() {
-    if (Object.keys(tokensByLaoRollCall).length === 0) {
+    if (!tokensByLao || Object.keys(tokensByLao).length === 0) {
       return displayNoTokens();
     }
 
@@ -148,8 +151,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         <View style={styles.smallPadding} />
         <View>
           {
-            Object.keys(tokensByLaoRollCall).map(
-              (laoId) => Object.keys(tokensByLaoRollCall[laoId]).map(
+            Object.keys(tokensByLao).map(
+              (laoId) => Object.keys(tokensByLao[laoId]).map(
                 (rollCallId) => displayOneToken(laoId, rollCallId),
               ),
             )
