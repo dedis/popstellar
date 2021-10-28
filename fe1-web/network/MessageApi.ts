@@ -22,6 +22,7 @@ import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
 import { Question, Vote } from 'model/objects/Election';
+import { AddChirp } from 'model/network/method/message/data/chirp/AddChirp';
 import { publish } from './JsonRpcApi';
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
@@ -276,4 +277,19 @@ export function terminateElection(
 
   const elecCh = channelFromIds(currentLao.id, electionId);
   return publish(elecCh, message);
+}
+
+export function requestAddChirp(
+  text: string, parent_id: Hash = undefined,
+): Promise<void> {
+  const timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+
+  const message = new AddChirp({
+    text: text,
+    parent_id: parent_id,
+    timestamp: timestamp,
+  });
+
+  return publish(channelFromIds(currentLao.id), message);
 }
