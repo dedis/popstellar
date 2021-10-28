@@ -30,7 +30,6 @@ case object SocialMediaHandler extends MessageHandler {
   }
   
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //maybe handle it in another way??
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }

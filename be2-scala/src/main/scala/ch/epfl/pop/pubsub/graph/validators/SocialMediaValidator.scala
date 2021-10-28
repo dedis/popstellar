@@ -13,8 +13,20 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
         def validationError(reason: String): PipelineError = super.validationError(reason, "AddChirp", rpcMessage.id)
 
         rpcMessage.getParamsMessage match {
+
+
             // FIXME need more checks
-            case Some(_) => Left(rpcMessage)
+            case Some(message) => {
+                val data: AddChirp = message.decodedData.get.asInstanceOf[AddChirp]
+
+                if (!validateTimestampStaleness(data.timestamp)) {
+                    Right(validationError(s"stale timestamp (${data.timestamp})"))
+                }
+                // FIXME: validate parent ID: need to store all the channel's tweet IDs somewhere to compare?
+                else{
+                    Left(rpcMessage)
+                }
+            }
             case _ => Right(validationErrorNoMessage(rpcMessage.id))
         }
     }
