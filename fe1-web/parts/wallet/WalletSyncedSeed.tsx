@@ -124,15 +124,16 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     const rollCall = rollCalls[laoId][rollCallId];
     const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
+    // eslint-disable-next-line consistent-return
     return (
       <View style={styleContainer.centered}>
         <View style={styles.smallPadding} />
         <TextBlock bold text={STRINGS.lao_id} />
-        <CopiableTextInput text={lao.name} visibility />
+        <CopiableTextInput text={lao.name} />
         <TextBlock bold text={STRINGS.roll_call_name} />
         <TextBlock text={rollCall.name} visibility />
         <View style={styles.smallPadding} />
-        <CopiableTextInput text={tokenPk.valueOf()} visibility={showPublicKey} />
+        <CopiableTextInput text={tokenPk.valueOf()} />
         <View style={styles.smallPadding} />
         <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey} />
       </View>
