@@ -1,4 +1,6 @@
 apply plugin: 'com.android.application'
+apply plugin: 'org.sonarqube'
+apply plugin: 'jacoco'
 
 android {
     compileSdkVersion 30
@@ -24,8 +26,12 @@ android {
         }
 
         testOptions {
-            execution 'ANDROIDX_TEST_ORCHESTRATOR'
+            // This makes the coverage fail. For more information :
+            // https://developer.android.com/training/testing/junit-runner#using-android-test-orchestrator
+            // execution 'ANDROIDX_TEST_ORCHESTRATOR'
             unitTests.returnDefaultValues = true
+            // Improve tests performances by disabling fancy animations
+            animationsDisabled = true
         }
 
         javaCompileOptions {
@@ -38,6 +44,7 @@ android {
     buildTypes {
         debug {
             getIsDefault().set(true)  // sets this build type as default
+            testCoverageEnabled true
         }
         release {
             minifyEnabled false
@@ -45,8 +52,10 @@ android {
         }
     }
 
-    buildFeatures {
-        dataBinding true
+    // Enable data binding library for the project
+    // For more information : https://developer.android.com/topic/libraries/data-binding
+    dataBinding {
+        enabled = true
     }
 
     flavorDimensions "default"
@@ -62,12 +71,23 @@ android {
     }
 }
 
-//Simple library to use QR codes
-//More info : https://github.com/kenglxn/QRGen
-allprojects {
-    repositories {
-        maven { url "https://jitpack.io" }
+sonarqube {
+    properties {
+        property "sonar.projectKey", "dedis_student_21_pop_fe2"
+        property "sonar.projectName", "PoP - Fe2-Android"
+        property "sonar.organization", "dedis"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.coverage.jacoco.xmlReportPaths", "./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.junit.reportsPath", "./build/test-results/*/TEST-*.xml"
     }
+}
+
+jacoco {
+    toolVersion = "0.8.7"
+}
+
+tasks.withType(Test) {
+    jacoco.excludes = ['jdk.internal.*']
 }
 
 dependencies {
@@ -127,4 +147,29 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.2'
 
     androidTestUtil 'androidx.test:orchestrator:1.4.0'
+}
+
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testMockDebugUnitTest', 'createMockDebugCoverageReport']) {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+    def fileFilter = [
+        '**/R.class',
+        '**/R$*.class',
+        '**/BuildConfig.*',
+        '**/Manifest*.*',
+        '**/*Test*.*',
+        'android/**/*.*'
+    ]
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/mockDebug/classes", excludes: fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
+    sourceDirectories.setFrom(files([mainSrc]))
+    classDirectories.setFrom(files([debugTree]))
+    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
+        'outputs/unit_test_code_coverage/mockDebugUnitTest/testMockDebugUnitTest.exec',
+        'outputs/code_coverage/mockDebugAndroidTest/connected/*coverage.ec'
+    ]))
 }
