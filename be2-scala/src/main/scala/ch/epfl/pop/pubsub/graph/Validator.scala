@@ -96,7 +96,6 @@ object Validator {
       // we get and concatenate all of the JsonString messages
       Right(PipelineError(ErrorCodes.INVALID_DATA.id, errors.mkString("; "), rpcId))
     }
-
   }
 
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
