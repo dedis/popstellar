@@ -13,10 +13,12 @@ import { makeCurrentLao } from 'store/reducers';
 import QRCode from '../QRCode';
 
 function renderProperties(lao: Lao) {
+  const creationDateString = lao.creation.timestampToString();
+
   return (
     <>
       <ParagraphBlock text={`Lao name: ${lao.name}`} />
-      <ParagraphBlock text={`Lao creation: ${lao.creation.toString()}`} />
+      <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
       <QRCode value={lao.id.toString()} visibility />
     </>
   );

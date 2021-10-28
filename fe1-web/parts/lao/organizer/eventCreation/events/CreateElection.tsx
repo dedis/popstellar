@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, ScrollView,
+  View, Platform, ScrollView, Modal,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
 import STRINGS from 'res/strings';
-import DatePicker from 'components/DatePicker';
+import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
-import {
-  Hash, Lao, Timestamp, Question, EventTags,
-} from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
+import TextInputLine from 'components/TextInputLine';
+import {
+  Hash, Lao, Timestamp, Question, EventTags,
+} from 'model/objects';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
-import TextInputLine from 'components/TextInputLine';
+import { onConfirmPress } from '../CreateEvent';
+
+const DEFAULT_ELECTION_DURATION = 3600;
 
 /**
  * UI to create an Election Event
@@ -26,40 +29,38 @@ import TextInputLine from 'components/TextInputLine';
 const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
-  const initialStartDate = new Date();
-  const initialEndDate = new Date();
-  // Sets initial end date to 1 hour later than start date
-  initialEndDate.setMinutes(initialEndDate.getMinutes() + 15);
 
-  const [startDate, setStartDate] = useState(Timestamp.dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(Timestamp.dateToTimestamp(initialEndDate));
+  const [startTime, setStartTime] = useState(Timestamp.EpochNow());
+  const [endTime, setEndTime] = useState(Timestamp.EpochNow()
+    .addSeconds(DEFAULT_ELECTION_DURATION));
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
   const currentLao: Lao = OpenedLaoStore.get();
   const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
   const [questions, setQuestions] = useState([emptyQuestion]);
+  const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
+  const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
 
   const buildDatePickerWeb = () => {
-    const startTime = new Date(0);
-    const endTime = new Date(1);
-    startTime.setUTCSeconds(startDate.valueOf());
-    endTime.setUTCSeconds(endDate.valueOf());
+    const startDate = startTime.timestampToDate();
+    const endDate = endTime.timestampToDate();
 
     return (
       <View style={styles.viewVertical}>
         <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
-            selected={startTime}
-            onChange={(date: Date) => setStartDate(Timestamp.dateToTimestamp(date))}
+            selected={startDate}
+            onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
+              DEFAULT_ELECTION_DURATION)}
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.election_create_finish_time} />
           <DatePicker
-            selected={endTime}
-            onChange={(date: Date) => setEndDate(Timestamp.dateToTimestamp(date))}
+            selected={endDate}
+            onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
           />
         </View>
       </View>
@@ -82,13 +83,13 @@ const CreateElection = ({ route }: any) => {
   const buttonsVisibility: boolean = (electionName !== ''
     && !getQuestionObjects().some(isInvalid));
 
-  const onConfirmPress = () => {
+  const createElection = () => {
     console.log(getQuestionObjects());
     requestCreateElection(
       electionName,
       STRINGS.election_version_identifier,
-      startDate,
-      endDate,
+      startTime,
+      endTime,
       getQuestionObjects(),
     )
       .then(() => {
@@ -146,10 +147,44 @@ const CreateElection = ({ route }: any) => {
         />
         <WideButtonView
           title={STRINGS.general_button_confirm}
-          onPress={onConfirmPress}
+          onPress={() => onConfirmPress(startTime, endTime, createElection, setModalStartIsVisible,
+            setModalEndIsVisible)}
           disabled={!buttonsVisibility}
         />
       </View>
+
+      <Modal
+        visible={modalEndIsVisible}
+        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_ends_in_past} />
+          <WideButtonView
+            title={STRINGS.general_button_ok}
+            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
+          />
+        </View>
+      </Modal>
+      <Modal
+        visible={modalStartIsVisible}
+        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_starts_in_past} />
+          <WideButtonView
+            title={STRINGS.modal_button_start_now}
+            onPress={() => createElection()}
+          />
+          <WideButtonView
+            title={STRINGS.modal_button_go_back}
+            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
+          />
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
