@@ -1,13 +1,13 @@
-import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-
-import styleContainer from 'styles/stylesheets/container';
+import React, { useState } from 'react';
+import {
+  StyleSheet, TextStyle, View, ViewStyle,
+} from 'react-native';
 
 import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
-import WideButtonView from 'components/WideButtonView';
 
 import { requestAddChirp } from 'network/MessageApi';
+import TextInputChirp from '../components/TextInputChirp';
 
 /**
  * UI for the Social Media component
@@ -35,14 +35,15 @@ const Social = () => {
     console.log(inputChirp);
   };
 
-const Social = () => (
-  <View style={styles.view}>
+  return (
+    <View style={styles.view}>
       <TextInputChirp
         onChangeText={setInputChirp}
         onPress={publishChirp}
       />
       <TextBlock text={STRINGS.feed_description} />
-  </View>
-);
+    </View>
+  );
+};
 
 export default Social;
