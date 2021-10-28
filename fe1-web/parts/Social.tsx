@@ -28,11 +28,10 @@ const Social = () => {
   const [inputChirp, setInputChirp] = useState('');
 
   const publishChirp = () => {
-    requestAddChirp('chirp chirp')
+    requestAddChirp(inputChirp)
       .catch((err) => {
         console.error('Could not add chirp, error:', err);
       });
-    console.log(inputChirp);
   };
 
   return (
