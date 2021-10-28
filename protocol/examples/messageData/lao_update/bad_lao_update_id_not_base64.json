@@ -1,7 +1,7 @@
 {
     "object": "lao",
     "action": "update_properties",
-    "id": "not base64",
+    "id": "@@@",
     "name": "LAO",
     "last_modified": 1633099140,
     "witnesses": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="]
