@@ -22,6 +22,7 @@ import com.typesafe.config.ConfigFactory
 import java.io.File
 import ch.epfl.pop.config.RuntimeEnvironment
 import ch.epfl.pop.config.ServerConf
+import akka.event.LoggingAdapter
 
 object Server {
 
@@ -68,15 +69,26 @@ object Server {
           typedSystem.terminate()
       }
 
-      /* Server terminating logic */
-      StdIn.readLine // let it run until user presses return
-      bindingFuture
-        .flatMap(_.unbind()) // trigger unbinding from the port
-        .onComplete(_ => {
-          logger.info("Server terminated !")
-          system.terminate()
-          typedSystem.terminate()
-        }) // and shutdown when done
+    /***Shutting down**/
+    val shutdownListener = new Thread(){
+              override def run(): Unit ={
+                      logger.warning("shutdown in 5s ");
+                      try {
+                          Thread.sleep(5000);
+                            bindingFuture
+              .flatMap(_.unbind()) // trigger unbinding from the port
+              .onComplete(_ => {
+                logger.info("Server terminated !")
+                system.terminate()
+                typedSystem.terminate()
+              }) // and shutdown when done
+                      } catch {
+                          case  e: InterruptedException =>   logger.warning("Server shutting thread was interrupted !")    
+
+                      }
+                  }
+              };
+              Runtime.getRuntime().addShutdownHook(shutdownListener);
 
       Behaviors.empty
     }
@@ -86,3 +98,4 @@ object Server {
 
   }
 }
+
