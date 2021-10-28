@@ -35,7 +35,7 @@ const Social = () => (
     </View>
     <View style={styles.viewBottom}>
       <WideButtonView
-        title={STRINGS.button_publish_test_chirp}
+        title={STRINGS.button_publish}
         onPress={publishChirp}
       />
     </View>
