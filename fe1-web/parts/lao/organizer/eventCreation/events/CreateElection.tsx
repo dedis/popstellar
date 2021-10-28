@@ -93,6 +93,7 @@ const CreateElection = ({ route }: any) => {
       getQuestionObjects(),
     )
       .then(() => {
+        // @ts-ignore
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
       .catch((err) => {
