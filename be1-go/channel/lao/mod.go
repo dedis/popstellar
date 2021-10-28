@@ -5,13 +5,9 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/xerrors"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
-	"popstellar/channel"
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	generalChriping "popstellar/channel/generalChirping"
@@ -500,8 +496,6 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
 
-		err = c.createChirpingChannels(rollCallClose)
-
 	default:
 		return answer.NewInvalidActionError(action)
 	}
@@ -515,14 +509,11 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	return nil
 }
 
-func (c *Channel) createChirpingChannels(msg messagedata.RollCallClose) error {
-
-	for _, s := range msg.Attendees {
-		chirpingChannelPath := c.channelID + s + "/"
-		cha := chirp.NewChannel(chirpingChannelPath, s, c.hub, c.general, c.log)
-		c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
-	}
-	return nil
+func (c *Channel) createChirpingChannels(attendee string) {
+	chirpingChannelPath := c.channelID + "/" + "social" + "/"+ attendee + "/"
+	cha := chirp.NewChannel(chirpingChannelPath, attendee, c.hub, c.general, c.log)
+	c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
+	c.log.Info().Msgf("storing new channel chirp channel for attendee '%s' ", attendee)
 }
 
 
@@ -689,8 +680,11 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 		}
 	}
 
+
 	for _, attendee := range msg.Attendees {
 		c.attendees[attendee] = struct{}{}
+
+		c.createChirpingChannels(attendee)
 
 		if db != nil {
 			c.log.Info().Msgf("inserting attendee %s into db", attendee)

@@ -1,18 +1,17 @@
 package lao
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -37,11 +36,6 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create the messages
-	keypair := generateKeyPair(t)
-
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
-	require.NoError(t, err)
-
 	numMessages := 5
 
 	messages := make([]message.Message, numMessages)
@@ -108,6 +102,188 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	consensusID := "channel0/consensus"
 	consensus := fakeHub.channelByID[consensusID]
 	require.NotNil(t, consensus)
+}
+
+func TestBaseChannel_GeneralChirpingIsCreated(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the messages
+	numMessages := 1
+
+	messages := make([]message.Message, numMessages)
+
+	messages[0] = message.Message{MessageID: "0"}
+
+	// Create the channel
+	channel := NewChannel("/root/channel0", fakeHub, messages[0], nolog)
+
+	_, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	time.Sleep(time.Millisecond)
+
+	_, found := fakeHub.channelByID["/root/channel0/social/chirps/"]
+	require.True(t, found)
+
+}
+
+func TestBaseChannel_CreationChirpChannel(t *testing.T) {
+	publicKey := "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
+
+	pk, err := base64.URLEncoding.DecodeString(publicKey)
+	require.NoError(t, err)
+	point := crypto.Suite.Point()
+	err = point.UnmarshalBinary(pk)
+	require.NoError(t, err)
+
+	// Create the hub
+	fakeHub, err := NewfakeHub(point, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the messages
+	numMessages := 1
+
+	messages := make([]message.Message, numMessages)
+
+	messages[0] = message.Message{MessageID: "0"}
+
+	// Create the channel
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog)
+
+	_, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	time.Sleep(time.Millisecond)
+
+	newDataCreate := messagedata.RollCallCreate{
+		Object: "roll_call",
+		Action: "create",
+		ID: messagedata.Hash("R", "channel0", "1633098853", "Roll Call"),
+		Name: "Roll Call",
+		Creation: 1633098853,
+		ProposedStart: 1633099125,
+		ProposedEnd: 1633099140,
+		Location: "EPFL",
+		Description: "Food is welcome!",
+	}
+
+	dataBufCreate, err := json.Marshal(newDataCreate)
+	require.Nil(t, err)
+
+	newData64Create := base64.URLEncoding.EncodeToString(dataBufCreate)
+
+	rpcMessageCreate := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+		ID: 1,
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			"channel0",
+			message.Message{
+				Data: newData64Create,
+				Sender: "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+				Signature: "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+				MessageID: messagedata.Hash(newData64Create, "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw=="),
+				WitnessSignatures: []message.WitnessSignature{},
+			},
+		},
+	}
+	
+	err = channel.Publish(rpcMessageCreate)
+	require.Nil(t, err)
+
+	newDataOpen := messagedata.RollCallOpen{
+		Object: "roll_call",
+		Action: "open",
+		UpdateID: messagedata.Hash("R", "channel0", messagedata.Hash("R", "channel0", "1633098853", "Roll Call"), "1633099127"),
+		Opens: messagedata.Hash("R", "channel0", "1633098853", "Roll Call"),
+		OpenedAt: 1633099127,
+	}
+
+	dataBufOpen, err := json.Marshal(newDataOpen)
+	require.Nil(t, err)
+
+	newData64Open := base64.URLEncoding.EncodeToString(dataBufOpen)
+
+	rpcMessageOpen := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+		ID: 2,
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			"channel0",
+			message.Message{
+				Data: newData64Open,
+				Sender: "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+				Signature: "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+				MessageID: messagedata.Hash(newData64Open, "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw=="),
+				WitnessSignatures: []message.WitnessSignature{},
+			},
+		},
+	}
+
+	err = channel.Publish(rpcMessageOpen)
+	require.Nil(t, err)
+
+	newDataClose := messagedata.RollCallClose{
+		Object: "roll_call",
+		Action: "close",
+		UpdateID: messagedata.Hash("R", "channel0", messagedata.Hash("R", "channel0", messagedata.Hash("R", "channel0", "1633098853", "Roll Call"), "1633099127"), "1633099135"),
+		Closes: messagedata.Hash("R", "channel0", messagedata.Hash("R", "channel0", "1633098853", "Roll Call"), "1633099127"),
+		ClosedAt: 1633099135,
+		Attendees: []string{"M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="},
+	}
+
+	dataBufClose, err := json.Marshal(newDataClose)
+	require.Nil(t, err)
+
+	newData64Close := base64.URLEncoding.EncodeToString(dataBufClose)
+
+	rpcMessageClose := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "publish",
+		},
+		ID: 3,
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			"channel0",
+			message.Message{
+				Data: newData64Close,
+				Sender: "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+				Signature: "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+				MessageID: messagedata.Hash(newData64Close, "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw=="),
+				WitnessSignatures: []message.WitnessSignature{},
+			},
+		},
+	}
+	err = channel.Publish(rpcMessageClose)
+	require.Nil(t, err)
+
+	time.Sleep(time.Millisecond)
+
+	_, found := fakeHub.channelByID["channel0/social/" + "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=" + "/"]
+	require.True(t, found)
 }
 
 func Test_Verify_Functions(t *testing.T) {
@@ -221,10 +397,10 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 	return &hub, nil
 }
 
+
 func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
-	fmt.Printf("cccc")
 	h.Unlock()
 }
 
@@ -235,4 +411,3 @@ func (h *fakeHub) GetPubkey() kyber.Point {
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
-
