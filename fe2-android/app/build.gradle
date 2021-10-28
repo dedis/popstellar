@@ -26,9 +26,11 @@ android {
         }
 
         testOptions {
-            // This makes the coverage fail. Don't ask why.
+            // This makes the coverage fail. For more information :
+            // https://developer.android.com/training/testing/junit-runner#using-android-test-orchestrator
             // execution 'ANDROIDX_TEST_ORCHESTRATOR'
             unitTests.returnDefaultValues = true
+            // Improve tests performances by disabling fancy animations
             animationsDisabled = true
         }
 
@@ -50,6 +52,8 @@ android {
         }
     }
 
+    // Enable data binding library for the project
+    // For more information : https://developer.android.com/topic/libraries/data-binding
     dataBinding {
         enabled = true
     }
