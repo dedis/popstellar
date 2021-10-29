@@ -89,13 +89,21 @@ android {
 }
 
 sonarqube {
+
+    // The flavor and build type to analyse with SonarCloud
+    var analysedProject = "mockDebug"
+
     properties {
         property "sonar.projectKey", "dedis_student_21_pop_fe2"
         property "sonar.projectName", "PoP - Fe2-Android"
         property "sonar.organization", "dedis"
         property "sonar.host.url", "https://sonarcloud.io"
+        // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
+        property "sonar.junit.reportPaths", "./build/test-results/test${analysedProject.capitalize()}UnitTest/TEST-*.xml"
+        // Paths (absolute or relative) to xml files with Android Lint issues.
+        property "sonar.androidLint.reportPaths", "./build/reports/lint-results-${analysedProject}.xml"
+        // Paths to JaCoCo XML coverage report files.
         property "sonar.coverage.jacoco.xmlReportPaths", "./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
-        property "sonar.junit.reportsPath", "./build/test-results/*/TEST-*.xml"
     }
 }
 
