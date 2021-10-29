@@ -13,12 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments clearPackageData: 'true'
 
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
@@ -26,9 +21,6 @@ android {
         }
 
         testOptions {
-            // This makes the coverage fail. For more information :
-            // https://developer.android.com/training/testing/junit-runner#using-android-test-orchestrator
-            // execution 'ANDROIDX_TEST_ORCHESTRATOR'
             unitTests.returnDefaultValues = true
             // Improve tests performances by disabling fancy animations
             animationsDisabled = true
@@ -44,8 +36,9 @@ android {
     buildTypes {
         debug {
             getIsDefault().set(true)  // sets this build type as default
-            testCoverageEnabled true
+            testCoverageEnabled true // Enables test coverage
         }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -63,10 +56,34 @@ android {
     productFlavors {
         mock {
             dimension "default"
+
+            testOptions {
+                execution 'ANDROIDX_TEST_ORCHESTRATOR'
+            }
+
+            // The following argument makes the Android Test Orchestrator run its
+            // "pm clear" command after each test invocation. This command ensures
+            // that the app's state is completely cleared between tests.
+            testInstrumentationRunnerArguments clearPackageData: 'true'
         }
+
+        // Flavor used only to compute the coverage of teh tests as it cannot be done with
+        // the android orchestrator enabled. More informations :
+        // https://developer.android.com/training/testing/junit-runner#using-android-test-orchestrator
+        cov {
+            dimension "default"
+        }
+
         prod {
             getIsDefault().set(true)  // sets this flavor as default
             dimension "default"
+        }
+    }
+
+    // Make sure the coverage flavor uses the same source set as the mock
+    sourceSets{
+        cov {
+            java.srcDirs += [ 'src/mock/java' ]
         }
     }
 }
@@ -149,7 +166,7 @@ dependencies {
     androidTestUtil 'androidx.test:orchestrator:1.4.0'
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testMockDebugUnitTest', 'createMockDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'createCovDebugCoverageReport']) {
     reports {
         xml.enabled = true
         html.enabled = true
@@ -163,13 +180,13 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testMockDebugUnitTest', '
         '**/*Test*.*',
         'android/**/*.*'
     ]
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/mockDebug/classes", excludes: fileFilter)
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/covDebug/classes", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
 
     sourceDirectories.setFrom(files([mainSrc]))
     classDirectories.setFrom(files([debugTree]))
     executionData.setFrom(fileTree(dir: project.buildDir, includes: [
-        'outputs/unit_test_code_coverage/mockDebugUnitTest/testMockDebugUnitTest.exec',
-        'outputs/code_coverage/mockDebugAndroidTest/connected/*coverage.ec'
+        'outputs/unit_test_code_coverage/covDebugUnitTest/testCovDebugUnitTest.exec',
+        'outputs/code_coverage/covDebugAndroidTest/connected/**/*.ec'
     ]))
 }
