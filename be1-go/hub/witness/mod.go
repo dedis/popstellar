@@ -119,6 +119,7 @@ func (h *Hub) tempHandleMessage(incMsg *socket.IncomingMessage) error {
 
 	switch queryBase.Method {
 	case query.MethodPublish:
+		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 	case query.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
@@ -253,6 +254,11 @@ func (h *Hub) GetPubkey() kyber.Point {
 // GetSchemaValidator implements channel.HubFunctionalities
 func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
+}
+
+// broadcastToServers broadcast a message to all other known servers
+func (h *Hub) broadcastToServers(message []byte) {
+	h.serverSockets.SendToAll(message)
 }
 
 // createLao creates a new LAO using the data in the publish parameter.

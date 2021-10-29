@@ -269,6 +269,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 
 	switch queryBase.Method {
 	case query.MethodPublish:
+		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 	case query.MethodSubscribe:
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
@@ -432,6 +433,11 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 		return xerrors.Errorf("invalid socket type")
 	}
 
+}
+
+// broadcastToServers broadcast a message to all other known servers
+func (h *Hub) broadcastToServers(message []byte) {
+	h.serverSockets.SendToAll(message)
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
