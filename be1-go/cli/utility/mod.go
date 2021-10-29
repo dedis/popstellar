@@ -36,6 +36,7 @@ func ConnectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sy
 		organizerSocket := socket.NewOrganizerSocket(h.Receiver(),
 			h.OnSocketClose(), ws, wg, done, log)
 		wg.Add(2)
+		h.AddServerSocket(organizerSocket)
 
 		go organizerSocket.WritePump()
 		go organizerSocket.ReadPump()
@@ -43,6 +44,7 @@ func ConnectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sy
 		witnessSocket := socket.NewWitnessSocket(h.Receiver(),
 			h.OnSocketClose(), ws, wg, done, log)
 		wg.Add(2)
+		h.AddServerSocket(witnessSocket)
 
 		go witnessSocket.WritePump()
 		go witnessSocket.ReadPump()

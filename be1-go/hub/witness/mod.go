@@ -57,6 +57,8 @@ type Hub struct {
 
 	// laoFac is there to allow a similar implementation to the organizer
 	laoFac channel.LaoFactory
+
+	serverSockets channel.Sockets
 }
 
 // NewHub returns a new Witness Hub.
@@ -79,6 +81,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		workers:         semaphore.NewWeighted(numWorkers),
 		log:             log,
 		laoFac:          laoFac,
+		serverSockets:   channel.NewSockets(),
 	}
 
 	return &witnessHub, nil
@@ -222,6 +225,11 @@ func (h *Hub) Stop() {
 // Receiver implements hub.Hub
 func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 	return h.messageChan
+}
+
+// AddServerSocket adds a socket to the sockets known by the hub
+func (h *Hub) AddServerSocket(socket socket.Socket) {
+	h.serverSockets.Upsert(socket)
 }
 
 // OnSocketClose implements hub.Hub
