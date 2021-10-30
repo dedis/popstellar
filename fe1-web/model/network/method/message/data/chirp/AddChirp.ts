@@ -6,6 +6,7 @@ import { checkTimestampStaleness } from '../Checker';
 
 const MAX_CHIRP_CHARS = 300;
 
+/** Data sent to add a chirp */
 export class AddChirp implements MessageData {
   public readonly object: ObjectType = ObjectType.CHIRP;
 
@@ -37,6 +38,10 @@ export class AddChirp implements MessageData {
     }
   }
 
+  /**
+   * Creates a AddChirp object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): AddChirp {
     const { errors } = validateDataObject(ObjectType.CHIRP, ActionType.ADD, obj);
 

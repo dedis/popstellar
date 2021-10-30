@@ -4,6 +4,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness, checkWitnesses } from '../Checker';
 
+/** Data sent to creat a Lao */
 export class CreateLao implements MessageData {
   public readonly object: ObjectType = ObjectType.LAO;
 
@@ -42,6 +43,10 @@ export class CreateLao implements MessageData {
     this.id = msg.id;
   }
 
+  /**
+   * Creates a Lao object from a goven object
+   * @param obj
+   */
   public static fromJson(obj: any): CreateLao {
     const { errors } = validateDataObject(ObjectType.LAO, ActionType.CREATE, obj);
 

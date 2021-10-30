@@ -7,6 +7,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
+/** Data sent to create a Roll-Call event */
 export class CreateRollCall implements MessageData {
   public readonly object: ObjectType = ObjectType.ROLL_CALL;
 
@@ -80,6 +81,10 @@ export class CreateRollCall implements MessageData {
     this.id = msg.id;
   }
 
+  /**
+   * Creates a CreatRollCall object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): CreateRollCall {
     const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.CREATE, obj);
 

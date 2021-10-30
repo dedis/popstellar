@@ -8,6 +8,7 @@ import { Question } from 'model/objects/Election';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
+/** Data sent to setup an Election event */
 export class SetupElection implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;
 
@@ -106,6 +107,10 @@ export class SetupElection implements MessageData {
     });
   }
 
+  /**
+   * Creates a SetupSection object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): SetupElection {
     const { errors } = validateDataObject(ObjectType.ELECTION, ActionType.SETUP, obj);
 

@@ -6,6 +6,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
+/** Data sent to end an Election event */
 export class EndElection implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;
 
@@ -46,6 +47,10 @@ export class EndElection implements MessageData {
     this.election = msg.election;
   }
 
+  /**
+   * Creates a EndElection object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): EndElection {
     const { errors } = validateDataObject(ObjectType.ELECTION, ActionType.END, obj);
 
