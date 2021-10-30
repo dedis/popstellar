@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import androidx.annotation.Nullable;
@@ -17,6 +19,7 @@ import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
@@ -112,6 +115,18 @@ public class HomeActivity extends AppCompatActivity {
               }
             });
 
+    // Subscribe to "open settings" event
+    mViewModel
+        .getOpenSettingsEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSettingsActivity();
+              }
+            });
+
     subscribeWalletEvents();
   }
 
@@ -166,6 +181,22 @@ public class HomeActivity extends AppCompatActivity {
       if (resultCode == RESULT_OK) {
         startActivity(new Intent(data));
       }
+    }
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.options_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.settings) {
+      mViewModel.openSettings();
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
     }
   }
 
@@ -284,6 +315,12 @@ public class HomeActivity extends AppCompatActivity {
       ActivityUtils.replaceFragmentInActivity(
           getSupportFragmentManager(), seedWalletFragment, R.id.fragment_container_home);
     }
+  }
+
+  private void setupSettingsActivity() {
+    Intent intent = new Intent(this, SettingsActivity.class);
+    Log.d(TAG, "Trying to open settings");
+    startActivity(intent);
   }
 
   private void openLaoDetails(String laoId) {

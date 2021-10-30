@@ -26,6 +26,7 @@
     <activity
       android:name="com.github.dedis.popstellar.ui.detail.LaoDetailActivity"
       android:windowSoftInputMode="adjustPan"></activity>
+    <activity android:name=".ui.settings.SettingsActivity" />
 
     <uses-library
       android:name="android.test.runner"
