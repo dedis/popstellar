@@ -7,14 +7,22 @@ import com.google.gson.annotations.SerializedName;
 
 public final class ConsensusElectAccept extends Data {
 
+  @SerializedName("instance_id")
+  private final String instanceId;
+
   @SerializedName("message_id")
   private final String messageId;
 
   private final boolean accept;
 
-  public ConsensusElectAccept(String messageId, boolean accept) {
+  public ConsensusElectAccept(String instanceId, String messageId, boolean accept) {
+    this.instanceId = instanceId;
     this.messageId = messageId;
     this.accept = accept;
+  }
+
+  public String getInstanceId() {
+    return instanceId;
   }
 
   public String getMessageId() {
@@ -37,7 +45,7 @@ public final class ConsensusElectAccept extends Data {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(messageId, accept);
+    return java.util.Objects.hash(instanceId, messageId, accept);
   }
 
   @Override
@@ -50,11 +58,15 @@ public final class ConsensusElectAccept extends Data {
     }
     ConsensusElectAccept that = (ConsensusElectAccept) o;
 
-    return java.util.Objects.equals(messageId, that.messageId) && accept == that.accept;
+    return java.util.Objects.equals(instanceId, that.instanceId)
+        && java.util.Objects.equals(messageId, that.messageId)
+        && accept == that.accept;
   }
 
   @Override
   public String toString() {
-    return String.format("ConsensusElectAccept{message_id='%s', accept=%b}", messageId, accept);
+    return String.format(
+        "ConsensusElectAccept{instance_id='%s', message_id='%s', accept=%b}",
+        instanceId, messageId, accept);
   }
 }
