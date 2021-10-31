@@ -2,10 +2,10 @@ package messagedata
 
 // ConsensusPromise defines a message data
 type ConsensusPromise struct {
-	Object    string `json:"object"`
-	Action    string `json:"action"`
-	ID        string `json:"id"`
-	MessageID string `string:"message_id"`
+	Object     string `json:"object"`
+	Action     string `json:"action"`
+	InstanceID string `json:"id"`
+	MessageID  string `string:"message_id"`
 
 	// CreatedAt is a Unix timestamp
 	CreatedAt int64 `json:"created_at"`
