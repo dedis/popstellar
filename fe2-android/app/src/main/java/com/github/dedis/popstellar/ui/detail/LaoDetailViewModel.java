@@ -599,7 +599,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
 
     ConsensusElectAccept consensusElectAccept =
-        new ConsensusElectAccept(consensus.getMessageId(), accept);
+        new ConsensusElectAccept(consensus.getId(), consensus.getMessageId(), accept);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
@@ -654,7 +654,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     List<String> acceptorsMessageIds =
         new ArrayList<>(consensus.getAcceptorsToMessageId().values());
     ConsensusLearn consensusLearn =
-        new ConsensusLearn(consensus.getMessageId(), acceptorsMessageIds);
+        new ConsensusLearn(consensus.getId(), consensus.getMessageId(), acceptorsMessageIds);
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();

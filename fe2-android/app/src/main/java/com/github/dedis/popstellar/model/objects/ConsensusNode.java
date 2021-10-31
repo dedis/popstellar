@@ -36,15 +36,15 @@ public final class ConsensusNode {
     return Collections.unmodifiableSet(acceptedMessageIds);
   }
 
-  public Optional<Consensus> getLastConsensus(String keyId) {
-    // get the consensus for the given key id, with the largest creation time
+  public Optional<Consensus> getLastConsensus(String instanceId) {
+    // get the consensus for the given instanceId, with the largest creation time
     return consensuses.stream()
-        .filter(consensus -> consensus.getKey().getId().equals(keyId))
+        .filter(consensus -> consensus.getId().equals(instanceId))
         .max((c1, c2) -> (int) (c1.getCreation() - c2.getCreation()));
   }
 
-  public State getState(String keyId) {
-    Optional<Consensus> lastConsensus = getLastConsensus(keyId);
+  public State getState(String instanceId) {
+    Optional<Consensus> lastConsensus = getLastConsensus(instanceId);
     if (lastConsensus.isPresent()) {
       Consensus consensus = lastConsensus.get();
       if (consensus.isFailed()) {
