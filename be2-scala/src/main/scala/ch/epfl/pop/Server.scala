@@ -71,7 +71,6 @@ object Server {
       /* Shutting down */
       val shutdownListener = new Thread() {
         override def run(): Unit = {
-          logger.warning("shutdown in 5s ");
           try {
             bindingFuture.flatMap(_.unbind()).onComplete(_ => { //trigger unbinding from the port
                 logger.info("Server terminated !")
@@ -82,9 +81,9 @@ object Server {
                 case  e: InterruptedException =>   logger.warning("Server shutting thread was interrupted !")
           }
         }
-      };
-    Runtime.getRuntime().addShutdownHook(shutdownListener);
-    Behaviors.empty
+      }
+      Runtime.getRuntime.addShutdownHook(shutdownListener);
+      Behaviors.empty
     }
     //Deploys system actor with root behavior
     ActorSystem[Nothing](root, "pop-be2-actor-system")
