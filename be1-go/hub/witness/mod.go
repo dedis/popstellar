@@ -59,6 +59,8 @@ type Hub struct {
 	laoFac channel.LaoFactory
 
 	serverSockets channel.Sockets
+
+	messageByID map[string][]byte
 }
 
 // NewHub returns a new Witness Hub.
@@ -82,6 +84,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
+		messageByID:     make(map[string][]byte),
 	}
 
 	return &witnessHub, nil
@@ -119,13 +122,10 @@ func (h *Hub) tempHandleMessage(incMsg *socket.IncomingMessage) error {
 
 	switch queryBase.Method {
 	case query.MethodPublish:
-		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 	case query.MethodSubscribe:
-		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
 	case query.MethodUnsubscribe:
-		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(byteMessage)
@@ -259,8 +259,12 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 // broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(message []byte) {
-	h.serverSockets.SendToAll(message)
+func (h *Hub) broadcastToServers(message []byte, messageID string) {
+	_, ok := h.messageByID[messageID]
+	if !ok {
+		h.messageByID[messageID] = message
+		h.serverSockets.SendToAll(message)
+	}
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
@@ -345,6 +349,8 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if err != nil {
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
+
+	h.broadcastToServers(byteMessage, publish.Params.Message.MessageID)
 
 	if publish.Params.Channel == "/root" {
 		h.handleRootChannelMesssage(socket, publish)
