@@ -122,8 +122,10 @@ func (h *Hub) tempHandleMessage(incMsg *socket.IncomingMessage) error {
 		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handlePublish(socket, byteMessage)
 	case query.MethodSubscribe:
+		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handleSubscribe(socket, byteMessage)
 	case query.MethodUnsubscribe:
+		h.broadcastToServers(byteMessage)
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(byteMessage)
