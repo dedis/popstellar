@@ -33,12 +33,12 @@ object Server {
     /* Get configuration object for akka actor/http*/
     val appConf = RuntimeEnvironment.appConf
 
-    /* Get Setup configuration*/ 
+    /* Get Setup configuration*/
     println("Loading configuration from file...")
     val config = ServerConf(appConf)
-   
+
     val system = akka.actor.ActorSystem("pop-be2-inner-actor-system", appConf)
-    
+
     implicit val typedSystem: ActorSystem[Nothing] = system.toTyped
     val logger = system.log
 
@@ -54,9 +54,9 @@ object Server {
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(config.path) {
         handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef)(system))
       }
-     
+
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
-      /* Setup http server with bind and route config*/ 
+      /* Setup http server with bind and route config*/
       val bindingFuture = Http().bindAndHandle(publishSubscribeRoute, config.interface, config.port)
 
       bindingFuture.onComplete {
@@ -68,34 +68,26 @@ object Server {
           system.terminate()
           typedSystem.terminate()
       }
-
-    /***Shutting down**/
-    val shutdownListener = new Thread(){
-              override def run(): Unit ={
-                      logger.warning("shutdown in 5s ");
-                      try {
-                          Thread.sleep(5000);
-                            bindingFuture
-              .flatMap(_.unbind()) // trigger unbinding from the port
-              .onComplete(_ => {
+      /* Shutting down */
+      val shutdownListener = new Thread() {
+        override def run(): Unit = {
+          logger.warning("shutdown in 5s ");
+          try {
+            bindingFuture.flatMap(_.unbind()).onComplete(_ => { //trigger unbinding from the port
                 logger.info("Server terminated !")
                 system.terminate()
                 typedSystem.terminate()
               }) // and shutdown when done
-                      } catch {
-                          case  e: InterruptedException =>   logger.warning("Server shutting thread was interrupted !")    
-
-                      }
-                  }
-              };
-              Runtime.getRuntime().addShutdownHook(shutdownListener);
-
-      Behaviors.empty
+          } catch {
+                case  e: InterruptedException =>   logger.warning("Server shutting thread was interrupted !")
+          }
+        }
+      };
+    Runtime.getRuntime().addShutdownHook(shutdownListener);
+    Behaviors.empty
     }
-
     //Deploys system actor with root behavior
     ActorSystem[Nothing](root, "pop-be2-actor-system")
 
   }
 }
-
