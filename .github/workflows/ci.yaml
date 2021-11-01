@@ -208,7 +208,18 @@ jobs:
         emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         working-directory: ./fe2-android
-        script: ./gradlew connectedMockDebugAndroidTest jacocoTestReport
+        script: ./gradlew connectedMockDebugAndroidTest
+    
+    - name: Generate Test Coverage
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        arch: x86_64
+        profile: pixel_2
+        emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        working-directory: ./fe2-android
+        script: ./gradlew jacocoTestReport --continue
     
     - name: SonarCloud Analysis
       env:
