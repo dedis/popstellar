@@ -260,6 +260,8 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 
 // broadcastToServers broadcast a message to all other known servers
 func (h *Hub) broadcastToServers(message []byte, messageID string) {
+	h.Lock()
+	defer h.Unlock()
 	_, ok := h.messageByID[messageID]
 	if !ok {
 		h.messageByID[messageID] = message

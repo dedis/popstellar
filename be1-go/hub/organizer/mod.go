@@ -441,6 +441,8 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 
 // broadcastToServers broadcast a message to all other known servers
 func (h *Hub) broadcastToServers(message []byte, messageID string) {
+	h.Lock()
+	defer h.Unlock()
 	_, ok := h.messageById[messageID]
 	if !ok {
 		h.messageById[messageID] = message
