@@ -17,8 +17,6 @@ class JsonRpcRequest(
                       val params: Params,
                       val id: Option[Int]
                     ) extends JsonRpcMessage {
-                      
-  def isIdDefined = id.isDefined
 
   // defensive methods in case protocol structure changes
   def getParams: Params = params
@@ -78,11 +76,5 @@ object JsonRpcRequest extends Parsable {
            ): JsonRpcRequest = {
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
-
-  override def buildFromJson(payload: String): JsonRpcRequest = {
-  
-    val withId: JsonRpcRequest = payload.parseJson.asJsObject.convertTo[JsonRpcRequest]
-    withId
-
-  }
+  override def buildFromJson(payload: String): JsonRpcRequest = payload.parseJson.asJsObject.convertTo[JsonRpcRequest]
 }
