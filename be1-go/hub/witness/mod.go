@@ -129,7 +129,7 @@ func (h *Hub) tempHandleMessage(incMsg *socket.IncomingMessage) error {
 	case query.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(byteMessage)
+		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
 		err = answer.NewErrorf(-2, unexpectedMethodError, queryBase.Method)
 		h.log.Err(err)
@@ -296,8 +296,8 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Unlock()
 }
 
-// handleRootChannelMesssage handles an incoming message on the root channel.
-func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) {
+// handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
+func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish method.Publish) {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
 		socket.SendError(&publish.ID, xerrors.Errorf("failed to decode message data: %v", err))
@@ -344,6 +344,15 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	}
 }
 
+// handleRootChannelCatchupMessage handles an incoming catchup message on the root channel
+func (h *Hub) handleRootChannelCatchupMessage(senderSocket socket.Socket, catchup method.Catchup) ([]message.Message, error) {
+	if senderSocket.Type() == socket.ClientSocketType {
+		return nil, xerrors.Errorf("clients aren't allowed to send root channel catchup message")
+	}
+	messages := h.inbox.GetSortedMessages()
+	return messages, nil
+}
+
 // handlePublish let a witness handle a publish message
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
 	var publish method.Publish
@@ -356,7 +365,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	h.broadcastToServers(publish.Params.Message, byteMessage)
 
 	if publish.Params.Channel == "/root" {
-		h.handleRootChannelMesssage(socket, publish)
+		h.handleRootChannelPublishMesssage(socket, publish)
 		return publish.ID, nil
 	}
 
@@ -418,12 +427,20 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 }
 
 // handleCatchup let a witness handle a catchup message
-func (h *Hub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) {
+func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
 	if err != nil {
 		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
+	}
+
+	if catchup.Params.Channel == "/root" {
+		messages, err := h.handleRootChannelCatchupMessage(socket, catchup)
+		if err != nil {
+			return nil, catchup.ID, xerrors.Errorf("failed to handle root channel catchup message: %v", err)
+		}
+		return messages, catchup.ID, nil
 	}
 
 	channel, err := h.getChan(catchup.Params.Channel)

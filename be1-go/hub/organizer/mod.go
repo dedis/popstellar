@@ -228,13 +228,13 @@ func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish met
 }
 
 // handleRootChannelCatchupMessage handles an incoming catchup message on the root channel
-func (h *Hub) handleRootChannelCatchupMessage(senderSocket socket.Socket, publish method.Publish) ([]message.Message, int, error) {
+func (h *Hub) handleRootChannelCatchupMessage(senderSocket socket.Socket, catchup method.Catchup) ([]message.Message, error) {
 	if senderSocket.Type() == socket.ClientSocketType {
-		err := xerrors.Errorf("a client isn't allowed to send a root catchup message")
-		return nil, publish.ID, err
+		err := xerrors.Errorf("clients aren't allowed to send root channel catchup message")
+		return nil, err
 	}
 	messages := h.inbox.GetSortedMessages()
-	return messages, publish.ID, nil
+	return messages, nil
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
@@ -289,7 +289,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	case query.MethodUnsubscribe:
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodCatchUp:
-		msgs, id, handlerErr = h.handleCatchup(byteMessage)
+		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
@@ -386,12 +386,20 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 	return unsubscribe.ID, nil
 }
 
-func (h *Hub) handleCatchup(byteMessage []byte) ([]message.Message, int, error) {
+func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
 	if err != nil {
 		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
+	}
+
+	if catchup.Params.Channel == "/root" {
+		messages, err := h.handleRootChannelCatchupMessage(socket, catchup)
+		if err != nil {
+			return nil, catchup.ID, xerrors.Errorf("failed to handle root channel catchup message: %v", err)
+		}
+		return messages, catchup.ID, nil
 	}
 
 	channel, err := h.getChan(catchup.Params.Channel)
