@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"popstellar/channel"
+	"popstellar/channel/inbox"
 	"popstellar/hub"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -60,7 +61,7 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	messageByID map[string][]byte
+	inbox inbox.Inbox
 }
 
 // NewHub returns a new Witness Hub.
@@ -84,7 +85,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
-		messageByID:     make(map[string][]byte),
+		inbox:           *inbox.NewInbox("/root"),
 	}
 
 	return &witnessHub, nil
@@ -259,13 +260,13 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 // broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(message []byte, messageID string) {
+func (h *Hub) broadcastToServers(message message.Message, byteMessage []byte) {
 	h.Lock()
 	defer h.Unlock()
-	_, ok := h.messageByID[messageID]
+	_, ok := h.inbox.GetMessage(message.MessageID)
 	if !ok {
-		h.messageByID[messageID] = message
-		h.serverSockets.SendToAll(message)
+		h.inbox.StoreMessage(message)
+		h.serverSockets.SendToAll(byteMessage)
 	}
 }
 
@@ -352,7 +353,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
-	h.broadcastToServers(byteMessage, publish.Params.Message.MessageID)
+	h.broadcastToServers(publish.Params.Message, byteMessage)
 
 	if publish.Params.Channel == "/root" {
 		h.handleRootChannelMesssage(socket, publish)

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	be1_go "popstellar"
 	"popstellar/channel"
+	"popstellar/channel/inbox"
 	"popstellar/channel/lao"
 	"popstellar/db/sqlite"
 	"popstellar/hub"
@@ -66,7 +67,7 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	messageById map[string][]byte
+	inbox inbox.Inbox
 }
 
 // NewHub returns a Organizer Hub.
@@ -90,7 +91,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
-		messageById:     make(map[string][]byte),
+		inbox:           *inbox.NewInbox("/root"),
 	}
 
 	if sqlite.GetDBPath() != "" {
@@ -167,8 +168,8 @@ func (h *Hub) OnSocketClose() chan<- string {
 	return h.closedSockets
 }
 
-// handleRootChannelMesssage handles an incoming message on the root channel.
-func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Publish) error {
+// handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
+func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
 		err := xerrors.Errorf("failed to decode message data: %v", err)
@@ -224,6 +225,16 @@ func (h *Hub) handleRootChannelMesssage(socket socket.Socket, publish method.Pub
 	}
 
 	return nil
+}
+
+// handleRootChannelCatchupMessage handles an incoming catchup message on the root channel
+func (h *Hub) handleRootChannelCatchupMessage(senderSocket socket.Socket, publish method.Publish) ([]message.Message, int, error) {
+	if senderSocket.Type() == socket.ClientSocketType {
+		err := xerrors.Errorf("a client isn't allowed to send a root catchup message")
+		return nil, publish.ID, err
+	}
+	messages := h.inbox.GetSortedMessages()
+	return messages, publish.ID, nil
 }
 
 // handleMessageFromClient handles an incoming message from an end user.
@@ -310,10 +321,10 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
-	h.broadcastToServers(byteMessage, publish.Params.Message.MessageID)
+	h.broadcastToServers(publish.Params.Message, byteMessage)
 
 	if publish.Params.Channel == "/root" {
-		err := h.handleRootChannelMesssage(socket, publish)
+		err := h.handleRootChannelPublishMesssage(socket, publish)
 		if err != nil {
 			return -1, xerrors.Errorf("failed to handle root channel message: %v", err)
 		}
@@ -440,13 +451,13 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 }
 
 // broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(message []byte, messageID string) {
+func (h *Hub) broadcastToServers(message message.Message, byteMessage []byte) {
 	h.Lock()
 	defer h.Unlock()
-	_, ok := h.messageById[messageID]
+	_, ok := h.inbox.GetMessage(message.MessageID)
 	if !ok {
-		h.messageById[messageID] = message
-		h.serverSockets.SendToAll(message)
+		h.inbox.StoreMessage(message)
+		h.serverSockets.SendToAll(byteMessage)
 	}
 }
 
