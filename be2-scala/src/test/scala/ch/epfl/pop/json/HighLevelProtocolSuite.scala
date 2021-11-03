@@ -114,7 +114,6 @@ class HighLevelProtocolSuite extends FunSuite with Matchers  {
                 } yield (t,p)
 
   val setWitness = Set("","1", "{}", "null").map((_,WITNESS_SIGNATURES))
-  implicit val prettifier = Prettifier.default
   forEvery(set union setWitness){
     case (t: String, p: MsgField) =>  {
         val source: String = getFormattedString(p,t)
