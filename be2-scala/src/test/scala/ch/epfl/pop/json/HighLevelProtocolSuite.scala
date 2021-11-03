@@ -10,7 +10,7 @@ import org.scalactic.Prettifier
 
 class HighLevelProtocolSuite extends FunSuite with Matchers  {
 
-    def buildExcpected(id: String, sender: String, signature: String, data: String): Message ={
+    def buildExpected(id: String, sender: String, signature: String, data: String): Message ={
       Message(
         Base64Data(data),
         PublicKey(Base64Data(sender)),
@@ -51,8 +51,8 @@ class HighLevelProtocolSuite extends FunSuite with Matchers  {
                                  |      "witness_signatures": [{"witness": "wit1", "signature": "sig1"}, {"witness": "wit2", "signature": "sig2"}]
                                  |    }""".stripMargin
 
-    var expected: Message = buildExcpected(id, sender, signature, data)
-    // Add witnesses to the excpected message
+    var expected: Message = buildExpected(id, sender, signature, data)
+    // Add witnesses to the expected message
     val witness = (WitnessSignaturePair(PublicKey(Base64Data("wit1")), Signature(Base64Data("sig1")))
       :: WitnessSignaturePair(PublicKey(Base64Data("wit2")), Signature(Base64Data("sig2")))
       :: Nil).reverse.foreach(w => {expected = expected.addWitnessSignature(w)})
@@ -77,7 +77,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers  {
                                |    }""".stripMargin
 
 
-    var expected: Message = buildExcpected(id, sender, signature, data)
+    var expected: Message = buildExpected(id, sender, signature, data)
     val message = Message.buildFromJson(source)
 
     message shouldBe a [Message]
@@ -97,7 +97,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers  {
                                  |      "witness_signatures": []
                                  |    }""".stripMargin
 
-    val expected: Message = buildExcpected(id, sender, signature, data)
+    val expected: Message = buildExpected(id, sender, signature, data)
     val message = Message.buildFromJson(source)
     message shouldBe a [Message]
     message should equal (expected)
