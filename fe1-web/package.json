@@ -69,6 +69,7 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@expo/webpack-config": "~0.12.63",
+    "@testing-library/react-native": "^8.0.0",
     "@types/base-64": "^0.1.3",
     "@types/chai": "^4.2.14",
     "@types/color": "^3.0.1",
