@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import STRINGS from 'res/strings';
 import TextInputChirp from '../TextInputChirp';
-import STRINGS from '../../res/strings';
 
 const onChangeText = jest.fn();
 const onPress = jest.fn();
