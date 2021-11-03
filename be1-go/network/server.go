@@ -120,10 +120,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(),
 			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
-		s.h.AddServerSocket(witness)
 
 		go witness.ReadPump()
 		go witness.WritePump()
+
+		err = s.h.AddServerSocket(witness)
+		s.log.Err(err).Msg("error while trying to catchup server")
 	}
 }
 

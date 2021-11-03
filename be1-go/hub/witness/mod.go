@@ -5,9 +5,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"popstellar/channel"
-	"popstellar/channel/inbox"
 	"popstellar/hub"
+	"popstellar/hub/serverInbox"
+	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"popstellar/message/query"
@@ -26,6 +28,9 @@ import (
 // rootPrefix denotes the prefix for the root channel
 // used to keep an image of the laos
 const rootPrefix = "/root/"
+
+// rpcUnknownError is an error message
+const rpcUnknownError = "jsonRPC message is of unknown type"
 
 // Strings used to return error messages
 const jsonNotValidError = "message is not valid against json schema"
@@ -61,7 +66,16 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	inbox inbox.Inbox
+	inbox serverInbox.Inbox
+
+	queriesID queriesID
+}
+
+type queriesID struct {
+	mu sync.Mutex
+	// queries store the ID of the server queries and their state. False for a
+	// query not yet answered, else true.
+	queries map[int]*bool
 }
 
 // NewHub returns a new Witness Hub.
@@ -85,7 +99,8 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
-		inbox:           *inbox.NewInbox("/root"),
+		inbox:           *serverInbox.NewInbox("/root"),
+		queriesID:       queriesID{queries: make(map[int]*bool)},
 	}
 
 	return &witnessHub, nil
@@ -115,6 +130,27 @@ func (h *Hub) tempHandleMessage(incMsg *socket.IncomingMessage) error {
 		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
+	}
+
+	rpctype, err := jsonrpc.GetType(byteMessage)
+	if err != nil {
+		h.log.Err(err).Msg("failed to get rpc type")
+		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
+		socket.SendError(nil, rpcErr)
+		return rpcErr
+	}
+
+	// check type (answer or query), we expect a query
+	if rpctype == jsonrpc.RPCTypeAnswer {
+		err = h.handleAnswer(byteMessage)
+		if err != nil {
+			return xerrors.Errorf("invalid answer message received: %v", err)
+		}
+	} else if rpctype != jsonrpc.RPCTypeQuery {
+		h.log.Error().Msg(rpcUnknownError)
+		rpcErr := xerrors.New(rpcUnknownError)
+		socket.SendError(nil, rpcErr)
+		return rpcErr
 	}
 
 	var id int
@@ -186,6 +222,57 @@ func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error {
 	}
 }
 
+func (h *Hub) handleAnswer(byteMessage []byte) error {
+	var answer method.Answer
+
+	err := json.Unmarshal(byteMessage, &answer)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal answer: %v", err)
+	}
+
+	h.queriesID.mu.Lock()
+
+	val := h.queriesID.queries[answer.ID]
+	if val == nil {
+		h.queriesID.mu.Unlock()
+		return xerrors.Errorf("no queries sent with this id")
+	} else if *val {
+		h.queriesID.mu.Unlock()
+		return xerrors.Errorf("queries already got an answer")
+	}
+
+	*h.queriesID.queries[answer.ID] = true
+	h.queriesID.mu.Unlock()
+
+	for msg := range answer.Result {
+		err := h.handleUnmarshaledPublish(answer.Result[msg])
+		h.log.Err(err).Msg("failed to handle message during catchup")
+	}
+	return nil
+}
+
+func (h *Hub) handleUnmarshaledPublish(message method.Publish) error {
+	if message.Params.Channel == "/root" {
+		err := h.handleRootChannelPublishMesssage(nil, message)
+		if err != nil {
+			return xerrors.Errorf("failed to handle root channel message: %v", err)
+		}
+		return nil
+	}
+
+	channel, err := h.getChan(message.Params.Channel)
+	if err != nil {
+		return xerrors.Errorf("failed to get channel: %v", err)
+	}
+
+	err = channel.Publish(message)
+	if err != nil {
+		return xerrors.Errorf("failed to publish: %v", err)
+	}
+
+	return nil
+}
+
 // Start implements hub.Hub
 func (h *Hub) Start() {
 	h.log.Info().Msg("started witness...")
@@ -232,8 +319,33 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 }
 
 // AddServerSocket adds a socket to the sockets known by the hub
-func (h *Hub) AddServerSocket(socket socket.Socket) {
+func (h *Hub) AddServerSocket(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
+
+	catchupID := h.generateID()
+
+	rpcMessage := method.Catchup{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "catchup",
+		},
+		ID: catchupID,
+		Params: struct {
+			Channel string "json:\"channel\""
+		}{
+			"/root",
+		},
+	}
+
+	buf, err := json.Marshal(rpcMessage)
+	if err != nil {
+		return xerrors.Errorf("server failed to marshal catchup query: %v", err)
+	}
+
+	socket.Send(buf)
+	return nil
 }
 
 // OnSocketClose implements hub.Hub
@@ -259,11 +371,24 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
+// generateID generates a unique ID in the hub used for queries from the server
+func (h *Hub) generateID() int {
+	h.queriesID.mu.Lock()
+	defer h.queriesID.mu.Unlock()
+
+	newID := 0
+	for ok := false; !ok; _, ok = h.queriesID.queries[newID] {
+		newID = rand.Int()
+	}
+	*h.queriesID.queries[newID] = false
+	return newID
+}
+
 // broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(message message.Message, byteMessage []byte) {
+func (h *Hub) broadcastToServers(message method.Publish, byteMessage []byte) {
 	h.Lock()
 	defer h.Unlock()
-	_, ok := h.inbox.GetMessage(message.MessageID)
+	_, ok := h.inbox.GetMessage(message.Params.Message.MessageID)
 	if !ok {
 		h.inbox.StoreMessage(message)
 		h.serverSockets.SendToAll(byteMessage)
@@ -297,25 +422,26 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 }
 
 // handleRootChannelPublishMesssage handles an incoming publish message on the root channel.
-func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish method.Publish) {
+func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
 	if err != nil {
-		socket.SendError(&publish.ID, xerrors.Errorf("failed to decode message data: %v", err))
-		return
+		err := xerrors.Errorf("failed to decode message data: %v", err)
+		socket.SendError(&publish.ID, err)
+		return err
 	}
 
 	// validate message data against the json schema
 	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
 	if err != nil {
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	// get object#action
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	// must be "lao#create"
@@ -324,7 +450,7 @@ func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish met
 			"but found %s#%s", object, action)
 		h.log.Err(err)
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	var laoCreate messagedata.LaoCreate
@@ -333,19 +459,21 @@ func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish met
 	if err != nil {
 		h.log.Err(err).Msg("failed to unmarshal lao#create")
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
 
 	err = h.createLao(publish, laoCreate)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")
 		socket.SendError(&publish.ID, err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 // handleRootChannelCatchupMessage handles an incoming catchup message on the root channel
-func (h *Hub) handleRootChannelCatchupMessage(senderSocket socket.Socket, catchup method.Catchup) ([]message.Message, error) {
+func (h *Hub) handleRootChannelCatchupMessage(senderSocket socket.Socket, catchup method.Catchup) ([]method.Publish, error) {
 	if senderSocket.Type() == socket.ClientSocketType {
 		return nil, xerrors.Errorf("clients aren't allowed to send root channel catchup message")
 	}
@@ -362,11 +490,11 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
-	h.broadcastToServers(publish.Params.Message, byteMessage)
+	h.broadcastToServers(publish, byteMessage)
 
 	if publish.Params.Channel == "/root" {
-		h.handleRootChannelPublishMesssage(socket, publish)
-		return publish.ID, nil
+		err := h.handleRootChannelPublishMesssage(socket, publish)
+		return publish.ID, err
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
@@ -440,7 +568,8 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 		if err != nil {
 			return nil, catchup.ID, xerrors.Errorf("failed to handle root channel catchup message: %v", err)
 		}
-		return messages, catchup.ID, nil
+		h.sendAnswerToServer(socket, catchup.ID, messages)
+		return nil, catchup.ID, nil
 	}
 
 	channel, err := h.getChan(catchup.Params.Channel)
@@ -454,6 +583,10 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 	}
 
 	return msg, catchup.ID, nil
+}
+
+func (h *Hub) sendAnswerToServer(socket socket.Socket, id int, messages []method.Publish) {
+	socket.SendServerResult(id, messages)
 }
 
 // getChan finds a channel based on its path

@@ -7,6 +7,7 @@
 package socket
 
 import (
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"time"
 )
@@ -53,6 +54,9 @@ type Socket interface {
 	// SendResult is used to send a result message to the client. Res can be
 	// nil, empty, or filled. In case it is nil it sends the "0" return value.
 	SendResult(id int, res []message.Message)
+
+	// SendServerResult is used to send a result message to a server.
+	SendServerResult(id int, res []method.Publish)
 }
 
 // IncomingMessage wraps the raw message from the websocket connection and pairs

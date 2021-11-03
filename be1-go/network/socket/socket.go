@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"popstellar/message/answer"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 
 	"github.com/gorilla/websocket"
@@ -218,6 +219,47 @@ func (s *baseSocket) SendResult(id int, res []message.Message) {
 			JSONRPC string            `json:"jsonrpc"`
 			ID      int               `json:"id"`
 			Result  []message.Message `json:"result"`
+		}{
+			"2.0", id, res,
+		}
+	}
+
+	answerBuf, err := json.Marshal(&answer)
+	if err != nil {
+		s.log.Err(err).Msg("failed to marshal answer")
+		return
+	}
+
+	s.log.Info().
+		Str("to", s.conn.RemoteAddr().String()).
+		Str("msg", string(answerBuf)).
+		Msg("send result")
+	s.send <- answerBuf
+}
+
+// SendServerResult is a utility method that allows sending a `message.Result` to the
+// socket when the answer need the channels id where the messages were sent.
+func (s *baseSocket) SendServerResult(id int, res []method.Publish) {
+	var answer interface{}
+
+	if res == nil {
+		answer = struct {
+			JSONRPC string `json:"jsonrpc"`
+			ID      int    `json:"id"`
+			Result  int    `json:"result"`
+		}{
+			"2.0", id, 0,
+		}
+	} else {
+		for _, r := range res {
+			if r.Params.Message.WitnessSignatures == nil {
+				r.Params.Message.WitnessSignatures = []message.WitnessSignature{}
+			}
+		}
+		answer = struct {
+			JSONRPC string           `json:"jsonrpc"`
+			ID      int              `json:"id"`
+			Result  []method.Publish `json:"result"`
 		}{
 			"2.0", id, res,
 		}
