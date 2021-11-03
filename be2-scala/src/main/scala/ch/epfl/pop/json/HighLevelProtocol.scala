@@ -163,17 +163,20 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     }
 
     override def write(obj: JsonRpcRequest): JsValue = {
-      val optId: JsValue = obj.id match {
-        case Some(idx) => idx.toJson
-        case _ => JsNull
+
+      var jsObjectContent: ListMap[String, JsValue] = ListMap.empty[String, JsValue]
+
+      jsObjectContent += (PARAM_JSON_RPC -> obj.jsonrpc.toJson)
+      jsObjectContent += (PARAM_METHOD -> obj.method.toJson)
+      jsObjectContent += (PARAM_PARAMS -> obj.params.toJson)
+
+      /*Add the id key iff it's non null*/
+      if(obj.id.isDefined){
+        jsObjectContent += (PARAM_ID -> obj.id.get.toJson)
       }
 
-      JsObject(
-        PARAM_JSON_RPC -> obj.jsonrpc.toJson,
-        PARAM_METHOD -> obj.method.toJson,
-        PARAM_PARAMS -> obj.params.toJson,
-        PARAM_ID -> optId
-      )
+      JsObject(jsObjectContent)
+
     }
   }
 
