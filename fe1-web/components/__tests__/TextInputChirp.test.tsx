@@ -5,6 +5,7 @@ import STRINGS from '../../res/strings';
 
 const onChangeText = jest.fn();
 const onPress = jest.fn();
+const helloWorld = 'Hello World !';
 
 describe('TextInputChirp', () => {
   it('renders correctly without placeholder', () => {
@@ -23,7 +24,6 @@ describe('TextInputChirp', () => {
   });
 
   it('renders correctly when writing less than 300 chars', () => {
-    const helloWorld = 'Hello World !';
     const { getByPlaceholderText, toJSON } = render(
       <TextInputChirp onChangeText={onChangeText} onPress={onPress} />,
     );
@@ -46,7 +46,6 @@ describe('TextInputChirp', () => {
   });
 
   it('calls onChangeText correctly', () => {
-    const helloWorld = 'Hello World !';
     const { getByPlaceholderText } = render(
       <TextInputChirp onChangeText={onChangeText} onPress={onPress} />,
     );
@@ -56,7 +55,6 @@ describe('TextInputChirp', () => {
   });
 
   it('calls onPress correctly', () => {
-    const helloWorld = 'Hello World !';
     const { getByText, getByPlaceholderText } = render(
       <TextInputChirp onChangeText={onChangeText} onPress={onPress} />,
     );
