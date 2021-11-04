@@ -39,12 +39,4 @@ class AnswerGeneratorSuite extends FunSuite with Matchers with BeforeAndAfterAll
     expected should be (message)
 
   }
-
-
-
-
-
-
-
-
 }
