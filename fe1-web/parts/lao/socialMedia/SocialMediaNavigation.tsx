@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import STRINGS from 'res/strings';
 
 import SocialHome from './SocialHome';
@@ -8,12 +8,12 @@ import SocialFollows from './SocialFollows';
 import SocialSearch from './SocialSearch';
 import SocialProfile from './SocialProfile';
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 const SocialMediaNavigation = () => (
   <Tab.Navigator
     screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
+      tabBarIcon: ({ color }) => {
         let iconName;
 
         if (route.name === STRINGS.social_media_navigation_tab_home) {
@@ -26,7 +26,7 @@ const SocialMediaNavigation = () => (
           iconName = 'person';
         }
 
-        return <Ionicons name={iconName} size={size} color={color} />;
+        return <Ionicons name={iconName} size={23} color={color} />;
       },
       tabBarActiveTintColor: 'tomato',
       tabBarInactiveTintColor: 'gray',
