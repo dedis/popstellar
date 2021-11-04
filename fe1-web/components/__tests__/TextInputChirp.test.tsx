@@ -3,9 +3,14 @@ import { fireEvent, render } from '@testing-library/react-native';
 import STRINGS from 'res/strings';
 import TextInputChirp from '../TextInputChirp';
 
-const onChangeText = jest.fn();
-const onPress = jest.fn();
+let onChangeText: Function;
+let onPress: Function;
 const helloWorld = 'Hello World !';
+
+beforeEach(() => {
+  onChangeText = jest.fn();
+  onPress = jest.fn();
+});
 
 describe('TextInputChirp', () => {
   it('renders correctly without placeholder', () => {
