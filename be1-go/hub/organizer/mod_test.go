@@ -390,9 +390,9 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 }
 
-// Check that if the organizer receives a wrong message, it will send an error with
-// id = null if impossible to recover request id
-// The fakeSocket abstraction replaces null by -1 for testing
+// Check that if the organizer receives a wrong message, it will send an error
+// with id = null if impossible to recover request id. The fakeSocket
+// abstraction replaces null by -1 for testing.
 func TestOrganizer_HandleWrongMessage(t *testing.T) {
 	keypair := generateKeyPair(t)
 
