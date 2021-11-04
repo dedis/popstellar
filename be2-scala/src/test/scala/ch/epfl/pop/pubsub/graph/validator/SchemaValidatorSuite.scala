@@ -16,13 +16,6 @@ object SchemaValidatorSuite extends FunSuite with Matchers {
       jsonStr
     }
 
-  def getJsonStringFromFile(filePath: String): String = {
-      val source = Source.fromFile(filePath);
-      val jsonStr = source.getLines.mkString
-      source.close
-      jsonStr
-    }
-
   /* Test subscribe query without message format*/
   test("Correct subscribe JSON-RPC query"){
     val subscribePath = "../protocol/examples/query/subscribe/subscribe.json"
