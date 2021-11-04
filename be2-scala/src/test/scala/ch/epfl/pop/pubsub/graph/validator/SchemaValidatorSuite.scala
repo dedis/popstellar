@@ -7,7 +7,7 @@ import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.pubsub.graph.ErrorCodes
 import java.io.IOException
 
-class SchemaValidatorSuite extends FunSuite with Matchers {
+object SchemaValidatorSuite extends FunSuite with Matchers {
 
   def getJsonStringFromFile(filePath: String): String = {
       val source = Source.fromFile(filePath);
