@@ -60,6 +60,10 @@ public class SettingsViewModel extends AndroidViewModel {
     return mApplyChangesEvent;
   }
 
+  public LiveData<String> getServerUrl() {
+    return mServerUrl;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -69,5 +73,9 @@ public class SettingsViewModel extends AndroidViewModel {
 
   public void applyChanges() {
     mApplyChangesEvent.setValue(new SingleEvent<>(true));
+  }
+
+  public void setServerUrl(String serverUrl) {
+    this.mServerUrl.setValue(serverUrl);
   }
 }

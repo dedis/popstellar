@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.ui.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.SettingsFragmentBinding;
+import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
+import com.github.dedis.popstellar.ui.home.HomeActivity;
 
 public class SettingsFragment extends Fragment {
 
@@ -42,6 +46,7 @@ public class SettingsFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     setupApplyButton();
+    mSettingsViewModel.setServerUrl(LAORequestFactory.getUrl());
 
     // Subscribe to "apply changes" event
     mSettingsViewModel
@@ -61,6 +66,10 @@ public class SettingsFragment extends Fragment {
   }
 
   private void applyChanges() {
-    // LAORequestFactory.setUrl(mSettingsFragBinding.entryBoxServerUrl.getText());
+    LAORequestFactory.setUrl(mSettingsFragBinding.entryBoxServerUrl.getText().toString());
+    mSettingsViewModel.setServerUrl(mSettingsFragBinding.entryBoxServerUrl.getText().toString());
+    Intent intent = new Intent(getActivity(), HomeActivity.class);
+    Log.d(TAG, "Trying to open home");
+    startActivity(intent);
   }
 }

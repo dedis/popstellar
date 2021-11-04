@@ -39,7 +39,7 @@
         android:autofillHints="name"
         android:hint="@string/text_hint_server_url"
         android:inputType="textUri"
-        android:text="" />
+        android:text="@{viewmodel.getServerUrl().toString()}" />
 
       <LinearLayout
         android:layout_width="match_parent"
