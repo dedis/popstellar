@@ -47,6 +47,8 @@ case object RollCallHandler extends MessageHandler {
   }
 
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    //FIXME: need to do something with list of public keys, or at least be able to retrieve it
+    //FIXME: need to create one channel per participant (their PK as channel id?)
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }
