@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp,
+  EventTags, Hash, Lao, PublicKey, Timestamp, userSocialChannel,
 } from 'model/objects';
 import {
   CastVote,
@@ -300,5 +300,5 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(channelFromIds(currentLao.id), message);
+  return publish(userSocialChannel(currentLao.id), message);
 }
