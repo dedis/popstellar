@@ -70,17 +70,21 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	box := inbox.NewInbox(channelID)
 	box.StoreMessage(msg)
 
+	organizerPk, _ := hub.GetPubkey().MarshalBinary()
+	organizerPk64 := base64.URLEncoding.EncodeToString(organizerPk)
+
+	general := createGeneralChirpingChannel(channelID, hub)
+	createChirpingChannel(organizerPk64, channelID, hub, general, log)
+
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
-
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
-
 	hub.RegisterNewChannel(consensusPath, &consensusCh)
 
 	return &Channel{
 		channelID: channelID,
 		sockets:   channel.NewSockets(),
 		inbox:     box,
-		general:   createGeneralChirpingChannel(channelID, hub),
+		general:   general,
 		hub:       hub,
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
@@ -509,11 +513,12 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	return nil
 }
 
-func (c *Channel) createChirpingChannels(attendee string) {
-	chirpingChannelPath := c.channelID + "/" + "social" + "/"+ attendee + "/"
-	cha := chirp.NewChannel(chirpingChannelPath, attendee, c.hub, c.general, c.log)
-	c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
-	c.log.Info().Msgf("storing new channel chirp channel for attendee '%s' ", attendee)
+func createChirpingChannel(attendee string, channelID string, hub channel.HubFunctionalities,
+							general *generalChriping.Channel, log zerolog.Logger) {
+	chirpingChannelPath := channelID + "/" + "social" + "/" + attendee + "/"
+	cha := chirp.NewChannel(chirpingChannelPath, attendee, hub, general, log)
+	hub.RegisterNewChannel(chirpingChannelPath, &cha)
+	log.Info().Msgf("storing new channel chirp channel for attendee '%s' ", attendee)
 }
 
 
@@ -684,7 +689,7 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 	for _, attendee := range msg.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		c.createChirpingChannels(attendee)
+		createChirpingChannel(attendee, c.channelID, c.hub, c.general, c.log)
 
 		if db != nil {
 			c.log.Info().Msgf("inserting attendee %s into db", attendee)

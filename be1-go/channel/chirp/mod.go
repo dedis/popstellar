@@ -23,8 +23,10 @@ import (
 const msgID		 = "msg id"
 
 // NewChannel returns a new initialized individual chirping channel
-func NewChannel(channelPath string,
-	ownerKey string, hub channel.HubFunctionalities, generalChannel *generalChriping.Channel, log zerolog.Logger) Channel {
+func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
+				generalChannel *generalChriping.Channel, log zerolog.Logger) Channel {
+
+	log = log.With().Str("channel", "chirp").Logger()
 
 	return Channel{
 		sockets:   channel.NewSockets(),
@@ -75,7 +77,7 @@ func (c *Channel) Publish(publish method.Publish) error {
 		case messagedata.ChirpActionAdd:
 			err := c.publishAddChirp(msg)
 			if err != nil {
-				return xerrors.Errorf("failed to cast vote: %v", err)
+				return xerrors.Errorf("failed to publish chirp: %v", err)
 			}
 		case messagedata.ChirpActionDelete:
 			err := c.publishDeleteChirp(msg)
@@ -96,7 +98,7 @@ func (c *Channel) Publish(publish method.Publish) error {
 
 	err = c.broadcastViaGeneral(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to broadcast the chirp message via general")
+		return xerrors.Errorf("failed to broadcast the chirp message via general : %v", err)
 	}
 
 	return nil
@@ -109,7 +111,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		return xerrors.Errorf("failed to decode message data: %v", err)
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	object, _ , err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data", err)
 	}
@@ -121,9 +123,9 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	newData := messagedata.ChirpBroadcast{
 		Object:    object,
-		Action:    action,
+		Action:    "addBroadcast",
 		ChirpId:   msg.MessageID,
-		Channel:   c.channelID,
+		Channel:   c.generalChannel.GetChannelPath(),
 		Timestamp: time,
 	}
 
@@ -133,6 +135,13 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 	}
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+
+	pkOrganizer, err := c.hub.GetPubkey().MarshalBinary()
+
+	if err != nil {
+		return xerrors.Errorf("could not get the public key of the organizer:", err)
+	}
+	pkOrganizer64 := base64.URLEncoding.EncodeToString(pkOrganizer)
 
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
@@ -148,8 +157,8 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 			c.channelID,
 			message.Message{
 				Data: newData64,
-				Sender: msg.Sender,
-				Signature: msg.Signature,
+				Sender: pkOrganizer64,
+				Signature: pkOrganizer64,
 				MessageID: msg.MessageID,
 				WitnessSignatures: msg.WitnessSignatures,
 			},
@@ -158,7 +167,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	err = c.generalChannel.Broadcast(rpcMessage)
 	if err != nil {
-		return xerrors.Errorf("the general channel failed to broadcast the chirp message")
+		return xerrors.Errorf("the general channel failed to broadcast the chirp message: %v", err)
 	}
 
 	return nil

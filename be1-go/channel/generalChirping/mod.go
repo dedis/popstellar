@@ -28,7 +28,7 @@ type Channel struct {
 	hub channel.HubFunctionalities
 
 	// channel path
-	channelID string
+	channelPath string
 
 	log zerolog.Logger
 }
@@ -39,7 +39,7 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 	return Channel{
 		sockets:   channel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
-		channelID: channelPath,
+		channelPath: channelPath,
 		hub: hub,
 		log: log,
 	}
@@ -76,12 +76,12 @@ func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 	if object == messagedata.ChirpObject {
 
 		switch action {
-		case messagedata.ChirpActionAdd:
+		case messagedata.ChirpActionAddBroadcast:
 			err := c.AddChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to add a chirp to general: %v", err)
 			}
-		case messagedata.ChirpActionDelete:
+		case messagedata.ChirpActionDeleteBroadcast:
 			err := c.DeleteChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to delete the chirp from general: %v", err)
@@ -152,7 +152,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 			Channel string          `json:"channel"`
 			Message message.Message `json:"message"`
 		}{
-			c.channelID,
+			c.channelPath,
 			msg,
 		},
 	}
@@ -239,6 +239,11 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 	}
 
 	return nil
+}
+
+// GetChannelPath is a getter for the channel path
+func (c *Channel) GetChannelPath() string {
+	return c.channelPath
 }
 
 
