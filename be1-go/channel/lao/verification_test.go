@@ -68,6 +68,8 @@ func TestVerify_LaoState(t *testing.T) {
 	t.Run("id not base64", getTestBadExample("bad_lao_state_id_not_base64.json"))
 	t.Run("id invalid hash", getTestBadExample("bad_lao_state_id_invalid_hash.json"))
 	t.Run("empty lao name", getTestBadExample("bad_lao_state_empty_name.json"))
+	t.Run("creation negative", getTestBadExample("bad_lao_state_last_modified_negative.json"))
+	t.Run("last modified negative", getTestBadExample("bad_lao_state_creation_negative.json"))
 	t.Run("creation after last modified", getTestBadExample("bad_lao_state_creation_after_last_modified.json"))
 	t.Run("organizer id not base64", getTestBadExample("bad_lao_state_organizer_not_base64.json"))
 	t.Run("witness id not base64", getTestBadExample("bad_lao_state_witness_not_base64.json"))

@@ -67,6 +67,7 @@ func Test_Lao_Create_VerifyBadExample(t *testing.T) {
 
 	t.Run("id invalid hash", getTestBadExample("bad_lao_create_id_invalid_hash.json"))
 	t.Run("empty lao name", getTestBadExample("bad_lao_create_empty_name.json"))
+	t.Run("creation negative", getTestBadExample("bad_lao_create_creation_negative.json"))
 	t.Run("organizer id not base64", getTestBadExample("bad_lao_create_organizer_not_base64.json"))
 	t.Run("witness id not base64", getTestBadExample("bad_lao_create_witness_not_base64.json"))
 }
