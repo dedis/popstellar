@@ -16,14 +16,22 @@ const SocialMediaNavigation = () => (
       tabBarIcon: ({ color }) => {
         let iconName;
 
-        if (route.name === STRINGS.social_media_navigation_tab_home) {
-          iconName = 'home';
-        } else if (route.name === STRINGS.social_media_navigation_tab_search) {
-          iconName = 'search';
-        } else if (route.name === STRINGS.social_media_navigation_tab_follows) {
-          iconName = 'people';
-        } else if (route.name === STRINGS.social_media_navigation_tab_profile) {
-          iconName = 'person';
+        switch (route.name) {
+          case STRINGS.social_media_navigation_tab_home:
+            iconName = 'home';
+            break;
+          case STRINGS.social_media_navigation_tab_search:
+            iconName = 'search';
+            break;
+          case STRINGS.social_media_navigation_tab_follows:
+            iconName = 'people';
+            break;
+          case STRINGS.social_media_navigation_tab_profile:
+            iconName = 'person';
+            break;
+          default:
+            console.log('wrong route.');
+            break;
         }
 
         return <Ionicons name={iconName} size={23} color={color} />;
