@@ -79,7 +79,7 @@ public class IdentityFragment extends Fragment {
 
     // for now we use the user's public key to generate the QR code
     // TODO: In the future use Wallet with user's token
-    String pk = this.getArguments().getString(PUBLIC_KEY);
+    String pk = this.requireArguments().getString(PUBLIC_KEY);
     identityNameEditText.setText(pk);
 
     Bitmap myBitmap = QRCode.from(pk).bitmap();

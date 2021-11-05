@@ -2,8 +2,10 @@ package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -28,6 +30,8 @@ public final class Lao {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
+  private final Map<String, Consensus> messageIdToConsensus;
+  private final List<ConsensusNode> nodes;
 
   public Lao(String id) {
     if (id == null) {
@@ -39,6 +43,8 @@ public final class Lao {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
+    this.nodes = new ArrayList<>();
+    this.messageIdToConsensus = new HashMap<>();
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
@@ -76,6 +82,29 @@ public final class Lao {
   }
 
   /**
+   * Store the given consensus and update all nodes concerned by it.
+   *
+   * @param consensus the consensus
+   */
+  public void updateConsensus(Consensus consensus) {
+    if (consensus == null) {
+      throw new IllegalArgumentException("The consensus is null");
+    }
+    messageIdToConsensus.put(consensus.getMessageId(), consensus);
+
+    Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
+    // add to each node the messageId of the consensus if they accept it
+    nodes.stream()
+        .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
+        .forEach(node -> node.addMessageIdOfAnAcceptedConsensus(consensus.getMessageId()));
+
+    // add the consensus to node if it is proposer
+    nodes.stream()
+        .filter(node -> node.getPublicKey().equals(consensus.getProposer()))
+        .forEach(node -> node.addConsensus(consensus));
+  }
+
+  /**
    * Update the list of messages that have to be signed by witnesses. If the list of messages
    * contain the message with Id prevId , it will remove this message from the list. Then it will
    * add the new message to the list with the corresponding newId
@@ -94,6 +123,10 @@ public final class Lao {
 
   public Optional<Election> getElection(String id) {
     return Optional.ofNullable(elections.get(id));
+  }
+
+  public Optional<Consensus> getConsensus(String messageId) {
+    return Optional.ofNullable(messageIdToConsensus.get(messageId));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(String id) {
@@ -118,6 +151,10 @@ public final class Lao {
    */
   public boolean removeRollCall(String id) {
     return (rollCalls.remove(id) != null);
+  }
+
+  public boolean removeConsensus(String messageId) {
+    return (messageIdToConsensus.remove(messageId) != null);
   }
 
   public Long getLastModified() {
@@ -187,6 +224,9 @@ public final class Lao {
 
   public void setOrganizer(String organizer) {
     this.organizer = organizer;
+    if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(organizer))) {
+      nodes.add(new ConsensusNode(organizer));
+    }
   }
 
   public String getModificationId() {
@@ -208,10 +248,20 @@ public final class Lao {
       }
     }
     this.witnesses = witnesses;
+    witnesses.forEach(
+        w -> {
+          if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(w))) {
+            nodes.add(new ConsensusNode(w));
+          }
+        });
   }
 
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
+  }
+
+  public List<ConsensusNode> getNodes() {
+    return nodes;
   }
 
   public Map<String, Election> getElections() {
@@ -220,6 +270,10 @@ public final class Lao {
 
   public Map<String, RollCall> getRollCalls() {
     return rollCalls;
+  }
+
+  public Map<String, Consensus> getMessageIdToConsensus() {
+    return messageIdToConsensus;
   }
 
   public Map<String, WitnessMessage> getWitnessMessages() {
@@ -276,6 +330,8 @@ public final class Lao {
         + rollCalls
         + ", elections="
         + elections
+        + ", consensuses="
+        + messageIdToConsensus.values()
         + '}';
   }
 }

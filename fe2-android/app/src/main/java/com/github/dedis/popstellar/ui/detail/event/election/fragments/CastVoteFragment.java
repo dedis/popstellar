@@ -70,7 +70,7 @@ public class CastVoteFragment extends Fragment {
     // Inflate the layout for this fragment
     CastVoteFragmentBinding mCastVoteFragBinding =
         CastVoteFragmentBinding.inflate(inflater, container, false);
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     TextView laoNameView = mCastVoteFragBinding.castVoteLaoName;
     TextView electionNameView = mCastVoteFragBinding.castVoteElectionName;

@@ -36,7 +36,7 @@ public class ElectionResultFragment extends Fragment {
   @Override
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-    Button back = getActivity().findViewById(R.id.tab_back);
+    Button back = requireActivity().findViewById(R.id.tab_back);
     back.setOnClickListener(v -> mLaoDetailViewModel.openLaoDetail());
   }
 
@@ -46,7 +46,7 @@ public class ElectionResultFragment extends Fragment {
     // Inflate the layout for this fragment
     ElectionResultFragmentBinding mElectionResultFragBinding =
         ElectionResultFragmentBinding.inflate(inflater, container, false);
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     TextView laoNameView = mElectionResultFragBinding.electionResultLaoName;
     TextView electionNameView = mElectionResultFragBinding.electionResultPresentationTitle;

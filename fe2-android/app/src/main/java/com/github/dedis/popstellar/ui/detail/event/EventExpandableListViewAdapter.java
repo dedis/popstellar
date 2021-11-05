@@ -257,15 +257,16 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     layoutEventBinding.setEvent(event);
 
     EventCategory category = (EventCategory) getGroup(groupPosition);
-    if (event.getType() == EventType.ELECTION) {
-      return setupElectionElement((Election) event, category, layoutEventBinding);
-    } else if (event.getType() == EventType.ROLL_CALL) {
-      return setupRollCallElement((RollCall) event, layoutEventBinding);
+    switch (event.getType()) {
+      case ELECTION:
+        return setupElectionElement((Election) event, category, layoutEventBinding);
+      case ROLL_CALL:
+        return setupRollCallElement((RollCall) event, layoutEventBinding);
+      default:
+        layoutEventBinding.setLifecycleOwner(lifecycleOwner);
+        layoutEventBinding.executePendingBindings();
+        return layoutEventBinding.getRoot();
     }
-
-    layoutEventBinding.setLifecycleOwner(lifecycleOwner);
-    layoutEventBinding.executePendingBindings();
-    return layoutEventBinding.getRoot();
   }
 
   /**
@@ -370,6 +371,14 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
           viewModel.setCurrentElection(election);
           viewModel.openManageElection(true);
         });
+
+    electionBinding.detailsButton.setOnClickListener(
+        clicked -> {
+          viewModel.setCurrentElection(election);
+          viewModel.openStartElection(true);
+        });
+    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
+
     electionBinding.setEventCategory(category);
     electionBinding.setViewModel(viewModel);
     electionBinding.setLifecycleOwner(lifecycleOwner);

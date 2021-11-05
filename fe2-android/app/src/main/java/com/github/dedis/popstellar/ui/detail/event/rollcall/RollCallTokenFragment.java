@@ -50,9 +50,9 @@ public class RollCallTokenFragment extends Fragment {
     mRollCallTokenFragmentBinding =
         RollCallTokenFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    String rollCallId = this.getArguments().getString(EXTRA_ID);
+    String rollCallId = requireArguments().getString(EXTRA_ID);
     Optional<RollCall> optRollCall =
         mLaoDetailViewModel.getCurrentLao().getValue().getRollCall(rollCallId);
     if (!optRollCall.isPresent()) {

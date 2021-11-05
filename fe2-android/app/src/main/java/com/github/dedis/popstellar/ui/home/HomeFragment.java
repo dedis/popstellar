@@ -32,7 +32,6 @@ public final class HomeFragment extends Fragment {
     return new HomeFragment();
   }
 
-  @Nullable
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,
@@ -40,7 +39,7 @@ public final class HomeFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mHomeFragBinding = HomeFragmentBinding.inflate(inflater, container, false);
 
-    mHomeViewModel = HomeActivity.obtainViewModel(getActivity());
+    mHomeViewModel = HomeActivity.obtainViewModel(requireActivity());
 
     mHomeFragBinding.setViewmodel(mHomeViewModel);
     mHomeFragBinding.setLifecycleOwner(getActivity());
@@ -60,7 +59,7 @@ public final class HomeFragment extends Fragment {
     mHomeViewModel
         .getLAOs()
         .observe(
-            getActivity(),
+            requireActivity(),
             laos -> {
               Log.d(TAG, "Got a list update");
 
