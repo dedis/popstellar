@@ -256,6 +256,8 @@ func (c *Channel) Publish(publish method.Publish) error {
 		err = c.processRollCallObject(action, msg)
 	case messagedata.ElectionObject:
 		err = c.processElectionObject(action, msg)
+	default:
+		err = xerrors.Errorf("Object not accepted in a LAO channel.")
 	}
 
 	if err != nil {
