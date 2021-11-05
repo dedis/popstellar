@@ -40,3 +40,33 @@ func Test_Lao_Create(t *testing.T) {
 	err = msg.Verify()
 	require.NoError(t, err)
 }
+
+func Test_Lao_Create_VerifyBadExample(t *testing.T) {
+	getTestBadExample := func(file string) func(*testing.T) {
+		return func(t *testing.T) {
+			// read the bad example file
+			buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "lao_create", file))
+			require.NoError(t, err)
+
+			object, action, err := messagedata.GetObjectAndAction(buf)
+			require.NoError(t, err)
+
+			require.Equal(t, "lao", object)
+			require.Equal(t, "create", action)
+
+			var msg messagedata.LaoCreate
+
+			err = json.Unmarshal(buf, &msg)
+			require.NoError(t, err)
+
+			// test the bad example
+			err = msg.Verify()
+			require.Error(t, err)
+		}
+	}
+
+	t.Run("id invalid hash", getTestBadExample("bad_lao_create_id_invalid_hash.json"))
+	t.Run("empty lao name", getTestBadExample("bad_lao_create_empty_name.json"))
+	t.Run("organizer id not base64", getTestBadExample("bad_lao_create_organizer_not_base64.json"))
+	t.Run("witness id not base64", getTestBadExample("bad_lao_create_witness_not_base64.json"))
+}

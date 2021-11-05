@@ -37,6 +37,11 @@ func (message LaoCreate) Verify() error {
 		return xerrors.Errorf("lao id is %s, should be %s", message.ID, expectedLaoID)
 	}
 
+	// verify lao name non-empty
+	if len(message.Name) == 0 {
+		return xerrors.Errorf("lao name is %s, should not be empty", message.Name)
+	}
+
 	// verify creation is positive
 	if message.Creation < 0 {
 		return xerrors.Errorf("lao creation is %d, should be minimum 0", message.Creation)
