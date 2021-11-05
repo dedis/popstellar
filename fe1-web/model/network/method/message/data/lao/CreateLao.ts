@@ -44,7 +44,7 @@ export class CreateLao implements MessageData {
   }
 
   /**
-   * Creates a Lao object from a goven object
+   * Creates a Lao object from a given object
    * @param obj
    */
   public static fromJson(obj: any): CreateLao {
