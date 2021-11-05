@@ -13,7 +13,7 @@
         "instance_id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('consensus'||key:type||key:id||key:property)"
+            "$comment": "Hash : HashLen('consensus', key:type, key:id, key:property)"
         },
         "created_at": {
             "description": "[Timestamp] creation time",
