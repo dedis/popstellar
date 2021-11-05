@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import {
-  View, Button, Platform,
+  View, Platform, Modal,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import DatePicker from 'components/DatePicker';
+import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import STRINGS from 'res/strings';
@@ -11,40 +11,36 @@ import { requestCreateMeeting } from 'network/MessageApi';
 import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
-import { Timestamp } from 'model/objects';
 import TextInputLine from 'components/TextInputLine';
+import { Timestamp } from 'model/objects';
+import { onConfirmPress } from '../CreateEvent';
+
+const DEFAULT_MEETING_DURATION = 3600;
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
  * a finish time text and its buttons, a location text input, a confirm button and a cancel button
- *
- * TODO makes impossible to set a finish time before the start time
  */
-function dateToTimestamp(date: Date): Timestamp {
-  return new Timestamp(Math.floor(date.getTime() / 1000));
-}
 
 const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
   const navigation = useNavigation();
-  const initialStartDate = new Date();
 
   const [meetingName, setMeetingName] = useState('');
-  const [startDate, setStartDate] = useState(dateToTimestamp(initialStartDate));
-  const [endDate, setEndDate] = useState(new Timestamp(-1));
+  const [startTime, setStartTime] = useState(Timestamp.EpochNow());
+  const [endTime, setEndTime] = useState(Timestamp.EpochNow().addSeconds(DEFAULT_MEETING_DURATION));
+  const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
+  const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
 
   const [location, setLocation] = useState('');
 
   const confirmButtonVisibility: boolean = (
     meetingName !== ''
-    && Math.floor(startDate.valueOf() / 60) >= Math.floor((new Date()).getTime() / 60000)
   );
 
-  const onConfirmPress = () => {
-    const endTime = (endDate.valueOf() === -1) ? undefined : endDate;
-
-    requestCreateMeeting(meetingName, startDate, location || undefined, endTime)
+  const createMeeting = () => {
+    requestCreateMeeting(meetingName, startTime, location, endTime)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
@@ -53,53 +49,28 @@ const CreateMeeting = ({ route }: any) => {
       });
   };
 
-  const onChangeStartTime = (date: Date) => {
-    const dateStamp: Timestamp = dateToTimestamp(date);
-    setStartDate(dateStamp);
-    if (endDate < startDate) {
-      setEndDate(dateStamp);
-    }
-  };
-
-  const onChangeEndTime = (date: Date) => {
-    const dateStamp: Timestamp = dateToTimestamp(date);
-
-    if (dateStamp < startDate) {
-      setEndDate(startDate);
-    } else {
-      setEndDate(dateStamp);
-    }
-  };
-
   const buildDatePickerWeb = () => {
-    const startTime = new Date(0);
-    startTime.setUTCSeconds(startDate.valueOf());
-
-    const endTime = (endDate.valueOf() !== -1) ? new Date(0) : undefined;
-    if (endTime !== undefined) {
-      endTime.setUTCSeconds(endDate.valueOf());
-    }
+    const startDate = startTime.timestampToDate();
+    const endDate = endTime.timestampToDate();
 
     return (
-      <>
-        { /* Start time */ }
-        <View style={styles.view}>
+      <View style={styles.viewVertical}>
+        <View style={[styles.view, { padding: 5 }]}>
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
-          { /* zIndexBooster corrects the problem of DatePicker being other elements */ }
-          <DatePicker selected={startTime} onChange={onChangeStartTime} />
+          <DatePicker
+            selected={startDate}
+            onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
+              DEFAULT_MEETING_DURATION)}
+          />
         </View>
-
-        { /* End time */}
-        <View style={styles.view}>
+        <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
           <ParagraphBlock text={STRINGS.meeting_create_finish_time} />
-          { /* zIndexBooster corrects the problem of DatePicker being other elements */}
-          <DatePicker selected={endTime} onChange={onChangeEndTime} />
-          <View>
-            { /* the view is there to avoid button stretching */ }
-            <Button onPress={() => setEndDate(new Timestamp(-1))} title="Clear" />
-          </View>
+          <DatePicker
+            selected={endDate}
+            onChange={(date: Date) => onChangeEndTime(date, startTime, setEndTime)}
+          />
         </View>
-      </>
+      </View>
     );
   };
 
@@ -120,13 +91,47 @@ const CreateMeeting = ({ route }: any) => {
       />
       <WideButtonView
         title={STRINGS.general_button_confirm}
-        onPress={onConfirmPress}
+        onPress={() => onConfirmPress(startTime, endTime, createMeeting, setModalStartIsVisible,
+          setModalEndIsVisible)}
         disabled={!confirmButtonVisibility}
       />
       <WideButtonView
         title={STRINGS.general_button_cancel}
         onPress={navigation.goBack}
       />
+
+      <Modal
+        visible={modalEndIsVisible}
+        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_ends_in_past} />
+          <WideButtonView
+            title={STRINGS.general_button_ok}
+            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
+          />
+        </View>
+      </Modal>
+      <Modal
+        visible={modalStartIsVisible}
+        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
+        transparent
+      >
+        <View style={styles.modalView}>
+          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
+          <TextBlock text={STRINGS.modal_event_starts_in_past} />
+          <WideButtonView
+            title={STRINGS.modal_button_start_now}
+            onPress={() => createMeeting()}
+          />
+          <WideButtonView
+            title={STRINGS.modal_button_go_back}
+            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
+          />
+        </View>
+      </Modal>
     </>
   );
 };

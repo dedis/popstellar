@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
@@ -388,78 +390,65 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 }
 
-func TestOrganizer_Post_Chirp(t *testing.T) {
+// Check that if the organizer receives a wrong message, it will send an error
+// with id = null if impossible to recover request id. The fakeSocket
+// abstraction replaces null by -1 for testing.
+func TestOrganizer_HandleWrongMessage(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	c := &fakeChannel{}
+	fakeMessages := []message.Message{
+		{
+			MessageID: "XXX",
+		},
+	}
+
+	// set fake messages on the channel
+	c := &fakeChannel{
+		msgs: fakeMessages,
+	}
 
 	hub, err := NewHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	laoID := "XXX"
+	laoID := "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
 
 	hub.channelByID[rootPrefix+laoID] = c
 
-	data := messagedata.ChirpAdd{
-		Object:    messagedata.ChirpObject,
-		Action:    messagedata.ChirpActionAdd,
-		Text: "blabla",
-		Timestamp: time.Now().Unix(),
-	}
+	// get the wrong message example
+	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
+		"examples")
+	file := filepath.Join(relativeExamplePath, "wrong_missing_jsonrpc.json")
 
-	dataBuf, err := json.Marshal(data)
+	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	publishBuf, err := json.Marshal(&buf)
 	require.NoError(t, err)
 
-	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString(dataBuf),
-		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
-		WitnessSignatures: []message.WitnessSignature{},
-	}
+	sock := &fakeSocket{id: "fakeID"}
 
-	publish := method.Publish{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
+	err = hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+	require.Error(t, err)
+	require.Error(t, sock.err)
 
-			Method: query.MethodPublish,
-		},
+	// > check the id
+	require.Equal(t, -1, sock.resultID)
 
-		ID: 1,
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: rootPrefix + laoID,
-			Message: msg,
-		},
-	}
-
-	publishBuf, err := json.Marshal(&publish)
-	require.NoError(t, err)
-
-	sock := &fakeSocket{}
-
-	hub.handleMessageFromClient(&socket.IncomingMessage{
+	// > check that there is no errors with messages from witness too
+	err = hub.handleMessageFromWitness(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
 
-	require.Equal(t, publish.ID, sock.resultID)
+	require.Error(t, err)
+	require.Error(t, sock.err)
 
-	require.NoError(t, sock.err)
-
-	// > check that the channel has been called with the publish message
-	require.Equal(t, publish, c.publish)
-
-
+	// > check the id
+	require.Equal(t, -1, sock.resultID)
 }
-
 
 // -----------------------------------------------------------------------------
 // Utility functions
@@ -583,6 +572,11 @@ func (f *fakeSocket) SendResult(id int, res []message.Message) {
 
 // SendError implements socket.Socket
 func (f *fakeSocket) SendError(id *int, err error) {
+	if id != nil {
+		f.resultID = *id
+	} else {
+		f.resultID = -1
+	}
 	f.err = err
 }
 

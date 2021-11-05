@@ -5,10 +5,12 @@ import { useSelector } from 'react-redux';
 import { makeCurrentLao } from 'store';
 import { requestOpenRollCall } from 'network';
 import {
-  RollCall, RollCallStatus, Wallet,
+  RollCall, RollCallStatus, Timestamp, Wallet,
 } from 'model/objects';
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
+import STRINGS from 'res/strings';
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * Component used to display a RollCall event in the LAO event list
@@ -20,6 +22,7 @@ const EventRollCall = (props: IPropTypes) => {
   const { isOrganizer } = props;
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
+  const navigation = useNavigation();
 
   if (!lao) {
     console.warn('no LAO is currently active');
@@ -45,14 +48,15 @@ const EventRollCall = (props: IPropTypes) => {
         (e) => console.debug('Unable to send Roll call re-open request', e),
       );
     } else {
-      requestOpenRollCall(event.id).then().catch(
+      const time = Timestamp.EpochNow();
+      requestOpenRollCall(event.id, time).then(() => {
+        // @ts-ignore
+        navigation.navigate(STRINGS.roll_call_open,
+          { rollCallID: event.id.toString(), time: time.toString() });
+      }).catch(
         (e) => console.debug('Unable to send Roll call open request', e),
       );
     }
-  };
-
-  const onCloseRollCall = () => {
-    console.log('Closing Roll Call not yet implemented');
   };
 
   // Here we get the pop-token to display in the QR code
@@ -74,13 +78,6 @@ const EventRollCall = (props: IPropTypes) => {
       case RollCallStatus.OPENED:
         return (
           <>
-            <Text>Open</Text>
-            {isOrganizer && (
-              <>
-                <Text>Scan the tokens</Text>
-                <WideButtonView title="Close Roll Call" onPress={onCloseRollCall} />
-              </>
-            )}
             {!isOrganizer && (
               <>
                 <Text>Let the organizer scan your Pop token</Text>
@@ -93,10 +90,9 @@ const EventRollCall = (props: IPropTypes) => {
         return (
           <>
             <Text>Closed</Text>
-            {console.log('attendees are: ', rollCallFromStore.attendees)}
             <Text>Attendees are:</Text>
             {rollCallFromStore.attendees.map((attendee: string) => (
-              <Text>{attendee}</Text>
+              <Text key={attendee}>{attendee}</Text>
             ))}
             {isOrganizer && (
               <WideButtonView title="Re-open Roll Call" onPress={() => onOpenRollCall(true)} />
