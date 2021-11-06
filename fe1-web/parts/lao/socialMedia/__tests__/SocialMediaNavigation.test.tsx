@@ -1,6 +1,14 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
-import STRINGS from 'res/strings';
-import SocialMediaNavigation from "../SocialMediaNavigation";
+import render from '@testing-library/react-native';
+import SocialMediaNavigation from '../SocialMediaNavigation';
 
-describe('')
+jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
+describe('SocialMediaNavigation', () => {
+  it('renders correctly all the tabs', () => {
+    const { toJson } = render(
+      <SocialMediaNavigation />,
+    );
+    expect(toJson()).toMatchSnapshot();
+  });
+});

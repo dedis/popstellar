@@ -10,4 +10,6 @@ module.exports = {
   },
   collectCoverage: true,
   testResultsProcessor: "jest-sonar-reporter",
+  setupFiles: ["./jest/setup.js"],
 };
+
