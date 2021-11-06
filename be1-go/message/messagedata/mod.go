@@ -10,6 +10,11 @@ import (
 )
 
 const (
+	ConsensusObject            = "consensus"
+	ConsensusActionElect       = "elect"
+	ConsensusActionElectAccept = "elect-accept"
+	ConsensuisActionLearn      = "learn"
+
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"
 	ElectionActionResult = "result"
@@ -35,6 +40,10 @@ const (
 
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
+
+	ChirpObject = "chirp"
+	ChirpActionAdd = "add"
+	ChirpActionDelete = "delete"
 
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
@@ -66,8 +75,28 @@ func GetObjectAndAction(buf []byte) (string, string, error) {
 	return object, action, nil
 }
 
+
+// GetTime returns the time of a JSON RPC message.
+func GetTime(buf []byte) (int64, error) {
+	var objmap map[string]json.RawMessage
+
+	err := json.Unmarshal(buf, &objmap)
+	if err != nil {
+		return 0, xerrors.Errorf("failed to unmarshal objmap: %v", err)
+	}
+
+	var time int64
+
+	err = json.Unmarshal(objmap["timestamp"], &time)
+	if err != nil {
+		return 0, xerrors.Errorf("failed to get time: %v", err)
+	}
+
+	return time, nil
+}
+
 // Hash returns the sha256 created from an array of strings
-func Hash(strs []string) string {
+func Hash(strs ...string) string {
 	h := sha256.New()
 	for _, s := range strs {
 		h.Write([]byte(fmt.Sprintf("%d", len(s))))

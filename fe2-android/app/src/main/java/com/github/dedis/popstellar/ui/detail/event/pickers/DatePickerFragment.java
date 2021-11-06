@@ -33,7 +33,7 @@ public final class DatePickerFragment extends AppCompatDialogFragment
     int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
 
     // Return a new instance of DatePickerDialog
-    return new DatePickerDialog(getActivity(), DatePickerFragment.this, year, month, day);
+    return new DatePickerDialog(requireActivity(), DatePickerFragment.this, year, month, day);
   }
 
   // called when a date has been selected
@@ -48,10 +48,11 @@ public final class DatePickerFragment extends AppCompatDialogFragment
     calendar.set(Calendar.MILLISECOND, 0);
 
     // send date back to the target fragment
-    getTargetFragment()
-        .onActivityResult(
-            getTargetRequestCode(),
-            Activity.RESULT_OK,
-            new Intent().putExtra(getString(R.string.picker_selection), calendar));
+    if (getTargetFragment() != null)
+      getTargetFragment()
+          .onActivityResult(
+              getTargetRequestCode(),
+              Activity.RESULT_OK,
+              new Intent().putExtra(getString(R.string.picker_selection), calendar));
   }
 }

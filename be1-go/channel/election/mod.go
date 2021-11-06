@@ -237,6 +237,13 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	return c.inbox.GetSortedMessages()
 }
 
+// Broadcast is used to handle a broadcast message.
+func (c *Channel) Broadcast(msg method.Broadcast) error {
+	err := xerrors.Errorf("an election channel shouldn't need to broadcast a message")
+	c.log.Err(err)
+	return err
+}
+
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *Channel) broadcastToAllClients(msg message.Message) {

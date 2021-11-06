@@ -67,6 +67,8 @@ public class LAOListAdapter extends BaseAdapter {
       binding = DataBindingUtil.getBinding(view);
     }
 
+    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
+
     LAOItemUserActionsListener userActionsListener =
         lao -> {
           if (openLaoDetail) {

@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataLearn.json",
+    "description": "Match a learn query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "learn"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "acceptors": {
+            "description": "Array of the message_ids of the elect-accept messages that accepted this proposal",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "message_id",
+        "acceptors"
+    ]
+}

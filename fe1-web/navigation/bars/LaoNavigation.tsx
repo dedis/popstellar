@@ -14,6 +14,7 @@ import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
 import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
 import { WalletStore } from 'store/stores/WalletStore';
+import Social from 'parts/Social';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
@@ -113,11 +114,19 @@ function LaoNavigation() {
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={tabName}
+      screenOptions={{
+        swipeEnabled: false,
+      }}
     >
 
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.navigation_tab_home}
         component={Home}
+      />
+
+      <OrganizationTopTabNavigator.Screen
+        name={STRINGS.navigation_tab_social}
+        component={Social}
       />
 
       { buildTabComponent(isOrganizer, isWitness) }

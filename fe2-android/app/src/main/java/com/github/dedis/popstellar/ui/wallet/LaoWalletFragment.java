@@ -39,7 +39,7 @@ public class LaoWalletFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mLaoWalletFragmentBinding = LaoWalletFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     mLaoWalletFragmentBinding.setViewModel(mLaoDetailViewModel);
     mLaoWalletFragmentBinding.setLifecycleOwner(getActivity());
@@ -58,7 +58,7 @@ public class LaoWalletFragment extends Fragment {
     mLaoDetailViewModel
         .getLaoAttendedRollCalls()
         .observe(
-            getActivity(),
+            requireActivity(),
             rollCalls -> {
               Log.d(TAG, "Got a list update for LAO roll calls");
               mWalletListAdapter.replaceList(rollCalls);
@@ -69,7 +69,7 @@ public class LaoWalletFragment extends Fragment {
   }
 
   private void setupPropertiesButton() {
-    Button propertiesButton = (Button) getActivity().findViewById(R.id.tab_properties);
+    Button propertiesButton = requireActivity().findViewById(R.id.tab_properties);
 
     propertiesButton.setOnClickListener(clicked -> mLaoDetailViewModel.toggleShowHideProperties());
   }
@@ -87,7 +87,7 @@ public class LaoWalletFragment extends Fragment {
     mLaoDetailViewModel
         .getLaoAttendedRollCalls()
         .observe(
-            getActivity(),
+            requireActivity(),
             rollCalls -> {
               Log.d(TAG, "Got a wallet list update");
               mWalletListAdapter.replaceList(rollCalls);

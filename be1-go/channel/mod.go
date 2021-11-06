@@ -1,12 +1,13 @@
 package channel
 
 import (
-	"github.com/rs/zerolog"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"sync"
+
+	"github.com/rs/zerolog"
 
 	"go.dedis.ch/kyber/v3"
 )
@@ -28,6 +29,9 @@ type Channel interface {
 
 	// Catchup is used to handle a catchup message.
 	Catchup(msg method.Catchup) []message.Message
+
+	// Broadcast is used to handle a broadcast message.
+	Broadcast(msg method.Broadcast) error
 }
 
 // NewSockets returns a new initialized sockets

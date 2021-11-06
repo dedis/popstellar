@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
@@ -171,6 +173,19 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 
 	// > check that the channel has been called with the publish message
 	require.Equal(t, publish, c.publish)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, publish.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, publish, c.publish)
 }
 
 // Check that if the organizer receives a subscribe message, it will call the
@@ -221,6 +236,19 @@ func TestOrganizer_Handle_Subscribe(t *testing.T) {
 
 	// > check that the channel has been called with the publish message
 	require.Equal(t, subscribe, c.subscribe)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, subscribe.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, subscribe, c.subscribe)
 }
 
 // Check that if the organizer receives an unsubscribe message, it will call the
@@ -261,6 +289,20 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 	sock := &fakeSocket{id: "fakeID"}
 
 	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, unsubscribe.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, unsubscribe, c.unsubscribe)
+	require.Equal(t, sock.id, c.socketID)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -332,6 +374,80 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	// > check that the channel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, catchup.ID, sock.resultID)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, catchup, c.catchup)
+	require.Equal(t, fakeMessages, c.msgs)
+}
+
+// Check that if the organizer receives a wrong message, it will send an error
+// with id = null if impossible to recover request id. The fakeSocket
+// abstraction replaces null by -1 for testing.
+func TestOrganizer_HandleWrongMessage(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeMessages := []message.Message{
+		{
+			MessageID: "XXX",
+		},
+	}
+
+	// set fake messages on the channel
+	c := &fakeChannel{
+		msgs: fakeMessages,
+	}
+
+	hub, err := NewHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	laoID := "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	// get the wrong message example
+	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
+		"examples")
+	file := filepath.Join(relativeExamplePath, "wrong_missing_jsonrpc.json")
+
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	publishBuf, err := json.Marshal(&buf)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{id: "fakeID"}
+
+	err = hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+	require.Error(t, err)
+	require.Error(t, sock.err)
+
+	// > check the id
+	require.Equal(t, -1, sock.resultID)
+
+	// > check that there is no errors with messages from witness too
+	err = hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.Error(t, err)
+	require.Error(t, sock.err)
+
+	// > check the id
+	require.Equal(t, -1, sock.resultID)
 }
 
 // -----------------------------------------------------------------------------
@@ -384,6 +500,7 @@ type fakeChannel struct {
 	unsubscribe method.Unsubscribe
 	publish     method.Publish
 	catchup     method.Catchup
+	broadcast	method.Broadcast
 
 	// set by the subscribe
 	socket socket.Socket
@@ -420,6 +537,12 @@ func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 	return f.msgs
 }
 
+// Broadcast implements channel.Channel
+func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
+	f.broadcast = msg
+	return nil
+}
+
 // fakeSocket is a fake implementation of a socket
 //
 // - implements socket.Socket
@@ -449,6 +572,11 @@ func (f *fakeSocket) SendResult(id int, res []message.Message) {
 
 // SendError implements socket.Socket
 func (f *fakeSocket) SendError(id *int, err error) {
+	if id != nil {
+		f.resultID = *id
+	} else {
+		f.resultID = -1
+	}
 	f.err = err
 }
 

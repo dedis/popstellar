@@ -112,11 +112,14 @@ public class CastVoteViewPagerAdapter
 
   private boolean checkEachQuestion() {
     List<List<Integer>> allVotes = mLaoDetailViewModel.getCurrentElectionVotes().getValue();
-    for (List<Integer> vote : allVotes) {
-      if (vote == null || vote.isEmpty()) {
-        return false;
+    if (allVotes != null) {
+      for (List<Integer> vote : allVotes) {
+        if (vote == null || vote.isEmpty()) {
+          return false;
+        }
       }
     }
+
     return true;
   }
 

@@ -118,7 +118,7 @@ public final class QRCodeScanningFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     if (mQRCodeScanningViewModel.getScanningAction() == ScanningAction.ADD_WITNESS) {
-      Button back = getActivity().findViewById(R.id.tab_back);
+      Button back = requireActivity().findViewById(R.id.tab_back);
       back.setOnClickListener(c -> ((LaoDetailViewModel) mQRCodeScanningViewModel).openLaoDetail());
     }
   }
@@ -147,9 +147,11 @@ public final class QRCodeScanningFragment extends Fragment {
 
   private void startCamera() throws SecurityException {
     // check that the device has play services available.
-    int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(getContext());
+    int code = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(requireContext());
     if (code != ConnectionResult.SUCCESS) {
-      GoogleApiAvailability.getInstance().getErrorDialog(getActivity(), code, HANDLE_GMS).show();
+      GoogleApiAvailability.getInstance()
+          .getErrorDialog(requireActivity(), code, HANDLE_GMS)
+          .show();
     }
     if (camera != null) {
       try {

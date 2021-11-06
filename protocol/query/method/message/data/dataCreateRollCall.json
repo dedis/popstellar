@@ -13,7 +13,7 @@
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('R'||lao_id||creation||name)"
+            "$comment": "Hash : HashLen('R', lao_id, creation, name)"
         },
         "name": {
             "type": "string"

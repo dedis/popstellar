@@ -40,10 +40,11 @@ public final class TimePickerFragment extends AppCompatDialogFragment
     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
     calendar.set(Calendar.MINUTE, minute);
 
-    getTargetFragment()
-        .onActivityResult(
-            getTargetRequestCode(),
-            Activity.RESULT_OK,
-            new Intent().putExtra(getString(R.string.picker_selection), calendar));
+    if (getTargetFragment() != null)
+      getTargetFragment()
+          .onActivityResult(
+              getTargetRequestCode(),
+              Activity.RESULT_OK,
+              new Intent().putExtra(getString(R.string.picker_selection), calendar));
   }
 }

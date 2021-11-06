@@ -28,12 +28,15 @@ scalacOptions in Scapegoat += "-P:scapegoat:overrideLevels:all=Warning"
 sonarProperties := Map(
   "sonar.organization" -> "dedis",
   "sonar.projectKey" -> "dedis_student_21_pop_be2",
+  
   "sonar.sources" -> "src/main/scala",
-  //"sonar.tests" -> "src/test/scala",
+  "sonar.tests" -> "src/test/scala",
+  
   "sonar.sourceEncoding" -> "UTF-8",
   "sonar.scala.version" -> "2.13.5",
-  "sonar.scala.scoverage.reportPath" -> "target/scala-2.13/scoverage-report/scoverage.xml",
-  "sonar.scala.scapegoat.reportPath" -> "target/scala-2.13/scapegoat-report/scapegoat.xml"
+  // Paths to the test and coverage reports
+  "sonar.scala.coverage.reportPaths" -> "./target/scala-2.13/scoverage-report/scoverage.xml",
+  "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
 )
 
 
@@ -69,6 +72,13 @@ libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
+
+// Jackson Databind (for Json Schema Validation)
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
+
+// Json Schema Validator
+libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
+
 
 
 conflictManager := ConflictManager.latestCompatible
