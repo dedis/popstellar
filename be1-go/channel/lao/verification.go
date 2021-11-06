@@ -43,7 +43,8 @@ func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
 
 	// verify creation before or equal to last modified
 	if laoState.LastModified < laoState.Creation {
-		return xerrors.Errorf("lao creation is %d, should be smaller or equal to last modified %d", laoState.Creation, laoState.LastModified)
+		return xerrors.Errorf("lao creation is %d, should be smaller or equal to last modified %d",
+			laoState.Creation, laoState.LastModified)
 	}
 
 	// verify organizer is base64URL encoded
@@ -115,13 +116,13 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate messagedata.RollCal
 	}
 
 	// verify proposed end after creation
-	if rollCallCreate.ProposedEnd <  rollCallCreate.Creation {
+	if rollCallCreate.ProposedEnd < rollCallCreate.Creation {
 		return xerrors.Errorf("roll call proposed end is %d, should be greater or equal to creation %d",
 			rollCallCreate.ProposedEnd, rollCallCreate.Creation)
 	}
 
 	// verify proposed end after proposed start
-	if rollCallCreate.ProposedEnd <  rollCallCreate.ProposedStart {
+	if rollCallCreate.ProposedEnd < rollCallCreate.ProposedStart {
 		return xerrors.Errorf("roll call proposed end is %d, should be greater or equal to proposed start %d",
 			rollCallCreate.ProposedEnd, rollCallCreate.ProposedStart)
 	}
