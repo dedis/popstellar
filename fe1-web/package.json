@@ -72,6 +72,7 @@
   },
   "devDependencies": {
     "@babel/core": "~7.9.0",
+    "@babel/preset-env": "^7.16.0",
     "@expo/webpack-config": "~0.12.63",
     "@testing-library/react-native": "^8.0.0",
     "@types/base-64": "^0.1.3",
