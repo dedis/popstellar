@@ -31,9 +31,7 @@ const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
-  // const [qrWasScanned, setQrWasScanned] = useState(false);
-  const [attendeesSet, updateAttendeesSet] = useState(new Set<string>());
-  const attendees = Array.from(attendeesSet);
+  const [attendees, updateAttendees] = useState<string[]>([]);
 
   const handleError = (err: string) => {
     console.error(err);
@@ -41,17 +39,18 @@ const RollCallOpened = () => {
 
   const handleScan = (data: string) => {
     if (data) {
-      // setQrWasScanned(true);
-      updateAttendeesSet((prev) => new Set<string>(prev.add(data)));
-      toast.success(STRINGS.roll_call_scan_participant, {
-        position: 'top-center',
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      if (!attendees.includes(data)) {
+        updateAttendees((arr) => [...arr, data]);
+        toast.success(STRINGS.roll_call_scan_participant, {
+          position: 'top-center',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
   };
 
@@ -80,7 +79,7 @@ const RollCallOpened = () => {
           onError={handleError}
           style={{ width: '30%' }}
         />
-        <Badge value={attendeesSet.size} status="success" />
+        <Badge value={attendees.length} status="success" />
         <ToastContainer
           position="top-center"
           autoClose={5000}
