@@ -15,6 +15,8 @@ import { useRoute } from '@react-navigation/core';
 import { requestCloseRollCall } from 'network';
 import { EventTags, Hash, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const styles = StyleSheet.create({
   viewCenter: {
@@ -29,7 +31,7 @@ const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
-  const [, setQrWasScanned] = useState(false);
+  // const [qrWasScanned, setQrWasScanned] = useState(false);
   const [attendeesSet, updateAttendeesSet] = useState(new Set<string>());
   const attendees = Array.from(attendeesSet);
 
@@ -39,10 +41,17 @@ const RollCallOpened = () => {
 
   const handleScan = (data: string) => {
     if (data) {
-      setQrWasScanned(true);
+      // setQrWasScanned(true);
       updateAttendeesSet((prev) => new Set<string>(prev.add(data)));
-      // TODO: use toast to display the scanned message, instead of console.log
-      console.log(STRINGS.roll_call_scan_participant);
+      toast.success(STRINGS.roll_call_scan_participant, {
+        position: 'top-center',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
@@ -72,6 +81,17 @@ const RollCallOpened = () => {
           style={{ width: '30%' }}
         />
         <Badge value={attendeesSet.size} status="success" />
+        <ToastContainer
+          position="top-center"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
         <WideButtonView
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}
