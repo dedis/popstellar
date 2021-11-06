@@ -14,8 +14,6 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 
 public class SettingsActivity extends AppCompatActivity {
 
-  // private final String TAG = SettingsActivity.class.getSimpleName();
-
   private SettingsViewModel mViewModel;
 
   @Override
