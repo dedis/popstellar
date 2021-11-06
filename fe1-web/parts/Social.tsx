@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-
-import styleContainer from 'styles/stylesheets/container';
+import React, { useState } from 'react';
+import {
+  StyleSheet, TextStyle, View, ViewStyle,
+} from 'react-native';
 
 import TextBlock from 'components/TextBlock';
+import TextInputChirp from 'components/TextInputChirp';
 import STRINGS from 'res/strings';
-import WideButtonView from 'components/WideButtonView';
 
 import { requestAddChirp } from 'network/MessageApi';
 
@@ -13,33 +13,36 @@ import { requestAddChirp } from 'network/MessageApi';
  * UI for the Social Media component
  */
 const styles = StyleSheet.create({
-  viewTop: {
-    justifyContent: 'flex-start',
+  view: {
+    alignItems: 'center',
   } as ViewStyle,
-  viewBottom: {
-    justifyContent: 'flex-end',
-  } as ViewStyle,
+  textInput: {
+    padding: 10,
+    borderWidth: 1,
+    width: 500,
+    alignContent: 'flex-end',
+  } as TextStyle,
 });
 
-const publishChirp = () => {
-  requestAddChirp('chirp chirp')
-    .catch((err) => {
-      console.error('Could not add chirp, error:', err);
-    });
-};
+const Social = () => {
+  const [inputChirp, setInputChirp] = useState('');
 
-const Social = () => (
-  <View style={styleContainer.flex}>
-    <View style={styles.viewTop}>
-      <TextBlock text={STRINGS.feed_description} />
-    </View>
-    <View style={styles.viewBottom}>
-      <WideButtonView
-        title={STRINGS.button_publish_test_chirp}
+  const publishChirp = () => {
+    requestAddChirp(inputChirp)
+      .catch((err) => {
+        console.error('Could not add chirp, error:', err);
+      });
+  };
+
+  return (
+    <View style={styles.view}>
+      <TextInputChirp
+        onChangeText={setInputChirp}
         onPress={publishChirp}
       />
+      <TextBlock text={STRINGS.feed_description} />
     </View>
-  </View>
-);
+  );
+};
 
 export default Social;
