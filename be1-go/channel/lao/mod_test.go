@@ -393,9 +393,8 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	var messageOpenPub method.Publish
+	messageOpenPub := messageCreatePub
 
-	messageOpenPub = messageCreatePub
 	messageOpenPub.Params.Message = m2
 
 	require.NoError(t, channel.Publish(messageOpenPub))
@@ -418,9 +417,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	var messageClosePub method.Publish
-
-	messageClosePub = messageCreatePub
+	messageClosePub := messageCreatePub
 	messageClosePub.Params.Message = m3
 
 	require.NoError(t, channel.Publish(messageClosePub))
