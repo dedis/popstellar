@@ -33,10 +33,10 @@ public class SettingsFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mSettingsFragBinding = SettingsFragmentBinding.inflate(inflater, container, false);
 
-    mSettingsViewModel = SettingsActivity.obtainViewModel(getActivity());
+    mSettingsViewModel = SettingsActivity.obtainViewModel(requireActivity());
 
     mSettingsFragBinding.setViewmodel(mSettingsViewModel);
-    mSettingsFragBinding.setLifecycleOwner(getActivity());
+    mSettingsFragBinding.setLifecycleOwner(getViewLifecycleOwner());
 
     return mSettingsFragBinding.getRoot();
   }
@@ -47,6 +47,7 @@ public class SettingsFragment extends Fragment {
 
     setupApplyButton();
     mSettingsViewModel.setServerUrl(LAORequestFactory.getUrl());
+    mSettingsViewModel.setTempServerUrl(LAORequestFactory.getUrl());
 
     // Subscribe to "apply changes" event
     mSettingsViewModel

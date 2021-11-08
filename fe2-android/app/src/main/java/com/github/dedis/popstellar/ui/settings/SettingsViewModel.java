@@ -8,9 +8,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import com.google.gson.Gson;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -21,41 +18,27 @@ public class SettingsViewModel extends AndroidViewModel {
   /*
    * LiveData objects for capturing events like button clicks
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSettingsEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mApplyChangesEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
    */
   private final MutableLiveData<String> mServerUrl = new MutableLiveData<>();
+  private final MutableLiveData<String> mTempServerUrl = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
    */
-  private final LAORepository mLAORepository;
-  private final AndroidKeysetManager mKeysetManager;
-  private final Gson mGson;
   private final CompositeDisposable disposables;
 
-  public SettingsViewModel(
-      @NonNull Application application,
-      LAORepository laoRepository,
-      Gson gson,
-      AndroidKeysetManager keysetManager) {
+  public SettingsViewModel(@NonNull Application application) {
     super(application);
-    mLAORepository = laoRepository;
-    mKeysetManager = keysetManager;
-    mGson = gson;
     disposables = new CompositeDisposable();
   }
 
   /*
    * Getters for MutableLiveData instances declared above
    */
-  public LiveData<SingleEvent<Boolean>> getOpenSettingsEvent() {
-    return mOpenSettingsEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getApplyChangesEvent() {
     return mApplyChangesEvent;
   }
@@ -64,18 +47,22 @@ public class SettingsViewModel extends AndroidViewModel {
     return mServerUrl;
   }
 
+  public LiveData<String> getTempServerUrl() {
+    return mTempServerUrl;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
-  public void openSettings() {
-    mOpenSettingsEvent.setValue(new SingleEvent<>(true));
-  }
-
   public void applyChanges() {
     mApplyChangesEvent.setValue(new SingleEvent<>(true));
   }
 
   public void setServerUrl(String serverUrl) {
-    this.mServerUrl.setValue(serverUrl);
+    mServerUrl.setValue(serverUrl);
+  }
+
+  public void setTempServerUrl(String serverUrl) {
+    mTempServerUrl.setValue(serverUrl);
   }
 }

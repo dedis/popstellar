@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.ui.settings;
 
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
@@ -24,34 +22,6 @@ public class SettingsActivity extends AppCompatActivity {
     setupSettingsFragment();
 
     mViewModel = obtainViewModel(this);
-
-    // Subscribe to "open settings" event
-    mViewModel
-        .getOpenSettingsEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSettingsFragment();
-              }
-            });
-  }
-
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.options_menu, menu);
-    return true;
-  }
-
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.settings) {
-      mViewModel.openSettings();
-      return true;
-    } else {
-      return super.onOptionsItemSelected(item);
-    }
   }
 
   public static SettingsViewModel obtainViewModel(FragmentActivity activity) {

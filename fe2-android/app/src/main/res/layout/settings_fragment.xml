@@ -9,6 +9,10 @@
     <variable
       name="viewmodel"
       type="com.github.dedis.popstellar.ui.settings.SettingsViewModel" />
+
+    <variable
+      name="newUrl"
+      type="String" />
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
@@ -36,10 +40,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_top"
-        android:autofillHints="name"
+        android:autofillHints=""
         android:hint="@string/text_hint_server_url"
         android:inputType="textUri"
-        android:text="@{viewmodel.getServerUrl().toString()}" />
+        android:text="@{viewmodel.getServerUrl().toString()}"
+        android:afterTextChanged="@{(editable) -> viewmodel.setServerUrl(editable.toString())}" />
 
       <LinearLayout
         android:layout_width="match_parent"
@@ -54,7 +59,7 @@
           style="@style/Theme.AppCompat"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
-          android:enabled="@{entryBoxServerUrl.text.length() > 0}"
+          android:enabled="@{entryBoxServerUrl.text.length() > 0 &amp;&amp; entryBoxServerUrl.text.toString() != viewmodel.getTempServerUrl()}"
           android:gravity="center"
           android:text="@string/apply_button" />
 

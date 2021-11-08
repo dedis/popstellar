@@ -8,10 +8,10 @@ import okhttp3.Request;
 
 public class LAORequestFactory implements RequestFactory {
 
-  @NonNull private static String url;
+  @NonNull private static String url = "ws://10.0.2.2:9000/organizer/client";
 
   public LAORequestFactory(@NonNull String defaultUrl) {
-    url = defaultUrl;
+    setUrl(defaultUrl);
   }
 
   @NonNull
