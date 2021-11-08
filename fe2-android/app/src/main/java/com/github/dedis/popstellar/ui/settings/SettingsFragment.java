@@ -68,7 +68,6 @@ public class SettingsFragment extends Fragment {
 
   private void applyChanges() {
     LAORequestFactory.setUrl(mSettingsFragBinding.entryBoxServerUrl.getText().toString());
-    mSettingsViewModel.setServerUrl(mSettingsFragBinding.entryBoxServerUrl.getText().toString());
     Intent intent = new Intent(getActivity(), HomeActivity.class);
     Log.d(TAG, "Trying to open home");
     startActivity(intent);
