@@ -9,7 +9,7 @@ import (
 	"popstellar/cli/utility"
 	"popstellar/crypto"
 	"popstellar/hub"
-	"popstellar/hub/witness"
+	hub_impl "popstellar/hub/hub"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
@@ -52,7 +52,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create witness hub
-	h, err := witness.NewHub(point, log, lao.NewChannel)
+	h, err := hub_impl.NewHub(point, log, lao.NewChannel, hub.WitnessHubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}

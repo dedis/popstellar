@@ -9,7 +9,7 @@ import (
 	"popstellar/cli/utility"
 	"popstellar/crypto"
 	"popstellar/hub"
-	"popstellar/hub/organizer"
+	hub_impl "popstellar/hub/hub"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
@@ -51,7 +51,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create organizer hub
-	h, err := organizer.NewHub(point, log.With().Str("role", "organizer").Logger(), lao.NewChannel)
+	h, err := hub_impl.NewHub(point, log.With().Str("role", "organizer").Logger(), lao.NewChannel, hub.OrganizerHubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
