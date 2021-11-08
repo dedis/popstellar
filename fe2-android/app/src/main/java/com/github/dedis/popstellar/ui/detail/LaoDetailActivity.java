@@ -350,7 +350,11 @@ public class LaoDetailActivity extends AppCompatActivity {
         (CameraPermissionFragment)
             getSupportFragmentManager().findFragmentById(R.id.fragment_camera_perm);
     if (cameraPermissionFragment == null) {
-      cameraPermissionFragment = CameraPermissionFragment.newInstance();
+      cameraPermissionFragment = CameraPermissionFragment.newInstance(getActivityResultRegistry());
+      getSupportFragmentManager()
+          .setFragmentResultListener(
+              CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openLaoDetail());
+
       ActivityUtils.replaceFragmentInActivity(
           getSupportFragmentManager(),
           cameraPermissionFragment,
@@ -517,5 +521,4 @@ public class LaoDetailActivity extends AppCompatActivity {
               }
             });
   }
-
 }

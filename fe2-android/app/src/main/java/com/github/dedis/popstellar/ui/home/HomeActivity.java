@@ -227,10 +227,15 @@ public class HomeActivity extends AppCompatActivity {
         (CameraPermissionFragment)
             getSupportFragmentManager().findFragmentById(R.id.fragment_camera_perm);
     if (cameraPermissionFragment == null) {
-      cameraPermissionFragment = CameraPermissionFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_home);
+      cameraPermissionFragment = CameraPermissionFragment.newInstance(getActivityResultRegistry());
+      // Setup result listener to open the connect tab once the permission is granted
+      getSupportFragmentManager()
+          .setFragmentResultListener(
+              CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openConnect());
     }
+    // Display fragment
+    ActivityUtils.replaceFragmentInActivity(
+        getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_home);
   }
 
   private void setupLaunchFragment() {
