@@ -60,8 +60,6 @@ public final class CameraPermissionFragment extends Fragment {
   public void onActivityCreated(@Nullable Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
 
-    Button back = requireActivity().findViewById(R.id.tab_back);
-    back.setOnClickListener(c -> ((LaoDetailViewModel) mCameraPermissionViewModel).openLaoDetail());
     setupCameraPermissionButton();
   }
 
