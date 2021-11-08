@@ -2,12 +2,12 @@ package socket
 
 import (
 	"encoding/json"
-	"sync"
-	"time"
-
+	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
+	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/rs/xid"
@@ -89,7 +89,7 @@ func (s *baseSocket) ReadPump() {
 					Str("socket", s.conn.RemoteAddr().String()).
 					Msg("connection dropped unexpectedly")
 			} else {
-				s.log.Info().Msg("closing the read pump")
+				s.log.Err(err).Msg("closing the read pump")
 			}
 			break
 		}
@@ -178,6 +178,9 @@ func (s *baseSocket) SendError(id *int, err error) {
 	}
 
 	answer := answer.Answer{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
 		ID:    id,
 		Error: msgError,
 	}

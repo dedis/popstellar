@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"math/rand"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
@@ -30,6 +29,9 @@ import (
 
 // rootPrefix denotes the prefix for the root channel
 const rootPrefix = "/root/"
+
+// serverComChannel denotes the channel used to communicate between servers
+const serverComChannel = "/root/serverCom"
 
 // rpcUnknownError is an error message
 const rpcUnknownError = "jsonRPC message is of unknown type"
@@ -70,6 +72,8 @@ type Hub struct {
 
 	inbox serverInbox.Inbox
 
+	nextID int
+
 	queriesID queriesID
 }
 
@@ -102,6 +106,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
 		inbox:           *serverInbox.NewInbox("/root"),
+		nextID:          0,
 		queriesID:       queriesID{queries: make(map[int]*bool)},
 	}
 
@@ -187,7 +192,7 @@ func (h *Hub) AddServerSocket(socket socket.Socket) error {
 		Params: struct {
 			Channel string "json:\"channel\""
 		}{
-			"/root",
+			serverComChannel,
 		},
 	}
 
@@ -210,11 +215,10 @@ func (h *Hub) generateID() int {
 	h.queriesID.mu.Lock()
 	defer h.queriesID.mu.Unlock()
 
-	newID := 0
-	for ok := false; !ok; _, ok = h.queriesID.queries[newID] {
-		newID = rand.Int()
-	}
-	*h.queriesID.queries[newID] = false
+	newID := h.nextID
+	h.nextID++
+
+	//	*h.queriesID.queries[newID] = false
 	return newID
 }
 
@@ -500,12 +504,12 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
 	}
 
-	if catchup.Params.Channel == "/root" {
+	if catchup.Params.Channel == serverComChannel {
 		messages, err := h.handleRootChannelCatchupMessage(socket, catchup)
 		if err != nil {
 			return nil, catchup.ID, xerrors.Errorf("failed to handle root channel catchup message: %v", err)
 		}
-		h.sendAnswerToServer(socket, catchup.ID, messages)
+		socket.SendServerResult(catchup.ID, messages)
 		return nil, catchup.ID, nil
 	}
 
@@ -520,10 +524,6 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 	}
 
 	return msg, catchup.ID, nil
-}
-
-func (h *Hub) sendAnswerToServer(socket socket.Socket, id int, messages []method.Publish) {
-	socket.SendServerResult(id, messages)
 }
 
 func (h *Hub) getChan(channelPath string) (channel.Channel, error) {

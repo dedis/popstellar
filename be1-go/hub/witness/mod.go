@@ -4,8 +4,6 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
-	"math/rand"
 	"popstellar/channel"
 	"popstellar/hub"
 	"popstellar/hub/serverInbox"
@@ -28,6 +26,9 @@ import (
 // rootPrefix denotes the prefix for the root channel
 // used to keep an image of the laos
 const rootPrefix = "/root/"
+
+// serverComChannel denotes the channel used to communicate between servers
+const serverComChannel = "/root/serverCom"
 
 // rpcUnknownError is an error message
 const rpcUnknownError = "jsonRPC message is of unknown type"
@@ -68,6 +69,8 @@ type Hub struct {
 
 	inbox serverInbox.Inbox
 
+	nextID int
+
 	queriesID queriesID
 }
 
@@ -100,6 +103,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
 		inbox:           *serverInbox.NewInbox("/root"),
+		nextID:          0,
 		queriesID:       queriesID{queries: make(map[int]*bool)},
 	}
 
@@ -205,7 +209,7 @@ func (h *Hub) handleMessageFromWitness(incMsg *socket.IncomingMessage) error {
 func (h *Hub) handleIncomingMessage(incMsg *socket.IncomingMessage) error {
 	defer h.workers.Release(1)
 
-	h.log.Info().Str("msg", fmt.Sprintf("%v", incMsg.Message)).
+	h.log.Info().Str("msg", string(incMsg.Message)).
 		Str("from", incMsg.Socket.ID()).
 		Msgf("handle incoming message")
 
@@ -335,7 +339,7 @@ func (h *Hub) AddServerSocket(socket socket.Socket) error {
 		Params: struct {
 			Channel string "json:\"channel\""
 		}{
-			"/root",
+			serverComChannel,
 		},
 	}
 
@@ -376,11 +380,10 @@ func (h *Hub) generateID() int {
 	h.queriesID.mu.Lock()
 	defer h.queriesID.mu.Unlock()
 
-	newID := 0
-	for ok := false; !ok; _, ok = h.queriesID.queries[newID] {
-		newID = rand.Int()
-	}
-	*h.queriesID.queries[newID] = false
+	newID := h.nextID
+	h.nextID += 1
+
+	//	*h.queriesID.queries[newID] = false
 	return newID
 }
 
@@ -563,7 +566,7 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
 	}
 
-	if catchup.Params.Channel == "/root" {
+	if catchup.Params.Channel == serverComChannel {
 		messages, err := h.handleRootChannelCatchupMessage(socket, catchup)
 		if err != nil {
 			return nil, catchup.ID, xerrors.Errorf("failed to handle root channel catchup message: %v", err)
