@@ -39,7 +39,7 @@
                 "proposed_value"
             ]
         },
-        "acceptor-signature": {
+        "acceptor-signatures": {
             "description": "Signatures of all received Promise messages",
             "type": "array",
             "items": {
@@ -55,6 +55,6 @@
         "message_id",
         "created_at",
         "value",
-        "acceptor-signature"
+        "acceptor-signatures"
     ]
 }

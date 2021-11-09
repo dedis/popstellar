@@ -169,6 +169,18 @@ test("message data: consensus", () => {
     elect_accept = require("../examples/messageData/elect_accept.json");
     expect(elect_accept).toBeValid(messageDataSchema)
 
+    prepare = require("../examples/messageData/prepare.json");
+    expect(prepare).toBeValid(messageDataSchema)
+
+    promise = require("../examples/messageData/promise.json");
+    expect(promise).toBeValid(messageDataSchema)
+
+    propose = require("../examples/messageData/propose.json");
+    expect(propose).toBeValid(messageDataSchema)
+
+    accept = require("../examples/messageData/accept.json");
+    expect(accept).toBeValid(messageDataSchema)
+
     learn = require("../examples/messageData/learn.json");
     expect(learn).toBeValid(messageDataSchema)
 })
