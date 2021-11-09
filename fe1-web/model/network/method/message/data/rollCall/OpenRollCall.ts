@@ -48,7 +48,7 @@ export class OpenRollCall implements MessageData {
   }
 
   /**
-   * Creates a OpenRollCall object from a given object
+   * Creates an OpenRollCall object from a given object
    * @param obj
    */
   public static fromJson(obj: any): OpenRollCall {
