@@ -7,13 +7,10 @@ import {
 import { Views } from 'styles';
 import STRINGS from 'res/strings';
 import stylesContainer from 'styles/stylesheets/container';
-import { white } from 'styles/colors';
 
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
-
-const FIVE_MINUTES_IN_SECONDS = 300;
 
 const styleEvents = StyleSheet.create({
   view: {
@@ -25,15 +22,6 @@ const styleEvents = StyleSheet.create({
     ...Views.base,
     flexDirection: 'column',
     zIndex: 3,
-  } as ViewStyle,
-  modalView: {
-    ...Views.base,
-    backgroundColor: white,
-    borderRadius: 10,
-    borderWidth: 1,
-    margin: 'auto',
-    height: 200,
-    width: 600,
   } as ViewStyle,
 });
 
@@ -103,6 +91,9 @@ export const onConfirmPress = (start: Timestamp, end: Timestamp, createEvent: Fu
   setStartModalIsVisible: Function, setEndModalIsVisible: Function) => {
   const now = Timestamp.EpochNow();
 
+  setEndModalIsVisible(true);
+
+  /*
   if (end.before(now)) {
     setEndModalIsVisible(true);
   } else if (now.after(start.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
@@ -110,6 +101,7 @@ export const onConfirmPress = (start: Timestamp, end: Timestamp, createEvent: Fu
   } else {
     createEvent();
   }
+  */
 };
 
 export default CreateEvent;

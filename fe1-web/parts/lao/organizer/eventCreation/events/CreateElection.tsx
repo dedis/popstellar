@@ -19,6 +19,8 @@ import {
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
 import { onConfirmPress } from '../CreateEvent';
+import DismissModal from '../../../../../components/DismissModal';
+import ConfirmModal from '../../../../../components/ConfirmModal';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -154,38 +156,21 @@ const CreateElection = ({ route }: any) => {
         />
       </View>
 
-      <Modal
-        visible={modalEndIsVisible}
-        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
-        transparent
-      >
-        <View style={styles.modalView}>
-          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
-          <TextBlock text={STRINGS.modal_event_ends_in_past} />
-          <WideButtonView
-            title={STRINGS.general_button_ok}
-            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
-          />
-        </View>
-      </Modal>
-      <Modal
-        visible={modalStartIsVisible}
-        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
-        transparent
-      >
-        <View style={styles.modalView}>
-          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
-          <TextBlock text={STRINGS.modal_event_starts_in_past} />
-          <WideButtonView
-            title={STRINGS.modal_button_start_now}
-            onPress={() => createElection()}
-          />
-          <WideButtonView
-            title={STRINGS.modal_button_go_back}
-            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
-          />
-        </View>
-      </Modal>
+      <DismissModal
+        visibility={modalEndIsVisible}
+        setVisibility={setModalEndIsVisible}
+        title={STRINGS.modal_event_creation_failed}
+        description={STRINGS.modal_event_ends_in_past}
+      />
+      <ConfirmModal
+        visibility={modalStartIsVisible}
+        setVisibility={setModalStartIsVisible}
+        title={STRINGS.modal_event_creation_failed}
+        description={STRINGS.modal_event_starts_in_past}
+        onConfirmPress={() => createElection()}
+        buttonConfirmText={STRINGS.modal_button_start_now}
+        buttonCancelText={STRINGS.modal_button_go_back}
+      />
     </ScrollView>
   );
 };

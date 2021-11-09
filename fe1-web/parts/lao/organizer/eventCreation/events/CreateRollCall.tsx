@@ -14,6 +14,8 @@ import TextInputLine from 'components/TextInputLine';
 import TextBlock from 'components/TextBlock';
 import { Timestamp } from 'model/objects';
 import { onConfirmPress } from '../CreateEvent';
+import DismissModal from '../../../../../components/DismissModal';
+import ConfirmModal from '../../../../../components/ConfirmModal';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
@@ -107,38 +109,21 @@ const CreateRollCall = ({ route }: any) => {
         onPress={navigation.goBack}
       />
 
-      <Modal
-        visible={modalEndIsVisible}
-        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
-        transparent
-      >
-        <View style={styles.modalView}>
-          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
-          <TextBlock text={STRINGS.modal_event_ends_in_past} />
-          <WideButtonView
-            title={STRINGS.general_button_ok}
-            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
-          />
-        </View>
-      </Modal>
-      <Modal
-        visible={modalStartIsVisible}
-        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
-        transparent
-      >
-        <View style={styles.modalView}>
-          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
-          <TextBlock text={STRINGS.modal_event_starts_in_past} />
-          <WideButtonView
-            title={STRINGS.modal_button_start_now}
-            onPress={() => createRollCall()}
-          />
-          <WideButtonView
-            title={STRINGS.modal_button_go_back}
-            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
-          />
-        </View>
-      </Modal>
+      <DismissModal
+        visibility={modalEndIsVisible}
+        setVisibility={setModalEndIsVisible}
+        title={STRINGS.modal_event_creation_failed}
+        description={STRINGS.modal_event_ends_in_past}
+      />
+      <ConfirmModal
+        visibility={modalStartIsVisible}
+        setVisibility={setModalStartIsVisible}
+        title={STRINGS.modal_event_creation_failed}
+        description={STRINGS.modal_event_starts_in_past}
+        onConfirmPress={() => createRollCall()}
+        buttonConfirmText={STRINGS.modal_button_start_now}
+        buttonCancelText={STRINGS.modal_button_go_back}
+      />
     </ScrollView>
   );
 };
