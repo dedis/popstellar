@@ -5,8 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
