@@ -206,7 +206,7 @@ func (c *Channel) AddChirp(msg message.Message) error {
 func (c *Channel) DeleteChirp(msg message.Message) error {
 	err := c.verifyChirpBroadcastMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to get and verify delete chirp message: %v, err")
+		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)
 	}
 	c.inbox.StoreMessage(msg)
 

@@ -240,6 +240,9 @@ func (c *Channel) Publish(publish method.Publish) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("impossible to get the action or the object: %v", err)
+	}
 
 	switch object {
 	case messagedata.LAOObject:

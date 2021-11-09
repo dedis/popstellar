@@ -112,12 +112,12 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	object, _ , err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		return xerrors.Errorf("failed to read the message data", err)
+		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
 
 	time, err := messagedata.GetTime(jsonData)
 	if err != nil {
-		return xerrors.Errorf("failed to read the message data", err)
+		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
 
 	newData := messagedata.ChirpBroadcast{
@@ -130,7 +130,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	dataBuf, err := json.Marshal(newData)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal the data", err)
+		return xerrors.Errorf("failed to marshal the data: %v", err)
 	}
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
@@ -138,7 +138,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 	pkOrganizer, err := c.hub.GetPubkey().MarshalBinary()
 
 	if err != nil {
-		return xerrors.Errorf("could not get the public key of the organizer:", err)
+		return xerrors.Errorf("could not get the public key of the organizer: %v", err)
 	}
 	pkOrganizer64 := base64.URLEncoding.EncodeToString(pkOrganizer)
 
