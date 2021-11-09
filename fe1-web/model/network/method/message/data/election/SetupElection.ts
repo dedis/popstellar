@@ -108,7 +108,7 @@ export class SetupElection implements MessageData {
   }
 
   /**
-   * Creates a SetupSection object from a given object
+   * Creates a SetupElection object from a given object
    * @param obj
    */
   public static fromJson(obj: any): SetupElection {
