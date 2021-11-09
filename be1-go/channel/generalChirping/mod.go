@@ -21,7 +21,7 @@ import (
 
 const msgID		 = "msg id"
 
-// Channel is used to handle election messages.
+// Channel is used to handle chirping messages w/o text.
 type Channel struct {
 	sockets   channel.Sockets
 	inbox     *inbox.Inbox
@@ -213,7 +213,7 @@ func (c *Channel) DeleteChirp(msg message.Message) error {
 	return nil
 }
 
-// verifyAddChirpMessage verify a chirp broadcast message
+// verifyChirpBroadcastMessage verify a chirp broadcast message
 func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 	var chirpMsg messagedata.ChirpBroadcast
 

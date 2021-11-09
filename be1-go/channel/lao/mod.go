@@ -194,11 +194,8 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) *generalChriping.Channel {
 	log := be1_go.Logger
-
 	generalChannelPath := laoID + "/social/chirps"
-
 	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub, be1_go.Logger)
-
 	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)

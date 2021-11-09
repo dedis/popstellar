@@ -52,7 +52,7 @@ type Channel struct {
 }
 
 
-// Publish is used to handle publish messages in the election channel.
+// Publish is used to handle publish messages in the chirp channel.
 func (c *Channel) Publish(publish method.Publish) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
@@ -82,9 +82,8 @@ func (c *Channel) Publish(publish method.Publish) error {
 		case messagedata.ChirpActionDelete:
 			err := c.publishDeleteChirp(msg)
 			if err != nil {
-				return xerrors.Errorf("failed to end election: %v", err)
+				return xerrors.Errorf("failed to delete chirp: %v", err)
 			}
-
 		default:
 			return answer.NewInvalidActionError(action)
 		}
