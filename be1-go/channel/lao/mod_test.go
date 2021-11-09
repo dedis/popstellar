@@ -1,14 +1,10 @@
 package lao
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
-	"os"
-	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
-	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -96,47 +92,6 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	consensusID := "channel0/consensus"
 	consensus := fakeHub.channelByID[consensusID]
 	require.NotNil(t, consensus)
-}
-
-func Test_Verify_Functions(t *testing.T) {
-	// Create the hub
-	keypair := generateKeyPair(t)
-
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
-	require.NoError(t, err)
-
-	// Create the channel
-	numMessages := 1
-
-	messages := make([]message.Message, numMessages)
-
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog)
-
-	laoChannel, ok := channel.(*Channel)
-	require.True(t, ok)
-
-	// Get the JSON
-	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
-		"examples", "messageData")
-	file := filepath.Join(relativeExamplePath, "roll_call_open.json")
-
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	object, action, err := messagedata.GetObjectAndAction(buf)
-	require.NoError(t, err)
-
-	require.Equal(t, "roll_call", object)
-	require.Equal(t, "open", action)
-
-	var msg messagedata.RollCallOpen
-
-	err = json.Unmarshal(buf, &msg)
-	require.NoError(t, err)
-
-	// Test the function
-	err = laoChannel.verifyMessageRollCallOpenID(msg)
-	require.NoError(t, err)
 }
 
 // -----------------------------------------------------------------------------

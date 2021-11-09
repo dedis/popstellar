@@ -30,7 +30,7 @@ public final class Consensus {
   private final Map<String, String> acceptorToMessageId;
 
   public Consensus(long creation, ConsensusKey key, Object value) {
-    this.id = generateConsensusId(creation, key.getType(), key.getId(), key.getProperty(), value);
+    this.id = generateConsensusId(key.getType(), key.getId(), key.getProperty());
     this.key = key;
     this.value = value;
     this.creation = creation;
@@ -143,9 +143,7 @@ public final class Consensus {
         id, channel, messageId, key, value, creation, isAccepted, isFailed, proposer);
   }
 
-  public static String generateConsensusId(
-      long createdAt, String type, String id, String property, Object value) {
-    return Hash.hash(
-        "consensus", Long.toString(createdAt), type, id, property, String.valueOf(value));
+  public static String generateConsensusId(String type, String id, String property) {
+    return Hash.hash("consensus", type, id, property);
   }
 }
