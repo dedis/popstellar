@@ -34,8 +34,8 @@ public class SettingsActivity extends AppCompatActivity {
         (SettingsFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_settings);
     if (settingsFragment == null) {
       settingsFragment = SettingsFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), settingsFragment, R.id.fragment_container_settings);
     }
+    ActivityUtils.replaceFragmentInActivity(
+        getSupportFragmentManager(), settingsFragment, R.id.fragment_container_settings);
   }
 }

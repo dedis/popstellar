@@ -23,8 +23,10 @@ public class SettingsViewModel extends AndroidViewModel {
   /*
    * LiveData objects that represent the state in a fragment
    */
+  /** Server URL, updated everytime we change it */
   private final MutableLiveData<String> mServerUrl = new MutableLiveData<>();
-  private final MutableLiveData<String> mTempServerUrl = new MutableLiveData<>();
+  /** Stores the server URL when we open settings to check whether we changed it or not */
+  private final MutableLiveData<String> mCheckServerUrl = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
@@ -47,8 +49,8 @@ public class SettingsViewModel extends AndroidViewModel {
     return mServerUrl;
   }
 
-  public LiveData<String> getTempServerUrl() {
-    return mTempServerUrl;
+  public LiveData<String> getCheckServerUrl() {
+    return mCheckServerUrl;
   }
 
   /*
@@ -62,7 +64,7 @@ public class SettingsViewModel extends AndroidViewModel {
     mServerUrl.setValue(serverUrl);
   }
 
-  public void setTempServerUrl(String serverUrl) {
-    mTempServerUrl.setValue(serverUrl);
+  public void setCheckServerUrl(String serverUrl) {
+    mCheckServerUrl.setValue(serverUrl);
   }
 }

@@ -8,10 +8,10 @@ import okhttp3.Request;
 
 public class LAORequestFactory implements RequestFactory {
 
-  @NonNull private static String url = "ws://10.0.2.2:9000/organizer/client";
+  @NonNull private String url;
 
   public LAORequestFactory(@NonNull String defaultUrl) {
-    setUrl(defaultUrl);
+    url = defaultUrl;
   }
 
   @NonNull
@@ -21,11 +21,11 @@ public class LAORequestFactory implements RequestFactory {
   }
 
   @NonNull
-  public static String getUrl() {
+  public String getUrl() {
     return url;
   }
 
-  public static void setUrl(@NonNull String newUrl) {
+  public void setUrl(@NonNull String newUrl) {
     url = newUrl;
   }
 }
