@@ -32,7 +32,7 @@ public final class CameraPermissionFragment extends Fragment {
             new ActivityResultContracts.RequestPermission(),
             resultRegistry,
             isGranted -> {
-              if (isGranted) {
+              if (Boolean.TRUE.equals(isGranted)) {
                 getParentFragmentManager().setFragmentResult(REQUEST_KEY, Bundle.EMPTY);
               }
             });
