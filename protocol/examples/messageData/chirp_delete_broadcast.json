@@ -2,6 +2,6 @@
     "object": "chirp",
     "action": "deleteBroadcast",
     "chirp_id": "XXX",
-    "channel": "/root/<lao_id>/social/<sender>/",
+    "channel": "/root/<lao_id>/social/<sender>",
     "timestamp": 123
 }
