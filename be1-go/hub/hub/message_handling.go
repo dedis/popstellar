@@ -40,8 +40,7 @@ func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish met
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, "+
-			"but found %s#%s", object, action)
+		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, but found %s#%s", object, action)
 		h.log.Err(err)
 		socket.SendError(&publish.ID, err)
 		return err
@@ -89,6 +88,7 @@ func (h *Hub) handleServerCatchup(senderSocket socket.Socket, byteMessage []byte
 	return messages, catchup.ID, nil
 }
 
+// handleAnswer handles the answer to a message sent by the server
 func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error {
 	var answer method.ServerCatchupAnswer
 	var result method.ServerResult

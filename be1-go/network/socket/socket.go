@@ -242,6 +242,9 @@ func (s *baseSocket) SendResult(id int, res []message.Message) {
 // SendServerResult is a utility method that allows sending a `message.Result` to the
 // socket when the answer need the channels id where the messages were sent.
 func (s *baseSocket) SendServerResult(id int, res []string) {
+	if s.socketType == ClientSocketType {
+		s.log.Error().Msgf("server result should only be sent to other servers")
+	}
 	var answer interface{}
 
 	if res == nil {

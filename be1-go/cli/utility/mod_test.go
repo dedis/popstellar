@@ -1,9 +1,8 @@
-package witness
+package utility
 
 import (
 	"io"
 	"popstellar/channel/lao"
-	"popstellar/cli/utility"
 	"popstellar/crypto"
 	"popstellar/hub"
 	hub_impl "popstellar/hub/hub"
@@ -17,7 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestConnectToWitnessSocket(t *testing.T) {
+func TestConnectToSocket(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
 	oh, err := hub_impl.NewHub(crypto.Suite.Point(), log, lao.NewChannel, hub.OrganizerHubType)
@@ -36,7 +35,7 @@ func TestConnectToWitnessSocket(t *testing.T) {
 	wh.Start()
 
 	wg := &sync.WaitGroup{}
-	err = utility.ConnectToSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
+	err = ConnectToSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
 	require.NoError(t, err)
 
 	err = witnessSrv.Shutdown()

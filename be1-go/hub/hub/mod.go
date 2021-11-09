@@ -68,7 +68,7 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	inbox serverInbox.Inbox
+	inbox serverInbox.ServerInbox
 
 	queries queries
 }
@@ -105,7 +105,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory, h
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
-		inbox:           *serverInbox.NewInbox("/root"),
+		inbox:           *serverInbox.NewServerInbox(),
 		queries:         queries{queries: make(map[int]*bool), nextID: 0},
 	}
 

@@ -24,6 +24,20 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 )
 
+func Test_Add_Server_Socket(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{id: "fakeID"}
+
+	err = hub.AddServerSocket(sock)
+	require.NoError(t, err)
+	require.NotNil(t, hub.queries.queries[0])
+	require.Equal(t, 1, hub.queries.nextID)
+}
+
 func Test_Create_LAO(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -115,7 +129,197 @@ func Test_Create_LAO(t *testing.T) {
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
 }
 
-// Check that if the organizer receives a publish message, it will call the
+func Test_Wrong_Root_Publish(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	laoID := "/root"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	data := messagedata.LaoState{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      "channel0",
+		Creation:  123,
+		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.Error(t, sock.err, "only lao#create is allowed on root, but found %s#%s", data.Object, data.Action)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.Error(t, sock.err, "only lao#create is allowed on root, but found %s#%s", data.Object, data.Action)
+}
+
+func Test_Handle_Server_Catchup(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	serverCatchup := method.Catchup{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodCatchUp,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string `json:"channel"`
+		}{
+			Channel: serverComChannel,
+		},
+	}
+
+	publishBuf, err := json.Marshal(serverCatchup)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, serverCatchup.ID, sock.resultID)
+}
+
+func Test_Handle_Answer(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	result := method.ServerResult{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  0,
+	}
+
+	serverAnswer := method.ServerCatchupAnswer{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  make([]string, 0),
+	}
+
+	serverAnswerBis := method.ServerCatchupAnswer{
+		JSONRPC: "2.0",
+		ID:      2,
+		Result:  make([]string, 0),
+	}
+
+	resultBuf, err := json.Marshal(result)
+	require.NoError(t, err)
+
+	answerBuf, err := json.Marshal(serverAnswer)
+	require.NoError(t, err)
+
+	answerBisBuf, err := json.Marshal(serverAnswerBis)
+	require.NoError(t, err)
+
+	queryState := false
+	hub.queries.queries[1] = &queryState
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: resultBuf,
+	})
+	require.Error(t, sock.err, "rpc message sent by a client should be a query")
+	sock.err = nil
+	require.False(t, queryState)
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: resultBuf,
+	})
+	require.NoError(t, sock.err)
+	require.False(t, queryState)
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: answerBuf,
+	})
+	require.NoError(t, sock.err)
+	require.True(t, queryState)
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: answerBuf,
+	})
+	require.Error(t, sock.err, "query %v already got an answer", serverAnswer.ID)
+	sock.err = nil
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: answerBisBuf,
+	})
+	require.Error(t, sock.err, "no query sent with id %v", serverAnswerBis.ID)
+}
+
+// Check that if the server receives a publish message, it will call the
 // publish function on the appropriate channel.
 func Test_Handle_Publish(t *testing.T) {
 	keypair := generateKeyPair(t)
@@ -490,6 +694,7 @@ type fakeSocket struct {
 
 	resultID int
 	res      []message.Message
+	servRes  []string
 	msg      []byte
 
 	err error
@@ -507,6 +712,12 @@ func (f *fakeSocket) Send(msg []byte) {
 func (f *fakeSocket) SendResult(id int, res []message.Message) {
 	f.resultID = id
 	f.res = res
+}
+
+// SendServerResult implements socket.Socket
+func (f *fakeSocket) SendServerResult(id int, res []string) {
+	f.resultID = id
+	f.servRes = res
 }
 
 // SendError implements socket.Socket

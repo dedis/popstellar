@@ -2,9 +2,7 @@ package serverInbox
 
 import (
 	"encoding/json"
-	"popstellar/message/answer"
 	"popstellar/message/query/method"
-	"popstellar/message/query/method/message"
 	"sort"
 	"sync"
 	"time"
@@ -16,67 +14,22 @@ type messageInfo struct {
 	storedTime int64
 }
 
-// Inbox represents an in-memory data store to record incoming messages.
-type Inbox struct {
-	mutex     sync.RWMutex
-	msgs      map[string]*messageInfo
-	channelID string
+// ServerInbox represents an in-memory data store to record incoming messages.
+type ServerInbox struct {
+	mutex sync.RWMutex
+	msgs  map[string]*messageInfo
 }
 
-// NewInbox returns a new initialized inbox
-func NewInbox(channelID string) *Inbox {
-	return &Inbox{
-		mutex:     sync.RWMutex{},
-		msgs:      make(map[string]*messageInfo),
-		channelID: channelID,
+// NewServerInbox returns a new initialized inbox
+func NewServerInbox() *ServerInbox {
+	return &ServerInbox{
+		mutex: sync.RWMutex{},
+		msgs:  make(map[string]*messageInfo),
 	}
-}
-
-// AddWitnessSignature adds a signature of witness to a message of ID
-// `messageID`. if the signature was correctly added return true otherwise
-// returns false
-func (i *Inbox) AddWitnessSignature(messageID string, public string, signature string) error {
-	//	log := be1_go.Logger
-
-	msg, ok := i.GetMessage(messageID)
-	if !ok {
-		// TODO: We received a witness signature before the message itself. We
-		// ignore it for now but it might be worth keeping it until we actually
-		// receive the message
-		return answer.NewErrorf(-4, "failed to find message_id %q for witness message", messageID)
-	}
-
-	i.mutex.Lock()
-	defer i.mutex.Unlock()
-
-	msg.Params.Message.WitnessSignatures = append(msg.Params.Message.WitnessSignatures, message.WitnessSignature{
-		Witness:   public,
-		Signature: signature,
-	})
-
-	/**
-	if sqlite.GetDBPath() != "" {
-		log.Info().Msg("adding witness into db")
-
-		db, err := sql.Open("sqlite3", sqlite.GetDBPath())
-		if err != nil {
-			log.Err(err).Msg("failed to open connection")
-		} else {
-			defer db.Close()
-
-			err := addWitnessInDB(db, messageID, public, signature)
-			if err != nil {
-				log.Err(err).Msg("failed to store witness into db")
-			}
-		}
-	}
-	*/
-
-	return nil
 }
 
 // StoreMessage stores a message inside the inbox
-func (i *Inbox) StoreMessage(publish method.Publish) {
+func (i *ServerInbox) StoreMessage(publish method.Publish) {
 	//	log := be1_go.Logger
 
 	i.mutex.Lock()
@@ -104,7 +57,7 @@ func (i *Inbox) StoreMessage(publish method.Publish) {
 }
 
 // GetSortedMessages returns all messages stored sorted by stored time.
-func (i *Inbox) GetSortedMessages() []string {
+func (i *ServerInbox) GetSortedMessages() []string {
 	i.mutex.RLock()
 	defer i.mutex.RUnlock()
 
@@ -135,7 +88,7 @@ func (i *Inbox) GetSortedMessages() []string {
 
 // GetMessage returns the message of messageID if it exists. We need a pointer
 // on message to add witness signatures.
-func (i *Inbox) GetMessage(messageID string) (*method.Publish, bool) {
+func (i *ServerInbox) GetMessage(messageID string) (*method.Publish, bool) {
 	i.mutex.Lock()
 	defer i.mutex.Unlock()
 
