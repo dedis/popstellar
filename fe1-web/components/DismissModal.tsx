@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import STRINGS from 'res/strings';
 import { white } from 'styles/colors';
-import { Views, Typography } from 'styles';
+import { Typography } from 'styles';
 import WideButtonView from './WideButtonView';
 
 const styles = StyleSheet.create({
@@ -14,18 +14,29 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     margin: 'auto',
-    width: 600,
+    width: 550,
+  } as ViewStyle,
+  titleView: {
+    borderBottomWidth: 1,
   } as ViewStyle,
   modalTitle: {
     ...Typography.important,
     alignSelf: 'flex-start',
+    padding: 20,
+    paddingLeft: 10,
   } as TextStyle,
   modalDescription: {
     ...Typography.base,
+    fontSize: 20,
     alignSelf: 'flex-start',
+    textAlign: 'left',
+    padding: 20,
+    paddingLeft: 10,
   } as TextStyle,
   buttonView: {
-    alignSelf: 'flex-end',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    paddingBottom: 20,
   } as ViewStyle,
 });
 
@@ -43,7 +54,9 @@ const DismissModal = (props: IPropTypes) => {
       transparent
     >
       <View style={styles.modalView}>
-        <Text style={styles.modalTitle}>{title}</Text>
+        <View style={styles.titleView}>
+          <Text style={styles.modalTitle}>{title}</Text>
+        </View>
         <Text style={styles.modalDescription}>{description}</Text>
         <View style={styles.buttonView}>
           <WideButtonView

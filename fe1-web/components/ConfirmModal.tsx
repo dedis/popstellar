@@ -5,29 +5,39 @@ import {
 } from 'react-native';
 import STRINGS from 'res/strings';
 import { white } from 'styles/colors';
-import { Views, Typography } from 'styles';
+import { Typography } from 'styles';
 import WideButtonView from './WideButtonView';
 
 const styles = StyleSheet.create({
   modalView: {
-    ...Views.base,
     backgroundColor: white,
     borderRadius: 10,
     borderWidth: 1,
     margin: 'auto',
-    height: 200,
-    width: 600,
+    width: 550,
+  } as ViewStyle,
+  titleView: {
+    borderBottomWidth: 1,
   } as ViewStyle,
   modalTitle: {
     ...Typography.important,
     alignSelf: 'flex-start',
-    padding: '10',
+    padding: 20,
+    paddingLeft: 10,
   } as TextStyle,
   modalDescription: {
     ...Typography.base,
+    fontSize: 20,
     alignSelf: 'flex-start',
-    padding: '10',
+    textAlign: 'left',
+    padding: 20,
+    paddingLeft: 10,
   } as TextStyle,
+  buttonView: {
+    alignSelf: 'center',
+    flexDirection: 'row',
+    paddingBottom: 20,
+  } as ViewStyle,
 });
 
 const ConfirmModal = (props: IPropTypes) => {
@@ -35,8 +45,8 @@ const ConfirmModal = (props: IPropTypes) => {
   const { setVisibility } = props;
   const { title } = props;
   const { description } = props;
-  const { buttonCancelText } = props;
   const { buttonConfirmText } = props;
+  const { buttonCancelText } = props;
   const { onConfirmPress } = props;
 
   return (
@@ -46,16 +56,20 @@ const ConfirmModal = (props: IPropTypes) => {
       transparent
     >
       <View style={styles.modalView}>
-        <Text style={styles.modalTitle}>{title}</Text>
+        <View style={styles.titleView}>
+          <Text style={styles.modalTitle}>{title}</Text>
+        </View>
         <Text style={styles.modalDescription}>{description}</Text>
-        <WideButtonView
-          title={buttonConfirmText}
-          onPress={() => onConfirmPress()}
-        />
-        <WideButtonView
-          title={buttonCancelText}
-          onPress={() => setVisibility(!visibility)}
-        />
+        <View style={styles.buttonView}>
+          <WideButtonView
+            title={buttonConfirmText}
+            onPress={() => onConfirmPress()}
+          />
+          <WideButtonView
+            title={buttonCancelText}
+            onPress={() => setVisibility(!visibility)}
+          />
+        </View>
       </View>
     </Modal>
   );

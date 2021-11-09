@@ -12,6 +12,8 @@ import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 
+const FIVE_MINUTES_IN_SECONDS = 300;
+
 const styleEvents = StyleSheet.create({
   view: {
     ...Views.base,
@@ -91,9 +93,6 @@ export const onConfirmPress = (start: Timestamp, end: Timestamp, createEvent: Fu
   setStartModalIsVisible: Function, setEndModalIsVisible: Function) => {
   const now = Timestamp.EpochNow();
 
-  setEndModalIsVisible(true);
-
-  /*
   if (end.before(now)) {
     setEndModalIsVisible(true);
   } else if (now.after(start.addSeconds(FIVE_MINUTES_IN_SECONDS))) {
@@ -101,7 +100,6 @@ export const onConfirmPress = (start: Timestamp, end: Timestamp, createEvent: Fu
   } else {
     createEvent();
   }
-  */
 };
 
 export default CreateEvent;
