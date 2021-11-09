@@ -10,12 +10,12 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
 	generalChriping "popstellar/channel/generalChirping"
 	"popstellar/crypto"
-	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
-	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -102,52 +102,48 @@ func Test_SendChirp(t *testing.T) {
 	time.Sleep(time.Millisecond)
 
 	// Create the message
-	newDataCreate := messagedata.ChirpAdd{
-		Object: "chirp",
-		Action: "add",
-		Text: "testing is rewarding",
-		Timestamp: 1633098853,
-	}
+	relativePath := filepath.Join("..", "..", "..", "protocol",
+		"examples", "messageData")
 
-	dataBufCreate, err := json.Marshal(newDataCreate)
-	require.Nil(t, err)
-
-	newData64Create := base64.URLEncoding.EncodeToString(dataBufCreate)
-
-	rpcMessageCreate := method.Publish{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "publish",
-		},
-		ID: 1,
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			"/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=",
-			message.Message{
-				Data: newData64Create,
-				Sender: "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=",
-				Signature: "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
-				MessageID: messagedata.Hash(newData64Create, "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw=="),
-				WitnessSignatures: []message.WitnessSignature{},
-			},
-		},
-	}
-
-	err = cha.Publish(rpcMessageCreate)
+	file := filepath.Join(relativePath, "chirp_add_publish.json")
+	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data: buf64,
+		Sender: sender,
+		Signature: "h",
+		MessageID: messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = "/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+
+	require.NoError(t, cha.Publish(message))
 
 	msg := generalCha.Catchup(method.Catchup{ID: 0})
 
 	checkData := messagedata.ChirpBroadcast{
 		Object: "chirp",
 		Action: "addBroadcast",
-		ChirpId: messagedata.Hash(newData64Create, "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw=="),
+		ChirpId: messagedata.Hash(buf64, "h"),
 		Channel: "/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/posts",
-		Timestamp: 1633098853,
+		Timestamp: 123,
 	}
 
 	checkDataBuf, err := json.Marshal(checkData)
