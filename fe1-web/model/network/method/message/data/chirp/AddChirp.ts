@@ -39,7 +39,7 @@ export class AddChirp implements MessageData {
   }
 
   /**
-   * Creates a AddChirp object from a given object
+   * Creates an AddChirp object from a given object
    * @param obj
    */
   public static fromJson(obj: any): AddChirp {
