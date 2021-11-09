@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
-	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"sync"
 	"time"
@@ -242,7 +241,7 @@ func (s *baseSocket) SendResult(id int, res []message.Message) {
 
 // SendServerResult is a utility method that allows sending a `message.Result` to the
 // socket when the answer need the channels id where the messages were sent.
-func (s *baseSocket) SendServerResult(id int, res []method.Publish) {
+func (s *baseSocket) SendServerResult(id int, res []string) {
 	var answer interface{}
 
 	if res == nil {
@@ -254,15 +253,10 @@ func (s *baseSocket) SendServerResult(id int, res []method.Publish) {
 			"2.0", id, 0,
 		}
 	} else {
-		for _, r := range res {
-			if r.Params.Message.WitnessSignatures == nil {
-				r.Params.Message.WitnessSignatures = []message.WitnessSignature{}
-			}
-		}
 		answer = struct {
-			JSONRPC string           `json:"jsonrpc"`
-			ID      int              `json:"id"`
-			Result  []method.Publish `json:"result"`
+			JSONRPC string   `json:"jsonrpc"`
+			ID      int      `json:"id"`
+			Result  []string `json:"result"`
 		}{
 			"2.0", id, res,
 		}

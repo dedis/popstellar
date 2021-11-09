@@ -1,6 +1,7 @@
 package serverInbox
 
 import (
+	"encoding/json"
 	"popstellar/message/answer"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -103,7 +104,7 @@ func (i *Inbox) StoreMessage(publish method.Publish) {
 }
 
 // GetSortedMessages returns all messages stored sorted by stored time.
-func (i *Inbox) GetSortedMessages() []method.Publish {
+func (i *Inbox) GetSortedMessages() []string {
 	i.mutex.RLock()
 	defer i.mutex.RUnlock()
 
@@ -118,12 +119,15 @@ func (i *Inbox) GetSortedMessages() []method.Publish {
 		return messages[i].storedTime < messages[j].storedTime
 	})
 
-	result := make([]method.Publish, len(messages))
+	result := make([]string, len(messages))
 
 	// iterate and extract the messages[i].message field and
 	// append it to the result slice
 	for i, msgInfo := range messages {
-		result[i] = msgInfo.message
+		buf, err := json.Marshal(msgInfo.message)
+		if err == nil {
+			result[i] = string(buf)
+		}
 	}
 
 	return result

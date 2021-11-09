@@ -24,6 +24,7 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
@@ -44,6 +45,8 @@ type Channel struct {
 
 	// /root/<ID>
 	channelID string
+
+	organizerKey kyber.Point
 
 	witnessMu sync.Mutex
 	witnesses []string
@@ -66,6 +69,18 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
 
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		log.Err(err).Msgf("failed to decode sender key: %v", err)
+		return nil
+	}
+
+	organizerPoint := crypto.Suite.Point()
+	err = organizerPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		log.Err(err).Msgf("failed to unmarshal public key of the sender: %v", err)
+	}
+
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
@@ -73,13 +88,14 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	hub.RegisterNewChannel(consensusPath, &consensusCh)
 
 	return &Channel{
-		channelID: channelID,
-		sockets:   channel.NewSockets(),
-		inbox:     inbox,
-		hub:       hub,
-		rollCall:  rollCall{},
-		attendees: make(map[string]struct{}),
-		log:       log,
+		channelID:    channelID,
+		sockets:      channel.NewSockets(),
+		inbox:        inbox,
+		organizerKey: organizerPoint,
+		hub:          hub,
+		rollCall:     rollCall{},
+		attendees:    make(map[string]struct{}),
+		log:          log,
 	}
 }
 
@@ -432,7 +448,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	if !c.hub.GetPubkey().Equal(senderPoint) {
+	if !c.organizerKey.Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
 	}
 
@@ -503,7 +519,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	if !c.hub.GetPubkey().Equal(senderPoint) {
+	if !c.organizerKey.Equal(senderPoint) {
 		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
 	}
 
