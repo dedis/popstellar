@@ -4,7 +4,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness, checkWitnesses } from '../Checker';
 
-/** Data sent to creat a Lao */
+/** Data sent to create a Lao */
 export class CreateLao implements MessageData {
   public readonly object: ObjectType = ObjectType.LAO;
 
