@@ -2,14 +2,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
  
-    <groupId>ch.epfl.test-DartifactId=karateTest</groupId>
+    <groupId>ch.epfl.pop.test</groupId>
     <artifactId>karateTest</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
  
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <java.version>1.8</java.version>
+        <java.version>11</java.version>
         <maven.compiler.version>3.6.0</maven.compiler.version>
         <karate.version>0.9.6</karate.version>
     </properties>    
