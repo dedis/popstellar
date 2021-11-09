@@ -107,7 +107,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
 	object, _ , err := messagedata.GetObjectAndAction(jsonData)
