@@ -6,8 +6,7 @@ import (
 	"popstellar/cli/utility"
 	"popstellar/crypto"
 	"popstellar/hub"
-	"popstellar/hub/organizer"
-	"popstellar/hub/witness"
+	hub_impl "popstellar/hub/hub"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
@@ -21,7 +20,7 @@ import (
 func TestConnectToWitnessSocket(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
-	oh, err := organizer.NewHub(crypto.Suite.Point(), log, lao.NewChannel)
+	oh, err := hub_impl.NewHub(crypto.Suite.Point(), log, lao.NewChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 	oh.Start()
 
@@ -31,7 +30,7 @@ func TestConnectToWitnessSocket(t *testing.T) {
 
 	time.Sleep(1 * time.Second)
 
-	wh, err := witness.NewHub(crypto.Suite.Point(), log, lao.NewChannel)
+	wh, err := hub_impl.NewHub(crypto.Suite.Point(), log, lao.NewChannel, hub.WitnessHubType)
 	require.NoError(t, err)
 	wDone := make(chan struct{})
 	wh.Start()

@@ -318,7 +318,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	socket := incomingMessage.Socket
 	byteMessage := incomingMessage.Message
 
-	/**
 	// validate against json schema
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
@@ -326,7 +325,7 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
 		socket.SendError(nil, schemaErr)
 		return schemaErr
-	}*/
+	}
 
 	rpctype, err := jsonrpc.GetType(byteMessage)
 	if err != nil {
