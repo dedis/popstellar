@@ -82,7 +82,7 @@ export class CreateRollCall implements MessageData {
   }
 
   /**
-   * Creates a CreatRollCall object from a given object
+   * Creates a CreateRollCall object from a given object
    * @param obj
    */
   public static fromJson(obj: any): CreateRollCall {
