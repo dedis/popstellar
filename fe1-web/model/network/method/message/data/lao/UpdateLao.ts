@@ -43,7 +43,7 @@ export class UpdateLao implements MessageData {
   }
 
   /**
-   * Creates a UpdateLao object from a given object
+   * Creates an UpdateLao object from a given object
    * @param obj
    */
   public static fromJson(obj: any): UpdateLao {
