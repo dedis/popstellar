@@ -314,10 +314,10 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupCameraPermissionFragment() {
-    // Setup result listener to open the connect tab once the permission is granted
+    // Setup result listener to open the scanning tab once the permission is granted
     getSupportFragmentManager()
         .setFragmentResultListener(
-            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openLaoDetail());
+            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openScanning());
 
     setCurrentFragment(
         R.id.fragment_camera_perm,
@@ -427,7 +427,7 @@ public class LaoDetailActivity extends AppCompatActivity {
    */
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was nt created yet, create it now
+    // If the fragment was not created yet, create it now
     if (fragment == null) fragment = fragmentSupplier.get();
 
     // Set the new fragment in the container

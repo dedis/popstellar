@@ -277,7 +277,7 @@ public class HomeActivity extends AppCompatActivity {
    */
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = getSupportFragmentManager().findFragmentById(id);
-    // If the fragment was nt created yet, create it now
+    // If the fragment was not created yet, create it now
     if (fragment == null) fragment = fragmentSupplier.get();
 
     // Set the new fragment in the container
