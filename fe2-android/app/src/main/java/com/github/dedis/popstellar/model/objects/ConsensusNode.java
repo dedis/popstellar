@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -40,7 +41,7 @@ public final class ConsensusNode {
     // get the consensus for the given instanceId, with the largest creation time
     return consensuses.stream()
         .filter(consensus -> consensus.getId().equals(instanceId))
-        .max((c1, c2) -> (int) (c1.getCreation() - c2.getCreation()));
+        .max(Comparator.comparingLong(Consensus::getCreation));
   }
 
   public State getState(String instanceId) {
