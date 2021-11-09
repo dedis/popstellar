@@ -4,7 +4,7 @@ import {
   Base64UrlData, Hash, PrivateKey, PublicKey, Timestamp,
 } from 'model/objects';
 import keyPair from 'test_data/keypair.json';
-import RollCallOpened from './RollCallOpened';
+import RollCallOpened from '../RollCallOpened';
 
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
 export const mockSecretKey = new PrivateKey(keyPair.privateKey);
