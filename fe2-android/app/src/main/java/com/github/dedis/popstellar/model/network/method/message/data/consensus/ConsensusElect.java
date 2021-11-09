@@ -19,8 +19,7 @@ public final class ConsensusElect extends Data {
   private final Object value;
 
   public ConsensusElect(long creation, String objId, String type, String property, Object value) {
-    this.instanceId =
-        Consensus.generateConsensusId(creation, type, objId, property, String.valueOf(value));
+    this.instanceId = Consensus.generateConsensusId(type, objId, property);
     this.creation = creation;
     this.key = new ConsensusKey(type, objId, property);
     this.value = value;
@@ -67,8 +66,8 @@ public final class ConsensusElect extends Data {
     }
     ConsensusElect that = (ConsensusElect) o;
 
-    return java.util.Objects.equals(instanceId, that.instanceId)
-        && creation == that.creation
+    return creation == that.creation
+        && java.util.Objects.equals(instanceId, that.instanceId)
         && java.util.Objects.equals(key, that.key)
         && java.util.Objects.equals(value, that.value);
   }
