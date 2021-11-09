@@ -33,17 +33,17 @@ func Test_Catchup(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-	generalName := "/root/" + laoID + "/social/posts/"
-	chirpChannelName := "/root/" + laoID + "/social/" + sender + "/"
+	generalName := "/root/" + laoID + "/social/posts"
+	chirpChannelName := "/root/" + laoID + "/social/" + sender
 	generalCha := generalChriping.NewChannel(generalName, fakeHub, nolog)
 	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
-	_, found := fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=/"]
+	_, found := fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="]
 	require.True(t, found)
-	_, found = fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/posts/"]
+	_, found = fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/posts"]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
@@ -86,17 +86,17 @@ func Test_SendChirp(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-	generalName := "/root/" + laoID + "/social/posts/"
-	chirpChannelName := "/root/" + laoID + "/social/" + sender + "/"
+	generalName := "/root/" + laoID + "/social/posts"
+	chirpChannelName := "/root/" + laoID + "/social/" + sender
 	generalCha := generalChriping.NewChannel(generalName, fakeHub, nolog)
 	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
-	_, found := fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=/"]
+	_, found := fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="]
 	require.True(t, found)
-	_, found = fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/posts/"]
+	_, found = fakeHub.channelByID["/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/posts"]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
@@ -126,7 +126,7 @@ func Test_SendChirp(t *testing.T) {
 			Channel string          `json:"channel"`
 			Message message.Message `json:"message"`
 		}{
-			"/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=/",
+			"/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=",
 			message.Message{
 				Data: newData64Create,
 				Sender: "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=",
@@ -146,7 +146,7 @@ func Test_SendChirp(t *testing.T) {
 		Object: "chirp",
 		Action: "addBroadcast",
 		ChirpId: messagedata.Hash(newData64Create, "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw=="),
-		Channel: "/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/posts/",
+		Channel: "/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/social/posts",
 		Timestamp: 1633098853,
 	}
 

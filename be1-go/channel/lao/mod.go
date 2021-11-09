@@ -196,13 +196,13 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) *generalChriping.Channel {
 	log := be1_go.Logger
 
-	generalChannelPath := laoID + "/social/chirps/"
+	generalChannelPath := laoID + "/social/chirps"
 
 	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub, be1_go.Logger)
 
 	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel)
 
-	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
+	log.Info().Msgf("storing general channel '%s' ", generalChannelPath)
 
 	return &generalChirpingChannel
 }
@@ -517,10 +517,10 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 func createChirpingChannel(attendee string, channelID string, hub channel.HubFunctionalities,
 							general *generalChriping.Channel, log zerolog.Logger) {
-	chirpingChannelPath := channelID + "/" + "social" + "/" + attendee + "/"
+	chirpingChannelPath := channelID + "/" + "social" + "/" + attendee
 	cha := chirp.NewChannel(chirpingChannelPath, attendee, hub, general, log)
 	hub.RegisterNewChannel(chirpingChannelPath, &cha)
-	log.Info().Msgf("storing new channel chirp channel for attendee '%s' ", attendee)
+	log.Info().Msgf("storing new channel chirp channel for '%s', channel name : ", attendee, chirpingChannelPath)
 }
 
 

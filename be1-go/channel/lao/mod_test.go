@@ -48,7 +48,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	laoChannel, ok := cha.(*Channel)
 	require.True(t, ok)
 
-	_, found := fakeHub.channelByID["/root/blabla/social/chirps/"]
+	_, found := fakeHub.channelByID["/root/blabla/social/chirps"]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
@@ -126,7 +126,7 @@ func TestBaseChannel_GeneralChirpingIsCreated(t *testing.T) {
 
 	time.Sleep(time.Millisecond)
 
-	_, found := fakeHub.channelByID["/root/channel0/social/chirps/"]
+	_, found := fakeHub.channelByID["/root/channel0/social/chirps"]
 	require.True(t, found)
 
 }
@@ -282,7 +282,7 @@ func TestBaseChannel_CreationChirpChannel(t *testing.T) {
 
 	time.Sleep(time.Millisecond)
 
-	_, found := fakeHub.channelByID["channel0/social/" + "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=" + "/"]
+	_, found := fakeHub.channelByID["channel0/social/" + "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="]
 	require.True(t, found)
 }
 
