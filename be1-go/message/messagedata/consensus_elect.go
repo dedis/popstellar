@@ -1,8 +1,6 @@
 package messagedata
 
 import (
-	"fmt"
-
 	"golang.org/x/xerrors"
 )
 
@@ -28,11 +26,9 @@ type Key struct {
 func (message ConsensusElect) Verify() error {
 	expectedID := Hash(
 		message.Object,
-		fmt.Sprintf("%d", message.CreatedAt),
 		message.Key.Type,
 		message.Key.ID,
 		message.Key.Property,
-		message.Value,
 	)
 
 	if message.InstanceID != expectedID {

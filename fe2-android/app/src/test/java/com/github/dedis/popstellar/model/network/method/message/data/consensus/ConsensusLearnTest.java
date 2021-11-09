@@ -18,7 +18,14 @@ public class ConsensusLearnTest {
 
   private static final String messageId = Hash.hash("aaa");
   private static final List<String> acceptors = Arrays.asList("aaa", "bbb");
-  private static final ConsensusLearn consensusLearn = new ConsensusLearn(messageId, acceptors);
+  private static final String instanceId = Hash.hash("ccc");
+  private static final ConsensusLearn consensusLearn =
+      new ConsensusLearn(instanceId, messageId, acceptors);
+
+  @Test
+  public void getInstanceIdTest() {
+    assertEquals(instanceId, consensusLearn.getInstanceId());
+  }
 
   @Test
   public void getMessageIdTest() {
@@ -42,9 +49,11 @@ public class ConsensusLearnTest {
 
   @Test
   public void equalsTest() {
-    assertEquals(consensusLearn, new ConsensusLearn(messageId, new ArrayList<>(acceptors)));
+    assertEquals(
+        consensusLearn, new ConsensusLearn(instanceId, messageId, new ArrayList<>(acceptors)));
 
-    assertNotEquals(consensusLearn, new ConsensusLearn("random", acceptors));
-    assertNotEquals(consensusLearn, new ConsensusLearn(messageId, Collections.emptyList()));
+    assertNotEquals(consensusLearn, new ConsensusLearn(instanceId, "random", acceptors));
+    assertNotEquals(
+        consensusLearn, new ConsensusLearn(instanceId, messageId, Collections.emptyList()));
   }
 }
