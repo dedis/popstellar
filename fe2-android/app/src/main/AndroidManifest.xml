@@ -16,7 +16,9 @@
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
-    <activity android:name="com.github.dedis.popstellar.ui.home.HomeActivity">
+    <activity
+      android:name="com.github.dedis.popstellar.ui.home.HomeActivity"
+      android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
@@ -25,7 +27,7 @@
     </activity>
     <activity
       android:name="com.github.dedis.popstellar.ui.detail.LaoDetailActivity"
-      android:windowSoftInputMode="adjustPan"></activity>
+      android:windowSoftInputMode="adjustPan" />
 
     <uses-library
       android:name="android.test.runner"
