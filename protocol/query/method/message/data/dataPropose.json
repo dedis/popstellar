@@ -1,17 +1,17 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataLearn.json",
-    "description": "Match a learn query",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPropose.json",
+    "description": "Match a propose query",
     "type": "object",
     "properties": {
         "object": {
             "const": "consensus"
         },
         "action": {
-            "const": "learn"
+            "const": "propose"
         },
         "instance_id": {
-            "description": "Unique id of the consensus instance taken from the elect accept",
+            "description": "Unique id of the consensus instance",
             "type": "string"
         },
         "message_id": {
@@ -26,17 +26,21 @@
         "value": {
             "type": "object",
             "properties": {
-                "decision": {
+                "proposed_try": {
+                    "type": "integer"
+                },
+                "proposed_value": {
                     "type": "boolean"
                 }
             },
             "additionalProperties": false,
             "required": [
-                "decision"
+                "proposed_try",
+                "proposed_value"
             ]
         },
-        "acceptor-signatures": {
-            "description": "Signatures of all received Accept messages",
+        "acceptor-signature": {
+            "description": "Signatures of all received Promise messages",
             "type": "array",
             "items": {
                 "type": "string"
@@ -51,6 +55,6 @@
         "message_id",
         "created_at",
         "value",
-        "acceptor-signatures"
+        "acceptor-signature"
     ]
 }
