@@ -25,7 +25,7 @@
     </activity>
     <activity
       android:name="com.github.dedis.popstellar.ui.detail.LaoDetailActivity"
-      android:windowSoftInputMode="adjustPan"></activity>
+      android:windowSoftInputMode="adjustPan" />
     <activity android:name=".ui.settings.SettingsActivity" />
 
     <uses-library
