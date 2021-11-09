@@ -45,9 +45,9 @@ public class AttendeesListFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     mAttendeesListBinding = AttendeesListFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    String id = this.getArguments().getString(EXTRA_ID);
+    String id = requireArguments().getString(EXTRA_ID);
     Optional<RollCall> optRollCall = mLaoDetailViewModel.getCurrentLaoValue().getRollCall(id);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + id);

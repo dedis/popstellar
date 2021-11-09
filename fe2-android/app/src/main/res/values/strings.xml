@@ -165,6 +165,17 @@
   <string name="cast_vote">Cast votes</string>
   <string name="show_results">Show results</string>
 
+  <!-- Consensus -->
+  <string name="start_election">Start Election</string>
+  <string name="election_start">Election Start</string>
+
+  <string name="election_started_at">Election started successfully at\n%s</string>
+  <string name="waiting_scheduled_time">Waiting scheduled time</string>
+  <string name="ready_to_start">Ready to start</string>
+  <string name="started">Started</string>
+  <string name="election_start_title">Election \"%s\"</string>
+  <string name="election_scheduled">Election scheduled to start at\n%s</string>
+
   <!-- Wallet -->
   <string name="button_own_seed">I own a seed</string>
   <string name="button_new_wallet">New wallet</string>

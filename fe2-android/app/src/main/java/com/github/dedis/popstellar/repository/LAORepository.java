@@ -22,6 +22,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
@@ -90,6 +91,9 @@ public class LAORepository {
   // Observable for view models that need access to all LAO Names
   private final BehaviorSubject<List<Lao>> allLaoSubject;
 
+  // Observable for view models that need access to all Nodes
+  private Map<String, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject;
+
   // Observable to subscribe to LAOs on reconnection
   private final Observable<WebSocket.Event> websocketEvents;
 
@@ -119,6 +123,8 @@ public class LAORepository {
     unprocessed = PublishSubject.create();
 
     allLaoSubject = BehaviorSubject.create();
+
+    channelToNodesSubject = new HashMap<>();
 
     upstream = mRemoteDataSource.observeMessage().share();
 
@@ -367,6 +373,28 @@ public class LAORepository {
 
   public Map<String, LAOState> getLaoById() {
     return laoById;
+  }
+
+  /**
+   * Return an Observable to the list of nodes in a given channel.
+   *
+   * @param channel the lao channel.
+   * @return an Observable to the list of nodes
+   */
+  public Observable<List<ConsensusNode>> getNodesByChannel(String channel) {
+    return channelToNodesSubject.get(channel);
+  }
+
+  /**
+   * Emit an update to the observer of nodes for the given lao channel. Create the BehaviorSubject
+   * if absent (first update).
+   *
+   * @param channel the lao channel
+   */
+  public void updateNodes(String channel) {
+    List<ConsensusNode> nodes = getLaoByChannel(channel).getNodes();
+    channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create());
+    channelToNodesSubject.get(channel).onNext(nodes);
   }
 
   public Map<String, MessageGeneral> getMessageById() {

@@ -90,7 +90,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
     mSetupElectionFragBinding = ElectionSetupFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     // Set the view for the date and time
     setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getParentFragmentManager());

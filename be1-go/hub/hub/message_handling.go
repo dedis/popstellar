@@ -40,7 +40,7 @@ func (h *Hub) handleRootChannelPublishMesssage(socket socket.Socket, publish met
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(-1, "only lao#create is allowed on root, "+
+		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, "+
 			"but found %s#%s", object, action)
 		h.log.Err(err)
 		socket.SendError(&publish.ID, err)
@@ -144,19 +144,19 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if publish.Params.Channel == "/root" {
 		err := h.handleRootChannelPublishMesssage(socket, publish)
 		if err != nil {
-			return -1, xerrors.Errorf("failed to handle root channel message: %v", err)
+			return publish.ID, xerrors.Errorf("failed to handle root channel message: %v", err)
 		}
 		return publish.ID, nil
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to get channel: %v", err)
+		return publish.ID, xerrors.Errorf("failed to get channel: %v", err)
 	}
 
 	err = channel.Publish(publish)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to publish: %v", err)
+		return publish.ID, xerrors.Errorf("failed to publish: %v", err)
 	}
 
 	return publish.ID, nil
@@ -172,12 +172,12 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 
 	channel, err := h.getChan(subscribe.Params.Channel)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to get subscribe channel: %v", err)
+		return subscribe.ID, xerrors.Errorf("failed to get subscribe channel: %v", err)
 	}
 
 	err = channel.Subscribe(socket, subscribe)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to publish: %v", err)
+		return subscribe.ID, xerrors.Errorf("failed to publish: %v", err)
 	}
 
 	return subscribe.ID, nil
@@ -193,12 +193,12 @@ func (h *Hub) handleUnsubscribe(socket socket.Socket, byteMessage []byte) (int, 
 
 	channel, err := h.getChan(unsubscribe.Params.Channel)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
+		return unsubscribe.ID, xerrors.Errorf("failed to get unsubscribe channel: %v", err)
 	}
 
 	err = channel.Unsubscribe(socket.ID(), unsubscribe)
 	if err != nil {
-		return -1, xerrors.Errorf("failed to unsubscribe: %v", err)
+		return unsubscribe.ID, xerrors.Errorf("failed to unsubscribe: %v", err)
 	}
 
 	return unsubscribe.ID, nil
@@ -221,12 +221,12 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 
 	channel, err := h.getChan(catchup.Params.Channel)
 	if err != nil {
-		return nil, -1, xerrors.Errorf("failed to get catchup channel: %v", err)
+		return nil, catchup.ID, xerrors.Errorf("failed to get catchup channel: %v", err)
 	}
 
 	msg := channel.Catchup(catchup)
 	if err != nil {
-		return nil, -1, xerrors.Errorf("failed to catchup: %v", err)
+		return nil, catchup.ID, xerrors.Errorf("failed to catchup: %v", err)
 	}
 
 	return msg, catchup.ID, nil

@@ -55,7 +55,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     return new RollCallEventCreationFragment();
   }
 
-  @Nullable
   @Override
   public View onCreateView(
       @NonNull LayoutInflater inflater,
@@ -64,7 +63,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mFragBinding = RollCallCreateFragmentBinding.inflate(inflater, container, false);
 
-    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(getActivity());
+    mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     setDateAndTimeView(mFragBinding.getRoot(), this, getParentFragmentManager());
     addStartDateAndTimeListener(confirmTextWatcher);

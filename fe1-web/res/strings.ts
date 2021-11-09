@@ -9,6 +9,7 @@ const STRINGS = {
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
+  navigation_tab_social: 'Social',
   navigation_tab_connect: 'Connect',
   navigation_tab_launch: 'Launch',
   navigation_tab_wallet: 'Wallet',
@@ -48,6 +49,11 @@ const STRINGS = {
   home_welcome: 'Welcome to Personhood.Online!',
   home_connect_lao: 'To connect to a local organization (LAO), please tap to Connect above',
   home_launch_lao: 'To launch a new LAO as on organizer, please tap Launch tab above',
+
+  /* --- Social Media Strings --- */
+  feed_description: 'User feed',
+  button_publish: 'Publish',
+  your_chirp: 'Your chirp',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',

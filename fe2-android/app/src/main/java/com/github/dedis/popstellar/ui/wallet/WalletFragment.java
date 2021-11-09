@@ -52,14 +52,14 @@ public class WalletFragment extends Fragment {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
     try {
-      Wallet.getInstance().initKeysManager(getContext().getApplicationContext());
+      Wallet.getInstance().initKeysManager(requireContext().getApplicationContext());
     } catch (IOException | GeneralSecurityException e) {
       Toast.makeText(
-              getContext().getApplicationContext(),
+              requireContext().getApplicationContext(),
               "Error import key, try again",
               Toast.LENGTH_LONG)
           .show();
-      Log.d(TAG, e.getMessage());
+      Log.d(TAG, "Error while importing the key", e);
     }
     mWalletFragBinding.setViewModel(mHomeViewModel);
     mWalletFragBinding.setLifecycleOwner(activity);
@@ -81,10 +81,10 @@ public class WalletFragment extends Fragment {
           if (seedAlert != null && seedAlert.isShowing()) {
             seedAlert.dismiss();
           }
-          AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+          AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
           builder.setTitle("Type the 12 word seed:");
 
-          final EditText input = new EditText(getActivity());
+          final EditText input = new EditText(requireActivity());
           input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
           input.setText(
               defaultSeed); // for facilitate test we set a default seed for login in the Wallet
@@ -109,7 +109,7 @@ public class WalletFragment extends Fragment {
               (dialog, which) -> {
                 if (!mHomeViewModel.importSeed(input.getText().toString())) {
                   Toast.makeText(
-                          getContext().getApplicationContext(),
+                          requireContext().getApplicationContext(),
                           "Error import key, try again",
                           Toast.LENGTH_LONG)
                       .show();
