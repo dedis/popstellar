@@ -121,7 +121,7 @@ func (c *Channel) BroadcastToAllWitnesses(msg message.Message) error {
 }
 
 // Publish handles publish messages for the consensus channel
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)

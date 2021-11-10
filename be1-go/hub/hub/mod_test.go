@@ -226,7 +226,7 @@ func Test_Handle_Server_Catchup(t *testing.T) {
 		Params: struct {
 			Channel string `json:"channel"`
 		}{
-			Channel: serverComChannel,
+			Channel: "/root",
 		},
 	}
 
@@ -251,22 +251,29 @@ func Test_Handle_Answer(t *testing.T) {
 	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	result := method.ServerResult{
+	result := method.Result{
 		JSONRPC: "2.0",
 		ID:      1,
 		Result:  0,
 	}
 
-	serverAnswer := method.ServerCatchupAnswer{
+	serverAnswer := method.Answer{
 		JSONRPC: "2.0",
 		ID:      1,
-		Result:  make([]string, 0),
+		Result:  make([]message.Message, 1),
+	}
+	serverAnswer.Result[0] = message.Message{
+		Data:              "XXX",
+		Sender:            "XXX",
+		Signature:         "XXX",
+		MessageID:         "XXX",
+		WitnessSignatures: make([]message.WitnessSignature, 0),
 	}
 
-	serverAnswerBis := method.ServerCatchupAnswer{
+	serverAnswerBis := method.Answer{
 		JSONRPC: "2.0",
 		ID:      2,
-		Result:  make([]string, 0),
+		Result:  make([]message.Message, 0),
 	}
 
 	resultBuf, err := json.Marshal(result)
@@ -279,7 +286,7 @@ func Test_Handle_Answer(t *testing.T) {
 	require.NoError(t, err)
 
 	queryState := false
-	hub.queries.queries[1] = &queryState
+	hub.queries.state[1] = &queryState
 
 	sock := &fakeSocket{}
 
@@ -627,7 +634,7 @@ type fakeChannelFac struct {
 
 // newChannel implement the type channel.LaoFactory
 func (c *fakeChannelFac) newChannel(channelID string,
-	hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
+	hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger, socket socket.Socket) channel.Channel {
 
 	c.chanID = channelID
 	c.msg = msg
@@ -669,7 +676,7 @@ func (f *fakeChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error
 }
 
 // Publish implements channel.Channel
-func (f *fakeChannel) Publish(msg method.Publish) error {
+func (f *fakeChannel) Publish(msg method.Publish, socket socket.Socket) error {
 	f.publish = msg
 	return nil
 }
@@ -727,4 +734,8 @@ func (f *fakeSocket) SendError(id *int, err error) {
 
 func (f *fakeSocket) ID() string {
 	return f.id
+}
+
+func (f *fakeSocket) Type() socket.SocketType {
+	return socket.ClientSocketType
 }

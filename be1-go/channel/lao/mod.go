@@ -62,7 +62,7 @@ type Channel struct {
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
 // its associated consensus channel and register it to the hub
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger, socket socket.Socket) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
@@ -85,7 +85,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
-	hub.RegisterNewChannel(consensusPath, &consensusCh)
+	hub.RegisterNewChannel(consensusPath, &consensusCh, socket)
 
 	return &Channel{
 		channelID:    channelID,
@@ -220,7 +220,7 @@ type rollCall struct {
 }
 
 // Publish handles publish messages for the LAO channel.
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
@@ -247,7 +247,7 @@ func (c *Channel) Publish(publish method.Publish) error {
 	case messagedata.RollCallObject:
 		err = c.processRollCallObject(action, msg)
 	case messagedata.ElectionObject:
-		err = c.processElectionObject(action, msg)
+		err = c.processElectionObject(action, msg, socket)
 	}
 
 	if err != nil {
@@ -507,7 +507,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 // verify
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(action string, msg message.Message) error {
+func (c *Channel) processElectionObject(action string, msg message.Message, socket socket.Socket) error {
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
@@ -537,7 +537,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 		return xerrors.Errorf("failed to unmarshal election setup: %v", err)
 	}
 
-	err = c.createElection(msg, electionSetup)
+	err = c.createElection(msg, electionSetup, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to create election: %w", err)
 	}
@@ -547,7 +547,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 }
 
 // createElection creates an election in the LAO.
-func (c *Channel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
+func (c *Channel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
@@ -573,7 +573,7 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.RegisterNewChannel(channelPath, &electionCh)
+	c.hub.RegisterNewChannel(channelPath, &electionCh, socket)
 
 	return nil
 }

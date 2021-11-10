@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	be1_go "popstellar"
 	"popstellar/channel"
+	"popstellar/channel/inbox"
 	"popstellar/channel/lao"
 	"popstellar/db/sqlite"
 	"popstellar/hub"
@@ -68,16 +69,21 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	inbox serverInbox.ServerInbox
+	// serverInbox is used to remember which messages were broadcast by the
+	// server
+	serverInbox serverInbox.ServerInbox
 
+	// inbox and queries are used to help servers catchup to each other
+	inbox   inbox.Inbox
 	queries queries
 }
 
 type queries struct {
 	mu sync.Mutex
-	// queries store the ID of the server queries and their state. False for a
+	// state store the ID of the server queries and their state. False for a
 	// query not yet answered, else true.
-	queries map[int]*bool
+	state   map[int]*bool
+	queries map[int]method.Catchup
 
 	// nextID store the ID of the next query
 	nextID int
@@ -105,8 +111,9 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory, h
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
-		inbox:           *serverInbox.NewServerInbox(),
-		queries:         queries{queries: make(map[int]*bool), nextID: 0},
+		serverInbox:     *serverInbox.NewServerInbox(),
+		inbox:           *inbox.NewInbox("/root"),
+		queries:         queries{state: make(map[int]*bool), queries: make(map[int]method.Catchup), nextID: 0},
 	}
 
 	if sqlite.GetDBPath() != "" {
@@ -178,7 +185,18 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 func (h *Hub) AddServerSocket(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
 
-	catchupID := h.generateID()
+	return h.CatchupToServer(socket, "/root")
+}
+
+// CatchupToServer sends a catchup query to another server
+func (h *Hub) CatchupToServer(socket socket.Socket, channel string) error {
+	h.queries.mu.Lock()
+
+	catchupID := h.queries.nextID
+	h.queries.nextID += 1
+
+	baseValue := false
+	h.queries.state[catchupID] = &baseValue
 
 	rpcMessage := method.Catchup{
 		Base: query.Base{
@@ -191,9 +209,13 @@ func (h *Hub) AddServerSocket(socket socket.Socket) error {
 		Params: struct {
 			Channel string "json:\"channel\""
 		}{
-			serverComChannel,
+			channel,
 		},
 	}
+
+	h.queries.queries[catchupID] = rpcMessage
+
+	h.queries.mu.Unlock()
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
@@ -207,19 +229,6 @@ func (h *Hub) AddServerSocket(socket socket.Socket) error {
 // OnSocketClose implements hub.Hub
 func (h *Hub) OnSocketClose() chan<- string {
 	return h.closedSockets
-}
-
-// generateID generates a unique ID in the hub used for queries from the server
-func (h *Hub) generateID() int {
-	h.queries.mu.Lock()
-	defer h.queries.mu.Unlock()
-
-	newID := h.queries.nextID
-	h.queries.nextID += 1
-
-	baseValue := false
-	h.queries.queries[newID] = &baseValue
-	return newID
 }
 
 func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
@@ -373,9 +382,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
-		if msgs == nil && handlerErr == nil {
-			serverMsgs, id, handlerErr = h.handleServerCatchup(socket, byteMessage)
-		}
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		h.log.Err(err)
@@ -429,17 +435,17 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 func (h *Hub) broadcastToServers(message method.Publish, byteMessage []byte) bool {
 	h.Lock()
 	defer h.Unlock()
-	_, ok := h.inbox.GetMessage(message.Params.Message.MessageID)
+	_, ok := h.serverInbox.GetMessage(message.Params.Message.MessageID)
 	if !ok {
-		h.inbox.StoreMessage(message)
 		h.serverSockets.SendToAll(byteMessage)
+		h.serverInbox.StoreMessage(message)
 		return false
 	}
 	return true
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate) error {
+func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate, socket socket.Socket) error {
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
@@ -448,11 +454,11 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log)
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log, socket)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
-	h.RegisterNewChannel(laoChannelPath, laoCh)
+	h.RegisterNewChannel(laoChannelPath, laoCh, socket)
 
 	if sqlite.GetDBPath() != "" {
 		saveChannel(laoChannelPath)
@@ -472,10 +478,14 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 // RegisterNewChannel implements channel.HubFunctionalities
-func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *Hub) RegisterNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
 	h.Lock()
-	h.channelByID[channeID] = channel
+	h.channelByID[channelID] = channel
 	h.Unlock()
+
+	if sock.Type() != socket.ClientSocketType {
+		h.CatchupToServer(sock, channelID)
+	}
 }
 
 // ---

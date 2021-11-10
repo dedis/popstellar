@@ -40,7 +40,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -86,7 +86,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -110,7 +110,7 @@ func Test_Verify_Functions(t *testing.T) {
 
 	messages := make([]message.Message, numMessages)
 
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog)
+	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -208,7 +208,7 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 	return &hub, nil
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	fmt.Printf("cccc")
