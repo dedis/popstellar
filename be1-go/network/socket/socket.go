@@ -2,6 +2,7 @@ package socket
 
 import (
 	"encoding/json"
+	jsonrpc "popstellar/message"
 	"sync"
 	"time"
 
@@ -177,6 +178,7 @@ func (s *baseSocket) SendError(id *int, err error) {
 	}
 
 	answer := answer.Answer{
+		JSONRPCBase: jsonrpc.JSONRPCBase{JSONRPC: "2.0"},
 		ID:    id,
 		Error: msgError,
 	}

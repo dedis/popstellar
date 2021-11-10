@@ -10,14 +10,22 @@ import java.util.List;
 
 public final class ConsensusLearn extends Data {
 
+  @SerializedName("instance_id")
+  private final String instanceId;
+
   @SerializedName("message_id")
   private final String messageId;
 
   private final List<String> acceptors;
 
-  public ConsensusLearn(String messageId, List<String> acceptors) {
+  public ConsensusLearn(String instanceId, String messageId, List<String> acceptors) {
+    this.instanceId = instanceId;
     this.messageId = messageId;
     this.acceptors = Collections.unmodifiableList(acceptors);
+  }
+
+  public String getInstanceId() {
+    return instanceId;
   }
 
   public String getMessageId() {
@@ -40,7 +48,7 @@ public final class ConsensusLearn extends Data {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(messageId, acceptors);
+    return java.util.Objects.hash(instanceId, messageId, acceptors);
   }
 
   @Override
@@ -53,12 +61,15 @@ public final class ConsensusLearn extends Data {
     }
     ConsensusLearn that = (ConsensusLearn) o;
 
-    return java.util.Objects.equals(messageId, that.messageId)
+    return java.util.Objects.equals(instanceId, that.instanceId)
+        && java.util.Objects.equals(messageId, that.messageId)
         && java.util.Objects.equals(acceptors, that.acceptors);
   }
 
   @Override
   public String toString() {
-    return String.format("ConsensusLearn{message_id='%s', acceptors=%s}", messageId, acceptors);
+    return String.format(
+        "ConsensusLearn{instance_id='%s', message_id='%s', acceptors=%s}",
+        instanceId, messageId, acceptors);
   }
 }

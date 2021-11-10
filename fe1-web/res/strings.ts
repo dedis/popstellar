@@ -4,6 +4,7 @@ const STRINGS = {
   general_button_cancel: 'Cancel',
   general_button_confirm: 'Confirm',
   general_button_open: 'Open',
+  general_button_ok: 'Ok',
   general_yes: 'Yes',
   general_no: 'No',
 
@@ -124,6 +125,13 @@ const STRINGS = {
   election_method_Approval: 'Approval',
   election_version_identifier: '1.0.0',
 
+  /* --- Event Creation Strings --- */
+  modal_event_creation_failed: 'Event creation failed',
+  modal_event_ends_in_past: 'The event\'s end time in the past.',
+  modal_event_starts_in_past: 'The event\'s start time is in the past.\nWhat do you want to do ?',
+  modal_button_start_now: 'Start it now',
+  modal_button_go_back: 'Cancel',
+
   /* --- Cast Vote Strings --- */
   cast_vote: 'Cast Vote',
 
@@ -133,6 +141,9 @@ const STRINGS = {
   roll_call_create_description: 'Description',
   roll_call_create_location: 'Location*',
   roll_call_create_name: 'Name*',
+
+  /* --- Roll-call open page Strings --- */
+  roll_call_open: 'Open Roll-Call',
 
   /* --- Roll-call scanning Strings --- */
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',

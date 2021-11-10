@@ -3,12 +3,13 @@ import {
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
+import { OpenedLaoStore } from 'store';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
-import { OpenedLaoStore } from '../../../../../../store';
 
 const paramError = (o: OpenRollCall) => `parameter encountered during roll call ${o.action}`;
 
+/** Data sent to open a Roll-Call event */
 export class OpenRollCall implements MessageData {
   public readonly object: ObjectType = ObjectType.ROLL_CALL;
 
@@ -46,6 +47,10 @@ export class OpenRollCall implements MessageData {
     this.update_id = msg.update_id;
   }
 
+  /**
+   * Creates an OpenRollCall object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): OpenRollCall {
     const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.OPEN, obj);
 
