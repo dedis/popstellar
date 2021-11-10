@@ -61,7 +61,6 @@ public class ConsensusLearnTest {
     assertEquals(decision, value.isDecision());
 
     LearnValue value2 = new LearnValue(decision);
-    assertEquals(value, value);
     assertEquals(value, value2);
     assertEquals(value.hashCode(), value2.hashCode());
 
@@ -74,7 +73,6 @@ public class ConsensusLearnTest {
     ConsensusLearn learn2 =
         new ConsensusLearn(
             instanceId, messageId, timeInSeconds, decision, new ArrayList<>(acceptorSignatures));
-    assertEquals(consensusLearn, consensusLearn);
     assertEquals(consensusLearn, learn2);
     assertEquals(consensusLearn.hashCode(), learn2.hashCode());
 

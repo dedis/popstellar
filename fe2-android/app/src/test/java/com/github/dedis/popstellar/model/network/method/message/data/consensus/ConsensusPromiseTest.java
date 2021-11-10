@@ -55,7 +55,6 @@ public class ConsensusPromiseTest {
     assertEquals(promisedTry, value.getPromisedTry());
 
     PromiseValue value2 = new PromiseValue(acceptedTry, acceptedValue, promisedTry);
-    assertEquals(value, value);
     assertEquals(value, value2);
     assertEquals(value.hashCode(), value2.hashCode());
 
@@ -70,7 +69,6 @@ public class ConsensusPromiseTest {
     ConsensusPromise promise2 =
         new ConsensusPromise(
             instanceId, messageId, timeInSeconds, acceptedTry, acceptedValue, promisedTry);
-    assertEquals(promise, promise);
     assertEquals(promise, promise2);
     assertEquals(promise.hashCode(), promise2.hashCode());
 

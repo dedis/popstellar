@@ -52,7 +52,6 @@ public class ConsensusAcceptTest {
     assertEquals(acceptedValue, value.isAcceptedValue());
 
     AcceptValue value2 = new AcceptValue(acceptedTry, acceptedValue);
-    assertEquals(value, value);
     assertEquals(value, value2);
     assertEquals(value.hashCode(), value2.hashCode());
 
@@ -65,7 +64,6 @@ public class ConsensusAcceptTest {
   public void equalsTest() {
     ConsensusAccept accept2 =
         new ConsensusAccept(instanceId, messageId, timeInSeconds, acceptedTry, acceptedValue);
-    assertEquals(accept, accept);
     assertEquals(accept, accept2);
     assertEquals(accept.hashCode(), accept2.hashCode());
 

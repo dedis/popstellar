@@ -59,7 +59,6 @@ public class ConsensusProposeTest {
     assertEquals(proposedValue, value.isProposedValue());
 
     ProposeValue value2 = new ProposeValue(proposedTry, proposedValue);
-    assertEquals(value, value);
     assertEquals(value, value2);
     assertEquals(value.hashCode(), value2.hashCode());
 
@@ -78,7 +77,6 @@ public class ConsensusProposeTest {
             proposedTry,
             proposedValue,
             new ArrayList<>(acceptorSignatures));
-    assertEquals(propose, propose);
     assertEquals(propose, propose2);
     assertEquals(propose.hashCode(), propose2.hashCode());
 
