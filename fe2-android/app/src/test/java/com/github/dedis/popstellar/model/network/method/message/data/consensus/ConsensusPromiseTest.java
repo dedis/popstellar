@@ -47,7 +47,7 @@ public class ConsensusPromiseTest {
   }
 
   @Test
-  public void getAcceptValueTest() {
+  public void getPromiseValueTest() {
     PromiseValue value = promise.getPromiseValue();
 
     assertEquals(acceptedTry, value.getAcceptedTry());
@@ -55,9 +55,11 @@ public class ConsensusPromiseTest {
     assertEquals(promisedTry, value.getPromisedTry());
 
     PromiseValue value2 = new PromiseValue(acceptedTry, acceptedValue, promisedTry);
+    assertEquals(value, value);
     assertEquals(value, value2);
     assertEquals(value.hashCode(), value2.hashCode());
 
+    assertNotEquals(value, null);
     assertNotEquals(value, new PromiseValue(acceptedTry + 1, acceptedValue, promisedTry));
     assertNotEquals(value, new PromiseValue(acceptedTry, !acceptedValue, promisedTry));
     assertNotEquals(value, new PromiseValue(acceptedTry, acceptedValue, promisedTry + 1));
@@ -68,10 +70,12 @@ public class ConsensusPromiseTest {
     ConsensusPromise promise2 =
         new ConsensusPromise(
             instanceId, messageId, timeInSeconds, acceptedTry, acceptedValue, promisedTry);
+    assertEquals(promise, promise);
     assertEquals(promise, promise2);
     assertEquals(promise.hashCode(), promise2.hashCode());
 
     String random = "random";
+    assertNotEquals(promise, null);
     assertNotEquals(
         promise,
         new ConsensusPromise(

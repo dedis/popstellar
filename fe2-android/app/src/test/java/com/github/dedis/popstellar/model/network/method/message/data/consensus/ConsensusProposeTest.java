@@ -52,16 +52,18 @@ public class ConsensusProposeTest {
   }
 
   @Test
-  public void getAcceptValueTest() {
+  public void getProposeValueTest() {
     ProposeValue value = propose.getProposeValue();
 
     assertEquals(proposedTry, value.getProposedTry());
     assertEquals(proposedValue, value.isProposedValue());
 
     ProposeValue value2 = new ProposeValue(proposedTry, proposedValue);
+    assertEquals(value, value);
     assertEquals(value, value2);
     assertEquals(value.hashCode(), value2.hashCode());
 
+    assertNotEquals(value, null);
     assertNotEquals(value, new ProposeValue(proposedTry + 1, proposedValue));
     assertNotEquals(value, new ProposeValue(proposedTry, !proposedValue));
   }
@@ -76,10 +78,12 @@ public class ConsensusProposeTest {
             proposedTry,
             proposedValue,
             new ArrayList<>(acceptorSignatures));
+    assertEquals(propose, propose);
     assertEquals(propose, propose2);
     assertEquals(propose.hashCode(), propose2.hashCode());
 
     String random = "random";
+    assertNotEquals(propose, null);
     assertNotEquals(
         propose,
         new ConsensusPropose(

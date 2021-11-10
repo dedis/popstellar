@@ -50,6 +50,14 @@ public final class ConsensusLearn extends Data {
     return acceptorSignatures;
   }
 
+  public long getCreation() {
+    return creation;
+  }
+
+  public LearnValue getLearnValue() {
+    return learnValue;
+  }
+
   @Override
   public String getObject() {
     return Objects.CONSENSUS.getObject();

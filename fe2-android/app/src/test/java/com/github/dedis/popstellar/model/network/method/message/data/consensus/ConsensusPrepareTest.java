@@ -50,9 +50,11 @@ public class ConsensusPrepareTest {
     assertEquals(proposedTry, value.getProposedTry());
 
     PrepareValue value2 = new PrepareValue(proposedTry);
+    assertEquals(value, value);
     assertEquals(value, value2);
     assertEquals(value.hashCode(), value2.hashCode());
 
+    assertNotEquals(value, null);
     assertNotEquals(value, new PrepareValue(proposedTry + 1));
   }
 
@@ -60,10 +62,12 @@ public class ConsensusPrepareTest {
   public void equalsTest() {
     ConsensusPrepare prepare2 =
         new ConsensusPrepare(instanceId, messageId, timeInSeconds, proposedTry);
+    assertEquals(prepare, prepare);
     assertEquals(prepare, prepare2);
     assertEquals(prepare.hashCode(), prepare2.hashCode());
 
     String random = "random";
+    assertNotEquals(prepare, null);
     assertNotEquals(prepare, new ConsensusPrepare(random, messageId, timeInSeconds, proposedTry));
     assertNotEquals(prepare, new ConsensusPrepare(instanceId, random, timeInSeconds, proposedTry));
     assertNotEquals(
