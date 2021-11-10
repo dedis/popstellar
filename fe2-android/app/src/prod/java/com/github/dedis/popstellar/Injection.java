@@ -69,7 +69,7 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private static volatile ViewModelFactory INSTANCE;
+  private static volatile ViewModelFactory viewModelFactory;
 
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
@@ -179,17 +179,13 @@ public class Injection {
         new ProdSchedulerProvider());
   }
 
-  public static ViewModelFactory provideViewModelFactory(Application application) {
-    if (INSTANCE == null) {
-      synchronized (ViewModelFactory.class) {
-        if (INSTANCE == null) {
-          Log.d(
-              ViewModelFactory.class.getSimpleName(),
-              "Creating new instance of " + ViewModelFactory.class.getSimpleName());
-          INSTANCE = new ViewModelFactory(application);
-        }
-      }
+  public static synchronized ViewModelFactory provideViewModelFactory(Application application) {
+    if (viewModelFactory == null) {
+      Log.d(
+          ViewModelFactory.class.getSimpleName(),
+          "Creating new instance of " + ViewModelFactory.class.getSimpleName());
+      viewModelFactory = new ViewModelFactory(application);
     }
-    return INSTANCE;
+    return viewModelFactory;
   }
 }
