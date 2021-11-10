@@ -75,8 +75,8 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	return nil
 }
 
-// handleServerCatchup handles an incoming catchup message coming from a server
-func (h *Hub) handleServerCatchup(senderSocket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
+// handleRootCatchup handles an incoming catchup message on the root channel
+func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) ([]message.Message, int, error) {
 	var catchup method.Catchup
 
 	err := json.Unmarshal(byteMessage, &catchup)
@@ -149,6 +149,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	return nil
 }
 
+// handleDuringCatchup handle a message obtained by the server catching up
 func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) error {
 
 	h.Lock()
@@ -267,7 +268,7 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 	}
 
 	if catchup.Params.Channel == "/root" {
-		return h.handleServerCatchup(socket, byteMessage)
+		return h.handleRootCatchup(socket, byteMessage)
 	}
 
 	channel, err := h.getChan(catchup.Params.Channel)

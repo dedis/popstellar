@@ -67,7 +67,7 @@ type Hub struct {
 	serverSockets channel.Sockets
 
 	// serverInbox is used to remember which messages were broadcast by the
-	// server
+	// server to avoid broadcast loops
 	serverInbox serverInbox.ServerInbox
 
 	// inbox and queries are used to help servers catchup to each other
@@ -483,7 +483,7 @@ func (h *Hub) RegisterNewChannel(channelID string, channel channel.Channel, sock
 	h.channelByID[channelID] = channel
 	h.Unlock()
 
-	if sock.Type() != socket.ClientSocketType {
+	if sock.Type() == socket.OrganizerSocketType || sock.Type() == socket.WitnessSocketType {
 		h.log.Info().Msgf("catching up on channel %v", channelID)
 		h.CatchupToServer(sock, channelID)
 	}
