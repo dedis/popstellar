@@ -269,7 +269,7 @@ func Test_Handle_Answer(t *testing.T) {
 		Result:  make([]message.Message, 1),
 	}
 	messageDataPath := filepath.Join("..", "..", "..", "protocol",
-		"examples", "messageData", "lao_create.json")
+		"examples", "messageData", "lao_create", "lao_create.json")
 
 	messageDataBuf, err := os.ReadFile(messageDataPath)
 	require.NoError(t, err)
