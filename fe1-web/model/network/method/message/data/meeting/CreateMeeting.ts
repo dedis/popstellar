@@ -5,6 +5,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
+/** Data sent to create a Meeting event */
 export class CreateMeeting implements MessageData {
   public readonly object: ObjectType = ObjectType.MEETING;
 
@@ -61,6 +62,10 @@ export class CreateMeeting implements MessageData {
     this.id = msg.id;
   }
 
+  /**
+   * Creates a CreateMeeting object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): CreateMeeting {
     const { errors } = validateDataObject(ObjectType.MEETING, ActionType.CREATE, obj);
 
