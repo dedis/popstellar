@@ -5,7 +5,6 @@ import static com.github.dedis.popstellar.utility.handler.RollCallHandler.closeR
 import static com.github.dedis.popstellar.utility.handler.RollCallHandler.createRollCallWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.RollCallHandler.openRollCallWitnessMessage;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.Injection;
@@ -25,6 +24,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
@@ -131,7 +131,7 @@ public class RollCallHandlerTest {
   }
 
   @Test
-  public void testHandleCreateRollCall() {
+  public void testHandleCreateRollCall() throws DataHandlingException {
     // Create the create Roll Call message
     CreateRollCall createRollCall =
         new CreateRollCall(
@@ -150,7 +150,7 @@ public class RollCallHandlerTest {
             Injection.provideGson());
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
+    handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the new Roll Call is present with state CREATED and the correct ID
     Optional<RollCall> rollCallOpt =
@@ -172,7 +172,7 @@ public class RollCallHandlerTest {
   }
 
   @Test
-  public void testHandleOpenRollCall() {
+  public void testHandleOpenRollCall() throws DataHandlingException {
     // Create the open Roll Call message
     OpenRollCall openRollCall =
         new OpenRollCall(
@@ -185,7 +185,7 @@ public class RollCallHandlerTest {
             Injection.provideGson());
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
+    handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state OPENED and the correct ID
     Optional<RollCall> rollCallOpt =
@@ -207,7 +207,7 @@ public class RollCallHandlerTest {
   }
 
   @Test
-  public void testHandleCloseRollCall() {
+  public void testHandleCloseRollCall() throws DataHandlingException {
     // Create the close Roll Call message
     CloseRollCall closeRollCall =
         new CloseRollCall(
@@ -220,7 +220,7 @@ public class RollCallHandlerTest {
             Injection.provideGson());
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
+    handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state CLOSED and the correct ID
     Optional<RollCall> rollCallOpt =

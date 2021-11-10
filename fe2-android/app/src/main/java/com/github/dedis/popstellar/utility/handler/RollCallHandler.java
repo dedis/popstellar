@@ -12,12 +12,14 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
+import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 
-import java.util.Objects;
 import java.util.Optional;
 
 /** Roll Call messages handler class */
-public class RollCallHandler {
+public final class RollCallHandler {
 
   public static final String TAG = RollCallHandler.class.getSimpleName();
 
@@ -35,22 +37,28 @@ public class RollCallHandler {
    * @param channel the channel on which the message was received
    * @param data the data of the message received
    * @param messageId the ID of the message received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleRollCallMessage(
-      LAORepository laoRepository, String channel, Data data, String messageId) {
+  public static void handleRollCallMessage(
+      LAORepository laoRepository, String channel, Data data, String messageId)
+      throws DataHandlingException {
     Log.d(TAG, "handle Roll Call message id=" + messageId);
 
-    switch (Objects.requireNonNull(Action.find(data.getAction()))) {
+    Action action = Action.find(data.getAction());
+    if (action == null) throw new UnknownDataActionException(data);
+
+    switch (action) {
       case CREATE:
-        return handleCreateRollCall(laoRepository, channel, (CreateRollCall) data, messageId);
+        handleCreateRollCall(laoRepository, channel, (CreateRollCall) data, messageId);
+        break;
       case OPEN:
       case REOPEN:
-        return handleOpenRollCall(laoRepository, channel, (OpenRollCall) data, messageId);
+        handleOpenRollCall(laoRepository, channel, (OpenRollCall) data, messageId);
+        break;
       case CLOSE:
-        return handleCloseRollCall(laoRepository, channel, (CloseRollCall) data, messageId);
+        handleCloseRollCall(laoRepository, channel, (CloseRollCall) data, messageId);
+        break;
       default:
-        return true;
+        throw new UnhandledDataTypeException(data, action.getAction());
     }
   }
 
@@ -60,9 +68,8 @@ public class RollCallHandler {
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
    * @param createRollCall the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleCreateRollCall(
+  public static void handleCreateRollCall(
       LAORepository laoRepository,
       String channel,
       CreateRollCall createRollCall,
@@ -84,8 +91,6 @@ public class RollCallHandler {
     lao.updateRollCall(rollCall.getId(), rollCall);
 
     lao.updateWitnessMessage(messageId, createRollCallWitnessMessage(messageId, rollCall));
-
-    return false;
   }
 
   /**
@@ -94,10 +99,10 @@ public class RollCallHandler {
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
    * @param openRollCall the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleOpenRollCall(
-      LAORepository laoRepository, String channel, OpenRollCall openRollCall, String messageId) {
+  public static void handleOpenRollCall(
+      LAORepository laoRepository, String channel, OpenRollCall openRollCall, String messageId)
+      throws DataHandlingException {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
 
@@ -107,7 +112,7 @@ public class RollCallHandler {
     Optional<RollCall> rollCallOptional = lao.getRollCall(opens);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to open : " + opens);
-      return true;
+      throw new DataHandlingException(openRollCall);
     }
 
     RollCall rollCall = rollCallOptional.get();
@@ -120,7 +125,6 @@ public class RollCallHandler {
     lao.updateRollCall(opens, rollCall);
 
     lao.updateWitnessMessage(messageId, openRollCallWitnessMessage(messageId, rollCall));
-    return false;
   }
 
   /**
@@ -129,10 +133,10 @@ public class RollCallHandler {
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
    * @param closeRollCall the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleCloseRollCall(
-      LAORepository laoRepository, String channel, CloseRollCall closeRollCall, String messageId) {
+  public static void handleCloseRollCall(
+      LAORepository laoRepository, String channel, CloseRollCall closeRollCall, String messageId)
+      throws DataHandlingException {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCloseRollCall: " + channel);
 
@@ -142,7 +146,7 @@ public class RollCallHandler {
     Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to close : " + closes);
-      return true;
+      throw new DataHandlingException(closeRollCall);
     }
 
     RollCall rollCall = rollCallOptional.get();
@@ -154,7 +158,6 @@ public class RollCallHandler {
     lao.updateRollCall(closes, rollCall);
 
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
-    return false;
   }
 
   public static WitnessMessage createRollCallWitnessMessage(String messageId, RollCall rollCall) {
