@@ -51,4 +51,6 @@ trait MessageHandler extends AskPatternConstants {
 
     ask
   }
+
+  //FIXME: add method/modify existing methods in order to use the new database structure, for both with and without objects
 }

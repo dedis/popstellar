@@ -31,6 +31,9 @@ case object SocialMediaHandler extends MessageHandler {
   
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     //broadcast chirp too? On general channel?
+    //create message (Broadcast one)
+    //we can use PubSubMediator.Propagate(channel (fixed), message (created here))
+    // mediatorRef ! PubSubMediator.Propagate(channel, message)
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }

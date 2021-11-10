@@ -39,7 +39,9 @@ case object LaoHandler extends MessageHandler {
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
         // we are using the lao id instead of the message_id at lao creation
         val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
-
+        //FIXME: this will be a writeChannelObject dedicated to writing both the creation message and the LaoData to the channel
+        //val laoData: LaoData = LaoData(message.sender, List(message.sender)) //so that the operations the owner does next are authorized
+        //val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(channel, message, laoData)).map {
         val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
           case DbActorWriteAck => Left(rpcMessage)
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -62,6 +64,7 @@ case object LaoHandler extends MessageHandler {
   }
 
   def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
+    //FIXME: the main channel is not updated
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }
