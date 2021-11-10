@@ -484,6 +484,7 @@ func (h *Hub) RegisterNewChannel(channelID string, channel channel.Channel, sock
 	h.Unlock()
 
 	if sock.Type() != socket.ClientSocketType {
+		h.log.Info().Msgf("catching up on channel %v", channelID)
 		h.CatchupToServer(sock, channelID)
 	}
 }

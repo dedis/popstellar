@@ -143,7 +143,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 
 		err := h.handleDuringCatchup(senderSocket, publish)
 		if err != nil {
-			h.log.Err(err).Msgf("failed to handle message during catchup: %v", err)
+			h.log.Error().Msgf("failed to handle message during catchup: %v", err)
 		}
 	}
 	return nil
@@ -154,6 +154,7 @@ func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) 
 	h.Lock()
 	_, stored := h.serverInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
+		h.Unlock()
 		return xerrors.Errorf("already stored this message")
 	}
 	h.serverInbox.StoreMessage(publish)
