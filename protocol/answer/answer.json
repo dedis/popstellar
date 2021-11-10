@@ -21,14 +21,6 @@
                     },
                     "minItems": 0,
                     "$comment": "Return value for a `catchup` request"
-                },
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "minItems": 0,
-                    "$comment": "Return value for a `catchup` request between servers"
                 }
             ],
             "$comment": "Note: this field is absent if there is an error"
