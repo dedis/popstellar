@@ -71,6 +71,17 @@ const RollCallOpened = () => {
 
   return (
     <View style={styleContainer.flex}>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <View style={styles.viewCenter}>
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader
@@ -80,17 +91,6 @@ const RollCallOpened = () => {
           style={{ width: '30%' }}
         />
         <Badge value={attendees.length} status="success" />
-        <ToastContainer
-          position="top-center"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-        />
         <WideButtonView
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}
