@@ -7,6 +7,10 @@ import STRINGS from 'res/strings';
 import styles from 'styles/stylesheets/modal';
 import WideButtonView from './WideButtonView';
 
+/**
+ * A modal used to ask for the confirmation or cancellation of the user.
+ */
+
 const ConfirmModal = (props: IPropTypes) => {
   const { visibility } = props;
   const { setVisibility } = props;

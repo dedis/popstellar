@@ -7,6 +7,10 @@ import STRINGS from 'res/strings';
 import styles from 'styles/stylesheets/modal';
 import WideButtonView from './WideButtonView';
 
+/**
+ * A modal used to show an error, that you can close by clicking on a button
+ */
+
 const DismissModal = (props: IPropTypes) => {
   const { visibility } = props;
   const { setVisibility } = props;
