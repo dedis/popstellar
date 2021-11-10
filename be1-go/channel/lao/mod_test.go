@@ -51,8 +51,9 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	socket := &fakeSocket{id: "socket"}
-
-	channel.Subscribe(socket, message)
+	
+	err = channel.Subscribe(socket, message)
+	require.NoError(t, err)
 
 	require.True(t, laoChannel.sockets.Delete("socket"))
 }
@@ -106,7 +107,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	// Should fail as it is not subscribing
+	// Should fail as it is not subscribed
 	require.Error(t, channel.Unsubscribe("inexistingSocket", message))
 }
 
