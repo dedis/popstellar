@@ -1,4 +1,5 @@
 import 'react-native-gesture-handler/jestSetup';
+import RN from 'react-native';
 import { jest } from '@jest/globals';
 
 jest.mock('react-native-reanimated', () => {
@@ -14,3 +15,7 @@ jest.mock('react-native-reanimated', () => {
 // Silence the warning: Animated: `useNativeDriver` is not supported
 // because the native animated module is missing
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+
+jest
+  .spyOn(RN.Animated, 'FlatList', 'get')
+  .mockImplementation(() => RN.FlatList);
