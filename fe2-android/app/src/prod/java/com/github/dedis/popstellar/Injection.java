@@ -69,6 +69,8 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
+  private static volatile ViewModelFactory INSTANCE;
+
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
 
@@ -175,5 +177,19 @@ public class Injection {
         keysetManager,
         gson,
         new ProdSchedulerProvider());
+  }
+
+  public static ViewModelFactory provideViewModelFactory(Application application) {
+    if (INSTANCE == null) {
+      synchronized (ViewModelFactory.class) {
+        if (INSTANCE == null) {
+          Log.d(
+              ViewModelFactory.class.getSimpleName(),
+              "Creating new instance of " + ViewModelFactory.class.getSimpleName());
+          INSTANCE = new ViewModelFactory(application);
+        }
+      }
+    }
+    return INSTANCE;
   }
 }

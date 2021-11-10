@@ -51,6 +51,8 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
+  private static volatile ViewModelFactory INSTANCE;
+
   private Injection() {}
 
   @SuppressWarnings("unused")
@@ -163,5 +165,18 @@ public class Injection {
         };
       }
     };
+  }
+
+  public static ViewModelFactory provideViewModelFactory(Application application) {
+    if (INSTANCE == null) {
+      synchronized (ViewModelFactory.class) {
+        if (INSTANCE == null) {
+          Log.d(
+              ViewModelFactory.class.getSimpleName(),
+              "Creating new instance of " + ViewModelFactory.class.getSimpleName());
+          INSTANCE = new ViewModelFactory(application);
+        }
+      }
+    }
   }
 }
