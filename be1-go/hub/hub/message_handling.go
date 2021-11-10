@@ -15,6 +15,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const publishError = "failed to publish: %v"
+
 // handleRootChannelPublishMesssage handles an incominxg publish message on the root channel.
 func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish method.Publish) error {
 	jsonData, err := base64.URLEncoding.DecodeString(publish.Params.Message.Data)
@@ -176,7 +178,7 @@ func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) 
 
 	err = channel.Publish(publish, socket)
 	if err != nil {
-		return xerrors.Errorf("failed to publish: %v", err)
+		return xerrors.Errorf(publishError, err)
 	}
 
 	return nil
@@ -211,7 +213,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	err = channel.Publish(publish, socket)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to publish: %v", err)
+		return publish.ID, xerrors.Errorf(publishError, err)
 	}
 
 	return publish.ID, nil
@@ -232,7 +234,7 @@ func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, er
 
 	err = channel.Subscribe(socket, subscribe)
 	if err != nil {
-		return subscribe.ID, xerrors.Errorf("failed to publish: %v", err)
+		return subscribe.ID, xerrors.Errorf(publishError, err)
 	}
 
 	return subscribe.ID, nil

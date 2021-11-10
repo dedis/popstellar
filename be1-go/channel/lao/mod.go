@@ -29,6 +29,9 @@ import (
 )
 
 const (
+	keyDecodeError    = "failed to decode sender key: %v"
+	keyUnmarshalError = "failed to unmarshal public key of the sender: %v"
+
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
@@ -70,14 +73,14 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		log.Err(err).Msgf("failed to decode sender key: %v", err)
+		log.Err(err).Msgf(keyDecodeError, err)
 		return nil
 	}
 
 	organizerPoint := crypto.Suite.Point()
 	err = organizerPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		log.Err(err).Msgf("failed to unmarshal public key of the sender: %v", err)
+		log.Err(err).Msgf(keyUnmarshalError, err)
 	}
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
@@ -434,14 +437,14 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
+		return xerrors.Errorf(keyDecodeError, err)
 	}
 
 	// Check if the sender of the roll call message is the organizer
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
 	if !c.organizerKey.Equal(senderPoint) {
@@ -503,14 +506,14 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
+		return xerrors.Errorf(keyDecodeError, err)
 	}
 
 	// Check if the sender of election creation message is the organizer
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
 	if !c.organizerKey.Equal(senderPoint) {
