@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, ScrollView, Modal,
+  View, Platform, ScrollView,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
@@ -13,14 +13,15 @@ import TextBlock from 'components/TextBlock';
 import DropdownSelector from 'components/DropdownSelector';
 import TextInputList from 'components/TextInputList';
 import TextInputLine from 'components/TextInputLine';
+import DismissModal from 'components/DismissModal';
+import ConfirmModal from 'components/ConfirmModal';
 import {
   Hash, Lao, Timestamp, Question, EventTags,
 } from 'model/objects';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
+
 import { onConfirmPress } from '../CreateEvent';
-import DismissModal from '../../../../../components/DismissModal';
-import ConfirmModal from '../../../../../components/ConfirmModal';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 

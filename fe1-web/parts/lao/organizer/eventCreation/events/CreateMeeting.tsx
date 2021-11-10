@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, Modal,
+  View, Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -12,7 +12,7 @@ import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
-import DismissModal from '../../../../../components/DismissModal';
+import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
 import { onConfirmPress } from '../CreateEvent';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, ScrollView, Modal,
+  View, Platform, ScrollView,
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
@@ -11,11 +11,10 @@ import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DateP
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
-import TextBlock from 'components/TextBlock';
+import DismissModal from 'components/DismissModal';
+import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
 import { onConfirmPress } from '../CreateEvent';
-import DismissModal from '../../../../../components/DismissModal';
-import ConfirmModal from '../../../../../components/ConfirmModal';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 
