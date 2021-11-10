@@ -8,9 +8,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import com.google.gson.Gson;
 
 import io.reactivex.disposables.CompositeDisposable;
 
@@ -34,20 +31,10 @@ public class SettingsViewModel extends AndroidViewModel {
   /*
    * Dependencies for this class
    */
-  private final LAORepository mLAORepository;
-  private final Gson mGson;
-  private final AndroidKeysetManager mKeysetManager;
   private final CompositeDisposable disposables;
 
-  public SettingsViewModel(
-      @NonNull Application application,
-      LAORepository laoRepository,
-      Gson gson,
-      AndroidKeysetManager keysetManager) {
+  public SettingsViewModel(@NonNull Application application) {
     super(application);
-    mLAORepository = laoRepository;
-    mGson = gson;
-    mKeysetManager = keysetManager;
     disposables = new CompositeDisposable();
   }
 

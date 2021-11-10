@@ -86,17 +86,7 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
               gson,
               keysetManager);
     } else if (SettingsViewModel.class.isAssignableFrom(modelClass)) {
-      return (T)
-          new SettingsViewModel(
-              application,
-              Injection.provideLAORepository(
-                  application,
-                  Injection.provideLAOService(
-                      Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
-                  keysetManager,
-                  gson),
-              gson,
-              keysetManager);
+      return (T) new SettingsViewModel(application);
     }
 
     throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
