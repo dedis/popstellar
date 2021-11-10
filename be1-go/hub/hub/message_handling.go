@@ -70,7 +70,7 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 		return err
 	}
 
-	h.inbox.StoreMessage(publish.Params.Message)
+	h.rootInbox.StoreMessage(publish.Params.Message)
 
 	return nil
 }
@@ -88,7 +88,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) 
 		return nil, catchup.ID, xerrors.Errorf("server catchup message can only be sent on /root channel")
 	}
 
-	messages := h.inbox.GetSortedMessages()
+	messages := h.rootInbox.GetSortedMessages()
 	return messages, catchup.ID, nil
 }
 
@@ -153,12 +153,12 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) error {
 
 	h.Lock()
-	_, stored := h.serverInbox.GetMessage(publish.Params.Message.MessageID)
+	_, stored := h.hubInbox.GetMessage(publish.Params.Message.MessageID)
 	if stored {
 		h.Unlock()
 		return xerrors.Errorf("already stored this message")
 	}
-	h.serverInbox.StoreMessage(publish)
+	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.Unlock()
 
 	if publish.Params.Channel == "/root" {
@@ -190,7 +190,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
-	alreadyReceived := h.broadcastToServers(publish, byteMessage)
+	alreadyReceived := h.broadcastToServers(publish.Params.Message, byteMessage)
 	if alreadyReceived {
 		h.log.Info().Msg("message was already received")
 		return publish.ID, nil

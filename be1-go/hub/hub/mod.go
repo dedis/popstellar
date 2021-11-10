@@ -10,7 +10,6 @@ import (
 	"popstellar/channel/lao"
 	"popstellar/db/sqlite"
 	"popstellar/hub"
-	"popstellar/hub/serverInbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -66,13 +65,13 @@ type Hub struct {
 
 	serverSockets channel.Sockets
 
-	// serverInbox is used to remember which messages were broadcast by the
+	// hubInbox is used to remember which messages were broadcast by the
 	// server to avoid broadcast loops
-	serverInbox serverInbox.ServerInbox
+	hubInbox inbox.Inbox
 
-	// inbox and queries are used to help servers catchup to each other
-	inbox   inbox.Inbox
-	queries queries
+	// rootInbox and queries are used to help servers catchup to each other
+	rootInbox inbox.Inbox
+	queries   queries
 }
 
 type queries struct {
@@ -108,8 +107,8 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory, h
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
-		serverInbox:     *serverInbox.NewServerInbox(),
-		inbox:           *inbox.NewInbox("/root"),
+		hubInbox:        *inbox.NewInbox("/root"),
+		rootInbox:       *inbox.NewInbox("/root"),
 		queries:         queries{state: make(map[int]*bool), queries: make(map[int]method.Catchup), nextID: 0},
 	}
 
@@ -432,13 +431,13 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 }
 
 // broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(message method.Publish, byteMessage []byte) bool {
+func (h *Hub) broadcastToServers(message message.Message, byteMessage []byte) bool {
 	h.Lock()
 	defer h.Unlock()
-	_, ok := h.serverInbox.GetMessage(message.Params.Message.MessageID)
+	_, ok := h.hubInbox.GetMessage(message.MessageID)
 	if !ok {
 		h.serverSockets.SendToAll(byteMessage)
-		h.serverInbox.StoreMessage(message)
+		h.hubInbox.StoreMessage(message)
 		return false
 	}
 	return true
@@ -492,6 +491,8 @@ func (h *Hub) RegisterNewChannel(channelID string, channel channel.Channel, sock
 // ---
 // DB operations
 // --
+
+// TODO : add database operations for the inbox of the server
 
 func saveChannel(channelPath string) error {
 	log := be1_go.Logger
