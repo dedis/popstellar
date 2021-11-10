@@ -179,10 +179,9 @@ public class ElectionStartFragment extends Fragment {
       LaoDetailViewModel mLaoDetailViewModel,
       String electionId) {
     electionStart.setOnClickListener(
-        clicked -> {
-          mLaoDetailViewModel.createNewConsensus(
-              Instant.now().getEpochSecond(), electionId, "election", "state", "started");
-        });
+        clicked ->
+            mLaoDetailViewModel.createNewConsensus(
+                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
 
     binding
         .backLayout
