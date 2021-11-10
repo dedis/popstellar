@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidDataException;
 import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
 import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 
@@ -112,7 +113,7 @@ public final class RollCallHandler {
     Optional<RollCall> rollCallOptional = lao.getRollCall(opens);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to open : " + opens);
-      throw new DataHandlingException(openRollCall);
+      throw new InvalidDataException(openRollCall, "open id", opens);
     }
 
     RollCall rollCall = rollCallOptional.get();
@@ -146,7 +147,7 @@ public final class RollCallHandler {
     Optional<RollCall> rollCallOptional = lao.getRollCall(closes);
     if (!rollCallOptional.isPresent()) {
       Log.w(TAG, "Cannot find roll call to close : " + closes);
-      throw new DataHandlingException(closeRollCall);
+      throw new InvalidDataException(closeRollCall, "close id", closes);
     }
 
     RollCall rollCall = rollCallOptional.get();

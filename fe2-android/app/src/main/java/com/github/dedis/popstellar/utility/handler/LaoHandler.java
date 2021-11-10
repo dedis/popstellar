@@ -140,7 +140,7 @@ public final class LaoHandler {
     if (!laoRepository.getMessageById().containsKey(stateLao.getModificationId())) {
       Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
       // queue it if we haven't received the update message yet
-      throw new InvalidMessageIdException(stateLao);
+      throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
     }
 
     Log.d(TAG, "Verifying signatures");

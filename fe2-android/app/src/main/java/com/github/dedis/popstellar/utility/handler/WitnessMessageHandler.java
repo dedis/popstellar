@@ -62,7 +62,7 @@ public final class WitnessMessageHandler {
     }
 
     MessageGeneral msg = laoRepository.getMessageById().get(messageId);
-    if (msg == null) throw new InvalidMessageIdException(message);
+    if (msg == null) throw new InvalidMessageIdException(message, messageId);
 
     // Update the message
     msg.getWitnessSignatures().add(new PublicKeySignaturePair(senderPkBuf, signatureBuf));
@@ -111,7 +111,7 @@ public final class WitnessMessageHandler {
 
     // We update the corresponding  witness message of the lao with a new witness that signed it.
     WitnessMessage witnessMessage =
-        optionalWitnessMessage.orElseThrow(() -> new InvalidMessageIdException(message));
+        optionalWitnessMessage.orElseThrow(() -> new InvalidMessageIdException(message, messageId));
     witnessMessage.addWitness(senderPk);
     Log.d(TAG, "Updated the WitnessMessage with a new witness " + messageId);
     lao.updateWitnessMessage(messageId, witnessMessage);

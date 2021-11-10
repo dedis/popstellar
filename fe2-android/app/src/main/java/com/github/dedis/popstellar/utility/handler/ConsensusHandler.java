@@ -94,7 +94,8 @@ public final class ConsensusHandler {
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusElectAccept.getMessageId());
     if (!consensusOpt.isPresent()) {
       Log.w(TAG, "elect-accept for invalid messageId : " + consensusElectAccept.getMessageId());
-      throw new InvalidMessageIdException(consensusElectAccept);
+      throw new InvalidMessageIdException(
+          consensusElectAccept, consensusElectAccept.getMessageId());
     }
 
     Consensus consensus = consensusOpt.get();
@@ -113,7 +114,7 @@ public final class ConsensusHandler {
 
     if (!consensusOpt.isPresent()) {
       Log.w(TAG, "learn for invalid messageId : " + consensusLearn.getMessageId());
-      throw new InvalidMessageIdException(consensusLearn);
+      throw new InvalidMessageIdException(consensusLearn, consensusLearn.getMessageId());
     }
 
     Consensus consensus = consensusOpt.get();
