@@ -47,6 +47,12 @@ public final class ConsensusHandler {
             laoRepository, channel, (ConsensusElectAccept) data, messageId, senderPk);
       case LEARN:
         return handleConsensusLearn(laoRepository, channel, (ConsensusLearn) data);
+      case PREPARE:
+      case PROMISE:
+      case PROPOSE:
+      case ACCEPT:
+        Log.w(TAG, "Received a consensus message only for backend with action=" + data.getAction());
+        return false;
       default:
         Log.w(TAG, "Invalid action for a consensus object : " + data.getAction());
         return true;
