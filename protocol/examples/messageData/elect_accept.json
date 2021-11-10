@@ -1,6 +1,7 @@
 {
     "object": "consensus",
     "action": "elect-accept",
-    "message_id": "6z1k9Eqet9-YAOdEE9NaIQMvw8_W_Fj-u2vRL4siIb0=",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
     "accept": true
 }
