@@ -3,8 +3,17 @@ import { ActionType, AddChirp, ObjectType } from 'model/network/method/message/d
 import { getStore, KeyPairStore, makeCurrentLao } from 'store';
 import { Chirp } from 'model/objects/Chirp';
 
+/**
+ * Handler for social media
+ */
+
 const getCurrentLao = makeCurrentLao();
 
+/**
+ * Handles an addChirp message by storing it.
+ *
+ * @param msg - The extended message for adding a chirp
+ */
 function handleAddChirpMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP
     || msg.messageData.action !== ActionType.ADD) {
@@ -31,4 +40,5 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
     dislikes: 0,
     parentId: chirpMessage.parent_id,
   });
+  return true;
 }
