@@ -1,18 +1,23 @@
 import { Timestamp } from './Timestamp';
+import { Hash } from './Hash';
+
+/**
+ * Object to represent a Chirp.
+ */
 
 export interface ChirpState {
   sender: string;
-  message: string;
+  text: string;
   time: number;
   likes: number;
   dislikes: number;
-  replies: number;
+  parentId: string;
 }
 
 export class Chirp {
   public readonly sender: string;
 
-  public readonly message: string;
+  public readonly text: string;
 
   public readonly time: Timestamp;
 
@@ -20,7 +25,7 @@ export class Chirp {
 
   public readonly dislikes: number;
 
-  public readonly replies: number;
+  public readonly parentId?: Hash;
 
   constructor(obj: Partial<Chirp>) {
     if (obj === undefined || obj === null) {
@@ -31,8 +36,8 @@ export class Chirp {
     if (obj.sender === undefined) {
       throw new Error("Undefined 'sender' when creating 'Chirp'");
     }
-    if (obj.message === undefined) {
-      throw new Error("Undefined 'message' when creating 'Chirp'");
+    if (obj.text === undefined) {
+      throw new Error("Undefined 'text' when creating 'Chirp'");
     }
     if (obj.time === undefined) {
       throw new Error("Undefined 'id' when creating 'Chirp'");
@@ -43,29 +48,34 @@ export class Chirp {
     if (obj.dislikes === undefined) {
       throw new Error("Undefined 'dislikes' when creating 'Chirp'");
     }
-    if (obj.replies === undefined) {
-      throw new Error("Undefined 'replies' when creating 'Chirp'");
-    }
 
     this.sender = obj.sender;
-    this.message = obj.message;
+    this.text = obj.text;
     this.time = obj.time;
     this.likes = obj.likes;
     this.dislikes = obj.dislikes;
-    this.replies = obj.replies;
+    this.parentId = obj.parentId;
   }
 
-  public static fromState(c: ChirpState): Chirp {
+  /**
+   * Creates a Chirp object from a ChirpState object.
+   *
+   * @param chirpState
+   */
+  public static fromState(chirpState: ChirpState): Chirp {
     return new Chirp({
-      sender: c.sender,
-      message: c.message,
-      time: new Timestamp(c.time),
-      likes: c.likes,
-      dislikes: c.dislikes,
-      replies: c.replies,
+      sender: chirpState.sender,
+      text: chirpState.text,
+      time: new Timestamp(chirpState.time),
+      likes: chirpState.likes,
+      dislikes: chirpState.dislikes,
+      parentId: new Hash(chirpState.parentId),
     });
   }
 
+  /**
+   * Creates a ChirpState object from the current Chirp object.
+   */
   public toState(): ChirpState {
     const obj: any = JSON.parse(JSON.stringify(this));
     return { ...obj };
