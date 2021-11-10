@@ -20,7 +20,6 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/rs/zerolog"
@@ -270,7 +269,7 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
-		err = c.verifyMessageLaoID(laoState.ID)
+		err = c.verifyMessageLaoState(laoState)
 		if err != nil {
 			return xerrors.Errorf("invalid lao#state message: %v", err)
 		}
@@ -387,16 +386,6 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
-func (c *Channel) verifyMessageLaoID(id string) error {
-	expectedID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
-	if expectedID != id {
-		return xerrors.Errorf("lao id is %s, should be %s", id, expectedID)
-	}
-
-	return nil
-}
-
 // processMeetingObject handles a meeting object.
 func (c *Channel) processMeetingObject(action string, msg message.Message) error {
 
@@ -468,13 +457,13 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
 		}
 
-		err = c.processCreateRollCall(rollCallCreate)
+		err = c.processRollCallCreate(rollCallCreate)
 		if err != nil {
 			return xerrors.Errorf("failed to process roll call create: %v", err)
 		}
 
 	case messagedata.RollCallActionOpen, messagedata.RollCallActionReopen:
-		err := c.processOpenRollCall(msg, action)
+		err := c.processRollCallOpen(msg, action)
 		if err != nil {
 			return xerrors.Errorf("failed to process open roll call: %v", err)
 		}
@@ -487,7 +476,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
 		}
 
-		err = c.processCloseRollCall(rollCallClose)
+		err = c.processRollCallClose(rollCallClose)
 		if err != nil {
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
@@ -503,8 +492,6 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 	return nil
 }
-
-// verify
 
 // processElectionObject handles an election object.
 func (c *Channel) processElectionObject(action string, msg message.Message, socket socket.Socket) error {
@@ -578,13 +565,13 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	return nil
 }
 
-// processCreateRollCall processes a roll call creation object.
-func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
+// processRollCallCreate processes a roll call creation object.
+func (c *Channel) processRollCallCreate(msg messagedata.RollCallCreate) error {
 
-	// Check that the ID is correct
-	err := c.verifyMessageRollCallCreateID(msg)
+	// Check that data is correct
+	err := c.verifyMessageRollCallCreate(msg)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#create message: %v", err)
+		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
@@ -597,8 +584,8 @@ func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
 	return nil
 }
 
-// processOpenRollCall processes an open roll call object.
-func (c *Channel) processOpenRollCall(msg message.Message, action string) error {
+// processRollCallOpen processes an open roll call object.
+func (c *Channel) processRollCallOpen(msg message.Message, action string) error {
 	if action == messagedata.RollCallActionOpen {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction
@@ -622,9 +609,10 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 		return xerrors.Errorf("failed to unmarshal roll call open: %v", err)
 	}
 
-	err = c.verifyMessageRollCallOpenID(rollCallOpen)
+	// check that data is correct
+	err = c.verifyMessageRollCallOpen(rollCallOpen)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#open message: %v", err)
+		return xerrors.Errorf("invalid roll_call#open message: %v", err)
 	}
 
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
@@ -636,12 +624,13 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 	return nil
 }
 
-// processCloseRollCall processes a close roll call message.
-func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
+// processRollCallClose processes a close roll call message.
+func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
 
-	err := c.verifyMessageRollCallCloseID(msg)
+	// check that data is correct
+	err := c.verifyMessageRollCallClose(msg)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#close message: %v", err)
+		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
 
 	if c.rollCall.state != Open {
@@ -678,56 +667,6 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 				c.log.Err(err).Msgf("failed to insert attendee %s into db", attendee)
 			}
 		}
-	}
-
-	return nil
-}
-
-const InvalidIDMessage string = "ID %s does not correspond with message data, should be %s"
-
-// verifyMessageRollCallCreateID verify the id of a message
-func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
-	expectedID := messagedata.Hash(
-		"R",
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		fmt.Sprintf("%d", msg.Creation),
-		msg.Name,
-	)
-
-	if msg.ID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.ID, expectedID)
-	}
-
-	return nil
-}
-
-// verifyMessageRollCallOpenID verify the id of a message
-func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
-	expectedID := messagedata.Hash(
-		"R",
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		msg.Opens,
-		fmt.Sprintf("%d", msg.OpenedAt),
-	)
-
-	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
-	}
-
-	return nil
-}
-
-// verifyMessageRollCallCloseID verify the id of a message
-func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
-	expectedID := messagedata.Hash(
-		"R",
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		msg.Closes,
-		fmt.Sprintf("%d", msg.ClosedAt),
-	)
-
-	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
 	}
 
 	return nil

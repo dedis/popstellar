@@ -13,7 +13,6 @@ lazy val scoverageSettings = Seq(
   coverageEnabled in Compile := true,
   coverageEnabled in Test := true,
   coverageEnabled in packageBin := false,
-  
 )
 
 
@@ -28,14 +27,23 @@ scalacOptions in Scapegoat += "-P:scapegoat:overrideLevels:all=Warning"
 sonarProperties := Map(
   "sonar.organization" -> "dedis",
   "sonar.projectKey" -> "dedis_student_21_pop_be2",
+
   "sonar.sources" -> "src/main/scala",
-  //"sonar.tests" -> "src/test/scala",
+  "sonar.tests" -> "src/test/scala",
+
   "sonar.sourceEncoding" -> "UTF-8",
   "sonar.scala.version" -> "2.13.5",
-  "sonar.scala.scoverage.reportPath" -> "target/scala-2.13/scoverage-report/scoverage.xml",
-  "sonar.scala.scapegoat.reportPath" -> "target/scala-2.13/scapegoat-report/scapegoat.xml"
+  // Paths to the test and coverage reports
+  "sonar.scala.coverage.reportPaths" -> "./target/scala-2.13/scoverage-report/scoverage.xml",
+  "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
 )
 
+assemblyMergeStrategy in assembly := {
+    case PathList("module-info.class") => MergeStrategy.discard
+    case PathList("reference.conf") => MergeStrategy.concat
+    case PathList("META-INF","MANIFEST.MF") => MergeStrategy.discard
+    case _ => MergeStrategy.defaultMergeStrategy("")
+}
 
 // For websockets
 val AkkaVersion = "2.6.8"

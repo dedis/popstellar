@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.objects;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -36,15 +37,15 @@ public final class ConsensusNode {
     return Collections.unmodifiableSet(acceptedMessageIds);
   }
 
-  public Optional<Consensus> getLastConsensus(String keyId) {
-    // get the consensus for the given key id, with the largest creation time
+  public Optional<Consensus> getLastConsensus(String instanceId) {
+    // get the consensus for the given instanceId, with the largest creation time
     return consensuses.stream()
-        .filter(consensus -> consensus.getKey().getId().equals(keyId))
-        .max((c1, c2) -> (int) (c1.getCreation() - c2.getCreation()));
+        .filter(consensus -> consensus.getId().equals(instanceId))
+        .max(Comparator.comparingLong(Consensus::getCreation));
   }
 
-  public State getState(String keyId) {
-    Optional<Consensus> lastConsensus = getLastConsensus(keyId);
+  public State getState(String instanceId) {
+    Optional<Consensus> lastConsensus = getLastConsensus(instanceId);
     if (lastConsensus.isPresent()) {
       Consensus consensus = lastConsensus.get();
       if (consensus.isFailed()) {

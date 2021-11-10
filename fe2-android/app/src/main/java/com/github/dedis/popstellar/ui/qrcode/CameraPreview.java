@@ -98,8 +98,10 @@ public class CameraPreview extends ViewGroup {
 
     if (mCameraSource != null) {
       Size size = mCameraSource.getPreviewSize();
-      height = size.getWidth();
-      width = size.getHeight();
+      if (size != null) {
+        height = size.getWidth();
+        width = size.getHeight();
+      }
     }
 
     final int layoutWidth = right - left;

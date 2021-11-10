@@ -214,7 +214,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		if err != nil {
 			return xerrors.Errorf("failed to process elect accept action: %w", err)
 		}
-	case messagedata.ConsensuisActionLearn:
+	case messagedata.ConsensusActionLearn:
 		var consensusLearn messagedata.ConsensusLearn
 
 		err := msg.UnmarshalData(&consensusLearn)
