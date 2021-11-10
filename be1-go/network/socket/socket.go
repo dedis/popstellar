@@ -239,45 +239,6 @@ func (s *baseSocket) SendResult(id int, res []message.Message) {
 	s.send <- answerBuf
 }
 
-// SendServerResult is a utility method that allows sending a `message.Result` to the
-// socket when the answer need the channels id where the messages were sent.
-func (s *baseSocket) SendServerResult(id int, res []string) {
-	if s.socketType == ClientSocketType {
-		s.log.Error().Msgf("server result should only be sent to other servers")
-	}
-	var answer interface{}
-
-	if res == nil {
-		answer = struct {
-			JSONRPC string `json:"jsonrpc"`
-			ID      int    `json:"id"`
-			Result  int    `json:"result"`
-		}{
-			"2.0", id, 0,
-		}
-	} else {
-		answer = struct {
-			JSONRPC string   `json:"jsonrpc"`
-			ID      int      `json:"id"`
-			Result  []string `json:"result"`
-		}{
-			"2.0", id, res,
-		}
-	}
-
-	answerBuf, err := json.Marshal(&answer)
-	if err != nil {
-		s.log.Err(err).Msg("failed to marshal answer")
-		return
-	}
-
-	s.log.Info().
-		Str("to", s.conn.RemoteAddr().String()).
-		Str("msg", string(answerBuf)).
-		Msg("send result")
-	s.send <- answerBuf
-}
-
 func newBaseSocket(socketType SocketType, receiver chan<- IncomingMessage,
 	closedSockets chan<- string, conn *websocket.Conn, wg *sync.WaitGroup,
 	done chan struct{}, log zerolog.Logger) *baseSocket {

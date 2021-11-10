@@ -720,7 +720,6 @@ type fakeSocket struct {
 
 	resultID int
 	res      []message.Message
-	servRes  []string
 	msg      []byte
 
 	err error
@@ -738,12 +737,6 @@ func (f *fakeSocket) Send(msg []byte) {
 func (f *fakeSocket) SendResult(id int, res []message.Message) {
 	f.resultID = id
 	f.res = res
-}
-
-// SendServerResult implements socket.Socket
-func (f *fakeSocket) SendServerResult(id int, res []string) {
-	f.resultID = id
-	f.servRes = res
 }
 
 // SendError implements socket.Socket

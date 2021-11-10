@@ -369,7 +369,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 
 	var id int
 	var msgs []message.Message
-	var serverMsgs []string
 	var handlerErr error
 
 	switch queryBase.Method {
@@ -393,11 +392,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		h.log.Err(err)
 		socket.SendError(&id, err)
 		return err
-	}
-
-	if serverMsgs != nil {
-		socket.SendServerResult(id, serverMsgs)
-		return nil
 	}
 
 	if queryBase.Method == query.MethodCatchUp {
