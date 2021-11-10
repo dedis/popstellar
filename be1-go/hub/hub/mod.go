@@ -32,9 +32,6 @@ const (
 	// used to keep an image of the laos
 	rootPrefix = "/root/"
 
-	// serverComChannel denotes the channel used to communicate between servers
-	serverComChannel = "/root/serverCom"
-
 	// Strings used to return error messages in relation with a database
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
@@ -344,11 +341,14 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		return rpcErr
 	}
 
-	// check type (answer or query), we expect a query
+	// check type (answer or query)
 	if rpctype == jsonrpc.RPCTypeAnswer {
 		err = h.handleAnswer(socket, byteMessage)
 		if err != nil {
-			return xerrors.Errorf("failed to handle answer message: %v", err)
+			err = answer.NewErrorf(-4, "failed to handle answer message: %v", err)
+			h.log.Err(err)
+			socket.SendError(nil, err)
+			return err
 		}
 		return nil
 	} else if rpctype != jsonrpc.RPCTypeQuery {

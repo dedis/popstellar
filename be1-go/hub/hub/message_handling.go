@@ -84,8 +84,8 @@ func (h *Hub) handleServerCatchup(senderSocket socket.Socket, byteMessage []byte
 		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
 	}
 
-	if catchup.Params.Channel != serverComChannel {
-		return nil, catchup.ID, xerrors.Errorf("server catchup message can only be sent on /root/serverCom channel")
+	if catchup.Params.Channel != "/root" {
+		return nil, catchup.ID, xerrors.Errorf("server catchup message can only be sent on /root channel")
 	}
 
 	messages := h.inbox.GetSortedMessages()

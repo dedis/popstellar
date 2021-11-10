@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/hub"
@@ -248,7 +250,11 @@ func Test_Handle_Server_Catchup(t *testing.T) {
 func Test_Handle_Answer(t *testing.T) {
 	keypair := generateKeyPair(t)
 
-	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	result := method.Result{
@@ -262,13 +268,19 @@ func Test_Handle_Answer(t *testing.T) {
 		ID:      1,
 		Result:  make([]message.Message, 1),
 	}
-	serverAnswer.Result[0] = message.Message{
-		Data:              "XXX",
-		Sender:            "XXX",
-		Signature:         "XXX",
-		MessageID:         "XXX",
-		WitnessSignatures: make([]message.WitnessSignature, 0),
+	messageDataPath := filepath.Join("..", "..", "..", "protocol",
+		"examples", "messageData", "lao_create.json")
+
+	messageDataBuf, err := os.ReadFile(messageDataPath)
+	require.NoError(t, err)
+
+	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
+
+	msg := message.Message{
+		Data:              messageData,
+		WitnessSignatures: []message.WitnessSignature{},
 	}
+	serverAnswer.Result[0] = msg
 
 	serverAnswerBis := method.Answer{
 		JSONRPC: "2.0",
@@ -287,6 +299,13 @@ func Test_Handle_Answer(t *testing.T) {
 
 	queryState := false
 	hub.queries.state[1] = &queryState
+	hub.queries.queries[1] = method.Catchup{
+		Params: struct {
+			Channel string "json:\"channel\""
+		}{
+			Channel: "/root",
+		},
+	}
 
 	sock := &fakeSocket{}
 
