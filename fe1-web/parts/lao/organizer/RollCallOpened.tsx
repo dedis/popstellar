@@ -15,8 +15,7 @@ import { useRoute } from '@react-navigation/core';
 import { requestCloseRollCall } from 'network';
 import { EventTags, Hash, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { useToast } from 'react-native-toast-notifications';
 
 const styles = StyleSheet.create({
   viewCenter: {
@@ -32,6 +31,7 @@ const RollCallOpened = () => {
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
   const [attendees, updateAttendees] = useState<string[]>([]);
+  const toast = useToast();
 
   const handleError = (err: string) => {
     console.error(err);
@@ -41,14 +41,10 @@ const RollCallOpened = () => {
     if (data) {
       if (!attendees.includes(data)) {
         updateAttendees((arr) => [...arr, data]);
-        toast.success(STRINGS.roll_call_scan_participant, {
-          position: 'top-center',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
+        toast.show(STRINGS.roll_call_scan_participant, {
+          type: 'success',
+          placement: 'top',
+          duration: 4000,
         });
       }
     }
@@ -71,17 +67,6 @@ const RollCallOpened = () => {
 
   return (
     <View style={styleContainer.flex}>
-      <ToastContainer
-        position="top-center"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
       <View style={styles.viewCenter}>
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader
