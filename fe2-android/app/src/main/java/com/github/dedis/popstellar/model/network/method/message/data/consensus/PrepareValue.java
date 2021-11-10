@@ -13,6 +13,10 @@ public final class PrepareValue {
     this.proposedTry = proposedTry;
   }
 
+  public int getProposedTry() {
+    return proposedTry;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -33,6 +37,6 @@ public final class PrepareValue {
 
   @Override
   public String toString() {
-    return String.format("PrepareValue{proposed_try=%s)}", proposedTry);
+    return String.format("PrepareValue{proposed_try=%s}", proposedTry);
   }
 }

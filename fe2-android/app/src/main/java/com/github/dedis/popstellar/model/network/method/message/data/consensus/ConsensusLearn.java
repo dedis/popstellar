@@ -26,7 +26,11 @@ public final class ConsensusLearn extends Data {
   private final List<String> acceptorSignatures;
 
   public ConsensusLearn(
-      String instanceId, String messageId, long creation, boolean decision, List<String> acceptorSignatures) {
+      String instanceId,
+      String messageId,
+      long creation,
+      boolean decision,
+      List<String> acceptorSignatures) {
     this.instanceId = instanceId;
     this.messageId = messageId;
     this.creation = creation;
@@ -58,7 +62,7 @@ public final class ConsensusLearn extends Data {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(instanceId, messageId, acceptorSignatures);
+    return java.util.Objects.hash(instanceId, messageId, creation, learnValue, acceptorSignatures);
   }
 
   @Override
@@ -74,6 +78,7 @@ public final class ConsensusLearn extends Data {
     return creation == that.creation
         && java.util.Objects.equals(instanceId, that.instanceId)
         && java.util.Objects.equals(messageId, that.messageId)
+        && java.util.Objects.equals(learnValue, that.learnValue)
         && java.util.Objects.equals(acceptorSignatures, that.acceptorSignatures);
   }
 

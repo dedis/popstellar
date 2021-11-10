@@ -51,16 +51,24 @@ public class ConsensusLearnTest {
 
   @Test
   public void equalsTest() {
-    assertEquals(
-        consensusLearn,
+    ConsensusLearn learn2 =
         new ConsensusLearn(
-            instanceId, messageId, timeInSeconds, decision, new ArrayList<>(acceptorSignatures)));
+            instanceId, messageId, timeInSeconds, decision, new ArrayList<>(acceptorSignatures));
+    assertEquals(consensusLearn, learn2);
+    assertEquals(consensusLearn.hashCode(), learn2.hashCode());
 
+    String random = "random";
     assertNotEquals(
         consensusLearn,
-        new ConsensusLearn(instanceId, "random", timeInSeconds, decision, acceptorSignatures));
+        new ConsensusLearn(random, messageId, timeInSeconds, decision, acceptorSignatures));
+    assertNotEquals(
+        consensusLearn,
+        new ConsensusLearn(instanceId, random, timeInSeconds, decision, acceptorSignatures));
     assertNotEquals(
         consensusLearn, new ConsensusLearn(instanceId, messageId, 0, decision, acceptorSignatures));
+    assertNotEquals(
+        consensusLearn,
+        new ConsensusLearn(instanceId, messageId, timeInSeconds, !decision, acceptorSignatures));
     assertNotEquals(
         consensusLearn,
         new ConsensusLearn(
