@@ -14,23 +14,5 @@ module.exports = {
   transformIgnorePatterns: [
     "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg)"
   ]
-  /*  transform: {
-      "node_modules/@expo/vector-icons/.+\\.tsx?$": "ts-jest"
-    },
-    transformIgnorePatterns: [
-      'node_modules/(?!(jest-)?react-native|@react-native-community|@react-navigation)',
-    ]
-    transform: {
-      "node_modules/createIconSet/.+\\.tsx?$": "ts-jest"
-    },
-    transformIgnorePatterns: [
-      "node_modules/(?!createIconSet/.*)"
-    ]
-    transform: {
-      "node_modules/react-native-vector-icons/.+\\.tsx?$": "ts-jest"
-    },
-    transformIgnorePatterns: [
-      "node_modules/(?!react-native-vector-icons/.*)"
-    ]*/
 };
 
