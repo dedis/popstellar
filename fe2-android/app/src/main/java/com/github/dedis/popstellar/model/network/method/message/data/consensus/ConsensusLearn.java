@@ -16,12 +16,22 @@ public final class ConsensusLearn extends Data {
   @SerializedName("message_id")
   private final String messageId;
 
-  private final List<String> acceptors;
+  @SerializedName("created_at")
+  private final long creation;
 
-  public ConsensusLearn(String instanceId, String messageId, List<String> acceptors) {
+  @SerializedName("value")
+  private final LearnValue learnValue;
+
+  @SerializedName("acceptor-signatures")
+  private final List<String> acceptorSignatures;
+
+  public ConsensusLearn(
+      String instanceId, String messageId, long creation, boolean decision, List<String> acceptorSignatures) {
     this.instanceId = instanceId;
     this.messageId = messageId;
-    this.acceptors = Collections.unmodifiableList(acceptors);
+    this.creation = creation;
+    this.learnValue = new LearnValue(decision);
+    this.acceptorSignatures = Collections.unmodifiableList(acceptorSignatures);
   }
 
   public String getInstanceId() {
@@ -32,8 +42,8 @@ public final class ConsensusLearn extends Data {
     return messageId;
   }
 
-  public List<String> getAcceptors() {
-    return acceptors;
+  public List<String> getAcceptorSignatures() {
+    return acceptorSignatures;
   }
 
   @Override
@@ -48,7 +58,7 @@ public final class ConsensusLearn extends Data {
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(instanceId, messageId, acceptors);
+    return java.util.Objects.hash(instanceId, messageId, acceptorSignatures);
   }
 
   @Override
@@ -61,15 +71,16 @@ public final class ConsensusLearn extends Data {
     }
     ConsensusLearn that = (ConsensusLearn) o;
 
-    return java.util.Objects.equals(instanceId, that.instanceId)
+    return creation == that.creation
+        && java.util.Objects.equals(instanceId, that.instanceId)
         && java.util.Objects.equals(messageId, that.messageId)
-        && java.util.Objects.equals(acceptors, that.acceptors);
+        && java.util.Objects.equals(acceptorSignatures, that.acceptorSignatures);
   }
 
   @Override
   public String toString() {
     return String.format(
-        "ConsensusLearn{instance_id='%s', message_id='%s', acceptors=%s}",
-        instanceId, messageId, acceptors);
+        "ConsensusLearn{instance_id='%s', message_id='%s', acceptor-signatures=%s}",
+        instanceId, messageId, acceptorSignatures);
   }
 }
