@@ -1,6 +1,8 @@
 package messagedata
 
 import (
+	"encoding/base64"
+
 	"golang.org/x/xerrors"
 )
 
@@ -24,6 +26,12 @@ type Key struct {
 
 // Verify verifies that the ConsensusElect message is correct
 func (message ConsensusElect) Verify() error {
+	// verify that the id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(message.InstanceID); err != nil {
+		return xerrors.Errorf("lao id is %s, should be base64URL encoded", message.InstanceID)
+	}
+
+	// verify the instance ID
 	expectedID := Hash(
 		message.Object,
 		message.Key.Type,
@@ -33,6 +41,11 @@ func (message ConsensusElect) Verify() error {
 
 	if message.InstanceID != expectedID {
 		return xerrors.Errorf("invalid ConsensusStart message: invalid ID")
+	}
+
+	// verify CreatedAt is positive
+	if message.CreatedAt < 0 {
+		return xerrors.Errorf("consensus creation is %d, should be at minimum 0", message.CreatedAt)
 	}
 
 	return nil
