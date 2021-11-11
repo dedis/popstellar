@@ -26,6 +26,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+const protocolRelativePath string = "../../../protocol"
+
 func TestLAOChannel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -39,7 +41,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	relativePath := filepath.Join("..", "..", "..", "protocol",
+	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "subscribe")
 
 	file := filepath.Join(relativePath, "subscribe.json")
@@ -70,7 +72,7 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	relativePath := filepath.Join("..", "..", "..", "protocol",
+	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "unsubscribe")
 
 	file := filepath.Join(relativePath, "unsubscribe.json")
@@ -85,6 +87,12 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	laoChannel.sockets.Upsert(socket)
 
 	require.NoError(t, channel.Unsubscribe("socket", message))
+
+	// we check that the socket has been deleted
+	require.False(t, laoChannel.sockets.Delete("socket"))
+
+	// unsubscribing two times the same socket must fail
+	require.Error(t, channel.Unsubscribe("socket", message))
 }
 
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
@@ -96,7 +104,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 	channel := NewChannel("channel0", fakeHub, m, nolog)
 
-	relativePath := filepath.Join("..", "..", "..", "protocol",
+	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "unsubscribe")
 
 	file := filepath.Join(relativePath, "unsubscribe.json")
@@ -120,7 +128,7 @@ func TestLAOChannel_Broadcast_mustFail(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 	channel := NewChannel("channel0", fakeHub, m, nolog)
 
-	relativePath := filepath.Join("..", "..", "..", "protocol",
+	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "broadcast")
 
 	file := filepath.Join(relativePath, "broadcast.json")
@@ -131,6 +139,7 @@ func TestLAOChannel_Broadcast_mustFail(t *testing.T) {
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
+	// a lao channel isn't supposed to broadcast a message - must fail
 	require.Error(t, channel.Broadcast(message))
 }
 
@@ -191,7 +200,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog)
 
 	// Create an update lao message
-	relativePath := filepath.Join("..", "..", "..", "protocol",
+	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "lao_update")
 
 	file := filepath.Join(relativePath, "lao_update.json")
@@ -208,7 +217,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	relativePathPub := filepath.Join("..", "..", "..", "protocol",
+	relativePathPub := filepath.Join(protocolRelativePath,
 		"examples", "query", "publish")
 
 	filePublish := filepath.Join(relativePathPub, "publish.json")
@@ -237,7 +246,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	laoChannel := channel.(*Channel)
 
 	// Create an update lao
-	relativePath := filepath.Join("..", "..", "..", "protocol",
+	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "lao_update")
 
 	file := filepath.Join(relativePath, "lao_update.json")
@@ -258,7 +267,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	laoChannel.inbox.StoreMessage(m1)
 
 	// Create a lao_state message
-	relativePathState := filepath.Join("..", "..", "..", "protocol",
+	relativePathState := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "lao_state")
 
 	fileState := filepath.Join(relativePathState, "lao_state.json")
@@ -285,7 +294,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	relativePathStatePub := filepath.Join("..", "..", "..", "protocol",
+	relativePathStatePub := filepath.Join(protocolRelativePath,
 		"examples", "query", "publish")
 
 	fileStatePublish := filepath.Join(relativePathStatePub, "publish.json")
@@ -343,7 +352,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	time.Sleep(time.Millisecond)
 
 	// Create the roll_call_create message
-	relativePathCreate := filepath.Join("..", "..", "..", "protocol",
+	relativePathCreate := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
 	fileCreate := filepath.Join(relativePathCreate, "roll_call_create.json")
@@ -360,7 +369,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
 		"examples", "query", "publish")
 
 	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
@@ -377,7 +386,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	require.NoError(t, channel.Publish(messageCreatePub))
 
 	// Create the roll_call_open message
-	relativePathOpen := filepath.Join("..", "..", "..", "protocol",
+	relativePathOpen := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
 	fileOpen := filepath.Join(relativePathOpen, "roll_call_open.json")
@@ -401,7 +410,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	require.NoError(t, channel.Publish(messageOpenPub))
 
 	// Create the roll_call_close message
-	relativePathClose := filepath.Join("..", "..", "..", "protocol",
+	relativePathClose := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
 	fileClose := filepath.Join(relativePathClose, "roll_call_close.json")
@@ -435,7 +444,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	channel := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog)
 
 	// Create an update lao message
-	relativePath := filepath.Join("..", "..", "..", "protocol",
+	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
 	file := filepath.Join(relativePath, "election_setup.json")
@@ -452,7 +461,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	relativePathPub := filepath.Join("..", "..", "..", "protocol",
+	relativePathPub := filepath.Join(protocolRelativePath,
 		"examples", "query", "publish")
 
 	filePublish := filepath.Join(relativePathPub, "publish.json")
