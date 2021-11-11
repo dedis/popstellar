@@ -7,7 +7,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 
 public class DataHandlingException extends Exception {
 
-  @NonNull private final Data data;
+  @NonNull private final transient Data data;
 
   public DataHandlingException(@NonNull Data data) {
     this.data = data;

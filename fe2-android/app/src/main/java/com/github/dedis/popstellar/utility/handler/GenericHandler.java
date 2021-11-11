@@ -74,7 +74,6 @@ public final class GenericHandler {
       // Send catchup after subscribing to a LAO
       laoRepository.sendCatchup(channel);
     } else {
-      // TODO Invalid id
       Log.e(TAG, "Invalid Subscribe request id : " + id);
     }
   }
@@ -117,7 +116,7 @@ public final class GenericHandler {
         handleMessage(laoRepository, channel, msg);
       } catch (DataHandlingException ex) {
         Log.e(TAG, "Unable to handle message", ex);
-        // TODO This will have to change at some point
+        // This will have to change at some point
         unprocessed.onNext(result);
       }
     }
@@ -171,7 +170,7 @@ public final class GenericHandler {
       handleMessage(laoRepository, channel, message);
     } catch (DataHandlingException ex) {
       Log.e(TAG, "Unable to handle message", ex);
-      // TODO This will have to change at some point
+      // This will have to change at some point
       unprocessed.onNext(broadcast);
     }
   }
