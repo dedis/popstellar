@@ -233,31 +233,9 @@ object DbActor extends AskPatternConstants {
     //however, maybe need to keep count of databases? could be done with a private val channelCount: Int
 
     override def preStart(): Unit = {
-      /*log.info(
-        s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels"
-      )
-      if (initialChannelsMap.size > DATABASE_MAX_CHANNELS) {
-        log.warning(
-          s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)"
-        )
-      }*/
-
+      //FIXME: check if this should be kept
       super.preStart()
     }
-
-    // unnecessary
-    /*private def createDatabase(channel: Channel): DB = {
-      val options: Options = new Options()
-      options.createIfMissing(true)
-
-      val channelName: String = s"$DATABASE_FOLDER$channel"
-      val channelDb = factory.open(new File(channelName), options)
-
-      channelNamesDb.put(channelName.getBytes, "".getBytes)
-      channelsMap += (channel -> channelDb)
-
-      channelDb
-    }*/
 
     // only for the messages
     private def write(channel: Channel, message: Message): DbActorMessage = {
@@ -477,11 +455,10 @@ object DbActor extends AskPatternConstants {
           // create empty? list of messageIds and object type within object
           Try(db.put(key.getBytes, ChannelData(objectType, List.empty).toJsonString.getBytes)) match {
             case Success(_) => DbActorAck()
-            case _ => 
+            case _ =>
               log.info(s"Error while creating channel in the database")
               DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Error while creating channel in the database")
           }
-          
       }
     }
 
