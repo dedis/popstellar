@@ -12,8 +12,14 @@ export function channelFromIds(...args: Hash[]) : Channel {
       .join('/')}`;
 }
 
-export function userSocialChannel(laoId: Hash): Channel {
-  return `${ROOT_CHANNEL}/${laoId.valueOf()}/social/${KeyPairStore.get().publicKey.valueOf()}`;
+/**
+ * Returns the social channel of the current user.
+ *
+ * @param laoIdHash - The hash containing the laoID
+ */
+export function userSocialChannel(laoIdHash: Hash): Channel {
+  const userPublicKey = KeyPairStore.get().publicKey.valueOf();
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
 }
 
 /** Returns the last part of the channel which is usually an event id
