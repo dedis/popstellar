@@ -69,7 +69,7 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private static volatile ViewModelFactory viewModelFactory;
+  private static ViewModelFactory viewModelFactory;
 
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {

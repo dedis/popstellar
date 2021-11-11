@@ -54,7 +54,7 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private static volatile ViewModelFactory viewModelFactory;
+  private static ViewModelFactory viewModelFactory;
 
   private Injection() {}
 
@@ -178,9 +178,5 @@ public class Injection {
       viewModelFactory = new ViewModelFactory(application);
     }
     return viewModelFactory;
-  }
-
-  public static synchronized void setViewModelFactory(ViewModelFactory factory) {
-    viewModelFactory = factory;
   }
 }
