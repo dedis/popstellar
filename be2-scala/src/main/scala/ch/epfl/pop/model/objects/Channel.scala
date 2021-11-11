@@ -28,7 +28,7 @@ final case class Channel(channel: String) {
    */
   def extractChildChannel: Hash = {
       val c = channel.split(Channel.SEPARATOR) //Might return empty array
-      Hash(Base64Data(if(c.isEmpty) "" else c.last)) 
+      Hash(Base64Data(if(c.isEmpty) "" else c.last))
   }
 
   def isRootChannel: Boolean = channel == Channel.rootChannel.channel
@@ -47,4 +47,12 @@ object Channel {
   final val SEPARATOR: Char = '/'
   final val rootChannel: Channel = Channel(s"${SEPARATOR}root")
   final val rootChannelPrefix: String = s"${SEPARATOR}root${SEPARATOR}"
+  private final def channelRegex: String = "^/root(/[^/]+)*$"
+
+  def apply(channel: String): Channel = {
+    if(channel.isBlank() || !channel.matches(channelRegex)){
+        throw new IllegalArgumentException("The channel name is invalid")
+    }
+    new Channel(channel)
+  }
 }
