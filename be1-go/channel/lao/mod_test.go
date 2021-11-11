@@ -91,7 +91,7 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	// we check that the socket has been deleted
 	require.False(t, laoChannel.sockets.Delete("socket"))
 
-	// unsubscribing two times the same socket must fail
+	// unsubscribing two times with the same socket must fail
 	require.Error(t, channel.Unsubscribe("socket", message))
 }
 
