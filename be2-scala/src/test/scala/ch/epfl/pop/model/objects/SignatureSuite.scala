@@ -4,20 +4,23 @@ import org.scalatest.{FunSuite, Matchers, BeforeAndAfterAll}
 import com.google.crypto.tink.subtle.Ed25519Sign
 import java.nio.charset.StandardCharsets
 import org.scalatest.Inspectors.{forAll,forEvery}
+import org.scalatest.fixture
+import org.scalatest.Suite
+import org.scalatest.Outcome
 
 
 /*Helper object for testing*/
 case class TestObj(ed_signer: Ed25519Sign, keyPair: Ed25519Sign.KeyPair)
-class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll{
-
-    var tester: TestObj = null;
-    override def beforeAll(){
-            val kpair = Ed25519Sign.KeyPair.newKeyPair()
-
-            val privateKey = kpair.getPrivateKey
-            val ed_signer  = new Ed25519Sign(privateKey)
-            tester = TestObj(ed_signer, kpair)
+class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
+    //Fixture test
+    final val tester = {
+      val kpair = Ed25519Sign.KeyPair.newKeyPair()
+      val privateKey = kpair.getPrivateKey
+      val ed_signer  = new Ed25519Sign(privateKey)
+      TestObj(ed_signer, kpair)
     }
+
+    final val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
 
     /*Provides correct signature for a msg*/
     private def getTrueSignatureTest(msg: String): Signature = {
@@ -38,7 +41,6 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll{
          (msg: String) => {
               val signature = getTrueSignatureTest(msg);
               //Assertion
-              val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
               val msg_encoded = Base64Data.encode(msg)
               signature.verify(verify_pk,msg_encoded) should be (true)
          }
@@ -49,7 +51,6 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll{
         val msg = ""
         val signature = getTrueSignatureTest(msg);
         //Assertion
-        val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
         val msg_encoded = Base64Data.encode(msg)
         signature.verify(verify_pk,msg_encoded) should be (true)
     }
@@ -59,7 +60,6 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll{
         val msg = "A"
         val signature = getTrueSignatureTest(msg);
         //Assertion
-        val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
         val msg_encoded = Base64Data.encode(msg)
         signature.verify(verify_pk,msg_encoded) should be (true)
     }
@@ -70,7 +70,6 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll{
         (msg:String) => {
             val signature = getFalseSignatureTest(msg);
             //Assertion
-            val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
             val msg_encoded = Base64Data.encode(msg)
             signature.verify(verify_pk,msg_encoded) should be (false)
           }
@@ -82,7 +81,6 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll{
         val msg = ""
         val signature = getFalseSignatureTest(msg);
         //Assertion
-        val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
         val msg_encoded = Base64Data.encode(msg)
         signature.verify(verify_pk,msg_encoded) should be (false)
     }
@@ -92,7 +90,6 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll{
         val msg = "A"
         val signature = getFalseSignatureTest(msg);
         //Assertion
-        val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
         val msg_encoded = Base64Data.encode(msg)
         signature.verify(verify_pk,msg_encoded) should be (false)
     }
