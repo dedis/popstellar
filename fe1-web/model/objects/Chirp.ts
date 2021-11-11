@@ -6,15 +6,17 @@ import { Hash } from './Hash';
  */
 
 export interface ChirpState {
+  id: string;
   sender: string;
   text: string;
   time: number;
   likes: number;
-  dislikes: number;
   parentId: string;
 }
 
 export class Chirp {
+  public readonly id: Hash;
+
   public readonly sender: string;
 
   public readonly text: string;
@@ -22,8 +24,6 @@ export class Chirp {
   public readonly time: Timestamp;
 
   public readonly likes: number;
-
-  public readonly dislikes: number;
 
   public readonly parentId?: Hash;
 
@@ -33,6 +33,9 @@ export class Chirp {
         + 'undefined/null parameters');
     }
 
+    if (obj.id === undefined) {
+      throw new Error("Undefined 'id' when creating 'Chirp'");
+    }
     if (obj.sender === undefined) {
       throw new Error("Undefined 'sender' when creating 'Chirp'");
     }
@@ -45,15 +48,12 @@ export class Chirp {
     if (obj.likes === undefined) {
       throw new Error("Undefined 'likes' when creating 'Chirp'");
     }
-    if (obj.dislikes === undefined) {
-      throw new Error("Undefined 'dislikes' when creating 'Chirp'");
-    }
 
+    this.id = obj.id;
     this.sender = obj.sender;
     this.text = obj.text;
     this.time = obj.time;
     this.likes = obj.likes;
-    this.dislikes = obj.dislikes;
     this.parentId = obj.parentId;
   }
 
@@ -64,11 +64,11 @@ export class Chirp {
    */
   public static fromState(chirpState: ChirpState): Chirp {
     return new Chirp({
+      id: new Hash(chirpState.id),
       sender: chirpState.sender,
       text: chirpState.text,
       time: new Timestamp(chirpState.time),
       likes: chirpState.likes,
-      dislikes: chirpState.dislikes,
       parentId: new Hash(chirpState.parentId),
     });
   }
@@ -77,7 +77,6 @@ export class Chirp {
    * Creates a ChirpState object from the current Chirp object.
    */
   public toState(): ChirpState {
-    const obj: any = JSON.parse(JSON.stringify(this));
-    return { ...obj };
+    return JSON.parse(JSON.stringify(this));
   }
 }
