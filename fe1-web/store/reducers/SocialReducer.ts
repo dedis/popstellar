@@ -20,16 +20,13 @@ const socialSlice = createSlice({
   name: socialReducerPath,
   initialState,
   reducers: {
-    addChirp: (state, action: PayloadAction<{ chirpState: ChirpState; }>) => {
-      const { chirpState } = action.payload;
+    addChirp: (state, action: PayloadAction<ChirpState>) => {
+      const chirpState = action.payload;
       state.allChirps.push(chirpState);
+      console.log(`New chirp added:\n\tSender: ${chirpState.sender}\n\tMessage: ${chirpState.text}`);
     }
   }
 });
-
-export const getChirpsList = () => createSelector(
-  return allChirps.map((state: ChirpState) => { state.sender, state.text});
-)
 
 export const {
   addChirp
