@@ -12,9 +12,9 @@ case class LaoData(
     attendees: List[PublicKey]
 ){
     def toJsonString: String = {
-    val that: LaoData = this // tricks the compiler into inferring the right type
-    that.toJson.toString
-  }
+      val that: LaoData = this // tricks the compiler into inferring the right type
+      that.toJson.toString
+    }
 }
 
 object LaoData extends Parsable {

@@ -40,6 +40,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
+        //FIXME: cast is wrong if the validatorName is ReopenRollCall
         val data: OpenRollCall = message.decodedData.get.asInstanceOf[OpenRollCall]
 
         val laoId: Hash = rpcMessage.extractLaoId

@@ -53,12 +53,17 @@ object DbActor extends AskPatternConstants {
     */
   final case class Read(channel: Channel, messageId: Hash) extends Event
 
-  /** Request to read a specific message with id <messageId> from <channel>
+  /** Request to read the channelData from <channel>, with key laoId/channel
     *
     * @param channel
     *   the channel we need the data for
     */
   final case class ReadChannelData(channel: Channel) extends Event
+
+  /** Request to read the laoData of the LAO, with key laoid/
+    *
+    */
+  final case class ReadLaoData() extends Event
 
   /** Request to read all messages from a specific <channel>
     *
@@ -79,7 +84,7 @@ object DbActor extends AskPatternConstants {
   final case class WriteAndPropagate(channel: Channel, message: Message) extends Event
 
   /**
-   * Request to create channel <channel> in the db
+   * Request to create channel <channel> in the db with a type
    *
    * @param channel channel to create
    */
@@ -111,7 +116,7 @@ object DbActor extends AskPatternConstants {
   /** Response for a [[Write]] db request Receiving [[DbActorWriteAck]] works as
     * an acknowledgement that the write request was successful
     */
-  final case object DbActorWriteAck extends DbActorMessage
+  final case class DbActorWriteAck() extends DbActorMessage
 
   /** Response for a [[Read]] db request Receiving [[DbActorReadAck]] works as
     * an acknowledgement that the read request was successful
@@ -130,6 +135,15 @@ object DbActor extends AskPatternConstants {
     */
   final case class DbActorReadChannelDataAck(channelData: Option[ChannelData])
       extends DbActorMessage
+
+  /** Response for a [[ReadLaoData]] db request Receiving [[DbActorReadLaoDataAck]] works as
+    * an acknowledgement that the request was successful
+    *
+    * @param laoData
+    *   requested lao data
+    */
+  final case class DbActorReadLaoDataAck(laoData: Option[LaoData])
+      extends DbActorMessage  
 
   /** Response for a [[Catchup]] db request Receiving [[DbActorCatchupAck]]
     * works as an acknowledgement that the catchup request was successful
@@ -201,12 +215,13 @@ object DbActor extends AskPatternConstants {
     private def write(channel: Channel, message: Message): DbActorMessage = {
       val channelKey: String = "laoid/" + channel
       
+      //encapsulate this inside function
       Try(db.get(channelKey.getBytes)) match {
         case Success(bytes) if bytes != null =>
           log.info(s"Channel '$channel' already exists.")
         case _ =>
           //FIXME: handle type of message (is it actually a problem or is the MessageExample coded in a weird way?)
-          //val objectType: ObjectType.ObjectType = message.decodedData.get._object //or some other way, then match using match case and establish channel type
+          //val objectType = message.decodedData.get._object //or some other way, then match using match case and establish channel type
           val objectType = ObjectType.LAO
           val actualObjectType = if (objectType == ObjectType.ELECTION || objectType == ObjectType.CHIRP){
             objectType
@@ -223,7 +238,7 @@ object DbActor extends AskPatternConstants {
       
       val messageId: Hash = message.message_id
       Try(db.get(channelKey.getBytes)) match {
-        case Success(bytes) => {
+        case Success(bytes) if bytes != null => {
           if (bytes != null){
             val key: String = "laoid/" + channel + "/" + messageId.toString
             Try(db.createWriteBatch()) match {
@@ -237,7 +252,7 @@ object DbActor extends AskPatternConstants {
                         Try(db.write(batch)) match {
                           case Success(_) => 
                             log.info(s"Actor $self (db) wrote object 'objectId' and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
-                            DbActorWriteAck
+                            DbActorWriteAck()
                           case Failure(exception) =>
                             log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel' because of the batch write")
                             DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
@@ -270,62 +285,91 @@ object DbActor extends AskPatternConstants {
     }
 
 
-
+    //this method is used by all the functions handling any message concerning LAO data: i.e. CreateLao, CloseRollCall
     //then, for the other Object (LAOdata etc) storage, we need another function, need laoId for all?????
     //we can get the laoId with an Array[Byte] with decodeSubChannel(channel)
-    //need to have a function to store both message and object for atomicity?
-    /*private def writeLaoData(channel: Channel, message: Message, obj: LaoData): DbActorMessage = {
-      val key: String = "laoid/" + channel //to see better once we know exactly the keys
-      val dataKey: String = "laoid/" + channel + "/data"
+    private def writeLaoData(channel: Channel, message: Message, obj: LaoData): DbActorMessage = {
+      //val key: String = "laoid/" //FIXME: (everywhere) the lao id for each lao, also, maybe just laoid, not laoid/ (not a huge difference though)
+      val messageId: Hash = message.message_id
+      //val dataKey: String = "laoid/" + channel + "/data"
+      val dataKey: String = "laoid/"
       val messageKey: String = "laoid/" + channel + "/" + messageId.toString
-      //need to do like for message and have JsonString en/decoding
-      Try(db.createWriteBatch()) match {
-        case Success(batch) => {
-          Try(batch.put(dataKey.getBytes, obj.toJsonString.getBytes)) match {
-            case Success(_) => {
-              Try(batch.put(messageKey.getBytes, message.toJsonString.getBytes)) match {
-                case Success(_) => {
-                  Try(batch.put(key.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)) match {
-                    case Success(_) => {
-                      //allows writing all data atomically
-                      Try(db.write(batch)) match {
-                        case Success(_) => 
-                          log.info(s"Actor $self (db) wrote object 'objectId' and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
-                          DbActorWriteAck
-                        case Failure(exception) =>
-                          log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel'")
-                          DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+      val channelKey: String = "laoid/" + channel
+      
+      //encapsulate this inside function
+      Try(db.get(channelKey.getBytes)) match {
+        case Success(bytes) if bytes != null =>
+          log.info(s"Channel '$channel' already exists.")
+        case _ =>
+          //FIXME: handle type of message (is it actually a problem or is the MessageExample coded in a weird way?)
+          //val objectType: ObjectType.ObjectType = message.decodedData.get._object //or some other way, then match using match case and establish channel type
+          val objectType = ObjectType.LAO
+          val actualObjectType = if (objectType == ObjectType.ELECTION || objectType == ObjectType.CHIRP){
+            objectType
+          } else {
+            ObjectType.LAO
+          }
+          createChannel(channel, actualObjectType) match {
+            case DbActorAck() =>
+            case _ =>
+              log.info(s"Actor $self (db) encountered a problem while creating channel '$channel'")
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Error when creating channel '$channel'")
+          }
+      }
+      
+      Try(db.get(channelKey.getBytes)) match {
+        case Success(bytes) => {
+          if (bytes != null){
+            Try(db.createWriteBatch()) match {
+              //FIXME: create function to loop over a list??
+              case Success(batch) => {
+                val json = new String(bytes, StandardCharsets.UTF_8)
+                Try(batch.put(dataKey.getBytes, obj.toJsonString.getBytes)) match {
+                  case Success(_) => {
+                    Try(batch.put(messageKey.getBytes, message.toJsonString.getBytes)) match {
+                      case Success(_) => {
+                        Try(batch.put(channelKey.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)) match {
+                          case Success(_) => {
+                            //allows writing all data atomically
+                            Try(db.write(batch)) match {
+                              case Success(_) => 
+                                log.info(s"Actor $self (db) wrote object 'objectId' and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
+                                DbActorWriteAck()
+                              case Failure(exception) =>
+                                log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel' because of write batch")
+                                DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+                            }
+                          }
+                          case Failure(exception) =>
+                            log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel' because of batch put")
+                            DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+                        }
                       }
+                      case Failure(exception) =>
+                        log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel' because of batch put")
+                        DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
                     }
-                    case Failure(exception) =>
-                      log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel'")
-                      DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
                   }
+                  case Failure(exception) =>
+                    log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel' because of batch put")
+                    DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
                 }
-                case Failure(exception) =>
-                  log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel'")
-                  DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
               }
+              case Failure(exception) =>
+                log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel' because of batch creation")
+                DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
             }
-            case Failure(exception) =>
-              log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel'")
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+          }
+          else{
+            log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel', as the channel does not exist")
+            DbActorNAck(ErrorCodes.SERVER_ERROR.id, "Could not decode channel data")
           }
         }
         case Failure(exception) =>
-          log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object 'objectId' on channel '$channel'")
+          log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
           DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
       }
-      //this is not needed now
-      Try(batch.put(key.getBytes, obj.toJsonString.getBytes)) match {
-        case Success(_) =>
-          log.info(s"Actor $self (db) wrote object 'objectId' on channel '$channel'") //change with object and objectId/name/smth like that
-          DbActorWriteAck
-        case Failure(exception) =>
-          log.info(s"Actor $self (db) encountered a problem while writing object 'objectName' on channel '$channel'")
-          DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
-      }
-    }*/
+    }
     
 
     private def read(channel: Channel, messageId: Hash): DbActorMessage = {
@@ -355,6 +399,17 @@ object DbActor extends AskPatternConstants {
           DbActorReadChannelDataAck(Some(ChannelData.buildFromJson(json)))
         case _ =>
           DbActorReadChannelDataAck(None)
+      }
+    }
+
+    private def readLaoData(): DbActorMessage = {
+      val key: String = "laoid/"
+      Try(db.get(key.getBytes)) match {
+        case Success(bytes) if bytes != null =>
+          val json = new String(bytes, StandardCharsets.UTF_8)
+          DbActorReadLaoDataAck(Some(LaoData.buildFromJson(json)))
+        case _ =>
+          DbActorReadLaoDataAck(None)
       }
     }
 
@@ -438,9 +493,9 @@ object DbActor extends AskPatternConstants {
         sender ! write(channel, message)
       
       
-      /*case WriteLaoData(channel, message, laoData) =>
+      case WriteLaoData(channel, message, laoData) =>
         log.info(s"Actor $self (db) received a WRITELAODATA request on channel '$channel'")
-        sender ! writeLaoData(channel, message, laoData)*/
+        sender ! writeLaoData(channel, message, laoData)
       
 
       case Read(channel, messageId) =>
@@ -451,6 +506,9 @@ object DbActor extends AskPatternConstants {
         log.info(s"Actor $self (db) received a READCHANNELDATA request from channel '$channel'")
         sender ! readChannelData(channel)
       
+      case ReadLaoData() =>
+        log.info(s"Actor $self (db) received a READLAODATA request")
+        sender ! readLaoData()
 
       case Catchup(channel) =>
         log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")

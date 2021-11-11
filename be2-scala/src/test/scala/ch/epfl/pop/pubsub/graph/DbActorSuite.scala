@@ -11,7 +11,7 @@ import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import akka.pattern.ask
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.dataObject.ChannelData
+import ch.epfl.pop.model.network.method.message.data.dataObject._
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, Signature, WitnessSignaturePair}
 import util.examples.MessageExample
 
@@ -218,7 +218,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
   }
 
-  test("DbActor reads channelData"){
+  test("DbActor reads ChannelData"){
     val channel: Channel = generateUniqueChannel
     val ask1 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
     Await.ready(ask1, duration)
@@ -229,5 +229,31 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer2 shouldBe a [DbActor.DbActorReadChannelDataAck]
 
     answer2.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List.empty)))
+  }
+
+  test("DbActor stores and reads LaoData"){
+    val channel: Channel = generateUniqueChannel
+    val message: Message = MessageExample.MESSAGE
+    val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty)
+
+    val ask1 = dbActorRef ? DbActor.WriteLaoData(channel, message, laoData)
+    val answer1 = Await.result(ask1, duration)
+
+    answer1 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask3 = dbActorRef ? DbActor.ReadChannelData(channel)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorReadChannelDataAck]
+
+    answer3.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List(message.message_id))))
+
+    val ask2 = dbActorRef ? DbActor.ReadLaoData()
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("a")), List.empty)))
+
   }
 }

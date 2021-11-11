@@ -3,9 +3,12 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.dataObject.LaoData
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
+import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.DbActor._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -47,10 +50,35 @@ case object RollCallHandler extends MessageHandler {
   }
 
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //FIXME: need to do something with list of public keys, or at least be able to retrieve it
     //FIXME: need to create one channel per participant (their PK as channel id?)
     //FIXME: subscribe clients to main social channel
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    Await.result(ask, duration)
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
+
+        val askOldData = dbActor ? DbActor.ReadLaoData()
+        
+        Await.result(askOldData, duration) match {
+          case DbActorReadLaoDataAck(Some(oldLaoData)) =>
+            val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees)
+            val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(rpcMessage.getParamsChannel, message, laoData)).map {
+              case DbActorWriteAck => Left(rpcMessage)
+              case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+            }
+            Await.result(ask, duration)
+          case _ => Right(PipelineError(
+            ErrorCodes.SERVER_ERROR.id,
+            s"There is an issue with the data of the LAO",
+            rpcMessage.id
+          ))
+
+        }
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_ERROR.id,
+        s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",
+        rpcMessage.id
+      ))
+    }
   }
 }
