@@ -163,7 +163,6 @@ object DbActor extends AskPatternConstants {
    * @return the newly created [[DbActor]]
    */
   def apply(mediatorRef: ActorRef, DATABASE_FOLDER: String = "database"): DbActor = {
-    //modify here for the constructor use
 
     val CHANNELS_FOLDER: String = s"$DATABASE_FOLDER/channels"
 
@@ -182,45 +181,6 @@ object DbActor extends AskPatternConstants {
         }
 
       }
-    /*
-    // all of this will be useless, as we only have one DB
-    val channelNamesDb: DB =
-      try { factory.open(new File(CHANNELS_FOLDER), options) }
-      catch {
-        case e: IOException => {
-          logger.error("Could not open channels folder {}", CHANNELS_FOLDER)
-          throw e
-        }
-
-      }
-    val iterator: DBIterator = channelNamesDb.iterator
-    val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
-
-    iterator.seekToFirst()
-    options.createIfMissing(false)
-
-    while (iterator.hasNext) {
-      // open each db associated with each channel name
-      val channelName: String =
-        new String(iterator.next().getKey, StandardCharsets.UTF_8)
-      val channelDb: DB =
-        try { factory.open(new File(channelName), options) }
-        catch {
-          case e: IOException => {
-            logger.error("Could not open channel {}", channelName)
-            throw e
-          }
-
-        }
-
-      // store the channel name and its database in the map
-      initialChannelsMap += (Channel(
-        channelName.toString.stripPrefix(DATABASE_FOLDER)
-      ) -> channelDb)
-    }
-
-    iterator.close()
-    DbActor(mediatorRef, initialChannelsMap.toMap, channelNamesDb, DATABASE_FOLDER, CHANNELS_FOLDER)*/
     DbActor(mediatorRef, db, DATABASE_FOLDER)
   }
 
