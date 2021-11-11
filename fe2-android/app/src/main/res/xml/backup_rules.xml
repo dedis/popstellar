@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+  <include
+    domain="sharedpref"
+    path="." />
+  <exclude
+    domain="sharedpref"
+    path="POP_KEYSET_SP" />
+  <exclude
+    domain="sharedpref"
+    path="POP_KEYSET_SP_2" />
+</full-backup-content>

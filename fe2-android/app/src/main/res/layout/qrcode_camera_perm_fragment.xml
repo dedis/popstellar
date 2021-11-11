@@ -14,11 +14,6 @@
       android:orientation="horizontal"
       app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
-    <include
-      layout="@layout/tab_back"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
-
     <LinearLayout
       android:id="@+id/camera_permission"
       android:layout_width="match_parent"

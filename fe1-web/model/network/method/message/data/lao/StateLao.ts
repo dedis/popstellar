@@ -10,6 +10,7 @@ import {
   checkWitnessSignatures,
 } from '../Checker';
 
+/** Data received to track the state of a lao */
 export class StateLao implements MessageData {
   public readonly object: ObjectType = ObjectType.LAO;
 
@@ -88,6 +89,10 @@ export class StateLao implements MessageData {
     this.id = msg.id;
   }
 
+  /**
+   * Creates a StateLao object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): StateLao {
     const { errors } = validateDataObject(ObjectType.LAO, ActionType.STATE, obj);
 
