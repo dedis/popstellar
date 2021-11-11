@@ -179,4 +179,8 @@ public class Injection {
     }
     return viewModelFactory;
   }
+
+  public static synchronized void setViewModelFactory(ViewModelFactory factory) {
+    viewModelFactory = factory;
+  }
 }
