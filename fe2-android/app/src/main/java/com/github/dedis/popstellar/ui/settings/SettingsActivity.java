@@ -12,16 +12,12 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 
 public class SettingsActivity extends AppCompatActivity {
 
-  private SettingsViewModel mViewModel;
-
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.settings_activity);
 
     setupSettingsFragment();
-
-    mViewModel = obtainViewModel(this);
   }
 
   public static SettingsViewModel obtainViewModel(FragmentActivity activity) {
