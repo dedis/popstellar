@@ -10,6 +10,8 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import akka.pattern.ask
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.dataObject.ChannelData
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, Signature, WitnessSignaturePair}
 import util.examples.MessageExample
 
@@ -55,6 +57,44 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     expectMsg(message)
   }
 
+  test("DbActor creates channel"){
+    val channel: Channel = generateUniqueChannel
+    val ask = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a [DbActor.DbActorAck]
+  }
+
+  test("DbActor doesn't create same channel twice"){
+    val channel: Channel = generateUniqueChannel
+    val ask = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a [DbActor.DbActorAck]
+
+    val ask2 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorNAck]
+  }
+
+  test("DbActor knows whether channel exists or not"){
+    val channel: Channel = generateUniqueChannel
+    val ask = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    Await.ready(ask, duration)
+
+    val ask2 = dbActorRef ? DbActor.ChannelExists(channel)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorAck]
+
+    val channel3: Channel = new Channel("channel")
+    val ask3 = dbActorRef ? DbActor.ChannelExists(channel3)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorNAck]
+  }
+
   test("DbActor creates missing channels during WRITE") {
     val channel: Channel = generateUniqueChannel
     val message: Message = MessageExample.MESSAGE
@@ -74,7 +114,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer shouldBe a [DbActor.DbActorAck]
   }
-
+  
   test("DbActor fails during CATCHUP on a missing channel") {
     val expected: DbActor.DbActorNAck = DbActor.DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, "Database cannot catchup from a channel that does not exist in db")
 
@@ -84,7 +124,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer shouldBe a [DbActor.DbActorNAck]
     answer.asInstanceOf[DbActor.DbActorNAck] should equal (expected)
   }
-
+  
   test("DbActor succeeds during CATCHUP on a channel with one message") {
     val message: Message = MessageExample.MESSAGE
     val channel: Channel = generateUniqueChannel
@@ -134,7 +174,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer shouldBe a [DbActor.DbActorReadAck]
     answer.asInstanceOf[DbActor.DbActorReadAck].message should equal (Some(message))
   }
-
+  
   test("DbActor can overwrite messages") {
     val message: Message = MessageExample.MESSAGE
     val messageModified: Message = message.addWitnessSignature(WitnessSignaturePair(PublicKey(Base64Data("myKey")), Signature(Base64Data("mySig"))))
@@ -151,5 +191,43 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer shouldBe a [DbActor.DbActorReadAck]
     answer.asInstanceOf[DbActor.DbActorReadAck].message should equal (Some(messageModified))
+  }
+
+  test("DbActor will fail when creating same channel twice, but then still write in the channel") {
+    val channel: Channel = generateUniqueChannel
+    val message: Message = MessageExample.MESSAGE
+
+    val ask1 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer1 = Await.result(ask1, duration)
+
+    answer1 shouldBe a [DbActor.DbActorAck]
+
+    val ask2 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorNAck]
+
+    val ask3 = dbActorRef ? DbActor.Write(channel, message)
+    val answer3 = Await.result(ask3, duration)
+
+
+    val ask4 = dbActorRef ? DbActor.Read(channel, message.message_id)
+    val answer4 = Await.result(ask4, duration)
+
+    answer4 shouldBe a [DbActor.DbActorReadAck]
+
+  }
+
+  test("DbActor reads channelData"){
+    val channel: Channel = generateUniqueChannel
+    val ask1 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    Await.ready(ask1, duration)
+
+    val ask2 = dbActorRef ? DbActor.ReadChannelData(channel)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorReadChannelDataAck]
+
+    answer2.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List.empty)))
   }
 }
