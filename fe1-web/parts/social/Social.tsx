@@ -14,8 +14,10 @@ import WideButtonView from 'components/WideButtonView';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
-import { SocialStore } from 'store';
+import { OpenedLaoStore, SocialStore } from 'store';
 import { Chirp } from 'model/objects/Chirp';
+import { subscribeToChannel } from '../../network/CommunicationApi';
+import { generalChirpsChannel, Lao } from '../../model/objects';
 
 /**
  * UI for the Social Media component
@@ -48,6 +50,14 @@ const Social = () => {
     chirpList = SocialStore.getAllChirps();
   };
 
+  const subscribeToSocialChannel = () => {
+    const currentLao: Lao = OpenedLaoStore.get();
+    const socialChannel = generalChirpsChannel(currentLao.id);
+    subscribeToChannel(socialChannel).then(() => {}).catch((err) => {
+      console.error('Could not subscribe to Social Media general channel, error: ', err);
+    });
+  };
+
   const renderChirp = (chirp: Chirp) => (
     <TextBlock text={chirp.text} />
   );
@@ -58,6 +68,10 @@ const Social = () => {
         <TextInputChirp
           onChangeText={setInputChirp}
           onPress={publishChirp}
+        />
+        <WideButtonView
+          title="Subscribe"
+          onPress={subscribeToSocialChannel}
         />
         <WideButtonView
           title="Update"
