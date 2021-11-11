@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, TextStyle, View, ViewStyle,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
 } from 'react-native';
 
 import TextBlock from 'components/TextBlock';
 import TextInputChirp from 'components/TextInputChirp';
+import WideButtonView from 'components/WideButtonView';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
+import { SocialStore } from 'store';
+import { Chirp } from 'model/objects/Chirp';
 
 /**
  * UI for the Social Media component
@@ -34,13 +42,34 @@ const Social = () => {
       });
   };
 
+  let chirpList = SocialStore.getAllChirps();
+
+  const updateChirps = () => {
+    chirpList = SocialStore.getAllChirps();
+  };
+
+  const renderChirp = (chirp: Chirp) => (
+    <TextBlock text={chirp.text} />
+  );
+
   return (
     <View style={styles.view}>
-      <TextInputChirp
-        onChangeText={setInputChirp}
-        onPress={publishChirp}
-      />
-      <TextBlock text={STRINGS.feed_description} />
+      <ScrollView>
+        <TextInputChirp
+          onChangeText={setInputChirp}
+          onPress={publishChirp}
+        />
+        <WideButtonView
+          title="Update"
+          onPress={updateChirps}
+        />
+        <TextBlock text={STRINGS.feed_description} />
+        <FlatList
+          data={chirpList}
+          renderItem={renderChirp}
+          keyExtractor={chirp => chirp.time}
+        />
+      </ScrollView>
     </View>
   );
 };
