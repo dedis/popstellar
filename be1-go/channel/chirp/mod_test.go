@@ -237,5 +237,5 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 func (h *fakeHub) Type() hub.HubType {
-	return ""
+	return hub.OrganizerHubType
 }
