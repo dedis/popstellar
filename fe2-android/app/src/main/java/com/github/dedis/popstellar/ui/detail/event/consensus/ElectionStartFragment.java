@@ -44,7 +44,7 @@ public class ElectionStartFragment extends Fragment {
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
 
   private final SimpleDateFormat dateFormat =
-      new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.ENGLISH);
+      new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.getDefault());
 
   private final CompositeDisposable disposables = new CompositeDisposable();
   private ConsensusNode ownNode;
@@ -77,8 +77,12 @@ public class ElectionStartFragment extends Fragment {
     LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     Election election = mLaoDetailViewModel.getCurrentElection();
+    if (election == null) {
+      Log.e(TAG, "The current election of the LaoDetailViewModel is null");
+      return null;
+    }
 
-    String scheduledDate = dateFormat.format(new Date(election.getStartTimestamp() * 1000));
+    String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
     String electionId = election.getId();
     String instanceId = Consensus.generateConsensusId("election", electionId, "state");
 
@@ -210,7 +214,7 @@ public class ElectionStartFragment extends Fragment {
             .findAny();
     if (acceptedConsensus.isPresent()) {
       // assuming the election start time was updated from scheduled to real start time
-      String startedDate = dateFormat.format(new Date(election.getStartTimestamp() * 1000));
+      String startedDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
       electionStatus.setText(R.string.started);
       electionStart.setText(getString(R.string.election_started_at, startedDate));
       electionStart.setEnabled(false);

@@ -951,6 +951,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mCurrentLao.getValue();
   }
 
+  public void setCurrentLao(Lao lao) {
+    mCurrentLao.setValue(lao);
+  }
+
   public LiveData<String> getCurrentLaoName() {
     return mCurrentLaoName;
   }
