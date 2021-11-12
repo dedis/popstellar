@@ -166,34 +166,10 @@ test("message data: consensus", () => {
     elect = require("../examples/messageData/consensus_elect/elect.json");
     expect(elect).toBeValid(messageDataSchema)
 
-    elect = require("../examples/messageData/consensus_elect/wrong_elect_invalid_instance.json");
-    expect(elect).toBeValid(messageDataSchema)
-
-    elect = require("../examples/messageData/consensus_elect/wrong_elect_not_base_64_instance.json");
-    expect(elect).toBeValid(messageDataSchema)
-
-    elect = require("../examples/messageData/consensus_elect/wrong_elect_negative_created_at.json");
-    expect(elect).toBeValid(messageDataSchema)
-
     elect_accept = require("../examples/messageData/consensus_elect_accept/elect_accept.json");
     expect(elect_accept).toBeValid(messageDataSchema)
 
-    elect_accept = require("../examples/messageData/consensus_elect_accept/wrong_elect_accept_not_base_64_instance.json");
-    expect(elect_accept).toBeValid(messageDataSchema)
-
-    elect_accept = require("../examples/messageData/consensus_elect_accept/wrong_elect_accept_not_base_64_message.json");
-    expect(elect_accept).toBeValid(messageDataSchema)
-
     learn = require("../examples/messageData/consensus_learn/learn.json");
-    expect(learn).toBeValid(messageDataSchema)
-
-    learn = require("../examples/messageData/consensus_learn/wrong_learn_not_base_64_instance.json");
-    expect(learn).toBeValid(messageDataSchema)
-
-    learn = require("../examples/messageData/consensus_learn/wrong_learn_not_base_64_message.json");
-    expect(learn).toBeValid(messageDataSchema)
-
-    learn = require("../examples/messageData/consensus_learn/wrong_learn_not_base_64_acceptor.json");
     expect(learn).toBeValid(messageDataSchema)
 })
 
