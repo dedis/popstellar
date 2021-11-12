@@ -4,11 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import com.github.dedis.popstellar.repository.local.LAODatabase;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.remote.LAOService;
+
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Result;
@@ -21,6 +17,12 @@ import com.github.dedis.popstellar.model.network.serializer.JsonGenericMessageDe
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageGeneralSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonResultSerializer;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.local.LAODatabase;
+import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
+import com.github.dedis.popstellar.repository.remote.LAOService;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.android.gms.vision.CameraSource;
@@ -35,10 +37,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tinder.scarlet.Scarlet;
 import com.tinder.scarlet.WebSocket;
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+
+import io.reactivex.Observable;
+import io.reactivex.Observer;
 import okhttp3.OkHttpClient;
 
 public class Injection {
@@ -116,6 +120,11 @@ public class Injection {
   @SuppressWarnings("unused")
   public static Scarlet provideScarlet(
       Application application, OkHttpClient okHttpClient, Gson gson) {
+    return null;
+  }
+
+  @SuppressWarnings("unused")
+  public static LAORequestFactory provideRequestFactory() {
     return null;
   }
 

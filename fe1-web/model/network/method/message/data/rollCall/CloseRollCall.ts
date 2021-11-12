@@ -7,6 +7,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness, checkAttendees } from '../Checker';
 
+/** Data sent to close a Roll-Call event */
 export class CloseRollCall implements MessageData {
   public readonly object: ObjectType = ObjectType.ROLL_CALL;
 
@@ -52,6 +53,10 @@ export class CloseRollCall implements MessageData {
     this.update_id = msg.update_id;
   }
 
+  /**
+   * Creates a CloseRollCall object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): CloseRollCall {
     const { errors } = validateDataObject(ObjectType.ROLL_CALL, ActionType.CLOSE, obj);
 
