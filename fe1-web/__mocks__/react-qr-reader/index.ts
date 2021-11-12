@@ -1,9 +1,18 @@
 import PropTypes from 'prop-types';
-import STRINGS from "../../res/strings";
+import STRINGS from 'res/strings';
+import { useToast } from 'react-native-toast-notifications';
 
 const QrReader = (props: IPropTypes) => {
-  const { onScan } = props;
-  const { onError } = props;
+  // const { onScan } = props;
+  // const { onError } = props;
+  const toast = useToast();
+  return (
+    toast.show(STRINGS.roll_call_scan_participant, {
+      type: 'success',
+      placement: 'top',
+      duration: 4000,
+    })
+  );
 };
 
 const propTypes = {
@@ -12,22 +21,14 @@ const propTypes = {
 };
 QrReader.prototype = propTypes;
 
+/*
 QrReader.defaultProps = {
   onScan:
-}
+} */
+
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 export default QrReader;
 
-const onScan = (data: String) => {
-  // but I want to add attendees to the list
-  // this is too specific
-  toast.show(STRINGS.roll_call_scan_participant, {
-    type: 'success',
-    placement: 'top',
-    duration: 4000,
-  });
-}
-
-export const fireScan = (data: string) => {
+/* export const fireScan = (data: string) => {
   QrReader.prototype.onScan(data);
-};
+}; */
