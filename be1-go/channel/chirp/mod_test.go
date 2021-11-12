@@ -15,7 +15,6 @@ import (
 	"popstellar/channel"
 	generalChriping "popstellar/channel/generalChirping"
 	"popstellar/crypto"
-	"popstellar/hub"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -234,8 +233,4 @@ func (h *fakeHub) GetPubkey() kyber.Point {
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
-}
-
-func (h *fakeHub) Type() hub.HubType {
-	return hub.OrganizerHubType
 }
