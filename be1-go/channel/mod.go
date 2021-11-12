@@ -1,6 +1,7 @@
 package channel
 
 import (
+	"popstellar/hub"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -86,4 +87,5 @@ type HubFunctionalities interface {
 	GetPubkey() kyber.Point
 	GetSchemaValidator() validation.SchemaValidator
 	RegisterNewChannel(channelID string, channel Channel)
+	Type() hub.HubType
 }

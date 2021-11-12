@@ -1,4 +1,4 @@
-package generalChriping
+package generalChirping
 
 import (
 	"encoding/base64"
@@ -8,6 +8,7 @@ import (
 	"popstellar/channel"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
+	"popstellar/hub"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -233,7 +234,7 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
-	ok := c.hub.GetPubkey().Equal(senderPoint)
+	ok := c.hub.GetPubkey().Equal(senderPoint) && c.hub.Type() == hub.OrganizerHubType
 	if !ok {
 		return answer.NewError(-4, "only organizer can broadcast the chirp messages")
 	}

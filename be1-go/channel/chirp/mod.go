@@ -8,7 +8,7 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
-	generalChriping "popstellar/channel/generalChirping"
+	generalChirping "popstellar/channel/generalChirping"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
@@ -26,7 +26,7 @@ const msgID		 = "msg id"
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-				generalChannel *generalChriping.Channel, log zerolog.Logger) Channel {
+				generalChannel *generalChirping.Channel, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "chirp").Logger()
 
@@ -45,7 +45,7 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 type Channel struct {
 	sockets   channel.Sockets
 	inbox     *inbox.Inbox
-	generalChannel *generalChriping.Channel
+	generalChannel *generalChirping.Channel
 	// channel path
 	channelID string
 	owner string
@@ -89,6 +89,8 @@ func (c *Channel) Publish(publish method.Publish) error {
 		default:
 			return answer.NewInvalidActionError(action)
 		}
+	} else {
+		return xerrors.Errorf("object should be \"chirp\" but is %s", object)
 	}
 
 	if err != nil {
@@ -230,7 +232,7 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(catchup.ID)).
-		Msg("received a subscribe")
+		Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
 }
@@ -301,7 +303,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 func (c *Channel) publishAddChirp(msg message.Message) error {
 	err := c.verifyAddChirpMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to get and verify vote message: %v", err)
+		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
 	c.inbox.StoreMessage(msg)
 	return nil
@@ -310,7 +312,7 @@ func (c *Channel) publishAddChirp(msg message.Message) error {
 func (c *Channel) publishDeleteChirp(msg message.Message) error {
 	err := c.verifyDeleteChirpMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to get and verify vote message: %v", err)
+		return xerrors.Errorf("failed to verify delete chirp message: %v", err)
 	}
 	c.inbox.StoreMessage(msg)
 	return nil
@@ -336,8 +338,7 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
-	ok := msg.Sender == c.owner
-	if !ok {
+	if msg.Sender != c.owner {
 		return answer.NewError(-4, "only the owner of the channel can post chirps")
 	}
 
@@ -357,7 +358,7 @@ func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
 	}
 
-	m, b := c.inbox.GetMessage(chirpMsg.ChirpId)
+	_, b := c.inbox.GetMessage(chirpMsg.ChirpId)
 	if !b {
 		return xerrors.Errorf("the message to be deleted was not found")
 	}
@@ -368,15 +369,8 @@ func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
-
-	ok := msg.Sender == c.owner
-	if !ok {
-	return answer.NewError(-4, "only the owner of the channel can delete chirps")
-	}
-
-	ok = m.Sender == msg.Sender
-	if !ok {
-		return answer.NewError(-4, "only the one that has send the chirp can delete it")
+	if msg.Sender != c.owner {
+		return answer.NewError(-4, "only the owner of the channel can delete chirps")
 	}
 
 	return nil
