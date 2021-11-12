@@ -40,7 +40,7 @@ func (message ConsensusElect) Verify() error {
 	)
 
 	if message.InstanceID != expectedID {
-		return xerrors.Errorf("invalid ConsensusStart message: invalid ID")
+		return xerrors.Errorf("instance id is %s, should be %s", message.InstanceID, expectedID)
 	}
 
 	// verify CreatedAt is positive
