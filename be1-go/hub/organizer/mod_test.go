@@ -129,10 +129,13 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 
 	hub.channelByID[rootPrefix+laoID] = c
 
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
+	require.NoError(t, err)
+	
 	msg := message.Message{
 		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
