@@ -3,6 +3,8 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.objects.{Channel, PublicKey}
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.dataObject.LaoData
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
@@ -50,11 +52,31 @@ case object RollCallHandler extends MessageHandler {
   }
 
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //FIXME: need to create one channel per participant (their PK as channel id?)
     //FIXME: subscribe clients to main social channel
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
+
+        //Creates a channel for each attendee (of name /root/social/PublicKeyAttendee), returns a GraphMessage
+        def createAttendeeChannels(attendees: List[PublicKey], rpcMessage: JsonRpcRequest): GraphMessage = {
+          attendees match {
+            case Nil => Left(rpcMessage)
+            case head::Nil => 
+              val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel("/root/social/" + head.toString), ObjectType.CHIRP)).map {
+                case DbActorWriteAck => Left(rpcMessage)
+                case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+                case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+              }
+              Await.result(ask, duration)
+            case head::tail => 
+              val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel("/root/social/" + head.toString), ObjectType.CHIRP)).map {
+                case DbActorWriteAck => createAttendeeChannels(tail, rpcMessage)
+                case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+                case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+              }
+              Await.result(ask, duration)
+          }
+        }
 
         val askOldData = dbActor ? DbActor.ReadLaoData()
         
@@ -62,7 +84,7 @@ case object RollCallHandler extends MessageHandler {
           case DbActorReadLaoDataAck(Some(oldLaoData)) =>
             val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees)
             val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(rpcMessage.getParamsChannel, message, laoData)).map {
-              case DbActorWriteAck => Left(rpcMessage)
+              case DbActorWriteAck => createAttendeeChannels(data.attendees, rpcMessage)
               case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
               case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
             }

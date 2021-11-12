@@ -7,7 +7,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.{MessageData, ObjectType}
 import ch.epfl.pop.model.network.method.message.data.dataObject._
 import ch.epfl.pop.model.objects.{Channel, Hash, Signature}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator, PublishSubscribe}
@@ -221,7 +221,7 @@ object DbActor extends AskPatternConstants {
           log.info(s"Channel '$channel' already exists.")
         case _ =>
           //FIXME: handle type of message (is it actually a problem or is the MessageExample coded in a weird way?)
-          //val objectType = message.decodedData.get._object //or some other way, then match using match case and establish channel type
+          //val objectType = message.decodedData.getOrElse(null)._object //or some other way, then match using match case and establish channel type
           val objectType = ObjectType.LAO
           val actualObjectType = if (objectType == ObjectType.ELECTION || objectType == ObjectType.CHIRP){
             objectType
@@ -301,7 +301,7 @@ object DbActor extends AskPatternConstants {
         case Success(bytes) if bytes != null =>
           log.info(s"Channel '$channel' already exists.")
         case _ =>
-          //FIXME: handle type of message (is it actually a problem or is the MessageExample coded in a weird way?)
+          //FIXME: handle type of message (is it actually a problem or is the MessageExample coded in a weird way?) needed here?
           //val objectType: ObjectType.ObjectType = message.decodedData.get._object //or some other way, then match using match case and establish channel type
           val objectType = ObjectType.LAO
           val actualObjectType = if (objectType == ObjectType.ELECTION || objectType == ObjectType.CHIRP){

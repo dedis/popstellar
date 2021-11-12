@@ -18,8 +18,8 @@ case class ChannelData(
         that.toJson.toString
     }
 
-    def addMessage(message: Hash): ChannelData = {
-        ChannelData(channel_type, message :: messages)
+    def addMessage(messageId: Hash): ChannelData = {
+        ChannelData(channel_type, messageId :: messages)
     }
     
 }
