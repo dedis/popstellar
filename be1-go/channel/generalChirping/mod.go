@@ -233,10 +233,11 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
-	ok := c.hub.GetPubkey().Equal(senderPoint)
-	if !ok {
-		return answer.NewError(-4, "only organizer can broadcast the chirp messages")
-	}
+	// temporary - TODO
+	//ok := c.hub.GetPubkey().Equal(senderPoint)
+	//if !ok {
+		//return answer.NewError(-4, "only organizer can broadcast the chirp messages")
+	//}
 
 	return nil
 }

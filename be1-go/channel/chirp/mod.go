@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
 	generalChriping "popstellar/channel/generalChirping"
@@ -104,6 +106,24 @@ func (c *Channel) Publish(publish method.Publish) error {
 	return nil
 }
 
+type keypairTemp struct {
+	public    kyber.Point
+	publicBuf []byte
+	private   kyber.Scalar
+}
+
+var suiteTemp = crypto.Suite
+
+func generateKeyPairTemp() keypairTemp {
+	secret := suiteTemp.Scalar().Pick(suiteTemp.RandomStream())
+	point := suiteTemp.Point().Mul(secret, nil)
+
+	pkbuf, err := point.MarshalBinary()
+	_ = err
+
+	return keypairTemp{point, pkbuf, secret}
+}
+
 func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
@@ -136,12 +156,23 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	pkOrganizer, err := c.hub.GetPubkey().MarshalBinary()
+	// Temporary solution until solution for the organizer private key TODO
 
-	if err != nil {
-		return xerrors.Errorf("could not get the public key of the organizer:", err)
-	}
-	pkOrganizer64 := base64.URLEncoding.EncodeToString(pkOrganizer)
+	//pkOrganizer, err := c.hub.GetPubkey().MarshalBinary()
+
+	// if err != nil {
+	// return xerrors.Errorf("could not get the public key of the organizer: %v", err)
+	// }
+
+	//pkOrganizer64 := base64.URLEncoding.EncodeToString(pkOrganizer)
+
+	keyPair := generateKeyPairTemp()
+	pk := keyPair.publicBuf
+	privateKey := keyPair.private
+	signatureBuf, err := schnorr.Sign(crypto.Suite, privateKey, dataBuf)
+	_ = err
+
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
@@ -157,9 +188,9 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 			c.channelID,
 			message.Message{
 				Data: newData64,
-				Sender: pkOrganizer64,
-				Signature: pkOrganizer64,
-				MessageID: msg.MessageID,
+				Sender: base64.URLEncoding.EncodeToString(pk),
+				Signature: signature,
+				MessageID: messagedata.Hash(newData64, signature),
 				WitnessSignatures: msg.WitnessSignatures,
 			},
 		},

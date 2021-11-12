@@ -5,9 +5,11 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
+	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/hub"
 	jsonrpc "popstellar/message"
@@ -42,6 +44,8 @@ const (
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
 )
+
+var suite = crypto.Suite
 
 // Hub implements the Hub interface.
 type Hub struct {
@@ -291,12 +295,43 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	return nil
 }
 
+func verifySignature(publicKey string, signature string, data string) error {
+	pk, err := base64.URLEncoding.DecodeString(publicKey)
+	if err != nil {
+		return xerrors.Errorf("failed to decode the public key")
+	}
+	var point = suite.Point()
+	err = point.UnmarshalBinary(pk)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal the public key")
+	}
+
+	s, err := base64.URLEncoding.DecodeString(signature)
+	if err != nil {
+		return xerrors.Errorf("failed to decode the signature")
+	}
+
+	d, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode the data")
+	}
+
+	return schnorr.VerifyWithChecks(crypto.Suite, pk, d, s)
+}
+
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
 	var publish method.Publish
 
 	err := json.Unmarshal(byteMessage, &publish)
 	if err != nil {
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
+	}
+
+	// validates the signature of the publish message
+	m := publish.Params.Message
+	err = verifySignature(m.Sender, m.Signature, m.Data)
+	if err != nil {
+		return -1, xerrors.Errorf("failed to verify signature of message: %v", err)
 	}
 
 	if publish.Params.Channel == "/root" {
