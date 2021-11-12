@@ -43,7 +43,7 @@ case object LaoHandler extends MessageHandler {
         val laoData: LaoData = LaoData(message.sender, List(message.sender)) //so that the operations the owner does next are authorized
         val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(channel, message, laoData)).map {
         //val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
-          case DbActorWriteAck => Left(rpcMessage)
+          case DbActorWriteAck() => Left(rpcMessage)
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
