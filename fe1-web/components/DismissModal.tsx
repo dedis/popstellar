@@ -21,7 +21,6 @@ const DismissModal = (props: IPropTypes) => {
   return (
     <Modal
       visible={visibility}
-      onRequestClose={() => setVisibility(!visibility)}
       transparent
     >
       <View style={styles.modalView}>
