@@ -8,6 +8,8 @@ import RollCallOpened from '../RollCallOpened';
 import QrReader from 'react-qr-reader';
 import STRINGS from "res/strings";
 import { useToast } from 'react-native-toast-notifications';
+import { useRoute } from '@react-navigation/core';
+jest.mock('@react-navigation/core');
 
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
 export const mockSecretKey = new PrivateKey(keyPair.privateKey);
@@ -20,20 +22,33 @@ const mockLaoId: Hash = Hash.fromStringArray(org.toString(), time.toString(), na
 const rollCallId = Hash.fromStringArray('R', mockLaoId.toString(), time.toString(), name.toString());
 
 jest.mock('react-qr-reader', () => function onScan() {
-  const mockToast = useToast();
+  /* const mockToast = useToast();
   return (
     mockToast.show('Scanned', {
       type: 'success',
       placement: 'top',
       duration: 4000,
     })
-  );
+  ); */
+  console.log('participants + 1');
 });
+
+beforeEach(() => {
+  useRoute = jest.fn();
+});
+
+// const useRoute = jest.spyOn(require('@react-navigation/core'), 'useRoute');
 
 describe('RollCallOpened', () => {
   it('renders correctly when no scan', () => {
+    const route = {
+      params: { rollCallId: rollCallId.toString(), time: time.toString() },
+    };
+    useRoute.mockImplementationOnce(() => ({
+      route: route,
+    }));
     const { toJSON } = render(
-      <RollCallOpened rollCallID={rollCallId} time={time} />,
+      <RollCallOpened />,
     );
     expect(toJSON()).toMatchSnapshot();
   });
