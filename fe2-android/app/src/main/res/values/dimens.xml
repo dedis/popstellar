@@ -4,9 +4,10 @@
   <!-- Tabs -->
   <dimen name="guideline_horizontal_tab">0.08</dimen>
   <dimen name="guideline_horizontal_bottom">0.92</dimen>
-  <dimen name="guideline_vertical_tab_home">0.25</dimen>
-  <dimen name="guideline_vertical_tab_connect">0.50</dimen>
-  <dimen name="guideline_vertical_tab_wallet">0.75</dimen>
+  <dimen name="guideline_vertical_tab_home">0.20</dimen>
+  <dimen name="guideline_vertical_tab_connect">0.40</dimen>
+  <dimen name="guideline_vertical_tab_wallet">0.60</dimen>
+  <dimen name="guideline_vertical_tab_social_media">0.80</dimen>
 
   <!-- Text -->
   <dimen name="margin_text">32dp</dimen>

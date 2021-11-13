@@ -8,6 +8,7 @@
   <string name="tab_wallet">Wallet</string>
   <string name="tab_identity">Identity</string>
   <string name="tab_properties">Show/Hide Properties</string>
+  <string name="tab_social_media">Chirp</string>
 
   <!-- Home -->
   <string name="text_title_welcome">Welcome to Personhood.Online!</string>
