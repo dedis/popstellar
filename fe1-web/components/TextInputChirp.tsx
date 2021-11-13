@@ -38,7 +38,8 @@ const TextInputChirp = (props: IPropTypes) => {
   const { onChangeText } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
-  const publishIsDisabled = charsLeft < 0;
+  const textIsRed = charsLeft < 0;
+  const publishIsDisabled = textIsRed || charsLeft === MAX_CHIRP_CHARS;
 
   return (
     <View style={styles.viewPublishChirp}>
@@ -53,7 +54,7 @@ const TextInputChirp = (props: IPropTypes) => {
         }}
       />
       <View style={styles.buttonView}>
-        <TextBlock text={charsLeft.toString()} color={publishIsDisabled ? red : undefined} />
+        <TextBlock text={charsLeft.toString()} color={textIsRed ? red : undefined} />
         <Button
           title={STRINGS.button_publish}
           onPress={() => onPress()}

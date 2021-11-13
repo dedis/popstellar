@@ -41,15 +41,8 @@ public class ConsensusTest {
 
   @Test
   public void setAndGetIdTest() {
-    // Hash("consensus"||created_at||key:type||key:id||key:property||value)
-    String expectedId =
-        Hash.hash(
-            "consensus",
-            Long.toString(creationInSeconds),
-            type,
-            objId,
-            property,
-            String.valueOf(value));
+    // Hash("consensus"||key:type||key:id||key:property)
+    String expectedId = Hash.hash("consensus", type, objId, property);
     assertEquals(expectedId, consensus.getId());
 
     String newId = Hash.hash("newId");
@@ -123,16 +116,8 @@ public class ConsensusTest {
 
   @Test
   public void generateConsensusIdTest() {
-    // Hash("consensus"||created_at||key:type||key:id||key:property||value)
-    String expectedId =
-        Hash.hash(
-            "consensus",
-            Long.toString(creationInSeconds),
-            type,
-            objId,
-            property,
-            String.valueOf(value));
-    assertEquals(
-        expectedId, Consensus.generateConsensusId(creationInSeconds, type, objId, property, value));
+    // Hash(“consensus”||key:type||key:id||key:property)
+    String expectedId = Hash.hash("consensus", type, objId, property);
+    assertEquals(expectedId, Consensus.generateConsensusId(type, objId, property));
   }
 }

@@ -25,15 +25,8 @@ public class ConsensusElectTest {
 
   @Test
   public void getInstanceIdTest() {
-    // Hash("consensus"||created_at||key:type||key:id||key:property||value)
-    String expectedId =
-        Hash.hash(
-            "consensus",
-            Long.toString(timeInSeconds),
-            type,
-            objId,
-            property,
-            String.valueOf(value));
+    // Hash("consensus"||key:type||key:id||key:property)
+    String expectedId = Hash.hash("consensus", type, objId, property);
     assertEquals(expectedId, consensusElect.getInstanceId());
   }
 

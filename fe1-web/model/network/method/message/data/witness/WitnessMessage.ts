@@ -22,6 +22,10 @@ export class WitnessMessage implements MessageData {
     this.signature = msg.signature;
   }
 
+  /**
+   * Creates a WitnessMessage from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): WitnessMessage {
     const { errors } = validateDataObject(ObjectType.MESSAGE, ActionType.WITNESS, obj);
 

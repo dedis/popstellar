@@ -1,11 +1,11 @@
 {
     "object": "consensus",
     "action": "elect",
-    "instance_id": "0bknjMZT1rVyyHJbRQBGl0CjCIxUnSmZcnI1XNIdCpM=",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
     "created_at": 1634553005,
     "key": {
         "type": "election",
-        "id": "-t0xoQZa-ryiW18JnTjJHCsCNehFxuXOFOsfgKHHkj0=",
+        "id": "GXVFZVHlVNpOJsdRsJkUmJW2hnrd9n_vKtEc7P6FMF4=",
         "property": "state"
     },
     "value": "started"
