@@ -1,5 +1,5 @@
+import { KeyPairStore } from 'store';
 import { Hash } from './Hash';
-import { KeyPairStore } from '../../store';
 
 export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
