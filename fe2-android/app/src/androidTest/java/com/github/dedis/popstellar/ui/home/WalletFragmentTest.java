@@ -64,8 +64,8 @@ public class WalletFragmentTest {
                 childAtPosition(
                     allOf(
                         withId(R.id.tab_wallet_only),
-                        childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                        childAtPosition(withId(R.id.fragment_container_home), 3)),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
