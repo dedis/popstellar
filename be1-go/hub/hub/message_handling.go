@@ -45,7 +45,6 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
 		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, but found %s#%s", object, action)
-		h.log.Err(err)
 		sock.SendError(&publish.ID, err)
 		return err
 	}
@@ -86,7 +85,7 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) 
 		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
 	}
 
-	if catchup.Params.Channel != "/root" {
+	if catchup.Params.Channel != rootChannel {
 		return nil, catchup.ID, xerrors.Errorf("server catchup message can only be sent on /root channel")
 	}
 
@@ -163,7 +162,7 @@ func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) 
 	h.hubInbox.StoreMessage(publish.Params.Message)
 	h.Unlock()
 
-	if publish.Params.Channel == "/root" {
+	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMesssage(socket, publish)
 		if err != nil {
 			return xerrors.Errorf("failed to handle root channel message: %v", err)
@@ -198,7 +197,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return publish.ID, nil
 	}
 
-	if publish.Params.Channel == "/root" {
+	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMesssage(socket, publish)
 		if err != nil {
 			return publish.ID, xerrors.Errorf("failed to handle root channel message: %v", err)
@@ -269,7 +268,7 @@ func (h *Hub) handleCatchup(socket socket.Socket, byteMessage []byte) ([]message
 		return nil, -1, xerrors.Errorf("failed to unmarshal catchup message: %v", err)
 	}
 
-	if catchup.Params.Channel == "/root" {
+	if catchup.Params.Channel == rootChannel {
 		return h.handleRootCatchup(socket, byteMessage)
 	}
 

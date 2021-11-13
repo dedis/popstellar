@@ -27,9 +27,12 @@ import (
 )
 
 const (
+	// rootChannel denotes the id of the root channel
+	rootChannel = "/root"
+
 	// rootPrefix denotes the prefix for the root channel
 	// used to keep an image of the laos
-	rootPrefix = "/root/"
+	rootPrefix = rootChannel + "/"
 
 	// Strings used to return error messages in relation with a database
 	dbPrepareErr  = "failed to prepare query: %v"
@@ -37,6 +40,8 @@ const (
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
 
+	// numWorkers denote the number of worker go-routines
+	// allowed to process requests concurrently.
 	numWorkers = 10
 )
 
@@ -107,8 +112,8 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory, h
 		log:             log,
 		laoFac:          laoFac,
 		serverSockets:   channel.NewSockets(),
-		hubInbox:        *inbox.NewInbox("/root"),
-		rootInbox:       *inbox.NewInbox("/root"),
+		hubInbox:        *inbox.NewInbox(rootChannel),
+		rootInbox:       *inbox.NewInbox(rootChannel),
 		queries:         queries{state: make(map[int]*bool), queries: make(map[int]method.Catchup), nextID: 0},
 	}
 
@@ -181,7 +186,7 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 func (h *Hub) AddServerSocket(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
 
-	return h.CatchupToServer(socket, "/root")
+	return h.CatchupToServer(socket, rootChannel)
 }
 
 // CatchupToServer sends a catchup query to another server
@@ -251,7 +256,6 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	// validate against json schema
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
-		h.log.Err(err).Msg("message is not valid against json schema")
 		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
 		socket.SendError(nil, schemaErr)
 		return schemaErr
@@ -259,14 +263,12 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 
 	rpctype, err := jsonrpc.GetType(byteMessage)
 	if err != nil {
-		h.log.Err(err).Msg("failed to get rpc type")
 		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
 		socket.SendError(nil, rpcErr)
 		return rpcErr
 	}
 
 	if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msg("rpc message sent by a client should be a query")
 		rpcErr := xerrors.New("rpc message sent by a client should be a query")
 		socket.SendError(nil, rpcErr)
 		return rpcErr
@@ -277,7 +279,6 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
-		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
 	}
@@ -297,14 +298,12 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
-		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
-		h.log.Err(err)
 		socket.SendError(&id, err)
 		return err
 	}
@@ -326,7 +325,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	// validate against json schema
 	err := h.schemaValidator.VerifyJSON(byteMessage, validation.GenericMessage)
 	if err != nil {
-		h.log.Err(err).Msg("message is not valid against json schema")
 		schemaErr := xerrors.Errorf("message is not valid against json schema: %v", err)
 		socket.SendError(nil, schemaErr)
 		return schemaErr
@@ -334,7 +332,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 
 	rpctype, err := jsonrpc.GetType(byteMessage)
 	if err != nil {
-		h.log.Err(err).Msg("failed to get rpc type")
 		rpcErr := xerrors.Errorf("failed to get rpc type: %v", err)
 		socket.SendError(nil, rpcErr)
 		return rpcErr
@@ -345,13 +342,11 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		err = h.handleAnswer(socket, byteMessage)
 		if err != nil {
 			err = answer.NewErrorf(-4, "failed to handle answer message: %v", err)
-			h.log.Err(err)
 			socket.SendError(nil, err)
 			return err
 		}
 		return nil
 	} else if rpctype != jsonrpc.RPCTypeQuery {
-		h.log.Error().Msg("jsonRPC is of unknown type")
 		rpcErr := xerrors.New("jsonRPC is of unknown type")
 		socket.SendError(nil, rpcErr)
 		return rpcErr
@@ -362,7 +357,6 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 	err = json.Unmarshal(byteMessage, &queryBase)
 	if err != nil {
 		err := answer.NewErrorf(-4, "failed to unmarshal incoming message: %v", err)
-		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
 	}
@@ -382,14 +376,12 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
-		h.log.Err(err)
 		socket.SendError(nil, err)
 		return err
 	}
 
 	if handlerErr != nil {
 		err := answer.NewErrorf(-4, "failed to handle method: %v", handlerErr)
-		h.log.Err(err)
 		socket.SendError(&id, err)
 		return err
 	}
@@ -418,7 +410,6 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 	case socket.OrganizerSocketType:
 		return h.handleMessageFromServer(incomingMessage)
 	default:
-		h.log.Error().Msg("invalid socket type")
 		return xerrors.Errorf("invalid socket type")
 	}
 
@@ -443,7 +434,6 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 	laoChannelPath := rootPrefix + laoCreate.ID
 
 	if _, ok := h.channelByID[laoChannelPath]; ok {
-		h.log.Error().Msgf("failed to create lao: duplicate lao path: %q", laoChannelPath)
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 

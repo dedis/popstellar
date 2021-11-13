@@ -633,8 +633,7 @@ var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())
-	point := suite.Point().Pick(suite.RandomStream())
-	point = point.Mul(secret, point)
+	point := suite.Point().Mul(secret, nil)
 
 	pkbuf, err := point.MarshalBinary()
 	require.NoError(t, err)

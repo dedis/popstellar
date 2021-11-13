@@ -89,7 +89,7 @@ func (s *baseSocket) ReadPump() {
 					Str("socket", s.conn.RemoteAddr().String()).
 					Msg("connection dropped unexpectedly")
 			} else {
-				s.log.Err(err).Msg("closing the read pump")
+				s.log.Info().Msg("closing the read pump")
 			}
 			break
 		}

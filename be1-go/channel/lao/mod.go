@@ -81,6 +81,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	err = organizerPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
 		log.Err(err).Msgf(keyUnmarshalError, err)
+		return nil
 	}
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
