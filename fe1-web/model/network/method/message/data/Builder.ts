@@ -3,13 +3,19 @@ import { ActionType, MessageData, ObjectType } from './MessageData';
 import { CreateLao, StateLao, UpdateLao } from './lao';
 import { CreateMeeting, StateMeeting } from './meeting';
 import {
-  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
+  CloseRollCall,
+  CreateRollCall,
+  OpenRollCall,
+  ReopenRollCall,
 } from './rollCall';
 import { WitnessMessage } from './witness';
 import {
-  CastVote, ElectionResult, EndElection, SetupElection,
+  CastVote,
+  ElectionResult,
+  EndElection,
+  SetupElection,
 } from './election';
-import { AddChirp } from './chirp/AddChirp';
+import { AddChirp, AddBroadcastChirp } from './chirp';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -74,6 +80,8 @@ function buildChirpMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.ADD:
       return AddChirp.fromJson(msgData);
+    case ActionType.ADD_BROADCAST:
+      return AddBroadcastChirp.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while adding a chirp MessageData`);
   }
