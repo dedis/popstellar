@@ -27,8 +27,11 @@ final case class Channel(channel: String) {
    * @example extractChannelId(Channel("/root/mEKXWFCMwb") == Hash(Base64Data("mEKXWFCMwb"))
    */
   def extractChildChannel: Hash = {
-      val c = channel.split(Channel.SEPARATOR) //Might return empty array
-      Hash(Base64Data(if(c.isEmpty) "" else c.last))
+      //After successful channel creation
+      //c cannot be empty
+      val c = channel.split(Channel.SEPARATOR)
+      assert(!c.isEmpty)
+      Hash(Base64Data( c.last))
   }
 
   def isRootChannel: Boolean = channel == Channel.rootChannel.channel
