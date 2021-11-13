@@ -69,6 +69,7 @@
   "devDependencies": {
     "@babel/core": "~7.9.0",
     "@expo/webpack-config": "~0.12.63",
+    "@testing-library/react-native": "^8.0.0",
     "@types/base-64": "^0.1.3",
     "@types/chai": "^4.2.14",
     "@types/color": "^3.0.1",
@@ -99,6 +100,7 @@
     "jest-localstorage-mock": "^2.4.6",
     "jest-matcher-utils": "^26.6.2",
     "jest-sonar-reporter": "^2.0.0",
+    "react-test-renderer": "^17.0.2",
     "ts-jest": "^26.5.1",
     "typescript": "~4.0.0"
   },

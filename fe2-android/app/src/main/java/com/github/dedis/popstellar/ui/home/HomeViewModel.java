@@ -65,6 +65,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenSettingsEvent = new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -278,6 +279,10 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenLaoWalletEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenSettingsEvent() {
+    return mOpenSettingsEvent;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -326,6 +331,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openLaunch() {
     mOpenLaunchEvent.setValue(new SingleEvent<>(true));
+  }
+
+  public void openSettings() {
+    mOpenSettingsEvent.setValue(new SingleEvent<>(true));
   }
 
   public void launchNewLao() {

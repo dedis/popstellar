@@ -199,4 +199,11 @@
   <string name="message_signed">MESSAGE SIGNED</string>
   <string name="witness_messages">WITNESS MESSAGES</string>
   <string name="delete_a_witness">delete a witness</string>
+
+  <!-- Settings -->
+  <string name="settings">Settings</string>
+  <string name="server_url">Server URL</string>
+  <string name="text_hint_server_url">Enter the server URL</string>
+  <string name="apply_button">APPLY</string>
+
 </resources>

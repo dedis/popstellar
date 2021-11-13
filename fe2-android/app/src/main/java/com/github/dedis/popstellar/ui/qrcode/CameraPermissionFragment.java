@@ -6,32 +6,41 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.ActivityResultRegistry;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 
-import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
-import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
-import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
-import com.github.dedis.popstellar.ui.home.HomeActivity;
 
 /** Fragment handling permission granting for the camera */
 public final class CameraPermissionFragment extends Fragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
-
-  private static final int HANDLE_CAMERA_PERM = 2;
+  public static final String REQUEST_KEY = "PERMISSION_REQUEST";
 
   private QrcodeCameraPermFragmentBinding mCameraPermFragBinding;
-  private CameraPermissionViewModel mCameraPermissionViewModel;
+  private final ActivityResultLauncher<String> requestPermissionLauncher;
 
-  public static CameraPermissionFragment newInstance() {
-    return new CameraPermissionFragment();
+  public CameraPermissionFragment(@NonNull ActivityResultRegistry resultRegistry) {
+    requestPermissionLauncher =
+        registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            resultRegistry,
+            isGranted -> {
+              if (Boolean.TRUE.equals(isGranted)) {
+                getParentFragmentManager().setFragmentResult(REQUEST_KEY, Bundle.EMPTY);
+              }
+            });
+  }
+
+  public static CameraPermissionFragment newInstance(
+      @NonNull ActivityResultRegistry resultRegistry) {
+    return new CameraPermissionFragment(resultRegistry);
   }
 
   @Override
@@ -39,40 +48,19 @@ public final class CameraPermissionFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+    super.onCreateView(inflater, container, savedInstanceState);
 
     mCameraPermFragBinding = QrcodeCameraPermFragmentBinding.inflate(inflater, container, false);
-
-    FragmentActivity activity = getActivity();
-    if (activity instanceof HomeActivity) {
-      mCameraPermissionViewModel = HomeActivity.obtainViewModel(activity);
-    } else if (activity instanceof LaoDetailActivity) {
-      mCameraPermissionViewModel = LaoDetailActivity.obtainViewModel(activity);
-    } else {
-      throw new IllegalArgumentException("cannot obtain view model for " + TAG);
-    }
-
-    mCameraPermFragBinding.setLifecycleOwner(activity);
+    mCameraPermFragBinding.setLifecycleOwner(getViewLifecycleOwner());
 
     return mCameraPermFragBinding.getRoot();
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
 
-    Button back = requireActivity().findViewById(R.id.tab_back);
-    back.setOnClickListener(c -> ((LaoDetailViewModel) mCameraPermissionViewModel).openLaoDetail());
     setupCameraPermissionButton();
-  }
-
-  @Override
-  public void onRequestPermissionsResult(
-      int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    if (requestCode == HANDLE_CAMERA_PERM
-        && grantResults.length != 0
-        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-      mCameraPermissionViewModel.onPermissionGranted();
-    }
   }
 
   @Override
@@ -81,12 +69,12 @@ public final class CameraPermissionFragment extends Fragment {
     // If the permission was granted while the app was paused, switch to QRCodeScanningFragment
     if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
-      mCameraPermissionViewModel.onPermissionGranted();
+      getParentFragmentManager().setFragmentResult(REQUEST_KEY, Bundle.EMPTY);
     }
   }
 
   private void setupCameraPermissionButton() {
     mCameraPermFragBinding.allowCameraButton.setOnClickListener(
-        v -> requestPermissions(new String[] {Manifest.permission.CAMERA}, HANDLE_CAMERA_PERM));
+        v -> requestPermissionLauncher.launch(Manifest.permission.CAMERA));
   }
 }
