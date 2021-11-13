@@ -1,4 +1,6 @@
+import scala.util.{Try, Success, Failure}
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
+import sbt.IO._
 
 name := "pop"
 
@@ -6,6 +8,30 @@ version := "0.1"
 
 scalaVersion := "2.13.5"
 
+//Create task to copy the protocol folder to resources
+lazy val copyProtocolTask = taskKey[Unit]("Copy protocol to resources")
+copyProtocolTask := {
+    val log = streams.value.log
+    log.info("Executing Protocol folder copy...")
+    val scalaDest = "be2-scala"
+    baseDirectory.value.name
+    if(! baseDirectory.value.name.equals(scalaDest)){
+        log.error(s"Please make sure you working dir is $scalaDest !")
+    }else{
+        val source = new File("../protocol")
+        val dest   = new File("./src/main/resources/protocol")
+        Try(IO.copyDirectory(source,dest, true)) match {
+            case Success(_) => log.info("Copied !!")
+            case Failure(exception) =>
+                log.error("Could not copy protocol to ressource folder")
+                exception.printStackTrace()
+        }
+    }
+}
+//Add task to compile time
+(Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
+
+//Setup main calass task context/confiuration
 mainClass in (Compile, run) := Some("ch.epfl.pop.Server")
 mainClass in (Compile, packageBin) := Some("ch.epfl.pop.Server")
 
@@ -13,7 +39,7 @@ lazy val scoverageSettings = Seq(
   coverageEnabled in Compile := true,
   coverageEnabled in Test := true,
   coverageEnabled in packageBin := false,
-  
+
 )
 
 
@@ -28,10 +54,10 @@ scalacOptions in Scapegoat += "-P:scapegoat:overrideLevels:all=Warning"
 sonarProperties := Map(
   "sonar.organization" -> "dedis",
   "sonar.projectKey" -> "dedis_student_21_pop_be2",
-  
+
   "sonar.sources" -> "src/main/scala",
   "sonar.tests" -> "src/test/scala",
-  
+
   "sonar.sourceEncoding" -> "UTF-8",
   "sonar.scala.version" -> "2.13.5",
   // Paths to the test and coverage reports
