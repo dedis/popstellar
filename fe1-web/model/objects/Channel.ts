@@ -18,7 +18,7 @@ export function channelFromIds(...args: Hash[]) : Channel {
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
 export function userSocialChannel(laoIdHash: Hash): Channel {
-  const userPublicKey = KeyPairStore.get().publicKey.valueOf();
+  const userPublicKey = KeyPairStore.getPublicKey().valueOf();
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
 }
 
@@ -33,8 +33,10 @@ export function generalChirpsChannel(laoIdHash: Hash): Channel {
 
 /** Returns the last part of the channel which is usually an event id
  * Example:
- * Input: /root/laoid/electionid
- * Output: electionId
+ * Input: /root/laoID/electionID
+ * Output: electionID
+ *
+ * @param channel - The channel we want the last port
  */
 export function getLastChannel(channel: Channel): Hash {
   const channels = channel.split('/');
