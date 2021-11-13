@@ -16,7 +16,7 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromIds, ROOT_CHANNEL,
+  Channel, channelFromIds, ROOT_CHANNEL, userSocialChannel,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
@@ -289,7 +289,8 @@ export function terminateElection(
 }
 
 export function requestAddChirp(
-  text: string, parent_id: Hash = undefined,
+  text: string,
+  parent_id?: Hash,
 ): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
@@ -300,5 +301,5 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(channelFromIds(currentLao.id), message);
+  return publish(userSocialChannel(currentLao.id), message);
 }
