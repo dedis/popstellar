@@ -27,7 +27,7 @@ describe('Channel object', () => {
       privateKey: PRIVATE_KEY,
     });
     KeyPairStore.store(keyPair);
-    const pk = new PublicKey(PUBLIC_KEY)
+    const pk = new PublicKey(PUBLIC_KEY);
     expect(userSocialChannel(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}/social/${pk}`);
   });
 
