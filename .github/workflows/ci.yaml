@@ -73,12 +73,11 @@ jobs:
 
     - name: Run code analysis
       if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '12.x' }}  # execute even if previous steps failed
-      uses: SonarSource/sonarcloud-github-action@master
-      with:
-        projectBaseDir: fe1-web
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE1 }}
+      run: |
+        npm install -g sonarqube-scanner
+        sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN_FE1 }}
 
     - name: Verify expo project health
       if: ${{ always() }}  # execute even if previous steps failed
@@ -130,7 +129,7 @@ jobs:
 
     - name: Run check target
       run: |
-        make check
+        make check-cov
 
     - name: Run go vet
       run: |
@@ -190,14 +189,11 @@ jobs:
         chmod +x ./gradlew
 
     - name: Build
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE2 }}
       shell: bash
       run: |
         # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
         # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-        ( set -o pipefail; ./gradlew build sonarqube --info | grep -vE "^Transforming artifact(.*) with (Jetify|ExtractAar|Aar)Transform" )
+        ( set -o pipefail; ./gradlew build --info | grep -vE "^Transforming artifact(.*) with (Jetify|ExtractAar|Aar)Transform" )
 
     - name: Unit Tests
       run: |
@@ -212,7 +208,25 @@ jobs:
         emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         working-directory: ./fe2-android
-        script: ./gradlew connectedCheck
+        script: ./gradlew connectedMockDebugAndroidTest
+    
+    - name: Generate Test Coverage
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: 29
+        arch: x86_64
+        profile: pixel_2
+        emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        working-directory: ./fe2-android
+        script: ./gradlew jacocoTestReport --continue
+    
+    - name: SonarCloud Analysis
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE2 }}
+      run: |
+        ./gradlew sonarqube
 
   be2-scala:
     name: Be2-Scala

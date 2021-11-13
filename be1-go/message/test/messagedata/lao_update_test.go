@@ -11,7 +11,7 @@ import (
 )
 
 func Test_Lao_Update(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "lao_update.json")
+	file := filepath.Join(relativeExamplePath, "lao_update", "lao_update.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)

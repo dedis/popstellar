@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
 	jsonrpc "popstellar/message"
@@ -388,6 +390,66 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 }
 
+// Check that if the organizer receives a wrong message, it will send an error
+// with id = null if impossible to recover request id. The fakeSocket
+// abstraction replaces null by -1 for testing.
+func TestOrganizer_HandleWrongMessage(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeMessages := []message.Message{
+		{
+			MessageID: "XXX",
+		},
+	}
+
+	// set fake messages on the channel
+	c := &fakeChannel{
+		msgs: fakeMessages,
+	}
+
+	hub, err := NewHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	laoID := "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	// get the wrong message example
+	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
+		"examples")
+	file := filepath.Join(relativeExamplePath, "wrong_missing_jsonrpc.json")
+
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	publishBuf, err := json.Marshal(&buf)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{id: "fakeID"}
+
+	err = hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+	require.Error(t, err)
+	require.Error(t, sock.err)
+
+	// > check the id
+	require.Equal(t, -1, sock.resultID)
+
+	// > check that there is no errors with messages from witness too
+	err = hub.handleMessageFromWitness(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.Error(t, err)
+	require.Error(t, sock.err)
+
+	// > check the id
+	require.Equal(t, -1, sock.resultID)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
@@ -510,6 +572,11 @@ func (f *fakeSocket) SendResult(id int, res []message.Message) {
 
 // SendError implements socket.Socket
 func (f *fakeSocket) SendError(id *int, err error) {
+	if id != nil {
+		f.resultID = *id
+	} else {
+		f.resultID = -1
+	}
 	f.err = err
 }
 

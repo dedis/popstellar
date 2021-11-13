@@ -10,6 +10,10 @@
         "action": {
             "const": "elect-accept"
         },
+        "instance_id": {
+            "description": "Unique id of the consensus instance taken from the elect message",
+            "type": "string"
+        },
         "message_id": {
             "description": "message_id of the elect message",
             "type": "string"
@@ -23,6 +27,7 @@
     "required": [
         "object",
         "action",
+        "instance_id",
         "message_id",
         "accept"
     ]

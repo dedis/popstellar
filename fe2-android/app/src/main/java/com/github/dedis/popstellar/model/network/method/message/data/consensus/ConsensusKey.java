@@ -40,9 +40,10 @@ public final class ConsensusKey {
       return false;
     }
     ConsensusKey that = (ConsensusKey) o;
-    return java.util.Objects.equals(getType(), that.getType())
-        && java.util.Objects.equals(getId(), that.getId())
-        && java.util.Objects.equals(getProperty(), that.getProperty());
+
+    return Objects.equals(type, that.type)
+        && Objects.equals(id, that.id)
+        && Objects.equals(property, that.property);
   }
 
   @Override
