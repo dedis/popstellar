@@ -2,6 +2,10 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import DismissModal from '../DismissModal';
 
+const TITLE = 'Title';
+const DESCRIPTION = 'Description';
+const OK = 'Ok';
+
 let setModalIsVisible: Function;
 
 beforeEach(() => {
@@ -14,8 +18,8 @@ describe('DismissModal', () => {
       <DismissModal
         visibility
         setVisibility={setModalIsVisible}
-        title="Title"
-        description="Description"
+        title={TITLE}
+        description={DESCRIPTION}
       />,
     ).toJSON();
     expect(component).toMatchSnapshot();
@@ -26,12 +30,12 @@ describe('DismissModal', () => {
       <DismissModal
         visibility
         setVisibility={setModalIsVisible}
-        title="Title"
-        description="Description"
-        buttonText="Ok"
+        title={TITLE}
+        description={DESCRIPTION}
+        buttonText={OK}
       />,
     );
-    const button = getByText('Ok');
+    const button = getByText(OK);
     fireEvent.press(button);
     expect(toJSON()).toMatchSnapshot();
   });
