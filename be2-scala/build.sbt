@@ -30,6 +30,7 @@ copyProtocolTask := {
 }
 //Add task to compile time
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
+resourceDirectory in (Compile, packageBin) := file(".") / "./src/main/resources"
 
 //Setup main calass task context/confiuration
 mainClass in (Compile, run) := Some("ch.epfl.pop.Server")
@@ -39,7 +40,6 @@ lazy val scoverageSettings = Seq(
   coverageEnabled in Compile := true,
   coverageEnabled in Test := true,
   coverageEnabled in packageBin := false,
-
 )
 
 
@@ -65,6 +65,12 @@ sonarProperties := Map(
   "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
 )
 
+assemblyMergeStrategy in assembly := {
+    case PathList("module-info.class") => MergeStrategy.discard
+    case PathList("reference.conf") => MergeStrategy.concat
+    case PathList("META-INF","MANIFEST.MF") => MergeStrategy.discard
+    case _ => MergeStrategy.defaultMergeStrategy("")
+}
 
 // For websockets
 val AkkaVersion = "2.6.8"

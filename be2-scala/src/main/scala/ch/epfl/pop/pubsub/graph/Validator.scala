@@ -31,12 +31,11 @@ import scala.util.{Failure, Success, Try}
 import scala.collection.JavaConverters._
 
 import spray.json._
-
-import java.io.File
+import java.io.InputStream
 
 
 object Validator {
-
+  private final val queryPath = "protocol/query/query.json" //With respect to resource folder
   private def validationError(rpcId: Option[Int]): PipelineError = PipelineError(
     ErrorCodes.INVALID_ACTION.id,
     "Unsupported action: Validator was given a message it could not recognize",
@@ -50,8 +49,8 @@ object Validator {
     }
   }
 
-  // contains the relative path to our "main" query JsonSchema file
-  final val queryPath = "../protocol/query/query.json"
+  //Get input stream of query.json file from resources folder
+  final def queryFile: InputStream = this.getClass().getClassLoader().getResourceAsStream(queryPath);
 
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
 
@@ -60,7 +59,8 @@ object Validator {
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
     // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
     // FIXME: error handling for queryPath
-    val jsonSchemaNode: JsonNode = objectMapper.readTree(new File(queryPath))
+    val jsonSchemaNode: JsonNode = objectMapper.readTree(queryFile)
+    queryFile.close()
     // Creation of a JsonSchema from the previously created factory and JsonNode
     val schema: JsonSchema = factory.getSchema(jsonSchemaNode)
 
