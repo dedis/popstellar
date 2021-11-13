@@ -65,7 +65,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -148,7 +148,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -274,7 +274,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -415,7 +415,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -526,7 +526,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
