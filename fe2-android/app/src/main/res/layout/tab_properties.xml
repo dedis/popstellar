@@ -31,7 +31,7 @@
     android:layout_width="0dp"
     android:layout_height="0dp"
     android:text="@string/tab_properties"
-    android:textSize="@dimen/tab_lao_detail"
+    android:textSize="@dimen/size_small"
     app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_properties"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_properties2"
