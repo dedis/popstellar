@@ -26,7 +26,8 @@ describe('Chirp object', () => {
 
   it('throws an error when id is undefined', () => {
     const createWrongChirp = () => {
-      Chirp.constructor({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const wrongChirp = new Chirp({
         sender: 'me',
         text: 'text',
         time: TIMESTAMP,
@@ -39,7 +40,8 @@ describe('Chirp object', () => {
 
   it('throws an error when sender is undefined', () => {
     const createWrongChirp = () => {
-      Chirp.constructor({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const wrongChirp = new Chirp({
         id: HASH_ID,
         text: 'text',
         time: TIMESTAMP,
@@ -52,7 +54,8 @@ describe('Chirp object', () => {
 
   it('throws an error when text is undefined', () => {
     const createWrongChirp = () => {
-      Chirp.constructor({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const wrongChirp = new Chirp({
         id: HASH_ID,
         sender: 'me',
         time: TIMESTAMP,
@@ -65,7 +68,8 @@ describe('Chirp object', () => {
 
   it('throws an error when time is undefined', () => {
     const createWrongChirp = () => {
-      Chirp.constructor({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const wrongChirp = new Chirp({
         id: HASH_ID,
         sender: 'me',
         text: 'text',
@@ -78,7 +82,8 @@ describe('Chirp object', () => {
 
   it('throws an error when likes is undefined', () => {
     const createWrongChirp = () => {
-      Chirp.constructor({
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const wrongChirp = new Chirp({
         id: HASH_ID,
         sender: 'me',
         text: 'text',
