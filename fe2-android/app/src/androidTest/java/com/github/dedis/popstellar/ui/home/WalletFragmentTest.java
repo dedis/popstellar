@@ -556,7 +556,7 @@ public class WalletFragmentTest {
                 childAtPosition(
                     allOf(
                         withId(R.id.fragment_content_wallet),
-                        childAtPosition(withId(R.id.fragment_container_home), 3)),
+                        childAtPosition(withId(R.id.fragment_container_home), 4)),
                     4),
                 isDisplayed()));
     appCompatButton4.perform(click());
