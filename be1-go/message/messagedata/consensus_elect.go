@@ -26,7 +26,7 @@ type Key struct {
 
 // Verify verifies that the ConsensusElect message is correct
 func (message ConsensusElect) Verify() error {
-	// verify that the id is base64URL encoded
+	// verify that the instance id is base64URL encoded
 	if _, err := base64.URLEncoding.DecodeString(message.InstanceID); err != nil {
 		return xerrors.Errorf("lao id is %s, should be base64URL encoded", message.InstanceID)
 	}
