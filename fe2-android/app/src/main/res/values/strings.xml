@@ -206,4 +206,12 @@
   <string name="text_hint_server_url">Enter the server URL</string>
   <string name="apply_button">APPLY</string>
 
+  <!-- Social Media -->
+  <string name="home">HOME</string>
+  <string name="search">SEARCH</string>
+  <string name="following">FOLLOWING</string>
+  <string name="profile">PROFILE</string>
+  <string name="send">SEND</string>
+  <string name="send_button_desc">button to write a chirp</string>
+
 </resources>
