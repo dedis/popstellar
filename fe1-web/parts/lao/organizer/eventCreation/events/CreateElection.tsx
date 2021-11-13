@@ -20,7 +20,6 @@ import {
 } from 'model/objects';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
-
 import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_ELECTION_DURATION = 3600;
