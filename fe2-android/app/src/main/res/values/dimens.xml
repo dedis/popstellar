@@ -20,6 +20,7 @@
   <dimen name="lao_name">36sp</dimen>
   <dimen name="event_displayed_name">15sp</dimen>
   <dimen name="date_text_event">15sp</dimen>
+  <dimen name="size_for_longer_text">10sp</dimen>
 
   <!-- Camera preview -->
   <integer name="camera_preview_width">240</integer>
