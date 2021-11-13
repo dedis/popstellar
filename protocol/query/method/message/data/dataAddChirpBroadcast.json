@@ -15,9 +15,13 @@
       "type": "string",
       "contentEncoding": "base64"
     },
+    "text": {
+      "description": "text message of the chirp",
+      "type": "string"
+    },
     "channel": {
       "description": "[String] name of the channel",
-      "pattern": "^/root/([^/]+)/social/([^/]+)/",
+      "pattern": "^/root/([^/]+)/social/([^/]+)",
       "type": "string"
     },
     "timestamp": {

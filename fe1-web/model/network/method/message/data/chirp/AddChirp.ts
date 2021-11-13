@@ -12,9 +12,6 @@ export class AddChirp implements MessageData {
 
   public readonly action: ActionType = ActionType.ADD;
 
-  // The ID of the chirp to add
-  public readonly id: Hash;
-
   // The text of the chirp
   public readonly text: string;
 
@@ -25,11 +22,6 @@ export class AddChirp implements MessageData {
   public readonly timestamp: Timestamp;
 
   constructor(msg: Partial<AddChirp>) {
-    if (!msg.id) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'AddChirp\'');
-    }
-    this.id = msg.id;
-
     if (!msg.text) {
       throw new ProtocolError('Undefined \'text\' parameter encountered during \'AddChirp\'');
     }
