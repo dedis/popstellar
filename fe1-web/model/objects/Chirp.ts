@@ -17,19 +17,14 @@ export interface ChirpState {
 export class Chirp {
   public readonly id: Hash;
 
-  // The sender's public key
   public readonly sender: string;
 
-  // The text of the chirp
   public readonly text: string;
 
-  // The time where the chirp was posted
   public readonly time: Timestamp;
 
-  // The number of likes
   public readonly likes: number;
 
-  // The id of the parent chirp (if it is a reply)
   public readonly parentId?: Hash;
 
   constructor(obj: Partial<Chirp>) {
