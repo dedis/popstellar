@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.settings.SettingsViewModel;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
@@ -87,6 +88,18 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
               keysetManager);
     } else if (SettingsViewModel.class.isAssignableFrom(modelClass)) {
       return (T) new SettingsViewModel(application);
+    } else if (SocialMediaViewModel.class.isAssignableFrom(modelClass)) {
+      return (T)
+          new SocialMediaViewModel(
+              application,
+              Injection.provideLAORepository(
+                  application,
+                  Injection.provideLAOService(
+                      Injection.provideScarlet(application, Injection.provideOkHttpClient(), gson)),
+                  keysetManager,
+                  gson),
+              gson,
+              keysetManager);
     }
 
     throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
