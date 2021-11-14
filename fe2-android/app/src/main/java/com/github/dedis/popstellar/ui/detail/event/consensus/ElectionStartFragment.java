@@ -121,7 +121,7 @@ public class ElectionStartFragment extends Fragment {
               }
             });
 
-    binding.setLifecycleOwner(getActivity());
+    binding.setLifecycleOwner(getViewLifecycleOwner());
 
     return binding.getRoot();
   }
