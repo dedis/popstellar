@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import STRINGS from 'res/strings';
+import { red, gray } from 'styles/colors';
 
 import SocialHome from './SocialHome';
 import SocialFollows from './SocialFollows';
@@ -36,8 +37,8 @@ const SocialMediaNavigation = () => (
 
         return <Ionicons name={iconName} size={23} color={color} />;
       },
-      tabBarActiveTintColor: 'tomato',
-      tabBarInactiveTintColor: 'gray',
+      tabBarActiveTintColor: red,
+      tabBarInactiveTintColor: gray,
     })}
   >
     <Tab.Screen name={STRINGS.social_media_navigation_tab_home} component={SocialHome} />
