@@ -245,8 +245,8 @@ object DbActor extends AskPatternConstants {
           Try(db.createWriteBatch()) match {
             case Success(batch) => {
               val json = new String(bytes, StandardCharsets.UTF_8)
-              batch.put(channelKey.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes) match {
-              batch.put(key.getBytes, message.toJsonString.getBytes) match {
+              batch.put(channelKey.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
+              batch.put(key.getBytes, message.toJsonString.getBytes)
               //allows writing all data atomically
               Try(db.write(batch)) match {
                 case Success(_) =>
