@@ -11,9 +11,58 @@
   </data>
 
   <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_social_media_send"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/fragment_social_media_send">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginHorizontal="@dimen/margin_text"
+      android:orientation="vertical">
+
+      <EditText
+        android:id="@+id/entry_box_chirp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:afterTextChanged="@{(editable) -> view_model.setNumberCharsLeft(view_model.MAX_CHAR_NUMBERS - editable.toString().length())}"
+        android:autofillHints="name"
+        android:background="@drawable/rounded_edit_text"
+        android:gravity="start"
+        android:hint="@string/hint_chirp"
+        android:inputType="text"
+        android:minHeight="@dimen/min_height_entry_box_chirp"
+        android:padding="@dimen/margin_top" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="@{view_model.getNumberCharsLeft()}"
+          android:textColor="@{view_model.getNumberCharsLeft() >= 0 ? @color/black : @color/red}"
+          android:textSize="@dimen/size_title"
+          android:textStyle="bold" />
+
+        <Button
+          android:id="@+id/send_chirp_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/margin_button"
+          android:background="@drawable/rounded_corner_button"
+          android:enabled="@{!(entryBoxChirp.text.length() > view_model.MAX_CHAR_NUMBERS)}"
+          android:text="@string/send"
+          android:textColor="@color/white" />
+      </LinearLayout>
+
+    </LinearLayout>
 
   </androidx.constraintlayout.widget.ConstraintLayout>
 

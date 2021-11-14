@@ -214,5 +214,6 @@
   <string name="profile">PROFILE</string>
   <string name="send">SEND</string>
   <string name="send_button_desc">button to write a chirp</string>
+  <string name="hint_chirp">Your chirp</string>
 
 </resources>

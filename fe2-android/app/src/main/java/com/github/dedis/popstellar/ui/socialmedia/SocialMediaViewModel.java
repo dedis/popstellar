@@ -13,6 +13,7 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
+  public static final int MAX_CHAR_NUMBERS = 300;
 
   /*
    * LiveData objects for capturing events
@@ -21,6 +22,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSendEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenFollowingEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenProfileEvent = new MutableLiveData<>();
+
+  private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
@@ -57,6 +60,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mOpenProfileEvent;
   }
 
+  public LiveData<Integer> getNumberCharsLeft() {
+    return mNumberCharsLeft;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -74,5 +81,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   public void openProfile() {
     mOpenProfileEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void setNumberCharsLeft(Integer numberChars) {
+    mNumberCharsLeft.setValue(numberChars);
   }
 }
