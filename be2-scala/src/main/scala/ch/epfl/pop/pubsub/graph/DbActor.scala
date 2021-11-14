@@ -211,9 +211,11 @@ object DbActor extends AskPatternConstants {
       super.preStart()
     }
 
+    val laoIdConst: String = "laoid/"
+
     // only for the messages
     private def write(channel: Channel, message: Message): DbActorMessage = {
-      val channelKey: String = "laoid/" + channel
+      val channelKey: String = laoIdConst + channel
       
       //encapsulate this inside function
       Try(db.get(channelKey.getBytes)) match {
@@ -240,7 +242,7 @@ object DbActor extends AskPatternConstants {
       Try(db.get(channelKey.getBytes)) match {
         case Success(bytes) if bytes != null => {
           if (bytes != null){
-            val key: String = "laoid/" + channel + "/" + messageId.toString
+            val key: String = laoIdConst + channel + "/" + messageId.toString
             Try(db.createWriteBatch()) match {
               case Success(batch) => {
                 val json = new String(bytes, StandardCharsets.UTF_8)
@@ -250,7 +252,7 @@ object DbActor extends AskPatternConstants {
                       case Success(_) => {
                         //allows writing all data atomically
                         Try(db.write(batch)) match {
-                          case Success(_) => 
+                          case Success(_) =>
                             log.info(s"Actor $self (db) wrote object 'objectId' and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
                             DbActorWriteAck()
                           case Failure(exception) =>
@@ -289,12 +291,12 @@ object DbActor extends AskPatternConstants {
     //then, for the other Object (LAOdata etc) storage, we need another function, need laoId for all?????
     //we can get the laoId with an Array[Byte] with decodeSubChannel(channel)
     private def writeLaoData(channel: Channel, message: Message, obj: LaoData): DbActorMessage = {
-      //val key: String = "laoid/" //FIXME: (everywhere) the lao id for each lao, also, maybe just laoid, not laoid/ (not a huge difference though)
+      //val key: String = laoIdConst //FIXME: (everywhere) the lao id for each lao, also, maybe just laoid, not laoid/ (not a huge difference though)
       val messageId: Hash = message.message_id
-      //val dataKey: String = "laoid/" + channel + "/data"
-      val dataKey: String = "laoid/"
-      val messageKey: String = "laoid/" + channel + "/" + messageId.toString
-      val channelKey: String = "laoid/" + channel
+      //val dataKey: String = laoIdConst + channel + "/data"
+      val dataKey: String = laoIdConst
+      val messageKey: String = laoIdConst + channel + "/" + messageId.toString
+      val channelKey: String = laoIdConst + channel
       
       //encapsulate this inside function
       val channelTest: DbActorMessage = Try(db.get(channelKey.getBytes)) match {
@@ -380,11 +382,11 @@ object DbActor extends AskPatternConstants {
     
 
     private def read(channel: Channel, messageId: Hash): DbActorMessage = {
-      val channelKey: String = "laoid/" + channel
+      val channelKey: String = laoIdConst + channel
       Try(db.get(channelKey.getBytes)) match {
         case Success(bytes) if bytes != null => {
           //val channelDb: DB = channelsMap(channel)
-          val key: String = "laoid/" + channel + "/" + messageId.toString
+          val key: String = laoIdConst + channel + "/" + messageId.toString
           Try (db.get(key.getBytes)) match {
           //Try(channelDb.get(messageId.getBytes)) match {
             case Success(bytes) if bytes != null =>
@@ -399,7 +401,7 @@ object DbActor extends AskPatternConstants {
     }
 
     private def readChannelData(channel: Channel): DbActorMessage = {
-      val channelKey: String = "laoid/" + channel
+      val channelKey: String = laoIdConst + channel
       Try (db.get(channelKey.getBytes)) match {
         case Success(bytes) if bytes != null =>
           val json = new String(bytes, StandardCharsets.UTF_8)
@@ -410,7 +412,7 @@ object DbActor extends AskPatternConstants {
     }
 
     private def readLaoData(): DbActorMessage = {
-      val key: String = "laoid/"
+      val key: String = laoIdConst
       Try(db.get(key.getBytes)) match {
         case Success(bytes) if bytes != null =>
           val json = new String(bytes, StandardCharsets.UTF_8)
@@ -422,7 +424,7 @@ object DbActor extends AskPatternConstants {
 
     //will also need laoId I guess, as for the write above
     private def catchup(channel: Channel): DbActorMessage = {
-      val channelKey: String = "laoid/" + channel
+      val channelKey: String = laoIdConst + channel
       Try(db.get(channelKey.getBytes)) match {
         case Success(bytes) if bytes != null =>
           readChannelData(channel) match {
@@ -434,11 +436,11 @@ object DbActor extends AskPatternConstants {
                 msgIds match {
                   case Nil => acc
                   case head::Nil => {
-                    val key: String = "laoid/" + channel + "/" + head.toString
+                    val key: String = laoIdConst + channel + "/" + head.toString
                     Message.buildFromJson(new String(db.get(key.getBytes), StandardCharsets.UTF_8)) :: acc
                   }
                   case head::tail => {
-                    val key: String = "laoid/" + channel + "/" + head.toString
+                    val key: String = laoIdConst + channel + "/" + head.toString
                     buildCatchupList(tail, Message.buildFromJson(new String(db.get(key.getBytes), StandardCharsets.UTF_8)) :: acc)
                   }
                 }
@@ -458,7 +460,8 @@ object DbActor extends AskPatternConstants {
     }
 
     private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): DbActorMessage = {
-      val key: String = "laoid/" + channel
+      val key: String = laoIdConst + channel
+      val errorMessageCreate: String = "Error while creating channel in the database"
       Try(db.get(key.getBytes)) match {
         case Success(bytes) =>
           if(bytes != null){
@@ -469,8 +472,8 @@ object DbActor extends AskPatternConstants {
             Try(db.put(key.getBytes, ChannelData(objectType, List.empty).toJsonString.getBytes)) match {
             case Success(_) => DbActorAck()
             case _ => 
-              log.info(s"Error while creating channel in the database")
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Error while creating channel in the database")
+              log.info(errorMessageCreate)
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, errorMessageCreate)
           }
           }
         case _ =>
@@ -478,15 +481,15 @@ object DbActor extends AskPatternConstants {
           Try(db.put(key.getBytes, ChannelData(objectType, List.empty).toJsonString.getBytes)) match {
             case Success(_) => DbActorAck()
             case _ =>
-              log.info(s"Error while creating channel in the database")
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Error while creating channel in the database")
+              log.info(errorMessageCreate)
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, errorMessageCreate)
           }
       }
     }
 
 
     private def channelExists(channel: Channel): DbActorMessage = {
-      val key:String = "laoid/" + channel
+      val key:String = laoIdConst + channel
       Try(db.get(key.getBytes)) match {
         case Success(bytes) if bytes != null => DbActorAck()
         case _ => DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
