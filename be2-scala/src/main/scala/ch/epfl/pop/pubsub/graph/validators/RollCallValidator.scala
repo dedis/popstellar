@@ -2,9 +2,14 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
+import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
+import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
+import ch.epfl.pop.model.network.method.message.data.rollCall.IOpenRollCall
+import ch.epfl.pop.model.network.method.message.data.rollCall.OpenRollCall
+import ch.epfl.pop.model.network.method.message.data.rollCall.ReopenRollCall
 import ch.epfl.pop.model.objects.Hash
-import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.pubsub.graph.PipelineError
 
 
 case object RollCallValidator extends MessageDataContentValidator with EventValidator {
@@ -35,14 +40,18 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
     }
   }
 
+  /**
+   * Validates an rpcMessage for OpenRollCall message
+   * @param rpcMessage
+   * @return GraphMessage: passes the rpcMessages to Left if successful
+   *         right with pipeline error
+   */
   def validateOpenRollCall(rpcMessage: JsonRpcRequest, validatorName: String = "OpenRollCall"): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, validatorName, rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
-        //FIXME: cast is wrong if the validatorName is ReopenRollCall
-        val data: OpenRollCall = message.decodedData.get.asInstanceOf[OpenRollCall]
-
+        val data: IOpenRollCall = message.decodedData.get.asInstanceOf[IOpenRollCall]
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(
           EVENT_HASH_PREFIX, laoId.toString, data.opens.toString, data.opened_at.toString
@@ -59,6 +68,13 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
     }
   }
 
+  /**
+    * Validates the rpcMessage for a ReOpenRollCall
+    * similar to [[validateOpenRollCall]]
+    * @param rpcMessage
+    * @return GraphMessage: passes the rpcMessages to Left if successful
+    *         right with pipeline error
+    */
   def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     validateOpenRollCall(rpcMessage, "ReopenRollCall")
   }
