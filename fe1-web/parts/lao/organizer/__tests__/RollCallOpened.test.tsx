@@ -6,7 +6,7 @@ import {
 import keyPair from 'test_data/keypair.json';
 import RollCallOpened from '../RollCallOpened';
 import QrReader from 'react-qr-reader';
-import STRINGS from "res/strings";
+import STRINGS from 'res/strings';
 import { useToast } from 'react-native-toast-notifications';
 import { useRoute } from '@react-navigation/core';
 
@@ -22,6 +22,11 @@ const location = 'EPFL';
 const mockLaoId: Hash = Hash.fromStringArray(org.toString(), time.toString(), name);
 const rollCallId = Hash.fromStringArray('R', mockLaoId.toString(), time.toString(), name.toString());
 
+jest.mock('react-native-toast-notifications', () => ({
+  show: jest.fn(),
+  // hide: jest.fn(),
+}));
+
 jest.mock('react-qr-reader', () => function onScan() {
   /* const mockToast = useToast();
   return (
@@ -31,6 +36,10 @@ jest.mock('react-qr-reader', () => function onScan() {
       duration: 4000,
     })
   ); */
+  /*  jest.mock('react-native-toast-notifications', () => ({
+    show: jest.fn(),
+    hide: jest.fn(),
+  })); */
   console.log('participants + 1');
 });
 
