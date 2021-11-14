@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  FlatList,
   StyleSheet, TextStyle, View, ViewStyle,
 } from 'react-native';
 
@@ -8,6 +9,8 @@ import TextInputChirp from 'components/TextInputChirp';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
+import ChirpCard from 'components/ChirpCard';
+import { Hash, Timestamp } from 'model/objects';
 
 /**
  * UI for the Social Media component
@@ -22,7 +25,34 @@ const styles = StyleSheet.create({
     width: 500,
     alignContent: 'flex-end',
   } as TextStyle,
+
+  item: {
+    backgroundColor: '#f9c2ff',
+    padding: 20,
+    marginVertical: 8,
+    marginHorizontal: 16,
+  },
+  title: {
+    fontSize: 32,
+  },
 });
+
+const DATA = [
+  {
+    id: Hash.fromString('1234'),
+    sender: 'Gandalf',
+    text: 'You shall not pass!',
+    time: new Timestamp(1609455600),
+    likes: 0,
+  },
+  {
+    id: Hash.fromString('5678'),
+    sender: 'Douglas Adams',
+    text: 'Don\'t panic.',
+    time: new Timestamp(1609455600),
+    likes: 0,
+  },
+];
 
 const Social = () => {
   const [inputChirp, setInputChirp] = useState('');
@@ -34,6 +64,14 @@ const Social = () => {
       });
   };
 
+  const renderItem = ({ item }) => (
+    <ChirpCard
+      sender={item.sender}
+      text={item.text}
+      time={item.time}
+    />
+  );
+
   return (
     <View style={styles.view}>
       <TextInputChirp
@@ -41,6 +79,11 @@ const Social = () => {
         onPress={publishChirp}
       />
       <TextBlock text={STRINGS.feed_description} />
+      <FlatList
+        data={DATA}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+      />
     </View>
   );
 };
