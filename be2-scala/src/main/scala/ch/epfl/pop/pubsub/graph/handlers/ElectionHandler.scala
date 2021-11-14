@@ -41,8 +41,8 @@ object ElectionHandler extends MessageHandler {
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.SEPARATOR}$electionId")
 
     val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
-      case DbActor.DbActorWriteAck => Await.result((dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)).map {
-        case DbActor.DbActorAck => Left(rpcMessage)
+      case DbActor.DbActorWriteAck() => Await.result((dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)).map {
+        case DbActor.DbActorAck() => Left(rpcMessage)
         case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
       }, duration)
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
