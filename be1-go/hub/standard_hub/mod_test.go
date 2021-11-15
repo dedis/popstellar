@@ -1,4 +1,4 @@
-package hub
+package standard_hub
 
 import (
 	"crypto/sha256"
