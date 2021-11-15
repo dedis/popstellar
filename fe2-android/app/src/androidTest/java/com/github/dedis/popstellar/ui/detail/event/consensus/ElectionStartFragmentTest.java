@@ -11,12 +11,21 @@ import static com.github.dedis.popstellar.pages.qrcode.ElectionStartPageObject.e
 import static com.github.dedis.popstellar.pages.qrcode.ElectionStartPageObject.electionTitle;
 import static com.github.dedis.popstellar.pages.qrcode.ElectionStartPageObject.nodesGrid;
 import static org.hamcrest.core.AllOf.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
+import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.model.network.GenericMessage;
+import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.network.method.Message;
+import com.github.dedis.popstellar.model.network.method.Publish;
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
@@ -27,21 +36,33 @@ import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.handler.ConsensusHandler;
+import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
+import com.github.dedis.popstellar.utility.security.Keys;
+import com.google.crypto.tink.KeysetHandle;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
+import org.mockito.internal.util.collections.Sets;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ElectionStartFragmentTest {
@@ -55,19 +76,15 @@ public class ElectionStartFragmentTest {
   private static final long pastTime = 946684800;
   private static final long futureTime = 2145916800;
 
-  private static final Election election = new Election(laoId, pastTime, electionName);
   private static final Lao lao = new Lao(laoId);
+  private static final Election election = new Election(laoId, pastTime, electionName);
   private static final String node2Key = "12RDUW4s9bZrdqJB7zoVag";
   private static final String node3Key = "dRCXFdXYfY5OVAzh3oQ3pA";
-  private static final ConsensusNode node2 = new ConsensusNode(node2Key);
-  private static final ConsensusNode node3 = new ConsensusNode(node3Key);
   private static final ConsensusKey key = new ConsensusKey("election", election.getId(), "state");
   private static final String instanceId =
       Consensus.generateConsensusId(key.getType(), key.getId(), key.getProperty());
 
-  private static final ConsensusElect elect2 =
-      new ConsensusElect(pastTime, key.getId(), key.getType(), key.getProperty(), "started");
-  private static final ConsensusElect elect3 =
+  private static final ConsensusElect elect =
       new ConsensusElect(pastTime, key.getId(), key.getType(), key.getProperty(), "started");
   private static final ConsensusElectAccept accept3 =
       new ConsensusElectAccept(instanceId, "m3", true);
@@ -75,15 +92,71 @@ public class ElectionStartFragmentTest {
   private static final ConsensusLearn learn3 =
       new ConsensusLearn(instanceId, "m3", Collections.emptyList());
 
+  private static final ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
+
   private static String publicKey;
-  private static ConsensusNode ownNode;
   private static LAORepository laoRepository;
-  private static LaoDetailViewModel laoDetailViewModel;
+  private static boolean isAlreadySetup = false;
+
+  LAORemoteDataSource remoteDataSource = Mockito.mock(LAORemoteDataSource.class);
+  LAOLocalDataSource localDataSource = Mockito.mock(LAOLocalDataSource.class);
 
   @Rule
   public final FragmentScenarioRule<ElectionStartFragment> fragmentRule =
       FragmentScenarioRule.launchInContainer(
-          ElectionStartFragment.class, ElectionStartFragment::newInstance);
+          ElectionStartFragment.class,
+          () -> {
+            ElectionStartFragment fragment = ElectionStartFragment.newInstance();
+            if (!isAlreadySetup) {
+              setup();
+              isAlreadySetup = true;
+            }
+            return fragment;
+          });
+
+  private void setup() {
+    Mockito.when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
+    Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+    Observable<GenericMessage> upstream = Observable.fromArray((GenericMessage) new Result(42));
+
+    // Mock the remote data source to receive a response
+    Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
+
+    try {
+      LAORepository.destroyInstance();
+      laoRepository =
+          LAORepository.getInstance(
+              remoteDataSource,
+              localDataSource,
+              Injection.provideAndroidKeysetManager(ApplicationProvider.getApplicationContext()),
+              Injection.provideGson(),
+              new ProdSchedulerProvider());
+      publicKey = getPublicKey();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+
+    election.setStart(futureTime);
+    lao.setChannel(laoChannel);
+    lao.setOrganizer(publicKey);
+    lao.setWitnesses(Sets.newSet(node2Key, node3Key));
+
+    laoRepository.getLaoById().put(laoChannel, new LAOState(lao));
+    laoRepository.updateNodes(laoChannel);
+  }
+
+  @After
+  public void clean() {
+    LAORepository.destroyInstance();
+  }
+
+  private String getPublicKey() throws IOException, GeneralSecurityException {
+    KeysetHandle publicKeysetHandle =
+        Injection.provideAndroidKeysetManager(ApplicationProvider.getApplicationContext())
+            .getKeysetHandle()
+            .getPublicKeysetHandle();
+    return Keys.getEncodedKey(publicKeysetHandle);
+  }
 
   @Test
   public void test() throws InterruptedException {
@@ -92,26 +165,13 @@ public class ElectionStartFragmentTest {
         .onFragment(
             electionStartFragment -> {
               FragmentActivity fragmentActivity = electionStartFragment.requireActivity();
-              laoDetailViewModel = LaoDetailActivity.obtainViewModel(fragmentActivity);
-              laoRepository = LAORepository.getInstance(null, null, null, null, null);
-
-              election.setStart(futureTime);
-              publicKey = laoDetailViewModel.getPublicKey();
-              ownNode = new ConsensusNode(publicKey);
-
-              lao.setChannel(laoChannel);
-              lao.getWitnesses()
-                  .addAll(Arrays.asList(publicKey, node2.getPublicKey(), node3.getPublicKey()));
-              lao.getNodes().addAll(Arrays.asList(ownNode, node2, node3));
-
-              laoRepository.getLaoById().put(laoChannel, new LAOState(lao));
-              laoRepository.updateNodes(laoChannel);
-
+              LaoDetailViewModel laoDetailViewModel =
+                  LaoDetailActivity.obtainViewModel(fragmentActivity);
               laoDetailViewModel.setCurrentElection(election);
               laoDetailViewModel.setCurrentLao(lao);
             });
 
-    // TODO find how to access the viewModel/repository before the fragment is created
+    // Recreate the fragment because the viewModel needed to be modified before start
     fragmentRule.getScenario().recreate();
 
     String expectedTitle = "Election " + '"' + electionName + '"';
@@ -152,17 +212,57 @@ public class ElectionStartFragmentTest {
     nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
     nodeAssertions(grid, 2, "Waiting\n" + node3Key, false);
 
-    // Nodes 2 and 3 try to start, we accept node 3 (it should disable button for node3)
+    // Nodes 3 try to start
+    ConsensusHandler.handleConsensusMessage(laoRepository, consensusChannel, elect, "m3", node3Key);
+    laoRepository.updateNodes(laoChannel);
+
+    nodeAssertions(grid, 0, "Waiting\n" + publicKey, false);
+    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
+    nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, true);
+
+    // We try to start
+    long minCreation = Instant.now().getEpochSecond();
+    electionStartButton().perform(ViewActions.click());
+    Mockito.verify(remoteDataSource).sendMessage(captor.capture());
+    Publish publish = (Publish) captor.getValue();
+    MessageGeneral msgGeneral = publish.getMessage();
+    long maxCreation = Instant.now().getEpochSecond();
+    assertEquals(consensusChannel, publish.getChannel());
+    assertEquals(publicKey, msgGeneral.getSender());
+
+    ConsensusElect elect = (ConsensusElect) msgGeneral.getData();
+    assertEquals(key, elect.getKey());
+    assertEquals(instanceId, elect.getInstanceId());
+    assertEquals("started", elect.getValue());
+    assertTrue(minCreation <= elect.getCreation() && elect.getCreation() <= maxCreation);
+
     ConsensusHandler.handleConsensusMessage(
-        laoRepository, consensusChannel, elect2, "m2", node2Key);
-    ConsensusHandler.handleConsensusMessage(
-        laoRepository, consensusChannel, elect3, "m3", node3Key);
+        laoRepository, consensusChannel, elect, "m1", publicKey);
+    laoRepository.updateNodes(laoChannel);
+
+    nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
+    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
+    nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, true);
+
+    // We try to accept node3
+    grid.atPosition(2).perform(ViewActions.click());
+    Mockito.verify(remoteDataSource, Mockito.times(2)).sendMessage(captor.capture());
+    publish = (Publish) captor.getValue();
+    msgGeneral = publish.getMessage();
+    assertEquals(consensusChannel, publish.getChannel());
+    assertEquals(publicKey, msgGeneral.getSender());
+    ConsensusElectAccept electAccept = (ConsensusElectAccept) msgGeneral.getData();
+    assertEquals("m3", electAccept.getMessageId());
+    assertEquals(instanceId, electAccept.getInstanceId());
+    assertTrue(electAccept.isAccept());
+
+    // We accepted node 3 (it should disable button for node3)
     ConsensusHandler.handleConsensusMessage(
         laoRepository, consensusChannel, accept3, "a3", publicKey);
     laoRepository.updateNodes(laoChannel);
 
-    nodeAssertions(grid, 0, "Waiting\n" + publicKey, false);
-    nodeAssertions(grid, 1, "Approve Start by\n" + node2Key, true);
+    nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
+    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
     nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, false);
 
     // Receive a learn message => node3 was accepted and has started the election
@@ -175,12 +275,9 @@ public class ElectionStartFragmentTest {
         .check(matches(isDisplayed()))
         .check(matches(isNotEnabled()));
 
-    nodeAssertions(grid, 0, "Waiting\n" + publicKey, false);
-    nodeAssertions(grid, 1, "Approve Start by\n" + node2Key, true);
+    nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
+    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
     nodeAssertions(grid, 2, "Started by\n" + node3Key, false);
-
-    // TODO find how to intercept message
-    grid.atPosition(1).perform(ViewActions.click());
   }
 
   private void nodeAssertions(
