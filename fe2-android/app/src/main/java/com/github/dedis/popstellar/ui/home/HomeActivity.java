@@ -22,12 +22,14 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /** HomeActivity represents the entry point for the application. */
@@ -51,6 +53,7 @@ public class HomeActivity extends AppCompatActivity {
     setupLaunchButton();
     setupConnectButton();
     setupWalletButton();
+    setupSocialMediaButton();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -128,6 +131,18 @@ public class HomeActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupSettingsActivity();
+              }
+            });
+
+    // Subscribe to "open social media" event
+    mViewModel
+        .getOpenSocialMediaEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSocialMediaActivity();
               }
             });
 
@@ -225,8 +240,14 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupWalletButton() {
-    Button launchButton = (Button) findViewById(R.id.tab_wallet);
-    launchButton.setOnClickListener(v -> mViewModel.openWallet());
+    Button walletButton = (Button) findViewById(R.id.tab_wallet);
+    walletButton.setOnClickListener(v -> mViewModel.openWallet());
+  }
+
+  public void setupSocialMediaButton() {
+    Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
+    socialMediaButton.setEnabled(mViewModel.getLAOs().getValue() != null);
+    socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
   private void setupHomeFragment() {
@@ -283,6 +304,14 @@ public class HomeActivity extends AppCompatActivity {
   private void setupSettingsActivity() {
     Intent intent = new Intent(this, SettingsActivity.class);
     Log.d(TAG, "Trying to open settings");
+    startActivity(intent);
+  }
+
+  private void setupSocialMediaActivity() {
+    Intent intent = new Intent(this, SocialMediaActivity.class);
+    String laoId = Objects.requireNonNull(mViewModel.getLAOs().getValue()).get(0).getId();
+    Log.d(TAG, "Trying to open social media with lao id " + laoId);
+    intent.putExtra("LAO_ID", laoId);
     startActivity(intent);
   }
 
