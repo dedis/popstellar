@@ -11,6 +11,7 @@ import com.github.dedis.popstellar.model.objects.PendingUpdate;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidDataException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
 import com.github.dedis.popstellar.utility.security.Signature;
@@ -36,9 +37,8 @@ public final class WitnessMessageHandler {
    * @param channel the channel on which the message was received
    * @param senderPk the public key of the sender
    * @param data the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleWitnessMessage(
+  public static void handleWitnessMessage(
       LAORepository laoRepository, String channel, String senderPk, Data data)
       throws DataHandlingException {
     WitnessMessageSignature message = (WitnessMessageSignature) data;
@@ -71,7 +71,7 @@ public final class WitnessMessageHandler {
     Lao lao = laoRepository.getLaoByChannel(channel);
     if (lao == null) {
       Log.d(TAG, "failed to retrieve the lao with channel " + channel);
-      return false;
+      throw new InvalidDataException(data, "lao's channel", channel);
     }
     // Update WitnessMessage of the corresponding lao
     updateWitnessMessage(lao, message, senderPk);
@@ -94,7 +94,6 @@ public final class WitnessMessageHandler {
         laoRepository.sendStateLao(lao, msg, messageId, channel);
       }
     }
-    return false;
   }
 
   /**
