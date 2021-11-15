@@ -29,7 +29,6 @@
       android:name="com.github.dedis.popstellar.ui.detail.LaoDetailActivity"
       android:windowSoftInputMode="adjustPan" />
     <activity android:name=".ui.settings.SettingsActivity" />
-    <activity android:name=".ui.socialmedia.SocialMediaActivity" />
 
     <uses-library
       android:name="android.test.runner"

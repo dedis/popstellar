@@ -18,7 +18,6 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -140,16 +139,40 @@ public class SocialMediaViewModel extends AndroidViewModel {
     mLaoId.setValue(laoId);
   }
 
-  /** Subscribe to a channel: /root/<lao id>/social/<sender> */
+  /** Subscribe to the channel: /root/<lao_id>/social */
+  public void subscribeToSocial(String laoId) {
+    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social");
+
+    String channel = "/root/" + laoId + "/social";
+
+    Disposable disposable =
+        mLaoRepository
+            .sendSubscribe(channel)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "subscribed to the channel");
+                  } else {
+                    Log.d(TAG, "failed to subscribe to the channel");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
+
+    disposables.add(disposable);
+  }
+
+  /** Subscribe to a channel: /root/<lao_id>/social/<sender> */
   public void subscribeToChannel(String laoId) {
     Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/<sender>");
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] senderByte = Base64.getUrlDecoder().decode(publicKey);
-      String sender = new String(senderByte);
-      String channel = "/root/" + laoId + "/social/" + sender;
+      String channel = "/root/" + laoId + "/social/" + publicKey;
 
       Disposable disposable =
           mLaoRepository
