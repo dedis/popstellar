@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.local.LAODatabase;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
 import com.github.dedis.popstellar.repository.remote.LAOService;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
@@ -121,6 +122,11 @@ public class Injection {
   @SuppressWarnings("unused")
   public static Scarlet provideScarlet(
       Application application, OkHttpClient okHttpClient, Gson gson) {
+    return null;
+  }
+
+  @SuppressWarnings("unused")
+  public static LAORequestFactory provideRequestFactory() {
     return null;
   }
 
