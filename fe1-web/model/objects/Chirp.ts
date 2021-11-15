@@ -1,5 +1,6 @@
 import { Timestamp } from './Timestamp';
 import { Hash } from './Hash';
+import { PublicKey } from './PublicKey';
 
 /**
  * Object to represent a Chirp.
@@ -18,7 +19,7 @@ export class Chirp {
   public readonly id: Hash;
 
   // The sender's public key
-  public readonly sender: string;
+  public readonly sender: PublicKey;
 
   // The text of the chirp
   public readonly text: string;
@@ -51,14 +52,15 @@ export class Chirp {
       throw new Error("Undefined 'id' when creating 'Chirp'");
     }
     if (obj.likes === undefined) {
-      throw new Error("Undefined 'likes' when creating 'Chirp'");
+      this.likes = 0;
+    } else {
+      this.likes = obj.likes;
     }
 
     this.id = obj.id;
     this.sender = obj.sender;
     this.text = obj.text;
     this.time = obj.time;
-    this.likes = obj.likes;
     this.parentId = obj.parentId;
   }
 
@@ -70,7 +72,7 @@ export class Chirp {
   public static fromState(chirpState: ChirpState): Chirp {
     return new Chirp({
       id: new Hash(chirpState.id),
-      sender: chirpState.sender,
+      sender: new PublicKey(chirpState.sender),
       text: chirpState.text,
       time: new Timestamp(chirpState.time),
       likes: chirpState.likes,

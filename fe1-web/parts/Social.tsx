@@ -25,15 +25,11 @@ const styles = StyleSheet.create({
     width: 500,
     alignContent: 'flex-end',
   } as TextStyle,
-
   item: {
     backgroundColor: '#f9c2ff',
     padding: 20,
     marginVertical: 8,
     marginHorizontal: 16,
-  },
-  title: {
-    fontSize: 32,
   },
 });
 
@@ -41,7 +37,7 @@ const DATA = [
   {
     id: Hash.fromString('1234'),
     sender: 'Gandalf',
-    text: 'You shall not pass!',
+    text: 'You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass!',
     time: new Timestamp(1609455600),
     likes: 0,
   },
@@ -50,7 +46,7 @@ const DATA = [
     sender: 'Douglas Adams',
     text: 'Don\'t panic.',
     time: new Timestamp(1609455600),
-    likes: 0,
+    likes: 100,
   },
 ];
 
@@ -69,6 +65,7 @@ const Social = () => {
       sender={item.sender}
       text={item.text}
       time={item.time}
+      likes={item.likes}
     />
   );
 

@@ -3,6 +3,8 @@ import {
   StyleSheet, ViewStyle, View, TextStyle, Text,
 } from 'react-native';
 import PropTypes from 'prop-types';
+import TimeAgo from 'react-timeago';
+import { Ionicons } from '@expo/vector-icons';
 import { Timestamp } from '../model/objects';
 import TextBlock from './TextBlock';
 
@@ -10,6 +12,7 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 50,
     justifyContent: 'center',
+    borderWidth: 2,
     flexDirection: 'column',
     display: 'flex',
   } as ViewStyle,
@@ -18,6 +21,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     width: 600,
     alignContent: 'flex-end',
+  } as TextStyle,
+  senderView: {
+    fontSize: 20,
+    fontWeight: '600',
+    marginTop: 7,
   } as TextStyle,
 });
 
@@ -29,11 +37,21 @@ const ChirpCard = (props: IPropTypes) => {
 
   return (
     <View style={styles.container}>
-      <Text>{sender}</Text>
+      <Text style={styles.senderView}>{sender}</Text>
       <View style={styles.textView}>
         <TextBlock text={text} />
       </View>
-      <Text style={styles.textView}>{time.timestampToDate().toString()}</Text>
+      <View style={{ flexDirection: 'row' }}>
+        <View style={{ flex: 1 }}>
+          <Ionicons name="thumbs-up" size={16} color="black" />
+        </View>
+        <View style={{ flex: 3 }}>
+          <Text>{likes}</Text>
+        </View>
+        <View style={{ flex: 6 }}>
+          <TimeAgo date={time.valueOf() * 1000} />
+        </View>
+      </View>
     </View>
   );
 };
@@ -51,7 +69,7 @@ type IPropTypes = {
   sender: string,
   text: string,
   time: Timestamp,
-  // like: number,
+  likes: number,
 };
 
 export default ChirpCard;
