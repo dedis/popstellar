@@ -90,6 +90,6 @@
   <dimen name="wallet_qr_token_size">130dp</dimen>
 
   <!-- Social Media dimensions -->
-  <dimen name="min_height_entry_box_chirp">245dp</dimen>
+  <dimen name="min_height_entry_box_chirp">200dp</dimen>
 
 </resources>

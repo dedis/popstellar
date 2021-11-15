@@ -31,14 +31,11 @@
         android:afterTextChanged="@{(editable) -> view_model.setNumberCharsLeft(view_model.MAX_CHAR_NUMBERS - editable.toString().length())}"
         android:autofillHints="name"
         android:background="@drawable/rounded_edit_text"
-        android:ellipsize="none"
         android:gravity="start"
         android:hint="@string/hint_chirp"
-        android:inputType="textMultiLine"
+        android:inputType="text"
         android:minHeight="@dimen/min_height_entry_box_chirp"
-        android:padding="@dimen/margin_top"
-        android:scrollHorizontally="false"
-        android:maxLines="20" />
+        android:padding="@dimen/margin_top" />
 
       <LinearLayout
         android:layout_width="match_parent"
@@ -52,7 +49,7 @@
           android:layout_height="wrap_content"
           android:layout_gravity="center"
           android:text="@{entryBoxChirp.text.length() > 0 ? view_model.getNumberCharsLeft().toString() : view_model.MAX_CHAR_NUMBERS.toString()}"
-          android:textColor="@{entryBoxChirp.text.length() > 0 ? (view_model.getNumberCharsLeft() >= 0 ? @color/black : @color/red) : @color/black}"
+          android:textColor="@{view_model.getNumberCharsLeft() >= 0 ? @color/black : @color/red}"
           android:textSize="@dimen/size_title"
           android:textStyle="bold" />
 
