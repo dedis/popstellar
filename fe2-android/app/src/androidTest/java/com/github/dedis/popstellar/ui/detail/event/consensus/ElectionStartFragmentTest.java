@@ -12,6 +12,7 @@ import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionS
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.core.app.ApplicationProvider;
@@ -44,13 +45,17 @@ import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
 
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.util.collections.Sets;
+import org.mockito.junit.MockitoJUnit;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -64,6 +69,28 @@ import io.reactivex.Observable;
 
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ElectionStartFragmentTest {
+
+  // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
+  private final TestRule setupRule =
+      new ExternalResource() {
+        @Override
+        protected void before() {
+          setUp();
+        }
+
+        @Override
+        protected void after() {
+          teardown();
+        }
+      };
+
+  private final FragmentScenarioRule<ElectionStartFragment> fragmentRule =
+      FragmentScenarioRule.launchInContainer(
+          ElectionStartFragment.class, ElectionStartFragment::newInstance);
+
+  @Rule
+  public final RuleChain chain =
+      RuleChain.outerRule(MockitoJUnit.testRule(this)).around(setupRule).around(fragmentRule);
 
   private static final DateTimeFormatter dateTimeFormatter =
       DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
@@ -92,33 +119,19 @@ public class ElectionStartFragmentTest {
 
   private static final ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
 
-  private static String publicKey;
-  private static LAORepository laoRepository;
-  private static boolean isAlreadySetup = false;
+  private String publicKey;
+  private LAORepository laoRepository;
 
-  LAORemoteDataSource remoteDataSource = Mockito.mock(LAORemoteDataSource.class);
-  LAOLocalDataSource localDataSource = Mockito.mock(LAOLocalDataSource.class);
+  @Mock private LAORemoteDataSource remoteDataSource;
+  @Mock private LAOLocalDataSource localDataSource;
 
-  @Rule
-  public final FragmentScenarioRule<ElectionStartFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(
-          ElectionStartFragment.class,
-          () -> {
-            ElectionStartFragment fragment = ElectionStartFragment.newInstance();
-            if (!isAlreadySetup) {
-              setup();
-              isAlreadySetup = true;
-            }
-            return fragment;
-          });
-
-  private void setup() {
-    Mockito.when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
-    Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+  public void setUp() {
+    when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
+    when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
     Observable<GenericMessage> upstream = Observable.fromArray((GenericMessage) new Result(42));
 
     // Mock the remote data source to receive a response
-    Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
+    when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
     try {
       LAORepository.destroyInstance();
@@ -143,21 +156,13 @@ public class ElectionStartFragmentTest {
     laoRepository.updateNodes(laoChannel);
   }
 
-  @After
-  public void clean() {
+  public void teardown() {
     LAORepository.destroyInstance();
   }
 
-  private String getPublicKey() throws IOException, GeneralSecurityException {
-    KeysetHandle publicKeysetHandle =
-        Injection.provideAndroidKeysetManager(ApplicationProvider.getApplicationContext())
-            .getKeysetHandle()
-            .getPublicKeysetHandle();
-    return Keys.getEncodedKey(publicKeysetHandle);
-  }
-
   @Test
-  public void displayWithUpdatesIsCorrectAndButtonsProduceCorrectMessages() throws InterruptedException {
+  public void displayWithUpdatesIsCorrectAndButtonsProduceCorrectMessages()
+      throws InterruptedException {
     fragmentRule
         .getScenario()
         .onFragment(
@@ -274,5 +279,13 @@ public class ElectionStartFragmentTest {
                     isDisplayed(),
                     withText(expectedText),
                     enabled ? isEnabled() : isNotEnabled())));
+  }
+
+  private String getPublicKey() throws IOException, GeneralSecurityException {
+    KeysetHandle publicKeysetHandle =
+        Injection.provideAndroidKeysetManager(ApplicationProvider.getApplicationContext())
+            .getKeysetHandle()
+            .getPublicKeysetHandle();
+    return Keys.getEncodedKey(publicKeysetHandle);
   }
 }
