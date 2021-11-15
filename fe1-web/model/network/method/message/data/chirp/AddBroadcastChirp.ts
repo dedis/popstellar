@@ -4,14 +4,14 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
-/** Data sent to receive a chirp */
+/** Data sent to broadcast a chirp to the general social channel */
 export class AddBroadcastChirp implements MessageData {
   public readonly object: ObjectType = ObjectType.CHIRP;
 
   public readonly action: ActionType = ActionType.ADD_BROADCAST;
 
-  // The ID of the received chirp
-  public readonly id: Hash;
+  // The ID of the chirp
+  public readonly chirp_id: Hash;
 
   // The channel to which the chirp has been posted
   public readonly channel: string;
@@ -20,10 +20,10 @@ export class AddBroadcastChirp implements MessageData {
   public readonly timestamp: Timestamp;
 
   constructor(msg: Partial<AddBroadcastChirp>) {
-    if (!msg.id) {
+    if (!msg.chirp_id) {
       throw new ProtocolError('Undefined \'id\' parameter encountered during \'AddBroadcastChirp\'');
     }
-    this.id = msg.id;
+    this.chirp_id = msg.chirp_id;
 
     if (!msg.timestamp) {
       throw new ProtocolError('Undefined \'timestamp\' parameter encountered during \'AddBroadcastChirp\'');
@@ -38,7 +38,7 @@ export class AddBroadcastChirp implements MessageData {
   }
 
   /**
-   * Creates a AddBroadcastChirp object from a given JSON object.
+   * Creates an AddBroadcastChirp object from a given JSON object.
    *
    * @param obj - The given JSON object
    */
@@ -51,7 +51,7 @@ export class AddBroadcastChirp implements MessageData {
 
     return new AddBroadcastChirp({
       ...obj,
-      id: new Hash(obj.id),
+      chirp_id: new Hash(obj.chirp_id),
       timestamp: new Timestamp(obj.timestamp),
     });
   }
