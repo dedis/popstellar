@@ -303,17 +303,17 @@ func verifySignature(publicKey64 string, signature64 string, data64 string) erro
 	var point = suite.Point()
 	err = point.UnmarshalBinary(pk)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal the public key")
+		return xerrors.Errorf("failed to unmarshal the public key: %v", err)
 	}
 
 	signature, err := base64.URLEncoding.DecodeString(signature64)
 	if err != nil {
-		return xerrors.Errorf("failed to decode the signature")
+		return xerrors.Errorf("failed to decode the signature: %v", err)
 	}
 
 	data, err := base64.URLEncoding.DecodeString(data64)
 	if err != nil {
-		return xerrors.Errorf("failed to decode the data")
+		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
 	return schnorr.VerifyWithChecks(crypto.Suite, pk, data, signature)
