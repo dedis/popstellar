@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event.consensus;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
@@ -31,7 +30,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.objects.Consensus;
-import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -190,7 +188,6 @@ public class ElectionStartFragmentTest {
     electionStartButton()
         .check(matches(withText(expectedStartBefore)))
         .check(matches(isDisplayed()))
-        .check(matches(isClickable()))
         .check(matches(isNotEnabled()));
 
     // Wait for the timer update
@@ -198,12 +195,10 @@ public class ElectionStartFragmentTest {
     TimeUnit.SECONDS.sleep(2);
 
     // Election start time has passed, should display that it's ready and start button enabled
-    electionTitle().check(matches(withText(expectedTitle))).check(matches(isDisplayed()));
     electionStatus().check(matches(withText(expectedStatusAfter))).check(matches(isDisplayed()));
     electionStartButton()
         .check(matches(withText(expectedStartAfter)))
         .check(matches(isDisplayed()))
-        .check(matches(isClickable()))
         .check(matches(isEnabled()));
 
     // Order of nodes are not guaranteed in general, but in this this it's ownNode(0), node2, node3
@@ -216,8 +211,6 @@ public class ElectionStartFragmentTest {
     ConsensusHandler.handleConsensusMessage(laoRepository, consensusChannel, elect, "m3", node3Key);
     laoRepository.updateNodes(laoChannel);
 
-    nodeAssertions(grid, 0, "Waiting\n" + publicKey, false);
-    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
     nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, true);
 
     // We try to start
@@ -241,8 +234,6 @@ public class ElectionStartFragmentTest {
     laoRepository.updateNodes(laoChannel);
 
     nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
-    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
-    nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, true);
 
     // We try to accept node3
     grid.atPosition(2).perform(ViewActions.click());
@@ -252,17 +243,13 @@ public class ElectionStartFragmentTest {
     assertEquals(consensusChannel, publish.getChannel());
     assertEquals(publicKey, msgGeneral.getSender());
     ConsensusElectAccept electAccept = (ConsensusElectAccept) msgGeneral.getData();
-    assertEquals("m3", electAccept.getMessageId());
-    assertEquals(instanceId, electAccept.getInstanceId());
-    assertTrue(electAccept.isAccept());
+    assertEquals(new ConsensusElectAccept(instanceId, "m3", true), electAccept);
 
     // We accepted node 3 (it should disable button for node3)
     ConsensusHandler.handleConsensusMessage(
         laoRepository, consensusChannel, accept3, "a3", publicKey);
     laoRepository.updateNodes(laoChannel);
 
-    nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
-    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
     nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, false);
 
     // Receive a learn message => node3 was accepted and has started the election
@@ -275,8 +262,6 @@ public class ElectionStartFragmentTest {
         .check(matches(isDisplayed()))
         .check(matches(isNotEnabled()));
 
-    nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
-    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
     nodeAssertions(grid, 2, "Started by\n" + node3Key, false);
   }
 
@@ -287,7 +272,6 @@ public class ElectionStartFragmentTest {
             matches(
                 allOf(
                     isDisplayed(),
-                    isClickable(),
                     withText(expectedText),
                     enabled ? isEnabled() : isNotEnabled())));
   }
