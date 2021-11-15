@@ -75,12 +75,41 @@ public class ElectionStartFragmentTest {
       new ExternalResource() {
         @Override
         protected void before() {
-          setUp();
+          when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
+          when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+          Observable<GenericMessage> upstream =
+              Observable.fromArray((GenericMessage) new Result(42));
+
+          // Mock the remote data source to receive a response
+          when(remoteDataSource.observeMessage()).thenReturn(upstream);
+
+          try {
+            LAORepository.destroyInstance();
+            laoRepository =
+                LAORepository.getInstance(
+                    remoteDataSource,
+                    localDataSource,
+                    Injection.provideAndroidKeysetManager(
+                        ApplicationProvider.getApplicationContext()),
+                    Injection.provideGson(),
+                    new ProdSchedulerProvider());
+            publicKey = getPublicKey();
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+
+          election.setStart(futureTime);
+          lao.setChannel(laoChannel);
+          lao.setOrganizer(publicKey);
+          lao.setWitnesses(Sets.newSet(node2Key, node3Key));
+
+          laoRepository.getLaoById().put(laoChannel, new LAOState(lao));
+          laoRepository.updateNodes(laoChannel);
         }
 
         @Override
         protected void after() {
-          teardown();
+          LAORepository.destroyInstance();
         }
       };
 
@@ -124,41 +153,6 @@ public class ElectionStartFragmentTest {
 
   @Mock private LAORemoteDataSource remoteDataSource;
   @Mock private LAOLocalDataSource localDataSource;
-
-  public void setUp() {
-    when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
-    when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
-    Observable<GenericMessage> upstream = Observable.fromArray((GenericMessage) new Result(42));
-
-    // Mock the remote data source to receive a response
-    when(remoteDataSource.observeMessage()).thenReturn(upstream);
-
-    try {
-      LAORepository.destroyInstance();
-      laoRepository =
-          LAORepository.getInstance(
-              remoteDataSource,
-              localDataSource,
-              Injection.provideAndroidKeysetManager(ApplicationProvider.getApplicationContext()),
-              Injection.provideGson(),
-              new ProdSchedulerProvider());
-      publicKey = getPublicKey();
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-
-    election.setStart(futureTime);
-    lao.setChannel(laoChannel);
-    lao.setOrganizer(publicKey);
-    lao.setWitnesses(Sets.newSet(node2Key, node3Key));
-
-    laoRepository.getLaoById().put(laoChannel, new LAOState(lao));
-    laoRepository.updateNodes(laoChannel);
-  }
-
-  public void teardown() {
-    LAORepository.destroyInstance();
-  }
 
   @Test
   public void displayWithUpdatesIsCorrectAndButtonsProduceCorrectMessages()
