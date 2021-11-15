@@ -41,59 +41,49 @@ describe('AddBroadcastChirp', () => {
     expect(AddBroadcastChirp.fromJson(obj)).toBeJsonEqual(sampleAddBroadcastChirp);
   });
 
-  it('should throw an error if id is undefined', () => {
-    const createWrongObj = () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const wrongObj = new AddBroadcastChirp({
+  describe('constructor', () => {
+    it('should throw an error if id is undefined', () => {
+      const createWrongObj = () => new AddBroadcastChirp({
         object: ObjectType.CHIRP,
         action: ActionType.ADD_BROADCAST,
         text: TEXT,
         channel: CHANNEL,
         timestamp: TIMESTAMP,
       });
-    };
-    expect(createWrongObj).toThrow(ProtocolError);
-  });
+      expect(createWrongObj).toThrow(ProtocolError);
+    });
 
-  it('should throw an error if text is undefined', () => {
-    const createWrongObj = () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const wrongObj = new AddBroadcastChirp({
+    it('should throw an error if text is undefined', () => {
+      const createWrongObj = () => new AddBroadcastChirp({
         object: ObjectType.CHIRP,
         action: ActionType.ADD_BROADCAST,
         id: ID,
         channel: CHANNEL,
         timestamp: TIMESTAMP,
       });
-    };
-    expect(createWrongObj).toThrow(ProtocolError);
-  });
+      expect(createWrongObj).toThrow(ProtocolError);
+    });
 
-  it('should throw an error if timestamp is undefined', () => {
-    const createWrongObj = () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const wrongObj = new AddBroadcastChirp({
+    it('should throw an error if timestamp is undefined', () => {
+      const createWrongObj = () => new AddBroadcastChirp({
         object: ObjectType.CHIRP,
         action: ActionType.ADD_BROADCAST,
         id: ID,
         text: TEXT,
         channel: CHANNEL,
       });
-    };
-    expect(createWrongObj).toThrow(ProtocolError);
-  });
+      expect(createWrongObj).toThrow(ProtocolError);
+    });
 
-  it('should throw an error if channel is undefined', () => {
-    const createWrongObj = () => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const wrongObj = new AddBroadcastChirp({
+    it('should throw an error if channel is undefined', () => {
+      const createWrongObj = () => new AddBroadcastChirp({
         object: ObjectType.CHIRP,
         action: ActionType.ADD_BROADCAST,
         id: ID,
         text: TEXT,
         timestamp: TIMESTAMP,
       });
-    };
-    expect(createWrongObj).toThrow(ProtocolError);
+      expect(createWrongObj).toThrow(ProtocolError);
+    });
   });
 });
