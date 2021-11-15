@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 
 import { Base64UrlData, Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { AddBroadcastChirp } from '../chirp/AddBroadcastChirp';
+import { AddChirpBroadcast } from '../chirp/AddChirpBroadcast';
 import { ActionType, ObjectType } from '../MessageData';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -11,7 +11,7 @@ const CHANNEL = '/root/abc/social/def';
 const mockMessageId = Base64UrlData.encode('message_id');
 const ID = new Hash(mockMessageId.toString());
 
-const sampleAddBroadcastChirp: Partial<AddBroadcastChirp> = {
+const sampleAddBroadcastChirp: Partial<AddChirpBroadcast> = {
   object: ObjectType.CHIRP,
   action: ActionType.ADD_BROADCAST,
   chirp_id: ID,
@@ -29,7 +29,7 @@ const dataAddChirpBroadcast = `{
 
 describe('AddBroadcastChirp', () => {
   it('should be created correctly from JSON', () => {
-    expect(new AddBroadcastChirp(sampleAddBroadcastChirp)).toBeJsonEqual(sampleAddBroadcastChirp);
+    expect(new AddChirpBroadcast(sampleAddBroadcastChirp)).toBeJsonEqual(sampleAddBroadcastChirp);
     const temp = {
       object: ObjectType.CHIRP,
       action: ActionType.ADD_BROADCAST,
@@ -37,12 +37,12 @@ describe('AddBroadcastChirp', () => {
       channel: CHANNEL,
       timestamp: TIMESTAMP,
     };
-    expect(new AddBroadcastChirp(temp)).toBeJsonEqual(temp);
+    expect(new AddChirpBroadcast(temp)).toBeJsonEqual(temp);
   });
 
   it('should be parsed correctly from JSON', () => {
     const obj = JSON.parse(dataAddChirpBroadcast);
-    expect(AddBroadcastChirp.fromJson(obj)).toBeJsonEqual(sampleAddBroadcastChirp);
+    expect(AddChirpBroadcast.fromJson(obj)).toBeJsonEqual(sampleAddBroadcastChirp);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
@@ -53,13 +53,13 @@ describe('AddBroadcastChirp', () => {
       channel: CHANNEL,
       timestamp: TIMESTAMP,
     };
-    const createFromJson = () => AddBroadcastChirp.fromJson(obj);
+    const createFromJson = () => AddChirpBroadcast.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);
   });
 
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
-      const createWrongObj = () => new AddBroadcastChirp({
+      const createWrongObj = () => new AddChirpBroadcast({
         object: ObjectType.CHIRP,
         action: ActionType.ADD_BROADCAST,
         channel: CHANNEL,
@@ -69,7 +69,7 @@ describe('AddBroadcastChirp', () => {
     });
 
     it('should throw an error if timestamp is undefined', () => {
-      const createWrongObj = () => new AddBroadcastChirp({
+      const createWrongObj = () => new AddChirpBroadcast({
         object: ObjectType.CHIRP,
         action: ActionType.ADD_BROADCAST,
         chirp_id: ID,
@@ -79,7 +79,7 @@ describe('AddBroadcastChirp', () => {
     });
 
     it('should throw an error if channel is undefined', () => {
-      const createWrongObj = () => new AddBroadcastChirp({
+      const createWrongObj = () => new AddChirpBroadcast({
         object: ObjectType.CHIRP,
         action: ActionType.ADD_BROADCAST,
         chirp_id: ID,
