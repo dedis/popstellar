@@ -5,10 +5,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.pages.qrcode.ElectionStartPageObject.electionStartButton;
-import static com.github.dedis.popstellar.pages.qrcode.ElectionStartPageObject.electionStatus;
-import static com.github.dedis.popstellar.pages.qrcode.ElectionStartPageObject.electionTitle;
-import static com.github.dedis.popstellar.pages.qrcode.ElectionStartPageObject.nodesGrid;
+import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.electionStartButton;
+import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.electionStatus;
+import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.electionTitle;
+import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.nodesGrid;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -157,7 +157,7 @@ public class ElectionStartFragmentTest {
   }
 
   @Test
-  public void test() throws InterruptedException {
+  public void displayWithUpdatesIsCorrectAndButtonsProduceCorrectMessages() throws InterruptedException {
     fragmentRule
         .getScenario()
         .onFragment(

@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.pages.qrcode;
+package com.github.dedis.popstellar.pages.detail.event.consensus;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
