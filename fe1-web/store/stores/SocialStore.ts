@@ -1,17 +1,8 @@
 import { Chirp, ChirpState } from 'model/objects/Chirp';
-import { dispatch, getStore } from '../Storage';
-import { addChirp, getChirps } from '../reducers';
+import { getStore } from '../Storage';
+import { getChirps } from '../reducers';
 
 export namespace SocialStore {
-  /**
-   * Stores the new posted chirp.
-   *
-   * @param chirp
-   */
-  export function storeChirp(chirp: Chirp): void {
-    dispatch(addChirp(chirp.toState()));
-  }
-
   /**
    * Returns the list of posted chirps.
    */

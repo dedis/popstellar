@@ -1,6 +1,12 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, AddChirp, ObjectType } from 'model/network/method/message/data';
-import { getStore, KeyPairStore, makeCurrentLao } from 'store';
+import {
+  addChirp,
+  dispatch,
+  getStore,
+  KeyPairStore,
+  makeCurrentLao,
+} from 'store';
 import { Chirp } from 'model/objects/Chirp';
 
 /**
@@ -30,15 +36,33 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
+  const messageId = msg.message_id;
   const chirpMessage = msg.messageData as AddChirp;
 
   const chirp = new Chirp({
-    sender: KeyPairStore.get().publicKey.valueOf(),
+    id: messageId,
+    sender: KeyPairStore.get().publicKey,
     text: chirpMessage.text,
     time: chirpMessage.timestamp,
-    likes: 0,
-    dislikes: 0,
     parentId: chirpMessage.parent_id,
   });
+
+  dispatch(addChirp(chirp.toState()));
   return true;
+}
+
+export function handleSocialMessage(msg: ExtendedMessage): boolean {
+  if (msg.messageData.object !== ObjectType.CHIRP) {
+    console.warn('handleSocialMessage was called to process an unsupported message', msg);
+    return false;
+  }
+
+  switch (msg.messageData.action) {
+    case ActionType.ADD:
+      return handleAddChirpMessage(msg);
+    default:
+      console.warn('A Social message was received but its processing logic is not yet '
+        + 'implemented:', msg);
+      return false;
+  }
 }
