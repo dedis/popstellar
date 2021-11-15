@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import {
-  ActionType, AddChirp,
+  ActionType,
   CloseRollCall,
   CreateLao,
   CreateMeeting,
@@ -306,22 +306,6 @@ function checkDataCloseRollCall(obj: MessageData): CloseRollCall {
   return data;
 }
 
-function checkDataAddChirp(obj: MessageData): AddChirp {
-  expect(obj.object).toBe(ObjectType.CHIRP);
-  expect(obj.action).toBe(ActionType.ADD);
-
-  const data: AddChirp = obj as AddChirp;
-
-  expect(data).toBeObject();
-  expect(data.text).toBeString();
-  if (data.parent_id) {
-    expect(data.parent_id).toBeBase64Url();
-  }
-  expect(data.timestamp).toBeNumberObject();
-
-  return data;
-}
-
 describe('=== WebsocketApi tests ===', () => {
   let dateNowSpy: jest.SpyInstance<number>;
   beforeAll(() => {
@@ -526,31 +510,6 @@ describe('=== WebsocketApi tests ===', () => {
 
       const msg = checkDataCloseRollCall(msgData);
       expect(msg.closed_at).toEqual(mockEndTime);
-    });
-
-    it('should create the correct request for requestAddChirp with parentId', async () => {
-      const text = 'text';
-      const parentId = new Hash('id');
-
-      await msApi.requestAddChirp(text, parentId);
-
-      expect(publishMock.mock.calls.length).toBe(1);
-      const [channel, msgData] = publishMock.mock.calls[0];
-      expect(channel).toBe(`/root/${sampleLao.id}/social/${testKeyPair.publicKey}`);
-
-      checkDataAddChirp(msgData);
-    });
-
-    it('should create the correct request for requestAddChirp without parentId', async () => {
-      const text = 'text';
-
-      await msApi.requestAddChirp(text);
-
-      expect(publishMock.mock.calls.length).toBe(1);
-      const [channel, msgData] = publishMock.mock.calls[0];
-      expect(channel).toBe(`/root/${sampleLao.id}/social/${testKeyPair.publicKey}`);
-
-      checkDataAddChirp(msgData);
     });
   });
 });

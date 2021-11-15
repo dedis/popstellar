@@ -5,7 +5,7 @@ import { Hash } from '../Hash';
 import {
   channelFromIds,
   generalChirpsChannel,
-  getLastChannel,
+  getLastPartOfChannel,
   userSocialChannel,
 } from '../Channel';
 import { KeyPair } from '../KeyPair';
@@ -38,6 +38,6 @@ describe('Channel object', () => {
   it('getLastChannel works correctly', () => {
     const channel = '/root/laoID/electionID';
     const expectedHash = new Hash('electionID');
-    expect(getLastChannel(channel)).toStrictEqual(expectedHash);
+    expect(getLastPartOfChannel(channel)).toStrictEqual(expectedHash);
   });
 });

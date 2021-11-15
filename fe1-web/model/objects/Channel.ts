@@ -36,9 +36,9 @@ export function generalChirpsChannel(laoIdHash: Hash): Channel {
  * Input: /root/laoID/electionID
  * Output: electionID
  *
- * @param channel - The channel we want the last port
+ * @param channel - The channel whose last component we want to obtain
  */
-export function getLastChannel(channel: Channel): Hash {
+export function getLastPartOfChannel(channel: Channel): Hash {
   const channels = channel.split('/');
   return new Hash(channels[channels.length - 1]);
 }
