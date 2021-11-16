@@ -14,16 +14,26 @@ export function channelFromIds(...args: Hash[]) : Channel {
 }
 
 /**
+<<<<<<< HEAD
  * Returns the chirp channel of the current user.
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
 export function getCurrentUserChirpChannel(laoIdHash: Hash): Channel {
   const userPublicKey = KeyPairStore.get().publicKey.valueOf();
+=======
+ * Returns the social channel of the current user.
+ *
+ * @param laoIdHash - The hash containing the laoID of the currently opened LAO
+ */
+export function userSocialChannel(laoIdHash: Hash): Channel {
+  const userPublicKey = KeyPairStore.getPublicKey().valueOf();
+>>>>>>> work-fe1-kschneiter-store-chirps
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
 }
 
 /**
+<<<<<<< HEAD
  * Returns the chirp channel for a specific user.
  *
  * @param laoIdHash - The hash containing the laoID of the current opened LAO
@@ -34,20 +44,28 @@ export function getUserChirpChannel(laoIdHash: Hash, userPk: PublicKey): Channel
 }
 
 /**
+=======
+>>>>>>> work-fe1-kschneiter-store-chirps
  * Returns the general channel of chirps.
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
+<<<<<<< HEAD
 export function getGeneralChirpChannel(laoIdHash: Hash): Channel {
+=======
+export function generalChirpsChannel(laoIdHash: Hash): Channel {
+>>>>>>> work-fe1-kschneiter-store-chirps
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/chirps`;
 }
 
 /** Returns the last part of the channel which is usually an event id
  * Example:
- * Input: /root/laoid/electionid
- * Output: electionId
+ * Input: /root/laoID/electionID
+ * Output: electionID
+ *
+ * @param channel - The channel whose last component we want to obtain
  */
-export function getLastChannel(channel: Channel): Hash {
+export function getLastPartOfChannel(channel: Channel): Hash {
   const channels = channel.split('/');
   return new Hash(channels[channels.length - 1]);
 }

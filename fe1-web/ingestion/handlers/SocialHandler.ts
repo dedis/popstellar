@@ -51,6 +51,12 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
+/**
+ * Handles all social media messages by redirecting them to the correct function based on the
+ * action.
+ *
+ * @param msg - The received extended message
+ */
 export function handleSocialMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP) {
     console.warn('handleSocialMessage was called to process an unsupported message', msg);

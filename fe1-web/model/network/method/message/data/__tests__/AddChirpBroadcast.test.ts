@@ -3,11 +3,11 @@ import '__tests__/utils/matchers';
 
 import { Base64UrlData, Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { AddChirpBroadcast } from '../chirp/AddChirpBroadcast';
+import { AddChirpBroadcast } from '../chirp';
 import { ActionType, ObjectType } from '../MessageData';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const CHANNEL = '/root/abc/social/def';
+const CHANNEL = '/root/laoID/social/senderPublicKey';
 const mockMessageId = Base64UrlData.encode('message_id');
 const ID = new Hash(mockMessageId.toString());
 

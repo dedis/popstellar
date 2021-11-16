@@ -289,14 +289,15 @@ export function terminateElection(
 }
 
 export function requestAddChirp(
-  text: string, parent_id: Hash = undefined,
+  text: string,
+  parentId?: Hash,
 ): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new AddChirp({
     text: text,
-    parent_id: parent_id,
+    parent_id: parentId,
     timestamp: timestamp,
   });
 
