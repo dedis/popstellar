@@ -7,6 +7,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
@@ -46,10 +48,10 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   public long startTimeInSeconds;
   public long endTimeInSeconds;
 
-  private Calendar startDate;
-  private Calendar endDate;
-  private Calendar startTime;
-  private Calendar endTime;
+  @Nullable private Calendar startDate;
+  @Nullable private Calendar endDate;
+  @Nullable private Calendar startTime;
+  @Nullable private Calendar endTime;
 
   private EditText startDateEditText;
   private EditText endDateEditText;
@@ -166,104 +168,84 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   }
 
   private void onStartDate(String request, Bundle bundle) {
-    startDate = getSelection(bundle);
+    Calendar newDate = getSelection(bundle);
 
-    if (startDate.compareTo(today) < 0) {
-      Toast.makeText(getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
-          .show();
-      startDateEditText.setText("");
-      startDate = null;
-    } else {
-      if ((endDate != null) && (startDate.compareTo(endDate) > 0)) {
-        Toast.makeText(
-                getActivity(),
-                getString(R.string.start_date_after_end_date_not_allowed),
-                Toast.LENGTH_LONG)
-            .show();
-        startDateEditText.setText("");
-        startDate = null;
-      } else {
-        startDateEditText.setText(DATE_FORMAT.format(startDate.getTime()));
-        if ((endDate != null) && (startDate.compareTo(endDate) == 0)) {
-          endTime = null;
-          endTimeEditText.setText("");
-        }
-      }
+    startDateEditText.setText("");
+    startDate = null;
+
+    if (newDate.compareTo(today) < 0) {
+      showToast(R.string.past_date_not_allowed);
+      return;
+    }
+
+    if (endDate != null && newDate.compareTo(endDate) > 0) {
+      showToast(R.string.start_date_after_end_date_not_allowed);
+      return;
+    }
+
+    startDate = newDate;
+    startDateEditText.setText(DATE_FORMAT.format(startDate.getTime()));
+
+    if (endDate != null && newDate.compareTo(endDate) == 0) {
+      endTime = null;
+      endTimeEditText.setText("");
     }
   }
 
   private void onEndDate(String requestKey, Bundle bundle) {
-    endDate = getSelection(bundle);
-    if (endDate.compareTo(today) < 0) {
-      Toast.makeText(getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
-          .show();
-      endDateEditText.setText("");
-      endDate = null;
-    } else {
-      if ((startDate != null) && (endDate.compareTo(startDate) < 0)) {
-        Toast.makeText(
-                getActivity(),
-                getString(R.string.end_date_after_start_date_not_allowed),
-                Toast.LENGTH_SHORT)
-            .show();
-        endDateEditText.setText("");
-        endDate = null;
-      } else {
-        if ((startDate != null) && (startDate.compareTo(endDate) == 0)) {
-          endTime = null;
-          endTimeEditText.setText("");
-        }
-        endDateEditText.setText(DATE_FORMAT.format(endDate.getTime()));
-      }
+    Calendar newDate = getSelection(bundle);
+
+    endDateEditText.setText("");
+    endDate = null;
+
+    if (newDate.compareTo(today) < 0) {
+      showToast(R.string.past_date_not_allowed);
+      return;
     }
+
+    if ((startDate != null) && (newDate.compareTo(startDate) < 0)) {
+      showToast(R.string.end_date_after_start_date_not_allowed);
+      return;
+    }
+
+    if ((startDate != null) && (startDate.compareTo(newDate) == 0)) return;
+
+    endDate = newDate;
+    endDateEditText.setText(DATE_FORMAT.format(newDate.getTime()));
   }
 
   private void onStartTime(String requestKey, Bundle bundle) {
-    Calendar selection = getSelection(bundle);
+    startTime = getSelection(bundle);
+    startTimeEditText.setText(TIME_FORMAT.format(startTime.getTime()));
 
-    if (startDate == null || endDate == null) {
-      startTime = selection;
-      startTimeEditText.setText(TIME_FORMAT.format(startTime.getTime()));
-    } else {
-      startTime = selection;
-      if ((startDate.compareTo(endDate) == 0)
-          && (endTime != null)
-          && (startTime.compareTo(endTime) > 0)) {
-        Toast.makeText(
-                getActivity(),
-                getString(R.string.start_time_after_end_time_not_allowed),
-                Toast.LENGTH_LONG)
-            .show();
-        startTime = null;
-        startTimeEditText.setText("");
-      } else {
-        startTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
-      }
+    if (startDate != null
+        && endDate != null
+        && startDate.compareTo(endDate) == 0
+        && endTime != null
+        && startTime.compareTo(endTime) > 0) {
+      showToast(R.string.start_time_after_end_time_not_allowed);
+      startTime = null;
+      startTimeEditText.setText("");
     }
   }
 
   private void onEndTime(String requestKey, Bundle bundle) {
-    Calendar selection = getSelection(bundle);
+    endTime = getSelection(bundle);
+    endTimeEditText.setText(TIME_FORMAT.format(endTime.getTime()));
 
-    if ((startDate == null) || (endDate == null)) {
-      endTime = selection;
-      endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
-    } else {
-      endTime = selection;
-      if ((startDate.compareTo(endDate) == 0)
-          && (startTime != null)
-          && (endTime.compareTo(startTime) < 0)) {
-        Toast.makeText(
-                getActivity(),
-                getString(R.string.end_time_before_start_time_not_allowed),
-                Toast.LENGTH_LONG)
-            .show();
-        endTime = null;
-        endTimeEditText.setText("");
-      } else {
-        endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
-      }
+    if (startDate != null
+        && endDate != null
+        && startDate.compareTo(endDate) == 0
+        && startTime != null
+        && startTime.compareTo(endTime) > 0) {
+      showToast(R.string.end_time_before_start_time_not_allowed);
+      endTime = null;
+      endTimeEditText.setText("");
     }
+  }
+
+  private void showToast(@StringRes int text) {
+    Toast.makeText(getActivity(), getString(text), Toast.LENGTH_LONG).show();
   }
 
   public void computeTimesInSeconds() {
