@@ -1,5 +1,6 @@
+import { KeyPairStore } from 'store';
 import { Hash } from './Hash';
-import { KeyPairStore } from '../../store';
+import { PublicKey } from './PublicKey';
 
 export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
@@ -13,13 +14,23 @@ export function channelFromIds(...args: Hash[]) : Channel {
 }
 
 /**
- * Returns the social channel of the current user.
+ * Returns the chirp channel of the current user.
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
-export function userSocialChannel(laoIdHash: Hash): Channel {
+export function getCurrentUserChirpChannel(laoIdHash: Hash): Channel {
   const userPublicKey = KeyPairStore.get().publicKey.valueOf();
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
+}
+
+/**
+ * Returns the chirp channel for a specific user.
+ *
+ * @param laoIdHash - The hash containing the laoID of the current opened LAO
+ * @param userPk - The public key of the user
+ */
+export function getUserChirpChannel(laoIdHash: Hash, userPk: PublicKey): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPk.valueOf()}`;
 }
 
 /**
@@ -27,7 +38,7 @@ export function userSocialChannel(laoIdHash: Hash): Channel {
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
-export function generalChirpsChannel(laoIdHash: Hash): Channel {
+export function getGeneralChirpChannel(laoIdHash: Hash): Channel {
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/chirps`;
 }
 

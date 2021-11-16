@@ -16,7 +16,7 @@ import { Chirp } from 'model/objects/Chirp';
 const getCurrentLao = makeCurrentLao();
 
 /**
- * Handles an addChirp message by storing it.
+ * Handles an addChirp message by storing the chirp sent.
  *
  * @param msg - The extended message for adding a chirp
  */
@@ -47,7 +47,7 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
     parentId: chirpMessage.parent_id,
   });
 
-  dispatch(addChirp(chirp.toState()));
+  dispatch(addChirp(lao.id, chirp.toState()));
   return true;
 }
 
@@ -61,8 +61,8 @@ export function handleSocialMessage(msg: ExtendedMessage): boolean {
     case ActionType.ADD:
       return handleAddChirpMessage(msg);
     default:
-      console.warn('A Social message was received but its processing logic is not yet '
-        + 'implemented:', msg);
+      console.warn('A Social Media message was received but its processing logic is not '
+        + 'yet implemented:', msg);
       return false;
   }
 }

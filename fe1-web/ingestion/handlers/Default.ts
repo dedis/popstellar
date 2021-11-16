@@ -5,7 +5,7 @@ import { handleWitnessMessage } from './Witness';
 import { handleMeetingMessage } from './Meeting';
 import { handleRollCallMessage } from './RollCall';
 import { handleElectionMessage } from './Election';
-import { handleSocialMessage } from './Social';
+import { handleSocialMessage } from './SocialHandler';
 
 /** Processes the messages from storage by dispatching them to the right handler
  *

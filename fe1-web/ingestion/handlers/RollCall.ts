@@ -6,16 +6,17 @@ import {
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
-import { RollCall, RollCallStatus, Wallet } from 'model/objects';
+import { getUserChirpChannel, PublicKey, RollCall, RollCallStatus, Wallet } from 'model/objects';
 import {
   addEvent,
   AsyncDispatch,
   dispatch,
-  getStore,
+  getStore, KeyPairStore,
   makeCurrentLao,
   setLaoLastRollCall,
   updateEvent,
 } from 'store';
+import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
@@ -131,6 +132,14 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
       console.debug(err);
     }
   }));
+
+  // FIXME: This for is only for testing purpose and has to be deleted at some point
+  rcMsgData.attendees.push(lao.organizer);
+  rcMsgData.attendees.forEach((pk: PublicKey) => {
+    subscribeToChannel(getUserChirpChannel(lao.id, pk)).then(() => {}).catch((err) => {
+      console.error(`Could not subscribe to social channel for user ${pk}, error:`, err);
+    });
+  });
 
   return true;
 }

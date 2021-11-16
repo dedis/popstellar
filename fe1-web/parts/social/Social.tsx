@@ -17,7 +17,7 @@ import { requestAddChirp } from 'network/MessageApi';
 import { OpenedLaoStore, SocialStore } from 'store';
 import { Chirp } from 'model/objects/Chirp';
 import { subscribeToChannel } from '../../network/CommunicationApi';
-import { generalChirpsChannel, Lao } from '../../model/objects';
+import { getGeneralChirpChannel, Lao } from '../../model/objects';
 
 /**
  * UI for the Social Media component
@@ -52,7 +52,7 @@ const Social = () => {
 
   const subscribeToSocialChannel = () => {
     const currentLao: Lao = OpenedLaoStore.get();
-    const socialChannel = generalChirpsChannel(currentLao.id);
+    const socialChannel = getGeneralChirpChannel(currentLao.id);
     subscribeToChannel(socialChannel).then(() => {}).catch((err) => {
       console.error('Could not subscribe to Social Media general channel, error: ', err);
     });
