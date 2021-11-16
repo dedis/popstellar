@@ -1,7 +1,6 @@
-import { Chirp, ChirpState } from 'model/objects/Chirp';
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { ChirpState } from 'model/objects/Chirp';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash } from 'model/objects';
-import { getLaosState } from './LaoReducer';
 
 /**
  * Stores all the Social Media related content
@@ -10,11 +9,8 @@ import { getLaosState } from './LaoReducer';
 // Stores all Social Media related information for a given LAO
 interface SocialReducerState {
 
-  // Stores all the id of sent chirps
-  allChirpsIds: string[],
-
-  // Maps each chirp id to the correspond chirp
-  chirpsById: Record<string, ChirpState>,
+  // Stores all chirps for a given LAO
+  allChirps: ChirpState[];
 }
 
 // Root state for the Social Reducer
@@ -27,8 +23,7 @@ interface SocialLaoReducerState {
 const initialState: SocialLaoReducerState = {
   byLaoId: {
     myLaoId: {
-      allChirpsIds: [],
-      chirpsById: {},
+      allChirps: [],
     },
   },
 }
@@ -53,32 +48,16 @@ const socialSlice = createSlice({
 
         if (!(laoId in state.byLaoId)) {
           state.byLaoId[laoId] = {
-            allChirpsIds: [],
-            chirpsById: {},
+            allChirps: [],
           };
         }
 
-        state.byLaoId[laoId].allChirpsIds.push(chirp.id);
-        state.byLaoId[laoId].chirpsById[chirp.id] = chirp;
+        state.byLaoId[laoId].allChirps.push(chirp);
         console.log(`New chirp added:\n\tSender: ${chirp.sender}\n\tMessage: ${chirp.text}`);
       }
     }
   }
 });
-
-export const makeChirpsMap = (laoId: string | undefined = undefined) => createSelector(
-  (state) => getSocialState(state),
-  (state) => getLaosState(state).currentId,
-  (chirpsMap: SocialLaoReducerState, laoId: string | undefined): Chirp[] => {
-    if (!laoId || !(laoId in chirpsMap.byLaoId)) {
-      return [];
-    }
-
-    return chirpsMap.byLaoId[laoId].allChirpsIds
-      .map((id: string): Chirp | undefined => Chirp.fromState(chirpsMap.byLaoId[laoId].chirpsById[id]))
-      .filter((chirp) => !!chirp) as Chirp[];
-  }
-)
 
 export const {
   addChirp

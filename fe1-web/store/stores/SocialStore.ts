@@ -1,20 +1,19 @@
-import { Chirp } from 'model/objects/Chirp';
-import { makeChirpsMap } from 'store/reducers';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
 import { Hash } from 'model/objects';
 import { getStore } from '../Storage';
+import { getSocialState } from '../reducers';
 
 export namespace SocialStore {
   /**
-   * Returns a chirp given its id.
+   * Returns the list of posted chirps for the given LAO.
    */
-  export function getChirp(id: Hash): Chirp | undefined {
-    const chirpsMap = makeChirpsMap();
-    const chirps = chirpsMap(getStore().getState());
-
-    if (!(id.valueOf() in chirps)) {
-      return undefined;
+  export function getAllChirps(laoId: Hash): Chirp[] {
+    if (getSocialState(getStore().getState()) === undefined) {
+      return [];
     }
 
-    return chirps[id.valueOf()];
+    const socialState: ChirpState[] = getSocialState(getStore().getState())
+      .byLaoId[laoId.valueOf()].allChirps;
+    return socialState.map((cs: ChirpState) => Chirp.fromState(cs));
   }
 }
