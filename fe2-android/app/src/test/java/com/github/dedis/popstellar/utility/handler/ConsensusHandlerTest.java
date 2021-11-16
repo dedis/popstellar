@@ -48,30 +48,30 @@ import io.reactivex.schedulers.TestScheduler;
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
 
-  private static final String organizer = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
-  private static final String node2Key = "Vf9kiBGdOPIutk9z055oQxpG9askyx5C_wnSznpOrHk=";
-  private static final String node3Key = "SYeTNtpM0XCbdrPTYSSMFJHtuHBiIEQyrq_auP4Hggw=";
-  private static final long creationTime = 946684800;
-  private static final String laoName = "laoName";
-  private static final String laoId = Lao.generateLaoId(organizer, creationTime, laoName);
-  private static final String laoChannel = "/root/" + laoId;
-  private static final String consensusChannel = laoChannel + "/consensus";
-  private static final Lao lao = new Lao(laoChannel);
+  private static final String ORGANIZER = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
+  private static final String NODE_2_KEY = "Vf9kiBGdOPIutk9z055oQxpG9askyx5C_wnSznpOrHk=";
+  private static final String NODE_3_KEY = "SYeTNtpM0XCbdrPTYSSMFJHtuHBiIEQyrq_auP4Hggw=";
+  private static final long CREATION_TIME = 946684800;
+  private static final String LAO_NAME = "laoName";
+  private static final String LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION_TIME, LAO_NAME);
+  private static final String LAO_CHANNEL = "/root/" + LAO_ID;
+  private static final String CONSENSUS_CHANNEL = LAO_CHANNEL + "/consensus";
+  private static final Lao LAO = new Lao(LAO_CHANNEL);
 
-  private static final String type = "election";
-  private static final String keyId = "-t0xoQZa-ryiW18JnTjJHCsCNehFxuXOFOsfgKHHkj0=";
-  private static final String property = "state";
-  private static final String value = "started";
-  private static final ConsensusKey key = new ConsensusKey(type, keyId, property);
+  private static final String TYPE = "election";
+  private static final String KEY_ID = "-t0xoQZa-ryiW18JnTjJHCsCNehFxuXOFOsfgKHHkj0=";
+  private static final String PROPERTY = "state";
+  private static final String VALUE = "started";
+  private static final ConsensusKey KEY = new ConsensusKey(TYPE, KEY_ID, PROPERTY);
+  private static final String INSTANCE_ID = Consensus.generateConsensusId(TYPE, KEY_ID, PROPERTY);
 
   private static final CreateLao CREATE_LAO =
-      new CreateLao(laoId, laoName, creationTime, organizer, Arrays.asList(node2Key, node3Key));
+      new CreateLao(
+          LAO_ID, LAO_NAME, CREATION_TIME, ORGANIZER, Arrays.asList(NODE_2_KEY, NODE_3_KEY));
   private static final ConsensusElect elect =
-      new ConsensusElect(creationTime, keyId, type, property, value);
+      new ConsensusElect(CREATION_TIME, KEY_ID, TYPE, PROPERTY, VALUE);
 
-  private static final String instanceId = Consensus.generateConsensusId(type, keyId, property);
-
-  private static final Gson gson = Injection.provideGson();
+  private static final Gson GSON = Injection.provideGson();
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
 
@@ -93,7 +93,7 @@ public class ConsensusHandlerTest {
     // Mock the signing of of any data for the MessageGeneral constructor
     byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
-    MessageGeneral createLaoMessage = getMsg(organizer, CREATE_LAO);
+    MessageGeneral createLaoMessage = getMsg(ORGANIZER, CREATE_LAO);
 
     // Simulate a network response from the server after the response delay
     Observable<GenericMessage> upstream =
@@ -112,8 +112,8 @@ public class ConsensusHandlerTest {
             Injection.provideGson(),
             testSchedulerProvider);
 
-    laoRepository.getLaoById().put(laoChannel, new LAOState(lao));
-    MessageHandler.handleMessage(laoRepository, laoChannel, createLaoMessage);
+    laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
+    MessageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
   }
 
   @After
@@ -122,7 +122,7 @@ public class ConsensusHandlerTest {
   }
 
   private MessageGeneral getMsg(String key, Data data) {
-    return new MessageGeneral(Base64.getUrlDecoder().decode(key), data, signer, gson);
+    return new MessageGeneral(Base64.getUrlDecoder().decode(key), data, signer, GSON);
   }
 
   @Test
@@ -134,60 +134,60 @@ public class ConsensusHandlerTest {
 
   // handle an elect from node2
   private void handleConsensusElectTest() {
-    electMsg = getMsg(node2Key, elect);
-    MessageHandler.handleMessage(laoRepository, consensusChannel, electMsg);
+    electMsg = getMsg(NODE_2_KEY, elect);
+    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
 
-    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
+    Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
     assertTrue(consensusOpt.isPresent());
     Consensus consensus = consensusOpt.get();
 
     assertEquals(electMsg.getMessageId(), consensus.getMessageId());
-    assertEquals(node2Key, consensus.getProposer());
-    assertEquals(consensusChannel, consensus.getChannel());
-    assertEquals(creationTime, consensus.getCreation());
-    assertEquals(value, consensus.getValue());
-    assertEquals(key, consensus.getKey());
+    assertEquals(NODE_2_KEY, consensus.getProposer());
+    assertEquals(CONSENSUS_CHANNEL, consensus.getChannel());
+    assertEquals(CREATION_TIME, consensus.getCreation());
+    assertEquals(VALUE, consensus.getValue());
+    assertEquals(KEY, consensus.getKey());
 
     assertTrue(consensus.getAcceptorsToMessageId().isEmpty());
-    assertEquals(Sets.newSet(organizer, node2Key, node3Key), consensus.getNodes());
+    assertEquals(Sets.newSet(ORGANIZER, NODE_2_KEY, NODE_3_KEY), consensus.getNodes());
 
-    Map<String, Consensus> messageIdToConsensus = lao.getMessageIdToConsensus();
+    Map<String, Consensus> messageIdToConsensus = LAO.getMessageIdToConsensus();
     assertEquals(1, messageIdToConsensus.size());
     assertEquals(consensus, messageIdToConsensus.get(consensus.getMessageId()));
 
-    List<ConsensusNode> nodes = lao.getNodes();
+    List<ConsensusNode> nodes = LAO.getNodes();
     assertEquals(3, nodes.size());
-    assertEquals(Optional.empty(), nodes.get(0).getLastConsensus(instanceId));
-    assertEquals(Optional.empty(), nodes.get(2).getLastConsensus(instanceId));
-    assertEquals(consensus, nodes.get(1).getLastConsensus(instanceId).get());
+    assertEquals(Optional.empty(), nodes.get(0).getLastConsensus(INSTANCE_ID));
+    assertEquals(Optional.empty(), nodes.get(2).getLastConsensus(INSTANCE_ID));
+    assertEquals(consensus, nodes.get(1).getLastConsensus(INSTANCE_ID).get());
   }
 
   // handle an electAccept from node3 for the elect of node2
   private void handleConsensusElectAcceptTest() {
-    electAccept = new ConsensusElectAccept(instanceId, electMsg.getMessageId(), true);
-    electAcceptMsg = getMsg(node3Key, electAccept);
-    MessageHandler.handleMessage(laoRepository, consensusChannel, electAcceptMsg);
+    electAccept = new ConsensusElectAccept(INSTANCE_ID, electMsg.getMessageId(), true);
+    electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
+    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptMsg);
 
-    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
+    Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
     assertTrue(consensusOpt.isPresent());
     Consensus consensus = consensusOpt.get();
 
     Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
     assertEquals(1, acceptorsToMessageId.size());
-    assertEquals(electAcceptMsg.getMessageId(), acceptorsToMessageId.get(node3Key));
+    assertEquals(electAcceptMsg.getMessageId(), acceptorsToMessageId.get(NODE_3_KEY));
 
     // only the node3 has accepted the elect of node2
-    List<ConsensusNode> nodes = lao.getNodes();
+    List<ConsensusNode> nodes = LAO.getNodes();
     ConsensusNode organizerNode =
-        nodes.stream().filter(n -> n.getPublicKey().equals(organizer)).findAny().get();
+        nodes.stream().filter(n -> n.getPublicKey().equals(ORGANIZER)).findAny().get();
     assertTrue(organizerNode.getAcceptedMessageIds().isEmpty());
 
     ConsensusNode node2 =
-        nodes.stream().filter(n -> n.getPublicKey().equals(node2Key)).findAny().get();
+        nodes.stream().filter(n -> n.getPublicKey().equals(NODE_2_KEY)).findAny().get();
     assertTrue(node2.getAcceptedMessageIds().isEmpty());
 
     ConsensusNode node3 =
-        nodes.stream().filter(n -> n.getPublicKey().equals(node3Key)).findAny().get();
+        nodes.stream().filter(n -> n.getPublicKey().equals(NODE_3_KEY)).findAny().get();
     assertEquals(Sets.newSet(electMsg.getMessageId()), node3.getAcceptedMessageIds());
   }
 }

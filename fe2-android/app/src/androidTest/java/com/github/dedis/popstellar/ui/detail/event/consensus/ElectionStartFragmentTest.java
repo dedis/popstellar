@@ -98,13 +98,13 @@ public class ElectionStartFragmentTest {
             throw new RuntimeException(e);
           }
 
-          election.setStart(futureTime);
-          lao.setChannel(laoChannel);
-          lao.setOrganizer(publicKey);
-          lao.setWitnesses(Sets.newSet(node2Key, node3Key));
+          election.setStart(FUTURE_TIME);
+          LAO.setChannel(LAO_CHANNEL);
+          LAO.setOrganizer(publicKey);
+          LAO.setWitnesses(Sets.newSet(NODE_2_KEY, NODE_3_KEY));
 
-          laoRepository.getLaoById().put(laoChannel, new LAOState(lao));
-          laoRepository.updateNodes(laoChannel);
+          laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
+          laoRepository.updateNodes(LAO_CHANNEL);
         }
 
         @Override
@@ -121,32 +121,31 @@ public class ElectionStartFragmentTest {
   public final RuleChain chain =
       RuleChain.outerRule(MockitoJUnit.testRule(this)).around(setupRule).around(fragmentRule);
 
-  private static final DateTimeFormatter dateTimeFormatter =
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
-  private static final String laoId = "laoId";
-  private static final String laoChannel = "/root/" + laoId;
-  private static final String consensusChannel = laoChannel + "/consensus";
-  private static final String electionName = "My Election !";
-  private static final long pastTime = 946684800;
-  private static final long futureTime = 2145916800;
+  private static final String LAO_ID = "laoId";
+  private static final String LAO_CHANNEL = "/root/" + LAO_ID;
+  private static final String CONSENSUS_CHANNEL = LAO_CHANNEL + "/consensus";
+  private static final String ELECTION_NAME = "My Election !";
+  private static final long PAST_TIME = 946684800;
+  private static final long FUTURE_TIME = 2145916800;
 
-  private static final Lao lao = new Lao(laoId);
-  private static final Election election = new Election(laoId, pastTime, electionName);
-  private static final String node2Key = "12RDUW4s9bZrdqJB7zoVag";
-  private static final String node3Key = "dRCXFdXYfY5OVAzh3oQ3pA";
-  private static final ConsensusKey key = new ConsensusKey("election", election.getId(), "state");
-  private static final String instanceId =
-      Consensus.generateConsensusId(key.getType(), key.getId(), key.getProperty());
+  private static final Lao LAO = new Lao(LAO_ID);
+  private static final Election election = new Election(LAO_ID, PAST_TIME, ELECTION_NAME);
+  private static final String NODE_2_KEY = "12RDUW4s9bZrdqJB7zoVag";
+  private static final String NODE_3_KEY = "dRCXFdXYfY5OVAzh3oQ3pA";
+  private static final ConsensusKey KEY = new ConsensusKey("election", election.getId(), "state");
+  private static final String INSTANCE_ID =
+      Consensus.generateConsensusId(KEY.getType(), KEY.getId(), KEY.getProperty());
 
   private static final ConsensusElect elect =
-      new ConsensusElect(pastTime, key.getId(), key.getType(), key.getProperty(), "started");
+      new ConsensusElect(PAST_TIME, KEY.getId(), KEY.getType(), KEY.getProperty(), "started");
   private static final ConsensusElectAccept accept3 =
-      new ConsensusElectAccept(instanceId, "m3", true);
-
+      new ConsensusElectAccept(INSTANCE_ID, "m3", true);
   private static final ConsensusLearn learn3 =
-      new ConsensusLearn(instanceId, "m3", Collections.emptyList());
+      new ConsensusLearn(INSTANCE_ID, "m3", Collections.emptyList());
 
-  private static final ArgumentCaptor<Message> captor = ArgumentCaptor.forClass(Message.class);
+  private static final ArgumentCaptor<Message> CAPTOR = ArgumentCaptor.forClass(Message.class);
 
   private String publicKey;
   private LAORepository laoRepository;
@@ -165,17 +164,17 @@ public class ElectionStartFragmentTest {
               LaoDetailViewModel laoDetailViewModel =
                   LaoDetailActivity.obtainViewModel(fragmentActivity);
               laoDetailViewModel.setCurrentElection(election);
-              laoDetailViewModel.setCurrentLao(lao);
+              laoDetailViewModel.setCurrentLao(LAO);
             });
 
     // Recreate the fragment because the viewModel needed to be modified before start
     fragmentRule.getScenario().recreate();
 
-    String expectedTitle = "Election " + '"' + electionName + '"';
+    String expectedTitle = "Election " + '"' + ELECTION_NAME + '"';
     String expectedStatusBefore = "Waiting scheduled time";
     String expectedStatusAfter = "Ready to start";
-    String futureDate = dateTimeFormatter.format(Instant.ofEpochSecond(futureTime));
-    String pastDate = dateTimeFormatter.format(Instant.ofEpochSecond(pastTime));
+    String futureDate = DATE_TIME_FORMATTER.format(Instant.ofEpochSecond(FUTURE_TIME));
+    String pastDate = DATE_TIME_FORMATTER.format(Instant.ofEpochSecond(PAST_TIME));
     String expectedStartBefore = "Election scheduled to start at\n" + futureDate;
     String expectedStartAfter = "Start Election";
     String expectedStatusStarted = "Started";
@@ -190,7 +189,7 @@ public class ElectionStartFragmentTest {
         .check(matches(isNotEnabled()));
 
     // Wait for the timer update
-    election.setStart(pastTime);
+    election.setStart(PAST_TIME);
     TimeUnit.SECONDS.sleep(2);
 
     // Election start time has passed, should display that it's ready and start button enabled
@@ -203,57 +202,57 @@ public class ElectionStartFragmentTest {
     // Order of nodes are not guaranteed in general, but in this this it's ownNode(0), node2, node3
     DataInteraction grid = nodesGrid();
     nodeAssertions(grid, 0, "Waiting\n" + publicKey, false);
-    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
-    nodeAssertions(grid, 2, "Waiting\n" + node3Key, false);
+    nodeAssertions(grid, 1, "Waiting\n" + NODE_2_KEY, false);
+    nodeAssertions(grid, 2, "Waiting\n" + NODE_3_KEY, false);
 
     // Nodes 3 try to start
-    ConsensusHandler.handleConsensusMessage(laoRepository, consensusChannel, elect, "m3", node3Key);
-    laoRepository.updateNodes(laoChannel);
+    ConsensusHandler.handleConsensusMessage(laoRepository, CONSENSUS_CHANNEL, elect, "m3", NODE_3_KEY);
+    laoRepository.updateNodes(LAO_CHANNEL);
 
-    nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, true);
+    nodeAssertions(grid, 2, "Approve Start by\n" + NODE_3_KEY, true);
 
     // We try to start
     long minCreation = Instant.now().getEpochSecond();
     electionStartButton().perform(ViewActions.click());
-    Mockito.verify(remoteDataSource).sendMessage(captor.capture());
-    Publish publish = (Publish) captor.getValue();
+    Mockito.verify(remoteDataSource).sendMessage(CAPTOR.capture());
+    Publish publish = (Publish) CAPTOR.getValue();
     MessageGeneral msgGeneral = publish.getMessage();
     long maxCreation = Instant.now().getEpochSecond();
-    assertEquals(consensusChannel, publish.getChannel());
+    assertEquals(CONSENSUS_CHANNEL, publish.getChannel());
     assertEquals(publicKey, msgGeneral.getSender());
 
     ConsensusElect elect = (ConsensusElect) msgGeneral.getData();
-    assertEquals(key, elect.getKey());
-    assertEquals(instanceId, elect.getInstanceId());
+    assertEquals(KEY, elect.getKey());
+    assertEquals(INSTANCE_ID, elect.getInstanceId());
     assertEquals("started", elect.getValue());
     assertTrue(minCreation <= elect.getCreation() && elect.getCreation() <= maxCreation);
 
     ConsensusHandler.handleConsensusMessage(
-        laoRepository, consensusChannel, elect, "m1", publicKey);
-    laoRepository.updateNodes(laoChannel);
+        laoRepository, CONSENSUS_CHANNEL, elect, "m1", publicKey);
+    laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
 
     // We try to accept node3
     grid.atPosition(2).perform(ViewActions.click());
-    Mockito.verify(remoteDataSource, Mockito.times(2)).sendMessage(captor.capture());
-    publish = (Publish) captor.getValue();
+    Mockito.verify(remoteDataSource, Mockito.times(2)).sendMessage(CAPTOR.capture());
+    publish = (Publish) CAPTOR.getValue();
     msgGeneral = publish.getMessage();
-    assertEquals(consensusChannel, publish.getChannel());
+    assertEquals(CONSENSUS_CHANNEL, publish.getChannel());
     assertEquals(publicKey, msgGeneral.getSender());
     ConsensusElectAccept electAccept = (ConsensusElectAccept) msgGeneral.getData();
-    assertEquals(new ConsensusElectAccept(instanceId, "m3", true), electAccept);
+    assertEquals(new ConsensusElectAccept(INSTANCE_ID, "m3", true), electAccept);
 
     // We accepted node 3 (it should disable button for node3)
     ConsensusHandler.handleConsensusMessage(
-        laoRepository, consensusChannel, accept3, "a3", publicKey);
-    laoRepository.updateNodes(laoChannel);
+        laoRepository, CONSENSUS_CHANNEL, accept3, "a3", publicKey);
+    laoRepository.updateNodes(LAO_CHANNEL);
 
-    nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, false);
+    nodeAssertions(grid, 2, "Approve Start by\n" + NODE_3_KEY, false);
 
     // Receive a learn message => node3 was accepted and has started the election
-    ConsensusHandler.handleConsensusMessage(laoRepository, consensusChannel, learn3, "l3", null);
-    laoRepository.updateNodes(laoChannel);
+    ConsensusHandler.handleConsensusMessage(laoRepository, CONSENSUS_CHANNEL, learn3, "l3", null);
+    laoRepository.updateNodes(LAO_CHANNEL);
 
     electionStatus().check(matches(withText(expectedStatusStarted))).check(matches(isDisplayed()));
     electionStartButton()
@@ -261,7 +260,7 @@ public class ElectionStartFragmentTest {
         .check(matches(isDisplayed()))
         .check(matches(isNotEnabled()));
 
-    nodeAssertions(grid, 2, "Started by\n" + node3Key, false);
+    nodeAssertions(grid, 2, "Started by\n" + NODE_3_KEY, false);
   }
 
   private void nodeAssertions(
