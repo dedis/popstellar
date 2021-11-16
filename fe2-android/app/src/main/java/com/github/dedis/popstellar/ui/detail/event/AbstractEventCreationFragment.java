@@ -31,22 +31,22 @@ import java.util.Locale;
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
 
-  public static final String START_DATE_REQUEST_KEY = "START_DATE"; // Used to identify the request
-  public static final String END_DATE_REQUEST_KEY = "END_DATE";
-  public static final String START_TIME_REQUEST_KEY = "START_TIME";
-  public static final String END_TIME_REQUEST_KEY = "END_TIME";
+  private static final String START_DATE_REQUEST_KEY = "START_DATE"; // Used to identify the request
+  private static final String END_DATE_REQUEST_KEY = "END_DATE";
+  private static final String START_TIME_REQUEST_KEY = "START_TIME";
+  private static final String END_TIME_REQUEST_KEY = "END_TIME";
 
-  public static final long CREATION_TIME_IN_SECONDS = Instant.now().getEpochSecond();
-
-  public final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
-  public final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
+  private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
+  private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);
 
   private final Calendar today = Calendar.getInstance();
   private final Calendar completeStartTime = Calendar.getInstance();
   private final Calendar completeEndTime = Calendar.getInstance();
 
-  public long startTimeInSeconds;
-  public long endTimeInSeconds;
+  protected final long creationTimeInSeconds = Instant.now().getEpochSecond();
+
+  protected long startTimeInSeconds;
+  protected long endTimeInSeconds;
 
   @Nullable private Calendar startDate;
   @Nullable private Calendar endDate;
@@ -184,7 +184,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     }
 
     startDate = newDate;
-    startDateEditText.setText(DATE_FORMAT.format(startDate.getTime()));
+    startDateEditText.setText(dateFormat.format(startDate.getTime()));
 
     if (endDate != null && newDate.compareTo(endDate) == 0) {
       endTime = null;
@@ -211,12 +211,12 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     if ((startDate != null) && (startDate.compareTo(newDate) == 0)) return;
 
     endDate = newDate;
-    endDateEditText.setText(DATE_FORMAT.format(newDate.getTime()));
+    endDateEditText.setText(dateFormat.format(newDate.getTime()));
   }
 
   private void onStartTime(String requestKey, Bundle bundle) {
     startTime = getSelection(bundle);
-    startTimeEditText.setText(TIME_FORMAT.format(startTime.getTime()));
+    startTimeEditText.setText(timeFormat.format(startTime.getTime()));
 
     if (startDate != null
         && endDate != null
@@ -231,7 +231,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
 
   private void onEndTime(String requestKey, Bundle bundle) {
     endTime = getSelection(bundle);
-    endTimeEditText.setText(TIME_FORMAT.format(endTime.getTime()));
+    endTimeEditText.setText(timeFormat.format(endTime.getTime()));
 
     if (startDate != null
         && endDate != null

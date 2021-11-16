@@ -234,7 +234,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   + ballotsOptionsFiltered);
           mLaoDetailViewModel.createNewElection(
               electionName,
-              CREATION_TIME_IN_SECONDS,
+              creationTimeInSeconds,
               startTimeInSeconds,
               endTimeInSeconds,
               votingMethodFiltered,
