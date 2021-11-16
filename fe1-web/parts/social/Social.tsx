@@ -36,7 +36,6 @@ const styles = StyleSheet.create({
 
 const Social = () => {
   const [inputChirp, setInputChirp] = useState('');
-  const currentLaoId = OpenedLaoStore.get().id;
 
   const publishChirp = () => {
     requestAddChirp(inputChirp)
@@ -45,13 +44,15 @@ const Social = () => {
       });
   };
 
-  let chirpList = SocialStore.getAllChirps(currentLaoId);
+  let chirpList: Chirp[];
 
   const updateChirps = () => {
+    const currentLaoId = OpenedLaoStore.get().id;
     chirpList = SocialStore.getAllChirps(currentLaoId);
   };
 
   const subscribeToSocialChannel = () => {
+    const currentLaoId = OpenedLaoStore.get().id;
     const socialChannel = getGeneralChirpChannel(currentLaoId);
     subscribeToChannel(socialChannel).then(() => {}).catch((err) => {
       console.error('Could not subscribe to Social Media general channel, error: ', err);
