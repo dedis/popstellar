@@ -5,7 +5,7 @@ import { getStore } from '../Storage';
 
 export namespace SocialStore {
   /**
-   * Returns the list of posted chirps.
+   * Returns a chirp given its id.
    */
   export function getChirp(id: Hash): Chirp | undefined {
     const chirpsMap = makeChirpsMap();
