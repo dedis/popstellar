@@ -11,6 +11,12 @@ import com.github.dedis.popstellar.R;
 
 import java.util.Calendar;
 
+/**
+ * This fragment shows a dialog to choose a time. It takes as argument (set with setArguments) a *
+ * request key that will be used to give the response.
+ *
+ * <p>More info : https://developer.android.com/guide/fragments/communicate
+ */
 public final class TimePickerFragment extends AppCompatDialogFragment
     implements TimePickerDialog.OnTimeSetListener {
 
