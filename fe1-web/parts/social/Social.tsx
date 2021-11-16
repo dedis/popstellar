@@ -17,7 +17,7 @@ import { requestAddChirp } from 'network/MessageApi';
 import { OpenedLaoStore, SocialStore } from 'store';
 import { Chirp } from 'model/objects/Chirp';
 import { subscribeToChannel } from '../../network/CommunicationApi';
-import { getGeneralChirpChannel, Lao } from '../../model/objects';
+import { getGeneralChirpChannel } from '../../model/objects';
 
 /**
  * UI for the Social Media component
@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
 
 const Social = () => {
   const [inputChirp, setInputChirp] = useState('');
+  const currentLaoId = OpenedLaoStore.get().id;
 
   const publishChirp = () => {
     requestAddChirp(inputChirp)
@@ -44,15 +45,14 @@ const Social = () => {
       });
   };
 
-  let chirpList = SocialStore.getAllChirps();
+  let chirpList = SocialStore.getAllChirps(currentLaoId);
 
   const updateChirps = () => {
-    chirpList = SocialStore.getAllChirps();
+    chirpList = SocialStore.getAllChirps(currentLaoId);
   };
 
   const subscribeToSocialChannel = () => {
-    const currentLao: Lao = OpenedLaoStore.get();
-    const socialChannel = getGeneralChirpChannel(currentLao.id);
+    const socialChannel = getGeneralChirpChannel(currentLaoId);
     subscribeToChannel(socialChannel).then(() => {}).catch((err) => {
       console.error('Could not subscribe to Social Media general channel, error: ', err);
     });
@@ -80,6 +80,7 @@ const Social = () => {
         <TextBlock text={STRINGS.feed_description} />
         <FlatList
           data={chirpList}
+          listKey={(chirp) => chirp.id}
           renderItem={renderChirp}
           keyExtractor={chirp => chirp.time}
         />
