@@ -34,18 +34,23 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   public static final String START_TIME_REQUEST_KEY = "START_TIME";
   public static final String END_TIME_REQUEST_KEY = "END_TIME";
 
+  public static final long CREATION_TIME_IN_SECONDS = Instant.now().getEpochSecond();
+
   public final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   public final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
-  public static final long CREATION_TIME_IN_SECONDS = Instant.now().getEpochSecond();
-  public static long startTimeInSeconds;
-  public static long endTimeInSeconds;
+
+  private final Calendar today = Calendar.getInstance();
+  private final Calendar completeStartTime = Calendar.getInstance();
+  private final Calendar completeEndTime = Calendar.getInstance();
+
+  public long startTimeInSeconds;
+  public long endTimeInSeconds;
+
   private Calendar startDate;
   private Calendar endDate;
   private Calendar startTime;
   private Calendar endTime;
-  private final Calendar today = Calendar.getInstance();
-  private final Calendar completeStartTime = Calendar.getInstance();
-  private final Calendar completeEndTime = Calendar.getInstance();
+
   private EditText startDateEditText;
   private EditText endDateEditText;
   private EditText startTimeEditText;
@@ -292,16 +297,6 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       }
       Instant end = Instant.ofEpochMilli(completeEndTime.getTimeInMillis());
       endTimeInSeconds = end.getEpochSecond();
-    }
-  }
-
-  public void editTextInputChecker(EditText editText, String errorMessage) {
-    if (editText != null && errorMessage != null) {
-      if (editText.getText().toString().trim().isEmpty()) {
-        editText.setError(errorMessage);
-      }
-    } else {
-      throw new IllegalArgumentException();
     }
   }
 }
