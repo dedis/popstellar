@@ -1,6 +1,7 @@
-import { ChirpState } from 'model/objects/Chirp';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash } from 'model/objects';
+import { getLaosState } from './LaoReducer';
 
 /**
  * Stores all the Social Media related content
@@ -65,6 +66,20 @@ const socialSlice = createSlice({
   }
 });
 
+export const makeChirpsMap = (laoId: string | undefined = undefined) => createSelector(
+  (state) => getSocialState(state),
+  (state) => getLaosState(state).currentId,
+  (chirpsMap: SocialLaoReducerState, laoId: string | undefined): Chirp[] => {
+    if (!laoId || !(laoId in chirpsMap.byLaoId)) {
+      return [];
+    }
+
+    return chirpsMap.byLaoId[laoId].allChirpsIds
+      .map((id: string): Chirp | undefined => Chirp.fromState(chirpsMap.byLaoId[laoId].chirpsById[id]))
+      .filter((chirp) => !!chirp) as Chirp[];
+  }
+)
+
 export const {
   addChirp
 } = socialSlice.actions;
@@ -73,4 +88,4 @@ export default {
   [socialReducerPath]: socialSlice.reducer,
 }
 
-export const getChirps = (state: any): SocialReducerState => state[socialReducerPath]
+export const getSocialState = (state: any): SocialLaoReducerState => state[socialReducerPath]
