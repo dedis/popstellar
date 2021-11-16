@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.ui.detail.event;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.View;
@@ -10,7 +9,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentResultListener;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.event.pickers.DatePickerFragment;
@@ -27,16 +26,14 @@ import java.util.Locale;
  * time.
  *
  * <p>This class handles these fields.
- *
- * <p>TODO: this class needs to be refactored
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
 
-  public static final int START_DATE_REQUEST_CODE = 11; // Used to identify the request
-  public static final int END_DATE_REQUEST_CODE = 12;
-  public static final int START_TIME_REQUEST_CODE = 13;
-  public static final int END_TIME_REQUEST_CODE = 14;
-  public static final String NO_LOCATION = "";
+  public static final String START_DATE_REQUEST_KEY = "START_DATE"; // Used to identify the request
+  public static final String END_DATE_REQUEST_KEY = "END_DATE";
+  public static final String START_TIME_REQUEST_KEY = "START_TIME";
+  public static final String END_TIME_REQUEST_KEY = "END_TIME";
+
   public final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   public final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm", Locale.FRENCH);
   public static final long CREATION_TIME_IN_SECONDS = Instant.now().getEpochSecond();
@@ -54,7 +51,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private EditText startTimeEditText;
   private EditText endTimeEditText;
 
-  public void setDateAndTimeView(View view, Fragment fragment, FragmentManager fragmentManager) {
+  public void setDateAndTimeView(View view) {
     startDateEditText = view.findViewById(R.id.start_date_edit_text);
     startDateEditText.setInputType(InputType.TYPE_NULL);
 
@@ -73,35 +70,68 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     today.set(Calendar.MILLISECOND, 0);
 
     startDateEditText.setOnClickListener(
-        v -> {
-          // create the datePickerFragment
-          AppCompatDialogFragment datePickerFragment = new DatePickerFragment();
-          // set the targetFragment to receive the results, specifying the request code
-          datePickerFragment.setTargetFragment(fragment, START_DATE_REQUEST_CODE);
-          // show the datePicker
-          datePickerFragment.show(fragmentManager, DatePickerFragment.TAG);
-        });
+        v ->
+            openPickerDialog(
+                new DatePickerFragment(),
+                DatePickerFragment.TAG,
+                DatePickerFragment.REQUEST_KEY,
+                START_DATE_REQUEST_KEY,
+                this::onStartDate));
 
     endDateEditText.setOnClickListener(
-        v -> {
-          AppCompatDialogFragment datePickerFragment = new DatePickerFragment();
-          datePickerFragment.setTargetFragment(fragment, END_DATE_REQUEST_CODE);
-          datePickerFragment.show(fragmentManager, DatePickerFragment.TAG);
-        });
+        v ->
+            openPickerDialog(
+                new DatePickerFragment(),
+                DatePickerFragment.TAG,
+                DatePickerFragment.REQUEST_KEY,
+                END_DATE_REQUEST_KEY,
+                this::onEndDate));
 
     startTimeEditText.setOnClickListener(
-        v -> {
-          AppCompatDialogFragment timePickerFragment = new TimePickerFragment();
-          timePickerFragment.setTargetFragment(fragment, START_TIME_REQUEST_CODE);
-          timePickerFragment.show(fragmentManager, TimePickerFragment.TAG);
-        });
+        v ->
+            openPickerDialog(
+                new TimePickerFragment(),
+                TimePickerFragment.TAG,
+                TimePickerFragment.REQUEST_KEY,
+                START_TIME_REQUEST_KEY,
+                this::onStartTime));
 
     endTimeEditText.setOnClickListener(
-        v -> {
-          AppCompatDialogFragment timePickerFragment = new TimePickerFragment();
-          timePickerFragment.setTargetFragment(fragment, END_TIME_REQUEST_CODE);
-          timePickerFragment.show(fragmentManager, TimePickerFragment.TAG);
-        });
+        v ->
+            openPickerDialog(
+                new TimePickerFragment(),
+                TimePickerFragment.TAG,
+                TimePickerFragment.REQUEST_KEY,
+                END_TIME_REQUEST_KEY,
+                this::onEndTime));
+  }
+
+  private void openPickerDialog(
+      AppCompatDialogFragment fragment,
+      String fragmentTag,
+      String bundleKey,
+      String requestKey,
+      FragmentResultListener listener) {
+    // Create Listener
+    getParentFragmentManager()
+        .setFragmentResultListener(requestKey, getViewLifecycleOwner(), listener);
+    // create the fragment
+    setArg(fragment, bundleKey, requestKey);
+    // show the picker
+    fragment.show(getParentFragmentManager(), fragmentTag);
+  }
+
+  private void setArg(Fragment fragment, String key, String value) {
+    Bundle bundle = new Bundle();
+    bundle.putString(key, value);
+    fragment.setArguments(bundle);
+  }
+
+  private Calendar getSelection(Bundle bundle) {
+    Calendar value = (Calendar) bundle.getSerializable(getString(R.string.picker_selection));
+    if (value == null) throw new IllegalStateException("Bundle does not contain selection");
+
+    return value;
   }
 
   public void addStartDateAndTimeListener(TextWatcher listener) {
@@ -130,128 +160,105 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     return endTimeEditText.getText().toString().trim();
   }
 
-  public void checkDates(int requestCode, int resultCode, Intent data) {
-    if (resultCode == Activity.RESULT_OK) {
-      Calendar selection =
-          (Calendar) data.getSerializableExtra(getString(R.string.picker_selection));
+  private void onStartDate(String request, Bundle bundle) {
+    startDate = getSelection(bundle);
 
-      if (selection == null)
-        throw new IllegalStateException("Indent does not contain extra : selection");
-
-      switch (requestCode) {
-        case START_DATE_REQUEST_CODE:
-          startDate = selection;
-          /*
-           In Java, two dates can be compared using the compareTo() method of Comparable interface.
-           This method returns '0' if both the dates are equal,
-           it returns a value "greater than 0" if date1 is after date2 and
-           it returns a value "less than 0" if date1 is before date2.
-          */
-          if (startDate.compareTo(today) < 0) {
-            Toast.makeText(
-                    getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
-                .show();
-            startDateEditText.setText("");
-            startDate = null;
-          } else {
-            if ((endDate != null) && (startDate.compareTo(endDate) > 0)) {
-              Toast.makeText(
-                      getActivity(),
-                      getString(R.string.start_date_after_end_date_not_allowed),
-                      Toast.LENGTH_LONG)
-                  .show();
-              startDateEditText.setText("");
-              startDate = null;
-            } else {
-              startDate = selection;
-              startDateEditText.setText(DATE_FORMAT.format(startDate.getTime()));
-              if ((endDate != null) && (startDate.compareTo(endDate) == 0)) {
-                endTime = null;
-                endTimeEditText.setText("");
-              }
-            }
-          }
-          break;
-
-        case END_DATE_REQUEST_CODE:
-          endDate = selection;
-          if (endDate.compareTo(today) < 0) {
-            Toast.makeText(
-                    getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
-                .show();
-            endDateEditText.setText("");
-            endDate = null;
-          } else {
-            if ((startDate != null) && (endDate.compareTo(startDate) < 0)) {
-              Toast.makeText(
-                      getActivity(),
-                      getString(R.string.end_date_after_start_date_not_allowed),
-                      Toast.LENGTH_SHORT)
-                  .show();
-              endDateEditText.setText("");
-              endDate = null;
-            } else {
-              if ((startDate != null) && (startDate.compareTo(endDate) == 0)) {
-                endTime = null;
-                endTimeEditText.setText("");
-              }
-              endDate = selection;
-              endDateEditText.setText(DATE_FORMAT.format(endDate.getTime()));
-            }
-          }
-          break;
-
-        case START_TIME_REQUEST_CODE:
-          if (startDate == null || endDate == null) {
-            startTime = selection;
-            startTimeEditText.setText(TIME_FORMAT.format(startTime.getTime()));
-          } else {
-            startTime = selection;
-            if ((startDate.compareTo(endDate) == 0)
-                && (endTime != null)
-                && (startTime.compareTo(endTime) > 0)) {
-              Toast.makeText(
-                      getActivity(),
-                      getString(R.string.start_time_after_end_time_not_allowed),
-                      Toast.LENGTH_LONG)
-                  .show();
-              startTime = null;
-              startTimeEditText.setText("");
-            } else {
-              startTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
-            }
-          }
-
-          break;
-
-        case END_TIME_REQUEST_CODE:
-          if ((startDate == null) || (endDate == null)) {
-            endTime = selection;
-            endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
-          } else {
-            endTime = selection;
-            if ((startDate.compareTo(endDate) == 0)
-                && (startTime != null)
-                && (endTime.compareTo(startTime) < 0)) {
-              Toast.makeText(
-                      getActivity(),
-                      getString(R.string.end_time_before_start_time_not_allowed),
-                      Toast.LENGTH_LONG)
-                  .show();
-              endTime = null;
-              endTimeEditText.setText("");
-            } else {
-              endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
-            }
-          }
-          break;
+    if (startDate.compareTo(today) < 0) {
+      Toast.makeText(getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
+          .show();
+      startDateEditText.setText("");
+      startDate = null;
+    } else {
+      if ((endDate != null) && (startDate.compareTo(endDate) > 0)) {
+        Toast.makeText(
+                getActivity(),
+                getString(R.string.start_date_after_end_date_not_allowed),
+                Toast.LENGTH_LONG)
+            .show();
+        startDateEditText.setText("");
+        startDate = null;
+      } else {
+        startDateEditText.setText(DATE_FORMAT.format(startDate.getTime()));
+        if ((endDate != null) && (startDate.compareTo(endDate) == 0)) {
+          endTime = null;
+          endTimeEditText.setText("");
+        }
       }
     }
   }
 
-  @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-    checkDates(requestCode, resultCode, data);
+  private void onEndDate(String requestKey, Bundle bundle) {
+    endDate = getSelection(bundle);
+    if (endDate.compareTo(today) < 0) {
+      Toast.makeText(getActivity(), getString(R.string.past_date_not_allowed), Toast.LENGTH_LONG)
+          .show();
+      endDateEditText.setText("");
+      endDate = null;
+    } else {
+      if ((startDate != null) && (endDate.compareTo(startDate) < 0)) {
+        Toast.makeText(
+                getActivity(),
+                getString(R.string.end_date_after_start_date_not_allowed),
+                Toast.LENGTH_SHORT)
+            .show();
+        endDateEditText.setText("");
+        endDate = null;
+      } else {
+        if ((startDate != null) && (startDate.compareTo(endDate) == 0)) {
+          endTime = null;
+          endTimeEditText.setText("");
+        }
+        endDateEditText.setText(DATE_FORMAT.format(endDate.getTime()));
+      }
+    }
+  }
+
+  private void onStartTime(String requestKey, Bundle bundle) {
+    Calendar selection = getSelection(bundle);
+
+    if (startDate == null || endDate == null) {
+      startTime = selection;
+      startTimeEditText.setText(TIME_FORMAT.format(startTime.getTime()));
+    } else {
+      startTime = selection;
+      if ((startDate.compareTo(endDate) == 0)
+          && (endTime != null)
+          && (startTime.compareTo(endTime) > 0)) {
+        Toast.makeText(
+                getActivity(),
+                getString(R.string.start_time_after_end_time_not_allowed),
+                Toast.LENGTH_LONG)
+            .show();
+        startTime = null;
+        startTimeEditText.setText("");
+      } else {
+        startTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
+      }
+    }
+  }
+
+  private void onEndTime(String requestKey, Bundle bundle) {
+    Calendar selection = getSelection(bundle);
+
+    if ((startDate == null) || (endDate == null)) {
+      endTime = selection;
+      endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
+    } else {
+      endTime = selection;
+      if ((startDate.compareTo(endDate) == 0)
+          && (startTime != null)
+          && (endTime.compareTo(startTime) < 0)) {
+        Toast.makeText(
+                getActivity(),
+                getString(R.string.end_time_before_start_time_not_allowed),
+                Toast.LENGTH_LONG)
+            .show();
+        endTime = null;
+        endTimeEditText.setText("");
+      } else {
+        endTimeEditText.setText(TIME_FORMAT.format(selection.getTime()));
+      }
+    }
   }
 
   public void computeTimesInSeconds() {

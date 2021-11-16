@@ -65,7 +65,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    setDateAndTimeView(mFragBinding.getRoot(), this, getParentFragmentManager());
+    setDateAndTimeView(mFragBinding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;

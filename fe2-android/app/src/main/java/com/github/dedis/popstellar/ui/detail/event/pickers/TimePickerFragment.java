@@ -1,9 +1,7 @@
 package com.github.dedis.popstellar.ui.detail.event.pickers;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.TimePicker;
 
@@ -17,10 +15,16 @@ public final class TimePickerFragment extends AppCompatDialogFragment
     implements TimePickerDialog.OnTimeSetListener {
 
   public static final String TAG = TimePickerFragment.class.getSimpleName();
+  public static final String REQUEST_KEY = "REQUEST_KEY";
+
   private final Calendar calendar = Calendar.getInstance();
+  private String request;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
+    // Query the request key
+    request = requireArguments().getString(REQUEST_KEY);
+
     int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
     int minute = calendar.get(Calendar.MINUTE);
 
@@ -40,11 +44,8 @@ public final class TimePickerFragment extends AppCompatDialogFragment
     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
     calendar.set(Calendar.MINUTE, minute);
 
-    if (getTargetFragment() != null)
-      getTargetFragment()
-          .onActivityResult(
-              getTargetRequestCode(),
-              Activity.RESULT_OK,
-              new Intent().putExtra(getString(R.string.picker_selection), calendar));
+    Bundle bundle = new Bundle();
+    bundle.putSerializable(request, calendar);
+    getParentFragmentManager().setFragmentResult(getString(R.string.picker_selection), bundle);
   }
 }
