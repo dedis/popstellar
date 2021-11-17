@@ -11,7 +11,7 @@ beforeEach(() => {
 describe('CameraButton', () => {
   it('renders correctly', () => {
     const { toJSON } = render(
-      <CameraButton action={action} />,
+      <CameraButton action={() => action} />,
     );
     expect(toJSON()).toMatchSnapshot();
   });

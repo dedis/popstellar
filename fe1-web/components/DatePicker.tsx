@@ -88,7 +88,7 @@ export function onChangeEndTime(
 ) {
   const newEnd = Timestamp.dateToTimestamp(newEndDate);
   if (newEnd.before(startTime)) {
-    setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS)); // Alert here ?
+    setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS));
   } else {
     setEndDate(newEnd);
   }

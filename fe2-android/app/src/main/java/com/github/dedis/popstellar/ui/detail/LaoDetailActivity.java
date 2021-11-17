@@ -46,7 +46,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   private LaoDetailViewModel mViewModel;
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
     return new ViewModelProvider(activity, factory).get(LaoDetailViewModel.class);
   }
 
