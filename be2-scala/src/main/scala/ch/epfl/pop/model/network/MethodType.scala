@@ -6,7 +6,7 @@ object MethodType extends Enumeration {
   // uninitialized placeholder
   val INVALID: Value = MatchingValue("__INVALID_METHOD__")
 
-  val BROADCAST: Value = MatchingValue("message")
+  val BROADCAST: Value = MatchingValue("broadcast")
   val PUBLISH: Value = MatchingValue("publish")
   val SUBSCRIBE: Value = MatchingValue("subscribe")
   val UNSUBSCRIBE: Value = MatchingValue("unsubscribe")

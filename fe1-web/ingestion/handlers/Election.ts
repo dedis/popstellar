@@ -8,7 +8,7 @@ import {
   SetupElection,
 } from 'model/network/method/message/data';
 import {
-  channelFromIds, Election, ElectionStatus, RegisteredVote, getLastChannel,
+  channelFromIds, Election, ElectionStatus, RegisteredVote, getLastPartOfChannel,
 } from 'model/objects';
 import {
   addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
@@ -151,7 +151,7 @@ function handleElectionResultMessage(msg: ExtendedMessage) {
     console.warn(makeErr('No channel found in message'));
     return false;
   }
-  const electionId = getLastChannel(msg.channel);
+  const electionId = getLastPartOfChannel(msg.channel);
   const ElectionResultMsg = msg.messageData as ElectionResult;
   const election = getEventFromId(storeState, electionId) as Election;
   if (!election) {

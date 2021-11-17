@@ -80,6 +80,7 @@ public class ElectionStartFragment extends Fragment {
 
     String scheduledDate = dateFormat.format(new Date(election.getStartTimestamp() * 1000));
     String electionId = election.getId();
+    String instanceId = Consensus.generateConsensusId("election", electionId, "state");
 
     binding.electionTitle.setText(getString(R.string.election_start_title, election.getName()));
     electionStatus.setText(R.string.waiting_scheduled_time);
@@ -88,19 +89,20 @@ public class ElectionStartFragment extends Fragment {
 
     setupTimerUpdate(election);
 
-    setupButtonListeners(binding, mLaoDetailViewModel, electionId);
+    setupButtonListeners(binding, mLaoDetailViewModel, electionId, instanceId);
 
     List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
 
     ownNode = getOwnNode(mLaoDetailViewModel.getPublicKey(), nodes);
 
     NodesAcceptorAdapter adapter =
-        new NodesAcceptorAdapter(nodes, ownNode, electionId, this, mLaoDetailViewModel);
+        new NodesAcceptorAdapter(
+            nodes, ownNode, instanceId, getViewLifecycleOwner(), mLaoDetailViewModel);
     GridView gridView = binding.nodesGrid;
     gridView.setAdapter(adapter);
 
     if (isElectionStartTimePassed(election)) {
-      updateStartAndStatus(nodes, election);
+      updateStartAndStatus(nodes, election, instanceId);
     }
 
     mLaoDetailViewModel
@@ -111,7 +113,7 @@ public class ElectionStartFragment extends Fragment {
               Log.d(TAG, "got an update for nodes : " + consensusNodes);
               adapter.setList(consensusNodes);
               if (isElectionStartTimePassed(election)) {
-                updateStartAndStatus(consensusNodes, election);
+                updateStartAndStatus(consensusNodes, election, instanceId);
               }
             });
 
@@ -175,12 +177,13 @@ public class ElectionStartFragment extends Fragment {
   private void setupButtonListeners(
       ElectionStartFragmentBinding binding,
       LaoDetailViewModel mLaoDetailViewModel,
-      String electionId) {
+      String electionId,
+      String instanceId) {
     electionStart.setOnClickListener(
         clicked -> {
           Optional<Consensus> acceptedConsensus =
               ownNode
-                  .getLastConsensus(electionId)
+                  .getLastConsensus(instanceId)
                   .filter(consensus -> consensus.canBeAccepted() && !consensus.isFailed());
           if (acceptedConsensus.isPresent()) {
             mLaoDetailViewModel.sendConsensusLearn(acceptedConsensus.get());
@@ -196,10 +199,11 @@ public class ElectionStartFragment extends Fragment {
         .setOnClickListener(clicked -> mLaoDetailViewModel.openLaoDetail());
   }
 
-  private void updateStartAndStatus(List<ConsensusNode> nodes, Election election) {
+  private void updateStartAndStatus(
+      List<ConsensusNode> nodes, Election election, String instanceId) {
     Optional<Consensus> acceptedConsensus =
         nodes.stream()
-            .map(node -> node.getLastConsensus(election.getId()))
+            .map(node -> node.getLastConsensus(instanceId))
             .filter(Optional::isPresent)
             .map(Optional::get)
             .filter(Consensus::isAccepted)
@@ -211,13 +215,10 @@ public class ElectionStartFragment extends Fragment {
       electionStart.setText(getString(R.string.election_started_at, startedDate));
       electionStart.setEnabled(false);
     } else {
-      State ownState = ownNode.getState(election.getId());
+      State ownState = ownNode.getState(instanceId);
       boolean canAccept =
           ownState == State.STARTING
-              && ownNode
-                  .getLastConsensus(election.getId())
-                  .map(Consensus::canBeAccepted)
-                  .orElse(false);
+              && ownNode.getLastConsensus(instanceId).map(Consensus::canBeAccepted).orElse(false);
       boolean canClick = canAccept || ownState == State.WAITING || ownState == State.FAILED;
       electionStart.setEnabled(canClick);
     }
