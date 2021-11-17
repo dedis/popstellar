@@ -246,7 +246,6 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupSocialMediaButton() {
     Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
-    socialMediaButton.setEnabled(mViewModel.getLAOs().getValue() != null);
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
