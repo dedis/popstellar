@@ -64,8 +64,6 @@ export const {
   addChirp,
 } = socialSlice.actions;
 
-export const { reducer } = socialSlice;
-
 export default {
   [socialReducerPath]: socialSlice.reducer,
 };

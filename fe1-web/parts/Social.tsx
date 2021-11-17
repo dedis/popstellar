@@ -6,6 +6,7 @@ import {
 
 import TextBlock from 'components/TextBlock';
 import TextInputChirp from 'components/TextInputChirp';
+import ChirpCard from 'components/ChirpCard';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
@@ -40,10 +41,14 @@ const Social = () => {
   const chirps = makeChirpsList();
   const chirpList = useSelector(chirps);
 
-  const renderChirpState = ({ item }) => {
-    const text = `${item.sender} said ${item.text}`;
-    return <TextBlock text={text} />;
-  };
+  const renderChirpState = ({ item }) => (
+    <ChirpCard
+      sender={item.sender}
+      text={item.text}
+      time={item.time}
+      likes={item.likes}
+    />
+  );
 
   return (
     <View style={styles.view}>
