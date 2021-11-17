@@ -52,19 +52,23 @@ case object RollCallHandler extends MessageHandler {
   }
 
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //FIXME: subscribe clients to main social channel
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
         val unknownAnswer: String = "Database actor returned an unknown answer"
 
-        //Creates a channel for each attendee (of name /root/social/PublicKeyAttendee), returns a GraphMessage
+        //Creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a GraphMessage
         def createAttendeeChannels(attendees: List[PublicKey], rpcMessage: JsonRpcRequest): GraphMessage = {
           attendees match {
             case Nil => Left(rpcMessage)
             case head::tail => 
-              val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel("/root/social/" + head.toString), ObjectType.CHIRP)).map {
+              //a closeRollCall is always sent in the lao's main channel so we are allowed to do this
+              val socialChannel: String = rpcMessage.getParamsChannel + "social/" + head.toString
+              val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel(socialChannel), ObjectType.CHIRP)).map {
                 case DbActorWriteAck() => createAttendeeChannels(tail, rpcMessage)
+                //FIXME: Once the real PoP tokens are implemented, the same person will not have access to the same channel name twice in a row, so we can remove this line
+                //however, this is to prevent errors for now within a LAO for multiple Roll Calls and the same participants since the public key will probably not change
+                case DbActorNAck(code, description) if description == "Database cannot create an already existing channel (" + socialChannel + ")" => createAttendeeChannels(tail, rpcMessage)
                 case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
                 case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
               }
@@ -72,7 +76,17 @@ case object RollCallHandler extends MessageHandler {
           }
         }
 
-        val askOldData = dbActor ? DbActor.ReadLaoData()
+        val laoChannel: Option[Array[Byte]] = rpcMessage.getParamsChannel.decodeSubChannel
+        laoChannel match {
+          case Some(channel) =>
+          case None => Right(PipelineError(
+            ErrorCodes.SERVER_ERROR.id,
+            s"There is an issue with the data of the LAO",
+            rpcMessage.id
+          ))
+        }
+
+        val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
         
         Await.result(askOldData, duration) match {
           case DbActorReadLaoDataAck(Some(oldLaoData)) =>

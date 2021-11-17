@@ -248,12 +248,52 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer3.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List(message.message_id))))
 
-    val ask2 = dbActorRef ? DbActor.ReadLaoData()
+    val ask2 = dbActorRef ? DbActor.ReadLaoData(channel)
     val answer2 = Await.result(ask2, duration)
 
     answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
     answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("a")), List.empty)))
+
+  }
+
+  test("DbActor stores and reads two distinct LaoData objects, to simulate two LAOs in the same database"){
+    val channel: Channel = generateUniqueChannel
+    val channel2: Channel = generateUniqueChannel
+    val message: Message = MessageExample.MESSAGE
+    val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty)
+    val laoData2: LaoData = LaoData(PublicKey(Base64Data("a")), List(PublicKey(Base64Data("b"))))
+
+    val ask1 = dbActorRef ? DbActor.WriteLaoData(channel, message, laoData)
+    val answer1 = Await.result(ask1, duration)
+
+    answer1 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask2 = dbActorRef ? DbActor.WriteLaoData(channel2, message, laoData2)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask3 = dbActorRef ? DbActor.ReadChannelData(channel)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorReadChannelDataAck]
+
+    answer3.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List(message.message_id))))
+
+    val ask4 = dbActorRef ? DbActor.ReadLaoData(channel)
+    val answer4 = Await.result(ask4, duration)
+
+    answer4 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("a")), List.empty)))
+
+    val ask5 = dbActorRef ? DbActor.ReadLaoData(channel2)
+    val answer5 = Await.result(ask5, duration)
+
+    answer5 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("a")), List(PublicKey(Base64Data("b"))))))
 
   }
 }

@@ -3,12 +3,13 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.dataObject.LaoData
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash}
-import ch.epfl.pop.pubsub.graph.DbActor.{DbActorNAck, DbActorWriteAck}
+import ch.epfl.pop.pubsub.graph.DbActor.{DbActorAck, DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -42,8 +43,15 @@ case object LaoHandler extends MessageHandler {
         val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
         val laoData: LaoData = LaoData(message.sender, List(message.sender)) //so that the operations the owner does next are authorized
         val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(channel, message, laoData)).map {
-        //val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
-          case DbActorWriteAck() => Left(rpcMessage)
+          case DbActorWriteAck() => {
+            val socialChannel: Channel = Channel(channel + "/posts")
+            val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
+              case DbActorAck() => Left(rpcMessage)
+              case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+            }
+            Await.result(askSocial, duration)
+          }
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }
