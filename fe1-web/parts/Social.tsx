@@ -9,10 +9,8 @@ import TextInputChirp from 'components/TextInputChirp';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
-import { ChirpState } from 'model/objects/Chirp';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
-import WideButtonView from '../components/WideButtonView';
 
 /**
  * UI for the Social Media component
@@ -39,12 +37,8 @@ const Social = () => {
       });
   };
 
-  let chirpList: ChirpState[] = [];
-
-  const updateChirps = () => {
-    const chirps = makeChirpsList();
-    chirpList = useSelector(chirps);
-  };
+  const chirps = makeChirpsList();
+  const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }) => {
     const text = `${item.sender} said ${item.text}`;
@@ -56,10 +50,6 @@ const Social = () => {
       <TextInputChirp
         onChangeText={setInputChirp}
         onPress={publishChirp}
-      />
-      <WideButtonView
-        title="Update feed"
-        onPress={updateChirps}
       />
       <TextBlock text={STRINGS.feed_description} />
       <FlatList

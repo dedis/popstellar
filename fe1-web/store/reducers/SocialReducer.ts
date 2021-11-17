@@ -81,6 +81,9 @@ export const makeChirpsList = () => createSelector(
     if (!laoId) {
       return [];
     }
-    return chirpList.byLaoId[laoId].allChirps;
+    if (chirpList.byLaoId[laoId]) {
+      return chirpList.byLaoId[laoId].allChirps;
+    }
+    return [];
   },
 );
