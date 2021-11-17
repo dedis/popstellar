@@ -19,6 +19,11 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
       val ed_signer  = new Ed25519Sign(privateKey)
       TestObj(ed_signer, kpair)
     }
+    //Data used for testing signature
+    final val dataTest = Seq("PoP-scala","HelloWorld","Not true is false",
+                              "😀" , "OMEGA \u03A9", "\u03A8",
+                              "Non empty can be fully non empty",
+                              "Not false is true")
 
     final val verify_pk = PublicKey(Base64Data.encode(tester.keyPair.getPublicKey))
 
@@ -37,7 +42,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     }
 
     test("Basic true signature"){
-        forEvery(Seq("PoP-scala","HelloWorld","Not true is false")) {
+        forEvery(dataTest) {
          (msg: String) => {
               val signature = getTrueSignatureTest(msg);
               //Assertion
@@ -66,7 +71,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
 
     test("Basic false signature"){
         /**Fake signature**/
-        forEvery(Seq("Non empty can be fully non empty","Not false is true")){
+        forEvery(dataTest){
         (msg:String) => {
             val signature = getFalseSignatureTest(msg);
             //Assertion
