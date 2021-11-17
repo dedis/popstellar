@@ -17,6 +17,8 @@ import {
   updateEvent,
 } from 'store';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
+import { subscribeToChannel } from '../../network/CommunicationApi';
+import { getUserChirpChannel } from '../../model/objects/Channel';
 
 const getCurrentLao = makeCurrentLao();
 
@@ -131,6 +133,12 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
       console.debug(err);
     }
   }));
+
+  // For now, everyone is automatically subscribed to the organizer's social channel at the end of
+  // the roll call
+  subscribeToChannel(getUserChirpChannel(lao.id, lao.organizer)).then(() => {}).catch((err) => {
+    console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`, err);
+  });
 
   return true;
 }
