@@ -58,6 +58,7 @@
     "react-navigation": "^4.4.1",
     "react-qr-reader": "^2.2.1",
     "react-redux": "^7.2.4",
+    "react-test-renderer": "^17.0.2",
     "react-timeago": "^6.2.1",
     "redux": "^4.1.1",
     "redux-devtools-extension": "^2.13.9",
