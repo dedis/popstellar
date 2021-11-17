@@ -205,15 +205,15 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   }
 
   private int compareWithNowByDay(Calendar date) {
-    Calendar threshold =
+    Calendar dayThreshold =
         new Calendar.Builder()
             .setDate(
-                this.threshold.get(Calendar.YEAR),
-                this.threshold.get(Calendar.MONTH),
-                this.threshold.get(Calendar.DAY_OF_MONTH))
+                threshold.get(Calendar.YEAR),
+                threshold.get(Calendar.MONTH),
+                threshold.get(Calendar.DAY_OF_MONTH))
             .build();
 
-    return date.compareTo(threshold);
+    return date.compareTo(dayThreshold);
   }
 
   private void showToast(@StringRes int text) {
