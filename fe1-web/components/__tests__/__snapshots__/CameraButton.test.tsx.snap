@@ -27,11 +27,7 @@ exports[`CameraButton renders correctly 1`] = `
     }
   >
     <Image
-      source={
-        Object {
-          "testUri": "../../../res/img/ic_camera.png",
-        }
-      }
+      source={1}
       style={
         Object {
           "height": 64,
