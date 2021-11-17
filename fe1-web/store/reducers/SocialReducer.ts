@@ -1,6 +1,7 @@
 import { ChirpState } from 'model/objects/Chirp';
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash } from 'model/objects';
+import { getLaosState } from './LaoReducer';
 
 /**
  * Stores all the Social Media related content
@@ -26,7 +27,7 @@ const initialState: SocialLaoReducerState = {
       allChirps: [],
     },
   },
-}
+};
 
 const socialReducerPath = 'social';
 
@@ -54,19 +55,32 @@ const socialSlice = createSlice({
 
         state.byLaoId[laoId].allChirps.push(chirp);
         console.log(`New chirp added:\n\tSender: ${chirp.sender}\n\tMessage: ${chirp.text}`);
-      }
-    }
-  }
+      },
+    },
+  },
 });
 
 export const {
-  addChirp
+  addChirp,
 } = socialSlice.actions;
 
 export const { reducer } = socialSlice;
 
 export default {
   [socialReducerPath]: socialSlice.reducer,
-}
+};
 
-export const getSocialState = (state: any): SocialLaoReducerState => state[socialReducerPath]
+export const getSocialState = (state: any): SocialLaoReducerState => state[socialReducerPath];
+
+export const makeChirpsList = () => createSelector(
+  // First input: Get all chirps across all LAOs
+  (state) => getSocialState(state),
+  // Second input: Get the current LAO id,
+  (state) => getLaosState(state).currentId,
+  (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
+    if (!laoId) {
+      return [];
+    }
+    return chirpList.byLaoId[laoId].allChirps;
+  },
+);
