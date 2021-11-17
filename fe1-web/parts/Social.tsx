@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
-  FlatList,
-  StyleSheet, TextStyle, View, ViewStyle,
+  FlatList, StyleSheet, TextStyle, View, ViewStyle,
 } from 'react-native';
 
 import TextBlock from 'components/TextBlock';
