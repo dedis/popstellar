@@ -35,7 +35,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);
 
-  private final Calendar today = Calendar.getInstance();
+  private final Calendar threshold = Calendar.getInstance();
   private final Calendar completeStartTime = Calendar.getInstance();
   private final Calendar completeEndTime = Calendar.getInstance();
 
@@ -67,10 +67,8 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     endTimeEditText = view.findViewById(R.id.end_time_edit_text);
     endTimeEditText.setInputType(InputType.TYPE_NULL);
 
-    today.set(Calendar.HOUR, 0);
-    today.set(Calendar.SECOND, 0);
-    today.set(Calendar.MINUTE, 0);
-    today.set(Calendar.MILLISECOND, 0);
+    // Offset the threshold a little to accept current value
+    threshold.add(Calendar.MINUTE, -1);
 
     startDateEditText.setOnClickListener(
         v -> openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate));
@@ -126,7 +124,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     startDateEditText.setText("");
     startDate = null;
 
-    if (newDate.compareTo(today) < 0) {
+    if (compareWithNowByDay(newDate) < 0) {
       showToast(R.string.past_date_not_allowed);
       return;
     }
@@ -151,7 +149,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     endDateEditText.setText("");
     endDate = null;
 
-    if (newDate.compareTo(today) < 0) {
+    if (compareWithNowByDay(newDate) < 0) {
       showToast(R.string.past_date_not_allowed);
       return;
     }
@@ -161,10 +159,13 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       return;
     }
 
-    if ((startDate != null) && (startDate.compareTo(newDate) == 0)) return;
-
     endDate = newDate;
     endDateEditText.setText(dateFormat.format(newDate.getTime()));
+
+    if ((startDate != null) && (startDate.compareTo(newDate) == 0)) {
+      endTime = null;
+      endTimeEditText.setText("");
+    }
   }
 
   private void onStartTime(String requestKey, Bundle bundle) {
@@ -200,8 +201,19 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private Calendar getSelection(Bundle bundle) {
     Calendar value = (Calendar) bundle.getSerializable(PickerConstant.RESPONSE_KEY);
     if (value == null) throw new IllegalStateException("Bundle does not contain selection");
-
     return value;
+  }
+
+  private int compareWithNowByDay(Calendar date) {
+    Calendar threshold =
+        new Calendar.Builder()
+            .setDate(
+                this.threshold.get(Calendar.YEAR),
+                this.threshold.get(Calendar.MONTH),
+                this.threshold.get(Calendar.DAY_OF_MONTH))
+            .build();
+
+    return date.compareTo(threshold);
   }
 
   private void showToast(@StringRes int text) {
