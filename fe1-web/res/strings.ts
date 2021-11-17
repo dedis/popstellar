@@ -133,7 +133,7 @@ const STRINGS = {
 
   /* --- Event Creation Strings --- */
   modal_event_creation_failed: 'Event creation failed',
-  modal_event_ends_in_past: 'The event\'s end time in the past.',
+  modal_event_ends_in_past: 'The event\'s end time is in the past.',
   modal_event_starts_in_past: 'The event\'s start time is in the past.\nWhat do you want to do ?',
   modal_button_start_now: 'Start it now',
   modal_button_go_back: 'Cancel',

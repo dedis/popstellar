@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.local.LAODatabase;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
 import com.github.dedis.popstellar.repository.remote.LAOService;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
@@ -63,11 +64,15 @@ public class Injection {
 
   private static OkHttpClient OK_HTTP_CLIENT_INSTANCE;
 
+  private static LAORequestFactory REQUEST_FACTORY_INSTANCE;
+
   private static Scarlet SCARLET_INSTANCE;
 
   private static LAOService LAO_SERVICE_INSTANCE;
 
   private static AndroidKeysetManager KEYSET_MANAGER;
+
+  private static ViewModelFactory viewModelFactory;
 
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
@@ -149,7 +154,8 @@ public class Injection {
       Log.d(TAG, "creating new Scarlet");
       SCARLET_INSTANCE =
           new Scarlet.Builder()
-              .webSocketFactory(OkHttpClientUtils.newWebSocketFactory(okHttpClient, SERVER_URL))
+              .webSocketFactory(
+                  OkHttpClientUtils.newWebSocketFactory(okHttpClient, provideRequestFactory()))
               .addMessageAdapterFactory(new GsonMessageAdapter.Factory(gson))
               .addStreamAdapterFactory(new RxJava2StreamAdapterFactory())
               .lifecycle(AndroidLifecycle.ofApplicationForeground(application))
@@ -157,6 +163,13 @@ public class Injection {
               .build();
     }
     return SCARLET_INSTANCE;
+  }
+
+  public static LAORequestFactory provideRequestFactory() {
+    if (REQUEST_FACTORY_INSTANCE == null) {
+      REQUEST_FACTORY_INSTANCE = new LAORequestFactory(SERVER_URL);
+    }
+    return REQUEST_FACTORY_INSTANCE;
   }
 
   public static LAOService provideLAOService(Scarlet scarlet) {
@@ -175,5 +188,15 @@ public class Injection {
         keysetManager,
         gson,
         new ProdSchedulerProvider());
+  }
+
+  public static synchronized ViewModelFactory provideViewModelFactory(Application application) {
+    if (viewModelFactory == null) {
+      Log.d(
+          ViewModelFactory.class.getSimpleName(),
+          "Creating new instance of " + ViewModelFactory.class.getSimpleName());
+      viewModelFactory = new ViewModelFactory(application);
+    }
+    return viewModelFactory;
   }
 }
