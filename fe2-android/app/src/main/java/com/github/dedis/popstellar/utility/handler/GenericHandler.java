@@ -116,7 +116,8 @@ public final class GenericHandler {
         handleMessage(laoRepository, channel, msg);
       } catch (DataHandlingException ex) {
         Log.e(TAG, "Unable to handle message", ex);
-        // This will have to change at some point
+        // This will have to change at some point. Every error is added to the queue.
+        // So if a message always fails to be handled, it will be re-added in the queue forever
         unprocessed.onNext(result);
       }
     }
@@ -170,7 +171,8 @@ public final class GenericHandler {
       handleMessage(laoRepository, channel, message);
     } catch (DataHandlingException ex) {
       Log.e(TAG, "Unable to handle message", ex);
-      // This will have to change at some point
+      // This will have to change at some point. Every error is added to the queue.
+      // So if a message always fails to be handled, it will be re-added in the queue forever
       unprocessed.onNext(broadcast);
     }
   }
