@@ -46,8 +46,8 @@ const Social = () => {
     chirpList = useSelector(chirps);
   };
 
-  const renderChirpState = (chirp: ChirpState) => {
-    const text = `${chirp.sender} said ${chirp.text}`;
+  const renderChirpState = ({ item }) => {
+    const text = `${item.sender} said ${item.text}`;
     return <TextBlock text={text} />;
   };
 

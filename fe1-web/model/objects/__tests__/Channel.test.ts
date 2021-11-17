@@ -4,9 +4,9 @@ import { KeyPairStore } from 'store';
 import { Hash } from '../Hash';
 import {
   channelFromIds,
-  generalChirpsChannel,
+  getGeneralChirpsChannel,
   getLastPartOfChannel,
-  userSocialChannel,
+  getCurrentUserSocialChannel,
 } from '../Channel';
 import { KeyPair } from '../KeyPair';
 import { PublicKey } from '../PublicKey';
@@ -28,11 +28,11 @@ describe('Channel object', () => {
     });
     KeyPairStore.store(keyPair);
     const pk = new PublicKey(PUBLIC_KEY);
-    expect(userSocialChannel(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}/social/${pk}`);
+    expect(getCurrentUserSocialChannel(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}/social/${pk}`);
   });
 
   it('generalChirpsChannel should return the correct channel', () => {
-    expect(generalChirpsChannel(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}/social/chirps`);
+    expect(getGeneralChirpsChannel(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}/social/chirps`);
   });
 
   it('getLastChannel works correctly', () => {
