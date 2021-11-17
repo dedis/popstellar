@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.ui.detail.event.rollcall;
+package com.github.dedis.popstellar.ui.detail.event.fragments;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -19,6 +19,7 @@ import androidx.test.filters.LargeTest;
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
+import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +27,7 @@ import org.junit.runner.RunWith;
 
 @LargeTest
 @RunWith(AndroidJUnit4ClassRunner.class)
-public class RollCallEventCreationFragmentTest {
+public class ElectionSetupFragmentTest {
 
   private final int YEAR = 2022;
   private final int MONTH_OF_YEAR = 10;
@@ -38,8 +39,8 @@ public class RollCallEventCreationFragmentTest {
   private final String TIME = "" + HOURS + ":" + MINUTES;
 
   @Rule
-  public final FragmentScenarioRule<RollCallEventCreationFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(RollCallEventCreationFragment.class);
+  public final FragmentScenarioRule<ElectionSetupFragment> fragmentRule =
+      FragmentScenarioRule.launchInContainer(ElectionSetupFragment.class);
 
   @Test
   public void canLaunchDatePickerFragmentFromStartDateButton() {
