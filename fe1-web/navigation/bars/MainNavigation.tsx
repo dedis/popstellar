@@ -42,10 +42,6 @@ export default function MainNavigation() {
         component={Home}
       />
       <HomeTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_social}
-        component={Social}
-      />
-      <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_connect}
         component={ConnectNavigation}
       />
