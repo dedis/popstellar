@@ -7,8 +7,6 @@ import android.widget.DatePicker;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.github.dedis.popstellar.R;
-
 import java.util.Calendar;
 
 /**
@@ -24,21 +22,14 @@ public final class DatePickerFragment extends AppCompatDialogFragment
     implements DatePickerDialog.OnDateSetListener {
 
   public static final String TAG = DatePickerFragment.class.getSimpleName();
-  public static final String REQUEST_KEY = "REQUEST_KEY";
-
-  private final Calendar calendar = Calendar.getInstance();
-  private String request;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
-    // Query the request key
-    request = requireArguments().getString(REQUEST_KEY);
-
     // Set the current date as the default date
-    final Calendar currentCalendar = Calendar.getInstance();
-    int year = currentCalendar.get(Calendar.YEAR);
-    int month = currentCalendar.get(Calendar.MONTH);
-    int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
+    final Calendar current = Calendar.getInstance();
+    int year = current.get(Calendar.YEAR);
+    int month = current.get(Calendar.MONTH);
+    int day = current.get(Calendar.DAY_OF_MONTH);
 
     // Return a new instance of DatePickerDialog
     return new DatePickerDialog(requireActivity(), DatePickerFragment.this, year, month, day);
@@ -46,18 +37,11 @@ public final class DatePickerFragment extends AppCompatDialogFragment
 
   // called when a date has been selected
   public void onDateSet(DatePicker view, int year, int month, int day) {
-    calendar.set(Calendar.YEAR, year);
-    calendar.set(Calendar.MONTH, month);
-    calendar.set(Calendar.DAY_OF_MONTH, day);
-
-    calendar.set(Calendar.HOUR, 0);
-    calendar.set(Calendar.SECOND, 0);
-    calendar.set(Calendar.MINUTE, 0);
-    calendar.set(Calendar.MILLISECOND, 0);
+    Calendar calendar = new Calendar.Builder().setDate(year, month, day).build();
 
     // send date back to the target fragment
     Bundle bundle = new Bundle();
-    bundle.putSerializable(request, calendar);
-    getParentFragmentManager().setFragmentResult(getString(R.string.picker_selection), bundle);
+    bundle.putSerializable(PickerConstant.RESPONSE_KEY, calendar);
+    getParentFragmentManager().setFragmentResult(PickerConstant.REQUEST_KEY, bundle);
   }
 }

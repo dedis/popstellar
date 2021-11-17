@@ -7,8 +7,6 @@ import android.widget.TimePicker;
 
 import androidx.appcompat.app.AppCompatDialogFragment;
 
-import com.github.dedis.popstellar.R;
-
 import java.util.Calendar;
 
 /**
@@ -21,18 +19,12 @@ public final class TimePickerFragment extends AppCompatDialogFragment
     implements TimePickerDialog.OnTimeSetListener {
 
   public static final String TAG = TimePickerFragment.class.getSimpleName();
-  public static final String REQUEST_KEY = "REQUEST_KEY";
-
-  private final Calendar calendar = Calendar.getInstance();
-  private String request;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
-    // Query the request key
-    request = requireArguments().getString(REQUEST_KEY);
-
-    int hourOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-    int minute = calendar.get(Calendar.MINUTE);
+    final Calendar current = Calendar.getInstance();
+    int hourOfDay = current.get(Calendar.HOUR_OF_DAY);
+    int minute = current.get(Calendar.MINUTE);
 
     return new TimePickerDialog(getActivity(), this, hourOfDay, minute, true);
   }
@@ -46,12 +38,10 @@ public final class TimePickerFragment extends AppCompatDialogFragment
    */
   @Override
   public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-    calendar.setTimeInMillis(0L);
-    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-    calendar.set(Calendar.MINUTE, minute);
+    Calendar calendar = new Calendar.Builder().setTimeOfDay(hourOfDay, minute, 0).build();
 
     Bundle bundle = new Bundle();
-    bundle.putSerializable(request, calendar);
-    getParentFragmentManager().setFragmentResult(getString(R.string.picker_selection), bundle);
+    bundle.putSerializable(PickerConstant.RESPONSE_KEY, calendar);
+    getParentFragmentManager().setFragmentResult(PickerConstant.REQUEST_KEY, bundle);
   }
 }

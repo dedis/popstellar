@@ -15,6 +15,7 @@ import androidx.fragment.app.FragmentResultListener;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ui.detail.event.pickers.DatePickerFragment;
+import com.github.dedis.popstellar.ui.detail.event.pickers.PickerConstant;
 import com.github.dedis.popstellar.ui.detail.event.pickers.TimePickerFragment;
 
 import java.text.DateFormat;
@@ -30,11 +31,6 @@ import java.util.Locale;
  * <p>This class handles these fields.
  */
 public abstract class AbstractEventCreationFragment extends Fragment {
-
-  private static final String START_DATE_REQUEST_KEY = "START_DATE"; // Used to identify the request
-  private static final String END_DATE_REQUEST_KEY = "END_DATE";
-  private static final String START_TIME_REQUEST_KEY = "START_TIME";
-  private static final String END_TIME_REQUEST_KEY = "END_TIME";
 
   private final DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private final DateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.FRENCH);
@@ -77,68 +73,25 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     today.set(Calendar.MILLISECOND, 0);
 
     startDateEditText.setOnClickListener(
-        v ->
-            openPickerDialog(
-                new DatePickerFragment(),
-                DatePickerFragment.TAG,
-                DatePickerFragment.REQUEST_KEY,
-                START_DATE_REQUEST_KEY,
-                this::onStartDate));
+        v -> openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onStartDate));
 
     endDateEditText.setOnClickListener(
-        v ->
-            openPickerDialog(
-                new DatePickerFragment(),
-                DatePickerFragment.TAG,
-                DatePickerFragment.REQUEST_KEY,
-                END_DATE_REQUEST_KEY,
-                this::onEndDate));
+        v -> openPickerDialog(new DatePickerFragment(), DatePickerFragment.TAG, this::onEndDate));
 
     startTimeEditText.setOnClickListener(
-        v ->
-            openPickerDialog(
-                new TimePickerFragment(),
-                TimePickerFragment.TAG,
-                TimePickerFragment.REQUEST_KEY,
-                START_TIME_REQUEST_KEY,
-                this::onStartTime));
+        v -> openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onStartTime));
 
     endTimeEditText.setOnClickListener(
-        v ->
-            openPickerDialog(
-                new TimePickerFragment(),
-                TimePickerFragment.TAG,
-                TimePickerFragment.REQUEST_KEY,
-                END_TIME_REQUEST_KEY,
-                this::onEndTime));
+        v -> openPickerDialog(new TimePickerFragment(), TimePickerFragment.TAG, this::onEndTime));
   }
 
   private void openPickerDialog(
-      AppCompatDialogFragment fragment,
-      String fragmentTag,
-      String bundleKey,
-      String requestKey,
-      FragmentResultListener listener) {
+      AppCompatDialogFragment fragment, String fragmentTag, FragmentResultListener listener) {
     // Create Listener
     getParentFragmentManager()
-        .setFragmentResultListener(requestKey, getViewLifecycleOwner(), listener);
-    // create the fragment
-    setArg(fragment, bundleKey, requestKey);
+        .setFragmentResultListener(PickerConstant.REQUEST_KEY, getViewLifecycleOwner(), listener);
     // show the picker
     fragment.show(getParentFragmentManager(), fragmentTag);
-  }
-
-  private void setArg(Fragment fragment, String key, String value) {
-    Bundle bundle = new Bundle();
-    bundle.putString(key, value);
-    fragment.setArguments(bundle);
-  }
-
-  private Calendar getSelection(Bundle bundle) {
-    Calendar value = (Calendar) bundle.getSerializable(getString(R.string.picker_selection));
-    if (value == null) throw new IllegalStateException("Bundle does not contain selection");
-
-    return value;
   }
 
   public void addStartDateAndTimeListener(TextWatcher listener) {
@@ -242,6 +195,13 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       endTime = null;
       endTimeEditText.setText("");
     }
+  }
+
+  private Calendar getSelection(Bundle bundle) {
+    Calendar value = (Calendar) bundle.getSerializable(PickerConstant.RESPONSE_KEY);
+    if (value == null) throw new IllegalStateException("Bundle does not contain selection");
+
+    return value;
   }
 
   private void showToast(@StringRes int text) {
