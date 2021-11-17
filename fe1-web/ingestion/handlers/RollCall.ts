@@ -7,7 +7,7 @@ import {
   OpenRollCall,
 } from 'model/network/method/message/data';
 import {
-  RollCall, RollCallStatus, Wallet, getCurrentUserSocialChannel, getUserSocialChannel,
+  RollCall, RollCallStatus, Wallet, getUserSocialChannel,
 } from 'model/objects';
 import {
   addEvent,

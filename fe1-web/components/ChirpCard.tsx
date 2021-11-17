@@ -5,8 +5,12 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { Timestamp } from '../model/objects';
+import { Timestamp } from 'model/objects';
 import TextBlock from './TextBlock';
+
+/**
+ * Component to display a chirp
+ */
 
 const styles = StyleSheet.create({
   container: {
