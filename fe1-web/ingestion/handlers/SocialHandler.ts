@@ -37,11 +37,12 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
   }
 
   const messageId = msg.message_id;
+  const { sender } = msg;
   const chirpMessage = msg.messageData as AddChirp;
 
   const chirp = new Chirp({
     id: messageId,
-    sender: KeyPairStore.get().publicKey,
+    sender: sender,
     text: chirpMessage.text,
     time: chirpMessage.timestamp,
     parentId: chirpMessage.parent_id,
