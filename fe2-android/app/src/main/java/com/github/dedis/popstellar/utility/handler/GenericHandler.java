@@ -146,6 +146,7 @@ public final class GenericHandler {
 
     // Send subscribe and catchup after creating a LAO
     laoRepository.sendSubscribe(channel);
+    laoRepository.sendSubscribe(channel + "/consensus");
   }
 
   /**
