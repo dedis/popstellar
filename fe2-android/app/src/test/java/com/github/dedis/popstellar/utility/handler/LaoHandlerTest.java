@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.utility.handler;
 import static com.github.dedis.popstellar.utility.handler.LaoHandler.updateLaoNameWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.Injection;
@@ -20,6 +19,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
@@ -114,7 +114,7 @@ public class LaoHandlerTest {
   }
 
   @Test
-  public void testHandleUpdateLao() {
+  public void testHandleUpdateLao() throws DataHandlingException {
     // Create the update LAO message
     UpdateLao updateLao =
         new UpdateLao(
@@ -135,7 +135,7 @@ public class LaoHandlerTest {
         updateLaoNameWitnessMessage(message.getMessageId(), updateLao, lao);
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
+    handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
@@ -146,7 +146,7 @@ public class LaoHandlerTest {
   }
 
   @Test
-  public void testHandleStateLao() {
+  public void testHandleStateLao() throws DataHandlingException {
     // Create the state LAO message
     StateLao stateLao =
         new StateLao(
@@ -166,7 +166,7 @@ public class LaoHandlerTest {
             Injection.provideGson());
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
+    handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the LAO last modification time and ID was updated
     assertEquals(
