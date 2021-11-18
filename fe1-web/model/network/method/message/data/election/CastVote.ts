@@ -6,6 +6,7 @@ import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness } from '../Checker';
 
+/** Data sent to cast a vote */
 export class CastVote implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;
 
@@ -63,6 +64,10 @@ export class CastVote implements MessageData {
     });
   }
 
+  /**
+   * Creates a CastVote object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): CastVote {
     const { errors } = validateDataObject(ObjectType.ELECTION, ActionType.CAST_VOTE, obj);
 
