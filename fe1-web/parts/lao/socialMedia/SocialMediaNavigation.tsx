@@ -31,7 +31,7 @@ const SocialMediaNavigation = () => (
             iconName = 'person';
             break;
           default:
-            console.log('wrong route.');
+            console.error('wrong route.');
             break;
         }
 
