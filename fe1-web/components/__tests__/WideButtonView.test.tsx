@@ -12,7 +12,7 @@ beforeEach(() => {
 describe('WideButtonView', () => {
   it('renders correctly without disabled', () => {
     const { toJSON } = render(
-      <WideButtonView title={wideButtonTitle} onPress={onPress} />,
+      <WideButtonView title={wideButtonTitle} onPress={() => onPress} />,
     );
     expect(toJSON()).toMatchSnapshot();
   });
