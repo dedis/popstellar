@@ -25,12 +25,6 @@ const styles = StyleSheet.create({
     width: 500,
     alignContent: 'flex-end',
   } as TextStyle,
-  item: {
-    backgroundColor: '#f9c2ff',
-    padding: 20,
-    marginVertical: 8,
-    marginHorizontal: 16,
-  },
 });
 
 const DATA = [
