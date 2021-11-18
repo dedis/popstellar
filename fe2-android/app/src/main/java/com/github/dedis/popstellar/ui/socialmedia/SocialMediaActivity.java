@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.IdRes;
@@ -28,10 +29,9 @@ public class SocialMediaActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.social_media_activity);
     mViewModel = obtainViewModel(this);
-    mViewModel.subscribeToSocial(
-        (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
-    mViewModel.subscribeToChannel(
-        (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
+    // mViewModel.subscribeToChannel(
+    //     (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
+    mViewModel.setLaoId((String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
 
     setupSocialMediaHomeFragment();
     setupNavigationBar();
@@ -83,6 +83,22 @@ public class SocialMediaActivity extends AppCompatActivity {
                 setupSocialMediaProfileFragment();
               }
             });
+  }
+
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.subscription_general_channel, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.subscription_icon) {
+      mViewModel.subscribeToGeneralChannel(mViewModel.getLaoId().getValue());
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
+    }
   }
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
