@@ -14,7 +14,6 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -47,18 +46,15 @@ public class SocialMediaViewModel extends AndroidViewModel {
    * Dependencies for this class
    */
   private final LAORepository mLaoRepository;
-  private final Gson mGson;
   private final AndroidKeysetManager mKeysetManager;
   private final CompositeDisposable disposables;
 
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
-      Gson gson,
       AndroidKeysetManager keysetManager) {
     super(application);
     mLaoRepository = laoRepository;
-    mGson = gson;
     mKeysetManager = keysetManager;
     disposables = new CompositeDisposable();
   }
@@ -197,7 +193,4 @@ public class SocialMediaViewModel extends AndroidViewModel {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
   }
-
-  /** Send a chirp to your own channel */
-  public void sendChirp() {}
 }
