@@ -139,9 +139,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
     mLaoId.setValue(laoId);
   }
 
-  /** Subscribe to the channel: /root/<lao_id>/social */
-  public void subscribeToSocial(String laoId) {
-    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social");
+  /** Subscribe to the channel: /root/<lao_id>/social/chirps */
+  public void subscribeToGeneralChannel(String laoId) {
+    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/chirps");
 
     String channel = "/root/" + laoId + "/social";
 

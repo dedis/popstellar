@@ -215,5 +215,6 @@
   <string name="send">SEND</string>
   <string name="send_button_desc">button to write a chirp</string>
   <string name="hint_chirp">Your chirp</string>
+  <string name="subscription_general_channel">Subscription</string>
 
 </resources>
