@@ -237,7 +237,6 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 
 	err = channel.Publish(messagePublish)
 	require.NoError(t, err)
-	require.NoError(t, err)
 	require.Equal(t, byteBroad, socket.msg)
 }
 
