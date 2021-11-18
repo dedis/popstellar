@@ -30,6 +30,10 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   final val DB_TEST_FOLDER: String = "databaseTest"
   final val DB_TEST_CHANNEL: String = "/root/testChannel"
 
+  final val TEST_CHANNEL_WRITELAO_1: String = "/root/channelNumber2056764657"
+  final val TEST_CHANNEL_WRITELAO_2: String = "/root/channelNumber277501811"
+  final val TEST_CHANNEL_WRITELAO_3: String = "/root/channelNumber456561164"
+
   final val GENERATOR = scala.util.Random
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
@@ -232,7 +236,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   }
 
   test("DbActor stores and reads LaoData"){
-    val channel: Channel = generateUniqueChannel
+    val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_1)
     val message: Message = MessageExample.MESSAGE
     val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty)
 
@@ -258,8 +262,8 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   }
 
   test("DbActor stores and reads two distinct LaoData objects, to simulate two LAOs in the same database"){
-    val channel: Channel = generateUniqueChannel
-    val channel2: Channel = generateUniqueChannel
+    val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_2)
+    val channel2: Channel = Channel(TEST_CHANNEL_WRITELAO_3)
     val message: Message = MessageExample.MESSAGE
     val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty)
     val laoData2: LaoData = LaoData(PublicKey(Base64Data("a")), List(PublicKey(Base64Data("b"))))

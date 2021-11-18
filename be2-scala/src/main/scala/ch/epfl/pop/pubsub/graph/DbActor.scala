@@ -235,7 +235,12 @@ object DbActor extends AskPatternConstants {
 
     //may return null if the extractLaoId fails
     private def generateLaoDataKey(channel: Channel): String = {
-      channel.extractLaoId + "/data"
+      channel.decodeSubChannel match {
+        case Some(data) => new String(data, StandardCharsets.UTF_8) + "/data"
+        case None =>
+          log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
+          null
+      }
     }
 
     private def writeBatch(channel: Channel, messageId: Hash, batch: WriteBatch): DbActorMessage = {
