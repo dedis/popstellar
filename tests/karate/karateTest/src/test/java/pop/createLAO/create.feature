@@ -4,6 +4,7 @@ Feature: Create a pop LAO
         # Handler can be used to filter websocket messages 
         * def handle = function(msg){ karate.signal(msg); return msg.startsWith('{')}
         # Forked process to launch the server
+        # Passing through the shell to launch te server is required 
         * def ssProc = karate.fork({line: serverCmd, workingDir: serverDIR, useShell: true})
         * karate.log('Waiting for server start up ....')
         # Wait for server to be ready by polling 
@@ -13,6 +14,7 @@ Feature: Create a pop LAO
         * configure afterScenario = 
             """     
                 function(){
+                    //FIXME: This seems to be killing the shell and not the server
                     karate.signal(ssProc.sysOut);
                     karate.log("Server process ended"); 
                 }
