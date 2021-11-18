@@ -78,31 +78,30 @@ case object RollCallHandler extends MessageHandler {
 
         val laoChannel: Option[Array[Byte]] = rpcMessage.getParamsChannel.decodeSubChannel
         laoChannel match {
-          case Some(channel) =>
           case None => Right(PipelineError(
             ErrorCodes.SERVER_ERROR.id,
             s"There is an issue with the data of the LAO",
             rpcMessage.id
           ))
-        }
+          case Some(channel) =>
+            val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
+            
+            Await.result(askOldData, duration) match {
+              case DbActorReadLaoDataAck(Some(oldLaoData)) =>
+                val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees)
+                val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(rpcMessage.getParamsChannel, message, laoData)).map {
+                  case DbActorWriteAck() => createAttendeeChannels(data.attendees, rpcMessage)
+                  case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+                  case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
+                }
+                Await.result(ask, duration)
+              case _ => Right(PipelineError(
+                ErrorCodes.SERVER_ERROR.id,
+                s"There is an issue with the data of the LAO",
+                rpcMessage.id
+              ))
 
-        val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
-        
-        Await.result(askOldData, duration) match {
-          case DbActorReadLaoDataAck(Some(oldLaoData)) =>
-            val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees)
-            val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(rpcMessage.getParamsChannel, message, laoData)).map {
-              case DbActorWriteAck() => createAttendeeChannels(data.attendees, rpcMessage)
-              case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
             }
-            Await.result(ask, duration)
-          case _ => Right(PipelineError(
-            ErrorCodes.SERVER_ERROR.id,
-            s"There is an issue with the data of the LAO",
-            rpcMessage.id
-          ))
-
         }
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
