@@ -1,0 +1,40 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CameraButton renders correctly 1`] = `
+<View>
+  <View
+    accessible={true}
+    collapsable={false}
+    focusable={true}
+    nativeID="animatedComponent"
+    onClick={[Function]}
+    onResponderGrant={[Function]}
+    onResponderMove={[Function]}
+    onResponderRelease={[Function]}
+    onResponderTerminate={[Function]}
+    onResponderTerminationRequest={[Function]}
+    onStartShouldSetResponder={[Function]}
+    style={
+      Object {
+        "alignItems": "center",
+        "backgroundColor": "#2196F3",
+        "borderRadius": 80,
+        "height": 80,
+        "justifyContent": "center",
+        "opacity": 1,
+        "width": 80,
+      }
+    }
+  >
+    <Image
+      source={1}
+      style={
+        Object {
+          "height": 64,
+          "width": 64,
+        }
+      }
+    />
+  </View>
+</View>
+`;

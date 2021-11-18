@@ -1,0 +1,251 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`DismissModal disappears correctly after dismissing 1`] = `
+<Modal
+  hardwareAccelerated={false}
+  transparent={true}
+  visible={true}
+>
+  <View
+    style={
+      Object {
+        "backgroundColor": "white",
+        "borderRadius": 10,
+        "borderWidth": 1,
+        "margin": "auto",
+        "width": 550,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "borderBottomWidth": 1,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "alignSelf": "flex-start",
+            "fontSize": 25,
+            "fontWeight": "bold",
+            "marginHorizontal": 10,
+            "padding": 20,
+            "paddingLeft": 10,
+            "textAlign": "center",
+          }
+        }
+      >
+        Title
+      </Text>
+    </View>
+    <Text
+      style={
+        Object {
+          "alignSelf": "flex-start",
+          "fontSize": 20,
+          "marginHorizontal": 10,
+          "padding": 20,
+          "paddingLeft": 10,
+          "textAlign": "left",
+        }
+      }
+    >
+      Description
+    </Text>
+    <View
+      style={
+        Object {
+          "alignSelf": "center",
+          "flexDirection": "row",
+          "paddingBottom": 20,
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "marginHorizontal": 50,
+            "marginVertical": 10,
+          }
+        }
+      >
+        <View
+          accessibilityRole="button"
+          accessibilityState={
+            Object {
+              "disabled": false,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          nativeID="animatedComponent"
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {},
+              ]
+            }
+          >
+            <Text
+              disabled={false}
+              style={
+                Array [
+                  Object {
+                    "color": "#007AFF",
+                    "fontSize": 18,
+                    "margin": 8,
+                    "textAlign": "center",
+                  },
+                ]
+              }
+            >
+              Ok
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;
+
+exports[`DismissModal renders correctly 1`] = `
+<Modal
+  hardwareAccelerated={false}
+  transparent={true}
+  visible={true}
+>
+  <View
+    style={
+      Object {
+        "backgroundColor": "white",
+        "borderRadius": 10,
+        "borderWidth": 1,
+        "margin": "auto",
+        "width": 550,
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "borderBottomWidth": 1,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "alignSelf": "flex-start",
+            "fontSize": 25,
+            "fontWeight": "bold",
+            "marginHorizontal": 10,
+            "padding": 20,
+            "paddingLeft": 10,
+            "textAlign": "center",
+          }
+        }
+      >
+        Title
+      </Text>
+    </View>
+    <Text
+      style={
+        Object {
+          "alignSelf": "flex-start",
+          "fontSize": 20,
+          "marginHorizontal": 10,
+          "padding": 20,
+          "paddingLeft": 10,
+          "textAlign": "left",
+        }
+      }
+    >
+      Description
+    </Text>
+    <View
+      style={
+        Object {
+          "alignSelf": "center",
+          "flexDirection": "row",
+          "paddingBottom": 20,
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "marginHorizontal": 50,
+            "marginVertical": 10,
+          }
+        }
+      >
+        <View
+          accessibilityRole="button"
+          accessibilityState={
+            Object {
+              "disabled": false,
+            }
+          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          nativeID="animatedComponent"
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Object {
+              "opacity": 1,
+            }
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {},
+              ]
+            }
+          >
+            <Text
+              disabled={false}
+              style={
+                Array [
+                  Object {
+                    "color": "#007AFF",
+                    "fontSize": 18,
+                    "margin": 8,
+                    "textAlign": "center",
+                  },
+                ]
+              }
+            >
+              Ok
+            </Text>
+          </View>
+        </View>
+      </View>
+    </View>
+  </View>
+</Modal>
+`;

@@ -83,7 +83,8 @@ android {
     // Make sure the coverage flavor uses the same source set as the mock
     sourceSets {
         cov {
-            java.srcDirs += ['src/mock/java']
+            java.srcDirs += mock.java.srcDirs
+            resources.srcDirs += mock.resources.srcDirs
         }
     }
 }
