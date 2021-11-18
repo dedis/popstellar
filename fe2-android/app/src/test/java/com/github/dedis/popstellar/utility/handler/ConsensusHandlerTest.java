@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
@@ -86,7 +87,7 @@ public class ConsensusHandlerTest {
   @Mock PublicKeySign signer;
 
   @Before
-  public void setup() throws GeneralSecurityException {
+  public void setup() throws GeneralSecurityException, DataHandlingException {
     SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
     TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
 
@@ -126,14 +127,14 @@ public class ConsensusHandlerTest {
   }
 
   @Test
-  public void handleConsensusTests() {
+  public void handleConsensusTests() throws DataHandlingException {
     // each test need to be run one after another
     handleConsensusElectTest();
     handleConsensusElectAcceptTest();
   }
 
   // handle an elect from node2
-  private void handleConsensusElectTest() {
+  private void handleConsensusElectTest() throws DataHandlingException {
     electMsg = getMsg(NODE_2_KEY, elect);
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
 
@@ -163,7 +164,7 @@ public class ConsensusHandlerTest {
   }
 
   // handle an electAccept from node3 for the elect of node2
-  private void handleConsensusElectAcceptTest() {
+  private void handleConsensusElectAcceptTest() throws DataHandlingException {
     electAccept = new ConsensusElectAccept(INSTANCE_ID, electMsg.getMessageId(), true);
     electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptMsg);
