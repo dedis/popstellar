@@ -27,6 +27,7 @@ import (
 
 const protocolRelativePath string = "../../../protocol"
 
+// Tests that the channel works correctly when it receives a subscribe
 func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -53,6 +54,7 @@ func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	require.True(t, consensusChannel.sockets.Delete("socket"))
 }
 
+// Tests that the channel works correctly when it receives an unsubscribe
 func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -80,6 +82,8 @@ func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	require.False(t, consensusChannel.sockets.Delete("socket"))
 }
 
+// Test that the channel throws an error when it receives an unsubscribe from a
+// non-subscribed source
 func Test_Consensus_Channel_Wrong_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
@@ -100,6 +104,7 @@ func Test_Consensus_Channel_Wrong_Unsubscribe(t *testing.T) {
 	require.Error(t, err, "client is not subscribed to this channel")
 }
 
+// Tests that the channel works correctly when it receives a catchup
 func Test_Consensus_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -140,6 +145,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	}
 }
 
+// Tests that the channel throws an error when it receives a broadcast message
 func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -165,6 +171,7 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	require.Error(t, err, "a consensus channel shouldn't need to broadcast a message")
 }
 
+// Tests that the channel works correctly when it receives an elect message
 func Test_Consensus_Publish_Elect(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -228,11 +235,14 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish))
+	err = channel.Publish(messagePublish)
+	require.NoError(t, err)
 	require.NoError(t, err)
 	require.Equal(t, byteBroad, socket.msg)
 }
 
+// Tests that the channel works correctly when it receives an elect-accept
+// message
 func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -317,6 +327,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	require.Equal(t, byteBroad, socket.msg)
 }
 
+// Tests that the channel works correctly when it receives a learn message
 func Test_Consensus_Publish_Elect_Learn(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)

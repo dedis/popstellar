@@ -240,7 +240,7 @@ func (c *Channel) processConsensusElect(data messagedata.ConsensusElect) error {
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to process consensus#elect message: %v", err)
+		return xerrors.Errorf("invalid consensus#elect message: %v", err)
 	}
 
 	return nil
@@ -251,7 +251,7 @@ func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAcc
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to process consensus#elect_accept message: %v", err)
+		return xerrors.Errorf("invalid consensus#elect_accept message: %v", err)
 	}
 
 	// check wether a message with the correct ID was received previously
@@ -268,7 +268,7 @@ func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to process consensus#learn message: %v", err)
+		return xerrors.Errorf("invalid consensus#learn message: %v", err)
 	}
 
 	// check wether a message with the correct ID was received previously
