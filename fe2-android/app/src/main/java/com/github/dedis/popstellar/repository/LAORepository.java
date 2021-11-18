@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.model.network.method.Publish;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
 import com.github.dedis.popstellar.model.network.method.Unsubscribe;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
@@ -266,6 +267,10 @@ public class LAORepository {
   }
 
   public Single<Answer> sendSubscribe(String channel) {
+    if (subscribedChannels.contains(channel)) {
+      return Single.error(new IllegalStateException("Already subscribed to " + channel));
+    }
+
     Log.d(TAG, "sending a subscribe to the channel " + channel);
     int id = mRemoteDataSource.incrementAndGetRequestId();
     Subscribe subscribe = new Subscribe(channel, id);
@@ -288,6 +293,9 @@ public class LAORepository {
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(unsubscribe);
+
+    subscribedChannels.remove(channel);
+
     return answer;
   }
 

@@ -161,6 +161,11 @@ public final class LaoHandler {
     lao.setLastModified(stateLao.getLastModified());
     lao.setModificationId(stateLao.getModificationId());
 
+    String publicKey = laoRepository.getPublicKey();
+    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
+      laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
+    }
+
     // Now we're going to remove all pending updates which came prior to this state lao
     long targetTime = stateLao.getLastModified();
     lao.getPendingUpdates()
