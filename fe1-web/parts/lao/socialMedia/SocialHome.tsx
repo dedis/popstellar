@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const Social = () => {
+const SocialHome = () => {
   const [inputChirp, setInputChirp] = useState('');
 
   const publishChirp = () => {
@@ -65,4 +65,4 @@ const Social = () => {
   );
 };
 
-export default Social;
+export default SocialHome;
