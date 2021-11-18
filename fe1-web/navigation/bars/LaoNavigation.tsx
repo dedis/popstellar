@@ -14,7 +14,7 @@ import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
 import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
 import { WalletStore } from 'store/stores/WalletStore';
-import Social from 'parts/Social';
+import Social from 'parts/social/Social';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
