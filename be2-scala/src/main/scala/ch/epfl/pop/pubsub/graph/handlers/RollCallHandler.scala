@@ -63,7 +63,7 @@ case object RollCallHandler extends MessageHandler {
             case Nil => Left(rpcMessage)
             case head::tail => 
               //a closeRollCall is always sent in the lao's main channel so we are allowed to do this
-              val socialChannel: String = rpcMessage.getParamsChannel + "social/" + head.toString
+              val socialChannel: String = generateSocialChannel(rpcMessage.getParamsChannel, head)
               val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel(socialChannel), ObjectType.CHIRP)).map {
                 case DbActorWriteAck() => createAttendeeChannels(tail, rpcMessage)
                 //FIXME: Once the real PoP tokens are implemented, the same person will not have access to the same channel name twice in a row, so we can remove this line
@@ -111,4 +111,6 @@ case object RollCallHandler extends MessageHandler {
       ))
     }
   }
+
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + "/social" + pk.toString
 }

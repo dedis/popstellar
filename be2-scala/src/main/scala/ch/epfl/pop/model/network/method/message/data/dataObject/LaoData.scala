@@ -25,4 +25,6 @@ object LaoData extends Parsable {
   }
 
   override def buildFromJson(payload: String): LaoData = payload.parseJson.asJsObject.convertTo[LaoData] // doesn't decode data
+
+  def getName: String = "LaoData"
 }

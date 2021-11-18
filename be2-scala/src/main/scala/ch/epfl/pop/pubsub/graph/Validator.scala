@@ -69,7 +69,6 @@ object Validator {
   }
 
   // contains the relative path to our "main" query JsonSchema file
-  //FIXME: does not work apparently
   final val queryPath = "../protocol/query/query.json"
 
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {

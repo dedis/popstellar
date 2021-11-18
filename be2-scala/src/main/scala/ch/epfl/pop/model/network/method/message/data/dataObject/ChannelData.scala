@@ -33,4 +33,6 @@ object ChannelData extends Parsable {
   }
 
   override def buildFromJson(payload: String): ChannelData = payload.parseJson.asJsObject.convertTo[ChannelData] // doesn't decode data
+
+  def getName: String = "ChannelData"
 }
