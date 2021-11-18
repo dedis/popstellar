@@ -10,7 +10,7 @@ const STRINGS = {
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
-  navigation_tab_social: 'Social',
+  navigation_tab_social_media: 'Social Media',
   navigation_tab_connect: 'Connect',
   navigation_tab_launch: 'Launch',
   navigation_tab_wallet: 'Wallet',
@@ -45,6 +45,12 @@ const STRINGS = {
   navigation_show_seed_wallet: 'New Wallet',
   navigation_synced_wallet: 'My Wallet',
   navigation_wallet_error: 'Error',
+
+  /* --- Social Media Navigation Strings --- */
+  social_media_navigation_tab_home: 'Home',
+  social_media_navigation_tab_search: 'Search',
+  social_media_navigation_tab_follows: 'My Follows',
+  social_media_navigation_tab_profile: 'My Profile',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
