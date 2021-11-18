@@ -62,6 +62,6 @@ object Answerer {
 
     // Combines a sink (input) and a source (output) to create a fake flow (one input and one
     // input) even though there's no link between sink and source
-    Flow.fromSinkAndSource(sink, source)
+    Flow.fromSinkAndSourceCoupled(sink, source)
   }
 }
