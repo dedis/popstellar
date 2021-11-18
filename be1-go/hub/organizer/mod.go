@@ -298,7 +298,7 @@ func (h *Hub) handleMessageFromClient(incomingMessage *socket.IncomingMessage) e
 func verifySignature(publicKey64 string, signature64 string, data64 string) error {
 	pk, err := base64.URLEncoding.DecodeString(publicKey64)
 	if err != nil {
-		return xerrors.Errorf("failed to decode the public key")
+		return xerrors.Errorf("failed to decode the public key: %v", err)
 	}
 	var point = suite.Point()
 	err = point.UnmarshalBinary(pk)
@@ -316,7 +316,12 @@ func verifySignature(publicKey64 string, signature64 string, data64 string) erro
 		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
-	return schnorr.VerifyWithChecks(crypto.Suite, pk, data, signature)
+	err = schnorr.VerifyWithChecks(crypto.Suite, pk, data, signature)
+	if err != nil {
+		return xerrors.Errorf("failed to verify the signature: %v", err)
+	}
+	
+	return nil
 }
 
 func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, error) {
