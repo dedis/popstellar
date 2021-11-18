@@ -4,7 +4,6 @@ import {
   addChirp,
   dispatch,
   getStore,
-  KeyPairStore,
   makeCurrentLao,
 } from 'store';
 import { Chirp } from 'model/objects/Chirp';
