@@ -137,7 +137,7 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
 
   // For now, everyone is automatically subscribed to the organizer's social channel at the end of
   // the roll call
-  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer.valueOf())).then(() => {})
+  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer.valueOf()))
     .catch((err) => {
       console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`,
         err);
