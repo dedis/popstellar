@@ -264,12 +264,12 @@ object DbActor extends AskPatternConstants {
                   log.info(s"Actor $self (db) wrote object 'objectId' and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
                   DbActorWriteAck()
                 case Failure(exception) =>
-                  log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object '" + ChannelData.getName + "' on channel '$channel' because of the batch write")
+                  log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object " + ChannelData.getName + " on channel '$channel' because of the batch write")
                   DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
               }      
             }
             case Failure(exception) =>
-              log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object '" + ChannelData.getName + "' on channel '$channel' because of a batch creation")
+              log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object " + ChannelData.getName + " on channel '$channel' because of a batch creation")
               DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
           }
         }
@@ -311,15 +311,15 @@ object DbActor extends AskPatternConstants {
               //allows writing all data atomically
               Try(db.write(batch)) match {
                 case Success(_) =>
-                  log.info(s"Actor $self (db) wrote objects '" + ChannelData.getName + "' and '" + LaoData.getName + "' and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
+                  log.info(s"Actor $self (db) wrote objects " + ChannelData.getName + " and " + LaoData.getName + " and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
                   DbActorWriteAck()
                 case Failure(exception) =>
-                  log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and objects '" + ChannelData.getName + "' and '" + LaoData.getName + "' on channel '$channel' because of write batch")
+                  log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and objects " + ChannelData.getName + " and " + LaoData.getName + " on channel '$channel' because of write batch")
                   DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
               }
             }
             case Failure(exception) =>
-              log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and objects '" + ChannelData.getName + "' and '" + LaoData.getName + "' on channel '$channel' because of batch creation")
+              log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and objects " + ChannelData.getName + " and " + LaoData.getName + " on channel '$channel' because of batch creation")
               DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
           }
         }
