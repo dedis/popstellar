@@ -63,7 +63,7 @@ const ChirpCard = (props: IPropTypes) => {
 const propTypes = {
   sender: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
-  time: PropTypes.instanceOf(Date).isRequired,
+  time: PropTypes.instanceOf(Timestamp).isRequired,
   likes: PropTypes.number.isRequired,
 };
 
