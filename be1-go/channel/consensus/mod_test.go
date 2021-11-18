@@ -50,7 +50,7 @@ func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	err = channel.Subscribe(socket, message)
 	require.NoError(t, err)
 
-	require.True(t, consensusChannel.sockets.Delete("socket"))
+	require.True(t, consensusChannel.clientSockets.Delete("socket"))
 }
 
 func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
@@ -72,12 +72,12 @@ func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	socket := &fakeSocket{id: "socket"}
-	consensusChannel.sockets.Upsert(socket)
+	consensusChannel.clientSockets.Upsert(socket)
 
 	err = channel.Unsubscribe("socket", message)
 	require.NoError(t, err)
 
-	require.False(t, consensusChannel.sockets.Delete("socket"))
+	require.False(t, consensusChannel.clientSockets.Delete("socket"))
 }
 
 func Test_Consensus_Channel_Wrong_Unsubscribe(t *testing.T) {
@@ -182,7 +182,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 
 	// Create a socket subscribed to the channel
 	socket := &fakeSocket{id: "socket"}
-	consensusChannel.sockets.Upsert(socket)
+	consensusChannel.clientSockets.Upsert(socket)
 
 	// Create a consensus elect message
 	file := filepath.Join(protocolRelativePath,
@@ -249,7 +249,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	// Create a socket subscribed to the channel
 	socket := &fakeSocket{id: "socket"}
-	consensusChannel.sockets.Upsert(socket)
+	consensusChannel.clientSockets.Upsert(socket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,
@@ -333,7 +333,7 @@ func Test_Consensus_Publish_Elect_Learn(t *testing.T) {
 
 	// Create a socket subscribed to the channel
 	socket := &fakeSocket{id: "socket"}
-	consensusChannel.sockets.Upsert(socket)
+	consensusChannel.clientSockets.Upsert(socket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,

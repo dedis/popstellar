@@ -47,6 +47,11 @@ type Sockets struct {
 	store map[string]socket.Socket
 }
 
+// Number returns the numbre of sockets.
+func (s *Sockets) Number() int {
+	return len(s.store)
+}
+
 // SendToAll sends a message to all sockets.
 func (s *Sockets) SendToAll(buf []byte) {
 	s.RLock()

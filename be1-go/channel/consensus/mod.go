@@ -14,8 +14,11 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+	"sync"
+	"time"
 
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )
 
@@ -25,7 +28,8 @@ const (
 
 // Channel defines a consensus channel
 type Channel struct {
-	sockets channel.Sockets
+	clientSockets channel.Sockets
+	serverSockets channel.Sockets
 
 	inbox *inbox.Inbox
 
@@ -37,7 +41,44 @@ type Channel struct {
 	attendees map[string]struct{}
 
 	log zerolog.Logger
+
+	consensusInstances map[string]*ConsensusInstance
+	messageStates      map[string]*MessageState
 }
+
+type ConsensusInstance struct {
+	mutex sync.RWMutex
+	id    string
+
+	proposed_try int64
+	promised_try int64
+	accepted_try int64
+
+	accepted_value *bool
+
+	decided        bool
+	decision       *bool
+	proposed_value *bool
+
+	promises []messagedata.ConsensusPromise
+	accepts  []messagedata.ConsensusAccept
+}
+
+type MessageState struct {
+	mutex sync.Mutex
+
+	currentPhase      Phase
+	proposer          kyber.Point
+	electAcceptNumber int
+}
+
+type Phase int
+
+const (
+	ElectAcceptPhase Phase = 1
+	PromisePhase     Phase = 2
+	AcceptPhase      Phase = 3
+)
 
 // NewChannel returns a new initialized consensus channel
 func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
@@ -46,19 +87,26 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 	log = log.With().Str("channel", "consensus").Logger()
 
 	return &Channel{
-		sockets:   channel.NewSockets(),
-		inbox:     inbox,
-		channelID: channelID,
-		hub:       hub,
-		attendees: make(map[string]struct{}),
-		log:       log,
+		clientSockets:      channel.NewSockets(),
+		inbox:              inbox,
+		channelID:          channelID,
+		hub:                hub,
+		attendees:          make(map[string]struct{}),
+		log:                log,
+		consensusInstances: make(map[string]*ConsensusInstance),
+		messageStates:      make(map[string]*MessageState),
 	}
 }
 
 // Subscribe is used to handle a subscribe message from the client
-func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+func (c *Channel) Subscribe(sock socket.Socket, msg method.Subscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received a subscribe")
-	c.sockets.Upsert(socket)
+
+	if sock.Type() == socket.ClientSocketType {
+		c.clientSockets.Upsert(sock)
+	} else {
+		c.serverSockets.Upsert(sock)
+	}
 
 	return nil
 }
@@ -67,7 +115,7 @@ func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received an unsubscribe")
 
-	ok := c.sockets.Delete(socketID)
+	ok := c.clientSockets.Delete(socketID)
 
 	if !ok {
 		return answer.NewError(-2, "client is not subscribed to this channel")
@@ -116,7 +164,7 @@ func (c *Channel) broadcastToAllWitnesses(msg message.Message) error {
 		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
 	}
 
-	c.sockets.SendToAll(buf)
+	c.clientSockets.SendToAll(buf)
 	return nil
 }
 
@@ -198,7 +246,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 			return xerrors.Errorf("failed to unmarshal consensus#elect: %v", err)
 		}
 
-		err = c.processConsensusElect(consensusElect)
+		err = c.processConsensusElect(msg.Sender, consensusElect)
 		if err != nil {
 			return xerrors.Errorf("failed to process elect action: %w", err)
 		}
@@ -284,12 +332,33 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 }
 
 // ProcessConsensusElect processes an elect action.
-func (c *Channel) processConsensusElect(data messagedata.ConsensusElect) error {
+func (c *Channel) processConsensusElect(sender string, data messagedata.ConsensusElect) error {
 
 	err := data.Verify()
 	if err != nil {
 		return xerrors.Errorf("failed to process consensus#elect message: %v", err)
 	}
+
+	c.consensusInstances[data.InstanceID] = &ConsensusInstance{
+		mutex: sync.RWMutex{},
+
+		// Check what is the id, is it important
+		id: data.InstanceID,
+
+		proposed_try: 0,
+		promised_try: -1,
+		accepted_try: -1,
+
+		accepted_value: nil,
+		decided:        false,
+		decision:       nil,
+		proposed_value: nil,
+
+		promises: make([]messagedata.ConsensusPromise, 0),
+		accepts:  make([]messagedata.ConsensusAccept, 0),
+	}
+
+	c.messageStates
 
 	return nil
 }
@@ -308,6 +377,47 @@ func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAcc
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
 	}
+
+	messageState := c.messageStates[data.MessageID]
+	messageState.mutex.Lock()
+	messageState.electAcceptNumber += 1
+
+	electAcceptNumber := messageState.electAcceptNumber
+
+	consensusInstance := c.consensusInstances[data.InstanceID]
+	consensusInstance.mutex.Lock()
+	defer consensusInstance.mutex.Unlock()
+
+	consensusInstance.elect_accept_number += 1
+
+	// Once all Elect_Accept have been received
+	if consensusInstance.elect_accept_number >= c.serverSockets.Number() {
+		if consensusInstance.proposed_try >= consensusInstance.promised_try {
+			consensusInstance.proposed_try += 1
+		} else {
+			consensusInstance.proposed_try = consensusInstance.promised_try + 1
+		}
+
+		newData := messagedata.ConsensusPrepare{
+			Object:     "consensus",
+			Action:     "prepare",
+			InstanceID: data.InstanceID,
+			MessageID:  data.MessageID,
+
+			CreatedAt: time.Now().Unix(),
+
+			Value: messagedata.ValuePrepare{
+				consensusInstance.proposed_try,
+			},
+		}
+		byteMsg, err := json.Marshal(newData)
+		if err != nil {
+			return xerrors.Errorf("failed to marshal new consensus#prepare message: %v", err)
+		}
+
+		return c.publishMessage(byteMsg)
+	}
+
 	return nil
 }
 
@@ -320,6 +430,35 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
 	}
+
+	if _ {
+		consensusInstance := c.consensusInstances[data.InstanceID]
+		if consensusInstance.proposed_try > consensusInstance.promised_try {
+			consensusInstance.promised_try = consensusInstance.proposed_try
+		}
+
+		newData := messagedata.ConsensusPromise{
+			Object:     "consensus",
+			Action:     "prepare",
+			InstanceID: data.InstanceID,
+			MessageID:  data.MessageID,
+
+			CreatedAt: time.Now().Unix(),
+
+			Value: messagedata.ValuePromise{
+				AcceptedTry:   consensusInstance.accepted_try,
+				AcceptedValue: *consensusInstance.accepted_value,
+				PromisedTry:   consensusInstance.promised_try,
+			},
+		}
+		byteMsg, err := json.Marshal(newData)
+		if err != nil {
+			return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+		}
+
+		return c.publishMessage(byteMsg)
+	}
+
 	return nil
 }
 
@@ -332,6 +471,54 @@ func (c *Channel) processConsensusPromise(data messagedata.ConsensusPromise) err
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
 	}
+
+	consensusInstance := c.consensusInstances[data.InstanceID]
+	consensusInstance.mutex.Lock()
+	defer consensusInstance.mutex.Unlock()
+
+	consensusInstance.promises = append(consensusInstance.promises, data)
+
+	if len(consensusInstance.promises) >= c.serverSockets.Number()/2+1 {
+		highestAccepted := int64(-1)
+		for _, promise := range consensusInstance.promises {
+			if promise.Value.AcceptedTry > highestAccepted {
+				highestAccepted = promise.Value.AcceptedTry
+			}
+		}
+
+		newData := messagedata.ConsensusPropose{
+			Object:     "consensus",
+			Action:     "propose",
+			InstanceID: data.InstanceID,
+			MessageID:  data.MessageID,
+
+			CreatedAt: time.Now().Unix(),
+
+			Value: messagedata.ValuePropose{
+				// TODO: check that the value is correct
+				ProposedValue: true,
+			},
+		}
+
+		if highestAccepted == -1 {
+			newData.Value.ProposedTry = consensusInstance.proposed_try
+			byteMsg, err := json.Marshal(newData)
+			if err != nil {
+				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
+			}
+
+			return c.publishMessage(byteMsg)
+		} else {
+			newData.Value.ProposedTry = highestAccepted
+			byteMsg, err := json.Marshal(newData)
+			if err != nil {
+				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
+			}
+
+			return c.publishMessage(byteMsg)
+		}
+	}
+
 	return nil
 }
 
@@ -344,6 +531,34 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
 	}
+
+	consensusInstance := c.consensusInstances[data.InstanceID]
+
+	if consensusInstance.promised_try <= data.Value.ProposedTry {
+		consensusInstance.accepted_try = data.Value.ProposedTry
+		consensusInstance.accepted_value = &data.Value.ProposedValue
+
+		newData := messagedata.ConsensusAccept{
+			Object:     "consensus",
+			Action:     "accept",
+			InstanceID: data.InstanceID,
+			MessageID:  data.MessageID,
+
+			CreatedAt: time.Now().Unix(),
+
+			Value: messagedata.ValueAccept{
+				AcceptedTry:   consensusInstance.accepted_try,
+				AcceptedValue: *consensusInstance.accepted_value,
+			},
+		}
+		byteMsg, err := json.Marshal(newData)
+		if err != nil {
+			return xerrors.Errorf("failed to marshal new consensus#accept message: %v", err)
+		}
+
+		return c.publishMessage(byteMsg)
+	}
+
 	return nil
 }
 
@@ -356,6 +571,39 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
 	}
+
+	consensusInstance := c.consensusInstances[data.InstanceID]
+	consensusInstance.mutex.Lock()
+	defer consensusInstance.mutex.Unlock()
+
+	consensusInstance.accepts = append(consensusInstance.accepts, data)
+
+	if len(consensusInstance.accepts) >= c.serverSockets.Number()/2+1 {
+		if !consensusInstance.decided {
+			consensusInstance.decided = true
+			consensusInstance.decision = consensusInstance.proposed_value
+
+			newData := messagedata.ConsensusLearn{
+				Object:     "consensus",
+				Action:     "learn",
+				InstanceID: data.InstanceID,
+				MessageID:  data.MessageID,
+
+				CreatedAt: time.Now().Unix(),
+
+				Value: messagedata.ValueLearn{
+					Decision: *consensusInstance.decision,
+				},
+			}
+			byteMsg, err := json.Marshal(newData)
+			if err != nil {
+				return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+			}
+
+			return c.publishMessage(byteMsg)
+		}
+	}
+
 	return nil
 }
 
@@ -373,5 +621,17 @@ func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any received message")
 	}
+
+	consensusInstance := c.consensusInstances[data.InstanceID]
+	if !consensusInstance.decided {
+		consensusInstance.decided = true
+		consensusInstance.decision = &data.Value.Decision
+	}
+
 	return nil
+}
+
+// publishMessage send a publish message on the current channel
+func (c *Channel) publishMessage(msg []byte) error {
+
 }
