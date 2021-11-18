@@ -40,6 +40,7 @@ import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.handler.ConsensusHandler;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
@@ -155,7 +156,7 @@ public class ElectionStartFragmentTest {
 
   @Test
   public void displayWithUpdatesIsCorrectAndButtonsProduceCorrectMessages()
-      throws InterruptedException {
+      throws InterruptedException, DataHandlingException {
     fragmentRule
         .getScenario()
         .onFragment(
@@ -206,7 +207,8 @@ public class ElectionStartFragmentTest {
     nodeAssertions(grid, 2, "Waiting\n" + NODE_3_KEY, false);
 
     // Nodes 3 try to start
-    ConsensusHandler.handleConsensusMessage(laoRepository, CONSENSUS_CHANNEL, elect, "m3", NODE_3_KEY);
+    ConsensusHandler.handleConsensusMessage(
+        laoRepository, CONSENSUS_CHANNEL, elect, "m3", NODE_3_KEY);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 2, "Approve Start by\n" + NODE_3_KEY, true);
