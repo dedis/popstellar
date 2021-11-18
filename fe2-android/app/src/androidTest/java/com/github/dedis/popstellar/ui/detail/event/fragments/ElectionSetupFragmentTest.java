@@ -29,14 +29,26 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ElectionSetupFragmentTest {
 
-  private final int YEAR = 2022;
-  private final int MONTH_OF_YEAR = 10;
-  private final int DAY_OF_MONTH = 10;
-  private final String DATE = "" + DAY_OF_MONTH + "/" + MONTH_OF_YEAR + "/" + YEAR;
+  private static final int YEAR;
+  private static final int MONTH_OF_YEAR;
+  private static final int DAY_OF_MONTH;
+  private static final String DATE;
 
-  private final int HOURS = 12;
-  private final int MINUTES = 15;
-  private final String TIME = "" + HOURS + ":" + MINUTES;
+  private static final int HOURS = 12;
+  private static final int MINUTES = 15;
+  private static final String TIME = "" + HOURS + ":" + MINUTES;
+
+  static {
+    // Make sure the date is always in the future
+    Calendar today = Calendar.getInstance();
+    today.add(Calendar.MONTH, 13);
+
+    YEAR = today.get(Calendar.YEAR);
+    MONTH_OF_YEAR = today.get(Calendar.MONTH);
+    DAY_OF_MONTH = today.get(Calendar.DAY_OF_MONTH);
+
+    DATE = DAY_OF_MONTH + "/" + MONTH_OF_YEAR + "/" + YEAR;
+  }
 
   @Rule
   public final FragmentScenarioRule<ElectionSetupFragment> fragmentRule =
