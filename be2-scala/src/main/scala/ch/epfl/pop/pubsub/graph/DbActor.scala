@@ -12,7 +12,7 @@ import ch.epfl.pop.model.network.method.message.data.dataObject._
 import ch.epfl.pop.model.objects.{Channel, Hash, Signature}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
-import org.iq80.leveldb.{DB, DBIterator, Options}
+import org.iq80.leveldb.{DB, DBIterator, Options, WriteBatch}
 
 import scala.collection.mutable
 import scala.concurrent.{Await, Future}
@@ -235,15 +235,18 @@ object DbActor extends AskPatternConstants {
 
     //may return null if the extractLaoId fails
     private def generateLaoDataKey(channel: Channel): String = {
-      /*channel.decodeSubChannel match {
-        case Some(data) => new String(data, StandardCharsets.UTF_8) + "/data"
-        case None =>
-          log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
-          null
-      }*/
-      
       channel.extractLaoId + "/data"
-      
+    }
+
+    private def writeBatch(channel: Channel, messageId: Hash, batch: WriteBatch): DbActorMessage = {
+      Try(db.write(batch)) match {
+        case Success(_) =>
+          log.info(s"Actor $self (db) wrote batch and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
+          DbActorWriteAck()
+        case Failure(exception) =>
+          log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and batch on channel '$channel' because of the batch write")
+          DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+      }
     }
 
     // only for the messages
@@ -262,14 +265,7 @@ object DbActor extends AskPatternConstants {
                   batch.put(channel.toString.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
                   batch.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)
                   //allows writing all data atomically
-                  Try(db.write(batch)) match {
-                    case Success(_) =>
-                      log.info(s"Actor $self (db) wrote object 'objectId' and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
-                      DbActorWriteAck()
-                    case Failure(exception) =>
-                      log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object " + ChannelData.getName + s" on channel '$channel' because of the batch write")
-                      DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
-                  }      
+                  writeBatch(channel, messageId, batch)   
                 }
                 case Failure(exception) =>
                   log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object " + ChannelData.getName + s" on channel '$channel' because of a batch creation")
@@ -311,14 +307,7 @@ object DbActor extends AskPatternConstants {
                     batch.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)
                     batch.put(channel.toString.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
                     //allows writing all data atomically
-                    Try(db.write(batch)) match {
-                      case Success(_) =>
-                        log.info(s"Actor $self (db) wrote objects " + ChannelData.getName + " and " + LaoData.getName + s" and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
-                        DbActorWriteAck()
-                      case Failure(exception) =>
-                        log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and objects " + ChannelData.getName + " and " + LaoData.getName + s" on channel '$channel' because of write batch")
-                        DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
-                    }
+                    writeBatch(channel, messageId, batch)
                   }
                   case Failure(exception) =>
                     log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and objects " + ChannelData.getName + " and " + LaoData.getName + s" on channel '$channel' because of batch creation")
