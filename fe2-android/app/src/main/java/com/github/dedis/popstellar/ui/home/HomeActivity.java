@@ -220,7 +220,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
     return new ViewModelProvider(activity, factory).get(HomeViewModel.class);
   }
 

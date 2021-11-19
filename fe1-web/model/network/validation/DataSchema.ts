@@ -12,6 +12,7 @@ import dataCastVote from 'protocol/query/method/message/data/dataCastVote.json';
 import dataEndElection from 'protocol/query/method/message/data/dataEndElection.json';
 import dataResultElection from 'protocol/query/method/message/data/dataResultElection.json';
 import dataAddChirp from 'protocol/query/method/message/data/dataAddChirp.json';
+import dataAddChirpBroadcast from 'protocol/query/method/message/data/dataAddChirpBroadcast.json';
 
 const dataSchemas = [
   dataCreateLao,
@@ -33,6 +34,7 @@ const dataSchemas = [
   dataWitnessMessage,
 
   dataAddChirp,
+  dataAddChirpBroadcast,
 ];
 
 export default dataSchemas;

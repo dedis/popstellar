@@ -7,7 +7,6 @@ import {
 import { Views } from 'styles';
 import STRINGS from 'res/strings';
 import stylesContainer from 'styles/stylesheets/container';
-import { white } from 'styles/colors';
 
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
@@ -25,15 +24,6 @@ const styleEvents = StyleSheet.create({
     ...Views.base,
     flexDirection: 'column',
     zIndex: 3,
-  } as ViewStyle,
-  modalView: {
-    ...Views.base,
-    backgroundColor: white,
-    borderRadius: 10,
-    borderWidth: 1,
-    margin: 'auto',
-    height: 200,
-    width: 600,
   } as ViewStyle,
 });
 
