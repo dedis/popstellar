@@ -347,7 +347,7 @@ public class LAORepository {
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       return Keys.getEncodedKey(publicKeysetHandle);
-    } catch (GeneralSecurityException | IOException e) {
+    } catch (Exception e) {
       Log.e(TAG, "failed to retrieve public key", e);
       return null;
     }
