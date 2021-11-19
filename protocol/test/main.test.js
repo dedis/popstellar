@@ -163,13 +163,13 @@ test("message data: chirp", () => {
 })
 
 test("message data: consensus", () => {
-    elect = require("../examples/messageData/elect.json");
+    elect = require("../examples/messageData/consensus_elect/elect.json");
     expect(elect).toBeValid(messageDataSchema)
 
-    elect_accept = require("../examples/messageData/elect_accept.json");
+    elect_accept = require("../examples/messageData/consensus_elect_accept/elect_accept.json");
     expect(elect_accept).toBeValid(messageDataSchema)
 
-    learn = require("../examples/messageData/learn.json");
+    learn = require("../examples/messageData/consensus_learn/learn.json");
     expect(learn).toBeValid(messageDataSchema)
 })
 
