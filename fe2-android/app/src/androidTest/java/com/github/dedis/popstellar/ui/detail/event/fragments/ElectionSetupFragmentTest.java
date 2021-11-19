@@ -29,6 +29,9 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class ElectionSetupFragmentTest {
 
+  private static final String DATE_FORMAT = "%02d/%02d/%02d";
+  private static final String TIME_FORMAT = "%02d:%02d";
+
   private static final int YEAR;
   private static final int MONTH_OF_YEAR;
   private static final int DAY_OF_MONTH;
@@ -36,7 +39,7 @@ public class ElectionSetupFragmentTest {
 
   private static final int HOURS = 12;
   private static final int MINUTES = 15;
-  private static final String TIME = "" + HOURS + ":" + MINUTES;
+  private static final String TIME = String.format(TIME_FORMAT, HOURS, MINUTES);
 
   static {
     // Make sure the date is always in the future
@@ -44,10 +47,10 @@ public class ElectionSetupFragmentTest {
     today.add(Calendar.MONTH, 13);
 
     YEAR = today.get(Calendar.YEAR);
-    MONTH_OF_YEAR = today.get(Calendar.MONTH);
+    MONTH_OF_YEAR = today.get(Calendar.MONTH) + 1;
     DAY_OF_MONTH = today.get(Calendar.DAY_OF_MONTH);
 
-    DATE = DAY_OF_MONTH + "/" + MONTH_OF_YEAR + "/" + YEAR;
+    DATE = String.format(DATE_FORMAT, DAY_OF_MONTH, MONTH_OF_YEAR, YEAR);
   }
 
   @Rule
@@ -82,12 +85,11 @@ public class ElectionSetupFragmentTest {
     int year = currentCalendar.get(Calendar.YEAR);
     int month = currentCalendar.get(Calendar.MONTH) + 1;
     int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
-    final String DATE =
-        (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
+    final String date = String.format(DATE_FORMAT, day, month, year);
 
     startDateView().perform(click());
     pickerAcceptButton().perform(click());
-    startDateView().check(matches(withText(DATE)));
+    startDateView().check(matches(withText(date)));
   }
 
   @Test
@@ -227,6 +229,6 @@ public class ElectionSetupFragmentTest {
     endTimeView().perform(click());
     timePicker().perform(PickerActions.setTime(HOURS + 1, MINUTES));
     pickerAcceptButton().perform(click());
-    endTimeView().check(matches(withText("" + (HOURS + 1) + ":" + MINUTES)));
+    endTimeView().check(matches(withText(String.format(TIME_FORMAT, HOURS + 1, MINUTES))));
   }
 }
