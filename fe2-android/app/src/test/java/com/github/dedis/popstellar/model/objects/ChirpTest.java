@@ -38,7 +38,11 @@ public class ChirpTest {
     assertEquals(text, chirp.getText());
 
     String textTooLong =
-        "This text should be way over three hundred characters which is the current limit of the text within a chirp, and if I try to set the chirp's text to this, it  should throw and IllegalArgumentException() so I hope it does otherwise I might have screwed something up. But normally it is not that hard to write enough to reach the threshold.";
+        "This text should be way over three hundred characters which is the current limit of the"
+            + " text within a chirp, and if I try to set the chirp's text to this, it  should"
+            + " throw and IllegalArgumentException() so I hope it does otherwise I might have"
+            + " screwed something up. But normally it is not that hard to write enough to reach"
+            + " the threshold.";
     assertThrows(IllegalArgumentException.class, () -> chirp.setText(textTooLong));
   }
 
