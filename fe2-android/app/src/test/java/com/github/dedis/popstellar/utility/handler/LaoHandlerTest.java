@@ -22,8 +22,10 @@ import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
+import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 
 import org.junit.After;
 import org.junit.Before;
@@ -88,6 +90,11 @@ public class LaoHandlerTest {
 
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+
+    Ed25519PrivateKeyManager.registerPair(true);
+    KeysetHandle keysetHandle =
+        KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
+    Mockito.when(androidKeysetManager.getKeysetHandle()).thenReturn(keysetHandle);
 
     laoRepository =
         LAORepository.getInstance(
