@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.detail.event.pickers;
 import static com.github.dedis.popstellar.pages.detail.event.pickers.DatePickerPageObject.getBundleResponseKey;
 import static com.github.dedis.popstellar.pages.detail.event.pickers.DatePickerPageObject.getRequestKey;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import android.widget.DatePicker;
 
@@ -38,7 +37,8 @@ public class DatePickerFragmentTest {
 
     fragmentRule
         .getScenario()
-        .onFragment(f -> f.onDateSet(mock(DatePicker.class), YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
+        .onFragment(
+            f -> f.onDateSet(new DatePicker(f.getContext()), YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
 
     Calendar response = receiver.get(500);
     assertEquals(YEAR, response.get(Calendar.YEAR));

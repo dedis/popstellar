@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.detail.event.pickers;
 import static com.github.dedis.popstellar.pages.detail.event.pickers.TimePickerPageObject.getBundleResponseKey;
 import static com.github.dedis.popstellar.pages.detail.event.pickers.TimePickerPageObject.getRequestKey;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 
 import android.widget.TimePicker;
 
@@ -35,7 +34,9 @@ public class TimePickerFragmentTest {
         ResultReceiver.createFakeListener(
             fragmentRule.getScenario(), getRequestKey(), getBundleResponseKey());
 
-    fragmentRule.getScenario().onFragment(f -> f.onTimeSet(mock(TimePicker.class), HOURS, MINUTES));
+    fragmentRule
+        .getScenario()
+        .onFragment(f -> f.onTimeSet(new TimePicker(f.getContext()), HOURS, MINUTES));
 
     Calendar response = receiver.get(500);
     assertEquals(HOURS, response.get(Calendar.HOUR_OF_DAY));
