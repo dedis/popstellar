@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
 /** Class modeling a Chirp */
 public class Chirp {
 
@@ -25,7 +27,7 @@ public class Chirp {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(@NonNull String id) {
     this.id = id;
   }
 
@@ -33,7 +35,7 @@ public class Chirp {
     return channel;
   }
 
-  public void setChannel(String channel) {
+  public void setChannel(@NonNull String channel) {
     this.channel = channel;
   }
 
