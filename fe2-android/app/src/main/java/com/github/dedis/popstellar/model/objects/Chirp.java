@@ -5,13 +5,15 @@ import androidx.annotation.NonNull;
 /** Class modeling a Chirp */
 public class Chirp {
 
+  private static final int MAX_CHIRP_CHARS = 300;
+
   private String id;
   private String channel;
 
   private String sender;
   private String text;
-  private Long timestamp;
-  private Integer likes;
+  private long timestamp;
+  private int likes;
   private String parentId;
 
   public Chirp(String id) {
@@ -52,10 +54,13 @@ public class Chirp {
   }
 
   public void setText(String text) {
+    if (text.length() > MAX_CHIRP_CHARS) {
+      throw new IllegalArgumentException("the text exceed the maximum numbers of characters");
+    }
     this.text = text;
   }
 
-  public Long getTimestamp() {
+  public long getTimestamp() {
     return timestamp;
   }
 
@@ -63,7 +68,7 @@ public class Chirp {
     this.timestamp = timestamp;
   }
 
-  public Integer getLikes() {
+  public int getLikes() {
     return likes;
   }
 
