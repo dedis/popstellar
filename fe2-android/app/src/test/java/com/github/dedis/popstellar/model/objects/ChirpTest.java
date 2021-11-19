@@ -11,6 +11,16 @@ public class ChirpTest {
   private static final Chirp chirp = new Chirp(id);
 
   @Test
+  public void createChirpWithNullId() {
+    assertThrows(IllegalArgumentException.class, () -> new Chirp(null));
+  }
+
+  @Test
+  public void createChirpWithEmptyId() {
+    assertThrows(IllegalArgumentException.class, () -> new Chirp(""));
+  }
+
+  @Test
   public void setAndGetIdTest() {
     String newId = "newMessageId";
     chirp.setId(newId);
