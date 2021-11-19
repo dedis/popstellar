@@ -82,6 +82,11 @@ public final class LaoHandler {
     lao.setOrganizer(createLao.getOrganizer());
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
+
+    String publicKey = laoRepository.getPublicKey();
+    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
+      laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
+    }
   }
 
   /**
