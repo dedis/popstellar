@@ -267,10 +267,6 @@ public class LAORepository {
   }
 
   public Single<Answer> sendSubscribe(String channel) {
-    if (subscribedChannels.contains(channel)) {
-      return Single.error(new IllegalStateException("Already subscribed to " + channel));
-    }
-
     Log.d(TAG, "sending a subscribe to the channel " + channel);
     int id = mRemoteDataSource.incrementAndGetRequestId();
     Subscribe subscribe = new Subscribe(channel, id);
