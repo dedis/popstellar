@@ -2,8 +2,8 @@ function fn() {
   var env = karate.env; // get system property 'karate.env'
   karate.log('karate.env system property was:', env);
   if (!env) {
-    env = 'scala';
-    //env = 'go'
+    //env = 'scala';
+    env = 'go'
   }
   karate.log('karate.env system property is set to', env);
   var config = {
@@ -16,7 +16,7 @@ function fn() {
     timeout: 5000, //Timeout for websocket responce
     serverCmd: 'Command to launch the server', // Cmd to launch the server
     serverDIR: 'Path to server source directory',
-    timeToLaunch: 5, // Time to wait for server startup in seconds
+    logPath: 'path/to/log/output/file',
     args: [],
   }
   if (env == 'go') {
@@ -27,8 +27,9 @@ function fn() {
      config.path = 'organizer/client';
      config.wsUrl = `ws://${config.host}:${config.port}/${config.path}`;
      //Directory to launch the server from
-     config.serverDIR = '/mnt/c/Users/Mohamed/GolandProjects/student_21_pop/be1-go' ;
-     config.serverCmd = `make pop; ./pop organizer --pk ${pk} serve`;
+     config.serverDIR = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be1-go' ;
+     config.serverCmd = ['bash', '-c', `./pop organizer --pk ${config.pk} serve`];
+     config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\create.log';
       
   
   } else if (env == 'scala') {
@@ -37,10 +38,10 @@ function fn() {
     config.port= 8000;
     config.path= '';
     config.wsUrl= `ws://${config.host}:${config.port}/${config.path}`;
-    config.serverDIR = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be2-scala\\';
-    var pathConfig = config.serverDIR + 'src\\main\\scala\\ch\\epfl\\pop\\config';
-    config.serverCmd = `sbt -Dscala.config=${pathConfig} run`;
-    config.timeToLaunch = 38
+    config.serverDIR = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be2-scala';
+    var pathConfig = `${config.serverDIR}\\src\\main\\scala\\ch\\epfl\\pop\\config`;
+    config.serverCmd = ['sbt.bat', `-Dscala.config=${pathConfig}`, 'run'];
+    config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\create.log';
   
   }
   return config;

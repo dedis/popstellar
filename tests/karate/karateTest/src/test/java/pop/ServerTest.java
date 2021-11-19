@@ -7,6 +7,7 @@ public class ServerTest {
     // see https://github.com/intuit/karate#naming-conventions   
     @Karate.Test
     Karate testAll() {
+
         return Karate.run().relativeTo(getClass());
     } 
 }
