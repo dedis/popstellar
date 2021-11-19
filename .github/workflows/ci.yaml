@@ -128,8 +128,8 @@ jobs:
           ${{ runner.os }}-go-
           
     - name: Format
+      if: ${{ matrix.platform == 'ubuntu-latest' }}
       run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then exit 1; fi
-      if: matrix.os == 'ubuntu-latest'
 
     - name: Run check target
       run: |
