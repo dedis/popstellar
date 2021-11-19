@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class WalletFragmentTest {
 
+  // TODO: update those tests: needs to be simplified and readable
   @Rule
   public ActivityScenarioRule<HomeActivity> mActivityTestRule =
       new ActivityScenarioRule<>(HomeActivity.class);

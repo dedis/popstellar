@@ -139,7 +139,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void subscribeToGeneralChannel(String laoId) {
     Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/chirps");
 
-    String channel = "/root/" + laoId + "/social";
+    String channel = "/root/" + laoId + "/social/chirps";
 
     Disposable disposable =
         mLaoRepository
