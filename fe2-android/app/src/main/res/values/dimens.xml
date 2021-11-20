@@ -4,9 +4,10 @@
   <!-- Tabs -->
   <dimen name="guideline_horizontal_tab">0.08</dimen>
   <dimen name="guideline_horizontal_bottom">0.92</dimen>
-  <dimen name="guideline_vertical_tab_home">0.25</dimen>
-  <dimen name="guideline_vertical_tab_connect">0.50</dimen>
-  <dimen name="guideline_vertical_tab_wallet">0.75</dimen>
+  <dimen name="guideline_vertical_tab_home">0.20</dimen>
+  <dimen name="guideline_vertical_tab_connect">0.40</dimen>
+  <dimen name="guideline_vertical_tab_wallet">0.60</dimen>
+  <dimen name="guideline_vertical_tab_social_media">0.80</dimen>
 
   <!-- Text -->
   <dimen name="margin_text">32dp</dimen>
@@ -19,6 +20,8 @@
   <dimen name="lao_name">36sp</dimen>
   <dimen name="event_displayed_name">15sp</dimen>
   <dimen name="date_text_event">15sp</dimen>
+  <dimen name="size_for_longer_text">10sp</dimen>
+  <dimen name="rounded_edit_text">10dp</dimen>
 
   <!-- Camera preview -->
   <integer name="camera_preview_width">240</integer>
@@ -35,6 +38,8 @@
 
   <!-- Button -->
   <dimen name="margin_button">16dp</dimen>
+  <dimen name="round_button_size">55dp</dimen>
+  <dimen name="rounded_corner_size">10dp</dimen>
 
   <!-- QR code -->
   <dimen name="qr_code_size">200dp</dimen>
@@ -83,5 +88,8 @@
   <dimen name="wallet_sk_width">350dp</dimen>
   <dimen name="wallet_pk_width">200dp</dimen>
   <dimen name="wallet_qr_token_size">130dp</dimen>
+
+  <!-- Social Media dimensions -->
+  <dimen name="min_height_entry_box_chirp">245dp</dimen>
 
 </resources>

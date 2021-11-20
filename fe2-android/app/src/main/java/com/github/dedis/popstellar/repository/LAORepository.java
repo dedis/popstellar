@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.model.network.method.Publish;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
 import com.github.dedis.popstellar.model.network.method.Unsubscribe;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
@@ -288,6 +289,9 @@ public class LAORepository {
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(unsubscribe);
+
+    subscribedChannels.remove(channel);
+
     return answer;
   }
 
@@ -310,6 +314,43 @@ public class LAORepository {
         .firstOrError()
         .subscribeOn(schedulerProvider.io())
         .cache();
+  }
+
+  /**
+   * Publish a MessageGeneral containing the given data.
+   *
+   * @param channel the channel on which the message will be send
+   * @param data the data to encapsulate in the message
+   */
+  public Single<Answer> sendMessageGeneral(String channel, Data data) {
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, data, signer, mGson);
+
+      return sendPublish(channel, msg);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.e(TAG, "failed to retrieve public key");
+      return Single.error(e);
+    }
+  }
+
+  /**
+   * Returns the public key or null if an error occurred.
+   *
+   * @return the public key
+   */
+  public String getPublicKey() {
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      return Keys.getEncodedKey(publicKeysetHandle);
+    } catch (Exception e) {
+      Log.e(TAG, "failed to retrieve public key", e);
+      return null;
+    }
   }
 
   /**

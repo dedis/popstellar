@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -893,6 +894,11 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public Lao getCurrentLaoValue() {
     return mCurrentLao.getValue();
+  }
+
+  @VisibleForTesting
+  public void setCurrentLao(Lao lao) {
+    mCurrentLao.setValue(lao);
   }
 
   public LiveData<String> getCurrentLaoName() {

@@ -1,0 +1,14 @@
+<!--Configuration for ch.qos.logback-->
+<!--Set debug to true to show debug logs on STDOUT-->
+<configuration debug="false" scan="true" scanPeriod="15 seconds">
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
+
+<!--Set root(general) logs level to INFO/DEBUG on STDOUT-->
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </root>
+</configuration>

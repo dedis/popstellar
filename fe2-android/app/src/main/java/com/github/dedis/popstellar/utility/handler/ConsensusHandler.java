@@ -10,9 +10,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
+import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
+import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -32,34 +35,39 @@ public final class ConsensusHandler {
    * @param data the data of the message that was received
    * @param messageId the ID of the message that was received
    * @param senderPk the public key of the sender of this message
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleConsensusMessage(
-      LAORepository laoRepository, String channel, Data data, String messageId, String senderPk) {
+  public static void handleConsensusMessage(
+      LAORepository laoRepository, String channel, Data data, String messageId, String senderPk)
+      throws DataHandlingException {
     Log.d(TAG, "handle Consensus message");
 
-    switch (Objects.requireNonNull(Action.find(data.getAction()))) {
+    Action action = Action.find(data.getAction());
+    if (action == null) throw new UnknownDataActionException(data);
+
+    switch (action) {
       case ELECT:
-        return handleConsensusElect(
-            laoRepository, channel, (ConsensusElect) data, messageId, senderPk);
+        handleConsensusElect(laoRepository, channel, (ConsensusElect) data, messageId, senderPk);
+        break;
       case ELECT_ACCEPT:
-        return handleConsensusElectAccept(
+        handleConsensusElectAccept(
             laoRepository, channel, (ConsensusElectAccept) data, messageId, senderPk);
-      case LEARN:
-        return handleConsensusLearn(laoRepository, channel, (ConsensusLearn) data);
+        break;
       case PREPARE:
       case PROMISE:
       case PROPOSE:
       case ACCEPT:
         Log.w(TAG, "Received a consensus message only for backend with action=" + data.getAction());
-        return false;
+        break;
+      case LEARN:
+        handleConsensusLearn(laoRepository, channel, (ConsensusLearn) data);
+        break;
       default:
         Log.w(TAG, "Invalid action for a consensus object : " + data.getAction());
-        return true;
+        throw new UnhandledDataTypeException(data, action.getAction());
     }
   }
 
-  public static boolean handleConsensusElect(
+  public static void handleConsensusElect(
       LAORepository laoRepository,
       String channel,
       ConsensusElect consensusElect,
@@ -79,21 +87,21 @@ public final class ConsensusHandler {
     consensus.setNodes(nodes);
 
     lao.updateConsensus(consensus);
-
-    return false;
   }
 
-  public static boolean handleConsensusElectAccept(
+  public static void handleConsensusElectAccept(
       LAORepository laoRepository,
       String channel,
       ConsensusElectAccept consensusElectAccept,
       String messageId,
-      String senderPk) {
+      String senderPk)
+      throws DataHandlingException {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusElectAccept.getMessageId());
     if (!consensusOpt.isPresent()) {
       Log.w(TAG, "elect-accept for invalid messageId : " + consensusElectAccept.getMessageId());
-      return true;
+      throw new InvalidMessageIdException(
+          consensusElectAccept, consensusElectAccept.getMessageId());
     }
 
     Consensus consensus = consensusOpt.get();
@@ -102,26 +110,22 @@ public final class ConsensusHandler {
     }
 
     lao.updateConsensus(consensus);
-
-    return false;
   }
 
-  public static boolean handleConsensusLearn(
-      LAORepository laoRepository, String channel, ConsensusLearn consensusLearn) {
+  public static void handleConsensusLearn(
+      LAORepository laoRepository, String channel, ConsensusLearn consensusLearn)
+      throws DataHandlingException {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusLearn.getMessageId());
 
     if (!consensusOpt.isPresent()) {
       Log.w(TAG, "learn for invalid messageId : " + consensusLearn.getMessageId());
-      return true;
+      throw new InvalidMessageIdException(consensusLearn, consensusLearn.getMessageId());
     }
 
     Consensus consensus = consensusOpt.get();
 
     consensus.setAccepted(true);
-
     lao.updateConsensus(consensus);
-
-    return false;
   }
 }

@@ -44,7 +44,7 @@ public class ElectionStartFragment extends Fragment {
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
 
   private final SimpleDateFormat dateFormat =
-      new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.ENGLISH);
+      new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.getDefault());
 
   private final CompositeDisposable disposables = new CompositeDisposable();
   private ConsensusNode ownNode;
@@ -77,6 +77,10 @@ public class ElectionStartFragment extends Fragment {
     LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     Election election = mLaoDetailViewModel.getCurrentElection();
+    if (election == null) {
+      Log.e(TAG, "The current election of the LaoDetailViewModel is null");
+      return null;
+    }
 
     String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
     String electionId = election.getId();
@@ -117,7 +121,7 @@ public class ElectionStartFragment extends Fragment {
               }
             });
 
-    binding.setLifecycleOwner(getActivity());
+    binding.setLifecycleOwner(getViewLifecycleOwner());
 
     return binding.getRoot();
   }

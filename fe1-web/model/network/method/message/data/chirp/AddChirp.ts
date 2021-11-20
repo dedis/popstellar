@@ -6,15 +6,19 @@ import { checkTimestampStaleness } from '../Checker';
 
 const MAX_CHIRP_CHARS = 300;
 
+/** Data sent to add a chirp */
 export class AddChirp implements MessageData {
   public readonly object: ObjectType = ObjectType.CHIRP;
 
   public readonly action: ActionType = ActionType.ADD;
 
+  // The text of the chirp
   public readonly text: string;
 
+  // The parent ID of the chirp (if it is a reply)
   public readonly parent_id?: Hash;
 
+  // The timestamp at which the chirp is posted
   public readonly timestamp: Timestamp;
 
   constructor(msg: Partial<AddChirp>) {
@@ -37,6 +41,10 @@ export class AddChirp implements MessageData {
     }
   }
 
+  /**
+   * Creates an AddChirp object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): AddChirp {
     const { errors } = validateDataObject(ObjectType.CHIRP, ActionType.ADD, obj);
 
