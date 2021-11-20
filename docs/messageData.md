@@ -17,6 +17,11 @@
   - [Opening a Roll-Call (roll_call#open)](#opening-a-roll-call-roll_callopen)
   - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
+  - [Elections (introduction)](#elections-introduction)
+  - [Setting up an Election (election#setup)](#setting-up-an-election-electionsetup)
+  - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
+  - [Ending an Election (election#end)](#ending-an-election-electionend)
+  - [Sending the results of an Election (election#result)](#sending-the-results-of-an-election-electionresult)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -47,6 +52,10 @@ Here are the existing `Message data`, identified by their unique
 * roll_call#open
 * roll_call#close
 * roll_call#reopen
+* election#setup
+* election#cast_vote
+* election#end
+* election#result
 
 ## Creating a LAO (lao#create)
 
@@ -71,11 +80,11 @@ broadcast”).
 {
     "object": "lao",
     "action": "create",
-    "id": "XXX",
-    "name": "XXX",
-    "creation": 1234,
-    "organizer": "XXX",
-    "witnesses": ["XXX"]
+    "id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "name": "LAO",
+    "creation": 1633098234,
+    "organizer": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "witnesses": []
 }
 
 ```
@@ -101,7 +110,7 @@ broadcast”).
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256(organizer||creation||name)"
+            "$comment": "Hash : HashLen(organizer, creation, name)"
         },
         "name": {
             "type": "string"
@@ -168,10 +177,10 @@ all witnesses and clients (see “LAO state broadcast”).
 {
     "object": "lao",
     "action": "update_properties",
-    "id": "XXX",
-    "name": "XXX",
-    "last_modified": 123,
-    "witnesses": ["XXX"]
+    "id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "name": "LAO",
+    "last_modified": 1633099140,
+    "witnesses": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="]
 }
 
 ```
@@ -196,7 +205,7 @@ all witnesses and clients (see “LAO state broadcast”).
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256(organizer||creation||name)"
+            "$comment": "Hash : HashLen(organizer, creation, name)"
         },
         "name": {
             "type": "string"
@@ -253,16 +262,16 @@ the required number of witness signatures.
 {
     "object": "lao",
     "action": "state",
-    "id": "XXX",
-    "name": "XXX",
-    "creation": 123,
-    "last_modified": 123,
-    "organizer": "XXX",
-    "witnesses": ["XXX"],
-    "modification_id": "XXX",
+    "id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "name": "LAO",
+    "creation": 1633098234,
+    "last_modified": 1633099140,
+    "organizer": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+    "witnesses": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="],
+    "modification_id": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "modification_signatures": [
         {
-            "witness": "XXX",
+            "witness": "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=",
             "signature": "XXX"
         }
     ]
@@ -290,7 +299,7 @@ the required number of witness signatures.
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256(organizer||creation||name)"
+            "$comment": "Hash : HashLen(organizer, creation, name)"
         },
         "name": {
             "type": "string"
@@ -388,8 +397,8 @@ populated with all the witness signatures received by the server.
 {
     "object": "message",
     "action": "witness",
-    "message_id": "XXX",
-    "signature": "XXX"
+    "message_id": "kAG_m4nEQXkguuO_LVphXFE_c_dPoQrHNsb0MvwhXTA=",
+    "signature": "Lgax5s25xVVF-6j5KNPE85oP3RyUtRZR0OSD5nNH34YT1DzlOFixmYyIcB5wZKjuKJ_nB3YkNwVGW5z96LC7Bw=="
 }
 
 ```
@@ -458,13 +467,12 @@ is expected to broadcast the Meeting state to all witnesses and clients (see
 {
     "object": "meeting",
     "action": "create",
-    "id": "XXX",
-    "name": "XXX",
-    "creation": 123,
-    "location": "XXX",
-    "start": 123,
-    "end": 123,
-    "extra": { "anything": "XXX" }
+    "id": "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=",
+    "name": "Meeting",
+    "creation": 1633098331,
+    "location": "EPFL",
+    "start": 1633098900,
+    "end": 1633102500
 }
 
 ```
@@ -489,7 +497,7 @@ is expected to broadcast the Meeting state to all witnesses and clients (see
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('M'||lao_id||creation||name)"
+            "$comment": "Hash : HashLen('M', lao_id, creation, name)"
         },
         "name": {
             "type": "string"
@@ -551,20 +559,17 @@ expected to publish the meeting/state message to the LAO’s main channel (LAO's
 {
     "object": "meeting",
     "action": "state",
-    "id": "XXX",
-    "name": "XXX",
-    "creation": 123,
-    "last_modified": 123,
-    "location": "XXX",
-    "start": 123,
-    "end": 123,
-    "extra": {
-        "anything": "XXX"
-    },
-    "modification_id": "XXX",
+    "id": "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=",
+    "name": "Meeting",
+    "creation": 1633098331,
+    "last_modified": 1633098340,
+    "location": "EPFL",
+    "start": 1633098900,
+    "end": 1633102500,
+    "modification_id": "wY29dWimwUQa0EWerQ7bNsRddlYtHBgJiEL8ZHnzjv8=",
     "modification_signatures": [
         {
-            "witness": "XXX",
+            "witness": "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=",
             "signature": "XXX"
         }
     ]
@@ -592,7 +597,7 @@ expected to publish the meeting/state message to the LAO’s main channel (LAO's
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('M'||lao_id||creation||name)"
+            "$comment": "Hash : HashLen('M', lao_id, creation, name)"
         },
         "name": {
             "type": "string"
@@ -712,13 +717,13 @@ ensuring that each attendee is scanned exactly once.
 {
     "object": "roll_call",
     "action": "create",
-    "id": "XXX",
-    "name": "XXX",
-    "creation": 123,
-    "proposed_start": 123,
-    "proposed_end": 123,
-    "location": "XXX",
-    "description": "XXX"
+    "id": "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=",
+    "name": "Roll Call ",
+    "creation": 1633098853,
+    "proposed_start": 1633099125,
+    "proposed_end": 1633099140,
+    "location": "EPFL",
+    "description": "Food is welcome!"
 }
 
 ```
@@ -743,7 +748,7 @@ ensuring that each attendee is scanned exactly once.
         "id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('R'||lao_id||creation||name)"
+            "$comment": "Hash : HashLen('R', lao_id, creation, name)"
         },
         "name": {
             "type": "string"
@@ -809,9 +814,9 @@ message on the LAO channel.
 {
     "object": "roll_call",
     "action": "open",
-    "update_id": "XXX",
-    "opens": "XXX",
-    "opened_at": 123
+    "update_id": "krCHh6OFWIjSHQiUSrWyx1FV0Jp8deC3zUyelhPG-Yk=",
+    "opens": "fEvAfdtNrykd9NPYl9ReHLX-6IP6SFLKTZJLeGUHZ_U=",
+    "opened_at": 1633099127
 }
 
 ```
@@ -836,7 +841,7 @@ message on the LAO channel.
         "update_id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('R'||lao_id||opens||opened_at)"
+            "$comment": "Hash : HashLen('R', lao_id, opens, opened_at)"
         },
         "opens": {
             "type": "string",
@@ -882,10 +887,10 @@ the organizer after scanning all attendees’ public key.
 {
     "object": "roll_call",
     "action": "close",
-    "update_id": "XXX",
-    "closes": "XXX",
-    "closed_at": 123,
-    "attendees": ["XXX"]
+    "update_id": "WxoPg4wLpmog0Q5eQewQ5AAD19RW-8-6aSZ2mGIJRO8=",
+    "closes": "krCHh6OFWIjSHQiUSrWyx1FV0Jp8deC3zUyelhPG-Yk=",
+    "closed_at": 1633099135,
+    "attendees": ["M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="]
 }
 
 ```
@@ -910,7 +915,7 @@ the organizer after scanning all attendees’ public key.
         "update_id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('R'||lao_id||closes||closed_at)"
+            "$comment": "Hash : HashLen('R', lao_id, closes, closed_at)"
         },
         "closes": {
             "type": "string",
@@ -972,9 +977,9 @@ the organizer forgets to scan an attendee’s public key.
 {
     "object": "roll_call",
     "action": "reopen",
-    "update_id": "XXX",
-    "opens": "XXX",
-    "opened_at": 123
+    "update_id": "sgMsQ4EPPwKbHw3TsiCwkyH1JvilxPn0Y9iTEcbNMl4=",
+    "opens": "WxoPg4wLpmog0Q5eQewQ5AAD19RW-8-6aSZ2mGIJRO8=",
+    "opened_at": 1633099137
 }
 
 ```
@@ -999,7 +1004,7 @@ the organizer forgets to scan an attendee’s public key.
         "update_id": {
             "type": "string",
             "contentEncoding": "base64",
-            "$comment": "Hash : SHA256('R'||lao_id||opens||opened_at)"
+            "$comment": "Hash : HashLen('R', lao_id, opens, opened_at)"
         },
         "opens": {
             "type": "string",
@@ -1022,6 +1027,499 @@ the organizer forgets to scan an attendee’s public key.
         "closed roll call in case of a human error (forgot to scan a QR Code). A roll_call/reopen attested by",
         "witnesses would cause a transition from closed -> opened state"
     ]
+}
+
+```
+
+## Elections (introduction)
+
+An election has the following phases:
+
+Setup → Cast vote(s) → End → Result
+
+**Setup**: This phase consists of the organizer creating a new election.
+**Cast vote(s)**: This phase consists of the members of the LAO casting a vote.  
+**End**: This phase consists of the organizer ending the election. No new votes are accepted from now on.
+**Result**: This phase consists of the organizer determining the outcome of the election and retrieving the **witness* signatures on it.
+
+## Setting up an Election (election#setup)
+
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*election#setup*)
+
+By sending the election/setup message to the organizer’s server’s channel
+(“/root/lao-channel”), the main channel of the election will be created with the identifier id.
+The election will be created with the start_time and end_time fields denote the start and end time for the election.
+The election may allow write-in or have ballot options.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_setup.json
+
+{
+    "object": "election",
+    "action": "setup",
+    "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "name": "Election",
+    "version": "1.0.0",
+    "created_at": 1633098941,
+    "start_time": 1633098941,
+    "end_time": 1633099812,
+    "questions": [
+        {
+            "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "question": "Is this project fun?",
+            "voting_method": "Plurality",
+            "ballot_options": ["Yes", "No"],
+            "write_in": false
+        }
+    ]
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataSetupElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataSetupElection.json",
+    "description": "Match an ElectionSetup query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "setup"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "name": {
+            "type": "string",
+            "$comment": "name of the election"
+        },
+        "version": {
+            "type": "string",
+            "$comment": "features/implementation identifier"
+        },
+        "created_at": {
+            "description": "[Timestamp] time created in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "start_time": {
+            "description": "[Timestamp] start time of the election in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "end_time": {
+            "description": "[Timestamp] end time of the election in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "questions": {
+            "description": "Array of questions",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Question ID: Hash : HashLen('Question', election_id, question)"
+                    },
+                    "question": {
+                        "type": "string",
+                        "$comment": "voting topic"
+                    },
+                    "voting_method": {
+                        "type": "string",
+                        "enum": ["Plurality", "Approval"],
+                        "$comment": "supported voting method"
+                    },
+                    "ballot_options": {
+                        "description": "[Array[String]] ballot options",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "$comment": "ballot option"
+                        },
+                        "minItems": 2,
+                        "uniqueItems": true
+                    },
+                    "write_in": {
+                        "type": "boolean",
+                        "$comment": "whether write-in is allowed"
+                    }
+                },
+                "additionalProperties": false,
+                "required": [
+                    "id",
+                    "question",
+                    "voting_method",
+                    "ballot_options",
+                    "write_in"
+                ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "id",
+        "lao",
+        "name",
+        "version",
+        "created_at",
+        "start_time",
+        "end_time",
+        "questions"
+    ]
+}
+
+```
+
+## Casting a vote (election#cast_vote)
+
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*election#cast_vote*)
+
+A member of the LAO can cast a vote by publishing an election/cast_vote message to the
+election’s channel. Each member may cast multiple votes, only the last one will be counted.
+If write-in is allowed for the election then the vote has to have a write-in.
+
+<details>
+<summary>
+💡 See some examples
+</summary>
+
+```json5
+// ../protocol/examples/messageData/vote_cast_vote.json
+
+{
+    "object": "election",
+    "action": "cast_vote",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "created_at": 1633098941,
+    "votes": [
+        {
+            "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
+            "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "vote": [0]
+        }
+    ]
+}
+
+```
+```json5
+// ../protocol/examples/messageData/vote_cast_write_in.json
+
+{
+    "object": "election",
+    "action": "cast_vote",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "QWTmcWMMMiUdWdZX7ib7GyqH6A5ifDYwPaMpKxIZm1k=",
+    "created_at": 1633098996,
+    "votes": [
+        {
+            "id": "DtIsj7nQ0Y4iLJ4ETKv2D0uah7IYGyEVW7aCLFjaL0w=",
+            "question": "WBVsWJI-C5YkD0wdE4DxnLa0lJzjnHEd67XPFVB9v3g=",
+            "write_in": "Computer Science"
+        }
+    ]
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataCastVote.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCastVote.json",
+    "description": "Match a cast vote query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "cast_vote"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the election"
+        },
+        "created_at": {
+            "description": "[Timestamp] time created in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "votes": {
+            "description": "Array of votes",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "allOf": [
+                    {
+                        "properties": {
+                            "id": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must use delimiter"
+                            },
+                            "question": {
+                                "type": "string",
+                                "contentEncoding": "base64",
+                                "$comment": "ID of the question"
+                            }
+                        },
+                        "required": ["id", "question"]
+                    },
+                    {
+                        "oneOf": [
+                            {
+                                "properties": {
+                                    "vote": {
+                                        "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer",
+                                            "$comment": "vote index"
+                                        },
+                                        "minItems": 1,
+                                        "uniqueItems": true
+                                    }
+                                },
+                                "required": ["vote"]
+                            },
+                            {
+                                "properties": {
+                                    "write_in": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["write_in"]
+                            }
+                        ]
+                    }
+                ]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "lao", "election", "created_at", "votes"]
+}
+
+```
+
+## Ending an Election (election#end)
+
+An election may be ended by the organizer by publishing an election/end
+message on the election channel. This message indicates that the organizer will no longer process new votes.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_end.json
+
+{
+    "object": "election",
+    "action": "end",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "created_at": 1633099883,
+    "registered_votes": "tAUYpZDc7lOfrxyviK6V9UsezeubGUZR-TpwF52pzWU="
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataEndElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataEndElection.json",
+    "description": "Match an ElectionEnd query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "end"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the election"
+        },
+        "created_at": {
+            "description": "[Timestamp] time created in UTC",
+            "type": "integer",
+            "minimum": 0
+        },
+        "registered_votes": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen(<vote_id>, <vote_id>, ...)"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "lao",
+        "election",
+        "created_at",
+        "registered_votes"
+    ]
+}
+
+```
+
+## Sending the results of an Election (election#result)
+
+The results of an election may be informed by the organizer by publishing an election/result
+message on the election channel. This message indicates that the organizer has determined the outcome
+and has received the witness signatures on the result.
+
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_result.json
+
+{
+    "object": "election",
+    "action": "result",
+    "questions": [
+        {
+            "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "result": [
+                {
+                    "ballot_option": "Yes",
+                    "count": 1
+                },
+                {
+                    "ballot_option": "No",
+                    "count": 0
+                }
+            ]
+        }
+    ],
+    "witness_signatures": []
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataResultElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataResultElection.json",
+    "description": "Match an ElectionResult query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "result"
+        },
+        "questions": {
+            "description": "Array of questions with their result",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "$comment": "ID of the question"
+                    },
+                    "result": {
+                        "description": "[Array[object{'ballot_options':string, 'count':integer}]] results",
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "$comment": "result of Plurality Voting",
+                            "properties": {
+                                "ballot_option": {
+                                    "type": "string",
+                                    "$comment": "string containing ballot option of the question"
+                                },
+                                "count": {
+                                    "type": "integer",
+                                    "$comment": "vote-count of the corresponding option",
+                                    "minimum": 0
+                                }
+                            },
+                            "required": ["ballot_option", "count"],
+                            "additionalProperties": false
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["id", "result"]
+            },
+            "minItems": 1,
+            "uniqueItems": true
+        },
+        "witness_signatures": {
+            "description": "[Array[Base64String]] list of witnesses' signatures",
+            "type": "array"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "questions"]
 }
 
 ```

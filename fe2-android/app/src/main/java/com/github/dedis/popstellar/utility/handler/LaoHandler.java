@@ -12,15 +12,19 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
+import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
+import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
+import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 import com.github.dedis.popstellar.utility.security.Signature;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 /** Lao messages handler class */
-public class LaoHandler {
+public final class LaoHandler {
 
   public static final String TAG = LaoHandler.class.getSimpleName();
 
@@ -37,19 +41,26 @@ public class LaoHandler {
    * @param messageId the ID of the message received
    * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleLaoMessage(
-      LAORepository laoRepository, String channel, Data data, String messageId) {
+  public static void handleLaoMessage(
+      LAORepository laoRepository, String channel, Data data, String messageId)
+      throws DataHandlingException {
     Log.d(TAG, "handle LAO message");
 
-    switch (Objects.requireNonNull(Action.find(data.getAction()))) {
+    Action action = Action.find(data.getAction());
+    if (action == null) throw new UnknownDataActionException(data);
+
+    switch (action) {
       case CREATE:
-        return handleCreateLao(laoRepository, channel, (CreateLao) data);
+        handleCreateLao(laoRepository, channel, (CreateLao) data);
+        break;
       case UPDATE:
-        return handleUpdateLao(laoRepository, channel, messageId, (UpdateLao) data);
+        handleUpdateLao(laoRepository, channel, messageId, (UpdateLao) data);
+        break;
       case STATE:
-        return handleStateLao(laoRepository, channel, (StateLao) data);
+        handleStateLao(laoRepository, channel, (StateLao) data);
+        break;
       default:
-        return true;
+        throw new UnhandledDataTypeException(data, action.getAction());
     }
   }
 
@@ -59,9 +70,8 @@ public class LaoHandler {
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
    * @param createLao the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleCreateLao(
+  public static void handleCreateLao(
       LAORepository laoRepository, String channel, CreateLao createLao) {
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -73,7 +83,10 @@ public class LaoHandler {
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
 
-    return false;
+    String publicKey = laoRepository.getPublicKey();
+    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
+      laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
+    }
   }
 
   /**
@@ -83,16 +96,17 @@ public class LaoHandler {
    * @param channel the channel on which the message was received
    * @param messageId the ID of the received message
    * @param updateLao the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleUpdateLao(
-      LAORepository laoRepository, String channel, String messageId, UpdateLao updateLao) {
+  public static void handleUpdateLao(
+      LAORepository laoRepository, String channel, String messageId, UpdateLao updateLao)
+      throws DataHandlingException {
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     if (lao.getLastModified() > updateLao.getLastModified()) {
       // the current state we have is more up to date
-      return false;
+      throw new DataHandlingException(
+          updateLao, "The current Lao is more up to date than the update lao message");
     }
 
     WitnessMessage message;
@@ -101,8 +115,9 @@ public class LaoHandler {
     } else if (!updateLao.getWitnesses().equals(lao.getWitnesses())) {
       message = updateLaoWitnessesWitnessMessage(messageId, updateLao, lao);
     } else {
-      Log.d(TAG, " Cannot set the witness message title to update lao");
-      return true;
+      Log.d(TAG, "Cannot set the witness message title to update lao");
+      throw new DataHandlingException(
+          updateLao, "Cannot set the witness message title to update lao");
     }
 
     lao.updateWitnessMessage(messageId, message);
@@ -111,7 +126,6 @@ public class LaoHandler {
       // UpdateLao
       lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
-    return false;
   }
 
   /**
@@ -120,10 +134,9 @@ public class LaoHandler {
    * @param laoRepository the repository to access the messages and LAO of the channel
    * @param channel the channel on which the message was received
    * @param stateLao the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleStateLao(
-      LAORepository laoRepository, String channel, StateLao stateLao) {
+  public static void handleStateLao(LAORepository laoRepository, String channel, StateLao stateLao)
+      throws DataHandlingException {
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
 
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -132,7 +145,7 @@ public class LaoHandler {
     if (!laoRepository.getMessageById().containsKey(stateLao.getModificationId())) {
       Log.d(TAG, "Can't find modification id : " + stateLao.getModificationId());
       // queue it if we haven't received the update message yet
-      return true;
+      throw new InvalidMessageIdException(stateLao, stateLao.getModificationId());
     }
 
     Log.d(TAG, "Verifying signatures");
@@ -140,7 +153,7 @@ public class LaoHandler {
     for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
       if (!Signature.verifySignature(
           stateLao.getModificationId(), pair.getWitness(), pair.getSignature())) {
-        return false;
+        throw new InvalidSignatureException(stateLao, pair.getSignatureEncoded());
       }
     }
     Log.d(TAG, "Success to verify state lao signatures");
@@ -153,12 +166,15 @@ public class LaoHandler {
     lao.setLastModified(stateLao.getLastModified());
     lao.setModificationId(stateLao.getModificationId());
 
+    String publicKey = laoRepository.getPublicKey();
+    if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
+      laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
+    }
+
     // Now we're going to remove all pending updates which came prior to this state lao
     long targetTime = stateLao.getLastModified();
     lao.getPendingUpdates()
         .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
-
-    return false;
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(
