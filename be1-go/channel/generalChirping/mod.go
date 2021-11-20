@@ -35,6 +35,7 @@ type Channel struct {
 
 // NewChannel returns a new initialized chirping channel
 func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+	log = log.With().Str("channel", "general chirp").Logger()
 
 	return Channel{
 		sockets:   channel.NewSockets(),
@@ -63,7 +64,6 @@ func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 	}
 
 	msg := broadcast.Params.Message
-
 	data := msg.Data
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
@@ -72,17 +72,20 @@ func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action from message data: %v", err)
+	}
 
 	if object == messagedata.ChirpObject {
 
 		switch action {
 		case messagedata.ChirpActionAddBroadcast:
-			err := c.AddChirp(msg)
+			err := c.addChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to add a chirp to general: %v", err)
 			}
 		case messagedata.ChirpActionDeleteBroadcast:
-			err := c.DeleteChirp(msg)
+			err := c.deleteChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to delete the chirp from general: %v", err)
 			}
@@ -91,11 +94,10 @@ func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 		}
 	}
 
+	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to process %q action: %w", action, err)
+		return xerrors.Errorf("failed to broadcast to all clients: %v", err)
 	}
-
-	c.broadcastToAllClients(msg)
 
 	return nil
 }
@@ -117,7 +119,6 @@ func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 		Msg("received a unsubscribe")
 
 	ok := c.sockets.Delete(socketID)
-
 	if !ok {
 		return answer.NewError(-2, "client is not subscribed to this channel")
 	}
@@ -135,7 +136,7 @@ func (c *Channel) Catchup(msg method.Catchup) []message.Message {
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) {
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
 
 	c.log.Info().
 		Str(msgID, msg.MessageID).
@@ -159,10 +160,12 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		c.log.Err(err).Msg("failed to marshal broadcast query")
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
 	}
 
 	c.sockets.SendToAll(buf)
+
+	return nil
 }
 
 // VerifyBroadcastMessage checks if a Broadcast message is valid
@@ -184,7 +187,8 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	}
 
 	// Check if the message already exists
-	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
 		return answer.NewError(-3, "message already exists")
 	}
 
@@ -192,7 +196,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 }
 
 // AddChirp checks and stores an add chirp message
-func (c *Channel) AddChirp(msg message.Message) error {
+func (c *Channel) addChirp(msg message.Message) error {
 	err := c.verifyChirpBroadcastMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
@@ -203,7 +207,7 @@ func (c *Channel) AddChirp(msg message.Message) error {
 }
 
 // DeleteChirp checks and stores a delete chirp message
-func (c *Channel) DeleteChirp(msg message.Message) error {
+func (c *Channel) deleteChirp(msg message.Message) error {
 	err := c.verifyChirpBroadcastMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)

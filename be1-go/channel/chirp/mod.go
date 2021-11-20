@@ -56,7 +56,7 @@ type Channel struct {
 
 // Publish is used to handle publish messages in the chirp channel.
 func (c *Channel) Publish(publish method.Publish) error {
-	err := c.VerifyPublishMessage(publish)
+	err := c.verifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on a "+
 			"chirping channel: %w", err)
@@ -72,6 +72,9 @@ func (c *Channel) Publish(publish method.Publish) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action from message data: %v", err)
+	}
 
 	if object == messagedata.ChirpObject {
 
@@ -93,11 +96,10 @@ func (c *Channel) Publish(publish method.Publish) error {
 		return xerrors.Errorf("object should be \"chirp\" but is %s", object)
 	}
 
+	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to process %q action: %w", action, err)
+		return xerrors.Errorf("failed to broadcast to all clients: %v", err)
 	}
-
-	c.broadcastToAllClients(msg)
 
 	err = c.broadcastViaGeneral(msg)
 	if err != nil {
@@ -247,7 +249,7 @@ func (c *Channel) Broadcast(msg method.Broadcast) error {
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) {
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	rpcMessage := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -266,14 +268,16 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		c.log.Error().Msg("failed to marshal in broadcastToAllClients in chirp channel")
-		}
+		return xerrors.Errorf("failed to marshal broadcast: %v", err)
+	}
 
 	c.sockets.SendToAll(buf)
+
+	return nil
 }
 
 // VerifyPublishMessage checks if a Publish message is valid
-func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
+func (c *Channel) verifyPublishMessage(publish method.Publish) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -293,7 +297,8 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	}
 
 	// Check if the message already exists
-	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
 		return answer.NewError(-3, "message already exists")
 	}
 
