@@ -71,7 +71,7 @@ const RollCallOpened = () => {
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader
           delay={300}
-          onScan={handleScan}
+          onScan={handleScan} // change to {()=>handleScan} make it fails
           onError={handleError}
           style={{ width: '30%' }}
         />
