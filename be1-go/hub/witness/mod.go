@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"popstellar/channel"
+	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -36,6 +37,7 @@ const (
 	numWorkers = 10
 )
 
+
 // Hub represents a Witness and implements the Hub interface.
 type Hub struct {
 	messageChan chan socket.IncomingMessage
@@ -45,7 +47,10 @@ type Hub struct {
 
 	closedSockets chan string
 
-	public kyber.Point
+	pubKeyOrg kyber.Point
+
+	pubKeyServ kyber.Point
+	secKeyServ kyber.Scalar
 
 	schemaValidator *validation.SchemaValidator
 
@@ -60,7 +65,7 @@ type Hub struct {
 }
 
 // NewHub returns a new Witness Hub.
-func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
+func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -69,11 +74,15 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 
 	log = log.With().Str("role", "base hub").Logger()
 
+	pubServ, secServ := generateKeys()
+
 	witnessHub := Hub{
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		public:          public,
+		pubKeyOrg:       publicOrg,
+		pubKeyServ: 	 pubServ,
+		secKeyServ: 	 secServ,
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(numWorkers),
@@ -237,14 +246,31 @@ func (h *Hub) Type() hub.HubType {
 // For now the witnesses work the same as organizer, all following functions are
 // tied to this particular comportement.
 
-// GetPubkey implements channel.HubFunctionalities
-func (h *Hub) GetPubkey() kyber.Point {
-	return h.public
+// GetPubkeyOrg implements channel.HubFunctionalities
+func (h *Hub) GetPubkeyOrg() kyber.Point {
+	return h.pubKeyOrg
+}
+
+// GetPubKeyServ implements channel.HubFunctionalities
+func (h *Hub) GetPubKeyServ() kyber.Point {
+	return h.pubKeyServ
+}
+
+// GetSecKeyServ implements channel.HubFunctionalities
+func (h *Hub) GetSecKeyServ() kyber.Scalar {
+	return h.secKeyServ
 }
 
 // GetSchemaValidator implements channel.HubFunctionalities
 func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
+}
+
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
+	point := crypto.Suite.Point().Mul(secret, nil)
+
+	return point, secret
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
