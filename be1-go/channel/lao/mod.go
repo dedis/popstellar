@@ -77,7 +77,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
-	hub.RegisterNewChannel(consensusPath, &consensusCh)
+	hub.RegisterNewChannel(consensusPath, consensusCh)
 
 	return &Channel{
 		channelID: channelID,
