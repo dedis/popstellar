@@ -15,6 +15,7 @@ import { useRoute } from '@react-navigation/core';
 import { requestCloseRollCall } from 'network';
 import { EventTags, Hash, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
+import { useToast } from 'react-native-toast-notifications';
 
 const styles = StyleSheet.create({
   viewCenter: {
@@ -29,9 +30,8 @@ const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
-  const [, setQrWasScanned] = useState(false);
-  const [attendeesSet, updateAttendeesSet] = useState(new Set<string>());
-  const attendees = Array.from(attendeesSet);
+  const [attendees, updateAttendees] = useState<string[]>([]);
+  const toast = useToast();
 
   const handleError = (err: string) => {
     console.error(err);
@@ -39,10 +39,14 @@ const RollCallOpened = () => {
 
   const handleScan = (data: string) => {
     if (data) {
-      setQrWasScanned(true);
-      updateAttendeesSet((prev) => new Set<string>(prev.add(data)));
-      // TODO: use toast to display the scanned message, instead of console.log
-      console.log(STRINGS.roll_call_scan_participant);
+      if (!attendees.includes(data)) {
+        updateAttendees((arr) => [...arr, data]);
+        toast.show(STRINGS.roll_call_scan_participant, {
+          type: 'success',
+          placement: 'top',
+          duration: 4000,
+        });
+      }
     }
   };
 
@@ -67,11 +71,11 @@ const RollCallOpened = () => {
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader
           delay={300}
-          onScan={handleScan}
+          onScan={handleScan} // change to {()=>handleScan} make it fails
           onError={handleError}
           style={{ width: '30%' }}
         />
-        <Badge value={attendeesSet.size} status="success" />
+        <Badge value={attendees.length} status="success" />
         <WideButtonView
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}
