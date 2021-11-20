@@ -428,7 +428,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	if !c.hub.GetPubkey().Equal(senderPoint) {
+	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
 	}
 
@@ -497,7 +497,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	if !c.hub.GetPubkey().Equal(senderPoint) {
+	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
 		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
 	}
 

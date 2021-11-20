@@ -247,7 +247,7 @@ func (h *Hub) Type() hub.HubType {
 // tied to this particular comportement.
 
 // GetPubkeyOrg implements channel.HubFunctionalities
-func (h *Hub) GetPubkeyOrg() kyber.Point {
+func (h *Hub) GetPubKeyOrg() kyber.Point {
 	return h.pubKeyOrg
 }
 

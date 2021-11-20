@@ -497,8 +497,8 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 	return nil
 }
 
-// GetPubkeyOrg implements channel.HubFunctionalities
-func (h *Hub) GetPubkeyOrg() kyber.Point {
+// GetPubKeyOrg implements channel.HubFunctionalities
+func (h *Hub) GetPubKeyOrg() kyber.Point {
 	return h.pubKeyOrg
 }
 
