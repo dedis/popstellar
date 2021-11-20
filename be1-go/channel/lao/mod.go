@@ -5,12 +5,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
-	generalChriping "popstellar/channel/generalChirping"
+	"popstellar/channel/generalChirping"
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
@@ -36,6 +37,8 @@ const (
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
 	msgID         = "msg id"
+	social	      = "/social/"
+	chirps		  = "chirps"
 )
 
 // Channel defines a LAO channel
@@ -43,7 +46,7 @@ type Channel struct {
 	sockets channel.Sockets
 
 	inbox *inbox.Inbox
-	general *generalChriping.Channel
+	general *generalChirping.Channel
 
 	// /root/<ID>
 	channelID string
@@ -69,11 +72,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	box := inbox.NewInbox(channelID)
 	box.StoreMessage(msg)
 
-	organizerPk, _ := hub.GetPubkey().MarshalBinary()
-	organizerPk64 := base64.URLEncoding.EncodeToString(organizerPk)
-
 	general := createGeneralChirpingChannel(channelID, hub)
-	createChirpingChannel(organizerPk64, channelID, hub, general, log)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
@@ -192,10 +191,9 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 }
 
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
-func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) *generalChriping.Channel {
-	log := be1_go.Logger
-	generalChannelPath := laoID + "/social/chirps"
-	generalChirpingChannel := generalChriping.NewChannel(generalChannelPath, hub, be1_go.Logger)
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) *generalChirping.Channel {
+	generalChannelPath := laoID + social + chirps
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
 	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
@@ -241,7 +239,7 @@ func (c *Channel) Publish(publish method.Publish) error {
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
-		return xerrors.Errorf("impossible to get the action or the object: %v", err)
+		return xerrors.Errorf("failed to get the action or the object: %v", err)
 	}
 
 	switch object {
@@ -256,7 +254,7 @@ func (c *Channel) Publish(publish method.Publish) error {
 	case messagedata.ElectionObject:
 		err = c.processElectionObject(action, msg)
 	default:
-		err = xerrors.Errorf("Object not accepted in a LAO channel.")
+		err = xerrors.Errorf("object not accepted in a LAO channel.")
 	}
 
 	if err != nil {
@@ -504,13 +502,13 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	return nil
 }
 
-func createChirpingChannel(publicKey string, channelID string, hub channel.HubFunctionalities,
-							general *generalChriping.Channel, log zerolog.Logger) {
-	chirpingChannelPath := channelID + "/" + "social" + "/" + publicKey
-	cha := chirp.NewChannel(chirpingChannelPath, publicKey, hub, general, log)
-	hub.RegisterNewChannel(chirpingChannelPath, &cha)
-	log.Info().Msgf("storing new channel chirp channel for : '%s', name of the channel : '%s' ", 
-					publicKey, channelID)
+func (c *Channel) createChirpingChannel(publicKey string) {
+	chirpingChannelPath := c.channelID + social + publicKey
+
+	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
+
+	c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
+	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
 // processElectionObject handles an election object.
@@ -680,7 +678,7 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
 	for _, attendee := range msg.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		createChirpingChannel(attendee, c.channelID, c.hub, c.general, c.log)
+		c.createChirpingChannel(attendee)
 
 		if db != nil {
 			c.log.Info().Msgf("inserting attendee %s into db", attendee)

@@ -13,7 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/channel"
-	generalChriping "popstellar/channel/generalChirping"
+	"popstellar/channel/generalChirping"
 	"popstellar/crypto"
 	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
@@ -40,7 +40,7 @@ func Test_Catchup(t *testing.T) {
 
 	generalName := root + laoID + social + posts
 	chirpChannelName := root + laoID + social + sender
-	generalCha := generalChriping.NewChannel(generalName, fakeHub, nolog)
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
 	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
@@ -90,7 +90,7 @@ func Test_SendChirp(t *testing.T) {
 	require.NoError(t, err)
 	generalName := root + laoID + social + posts
 	chirpChannelName := root + laoID + social + sender
-	generalCha := generalChriping.NewChannel(generalName, fakeHub, nolog)
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
 	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
@@ -170,8 +170,7 @@ var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())
-	point := suite.Point().Pick(suite.RandomStream())
-	point = point.Mul(secret, point)
+	point := suite.Point().Mul(secret, nil)
 
 	pkbuf, err := point.MarshalBinary()
 	require.NoError(t, err)
