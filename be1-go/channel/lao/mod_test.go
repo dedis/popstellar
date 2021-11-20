@@ -553,6 +553,13 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 	return &hub, nil
 }
 
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Mul(secret, nil)
+
+	return point, secret
+}
+
 func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
@@ -619,9 +626,4 @@ func (f *fakeSocket) ID() string {
 	return f.id
 }
 
-func generateKeys() (kyber.Point, kyber.Scalar) {
-	secret := suite.Scalar().Pick(suite.RandomStream())
-	point := suite.Point().Mul(secret, nil)
 
-	return point, secret
-}
