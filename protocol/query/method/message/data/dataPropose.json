@@ -27,7 +27,8 @@
             "type": "object",
             "properties": {
                 "proposed_try": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "proposed_value": {
                     "type": "boolean"

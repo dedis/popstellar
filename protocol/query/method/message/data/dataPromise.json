@@ -27,13 +27,15 @@
             "type": "object",
             "properties": {
                 "accepted_try": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": -1
                 },
                 "accepted_value": {
                     "type": "boolean"
                 },
                 "promised_try": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 1
                 }
             },
             "additionalProperties": false,
