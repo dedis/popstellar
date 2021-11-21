@@ -32,7 +32,7 @@ public class AddChirpBroadcast extends Data {
 
   @Override
   public String getAction() {
-    return Action.ADD.getAction();
+    return Action.ADD_BROADCAST.getAction();
   }
 
   public String getPostId() {
