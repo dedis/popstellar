@@ -5,28 +5,53 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { Timestamp } from '../model/objects';
-import TextBlock from './TextBlock';
+import { Timestamp } from 'model/objects';
+import { gray } from 'styles/colors';
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
-    justifyContent: 'center',
-    borderWidth: 2,
-    flexDirection: 'column',
-    display: 'flex',
-  } as ViewStyle,
-  textView: {
-    padding: 10,
+    borderColor: gray,
+    borderTopWidth: 0,
     borderWidth: 1,
+    flexDirection: 'row',
+    padding: 10,
     width: 600,
-    alignContent: 'flex-end',
-  } as TextStyle,
-  senderView: {
-    fontSize: 20,
+  } as ViewStyle,
+  leftView: {
+    width: 60,
+  } as ViewStyle,
+  rightView: {
+    display: 'flex',
+    flexDirection: 'column',
+  } as ViewStyle,
+  senderText: {
+    fontSize: 18,
     fontWeight: '600',
-    marginTop: 7,
   } as TextStyle,
+  senderTimeView: {
+    flexDirection: 'row',
+    fontSize: 18,
+    marginTop: 7,
+  } as ViewStyle,
+  timeView: {
+    alignContent: 'flex-end',
+    flexDirection: 'row',
+  } as ViewStyle,
+  chirpText: {
+    fontSize: 18,
+    paddingBottom: 20,
+    paddingTop: 10,
+    width: 520,
+  } as TextStyle,
+  reactionsView: {
+    flexDirection: 'row',
+    fontSize: 18,
+  } as ViewStyle,
+  reactionView: {
+    flexDirection: 'row',
+    flex: 1,
+    marginRight: 10,
+  } as ViewStyle,
 });
 
 const ChirpCard = (props: IPropTypes) => {
@@ -34,22 +59,42 @@ const ChirpCard = (props: IPropTypes) => {
   const { text } = props;
   const { time } = props;
   const { likes } = props;
+  const likesText = `  ${likes}`;
+
+  // This is temporary for now
+  const zero = '  0';
 
   return (
     <View style={styles.container}>
-      <Text style={styles.senderView}>{sender}</Text>
-      <View style={styles.textView}>
-        <TextBlock text={text} />
+      <View style={styles.leftView}>
+        <Ionicons name="person" size={40} color="black" />
       </View>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1 }}>
-          <Ionicons name="thumbs-up" size={16} color="black" />
+      <View style={styles.rightView}>
+        <View style={styles.senderTimeView}>
+          <Text style={styles.senderText}>{sender}</Text>
+          <View style={styles.timeView}>
+            <Text> - </Text>
+            <TimeAgo date={time.valueOf() * 1000} />
+          </View>
         </View>
-        <View style={{ flex: 3 }}>
-          <Text>{likes}</Text>
-        </View>
-        <View style={{ flex: 6 }}>
-          <TimeAgo date={time.valueOf() * 1000} />
+        <Text style={styles.chirpText}>{text}</Text>
+        <View style={styles.reactionsView}>
+          <View style={styles.reactionView}>
+            <Ionicons name="thumbs-up" size={16} color="black" />
+            <Text>{likesText}</Text>
+          </View>
+          <View style={styles.reactionView}>
+            <Ionicons name="thumbs-down" size={16} color="black" />
+            <Text>{zero}</Text>
+          </View>
+          <View style={styles.reactionView}>
+            <Ionicons name="heart" size={16} color="black" />
+            <Text>{zero}</Text>
+          </View>
+          <View style={styles.reactionView}>
+            <Ionicons name="chatbubbles" size={16} color="black" />
+            <Text>{zero}</Text>
+          </View>
         </View>
       </View>
     </View>
