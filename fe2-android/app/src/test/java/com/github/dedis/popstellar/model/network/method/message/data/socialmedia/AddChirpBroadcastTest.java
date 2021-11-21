@@ -8,7 +8,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
 import org.junit.Test;
 
-public class AddChirpBroadcastText {
+public class AddChirpBroadcastTest {
 
   private static final String postId = "postId";
   private static final String channel = "/root/laoId/social/myChannel";
