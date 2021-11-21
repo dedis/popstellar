@@ -53,7 +53,7 @@ const socialSlice = createSlice({
           };
         }
 
-        state.byLaoId[laoId].allChirps.push(chirp);
+        state.byLaoId[laoId].allChirps.unshift(chirp);
         console.log(`New chirp added:\n\tSender: ${chirp.sender}\n\tMessage: ${chirp.text}`);
       },
     },
