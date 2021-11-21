@@ -1,23 +1,35 @@
 import React, { useState } from 'react';
 import {
   FlatList,
-  StyleSheet, TextStyle, View, ViewStyle,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
 } from 'react-native';
 
-import TextBlock from 'components/TextBlock';
+import ChirpCard from 'components/ChirpCard';
 import TextInputChirp from 'components/TextInputChirp';
+import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
-import ChirpCard from 'components/ChirpCard';
 import { Hash, Timestamp } from 'model/objects';
 
 /**
  * UI for the Social Media component
  */
 const styles = StyleSheet.create({
-  view: {
-    alignItems: 'center',
+  viewCenter: {
+    alignSelf: 'center',
+    width: 600,
+  } as ViewStyle,
+  homeTextView: {
+    alignSelf: 'flex-start',
+    marginTop: 20,
+  } as ViewStyle,
+  userFeed: {
+    flexDirection: 'column',
+    marginTop: 20,
   } as ViewStyle,
   textInput: {
     padding: 10,
@@ -52,6 +64,7 @@ const SocialHome = () => {
       .catch((err) => {
         console.error('Could not add chirp, error:', err);
       });
+    setInputChirp('');
   };
 
   const renderItem = ({ item }) => (
@@ -64,17 +77,21 @@ const SocialHome = () => {
   );
 
   return (
-    <View style={styles.view}>
-      <TextInputChirp
-        onChangeText={setInputChirp}
-        onPress={publishChirp}
-      />
-      <TextBlock text={STRINGS.feed_description} />
-      <FlatList
-        data={DATA}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
-      />
+    <View style={styles.viewCenter}>
+      <View style={styles.homeTextView}>
+        <TextBlock text={STRINGS.social_media_navigation_tab_home} />
+      </View>
+      <View style={styles.userFeed}>
+        <TextInputChirp
+          onChangeText={setInputChirp}
+          onPress={publishChirp}
+        />
+        <FlatList
+          data={DATA}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
     </View>
   );
 };
