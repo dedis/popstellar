@@ -4,79 +4,133 @@ exports[`ChirpCard renders correctly 1`] = `
 <View
   style={
     Object {
-      "borderWidth": 2,
-      "display": "flex",
-      "flexDirection": "column",
-      "justifyContent": "center",
-      "marginTop": 50,
+      "borderColor": "gray",
+      "borderTopWidth": 0,
+      "borderWidth": 1,
+      "flexDirection": "row",
+      "padding": 10,
+      "width": 600,
     }
   }
 >
-  <Text
-    style={
-      Object {
-        "fontSize": 20,
-        "fontWeight": "600",
-        "marginTop": 7,
-      }
-    }
-  >
-    Douglas Adams
-  </Text>
   <View
     style={
       Object {
-        "alignContent": "flex-end",
-        "borderWidth": 1,
-        "padding": 10,
-        "width": 600,
+        "width": 60,
       }
     }
   >
+    <Text />
+  </View>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "fontSize": 18,
+          "marginTop": 7,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "fontSize": 18,
+            "fontWeight": "600",
+          }
+        }
+      >
+        Douglas Adams
+      </Text>
+    </View>
     <Text
       style={
         Object {
-          "color": "black",
-          "fontSize": 25,
-          "marginHorizontal": 10,
-          "textAlign": "center",
+          "fontSize": 18,
+          "paddingBottom": 20,
+          "paddingTop": 10,
+          "width": 520,
         }
       }
     >
       Don't panic.
     </Text>
-  </View>
-  <View
-    style={
-      Object {
-        "flexDirection": "row",
-      }
-    }
-  >
     <View
       style={
         Object {
-          "flex": 1,
+          "flexDirection": "row",
+          "fontSize": 18,
         }
       }
     >
-      <Text />
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text />
+        <Text>
+            42
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text />
+        <Text>
+            0
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text />
+        <Text>
+            0
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text />
+        <Text>
+            0
+        </Text>
+      </View>
     </View>
     <View
       style={
         Object {
-          "flex": 3,
-        }
-      }
-    >
-      <Text>
-        42
-      </Text>
-    </View>
-    <View
-      style={
-        Object {
-          "flex": 6,
+          "alignSelf": "flex-end",
+          "marginTop": 10,
         }
       }
     >
