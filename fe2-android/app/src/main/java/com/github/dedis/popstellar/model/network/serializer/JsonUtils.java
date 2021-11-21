@@ -1,5 +1,9 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.method.Message;
@@ -8,6 +12,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.ValidationMessage;
+
+import java.io.InputStream;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
 
 /** Json utility class */
 public final class JsonUtils {
@@ -16,6 +29,18 @@ public final class JsonUtils {
   public static final String JSON_RPC_VERSION = "2.0";
 
   public static final String JSON_REQUEST_ID = "id";
+
+  private static final String TAG = JsonUtils.class.getSimpleName();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final JsonSchema SCHEMA;
+
+  static {
+    JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+    InputStream is =
+        Objects.requireNonNull(Thread.currentThread().getContextClassLoader())
+            .getResourceAsStream("protocol/jsonRPC.json");
+    SCHEMA = factory.getSchema(is);
+  }
 
   private JsonUtils() {}
 
@@ -59,5 +84,25 @@ public final class JsonUtils {
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .create();
+  }
+
+  /**
+   * Verify the json against the root schema
+   *
+   * @param json a string representing the json
+   * @throws JsonParseException if the json is invalid or cannot be parsed
+   */
+  public static void verifyJson(String json) throws JsonParseException {
+    Log.d(TAG, "verifyJson for : " + json);
+
+    try {
+      Set<ValidationMessage> errors = SCHEMA.validate(OBJECT_MAPPER.readTree(json));
+      if (!errors.isEmpty()) {
+        throw new JsonParseException(
+            "ValidationMessage errors : " + Arrays.toString(errors.toArray()));
+      }
+    } catch (JsonProcessingException e) {
+      throw new JsonParseException(e);
+    }
   }
 }

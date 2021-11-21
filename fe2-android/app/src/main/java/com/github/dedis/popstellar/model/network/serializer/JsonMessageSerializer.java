@@ -24,6 +24,7 @@ public class JsonMessageSerializer implements JsonSerializer<Message>, JsonDeser
     Log.d("deserializer", "deserializing message");
     JSONRPCRequest container = context.deserialize(json, JSONRPCRequest.class);
     JsonUtils.testRPCVersion(container.getJsonrpc());
+    JsonUtils.verifyJson(json.toString());
 
     Method method = Method.find(container.getMethod());
     if (method == null) {
