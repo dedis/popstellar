@@ -28,14 +28,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   } as TextStyle,
-  senderTimeView: {
-    flexDirection: 'row',
+  senderView: {
     fontSize: 18,
     marginTop: 7,
-  } as ViewStyle,
-  timeView: {
-    alignContent: 'flex-end',
-    flexDirection: 'row',
   } as ViewStyle,
   chirpText: {
     fontSize: 18,
@@ -51,6 +46,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flex: 1,
     marginRight: 10,
+  } as ViewStyle,
+  timeView: {
+    alignSelf: 'flex-end',
+    marginTop: 10,
   } as ViewStyle,
 });
 
@@ -70,12 +69,8 @@ const ChirpCard = (props: IPropTypes) => {
         <Ionicons name="person" size={40} color="black" />
       </View>
       <View style={styles.rightView}>
-        <View style={styles.senderTimeView}>
+        <View style={styles.senderView}>
           <Text style={styles.senderText}>{sender}</Text>
-          <View style={styles.timeView}>
-            <Text> - </Text>
-            <TimeAgo date={time.valueOf() * 1000} />
-          </View>
         </View>
         <Text style={styles.chirpText}>{text}</Text>
         <View style={styles.reactionsView}>
@@ -95,6 +90,9 @@ const ChirpCard = (props: IPropTypes) => {
             <Ionicons name="chatbubbles" size={16} color="black" />
             <Text>{zero}</Text>
           </View>
+        </View>
+        <View style={styles.timeView}>
+          <TimeAgo date={time.valueOf() * 1000} />
         </View>
       </View>
     </View>
