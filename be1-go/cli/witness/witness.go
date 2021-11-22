@@ -13,6 +13,7 @@ import (
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
+	"time"
 
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
@@ -97,6 +98,22 @@ func Serve(cliCtx *cli.Context) error {
 	h.Stop()
 	close(done)
 	wg.Wait()
+
+	// notify channs to stop
+	close(done)
+
+	// wait on channs to be done
+	channsClosed := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(channsClosed)
+	}()
+
+	select {
+	case <-channsClosed:
+	case <-time.After(time.Second * 10):
+		log.Error().Msg("channs didn't close after timeout, exiting")
+	}
 
 	return nil
 }
