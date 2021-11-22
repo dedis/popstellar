@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,7 +14,7 @@ public class ElectionResultQuestion {
       throw new IllegalArgumentException();
     }
     this.id = id;
-    this.result = Collections.unmodifiableList(result);
+    this.result = result;
   }
 
   public String getId() {
