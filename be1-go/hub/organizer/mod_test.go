@@ -131,7 +131,7 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
-	
+
 	msg := message.Message{
 		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
@@ -462,6 +462,7 @@ type keypair struct {
 }
 
 var nolog = zerolog.New(io.Discard)
+
 //var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {

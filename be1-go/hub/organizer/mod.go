@@ -300,7 +300,7 @@ func verifySignature(publicKey64 string, signature64 string, data64 string) erro
 	if err != nil {
 		return xerrors.Errorf("failed to decode the public key: %v", err)
 	}
-	
+
 	var point = suite.Point()
 
 	err = point.UnmarshalBinary(pk)
