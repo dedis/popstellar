@@ -20,6 +20,7 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+	"strings"
 	"sync"
 
 	"github.com/rs/zerolog"
@@ -81,19 +82,22 @@ type Hub struct {
 	queries   queries
 }
 
+// queries let the hub remember all queries that it sent to other servers
 type queries struct {
-	mu sync.Mutex
-	// state store the ID of the server queries and their state. False for a
+	sync.Mutex
+	// state stores the ID of the server's queries and their state. False for a
 	// query not yet answered, else true.
-	state   map[int]*bool
+	state map[int]*bool
+	// queries stores the server's queries by their ID.
 	queries map[int]method.Catchup
 
 	// nextID store the ID of the next query
 	nextID int
 }
 
-// NewHub returns a new Witness Hub.
-func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory, hubType hub.HubType) (*Hub, error) {
+// NewHub returns a new Hub.
+func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
+	hubType hub.HubType) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -183,17 +187,17 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 	return h.messageChan
 }
 
-// AddServerSocket adds a socket to the sockets known by the hub and query a
+// NotifyNewServer adds a socket to the sockets known by the hub and query a
 // catchup from the new server
-func (h *Hub) AddServerSocket(socket socket.Socket) error {
+func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
-
-	return h.CatchupToServer(socket, rootChannel)
+	err := h.CatchupToServer(socket, rootChannel)
+	return err
 }
 
 // CatchupToServer sends a catchup query to another server
 func (h *Hub) CatchupToServer(socket socket.Socket, channel string) error {
-	h.queries.mu.Lock()
+	h.queries.Lock()
 
 	catchupID := h.queries.nextID
 	h.queries.nextID += 1
@@ -218,7 +222,7 @@ func (h *Hub) CatchupToServer(socket socket.Socket, channel string) error {
 
 	h.queries.queries[catchupID] = rpcMessage
 
-	h.queries.mu.Unlock()
+	h.queries.Unlock()
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
@@ -235,8 +239,8 @@ func (h *Hub) OnSocketClose() chan<- string {
 }
 
 func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
-	if channelPath[:6] != rootPrefix {
-		return nil, xerrors.Errorf("channel id must begin with \"/root/\", got: %q", channelPath[:6])
+	if !strings.HasPrefix(channelPath, rootPrefix) {
+		return nil, xerrors.Errorf("channel not prefixed with '%s': %q", rootPrefix, channelPath)
 	}
 
 	h.RLock()
@@ -347,8 +351,11 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 			socket.SendError(nil, err)
 			return err
 		}
+
 		return nil
-	} else if rpctype != jsonrpc.RPCTypeQuery {
+	}
+
+	if rpctype != jsonrpc.RPCTypeQuery {
 		rpcErr := xerrors.New("jsonRPC is of unknown type")
 		socket.SendError(nil, rpcErr)
 		return rpcErr
@@ -421,17 +428,20 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 func (h *Hub) broadcastToServers(message message.Message, byteMessage []byte) bool {
 	h.Lock()
 	defer h.Unlock()
+
 	_, ok := h.hubInbox.GetMessage(message.MessageID)
 	if !ok {
 		h.serverSockets.SendToAll(byteMessage)
 		h.hubInbox.StoreMessage(message)
 		return false
 	}
+
 	return true
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate, socket socket.Socket) error {
+func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
+	socket socket.Socket) error {
 
 	laoChannelPath := rootPrefix + laoCreate.ID
 
@@ -445,17 +455,17 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 	}
 
 	// Check if the sender of election creation message is the organizer
-	senderKey := crypto.Suite.Point()
-	err = senderKey.UnmarshalBinary(senderBuf)
+	senderPubKey := crypto.Suite.Point()
+	err = senderPubKey.UnmarshalBinary(senderBuf)
 	if err != nil {
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log, senderKey, socket)
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log, senderPubKey, socket)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 
-	h.RegisterNewChannel(laoChannelPath, laoCh, socket)
+	h.NotifyNewChannel(laoChannelPath, laoCh, socket)
 
 	if sqlite.GetDBPath() != "" {
 		saveChannel(laoChannelPath)
@@ -474,8 +484,8 @@ func (h *Hub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-// RegisterNewChannel implements channel.HubFunctionalities
-func (h *Hub) RegisterNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
+// NotifyNewChannel implements channel.HubFunctionalities
+func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock socket.Socket) {
 	h.Lock()
 	h.channelByID[channelID] = channel
 	h.Unlock()

@@ -163,7 +163,7 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 	return &hub, nil
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
+func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()

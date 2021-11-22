@@ -34,7 +34,7 @@ func Test_Add_Server_Socket(t *testing.T) {
 
 	sock := &fakeSocket{id: "fakeID"}
 
-	err = hub.AddServerSocket(sock)
+	err = hub.NotifyNewServer(sock)
 	require.NoError(t, err)
 	require.NotNil(t, hub.queries.queries[0])
 	require.Equal(t, 1, hub.queries.nextID)

@@ -109,20 +109,20 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return xerrors.Errorf("failed to unmarshal answer: %v", err)
 	}
 
-	h.queries.mu.Lock()
+	h.queries.Lock()
 
 	val := h.queries.state[answer.ID]
 	if val == nil {
-		h.queries.mu.Unlock()
+		h.queries.Unlock()
 		return xerrors.Errorf("no query sent with id %v", answer.ID)
 	} else if *val {
-		h.queries.mu.Unlock()
+		h.queries.Unlock()
 		return xerrors.Errorf("query %v already got an answer", answer.ID)
 	}
 
 	channel := h.queries.queries[answer.ID].Params.Channel
 	*h.queries.state[answer.ID] = true
-	h.queries.mu.Unlock()
+	h.queries.Unlock()
 
 	for msg := range answer.Result {
 		publish := method.Publish{
@@ -134,8 +134,8 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 			},
 
 			Params: struct {
-				Channel string          "json:\"channel\""
-				Message message.Message "json:\"message\""
+				Channel string          `json:"channel"`
+				Message message.Message `json:"message"`
 			}{
 				Channel: channel,
 				Message: answer.Result[msg],

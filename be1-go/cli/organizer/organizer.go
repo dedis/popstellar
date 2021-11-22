@@ -23,8 +23,8 @@ import (
 func Serve(cliCtx *cli.Context) error {
 	log := be1_go.Logger
 
-	// get command line args which specify public key, port to use for clients
-	// and witnesses, witness' address
+	// get command line args which specify public key, port to use for clients,
+	// witnesses and witness' address
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	if clientPort == witnessPort {
@@ -51,7 +51,8 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create organizer hub
-	h, err := standard_hub.NewHub(point, log.With().Str("role", "organizer").Logger(), lao.NewChannel, hub.OrganizerHubType)
+	h, err := standard_hub.NewHub(point, log.With().Str("role", "organizer").Logger(),
+		lao.NewChannel, hub.OrganizerHubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}

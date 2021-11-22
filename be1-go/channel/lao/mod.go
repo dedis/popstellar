@@ -63,9 +63,9 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
-// its associated consensus channel and register it to the hub
+// its associated consensus channel and register it to the hub.
 func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
-	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) channel.Channel {
+	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
@@ -76,13 +76,13 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
-	hub.RegisterNewChannel(consensusPath, &consensusCh, socket)
+	hub.NotifyNewChannel(consensusPath, &consensusCh, socket)
 
 	return &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           inbox,
-		organizerPubKey: organizerKey,
+		organizerPubKey: organizerPubKey,
 		hub:             hub,
 		rollCall:        rollCall{},
 		attendees:       make(map[string]struct{}),
@@ -486,7 +486,8 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(action string, msg message.Message, socket socket.Socket) error {
+func (c *Channel) processElectionObject(action string, msg message.Message,
+	socket socket.Socket) error {
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
@@ -506,7 +507,8 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 	}
 
 	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
+		return answer.NewErrorf(-5, "Sender key does not match the "+
+			"organizer's one: %s != %s", senderPoint, c, c.organizerPubKey)
 	}
 
 	var electionSetup messagedata.ElectionSetup
@@ -526,7 +528,8 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 }
 
 // createElection creates an election in the LAO.
-func (c *Channel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
+func (c *Channel) createElection(msg message.Message,
+	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
@@ -552,7 +555,7 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.RegisterNewChannel(channelPath, &electionCh, socket)
+	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
 
 	return nil
 }

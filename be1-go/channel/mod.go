@@ -25,7 +25,9 @@ type Channel interface {
 	// Unsubscribe is used to handle an unsubscribe message.
 	Unsubscribe(socketID string, msg method.Unsubscribe) error
 
-	// Publish is used to handle a publish message.
+	// Publish is used to handle a publish message. The sender's socket may be
+	// needed when a message creates a channel, to know if the server should
+	// catchup on this channel or not.
 	Publish(msg method.Publish, socket socket.Socket) error
 
 	// Catchup is used to handle a catchup message.
@@ -86,5 +88,5 @@ func (s *Sockets) Delete(ID string) bool {
 type HubFunctionalities interface {
 	GetPubkey() kyber.Point
 	GetSchemaValidator() validation.SchemaValidator
-	RegisterNewChannel(channelID string, channel Channel, socket socket.Socket)
+	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 }
