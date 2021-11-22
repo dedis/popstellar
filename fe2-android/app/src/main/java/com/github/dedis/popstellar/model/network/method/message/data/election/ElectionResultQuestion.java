@@ -1,7 +1,9 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ElectionResultQuestion {
 
@@ -13,7 +15,7 @@ public class ElectionResultQuestion {
       throw new IllegalArgumentException();
     }
     this.id = id;
-    this.result = result;
+    this.result = Collections.unmodifiableList(result);
   }
 
   public String getId() {
@@ -22,6 +24,24 @@ public class ElectionResultQuestion {
 
   public List<QuestionResult> getResult() {
     return result;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ElectionResultQuestion that = (ElectionResultQuestion) o;
+
+    return Objects.equals(id, that.id) && Objects.equals(result, that.result);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, result);
   }
 
   @Override

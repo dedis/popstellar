@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
@@ -61,5 +62,10 @@ public class ElectionQuestionTest {
   @Test
   public void electionQuestionGetterReturnsCorrectBallotOptions() {
     assertThat(electionQuestion.getBallotOptions(), is(new ArrayList<>()));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(electionSetup);
   }
 }
