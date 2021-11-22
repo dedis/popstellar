@@ -6,10 +6,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.security.Hash;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -84,5 +86,16 @@ public class CreateLaoTest {
     assertEquals(new CreateLao(name, organizer), new CreateLao(name, organizer));
     assertNotEquals(createLao1, new CreateLao("random", organizer));
     assertNotEquals(createLao1, new CreateLao(name, "random"));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(createLao);
+
+    String pathDir = "protocol/examples/messageData/laoCreate/";
+    String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_missing_params.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }
