@@ -94,7 +94,7 @@ public class UpdateLaoTest {
   public void jsonValidationTest() {
     JsonTestUtils.testData(updateLao);
 
-    String pathDir = "protocol/examples/messageData/laoUpdate/";
+    String pathDir = "protocol/examples/messageData/lao_update/";
     String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_lao_update_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_update_missing_params.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
