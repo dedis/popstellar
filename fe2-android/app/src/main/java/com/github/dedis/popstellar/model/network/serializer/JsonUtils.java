@@ -17,9 +17,8 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 
-import java.io.InputStream;
+import java.net.URI;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Set;
 
 /** Json utility class */
@@ -36,8 +35,10 @@ public final class JsonUtils {
       JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
   public static final JsonSchema ROOT_SCHEMA = loadSchema("protocol/jsonRPC.json");
-  public static final JsonSchema GENERAL_MESSAGE_SCHEMA = loadSchema("protocol/query/method/message/message.json");
-  public static final JsonSchema DATA_SCHEMA = loadSchema("protocol/query/method/message/data/data.json");
+  public static final JsonSchema GENERAL_MESSAGE_SCHEMA =
+      loadSchema("protocol/query/method/message/message.json");
+  public static final JsonSchema DATA_SCHEMA =
+      loadSchema("protocol/query/method/message/data/data.json");
 
   private JsonUtils() {}
 
@@ -110,9 +111,6 @@ public final class JsonUtils {
    * @return the JsonSchema
    */
   public static JsonSchema loadSchema(String resourcePath) {
-    InputStream is =
-        Objects.requireNonNull(Thread.currentThread().getContextClassLoader())
-            .getResourceAsStream(resourcePath);
-    return FACTORY.getSchema(is);
+    return FACTORY.getSchema(URI.create("resource:/" + resourcePath));
   }
 }

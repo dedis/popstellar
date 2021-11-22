@@ -39,7 +39,6 @@ public class JsonAnswerSerializer implements JsonSerializer<Answer>, JsonDeseria
   public JsonElement serialize(Answer src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject obj = context.serialize(src).getAsJsonObject();
     obj.addProperty(JsonUtils.JSON_RPC, JsonUtils.JSON_RPC_VERSION);
-    JsonUtils.verifyJson(JsonUtils.ROOT_SCHEMA, obj.toString());
     return obj;
   }
 }

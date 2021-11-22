@@ -53,7 +53,6 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     JsonObject obj = context.serialize(src).getAsJsonObject();
     obj.addProperty(OBJECT, src.getObject());
     obj.addProperty(ACTION, src.getAction());
-    JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, obj.toString());
     return obj;
   }
 }

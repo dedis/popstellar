@@ -82,8 +82,6 @@ public class JsonMessageGeneralSerializer
     result.add("witness_signatures", jsonArray);
     Log.d("JSON", result.toString());
 
-    JsonUtils.verifyJson(JsonUtils.GENERAL_MESSAGE_SCHEMA, result.toString());
-
     return result;
   }
 }

@@ -8,8 +8,6 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 
-import junit.framework.AssertionFailedError;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
