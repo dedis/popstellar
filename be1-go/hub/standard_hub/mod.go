@@ -82,6 +82,15 @@ type Hub struct {
 	queries   queries
 }
 
+// newQueries creates a new queries struct
+func newQueries() queries {
+	return queries{
+		state:   make(map[int]*bool),
+		queries: make(map[int]method.Catchup),
+		nextID:  0,
+	}
+}
+
 // queries let the hub remember all queries that it sent to other servers
 type queries struct {
 	sync.Mutex
@@ -93,6 +102,36 @@ type queries struct {
 
 	// nextID store the ID of the next query
 	nextID int
+}
+
+func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
+	q.Lock()
+	defer q.Unlock()
+
+	catchupID := q.nextID
+
+	baseValue := false
+	q.state[catchupID] = &baseValue
+
+	rpcMessage := method.Catchup{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "catchup",
+		},
+		ID: catchupID,
+		Params: struct {
+			Channel string "json:\"channel\""
+		}{
+			channel,
+		},
+	}
+
+	q.queries[catchupID] = rpcMessage
+	q.nextID++
+
+	return rpcMessage
 }
 
 // NewHub returns a new Hub.
@@ -120,7 +159,7 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
 		serverSockets:   channel.NewSockets(),
 		hubInbox:        *inbox.NewInbox(rootChannel),
 		rootInbox:       *inbox.NewInbox(rootChannel),
-		queries:         queries{state: make(map[int]*bool), queries: make(map[int]method.Catchup), nextID: 0},
+		queries:         newQueries(),
 	}
 
 	if sqlite.GetDBPath() != "" {
@@ -191,38 +230,14 @@ func (h *Hub) Receiver() chan<- socket.IncomingMessage {
 // catchup from the new server
 func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
-	err := h.CatchupToServer(socket, rootChannel)
+	err := h.catchupToServer(socket, rootChannel)
 	return err
 }
 
-// CatchupToServer sends a catchup query to another server
-func (h *Hub) CatchupToServer(socket socket.Socket, channel string) error {
-	h.queries.Lock()
+// catchupToServer sends a catchup query to another server
+func (h *Hub) catchupToServer(socket socket.Socket, channel string) error {
 
-	catchupID := h.queries.nextID
-	h.queries.nextID += 1
-
-	baseValue := false
-	h.queries.state[catchupID] = &baseValue
-
-	rpcMessage := method.Catchup{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "catchup",
-		},
-		ID: catchupID,
-		Params: struct {
-			Channel string "json:\"channel\""
-		}{
-			channel,
-		},
-	}
-
-	h.queries.queries[catchupID] = rpcMessage
-
-	h.queries.Unlock()
+	rpcMessage := h.queries.getNextCatchupMessage(channel)
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
@@ -492,7 +507,7 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 
 	if sock.Type() == socket.OrganizerSocketType || sock.Type() == socket.WitnessSocketType {
 		h.log.Info().Msgf("catching up on channel %v", channelID)
-		h.CatchupToServer(sock, channelID)
+		h.catchupToServer(sock, channelID)
 	}
 }
 
