@@ -32,15 +32,12 @@ public final class JsonUtils {
 
   private static final String TAG = JsonUtils.class.getSimpleName();
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  private static final JsonSchema SCHEMA;
+  private static final JsonSchemaFactory FACTORY =
+      JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
-  static {
-    JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-    InputStream is =
-        Objects.requireNonNull(Thread.currentThread().getContextClassLoader())
-            .getResourceAsStream("protocol/jsonRPC.json");
-    SCHEMA = factory.getSchema(is);
-  }
+  public static final JsonSchema ROOT_SCHEMA = loadSchema("protocol/jsonRPC.json");
+  public static final JsonSchema GENERAL_MESSAGE_SCHEMA = loadSchema("protocol/query/method/message/message.json");
+  public static final JsonSchema DATA_SCHEMA = loadSchema("protocol/query/method/message/data/data.json");
 
   private JsonUtils() {}
 
@@ -92,11 +89,11 @@ public final class JsonUtils {
    * @param json a string representing the json
    * @throws JsonParseException if the json is invalid or cannot be parsed
    */
-  public static void verifyJson(String json) throws JsonParseException {
+  public static void verifyJson(JsonSchema schema, String json) throws JsonParseException {
     Log.d(TAG, "verifyJson for : " + json);
 
     try {
-      Set<ValidationMessage> errors = SCHEMA.validate(OBJECT_MAPPER.readTree(json));
+      Set<ValidationMessage> errors = schema.validate(OBJECT_MAPPER.readTree(json));
       if (!errors.isEmpty()) {
         throw new JsonParseException(
             "ValidationMessage errors : " + Arrays.toString(errors.toArray()));
@@ -104,5 +101,18 @@ public final class JsonUtils {
     } catch (JsonProcessingException e) {
       throw new JsonParseException(e);
     }
+  }
+
+  /**
+   * Load a json schema from the resources directory
+   *
+   * @param resourcePath relative path inside resources directory
+   * @return the JsonSchema
+   */
+  public static JsonSchema loadSchema(String resourcePath) {
+    InputStream is =
+        Objects.requireNonNull(Thread.currentThread().getContextClassLoader())
+            .getResourceAsStream(resourcePath);
+    return FACTORY.getSchema(is);
   }
 }
