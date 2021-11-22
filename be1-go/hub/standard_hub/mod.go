@@ -3,10 +3,12 @@ package standard_hub
 import (
 	"context"
 	"database/sql"
+	"encoding/base64"
 	"encoding/json"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
+	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/hub"
 	"popstellar/inbox"
@@ -437,7 +439,19 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log, socket)
+	senderBuf, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
+	if err != nil {
+		return answer.NewErrorf(-4, "failed to decode public key of the sender: %v", err)
+	}
+
+	// Check if the sender of election creation message is the organizer
+	senderKey := crypto.Suite.Point()
+	err = senderKey.UnmarshalBinary(senderBuf)
+	if err != nil {
+		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+	}
+
+	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log, senderKey, socket)
 
 	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
 

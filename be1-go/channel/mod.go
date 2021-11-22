@@ -14,7 +14,8 @@ import (
 
 // LaoFactory is the function passed to the organizer that it must use to
 // create a new lao channel.
-type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message, log zerolog.Logger, socket socket.Socket) Channel
+type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message,
+	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) Channel
 
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {

@@ -249,6 +249,7 @@ func Test_Handle_Server_Catchup(t *testing.T) {
 
 func Test_Handle_Answer(t *testing.T) {
 	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	fakeChannelFac := &fakeChannelFac{
 		c: &fakeChannel{},
@@ -278,6 +279,7 @@ func Test_Handle_Answer(t *testing.T) {
 
 	msg := message.Message{
 		Data:              messageData,
+		Sender:            publicKey64,
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 	serverAnswer.Result[0] = msg
@@ -651,8 +653,8 @@ type fakeChannelFac struct {
 }
 
 // newChannel implement the type channel.LaoFactory
-func (c *fakeChannelFac) newChannel(channelID string,
-	hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger, socket socket.Socket) channel.Channel {
+func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionalities,
+	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	c.chanID = channelID
 	c.msg = msg

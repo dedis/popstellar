@@ -48,7 +48,7 @@ type Channel struct {
 	// /root/<ID>
 	channelID string
 
-	organizerKey kyber.Point
+	organizerPubKey kyber.Point
 
 	witnessMu sync.Mutex
 	witnesses []string
@@ -64,25 +64,13 @@ type Channel struct {
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
 // its associated consensus channel and register it to the hub
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger, socket socket.Socket) channel.Channel {
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
+	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		log.Err(err).Msgf(keyDecodeError, err)
-		return nil
-	}
-
-	organizerPoint := crypto.Suite.Point()
-	err = organizerPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		log.Err(err).Msgf(keyUnmarshalError, err)
-		return nil
-	}
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 
@@ -91,14 +79,14 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	hub.RegisterNewChannel(consensusPath, &consensusCh, socket)
 
 	return &Channel{
-		channelID:    channelID,
-		sockets:      channel.NewSockets(),
-		inbox:        inbox,
-		organizerKey: organizerPoint,
-		hub:          hub,
-		rollCall:     rollCall{},
-		attendees:    make(map[string]struct{}),
-		log:          log,
+		channelID:       channelID,
+		sockets:         channel.NewSockets(),
+		inbox:           inbox,
+		organizerPubKey: organizerKey,
+		hub:             hub,
+		rollCall:        rollCall{},
+		attendees:       make(map[string]struct{}),
+		log:             log,
 	}
 }
 
@@ -448,7 +436,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.organizerKey.Equal(senderPoint) {
+	if !c.organizerPubKey.Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
 	}
 
@@ -517,7 +505,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.organizerKey.Equal(senderPoint) {
+	if !c.organizerPubKey.Equal(senderPoint) {
 		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
 	}
 

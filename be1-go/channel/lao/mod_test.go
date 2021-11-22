@@ -36,7 +36,7 @@ func TestBaseChannel_RollCallOrder(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -82,7 +82,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil, nil)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
