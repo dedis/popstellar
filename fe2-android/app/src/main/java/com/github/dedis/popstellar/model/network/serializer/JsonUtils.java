@@ -19,7 +19,9 @@ import com.networknt.schema.ValidationMessage;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Json utility class */
 public final class JsonUtils {
@@ -34,11 +36,11 @@ public final class JsonUtils {
   private static final JsonSchemaFactory FACTORY =
       JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
 
-  public static final JsonSchema ROOT_SCHEMA = loadSchema("protocol/jsonRPC.json");
-  public static final JsonSchema GENERAL_MESSAGE_SCHEMA =
-      loadSchema("protocol/query/method/message/message.json");
-  public static final JsonSchema DATA_SCHEMA =
-      loadSchema("protocol/query/method/message/data/data.json");
+  public static final String ROOT_SCHEMA = "protocol/jsonRPC.json";
+  public static final String GENERAL_MESSAGE_SCHEMA = "protocol/query/method/message/message.json";
+  public static final String DATA_SCHEMA = "protocol/query/method/message/data/data.json";
+
+  private static final Map<String, JsonSchema> schemas = new ConcurrentHashMap<>();
 
   private JsonUtils() {}
 
@@ -85,13 +87,16 @@ public final class JsonUtils {
   }
 
   /**
-   * Verify the json against the root schema
+   * Verify the json against the given schema
    *
+   * @param schemaPath the path of the schema resource
    * @param json a string representing the json
    * @throws JsonParseException if the json is invalid or cannot be parsed
    */
-  public static void verifyJson(JsonSchema schema, String json) throws JsonParseException {
+  public static void verifyJson(String schemaPath, String json) throws JsonParseException {
     Log.d(TAG, "verifyJson for : " + json);
+
+    JsonSchema schema = loadSchema(schemaPath);
 
     try {
       Set<ValidationMessage> errors = schema.validate(OBJECT_MAPPER.readTree(json));
@@ -111,6 +116,7 @@ public final class JsonUtils {
    * @return the JsonSchema
    */
   public static JsonSchema loadSchema(String resourcePath) {
-    return FACTORY.getSchema(URI.create("resource:/" + resourcePath));
+    return schemas.computeIfAbsent(
+        resourcePath, k -> FACTORY.getSchema(URI.create("resource:/" + resourcePath)));
   }
 }
