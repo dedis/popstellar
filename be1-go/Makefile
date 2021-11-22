@@ -10,7 +10,7 @@ lint:
 
 check-cov: protocol lint vet
 	go test -v ./...
-	go test -v -race -coverprofile=coverage.out ./... -json > report.json
+	go test -v -race -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
 
 check: protocol lint vet
 	go test -v ./...
@@ -24,3 +24,6 @@ protocol:
 
 clean:
 	rm -rf validation/protocol
+
+fmt:
+	gofmt -s -w ./

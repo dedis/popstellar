@@ -1,5 +1,11 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import static com.github.dedis.popstellar.utility.handler.ConsensusHandler.handleConsensusMessage;
+import static com.github.dedis.popstellar.utility.handler.ElectionHandler.handleElectionMessage;
+import static com.github.dedis.popstellar.utility.handler.LaoHandler.handleLaoMessage;
+import static com.github.dedis.popstellar.utility.handler.RollCallHandler.handleRollCallMessage;
+import static com.github.dedis.popstellar.utility.handler.WitnessMessageHandler.handleWitnessMessage;
+
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -10,9 +16,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLa
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
+import com.github.dedis.popstellar.utility.error.UnknownDataObjectException;
 
 /** General message handler class */
-public class MessageHandler {
+public final class MessageHandler {
 
   public static final String TAG = MessageHandler.class.getSimpleName();
 
@@ -26,10 +35,10 @@ public class MessageHandler {
    * @param laoRepository the repository to access the messages and LAOs
    * @param channel the channel on which the message was received
    * @param message the message that was received
-   * @return true if the message cannot be processed and false otherwise
    */
-  public static boolean handleMessage(
-      LAORepository laoRepository, String channel, MessageGeneral message) {
+  public static void handleMessage(
+      LAORepository laoRepository, String channel, MessageGeneral message)
+      throws DataHandlingException {
     Log.d(TAG, "handle incoming message");
 
     // Put the message in the state
@@ -39,34 +48,33 @@ public class MessageHandler {
 
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
-    boolean enqueue;
-    if (data.getObject().equals(Objects.LAO.getObject())) {
-      enqueue = LaoHandler.handleLaoMessage(laoRepository, channel, data, message.getMessageId());
-      laoRepository.updateNodes(channel);
-    } else if (data.getObject().equals(Objects.ROLL_CALL.getObject())) {
-      enqueue =
-          RollCallHandler.handleRollCallMessage(
-              laoRepository, channel, data, message.getMessageId());
-    } else if (data.getObject().equals(Objects.ELECTION.getObject())) {
-      enqueue =
-          ElectionHandler.handleElectionMessage(
-              laoRepository, channel, data, message.getMessageId(), senderPk);
-    } else if (data.getObject().equals(Objects.CONSENSUS.getObject())) {
-      enqueue =
-          ConsensusHandler.handleConsensusMessage(
-              laoRepository, channel, data, message.getMessageId(), senderPk);
-      laoRepository.updateNodes(channel.replace("/consensus", ""));
-    } else if (data.getObject().equals(Objects.MESSAGE.getObject())) {
-      enqueue =
-          WitnessMessageHandler.handleWitnessMessage(
-              laoRepository, channel, senderPk, (WitnessMessageSignature) data);
-    } else {
-      Log.d(TAG, "cannot handle message with data" + data.getClass());
-      enqueue = true;
+
+    Objects dataObj = Objects.find(data.getObject());
+    if (dataObj == null) throw new UnknownDataObjectException(data);
+
+    switch (dataObj) {
+      case LAO:
+        handleLaoMessage(laoRepository, channel, data, message.getMessageId());
+        laoRepository.updateNodes(channel);
+        break;
+      case ROLL_CALL:
+        handleRollCallMessage(laoRepository, channel, data, message.getMessageId());
+        break;
+      case ELECTION:
+        handleElectionMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
+        break;
+      case CONSENSUS:
+        handleConsensusMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
+        laoRepository.updateNodes(channel.replace("/consensus", ""));
+        break;
+      case MESSAGE:
+        handleWitnessMessage(laoRepository, channel, senderPk, data);
+        break;
+      default:
+        throw new UnhandledDataTypeException(data, dataObj.getObject());
     }
 
     notifyLaoUpdate(laoRepository, data, channel);
-    return enqueue;
   }
 
   /**

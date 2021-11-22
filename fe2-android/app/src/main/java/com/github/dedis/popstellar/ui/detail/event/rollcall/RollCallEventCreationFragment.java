@@ -65,7 +65,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    setDateAndTimeView(mFragBinding.getRoot(), this, getParentFragmentManager());
+    setDateAndTimeView(mFragBinding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;
@@ -140,6 +140,6 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
     mLaoDetailViewModel.createNewRollCall(
-        title, description, CREATION_TIME_IN_SECONDS, startTimeInSeconds, endTimeInSeconds, open);
+        title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds, open);
   }
 }

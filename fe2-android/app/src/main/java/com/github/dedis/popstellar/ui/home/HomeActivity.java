@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 
 import androidx.annotation.IdRes;
@@ -19,6 +21,7 @@ import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
@@ -116,6 +119,18 @@ public class HomeActivity extends AppCompatActivity {
               }
             });
 
+    // Subscribe to "open settings" event
+    mViewModel
+        .getOpenSettingsEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSettingsActivity();
+              }
+            });
+
     subscribeWalletEvents();
   }
 
@@ -173,8 +188,24 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.options_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.settings) {
+      mViewModel.openSettings();
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
+    }
+  }
+
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
     return new ViewModelProvider(activity, factory).get(HomeViewModel.class);
   }
 
@@ -247,6 +278,12 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSeedWalletFragment() {
     setCurrentFragment(R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+  }
+
+  private void setupSettingsActivity() {
+    Intent intent = new Intent(this, SettingsActivity.class);
+    Log.d(TAG, "Trying to open settings");
+    startActivity(intent);
   }
 
   private void openLaoDetails(String laoId) {

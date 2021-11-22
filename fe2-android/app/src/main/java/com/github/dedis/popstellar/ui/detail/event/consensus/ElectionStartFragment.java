@@ -44,7 +44,7 @@ public class ElectionStartFragment extends Fragment {
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
 
   private final SimpleDateFormat dateFormat =
-      new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.ENGLISH);
+      new SimpleDateFormat("yyyy/MM/dd HH:mm:ss z", Locale.getDefault());
 
   private final CompositeDisposable disposables = new CompositeDisposable();
   private ConsensusNode ownNode;
@@ -77,8 +77,12 @@ public class ElectionStartFragment extends Fragment {
     LaoDetailViewModel mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     Election election = mLaoDetailViewModel.getCurrentElection();
+    if (election == null) {
+      Log.e(TAG, "The current election of the LaoDetailViewModel is null");
+      return null;
+    }
 
-    String scheduledDate = dateFormat.format(new Date(election.getStartTimestamp() * 1000));
+    String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
     String electionId = election.getId();
     String instanceId = Consensus.generateConsensusId("election", electionId, "state");
 
@@ -89,7 +93,7 @@ public class ElectionStartFragment extends Fragment {
 
     setupTimerUpdate(election);
 
-    setupButtonListeners(binding, mLaoDetailViewModel, electionId, instanceId);
+    setupButtonListeners(binding, mLaoDetailViewModel, electionId);
 
     List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
 
@@ -117,7 +121,7 @@ public class ElectionStartFragment extends Fragment {
               }
             });
 
-    binding.setLifecycleOwner(getActivity());
+    binding.setLifecycleOwner(getViewLifecycleOwner());
 
     return binding.getRoot();
   }
@@ -177,21 +181,11 @@ public class ElectionStartFragment extends Fragment {
   private void setupButtonListeners(
       ElectionStartFragmentBinding binding,
       LaoDetailViewModel mLaoDetailViewModel,
-      String electionId,
-      String instanceId) {
+      String electionId) {
     electionStart.setOnClickListener(
-        clicked -> {
-          Optional<Consensus> acceptedConsensus =
-              ownNode
-                  .getLastConsensus(instanceId)
-                  .filter(consensus -> consensus.canBeAccepted() && !consensus.isFailed());
-          if (acceptedConsensus.isPresent()) {
-            mLaoDetailViewModel.sendConsensusLearn(acceptedConsensus.get());
-          } else {
+        clicked ->
             mLaoDetailViewModel.createNewConsensus(
-                Instant.now().getEpochSecond(), electionId, "election", "state", "started");
-          }
-        });
+                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
 
     binding
         .backLayout
@@ -210,16 +204,13 @@ public class ElectionStartFragment extends Fragment {
             .findAny();
     if (acceptedConsensus.isPresent()) {
       // assuming the election start time was updated from scheduled to real start time
-      String startedDate = dateFormat.format(new Date(election.getStartTimestamp() * 1000));
+      String startedDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
       electionStatus.setText(R.string.started);
       electionStart.setText(getString(R.string.election_started_at, startedDate));
       electionStart.setEnabled(false);
     } else {
       State ownState = ownNode.getState(instanceId);
-      boolean canAccept =
-          ownState == State.STARTING
-              && ownNode.getLastConsensus(instanceId).map(Consensus::canBeAccepted).orElse(false);
-      boolean canClick = canAccept || ownState == State.WAITING || ownState == State.FAILED;
+      boolean canClick = ownState == State.WAITING || ownState == State.FAILED;
       electionStart.setEnabled(canClick);
     }
   }
