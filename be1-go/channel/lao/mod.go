@@ -76,7 +76,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
-	hub.NotifyNewChannel(consensusPath, &consensusCh, socket)
+	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	return &Channel{
 		channelID:       channelID,
@@ -508,7 +508,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message,
 
 	if !c.organizerPubKey.Equal(senderPoint) {
 		return answer.NewErrorf(-5, "Sender key does not match the "+
-			"organizer's one: %s != %s", senderPoint, c, c.organizerPubKey)
+			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
 	}
 
 	var electionSetup messagedata.ElectionSetup

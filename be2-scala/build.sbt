@@ -1,4 +1,7 @@
+import scala.util.{Try, Success, Failure}
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
+import sbt.IO._
+
 
 name := "pop"
 
@@ -6,6 +9,32 @@ version := "0.1"
 
 scalaVersion := "2.13.5"
 
+
+//Create task to copy the protocol folder to resources
+lazy val copyProtocolTask = taskKey[Unit]("Copy protocol to resources")
+copyProtocolTask := {
+    val log = streams.value.log
+    log.info("Executing Protocol folder copy...")
+    val scalaDest = "be2-scala"
+    baseDirectory.value.name
+    if(! baseDirectory.value.name.equals(scalaDest)){
+        log.error(s"Please make sure you working dir is $scalaDest !")
+    }else{
+        val source = new File("../protocol")
+        val dest   = new File("./src/main/resources/protocol")
+        Try(IO.copyDirectory(source,dest, true)) match {
+            case Success(_) => log.info("Copied !!")
+            case Failure(exception) =>
+                log.error("Could not copy protocol to ressource folder")
+                exception.printStackTrace()
+        }
+    }
+}
+//Add task to compile time
+(Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
+resourceDirectory in (Compile, packageBin) := file(".") / "./src/main/resources"
+
+//Setup main calass task context/confiuration
 mainClass in (Compile, run) := Some("ch.epfl.pop.Server")
 mainClass in (Compile, packageBin) := Some("ch.epfl.pop.Server")
 

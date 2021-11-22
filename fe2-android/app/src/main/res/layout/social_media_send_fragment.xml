@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <import type="android.view.View" />
+
+    <variable
+      name="view_model"
+      type="com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_social_media_send"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.socialmedia.SocialMediaSendFragment">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_marginHorizontal="@dimen/margin_text"
+      android:orientation="vertical">
+
+      <EditText
+        android:id="@+id/entry_box_chirp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:afterTextChanged="@{(editable) -> view_model.setNumberCharsLeft(view_model.MAX_CHAR_NUMBERS - editable.toString().length())}"
+        android:autofillHints="name"
+        android:background="@drawable/rounded_edit_text"
+        android:ellipsize="none"
+        android:gravity="start"
+        android:hint="@string/hint_chirp"
+        android:inputType="textMultiLine"
+        android:maxLines="20"
+        android:minHeight="@dimen/min_height_entry_box_chirp"
+        android:padding="@dimen/margin_top"
+        android:scrollHorizontally="false" />
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_top"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_gravity="center"
+          android:text="@{entryBoxChirp.text.length() > 0 ? view_model.getNumberCharsLeft().toString() : view_model.MAX_CHAR_NUMBERS.toString()}"
+          android:textColor="@{entryBoxChirp.text.length() > 0 ? (view_model.getNumberCharsLeft() >= 0 ? @color/black : @color/red) : @color/black}"
+          android:textSize="@dimen/size_title"
+          android:textStyle="bold" />
+
+        <Button
+          android:id="@+id/send_chirp_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="@dimen/margin_button"
+          android:background="@drawable/rounded_corner_button"
+          android:enabled="@{!(entryBoxChirp.text.length() > view_model.MAX_CHAR_NUMBERS)}"
+          android:text="@string/send"
+          android:textColor="@color/white" />
+      </LinearLayout>
+
+    </LinearLayout>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

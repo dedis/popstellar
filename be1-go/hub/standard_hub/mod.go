@@ -48,6 +48,8 @@ const (
 	numWorkers = 10
 )
 
+var suite = crypto.Suite
+
 // Hub implements the Hub interface.
 type Hub struct {
 	hubType hub.HubType

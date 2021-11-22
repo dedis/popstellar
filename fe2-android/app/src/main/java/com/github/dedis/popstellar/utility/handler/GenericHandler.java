@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.Map;
 import io.reactivex.subjects.Subject;
 
 /** Subscribe, catchup, create LAO and broadcast handler class */
-public class GenericHandler {
+public final class GenericHandler {
 
   public static final String TAG = GenericHandler.class.getSimpleName();
 
@@ -60,10 +61,9 @@ public class GenericHandler {
    */
   public static void handleSubscribe(
       LAORepository laoRepository, int id, Map<Integer, String> subscribeRequests) {
-    String channel = subscribeRequests.get(id);
-    subscribeRequests.remove(id);
+    String channel = subscribeRequests.remove(id);
 
-    if (laoRepository.isLaoChannel(channel)) {
+    if (channel != null && laoRepository.isLaoChannel(channel)) {
       Log.d(TAG, "subscribing to LAO with id " + channel);
 
       // Create the new LAO and add it to the LAORepository LAO lists
@@ -73,6 +73,10 @@ public class GenericHandler {
 
       // Send catchup after subscribing to a LAO
       laoRepository.sendCatchup(channel);
+    } else if (channel != null) {
+      laoRepository.sendCatchup(channel);
+    } else {
+      Log.e(TAG, "Invalid Subscribe request id : " + id);
     }
   }
 
@@ -107,11 +111,15 @@ public class GenericHandler {
               + id);
     }
 
-    Log.d(TAG, "messages length: " + messages.size());
+    Log.d(TAG, "Messages to handle : " + messages.size());
     // Handle all received messages from the catchup
     for (MessageGeneral msg : messages) {
-      boolean enqueue = handleMessage(laoRepository, channel, msg);
-      if (enqueue) {
+      try {
+        handleMessage(laoRepository, channel, msg);
+      } catch (DataHandlingException ex) {
+        Log.e(TAG, "Unable to handle message", ex);
+        // This will have to change at some point. Every error is added to the queue.
+        // So if a message always fails to be handled, it will be re-added in the queue forever
         unprocessed.onNext(result);
       }
     }
@@ -138,11 +146,7 @@ public class GenericHandler {
 
     // Send subscribe and catchup after creating a LAO
     laoRepository.sendSubscribe(channel);
-    laoRepository.sendCatchup(channel);
-
-    String consensusChannel = channel + "/consensus";
-    laoRepository.sendSubscribe(consensusChannel);
-    laoRepository.sendCatchup(consensusChannel);
+    laoRepository.sendSubscribe(channel + "/consensus");
   }
 
   /**
@@ -161,9 +165,13 @@ public class GenericHandler {
 
     Log.d(TAG, "broadcast channel: " + channel + " message " + message.getMessageId());
 
-    boolean enqueue = handleMessage(laoRepository, channel, message);
-    if (enqueue) {
-      unprocessed.onNext(genericMessage);
+    try {
+      handleMessage(laoRepository, channel, message);
+    } catch (DataHandlingException ex) {
+      Log.e(TAG, "Unable to handle message", ex);
+      // This will have to change at some point. Every error is added to the queue.
+      // So if a message always fails to be handled, it will be re-added in the queue forever
+      unprocessed.onNext(broadcast);
     }
   }
 }

@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/channel"
-	"popstellar/crypto"
 	"popstellar/hub"
 	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
@@ -361,10 +360,13 @@ func Test_Handle_Publish(t *testing.T) {
 
 	hub.channelByID[rootPrefix+laoID] = c
 
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
+	require.NoError(t, err)
+
 	msg := message.Message{
 		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -631,7 +633,8 @@ type keypair struct {
 }
 
 var nolog = zerolog.New(io.Discard)
-var suite = crypto.Suite
+
+//var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())
