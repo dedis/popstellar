@@ -179,8 +179,8 @@ func (s *baseSocket) SendError(id *int, err error) {
 
 	answer := answer.Answer{
 		JSONRPCBase: jsonrpc.JSONRPCBase{JSONRPC: "2.0"},
-		ID:    id,
-		Error: msgError,
+		ID:          id,
+		Error:       msgError,
 	}
 
 	answerBuf, err := json.Marshal(answer)

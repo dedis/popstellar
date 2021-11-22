@@ -501,7 +501,7 @@ type fakeChannel struct {
 	unsubscribe method.Unsubscribe
 	publish     method.Publish
 	catchup     method.Catchup
-	broadcast	method.Broadcast
+	broadcast   method.Broadcast
 
 	// set by the subscribe
 	socket socket.Socket

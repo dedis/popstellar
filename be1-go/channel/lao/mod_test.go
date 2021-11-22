@@ -53,7 +53,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	socket := &fakeSocket{id: "socket"}
-	
+
 	err = channel.Subscribe(socket, message)
 	require.NoError(t, err)
 
@@ -287,10 +287,10 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	bufState64 := base64.URLEncoding.EncodeToString(mStateBuf)
 
 	m2 := message.Message{
-		Data: bufState64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufState64, publicKey64),
+		Data:              bufState64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufState64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -362,10 +362,10 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	bufCreate64 := base64.URLEncoding.EncodeToString(bufCreate)
 
 	m1 := message.Message{
-		Data: bufCreate64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufCreate64, publicKey64),
+		Data:              bufCreate64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufCreate64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -396,10 +396,10 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	bufOpen64 := base64.URLEncoding.EncodeToString(bufOpen)
 
 	m2 := message.Message{
-		Data: bufOpen64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufOpen64, publicKey64),
+		Data:              bufOpen64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufOpen64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -420,10 +420,10 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	bufClose64 := base64.URLEncoding.EncodeToString(bufClose)
 
 	m3 := message.Message{
-		Data: bufClose64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufClose64, publicKey64),
+		Data:              bufClose64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufClose64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 

@@ -20,7 +20,7 @@ import (
 	"sync"
 )
 
-const msgID		 = "msg id"
+const msgID = "msg id"
 
 // attendees represents the attendees in an election.
 type attendees struct {

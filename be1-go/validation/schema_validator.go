@@ -18,7 +18,7 @@ import (
 type SchemaValidator struct {
 	genericMessageSchema *jsonschema.Schema
 	dataSchema           *jsonschema.Schema
-	log 				 zerolog.Logger
+	log                  zerolog.Logger
 }
 
 // SchemaType denotes the type of schema.
@@ -126,7 +126,7 @@ func NewSchemaValidator(log zerolog.Logger) (*SchemaValidator, error) {
 	return &SchemaValidator{
 		genericMessageSchema: gmSchema,
 		dataSchema:           dataSchema,
-		log:				  log,
+		log:                  log,
 	}, nil
 }
 
