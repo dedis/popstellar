@@ -3,11 +3,9 @@ package election
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
-	"popstellar/channel/inbox"
 	"popstellar/crypto"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -18,6 +16,9 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 const msgID = "msg id"
@@ -153,7 +154,7 @@ type validVote struct {
 }
 
 // Publish is used to handle publish messages in the election channel.
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an "+

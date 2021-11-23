@@ -1,4 +1,4 @@
-package organizer
+package standard_hub
 
 import (
 	"crypto/sha256"
@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/channel"
+	"popstellar/hub"
 	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
 	"popstellar/message/query"
@@ -24,14 +25,28 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 )
 
-func TestOrganizer_Create_LAO(t *testing.T) {
+func Test_Add_Server_Socket(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{id: "fakeID"}
+
+	err = hub.NotifyNewServer(sock)
+	require.NoError(t, err)
+	require.NotNil(t, hub.queries.queries[0])
+	require.Equal(t, 1, hub.queries.nextID)
+}
+
+func Test_Create_LAO(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeChannelFac := &fakeChannelFac{
 		c: &fakeChannel{},
 	}
 
-	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel)
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	now := time.Now().Unix()
@@ -115,14 +130,242 @@ func TestOrganizer_Create_LAO(t *testing.T) {
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
 }
 
-// Check that if the organizer receives a publish message, it will call the
-// publish function on the appropriate channel.
-func TestOrganizer_Handle_Publish(t *testing.T) {
+func Test_Wrong_Root_Publish(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil)
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	laoID := "/root"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	data := messagedata.LaoState{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      "channel0",
+		Creation:  123,
+		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.Error(t, sock.err, "only lao#create is allowed on root, but found %s#%s", data.Object, data.Action)
+
+	// > check that there is no errors with messages from witness too
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.Error(t, sock.err, "only lao#create is allowed on root, but found %s#%s", data.Object, data.Action)
+}
+
+func Test_Handle_Server_Catchup(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	serverCatchup := method.Catchup{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodCatchUp,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string `json:"channel"`
+		}{
+			Channel: "/root",
+		},
+	}
+
+	publishBuf, err := json.Marshal(serverCatchup)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	// > check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, serverCatchup.ID, sock.resultID)
+}
+
+func Test_Handle_Answer(t *testing.T) {
+	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
+
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	result := struct {
+		JSONRPC string `json:"jsonrpc"`
+		ID      int    `json:"id"`
+		Result  int    `json:"result"`
+	}{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  0,
+	}
+
+	serverAnswer := struct {
+		JSONRPC string            `json:"jsonrpc"`
+		ID      int               `json:"id"`
+		Result  []message.Message `json:"result"`
+	}{
+		JSONRPC: "2.0",
+		ID:      1,
+		Result:  make([]message.Message, 1),
+	}
+	messageDataPath := filepath.Join("..", "..", "..", "protocol",
+		"examples", "messageData", "lao_create", "lao_create.json")
+
+	messageDataBuf, err := os.ReadFile(messageDataPath)
+	require.NoError(t, err)
+
+	messageData := base64.URLEncoding.EncodeToString(messageDataBuf)
+
+	msg := message.Message{
+		Data:              messageData,
+		Sender:            publicKey64,
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+	serverAnswer.Result[0] = msg
+
+	serverAnswerBis := struct {
+		JSONRPC string            `json:"jsonrpc"`
+		ID      int               `json:"id"`
+		Result  []message.Message `json:"result"`
+	}{
+		JSONRPC: "2.0",
+		ID:      2,
+		Result:  make([]message.Message, 0),
+	}
+
+	resultBuf, err := json.Marshal(result)
+	require.NoError(t, err)
+
+	answerBuf, err := json.Marshal(serverAnswer)
+	require.NoError(t, err)
+
+	answerBisBuf, err := json.Marshal(serverAnswerBis)
+	require.NoError(t, err)
+
+	queryState := false
+	hub.queries.state[1] = &queryState
+	hub.queries.queries[1] = method.Catchup{
+		Params: struct {
+			Channel string "json:\"channel\""
+		}{
+			Channel: "/root",
+		},
+	}
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: resultBuf,
+	})
+	require.Error(t, sock.err, "rpc message sent by a client should be a query")
+	sock.err = nil
+	require.False(t, queryState)
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: resultBuf,
+	})
+	require.NoError(t, sock.err)
+	require.False(t, queryState)
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: answerBuf,
+	})
+	require.NoError(t, sock.err)
+	require.True(t, queryState)
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: answerBuf,
+	})
+	require.Error(t, sock.err, "query %v already got an answer", serverAnswer.ID)
+	sock.err = nil
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: answerBisBuf,
+	})
+	require.Error(t, sock.err, "no query sent with id %v", serverAnswerBis.ID)
+}
+
+// Check that if the server receives a publish message, it will call the
+// publish function on the appropriate channel.
+func Test_Handle_Publish(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -177,7 +420,7 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 	require.Equal(t, publish, c.publish)
 
 	// > check that there is no errors with messages from witness too
-	hub.handleMessageFromWitness(&socket.IncomingMessage{
+	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -192,12 +435,12 @@ func TestOrganizer_Handle_Publish(t *testing.T) {
 
 // Check that if the organizer receives a subscribe message, it will call the
 // subscribe function on the appropriate channel.
-func TestOrganizer_Handle_Subscribe(t *testing.T) {
+func Test_Handle_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil)
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -240,7 +483,7 @@ func TestOrganizer_Handle_Subscribe(t *testing.T) {
 	require.Equal(t, subscribe, c.subscribe)
 
 	// > check that there is no errors with messages from witness too
-	hub.handleMessageFromWitness(&socket.IncomingMessage{
+	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -260,7 +503,7 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 
 	c := &fakeChannel{}
 
-	hub, err := NewHub(keypair.public, nolog, nil)
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -304,7 +547,7 @@ func TestOrganizer_Handle_Unsubscribe(t *testing.T) {
 	require.Equal(t, sock.id, c.socketID)
 
 	// > check that there is no errors with messages from witness too
-	hub.handleMessageFromWitness(&socket.IncomingMessage{
+	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -334,7 +577,7 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 		msgs: fakeMessages,
 	}
 
-	hub, err := NewHub(keypair.public, nolog, nil)
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
 	laoID := "XXX"
@@ -378,7 +621,7 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 
 	// > check that there is no errors with messages from witness too
-	hub.handleMessageFromWitness(&socket.IncomingMessage{
+	hub.handleMessageFromServer(&socket.IncomingMessage{
 		Socket:  sock,
 		Message: publishBuf,
 	})
@@ -390,66 +633,6 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	// > check that the channel has been called with the publish message
 	require.Equal(t, catchup, c.catchup)
 	require.Equal(t, fakeMessages, c.msgs)
-}
-
-// Check that if the organizer receives a wrong message, it will send an error
-// with id = null if impossible to recover request id. The fakeSocket
-// abstraction replaces null by -1 for testing.
-func TestOrganizer_HandleWrongMessage(t *testing.T) {
-	keypair := generateKeyPair(t)
-
-	fakeMessages := []message.Message{
-		{
-			MessageID: "XXX",
-		},
-	}
-
-	// set fake messages on the channel
-	c := &fakeChannel{
-		msgs: fakeMessages,
-	}
-
-	hub, err := NewHub(keypair.public, nolog, nil)
-	require.NoError(t, err)
-
-	laoID := "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="
-
-	hub.channelByID[rootPrefix+laoID] = c
-
-	// get the wrong message example
-	relativeExamplePath := filepath.Join("..", "..", "..", "protocol",
-		"examples")
-	file := filepath.Join(relativeExamplePath, "wrong_missing_jsonrpc.json")
-
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	publishBuf, err := json.Marshal(&buf)
-	require.NoError(t, err)
-
-	sock := &fakeSocket{id: "fakeID"}
-
-	err = hub.handleMessageFromClient(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: publishBuf,
-	})
-	require.Error(t, err)
-	require.Error(t, sock.err)
-
-	// > check the id
-	require.Equal(t, -1, sock.resultID)
-
-	// > check that there is no errors with messages from witness too
-	err = hub.handleMessageFromWitness(&socket.IncomingMessage{
-		Socket:  sock,
-		Message: publishBuf,
-	})
-
-	require.Error(t, err)
-	require.Error(t, sock.err)
-
-	// > check the id
-	require.Equal(t, -1, sock.resultID)
 }
 
 // -----------------------------------------------------------------------------
@@ -485,8 +668,8 @@ type fakeChannelFac struct {
 }
 
 // newChannel implement the type channel.LaoFactory
-func (c *fakeChannelFac) newChannel(channelID string,
-	hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
+func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionalities,
+	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	c.chanID = channelID
 	c.msg = msg
@@ -528,7 +711,7 @@ func (f *fakeChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error
 }
 
 // Publish implements channel.Channel
-func (f *fakeChannel) Publish(msg method.Publish) error {
+func (f *fakeChannel) Publish(msg method.Publish, socket socket.Socket) error {
 	f.publish = msg
 	return nil
 }
@@ -574,14 +757,13 @@ func (f *fakeSocket) SendResult(id int, res []message.Message) {
 
 // SendError implements socket.Socket
 func (f *fakeSocket) SendError(id *int, err error) {
-	if id != nil {
-		f.resultID = *id
-	} else {
-		f.resultID = -1
-	}
 	f.err = err
 }
 
 func (f *fakeSocket) ID() string {
 	return f.id
+}
+
+func (f *fakeSocket) Type() socket.SocketType {
+	return socket.ClientSocketType
 }
