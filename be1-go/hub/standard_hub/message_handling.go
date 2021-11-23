@@ -125,7 +125,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	messages := answerMsg.Result.GetData()
 	for msg := range messages {
 		var messageData message.Message
-		err = json.Unmarshal(messages[msg], messageData)
+		err = json.Unmarshal(messages[msg], &messageData)
 		if err != nil {
 			h.log.Error().Msgf("failed to unmarshal message during catchup: %v", err)
 		} else {
