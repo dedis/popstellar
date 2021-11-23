@@ -95,56 +95,61 @@ func (h *Hub) handleRootCatchup(senderSocket socket.Socket, byteMessage []byte) 
 
 // handleAnswer handles the answer to a message sent by the server
 func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error {
-	var answer method.Answer
-	var result method.Result
+	var answerMsg answer.Answer
 
-	err := json.Unmarshal(byteMessage, &result)
-	if err == nil {
-		h.log.Info().Msg("result isn't an answer to a catchup, nothing to handle")
-		return nil
-	}
-
-	err = json.Unmarshal(byteMessage, &answer)
+	err := json.Unmarshal(byteMessage, &answerMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal answer: %v", err)
 	}
 
-	h.queries.Lock()
-
-	val := h.queries.state[answer.ID]
-	if val == nil {
-		h.queries.Unlock()
-		return xerrors.Errorf("no query sent with id %v", answer.ID)
-	} else if *val {
-		h.queries.Unlock()
-		return xerrors.Errorf("query %v already got an answer", answer.ID)
+	if answerMsg.Result.IsEmpty() {
+		h.log.Info().Msg("result isn't an answer to a catchup, nothing to handle")
+		return nil
 	}
 
-	channel := h.queries.queries[answer.ID].Params.Channel
-	*h.queries.state[answer.ID] = true
+	h.queries.Lock()
+
+	val := h.queries.state[*answerMsg.ID]
+	if val == nil {
+		h.queries.Unlock()
+		return xerrors.Errorf("no query sent with id %v", answerMsg.ID)
+	} else if *val {
+		h.queries.Unlock()
+		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
+	}
+
+	channel := h.queries.queries[*answerMsg.ID].Params.Channel
+	*h.queries.state[*answerMsg.ID] = true
 	h.queries.Unlock()
 
-	for msg := range answer.Result {
-		publish := method.Publish{
-			Base: query.Base{
-				JSONRPCBase: jsonrpc.JSONRPCBase{
-					JSONRPC: "2.0",
-				},
-				Method: "publish",
-			},
-
-			Params: struct {
-				Channel string          `json:"channel"`
-				Message message.Message `json:"message"`
-			}{
-				Channel: channel,
-				Message: answer.Result[msg],
-			},
-		}
-
-		err := h.handleDuringCatchup(senderSocket, publish)
+	messages := answerMsg.Result.GetData()
+	for msg := range messages {
+		var messageData message.Message
+		err = json.Unmarshal(messages[msg], messageData)
 		if err != nil {
-			h.log.Error().Msgf("failed to handle message during catchup: %v", err)
+			h.log.Error().Msgf("failed to unmarshal message during catchup: %v", err)
+		} else {
+			publish := method.Publish{
+				Base: query.Base{
+					JSONRPCBase: jsonrpc.JSONRPCBase{
+						JSONRPC: "2.0",
+					},
+					Method: "publish",
+				},
+
+				Params: struct {
+					Channel string          `json:"channel"`
+					Message message.Message `json:"message"`
+				}{
+					Channel: channel,
+					Message: messageData,
+				},
+			}
+
+			err := h.handleDuringCatchup(senderSocket, publish)
+			if err != nil {
+				h.log.Error().Msgf("failed to handle message during catchup: %v", err)
+			}
 		}
 	}
 	return nil

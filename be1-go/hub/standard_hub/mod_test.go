@@ -257,13 +257,21 @@ func Test_Handle_Answer(t *testing.T) {
 	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	result := method.Result{
+	result := struct {
+		JSONRPC string `json:"jsonrpc"`
+		ID      int    `json:"id"`
+		Result  int    `json:"result"`
+	}{
 		JSONRPC: "2.0",
 		ID:      1,
 		Result:  0,
 	}
 
-	serverAnswer := method.Answer{
+	serverAnswer := struct {
+		JSONRPC string            `json:"jsonrpc"`
+		ID      int               `json:"id"`
+		Result  []message.Message `json:"result"`
+	}{
 		JSONRPC: "2.0",
 		ID:      1,
 		Result:  make([]message.Message, 1),
@@ -283,7 +291,11 @@ func Test_Handle_Answer(t *testing.T) {
 	}
 	serverAnswer.Result[0] = msg
 
-	serverAnswerBis := method.Answer{
+	serverAnswerBis := struct {
+		JSONRPC string            `json:"jsonrpc"`
+		ID      int               `json:"id"`
+		Result  []message.Message `json:"result"`
+	}{
 		JSONRPC: "2.0",
 		ID:      2,
 		Result:  make([]message.Message, 0),
