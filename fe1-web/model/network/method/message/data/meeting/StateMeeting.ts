@@ -11,6 +11,7 @@ import {
   checkWitnessSignatures,
 } from '../Checker';
 
+/** Data received to track the state of a Meeting */
 export class StateMeeting implements MessageData {
   public readonly object: ObjectType = ObjectType.MEETING;
 
@@ -86,6 +87,10 @@ export class StateMeeting implements MessageData {
     this.id = msg.id;
   }
 
+  /**
+   * Creates a StateMeeting object from a given object
+   * @param obj
+   */
   public static fromJson(obj: any): StateMeeting {
     const { errors } = validateDataObject(ObjectType.MEETING, ActionType.STATE, obj);
 

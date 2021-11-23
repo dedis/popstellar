@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
-	"popstellar/channel/inbox"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -169,7 +169,7 @@ func (c *Channel) broadcastToAllWitnesses(msg message.Message) error {
 }
 
 // Publish handles publish messages for the consensus channel
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
@@ -336,7 +336,7 @@ func (c *Channel) processConsensusElect(sender string, data messagedata.Consensu
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to process consensus#elect message: %v", err)
+		return xerrors.Errorf("invalid consensus#elect message: %v", err)
 	}
 
 	c.consensusInstances[data.InstanceID] = &ConsensusInstance{
@@ -368,7 +368,7 @@ func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAcc
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to process consensus#elect_accept message: %v", err)
+		return xerrors.Errorf("invalid consensus#elect_accept message: %v", err)
 	}
 
 	// check wether a message with the correct ID was received previously
@@ -612,7 +612,7 @@ func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to process consensus#learn message: %v", err)
+		return xerrors.Errorf("invalid consensus#learn message: %v", err)
 	}
 
 	// check wether a message with the correct ID was received previously

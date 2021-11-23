@@ -52,7 +52,7 @@
                     "id": {
                         "type": "string",
                         "contentEncoding": "base64",
-                        "$comment": "ID of the question"
+                        "$comment": "Question ID: Hash : HashLen('Question', election_id, question)"
                     },
                     "question": {
                         "type": "string",

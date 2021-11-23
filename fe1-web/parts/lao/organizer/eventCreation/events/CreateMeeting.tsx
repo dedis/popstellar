@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  View, Platform, Modal,
+  View, Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -12,6 +12,8 @@ import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
+import DismissModal from 'components/DismissModal';
+import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
 import { onConfirmPress } from '../CreateEvent';
 
@@ -100,38 +102,21 @@ const CreateMeeting = ({ route }: any) => {
         onPress={navigation.goBack}
       />
 
-      <Modal
-        visible={modalEndIsVisible}
-        onRequestClose={() => setModalEndIsVisible(!modalEndIsVisible)}
-        transparent
-      >
-        <View style={styles.modalView}>
-          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
-          <TextBlock text={STRINGS.modal_event_ends_in_past} />
-          <WideButtonView
-            title={STRINGS.general_button_ok}
-            onPress={() => setModalEndIsVisible(!modalEndIsVisible)}
-          />
-        </View>
-      </Modal>
-      <Modal
-        visible={modalStartIsVisible}
-        onRequestClose={() => setModalStartIsVisible(!modalStartIsVisible)}
-        transparent
-      >
-        <View style={styles.modalView}>
-          <TextBlock text={STRINGS.modal_event_creation_failed} bold />
-          <TextBlock text={STRINGS.modal_event_starts_in_past} />
-          <WideButtonView
-            title={STRINGS.modal_button_start_now}
-            onPress={() => createMeeting()}
-          />
-          <WideButtonView
-            title={STRINGS.modal_button_go_back}
-            onPress={() => setModalStartIsVisible(!modalStartIsVisible)}
-          />
-        </View>
-      </Modal>
+      <DismissModal
+        visibility={modalEndIsVisible}
+        setVisibility={setModalEndIsVisible}
+        title={STRINGS.modal_event_creation_failed}
+        description={STRINGS.modal_event_ends_in_past}
+      />
+      <ConfirmModal
+        visibility={modalStartIsVisible}
+        setVisibility={setModalStartIsVisible}
+        title={STRINGS.modal_event_creation_failed}
+        description={STRINGS.modal_event_starts_in_past}
+        onConfirmPress={() => createMeeting()}
+        buttonConfirmText={STRINGS.modal_button_start_now}
+        buttonCancelText={STRINGS.modal_button_go_back}
+      />
     </>
   );
 };
