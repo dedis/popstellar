@@ -19,3 +19,6 @@ database
 
 # Test
 database_test
+
+#Protocol folder
+src/main/resources/protocol

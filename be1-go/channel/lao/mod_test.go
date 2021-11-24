@@ -36,7 +36,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 
 	m := message.Message{MessageID: "0"}
 
-	channel := NewChannel("channel0", fakeHub, m, nolog)
+	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -53,7 +53,7 @@ func TestLAOChannel_Subscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	socket := &fakeSocket{id: "socket"}
-	
+
 	err = channel.Subscribe(socket, message)
 	require.NoError(t, err)
 
@@ -67,7 +67,7 @@ func TestLAOChannel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("channel0", fakeHub, m, nolog)
+	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -102,7 +102,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("channel0", fakeHub, m, nolog)
+	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "unsubscribe")
@@ -126,7 +126,7 @@ func TestLAOChannel_Broadcast_mustFail(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("channel0", fakeHub, m, nolog)
+	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "broadcast")
@@ -158,7 +158,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -197,7 +197,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog)
+	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 
 	// Create an update lao message
 	relativePath := filepath.Join(protocolRelativePath,
@@ -231,7 +231,7 @@ func TestLAOChannel_Publish_LaoUpdate(t *testing.T) {
 
 	messagePublish.Params.Message = m1
 
-	require.NoError(t, channel.Publish(messagePublish))
+	require.NoError(t, channel.Publish(messagePublish, nil))
 }
 
 func TestLAOChannel_Publish_LaoState(t *testing.T) {
@@ -242,7 +242,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog)
+	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 	laoChannel := channel.(*Channel)
 
 	// Create an update lao
@@ -287,10 +287,10 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 	bufState64 := base64.URLEncoding.EncodeToString(mStateBuf)
 
 	m2 := message.Message{
-		Data: bufState64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufState64, publicKey64),
+		Data:              bufState64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufState64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -308,7 +308,7 @@ func TestLAOChannel_Publish_LaoState(t *testing.T) {
 
 	messageStatePublish.Params.Message = m2
 
-	require.NoError(t, channel.Publish(messageStatePublish))
+	require.NoError(t, channel.Publish(messageStatePublish, nil))
 }
 
 func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
@@ -321,7 +321,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, m, nolog)
+	channel := NewChannel("channel0", fakeHub, m, nolog, nil, nil)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -344,7 +344,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog)
+	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -362,10 +362,10 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	bufCreate64 := base64.URLEncoding.EncodeToString(bufCreate)
 
 	m1 := message.Message{
-		Data: bufCreate64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufCreate64, publicKey64),
+		Data:              bufCreate64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufCreate64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -383,7 +383,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 
 	messageCreatePub.Params.Message = m1
 
-	require.NoError(t, channel.Publish(messageCreatePub))
+	require.NoError(t, channel.Publish(messageCreatePub, nil))
 
 	// Create the roll_call_open message
 	relativePathOpen := filepath.Join(protocolRelativePath,
@@ -396,10 +396,10 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	bufOpen64 := base64.URLEncoding.EncodeToString(bufOpen)
 
 	m2 := message.Message{
-		Data: bufOpen64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufOpen64, publicKey64),
+		Data:              bufOpen64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufOpen64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -407,7 +407,7 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 
 	messageOpenPub.Params.Message = m2
 
-	require.NoError(t, channel.Publish(messageOpenPub))
+	require.NoError(t, channel.Publish(messageOpenPub, nil))
 
 	// Create the roll_call_close message
 	relativePathClose := filepath.Join(protocolRelativePath,
@@ -420,17 +420,17 @@ func TestBaseChannel_SimulateRollCall(t *testing.T) {
 	bufClose64 := base64.URLEncoding.EncodeToString(bufClose)
 
 	m3 := message.Message{
-		Data: bufClose64,
-		Sender: publicKey64,
-		Signature: "h",
-		MessageID: messagedata.Hash(bufClose64, publicKey64),
+		Data:              bufClose64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufClose64, publicKey64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
 	messageClosePub := messageCreatePub
 	messageClosePub.Params.Message = m3
 
-	require.NoError(t, channel.Publish(messageClosePub))
+	require.NoError(t, channel.Publish(messageClosePub, nil))
 }
 
 func TestLAOChannel_Election_Creation(t *testing.T) {
@@ -441,7 +441,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
-	channel := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog)
+	channel := NewChannel("/root/fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, m, nolog, keypair.public, nil)
 
 	// Create an update lao message
 	relativePath := filepath.Join(protocolRelativePath,
@@ -475,7 +475,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 
 	messagePublish.Params.Message = m1
 
-	require.NoError(t, channel.Publish(messagePublish))
+	require.NoError(t, channel.Publish(messagePublish, nil))
 }
 
 // -----------------------------------------------------------------------------
@@ -492,8 +492,7 @@ var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())
-	point := suite.Point().Pick(suite.RandomStream())
-	point = point.Mul(secret, point)
+	point := suite.Point().Mul(secret, nil)
 
 	pkbuf, err := point.MarshalBinary()
 	require.NoError(t, err)
@@ -547,7 +546,7 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 	return &hub, nil
 }
 
-func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
+func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()

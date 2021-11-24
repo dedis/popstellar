@@ -1,0 +1,7 @@
+{
+    "object": "consensus",
+    "action": "elect-accept",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "@@@",
+    "accept": true
+}

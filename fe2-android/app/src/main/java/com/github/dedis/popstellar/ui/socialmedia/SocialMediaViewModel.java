@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -8,27 +9,53 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
+import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.security.Keys;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
+  private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
+  public static final Integer MAX_CHAR_NUMBERS = 300;
 
   /*
    * LiveData objects for capturing events
    */
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSendEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenSearchEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenFollowingEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenProfileEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
+
+  private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
+  private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
    */
+  private final LAORepository mLaoRepository;
+  private final AndroidKeysetManager mKeysetManager;
   private final CompositeDisposable disposables;
 
-  public SocialMediaViewModel(@NonNull Application application) {
+  public SocialMediaViewModel(
+      @NonNull Application application,
+      LAORepository laoRepository,
+      AndroidKeysetManager keysetManager) {
     super(application);
+    mLaoRepository = laoRepository;
+    mKeysetManager = keysetManager;
     disposables = new CompositeDisposable();
   }
 
@@ -49,12 +76,28 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mOpenSendEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenSearchEvent() {
+    return mOpenSearchEvent;
+  }
+
   public LiveData<SingleEvent<Boolean>> getOpenFollowingEvent() {
     return mOpenFollowingEvent;
   }
 
   public LiveData<SingleEvent<Boolean>> getOpenProfileEvent() {
     return mOpenProfileEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getSendNewChirpEvent() {
+    return mSendNewChirpEvent;
+  }
+
+  public LiveData<Integer> getNumberCharsLeft() {
+    return mNumberCharsLeft;
+  }
+
+  public LiveData<String> getLaoId() {
+    return mLaoId;
   }
 
   /*
@@ -68,11 +111,86 @@ public class SocialMediaViewModel extends AndroidViewModel {
     mOpenSendEvent.postValue(new SingleEvent<>(true));
   }
 
+  public void openSearch() {
+    mOpenSearchEvent.postValue(new SingleEvent<>(true));
+  }
+
   public void openFollowing() {
     mOpenFollowingEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openProfile() {
     mOpenProfileEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void sendNewChirpEvent() {
+    mSendNewChirpEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void setNumberCharsLeft(Integer numberChars) {
+    mNumberCharsLeft.setValue(numberChars);
+  }
+
+  public void setLaoId(String laoId) {
+    mLaoId.setValue(laoId);
+  }
+
+  /** Subscribe to the channel: /root/<lao_id>/social/chirps */
+  public void subscribeToGeneralChannel(String laoId) {
+    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/chirps");
+
+    String channel = "/root/" + laoId + "/social/chirps";
+
+    Disposable disposable =
+        mLaoRepository
+            .sendSubscribe(channel)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "subscribed to the channel");
+                  } else {
+                    Log.d(TAG, "failed to subscribe to the channel");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
+
+    disposables.add(disposable);
+  }
+
+  /** Subscribe to a channel: /root/<lao_id>/social/<sender> */
+  public void subscribeToChannel(String laoId) {
+    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/<sender>");
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      String channel = "/root/" + laoId + "/social/" + publicKey;
+
+      Disposable disposable =
+          mLaoRepository
+              .sendSubscribe(channel)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "subscribed to the channel");
+                    } else {
+                      Log.d(TAG, "failed to subscribe to the channel");
+                    }
+                  },
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
+
+      disposables.add(disposable);
+
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
   }
 }
