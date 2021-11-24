@@ -59,12 +59,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 	}
 
 	// get the HubType from the user
-	var hubType hub.HubType
-	if user == organizer {
-		hubType = hub.OrganizerHubType
-	} else if user == witness {
-		hubType = hub.WitnessHubType
-	}
+	var hubType = hub.HubType(user)
 
 	// create user hub
 	h, err := standard_hub.NewHub(point, log.With().Str("role", user).Logger(), lao.NewChannel, hubType)
