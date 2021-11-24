@@ -63,4 +63,6 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
             case _ => Right(validationErrorNoMessage(rpcMessage.id))
         }
     }
+
+    //no need for a addBroadcastChirpValidator, since the server will never receive one in theory
 }
