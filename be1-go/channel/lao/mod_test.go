@@ -158,7 +158,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil, nil)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
