@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
@@ -106,22 +105,6 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	}
 
 	return nil
-}
-
-type keypairTemp struct {
-	public    kyber.Point
-	publicBuf []byte
-	private   kyber.Scalar
-}
-
-func generateKeyPairTemp() keypairTemp {
-	secret := crypto.Suite.Scalar().Pick(crypto.Suite.RandomStream())
-	point := crypto.Suite.Point().Pick(crypto.Suite.RandomStream())
-	point = point.Mul(secret, point)
-
-	pkbuf, err := point.MarshalBinary()
-	_ = err
-	return keypairTemp{point, pkbuf, secret}
 }
 
 func (c *Channel) broadcastViaGeneral(msg message.Message) error {
