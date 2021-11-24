@@ -124,34 +124,37 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 
 	messages := answerMsg.Result.GetData()
 	for msg := range messages {
+
 		var messageData message.Message
 		err = json.Unmarshal(messages[msg], &messageData)
 		if err != nil {
 			h.log.Error().Msgf("failed to unmarshal message during catchup: %v", err)
-		} else {
-			publish := method.Publish{
-				Base: query.Base{
-					JSONRPCBase: jsonrpc.JSONRPCBase{
-						JSONRPC: "2.0",
-					},
-					Method: "publish",
-				},
+			continue
+		}
 
-				Params: struct {
-					Channel string          `json:"channel"`
-					Message message.Message `json:"message"`
-				}{
-					Channel: channel,
-					Message: messageData,
+		publish := method.Publish{
+			Base: query.Base{
+				JSONRPCBase: jsonrpc.JSONRPCBase{
+					JSONRPC: "2.0",
 				},
-			}
+				Method: "publish",
+			},
 
-			err := h.handleDuringCatchup(senderSocket, publish)
-			if err != nil {
-				h.log.Error().Msgf("failed to handle message during catchup: %v", err)
-			}
+			Params: struct {
+				Channel string          `json:"channel"`
+				Message message.Message `json:"message"`
+			}{
+				Channel: channel,
+				Message: messageData,
+			},
+		}
+
+		err := h.handleDuringCatchup(senderSocket, publish)
+		if err != nil {
+			h.log.Error().Msgf("failed to handle message during catchup: %v", err)
 		}
 	}
+
 	return nil
 }
 
