@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <data>
+
+    <import type="android.view.View" />
+
+    <variable
+      name="view_model"
+      type="com.github.dedis.popstellar.ui.socialmedia.SocialMediaViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_social_media_home"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.socialmedia.SocialMediaHomeFragment">
+
+    <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
+
+      <ImageButton
+        android:id="@+id/social_media_send_fragment_button"
+        android:layout_width="@dimen/round_button_size"
+        android:layout_height="@dimen/round_button_size"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/margin_top"
+        android:layout_marginBottom="70dp"
+        android:background="@drawable/round_button"
+        android:contentDescription="@string/send_button_desc"
+        android:src="@drawable/ic_social_media_send_foreground" />
+    </FrameLayout>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

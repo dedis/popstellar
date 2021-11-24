@@ -12,7 +12,7 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
-import Social from 'parts/Social';
+import SocialMediaNavigation from 'parts/lao/socialMedia/SocialMediaNavigation';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
@@ -92,7 +92,9 @@ function LaoNavigation() {
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={tabName}
-      swipeEnabled={false}
+      screenOptions={{
+        swipeEnabled: false,
+      }}
     >
 
       <OrganizationTopTabNavigator.Screen
@@ -101,8 +103,8 @@ function LaoNavigation() {
       />
 
       <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_social}
-        component={Social}
+        name={STRINGS.navigation_tab_social_media}
+        component={SocialMediaNavigation}
       />
 
       { buildTabComponent(isOrganizer, isWitness) }

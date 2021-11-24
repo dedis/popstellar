@@ -7,6 +7,7 @@ import keyPair from 'test_data/keypair.json';
 
 import {
   ActionType,
+  AddChirp,
   CloseRollCall,
   CreateLao,
   CreateMeeting,
@@ -23,7 +24,15 @@ import {
 import 'store/Storage';
 import { ProtocolError } from 'model/network/index';
 import {
-  Base64UrlData, EventTags, Hash, Lao, PrivateKey, PublicKey, Timestamp, Question, KeyPair,
+  Base64UrlData,
+  EventTags,
+  Hash,
+  KeyPair,
+  Lao,
+  PrivateKey,
+  PublicKey,
+  Question,
+  Timestamp,
 } from 'model/objects';
 import { sign } from 'tweetnacl';
 import { OpenedLaoStore } from 'store';
@@ -61,6 +70,7 @@ describe('=== fromJsonData checks ===', () => {
   const location = 'Lausanne';
   const mockVersion = STRINGS.election_version_identifier;
   const mockLaoId: Hash = Hash.fromStringArray(org.toString(), time.toString(), name);
+  const chirpText = 'This is a test chirp';
 
   let temp: any = {};
 
@@ -172,6 +182,14 @@ describe('=== fromJsonData checks ===', () => {
     message_id: mockMessageId,
     signature: mockSecretKey.sign(mockMessageId),
   };
+
+  const sampleAddChirp: Partial<AddChirp> = {
+    object: ObjectType.CHIRP,
+    action: ActionType.ADD,
+    text: chirpText,
+    timestamp: time,
+  };
+
   const electionId: Hash = Hash.fromStringArray(
     'Election', mockLaoId.toString(), time.toString(), name.toString(),
   );
@@ -199,6 +217,7 @@ describe('=== fromJsonData checks ===', () => {
     write_in: true,
   };
   const mockQuestions = [mockQuestionObject1];
+
   const sampleSetupElection: Partial<SetupElection> = {
     object: ObjectType.ELECTION,
     action: ActionType.SETUP,
@@ -218,6 +237,7 @@ describe('=== fromJsonData checks ===', () => {
   const dataUpdateLao: string = `{"object": "${ObjectType.LAO}","action": "${ActionType.UPDATE_PROPERTIES}","name": "${name}","id": "${mockLaoId.toString()}","last_modified": ${CLOSE_TIMESTAMP.toString()},"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]}`;
   const dataWitnessMessage: string = `{"object": "${ObjectType.MESSAGE}","action": "${ActionType.WITNESS}","message_id": "${mockMessageId.toString()}","signature": "${mockSecretKey.sign(mockMessageId).toString()}"}`;
   const dataElection: string = `{"object": "${ObjectType.ELECTION}","action":"F_ACTION",FF_MODIFICATION}`;
+  const dataChirp: string = `{"object": "${ObjectType.CHIRP}", "action": "F_ACTION", "text": "${chirpText}", "timestamp": ${time}}`;
 
   const dataCreateLao: string = dataLao
     .replace('F_ACTION', ActionType.CREATE)
@@ -258,6 +278,9 @@ describe('=== fromJsonData checks ===', () => {
     .replace('FF_MODIFICATION', `"lao":"${mockLaoId.toString()}","id":
     "${electionId.toString()}","name":"${name}","version":"${mockVersion}","created_at":${time},
     "start_time":${time},"end_time":${CLOSE_TIMESTAMP},"questions":${JSON.stringify(mockQuestions)}`);
+
+  const dataAddChirp: string = dataChirp
+    .replace('F_ACTION', ActionType.ADD);
 
   beforeAll(() => {
     const sampleLao: Lao = new Lao({
@@ -459,6 +482,18 @@ describe('=== fromJsonData checks ===', () => {
         };
         expect(new SetupElection(temp)).toBeJsonEqual(temp);
       });
+
+      // Add Chirp
+      it('\'AddChirp\'', () => {
+        expect(new AddChirp(sampleAddChirp)).toBeJsonEqual(sampleAddChirp);
+        temp = {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: chirpText,
+          timestamp: time,
+        };
+        expect(new AddChirp(temp)).toBeJsonEqual(temp);
+      });
     });
 
     describe('from JSON objects', () => {
@@ -530,6 +565,12 @@ describe('=== fromJsonData checks ===', () => {
       it('\'SetupElection\'', () => {
         const obj = JSON.parse(dataSetupElection);
         expect(SetupElection.fromJson(obj)).toBeJsonEqual(sampleSetupElection);
+      });
+
+      // Add Chirp
+      it('\'AddChirp\'', () => {
+        const obj = JSON.parse(dataAddChirp);
+        expect(AddChirp.fromJson(obj)).toBeJsonEqual(sampleAddChirp);
       });
     });
   });

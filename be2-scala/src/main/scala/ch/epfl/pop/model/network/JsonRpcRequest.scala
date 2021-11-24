@@ -76,6 +76,5 @@ object JsonRpcRequest extends Parsable {
            ): JsonRpcRequest = {
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
-
   override def buildFromJson(payload: String): JsonRpcRequest = payload.parseJson.asJsObject.convertTo[JsonRpcRequest]
 }

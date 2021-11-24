@@ -31,6 +31,7 @@
     android:layout_width="0dp"
     android:layout_height="0dp"
     android:text="@string/tab_identity"
+    android:textSize="@dimen/size_small"
     app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_identity"
     app:layout_constraintEnd_toStartOf="@+id/guideline_vertical_tab_prop"
     app:layout_constraintStart_toEndOf="@+id/guideline_vertical_tab_identity"

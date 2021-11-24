@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -36,6 +38,7 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class LaoDetailActivity extends AppCompatActivity {
 
@@ -43,7 +46,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   private LaoDetailViewModel mViewModel;
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
     return new ViewModelProvider(activity, factory).get(LaoDetailViewModel.class);
   }
 
@@ -212,13 +215,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupLaoFragment() {
-    LaoDetailFragment laoDetailFragment =
-        (LaoDetailFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_lao_detail);
-    if (laoDetailFragment == null) {
-      laoDetailFragment = LaoDetailFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), laoDetailFragment, R.id.fragment_container_lao_detail);
-    }
+    setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
 
   private void setupHomeActivity() {
@@ -244,16 +241,8 @@ public class LaoDetailActivity extends AppCompatActivity {
             stringEvent -> {
               String publicKey = stringEvent.getContentIfNotHandled();
               if (publicKey != null) {
-                IdentityFragment identityFragment =
-                    (IdentityFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_identity);
-                if (identityFragment == null) {
-                  identityFragment = IdentityFragment.newInstance(publicKey);
-                  ActivityUtils.replaceFragmentInActivity(
-                      getSupportFragmentManager(),
-                      identityFragment,
-                      R.id.fragment_container_lao_detail);
-                }
+                setCurrentFragment(
+                    R.id.fragment_identity, () -> IdentityFragment.newInstance(publicKey));
               }
             });
   }
@@ -266,31 +255,15 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                WitnessMessageFragment witnessMessageFragment =
-                    (WitnessMessageFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_witness_message);
-                if (witnessMessageFragment == null) {
-                  witnessMessageFragment = WitnessMessageFragment.newInstance();
-                  ActivityUtils.replaceFragmentInActivity(
-                      getSupportFragmentManager(),
-                      witnessMessageFragment,
-                      R.id.fragment_container_lao_detail);
-                }
+                setCurrentFragment(
+                    R.id.fragment_witness_message, WitnessMessageFragment::newInstance);
               }
             });
   }
 
   private void setupCreateRollCallFragment() {
-    RollCallEventCreationFragment rollCallCreationFragment =
-        (RollCallEventCreationFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_create_roll_call_event);
-    if (rollCallCreationFragment == null) {
-      rollCallCreationFragment = RollCallEventCreationFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(),
-          rollCallCreationFragment,
-          R.id.fragment_container_lao_detail);
-    }
+    setCurrentFragment(
+        R.id.fragment_create_roll_call_event, RollCallEventCreationFragment::newInstance);
   }
 
   private void setupAddWitness() {
@@ -309,53 +282,46 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupScanFragmentWitness() {
-    QRCodeScanningFragment scanningFragment =
-        (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.qr_code);
-
-    if (scanningFragment == null) {
-      Context context = getApplicationContext();
-      BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
-      int width = getResources().getInteger(R.integer.camera_preview_width);
-      int height = getResources().getInteger(R.integer.camera_preview_height);
-      scanningFragment =
-          QRCodeScanningFragment.newInstance(
-              Injection.provideCameraSource(context, qrCodeDetector, width, height),
+    setCurrentFragment(
+        R.id.qr_code,
+        () -> {
+          Context context = getApplicationContext();
+          BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
+          return QRCodeScanningFragment.newInstance(
+              Injection.provideCameraSource(
+                  getApplicationContext(),
+                  qrCodeDetector,
+                  getResources().getInteger(R.integer.camera_preview_width),
+                  getResources().getInteger(R.integer.camera_preview_height)),
               qrCodeDetector);
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), scanningFragment, R.id.fragment_container_lao_detail);
-    }
+        });
   }
 
   private void setupScanFragmentRollCall() {
-    QRCodeScanningFragment scanningFragment =
-        (QRCodeScanningFragment)
-            getSupportFragmentManager().findFragmentById(R.id.add_attendee_layout);
-
-    if (scanningFragment == null) {
-      Context context = getApplicationContext();
-      BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
-      int width = getResources().getInteger(R.integer.camera_preview_width);
-      int height = getResources().getInteger(R.integer.camera_preview_height);
-      scanningFragment =
-          QRCodeScanningFragment.newInstance(
-              Injection.provideCameraSource(context, qrCodeDetector, width, height),
+    setCurrentFragment(
+        R.id.add_attendee_layout,
+        () -> {
+          Context context = getApplicationContext();
+          BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
+          return QRCodeScanningFragment.newInstance(
+              Injection.provideCameraSource(
+                  getApplicationContext(),
+                  qrCodeDetector,
+                  getResources().getInteger(R.integer.camera_preview_width),
+                  getResources().getInteger(R.integer.camera_preview_height)),
               qrCodeDetector);
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), scanningFragment, R.id.fragment_container_lao_detail);
-    }
+        });
   }
 
   private void setupCameraPermissionFragment() {
-    CameraPermissionFragment cameraPermissionFragment =
-        (CameraPermissionFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_camera_perm);
-    if (cameraPermissionFragment == null) {
-      cameraPermissionFragment = CameraPermissionFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(),
-          cameraPermissionFragment,
-          R.id.fragment_container_lao_detail);
-    }
+    // Setup result listener to open the scanning tab once the permission is granted
+    getSupportFragmentManager()
+        .setFragmentResultListener(
+            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openScanning());
+
+    setCurrentFragment(
+        R.id.fragment_camera_perm,
+        () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
   }
 
   private void openScanning(String action) {
@@ -371,61 +337,27 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupRollCallDetailFragment(String pk) {
-    RollCallDetailFragment rollCallDetailFragment =
-        (RollCallDetailFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_roll_call_detail);
-    if (rollCallDetailFragment == null) {
-      rollCallDetailFragment = RollCallDetailFragment.newInstance(pk);
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), rollCallDetailFragment, R.id.fragment_container_lao_detail);
-    }
+    setCurrentFragment(
+        R.id.fragment_roll_call_detail, () -> RollCallDetailFragment.newInstance(pk));
   }
 
   private void setupCreateElectionSetupFragment() {
-    ElectionSetupFragment electionSetupFragment =
-        (ElectionSetupFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_setup_election_event);
-    if (electionSetupFragment == null) {
-      electionSetupFragment = ElectionSetupFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), electionSetupFragment, R.id.fragment_container_lao_detail);
-    }
+    setCurrentFragment(R.id.fragment_setup_election_event, ElectionSetupFragment::newInstance);
   }
 
   private void setupLaoWalletFragment() {
-    LaoWalletFragment laoWalletFragment =
-        (LaoWalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_lao_wallet);
-    if (laoWalletFragment == null) {
-      laoWalletFragment = LaoWalletFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), laoWalletFragment, R.id.fragment_container_lao_detail);
-    }
+    setCurrentFragment(R.id.fragment_lao_wallet, LaoWalletFragment::newInstance);
   }
 
   private void setupRollCallTokenFragment(String id) {
-    RollCallTokenFragment rollCallTokenFragment =
-        (RollCallTokenFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_rollcall_token);
-    if (rollCallTokenFragment == null) {
-      rollCallTokenFragment = RollCallTokenFragment.newInstance(id);
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), rollCallTokenFragment, R.id.fragment_container_lao_detail);
-    }
+    setCurrentFragment(R.id.fragment_rollcall_token, () -> RollCallTokenFragment.newInstance(id));
   }
 
   private void setupAttendeesListFragment(String id) {
-    AttendeesListFragment attendeesListFragment =
-        (AttendeesListFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_attendees_list);
-    if (attendeesListFragment == null) {
-      attendeesListFragment = AttendeesListFragment.newInstance(id);
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), attendeesListFragment, R.id.fragment_container_lao_detail);
-    }
+    setCurrentFragment(R.id.fragment_attendees_list, () -> AttendeesListFragment.newInstance(id));
   }
 
   private void setupManageElectionFragment() {
-
     mViewModel
         .getOpenManageElectionEvent()
         .observe(
@@ -433,16 +365,8 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                ManageElectionFragment manageElectionFragment =
-                    (ManageElectionFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_manage_election);
-                if (manageElectionFragment == null) {
-                  manageElectionFragment = ManageElectionFragment.newInstance();
-                  ActivityUtils.replaceFragmentInActivity(
-                      getSupportFragmentManager(),
-                      manageElectionFragment,
-                      R.id.fragment_container_lao_detail);
-                }
+                setCurrentFragment(
+                    R.id.fragment_manage_election, ManageElectionFragment::newInstance);
               }
             });
   }
@@ -462,16 +386,7 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                CastVoteFragment castVoteFragment =
-                    (CastVoteFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_cast_vote);
-                if (castVoteFragment == null) {
-                  castVoteFragment = CastVoteFragment.newInstance();
-                  ActivityUtils.replaceFragmentInActivity(
-                      getSupportFragmentManager(),
-                      castVoteFragment,
-                      R.id.fragment_container_lao_detail);
-                }
+                setCurrentFragment(R.id.fragment_cast_vote, CastVoteFragment::newInstance);
               }
             });
   }
@@ -484,16 +399,8 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
-                ElectionResultFragment electionResultFragment =
-                    (ElectionResultFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_election_result);
-                if (electionResultFragment == null) {
-                  electionResultFragment = ElectionResultFragment.newInstance();
-                  ActivityUtils.replaceFragmentInActivity(
-                      getSupportFragmentManager(),
-                      electionResultFragment,
-                      R.id.fragment_container_lao_detail);
-                }
+                setCurrentFragment(
+                    R.id.fragment_election_result, ElectionResultFragment::newInstance);
               }
             });
   }
@@ -506,16 +413,25 @@ public class LaoDetailActivity extends AppCompatActivity {
             booleanSingleEvent -> {
               Boolean event = booleanSingleEvent.getContentIfNotHandled();
               if (event != null) {
-                ElectionStartFragment fragment =
-                    (ElectionStartFragment)
-                        getSupportFragmentManager().findFragmentById(R.id.fragment_election_start);
-                if (fragment == null) {
-                  fragment = ElectionStartFragment.newInstance();
-                  ActivityUtils.replaceFragmentInActivity(
-                      getSupportFragmentManager(), fragment, R.id.fragment_container_lao_detail);
-                }
+                setCurrentFragment(
+                    R.id.fragment_election_start, ElectionStartFragment::newInstance);
               }
             });
   }
 
+  /**
+   * Set the current fragment in the container of the activity
+   *
+   * @param id of the fragment
+   * @param fragmentSupplier provides the fragment if it is missing
+   */
+  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
+    Fragment fragment = getSupportFragmentManager().findFragmentById(id);
+    // If the fragment was not created yet, create it now
+    if (fragment == null) fragment = fragmentSupplier.get();
+
+    // Set the new fragment in the container
+    ActivityUtils.replaceFragmentInActivity(
+        getSupportFragmentManager(), fragment, R.id.fragment_container_lao_detail);
+  }
 }

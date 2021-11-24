@@ -15,7 +15,7 @@ import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import { makeEventByTypeSelector, makeLaosMap } from 'store';
 import { useSelector } from 'react-redux';
-import CopiableTextInput from '../../components/CopiableTextInput';
+import CopiableTextInput from 'components/CopiableTextInput';
 
 const styles = StyleSheet.create({
   smallPadding: {

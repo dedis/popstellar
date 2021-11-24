@@ -3,12 +3,19 @@ import { ActionType, MessageData, ObjectType } from './MessageData';
 import { CreateLao, StateLao, UpdateLao } from './lao';
 import { CreateMeeting, StateMeeting } from './meeting';
 import {
-  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
+  CloseRollCall,
+  CreateRollCall,
+  OpenRollCall,
+  ReopenRollCall,
 } from './rollCall';
 import { WitnessMessage } from './witness';
 import {
-  CastVote, ElectionResult, EndElection, SetupElection,
+  CastVote,
+  ElectionResult,
+  EndElection,
+  SetupElection,
 } from './election';
+import { AddChirp, AddChirpBroadcast } from './chirp';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -69,6 +76,17 @@ function buildRollCallMessage(msgData: MessageData): MessageData {
   }
 }
 
+function buildChirpMessage(msgData: MessageData): MessageData {
+  switch (msgData.action) {
+    case ActionType.ADD:
+      return AddChirp.fromJson(msgData);
+    case ActionType.ADD_BROADCAST:
+      return AddChirpBroadcast.fromJson(msgData);
+    default:
+      throw new Error(`Unknown action '${msgData.action}' encountered while adding a chirp MessageData`);
+  }
+}
+
 function buildWitnessMessage(msgData: MessageData): MessageData {
   return WitnessMessage.fromJson(msgData);
 }
@@ -89,6 +107,9 @@ export function buildMessageData(msgData: MessageData): MessageData {
 
     case ObjectType.ROLL_CALL:
       return buildRollCallMessage(msgData);
+
+    case ObjectType.CHIRP:
+      return buildChirpMessage(msgData);
 
     default:
       throw new Error(`Unknown object '${msgData.object}' encountered while creating a MessageData`);

@@ -8,9 +8,9 @@ import (
 	"popstellar/channel"
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
-	"popstellar/channel/inbox"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -20,15 +20,18 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
 const (
+	keyDecodeError    = "failed to decode sender key: %v"
+	keyUnmarshalError = "failed to unmarshal public key of the sender: %v"
+
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
@@ -45,6 +48,8 @@ type Channel struct {
 	// /root/<ID>
 	channelID string
 
+	organizerPubKey kyber.Point
+
 	witnessMu sync.Mutex
 	witnesses []string
 
@@ -58,8 +63,9 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
-// its associated consensus channel and register it to the hub
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
+// its associated consensus channel and register it to the hub.
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
+	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
@@ -70,16 +76,17 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
-	hub.RegisterNewChannel(consensusPath, &consensusCh)
+	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	return &Channel{
-		channelID: channelID,
-		sockets:   channel.NewSockets(),
-		inbox:     inbox,
-		hub:       hub,
-		rollCall:  rollCall{},
-		attendees: make(map[string]struct{}),
-		log:       log,
+		channelID:       channelID,
+		sockets:         channel.NewSockets(),
+		inbox:           inbox,
+		organizerPubKey: organizerPubKey,
+		hub:             hub,
+		rollCall:        rollCall{},
+		attendees:       make(map[string]struct{}),
+		log:             log,
 	}
 }
 
@@ -204,7 +211,7 @@ type rollCall struct {
 }
 
 // Publish handles publish messages for the LAO channel.
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
@@ -231,7 +238,7 @@ func (c *Channel) Publish(publish method.Publish) error {
 	case messagedata.RollCallObject:
 		err = c.processRollCallObject(action, msg)
 	case messagedata.ElectionObject:
-		err = c.processElectionObject(action, msg)
+		err = c.processElectionObject(action, msg, socket)
 	}
 
 	if err != nil {
@@ -254,7 +261,7 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
 		}
 
-		err = c.verifyMessageLaoID(laoState.ID)
+		err = c.verifyMessageLaoState(laoState)
 		if err != nil {
 			return xerrors.Errorf("invalid lao#state message: %v", err)
 		}
@@ -371,16 +378,6 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-// verify if a lao message id is the same as the lao id
-func (c *Channel) verifyMessageLaoID(id string) error {
-	expectedID := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
-	if expectedID != id {
-		return xerrors.Errorf("lao id is %s, should be %s", id, expectedID)
-	}
-
-	return nil
-}
-
 // processMeetingObject handles a meeting object.
 func (c *Channel) processMeetingObject(action string, msg message.Message) error {
 
@@ -429,17 +426,17 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
+		return xerrors.Errorf(keyDecodeError, err)
 	}
 
 	// Check if the sender of the roll call message is the organizer
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.hub.GetPubkey().Equal(senderPoint) {
+	if !c.organizerPubKey.Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
 	}
 
@@ -452,13 +449,13 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
 		}
 
-		err = c.processCreateRollCall(rollCallCreate)
+		err = c.processRollCallCreate(rollCallCreate)
 		if err != nil {
 			return xerrors.Errorf("failed to process roll call create: %v", err)
 		}
 
 	case messagedata.RollCallActionOpen, messagedata.RollCallActionReopen:
-		err := c.processOpenRollCall(msg, action)
+		err := c.processRollCallOpen(msg, action)
 		if err != nil {
 			return xerrors.Errorf("failed to process open roll call: %v", err)
 		}
@@ -471,7 +468,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
 		}
 
-		err = c.processCloseRollCall(rollCallClose)
+		err = c.processRollCallClose(rollCallClose)
 		if err != nil {
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
@@ -488,10 +485,9 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	return nil
 }
 
-// verify
-
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(action string, msg message.Message) error {
+func (c *Channel) processElectionObject(action string, msg message.Message,
+	socket socket.Socket) error {
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
@@ -500,18 +496,19 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
+		return xerrors.Errorf(keyDecodeError, err)
 	}
 
 	// Check if the sender of election creation message is the organizer
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.hub.GetPubkey().Equal(senderPoint) {
-		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
+	if !c.organizerPubKey.Equal(senderPoint) {
+		return answer.NewErrorf(-5, "Sender key does not match the "+
+			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
 	}
 
 	var electionSetup messagedata.ElectionSetup
@@ -521,7 +518,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 		return xerrors.Errorf("failed to unmarshal election setup: %v", err)
 	}
 
-	err = c.createElection(msg, electionSetup)
+	err = c.createElection(msg, electionSetup, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to create election: %w", err)
 	}
@@ -531,7 +528,8 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 }
 
 // createElection creates an election in the LAO.
-func (c *Channel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
+func (c *Channel) createElection(msg message.Message,
+	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
@@ -557,18 +555,18 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.RegisterNewChannel(channelPath, &electionCh)
+	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
 
 	return nil
 }
 
-// processCreateRollCall processes a roll call creation object.
-func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
+// processRollCallCreate processes a roll call creation object.
+func (c *Channel) processRollCallCreate(msg messagedata.RollCallCreate) error {
 
-	// Check that the ID is correct
-	err := c.verifyMessageRollCallCreateID(msg)
+	// Check that data is correct
+	err := c.verifyMessageRollCallCreate(msg)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#create message: %v", err)
+		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
@@ -581,8 +579,8 @@ func (c *Channel) processCreateRollCall(msg messagedata.RollCallCreate) error {
 	return nil
 }
 
-// processOpenRollCall processes an open roll call object.
-func (c *Channel) processOpenRollCall(msg message.Message, action string) error {
+// processRollCallOpen processes an open roll call object.
+func (c *Channel) processRollCallOpen(msg message.Message, action string) error {
 	if action == messagedata.RollCallActionOpen {
 		// If the action is an OpenRollCallAction,
 		// the previous roll call action should be a CreateRollCallAction
@@ -606,9 +604,10 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 		return xerrors.Errorf("failed to unmarshal roll call open: %v", err)
 	}
 
-	err = c.verifyMessageRollCallOpenID(rollCallOpen)
+	// check that data is correct
+	err = c.verifyMessageRollCallOpen(rollCallOpen)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#open message: %v", err)
+		return xerrors.Errorf("invalid roll_call#open message: %v", err)
 	}
 
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
@@ -620,12 +619,13 @@ func (c *Channel) processOpenRollCall(msg message.Message, action string) error 
 	return nil
 }
 
-// processCloseRollCall processes a close roll call message.
-func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
+// processRollCallClose processes a close roll call message.
+func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
 
-	err := c.verifyMessageRollCallCloseID(msg)
+	// check that data is correct
+	err := c.verifyMessageRollCallClose(msg)
 	if err != nil {
-		return xerrors.Errorf("invalid rollcall#close message: %v", err)
+		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
 
 	if c.rollCall.state != Open {
@@ -662,56 +662,6 @@ func (c *Channel) processCloseRollCall(msg messagedata.RollCallClose) error {
 				c.log.Err(err).Msgf("failed to insert attendee %s into db", attendee)
 			}
 		}
-	}
-
-	return nil
-}
-
-const InvalidIDMessage string = "ID %s does not correspond with message data, should be %s"
-
-// verifyMessageRollCallCreateID verify the id of a message
-func (c *Channel) verifyMessageRollCallCreateID(msg messagedata.RollCallCreate) error {
-	expectedID := messagedata.Hash(
-		"R",
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		fmt.Sprintf("%d", msg.Creation),
-		msg.Name,
-	)
-
-	if msg.ID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.ID, expectedID)
-	}
-
-	return nil
-}
-
-// verifyMessageRollCallOpenID verify the id of a message
-func (c *Channel) verifyMessageRollCallOpenID(msg messagedata.RollCallOpen) error {
-	expectedID := messagedata.Hash(
-		"R",
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		msg.Opens,
-		fmt.Sprintf("%d", msg.OpenedAt),
-	)
-
-	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
-	}
-
-	return nil
-}
-
-// verifyMessageRollCallCloseID verify the id of a message
-func (c *Channel) verifyMessageRollCallCloseID(msg messagedata.RollCallClose) error {
-	expectedID := messagedata.Hash(
-		"R",
-		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		msg.Closes,
-		fmt.Sprintf("%d", msg.ClosedAt),
-	)
-
-	if msg.UpdateID != expectedID {
-		return xerrors.Errorf(InvalidIDMessage, msg.UpdateID, expectedID)
 	}
 
 	return nil

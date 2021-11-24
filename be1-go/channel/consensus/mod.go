@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
-	"popstellar/channel/inbox"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -40,12 +40,12 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized consensus channel
-func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
 	inbox := inbox.NewInbox(channelID)
 
 	log = log.With().Str("channel", "consensus").Logger()
 
-	return Channel{
+	return &Channel{
 		sockets:   channel.NewSockets(),
 		inbox:     inbox,
 		channelID: channelID,
@@ -90,9 +90,9 @@ func (c *Channel) Broadcast(msg method.Broadcast) error {
 	return err
 }
 
-// BroadcastToAllWitnesses is a helper message to broadcast a message to all
+// broadcastToAllWitnesses is a helper message to broadcast a message to all
 // witnesses.
-func (c *Channel) BroadcastToAllWitnesses(msg message.Message) error {
+func (c *Channel) broadcastToAllWitnesses(msg message.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all witnesses")
 
 	rpcMessage := method.Broadcast{
@@ -121,7 +121,7 @@ func (c *Channel) BroadcastToAllWitnesses(msg message.Message) error {
 }
 
 // Publish handles publish messages for the consensus channel
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
@@ -152,7 +152,7 @@ func (c *Channel) Publish(publish method.Publish) error {
 		return xerrors.Errorf("failed to process %q object: %w", object, err)
 	}
 
-	err = c.BroadcastToAllWitnesses(msg)
+	err = c.broadcastToAllWitnesses(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to broadcast message: %v", err)
 	}
@@ -214,7 +214,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		if err != nil {
 			return xerrors.Errorf("failed to process elect accept action: %w", err)
 		}
-	case messagedata.ConsensuisActionLearn:
+	case messagedata.ConsensusActionLearn:
 		var consensusLearn messagedata.ConsensusLearn
 
 		err := msg.UnmarshalData(&consensusLearn)
@@ -240,7 +240,7 @@ func (c *Channel) processConsensusElect(data messagedata.ConsensusElect) error {
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("failed to process consensus#elect message: %v", err)
+		return xerrors.Errorf("invalid consensus#elect message: %v", err)
 	}
 
 	return nil
@@ -248,6 +248,11 @@ func (c *Channel) processConsensusElect(data messagedata.ConsensusElect) error {
 
 // ProcessConsensusElectAccept processes an elect accept action.
 func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAccept) error {
+
+	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid consensus#elect_accept message: %v", err)
+	}
 
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
@@ -260,6 +265,11 @@ func (c *Channel) processConsensusElectAccept(data messagedata.ConsensusElectAcc
 
 // ProcessConsensusElectAccept processes a elect accept action.
 func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
+
+	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid consensus#learn message: %v", err)
+	}
 
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)

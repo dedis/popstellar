@@ -56,7 +56,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
   }
 
   test("Parser correctly encodes/decodes a CreateLao message data") {
-    val example: String = getExampleMessage("messageData/lao_create.json")
+    val example: String = getExampleMessage("messageData/lao_create/lao_create.json")
     val messageData = CreateLao.buildFromJson(example)
 
     val expected = CreateLao(Hash(Base64Data("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=")), "LAO", Timestamp(1633098234L), PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=")), Nil)
