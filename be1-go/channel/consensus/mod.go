@@ -112,6 +112,10 @@ func (c *Channel) Subscribe(sock socket.Socket, msg method.Subscribe) error {
 
 	if sock.Type() == socket.ClientSocketType {
 		c.clientSockets.Upsert(sock)
+
+		if c.clientSockets.Number() == 1 {
+			c.hub.SendSubscribeToServers(c.channelID)
+		}
 	} else {
 		c.serverSockets.Upsert(sock)
 	}
@@ -123,10 +127,15 @@ func (c *Channel) Subscribe(sock socket.Socket, msg method.Subscribe) error {
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received an unsubscribe")
 
-	ok := c.clientSockets.Delete(socketID)
+	okClient := c.clientSockets.Delete(socketID)
+	okServer := c.serverSockets.Delete(socketID)
 
-	if !ok {
+	if !okClient && !okServer {
 		return answer.NewError(-2, "client is not subscribed to this channel")
+	}
+
+	if okClient && c.clientSockets.Number() == 0 {
+		c.hub.SendUnsubscribeToServers(c.channelID)
 	}
 
 	return nil
@@ -148,7 +157,7 @@ func (c *Channel) Broadcast(msg method.Broadcast) error {
 
 // broadcastToAllWitnesses is a helper message to broadcast a message to all
 // witnesses.
-func (c *Channel) broadcastToAllWitnesses(msg message.Message) error {
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all witnesses")
 
 	rpcMessage := method.Broadcast{
@@ -208,7 +217,7 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 		return xerrors.Errorf("failed to process %q object: %w", object, err)
 	}
 
-	err = c.broadcastToAllWitnesses(msg)
+	err = c.broadcastToAllClients(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to broadcast message: %v", err)
 	}
@@ -417,7 +426,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 	// message
 	if electAcceptNumber >= c.serverSockets.Number() &&
 		messageState.currentPhase == ElectAcceptPhase &&
-		messageState.proposer.Equal(sender) {
+		messageState.proposer.Equal(c.hub.GetPubkey()) {
 
 		messageState.currentPhase = PromisePhase
 
@@ -473,6 +482,12 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 			"finished the elect_accept phase")
 	}
 
+	// If the server has no client subscribed to the consensus channel, it
+	// doesn't take part in it
+	if c.clientSockets.Number() == 0 {
+		return nil
+	}
+
 	consensusInstance := c.consensusInstances[data.InstanceID]
 	if consensusInstance.proposed_try > consensusInstance.promised_try {
 		consensusInstance.promised_try = consensusInstance.proposed_try
@@ -526,7 +541,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 	// if enough Promise messages are received, the proposer send a Propose message
 	if len(consensusInstance.promises) >= c.serverSockets.Number()/2+1 &&
 		messageState.currentPhase == PromisePhase &&
-		messageState.proposer.Equal(sender) {
+		messageState.proposer.Equal(c.hub.GetPubkey()) {
 
 		highestAccepted := int64(-1)
 		for _, promise := range consensusInstance.promises {
@@ -582,6 +597,12 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 
 	consensusInstance := c.consensusInstances[data.InstanceID]
 
+	// If the server has no client subscribed to the consensus channel, it
+	// doesn't take part in it
+	if c.clientSockets.Number() == 0 {
+		return nil
+	}
+
 	if consensusInstance.promised_try <= data.Value.ProposedTry {
 		consensusInstance.accepted_try = data.Value.ProposedTry
 		consensusInstance.accepted_value = &data.Value.ProposedValue
@@ -626,7 +647,9 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 
 	consensusInstance.accepts = append(consensusInstance.accepts, data)
 
-	if len(consensusInstance.accepts) >= c.serverSockets.Number()/2+1 {
+	if len(consensusInstance.accepts) >= c.serverSockets.Number()/2+1 &&
+		c.messageStates[data.MessageID].proposer.Equal(c.hub.GetPubkey()) {
+
 		if !consensusInstance.decided {
 			consensusInstance.decided = true
 			consensusInstance.decision = consensusInstance.proposed_value

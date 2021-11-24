@@ -94,4 +94,6 @@ type HubFunctionalities interface {
 	GetPubkey() kyber.Point
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
+	SendSubscribeToServers(channelID string) error
+	SendUnsubscribeToServers(channeID string) error
 }

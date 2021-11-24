@@ -136,6 +136,16 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 	return rpcMessage
 }
 
+func (q *queries) getNextID() int {
+	q.Lock()
+	defer q.Unlock()
+
+	nextID := q.nextID
+	q.nextID++
+
+	return nextID
+}
+
 // NewHub returns a new Hub.
 func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
 	hubType hub.HubType) (*Hub, error) {
@@ -234,6 +244,74 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
 	err := h.catchupToServer(socket, rootChannel)
 	return err
+}
+
+// SendSubscribeToServers informs other server that this begins to take part in
+// the operations of a channel
+func (h *Hub) SendSubscribeToServers(channel string) error {
+
+	subscribeID := h.queries.getNextID()
+
+	subscribeMessage := method.Subscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: "subscribe",
+		},
+
+		ID: subscribeID,
+
+		Params: struct {
+			Channel string `json:"channel"`
+		}{
+			Channel: channel,
+		},
+	}
+
+	subscribeBuf, err := json.Marshal(subscribeMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal subscribe message: %v", err)
+	}
+
+	h.serverSockets.SendToAll(subscribeBuf)
+
+	return nil
+}
+
+// SendUnsubscribeToServers informs other server that this begins to take part in
+// the operations of a channel
+func (h *Hub) SendUnsubscribeToServers(channel string) error {
+
+	unsubscribeID := h.queries.getNextID()
+
+	unsubscribeMessage := method.Subscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: "unsubscribe",
+		},
+
+		ID: unsubscribeID,
+
+		Params: struct {
+			Channel string `json:"channel"`
+		}{
+			Channel: channel,
+		},
+	}
+
+	unsubscribeBuf, err := json.Marshal(unsubscribeMessage)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal subscribe message: %v", err)
+	}
+
+	h.serverSockets.SendToAll(unsubscribeBuf)
+
+	return nil
 }
 
 // catchupToServer sends a catchup query to another server

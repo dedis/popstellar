@@ -493,6 +493,14 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
+func (h *fakeHub) SendSubscribeToServers(channel string) error {
+	return nil
+}
+
+func (h *fakeHub) SendUnsubscribeToServers(channel string) error {
+	return nil
+}
+
 func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
 
 // fakeSocket is a fake implementation of a socket
