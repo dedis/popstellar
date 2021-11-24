@@ -19,13 +19,13 @@ import (
 	"strconv"
 )
 
-const msgID		 = "msg id"
+const msgID = "msg id"
 
 // Channel is used to handle chirping messages w/o text.
 type Channel struct {
-	sockets   channel.Sockets
-	inbox     *inbox.Inbox
-	hub channel.HubFunctionalities
+	sockets channel.Sockets
+	inbox   *inbox.Inbox
+	hub     channel.HubFunctionalities
 
 	// channel path
 	channelPath string
@@ -38,11 +38,11 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 	log = log.With().Str("channel", "general chirp").Logger()
 
 	return Channel{
-		sockets:   channel.NewSockets(),
-		inbox:     inbox.NewInbox(channelPath),
+		sockets:     channel.NewSockets(),
+		inbox:       inbox.NewInbox(channelPath),
 		channelPath: channelPath,
-		hub: hub,
-		log: log,
+		hub:         hub,
+		log:         log,
 	}
 }
 
@@ -53,7 +53,6 @@ func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
 		Msg("nothing should be published in the general")
 	return xerrors.Errorf("nothing should be directly published in the general")
 }
-
 
 // Broadcast is used to handle broadcast messages.
 func (c *Channel) Broadcast(broadcast method.Broadcast) error {
@@ -241,7 +240,7 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 
 	//ok := c.hub.GetPubkey().Equal(senderPoint) && c.hub.Type() == hub.OrganizerHubType
 	//if !ok {
-		//return answer.NewError(-4, "only organizer can broadcast the chirp messages")
+	//return answer.NewError(-4, "only organizer can broadcast the chirp messages")
 	//}
 
 	return nil
@@ -251,5 +250,3 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 func (c *Channel) GetChannelPath() string {
 	return c.channelPath
 }
-
-

@@ -41,15 +41,15 @@ const (
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
 	msgID         = "msg id"
-	social	      = "/social/"
-	chirps		  = "chirps"
+	social        = "/social/"
+	chirps        = "chirps"
 )
 
 // Channel defines a LAO channel
 type Channel struct {
 	sockets channel.Sockets
 
-	inbox *inbox.Inbox
+	inbox   *inbox.Inbox
 	general *generalChirping.Channel
 
 	// /root/<ID>
@@ -90,7 +90,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           box,
-		general:		 general,
+		general:         general,
 		organizerPubKey: organizerPubKey,
 		hub:             hub,
 		rollCall:        rollCall{},
@@ -685,7 +685,6 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 			defer db.Close()
 		}
 	}
-
 
 	for _, attendee := range msg.Attendees {
 		c.attendees[attendee] = struct{}{}

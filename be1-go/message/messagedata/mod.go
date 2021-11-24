@@ -41,10 +41,10 @@ const (
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
 
-	ChirpObject       = "chirp"
-	ChirpActionAdd    = "add"
-	ChirpActionDelete = "delete"
-	ChirpActionAddBroadcast = "addBroadcast"
+	ChirpObject                = "chirp"
+	ChirpActionAdd             = "add"
+	ChirpActionDelete          = "delete"
+	ChirpActionAddBroadcast    = "addBroadcast"
 	ChirpActionDeleteBroadcast = "deleteBroadcast"
 
 	// RootPrefix denotes the prefix for the root channel, used to verify the

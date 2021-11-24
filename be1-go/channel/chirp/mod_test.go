@@ -47,9 +47,9 @@ func Test_Catchup(t *testing.T) {
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
 
-	_, found := fakeHub.channelByID[root + laoID + social + sender]
+	_, found := fakeHub.channelByID[root+laoID+social+sender]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root + laoID + social + posts]
+	_, found = fakeHub.channelByID[root+laoID+social+posts]
 	require.True(t, found)
 
 	// Create the messages
@@ -81,7 +81,6 @@ func Test_Catchup(t *testing.T) {
 	}
 }
 
-
 func Test_SendChirp(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -96,9 +95,9 @@ func Test_SendChirp(t *testing.T) {
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
-	_, found := fakeHub.channelByID[root + laoID + social + sender]
+	_, found := fakeHub.channelByID[root+laoID+social+sender]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root + laoID + social + posts]
+	_, found = fakeHub.channelByID[root+laoID+social+posts]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
@@ -114,10 +113,10 @@ func Test_SendChirp(t *testing.T) {
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
 	m := message.Message{
-		Data: buf64,
-		Sender: sender,
-		Signature: "h",
-		MessageID: messagedata.Hash(buf64, "h"),
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -141,10 +140,10 @@ func Test_SendChirp(t *testing.T) {
 	msg := generalCha.Catchup(method.Catchup{ID: 0})
 
 	checkData := messagedata.ChirpBroadcast{
-		Object: "chirp",
-		Action: "addBroadcast",
-		ChirpId: messagedata.Hash(buf64, "h"),
-		Channel: root + laoID + social + posts,
+		Object:    "chirp",
+		Action:    "addBroadcast",
+		ChirpId:   messagedata.Hash(buf64, "h"),
+		Channel:   root + laoID + social + posts,
 		Timestamp: 123,
 	}
 
@@ -177,7 +176,6 @@ func generateKeyPair(t *testing.T) keypair {
 
 	return keypair{point, pkbuf, secret}
 }
-
 
 type fakeHub struct {
 	messageChan chan socket.IncomingMessage

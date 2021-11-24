@@ -22,37 +22,36 @@ import (
 	"strconv"
 )
 
-const msgID		 = "msg id"
+const msgID = "msg id"
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-				generalChannel *generalChirping.Channel, log zerolog.Logger) Channel {
+	generalChannel *generalChirping.Channel, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "chirp").Logger()
 
 	return Channel{
-		sockets:   channel.NewSockets(),
-		inbox:     inbox.NewInbox(channelPath),
-		channelID: channelPath,
+		sockets:        channel.NewSockets(),
+		inbox:          inbox.NewInbox(channelPath),
+		channelID:      channelPath,
 		generalChannel: generalChannel,
-		owner: ownerKey,
-		hub: hub,
-		log: log,
+		owner:          ownerKey,
+		hub:            hub,
+		log:            log,
 	}
 }
 
 // Channel is used to handle chirp messages.
 type Channel struct {
-	sockets   channel.Sockets
-	inbox     *inbox.Inbox
+	sockets        channel.Sockets
+	inbox          *inbox.Inbox
 	generalChannel *generalChirping.Channel
 	// channel path
 	channelID string
-	owner string
-	hub channel.HubFunctionalities
-	log zerolog.Logger
+	owner     string
+	hub       channel.HubFunctionalities
+	log       zerolog.Logger
 }
-
 
 // Publish is used to handle publish messages in the chirp channel.
 func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
@@ -132,7 +131,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
-	object, _ , err := messagedata.GetObjectAndAction(jsonData)
+	object, _, err := messagedata.GetObjectAndAction(jsonData)
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
@@ -185,10 +184,10 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		}{
 			c.channelID,
 			message.Message{
-				Data: newData64,
-				Sender: base64.URLEncoding.EncodeToString(pkBuf),
-				Signature: signature,
-				MessageID: msg.MessageID,
+				Data:              newData64,
+				Sender:            base64.URLEncoding.EncodeToString(pkBuf),
+				Signature:         signature,
+				MessageID:         msg.MessageID,
 				WitnessSignatures: msg.WitnessSignatures,
 			},
 		},
@@ -319,7 +318,6 @@ func (c *Channel) publishDeleteChirp(msg message.Message) error {
 	c.inbox.StoreMessage(msg)
 	return nil
 }
-
 
 func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 	var chirpMsg messagedata.ChirpAdd

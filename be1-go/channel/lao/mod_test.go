@@ -541,8 +541,8 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
 		pubKeyOrg:       publicOrg,
-		pubKeyServ: 	 pubServ,
-		secKeyServ: 	 secServ,
+		pubKeyServ:      pubServ,
+		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(10),
@@ -625,5 +625,3 @@ func (f *fakeSocket) SendError(id *int, err error) {
 func (f *fakeSocket) ID() string {
 	return f.id
 }
-
-
