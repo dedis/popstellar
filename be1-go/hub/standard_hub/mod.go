@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 	be1_go "popstellar"
@@ -140,7 +139,7 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 }
 
 // NewHub returns a new Hub.
-func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
+func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
 	hubType hub.HubType) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)

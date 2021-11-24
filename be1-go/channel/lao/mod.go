@@ -12,7 +12,6 @@ import (
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/generalChirping"
-	"popstellar/channel/inbox"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/inbox"
@@ -80,7 +79,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	box := inbox.NewInbox(channelID)
 	box.StoreMessage(msg)
 
-	general := createGeneralChirpingChannel(channelID, hub)
+	general := createGeneralChirpingChannel(channelID, hub, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
@@ -90,7 +89,8 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	return &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
-		inbox:           inbox,
+		inbox:           box,
+		general:		 general,
 		organizerPubKey: organizerPubKey,
 		hub:             hub,
 		rollCall:        rollCall{},
@@ -200,10 +200,10 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 }
 
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
-func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities) *generalChirping.Channel {
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
-	hub.RegisterNewChannel(generalChannelPath, &generalChirpingChannel)
+	hub.NotifyNewChannel(generalChannelPath, &generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
 
@@ -259,9 +259,9 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	case messagedata.MessageObject:
 		err = c.processMessageObject(action, msg)
 	case messagedata.RollCallObject:
-		err = c.processRollCallObject(action, msg)
+		err = c.processRollCallObject(action, msg, socket)
 	case messagedata.ElectionObject:
-		err = c.processElectionObject(action, msg)
+		err = c.processElectionObject(action, msg, socket)
 	default:
 		err = xerrors.Errorf("object not accepted in a LAO channel.")
 	}
@@ -446,7 +446,7 @@ func (c *Channel) processMessageObject(action string, msg message.Message) error
 }
 
 // processRollCallObject handles a roll call object.
-func (c *Channel) processRollCallObject(action string, msg message.Message) error {
+func (c *Channel) processRollCallObject(action string, msg message.Message, socket socket.Socket) error {
 	sender := msg.Sender
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
@@ -493,7 +493,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
 		}
 
-		err = c.processRollCallClose(rollCallClose)
+		err = c.processRollCallClose(rollCallClose, socket)
 		if err != nil {
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
@@ -511,12 +511,12 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	return nil
 }
 
-func (c *Channel) createChirpingChannel(publicKey string) {
+func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) {
 	chirpingChannelPath := c.channelID + social + publicKey
 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
 
-	c.hub.RegisterNewChannel(chirpingChannelPath, &cha)
+	c.hub.NotifyNewChannel(chirpingChannelPath, &cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
@@ -655,7 +655,7 @@ func (c *Channel) processRollCallOpen(msg message.Message, action string) error 
 }
 
 // processRollCallClose processes a close roll call message.
-func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
+func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket socket.Socket) error {
 
 	// check that data is correct
 	err := c.verifyMessageRollCallClose(msg)
@@ -690,7 +690,7 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
 	for _, attendee := range msg.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		c.createChirpingChannel(attendee)
+		c.createChirpingChannel(attendee, socket)
 
 		if db != nil {
 			c.log.Info().Msgf("inserting attendee %s into db", attendee)

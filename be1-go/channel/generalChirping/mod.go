@@ -6,8 +6,8 @@ import (
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
-	"popstellar/channel/inbox"
 	"popstellar/crypto"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -47,7 +47,7 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 }
 
 // Publish is used to handle a publish message.
-func (c *Channel) Publish(msg method.Publish) error {
+func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
 	c.log.Error().
 		Str(msgID, strconv.Itoa(msg.ID)).
 		Msg("nothing should be published in the general")

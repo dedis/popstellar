@@ -8,9 +8,9 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
-	generalChirping "popstellar/channel/generalChirping"
-	"popstellar/channel/inbox"
+	"popstellar/channel/generalChirping"
 	"popstellar/crypto"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -55,7 +55,7 @@ type Channel struct {
 
 
 // Publish is used to handle publish messages in the chirp channel.
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.verifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on a "+
