@@ -5,7 +5,6 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { Timestamp } from 'model/objects';
 import { gray } from 'styles/colors';
 
 /**
@@ -96,7 +95,7 @@ const ChirpCard = (props: IPropTypes) => {
           </View>
         </View>
         <View style={styles.timeView}>
-          <TimeAgo date={time.valueOf() * 1000} />
+          <TimeAgo date={time * 1000} />
         </View>
       </View>
     </View>
@@ -106,7 +105,7 @@ const ChirpCard = (props: IPropTypes) => {
 const propTypes = {
   sender: PropTypes.string.isRequired,
   text: PropTypes.string.isRequired,
-  time: PropTypes.instanceOf(Timestamp).isRequired,
+  time: PropTypes.number.isRequired,
   likes: PropTypes.number.isRequired,
 };
 
@@ -115,7 +114,7 @@ ChirpCard.prototype = propTypes;
 type IPropTypes = {
   sender: string,
   text: string,
-  time: Timestamp,
+  time: number,
   likes: number,
 };
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   FlatList,
+  ListRenderItemInfo,
   StyleSheet,
   TextStyle,
   View,
@@ -15,6 +16,7 @@ import STRINGS from 'res/strings';
 import { requestAddChirp } from 'network/MessageApi';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
+import { ChirpState } from 'model/objects/Chirp';
 
 /**
  * UI for the Social Media component
@@ -54,7 +56,7 @@ const SocialHome = () => {
   const chirps = makeChirpsList();
   const chirpList = useSelector(chirps);
 
-  const renderChirpState = ({ item }) => (
+  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
       sender={item.sender}
       text={item.text}
