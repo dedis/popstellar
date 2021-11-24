@@ -5,7 +5,11 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
@@ -21,11 +25,6 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"sync"
-
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 )
 
 // rootPrefix denotes the prefix for the root channel
@@ -56,7 +55,10 @@ type Hub struct {
 
 	closedSockets chan string
 
-	public kyber.Point
+	pubKeyOrg kyber.Point
+
+	pubKeyServ kyber.Point
+	secKeyServ kyber.Scalar
 
 	schemaValidator *validation.SchemaValidator
 
@@ -70,7 +72,7 @@ type Hub struct {
 }
 
 // NewHub returns a Organizer Hub.
-func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
+func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -79,11 +81,15 @@ func NewHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (
 
 	log = log.With().Str("role", "base hub").Logger()
 
+	pubServ, secServ := generateKeys()
+
 	hub := Hub{
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		public:          public,
+		pubKeyOrg:       publicOrg,
+		pubKeyServ: 	 pubServ,
+		secKeyServ: 	 secServ,
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(numWorkers),
@@ -491,9 +497,19 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate)
 	return nil
 }
 
-// GetPubkey implements channel.HubFunctionalities
-func (h *Hub) GetPubkey() kyber.Point {
-	return h.public
+// GetPubKeyOrg implements channel.HubFunctionalities
+func (h *Hub) GetPubKeyOrg() kyber.Point {
+	return h.pubKeyOrg
+}
+
+// GetPubKeyServ implements channel.HubFunctionalities
+func (h *Hub) GetPubKeyServ() kyber.Point {
+	return h.pubKeyOrg
+}
+
+// GetSecKeyServ implements channel.HubFunctionalities
+func (h *Hub) GetSecKeyServ() kyber.Scalar {
+	return h.secKeyServ
 }
 
 // GetSchemaValidator implements channel.HubFunctionalities
@@ -506,6 +522,13 @@ func (h *Hub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
+}
+
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Mul(secret, nil)
+
+	return point, secret
 }
 
 // ---

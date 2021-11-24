@@ -372,7 +372,7 @@ func (c *Channel) getAndVerifyCastVoteMessage(msg message.Message) (messagedata.
 		return voteMsg, answer.NewError(-4, "invalid sender public key")
 	}
 
-	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubkey().Equal(senderPoint)
+	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubKeyOrg().Equal(senderPoint)
 	if !ok {
 		return voteMsg, answer.NewError(-4, "only attendees can cast a vote in an election")
 	}
