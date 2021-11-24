@@ -7,7 +7,6 @@ import (
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
-	"popstellar/channel/generalChirping"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -25,7 +24,7 @@ const msgID = "msg id"
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-	generalChannel *generalChirping.Channel, log zerolog.Logger) Channel {
+	generalChannel channel.Broadcastable, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "chirp").Logger()
 
@@ -44,7 +43,7 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 type Channel struct {
 	sockets        channel.Sockets
 	inbox          *inbox.Inbox
-	generalChannel *generalChirping.Channel
+	generalChannel channel.Broadcastable
 	// channel path
 	channelID string
 	owner     string
@@ -74,24 +73,23 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 		return xerrors.Errorf("failed to get object and action from message data: %v", err)
 	}
 
-	if object == messagedata.ChirpObject {
+	if object != messagedata.ChirpObject {
+		return xerrors.Errorf("object should be 'chirp' but is %s", object)
+	}
 
-		switch action {
-		case messagedata.ChirpActionAdd:
-			err := c.publishAddChirp(msg)
-			if err != nil {
-				return xerrors.Errorf("failed to publish chirp: %v", err)
-			}
-		case messagedata.ChirpActionDelete:
-			err := c.publishDeleteChirp(msg)
-			if err != nil {
-				return xerrors.Errorf("failed to delete chirp: %v", err)
-			}
-		default:
-			return answer.NewInvalidActionError(action)
+	switch action {
+	case messagedata.ChirpActionAdd:
+		err := c.publishAddChirp(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to publish chirp: %v", err)
 		}
-	} else {
-		return xerrors.Errorf("object should be \"chirp\" but is %s", object)
+	case messagedata.ChirpActionDelete:
+		err := c.publishDeleteChirp(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to delete chirp: %v", err)
+		}
+	default:
+		return answer.NewInvalidActionError(action)
 	}
 
 	err = c.broadcastToAllClients(msg)

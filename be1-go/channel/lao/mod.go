@@ -50,7 +50,7 @@ type Channel struct {
 	sockets channel.Sockets
 
 	inbox   *inbox.Inbox
-	general *generalChirping.Channel
+	general channel.Broadcastable
 
 	// /root/<ID>
 	channelID string
@@ -86,7 +86,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
-	return &Channel{
+	c := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           box,
@@ -97,6 +97,13 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		attendees:       make(map[string]struct{}),
 		log:             log,
 	}
+	// temporary while the front-end find a solution to
+	// get the PoP token... TODO
+	pkBuf, _ := organizerPubKey.MarshalBinary()
+	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
+	c.createChirpingChannel(pk64, socket)
+
+	return c
 }
 
 // Subscribe is used to handle a subscribe message from the client.
