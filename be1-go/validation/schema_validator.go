@@ -4,21 +4,22 @@ import (
 	"bytes"
 	"embed"
 	"encoding/base64"
-	"github.com/rs/zerolog"
-	"github.com/santhosh-tekuri/jsonschema/v3"
-	"golang.org/x/xerrors"
 	"io"
 	"io/fs"
 	"path/filepath"
 	"popstellar/message/answer"
 	"strings"
+
+	"github.com/rs/zerolog"
+	"github.com/santhosh-tekuri/jsonschema/v3"
+	"golang.org/x/xerrors"
 )
 
 // SchemaValidator is used to validate JSON-RPC schemas.
 type SchemaValidator struct {
 	genericMessageSchema *jsonschema.Schema
 	dataSchema           *jsonschema.Schema
-	log 				 zerolog.Logger
+	log                  zerolog.Logger
 }
 
 // SchemaType denotes the type of schema.
@@ -126,7 +127,7 @@ func NewSchemaValidator(log zerolog.Logger) (*SchemaValidator, error) {
 	return &SchemaValidator{
 		genericMessageSchema: gmSchema,
 		dataSchema:           dataSchema,
-		log:				  log,
+		log:                  log,
 	}, nil
 }
 

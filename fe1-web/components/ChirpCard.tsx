@@ -8,6 +8,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { Timestamp } from 'model/objects';
 import { gray } from 'styles/colors';
 
+/**
+ * Component to display a chirp
+ */
+
 const styles = StyleSheet.create({
   container: {
     borderColor: gray,

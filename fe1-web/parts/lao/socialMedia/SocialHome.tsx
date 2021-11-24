@@ -13,7 +13,8 @@ import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
-import { Hash, Timestamp } from 'model/objects';
+import { makeChirpsList } from 'store/reducers/SocialReducer';
+import { useSelector } from 'react-redux';
 
 /**
  * UI for the Social Media component
@@ -39,23 +40,6 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const DATA = [
-  {
-    id: Hash.fromString('1234'),
-    sender: 'Gandalf',
-    text: 'You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass!',
-    time: new Timestamp(1609455600),
-    likes: 0,
-  },
-  {
-    id: Hash.fromString('5678'),
-    sender: 'Douglas Adams',
-    text: 'Don\'t panic.',
-    time: new Timestamp(1609455600),
-    likes: 100,
-  },
-];
-
 const SocialHome = () => {
   const [inputChirp, setInputChirp] = useState('');
 
@@ -67,7 +51,10 @@ const SocialHome = () => {
     setInputChirp('');
   };
 
-  const renderItem = ({ item }) => (
+  const chirps = makeChirpsList();
+  const chirpList = useSelector(chirps);
+
+  const renderChirpState = ({ item }) => (
     <ChirpCard
       sender={item.sender}
       text={item.text}
@@ -87,8 +74,8 @@ const SocialHome = () => {
           onPress={publishChirp}
         />
         <FlatList
-          data={DATA}
-          renderItem={renderItem}
+          data={chirpList}
+          renderItem={renderChirpState}
           keyExtractor={(item) => item.id.toString()}
         />
       </View>

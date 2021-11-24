@@ -17,7 +17,7 @@
                 "channel": {
                     "description": "[String] name of the channel",
                     "type": "string",
-                    "pattern": "^/root(/[^/]+)+$"
+                    "pattern": "^/root(/[^/]+)*$"
                 }
             },
 
