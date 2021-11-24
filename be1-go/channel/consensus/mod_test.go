@@ -235,7 +235,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	err = channel.Publish(messagePublish)
+	err = channel.Publish(messagePublish, nil)
 	require.NoError(t, err)
 	require.Equal(t, byteBroad, socket.msg)
 }
@@ -322,7 +322,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish))
+	require.NoError(t, channel.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, socket.msg)
 }
 
@@ -407,7 +407,7 @@ func Test_Consensus_Publish_Elect_Learn(t *testing.T) {
 	byteBroad, err := json.Marshal(&messageBroadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, channel.Publish(messagePublish))
+	require.NoError(t, channel.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, socket.msg)
 }
 
@@ -517,6 +517,8 @@ func (h *fakeHub) GetSecKeyServ() kyber.Scalar {
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
+
+func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
 
 // fakeSocket is a fake implementation of a socket
 //

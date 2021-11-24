@@ -15,6 +15,7 @@ import (
 	"popstellar/channel/inbox"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -27,11 +28,15 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
 const (
+	keyDecodeError    = "failed to decode sender key: %v"
+	keyUnmarshalError = "failed to unmarshal public key of the sender: %v"
+
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
@@ -51,6 +56,8 @@ type Channel struct {
 	// /root/<ID>
 	channelID string
 
+	organizerPubKey kyber.Point
+
 	witnessMu sync.Mutex
 	witnesses []string
 
@@ -64,8 +71,9 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
-// its associated consensus channel and register it to the hub
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger) channel.Channel {
+// its associated consensus channel and register it to the hub.
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
+	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
@@ -76,17 +84,18 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
-	hub.RegisterNewChannel(consensusPath, consensusCh)
+
+	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	return &Channel{
-		channelID: channelID,
-		sockets:   channel.NewSockets(),
-		inbox:     box,
-		general:   general,
-		hub:       hub,
-		rollCall:  rollCall{},
-		attendees: make(map[string]struct{}),
-		log:       log,
+		channelID:       channelID,
+		sockets:         channel.NewSockets(),
+		inbox:           inbox,
+		organizerPubKey: organizerPubKey,
+		hub:             hub,
+		rollCall:        rollCall{},
+		attendees:       make(map[string]struct{}),
+		log:             log,
 	}
 }
 
@@ -222,7 +231,7 @@ type rollCall struct {
 }
 
 // Publish handles publish messages for the LAO channel.
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
@@ -442,17 +451,17 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
+		return xerrors.Errorf(keyDecodeError, err)
 	}
 
 	// Check if the sender of the roll call message is the organizer
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
+	if !c.organizerPubKey.Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
 	}
 
@@ -512,7 +521,8 @@ func (c *Channel) createChirpingChannel(publicKey string) {
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(action string, msg message.Message) error {
+func (c *Channel) processElectionObject(action string, msg message.Message,
+	socket socket.Socket) error {
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
@@ -521,18 +531,19 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
+		return xerrors.Errorf(keyDecodeError, err)
 	}
 
 	// Check if the sender of election creation message is the organizer
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
-		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
+	if !c.organizerPubKey.Equal(senderPoint) {
+		return answer.NewErrorf(-5, "Sender key does not match the "+
+			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
 	}
 
 	var electionSetup messagedata.ElectionSetup
@@ -542,7 +553,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 		return xerrors.Errorf("failed to unmarshal election setup: %v", err)
 	}
 
-	err = c.createElection(msg, electionSetup)
+	err = c.createElection(msg, electionSetup, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to create election: %w", err)
 	}
@@ -552,7 +563,8 @@ func (c *Channel) processElectionObject(action string, msg message.Message) erro
 }
 
 // createElection creates an election in the LAO.
-func (c *Channel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup) error {
+func (c *Channel) createElection(msg message.Message,
+	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
@@ -578,7 +590,7 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.RegisterNewChannel(channelPath, &electionCh)
+	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
 
 	return nil
 }

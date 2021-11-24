@@ -24,3 +24,6 @@ protocol:
 
 clean:
 	rm -rf validation/protocol
+
+fmt:
+	gofmt -s -w ./

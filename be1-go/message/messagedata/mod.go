@@ -41,8 +41,8 @@ const (
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
 
-	ChirpObject = "chirp"
-	ChirpActionAdd = "add"
+	ChirpObject       = "chirp"
+	ChirpActionAdd    = "add"
 	ChirpActionDelete = "delete"
 	ChirpActionAddBroadcast = "addBroadcast"
 	ChirpActionDeleteBroadcast = "deleteBroadcast"
@@ -76,7 +76,6 @@ func GetObjectAndAction(buf []byte) (string, string, error) {
 
 	return object, action, nil
 }
-
 
 // GetTime returns the time of a JSON RPC message.
 func GetTime(buf []byte) (int64, error) {
