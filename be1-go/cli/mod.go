@@ -58,6 +58,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 		return xerrors.Errorf("failed to unmarshal public key: %v", err)
 	}
 
+	// get the HubType from the user
 	var hubType hub.HubType
 	if user == organizer {
 		hubType = hub.OrganizerHubType
