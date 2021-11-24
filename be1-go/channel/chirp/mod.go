@@ -157,21 +157,18 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	// Temporary solution until solution for the organizer private key TODO
+	// Sign the data
+	pk := c.hub.GetPubKeyServ()
+	privateKey := c.hub.GetSecKeyServ()
+	pkBuf, err := pk.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the public key: %v", err)
+	}
 
-	//pkOrganizer, err := c.hub.GetPubkey().MarshalBinary()
-
-	// if err != nil {
-		// return xerrors.Errorf("could not get the public key of the organizer: %v", err)
-	// }
-
-	//pkOrganizer64 := base64.URLEncoding.EncodeToString(pkOrganizer)
-
-	keyPair := generateKeyPairTemp()
-	pk := keyPair.publicBuf
-	privateKey := keyPair.private
 	signatureBuf, err := schnorr.Sign(crypto.Suite, privateKey, dataBuf)
-	_ = err
+	if err != nil {
+		return xerrors.Errorf("failed to sign the data: %v", err)
+	}
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
@@ -189,7 +186,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 			c.channelID,
 			message.Message{
 				Data: newData64,
-				Sender: base64.URLEncoding.EncodeToString(pk),
+				Sender: base64.URLEncoding.EncodeToString(pkBuf),
 				Signature: signature,
 				MessageID: msg.MessageID,
 				WitnessSignatures: msg.WitnessSignatures,
