@@ -1,6 +1,6 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
-import { reducer, clearWallet, setWallet } from '../WalletReducer';
+import { walletReducer, clearWallet, setWallet } from '../WalletReducer';
 
 const emptyState = {
   seed: undefined,
@@ -13,16 +13,16 @@ const filledState = {
 };
 
 test('should return the initial state', () => {
-  expect(reducer(undefined, {} as AnyAction))
+  expect(walletReducer(undefined, {} as AnyAction))
     .toEqual(emptyState);
 });
 
 test('should handle the wallet being set', () => {
-  expect(reducer({}, setWallet(filledState)))
+  expect(walletReducer({}, setWallet(filledState)))
     .toEqual(filledState);
 });
 
 test('should handle the wallet being set', () => {
-  expect(reducer(filledState, clearWallet()))
+  expect(walletReducer(filledState, clearWallet()))
     .toEqual(emptyState);
 });
