@@ -29,7 +29,12 @@ public class Chirp {
     return id;
   }
 
-  public void setId(@NonNull String id) {
+  public void setId(String id) {
+    if (id == null) {
+      throw new IllegalArgumentException(" The id is null");
+    } else if (id.isEmpty()) {
+      throw new IllegalArgumentException(" The id of the Chirp is empty");
+    }
     this.id = id;
   }
 

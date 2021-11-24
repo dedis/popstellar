@@ -10,45 +10,45 @@ import org.junit.Test;
 
 public class AddChirpBroadcastTest {
 
-  private static final String postId = "postId";
-  private static final String channel = "/root/laoId/social/myChannel";
-  private static final long timestamp = 1631280815;
+  private static final String POST_ID = "postId";
+  private static final String CHANNEL = "/root/laoId/social/myChannel";
+  private static final long TIMESTAMP = 1631280815;
 
-  private static final AddChirpBroadcast addChirpBroadcast =
-      new AddChirpBroadcast(postId, channel, timestamp);
+  private static final AddChirpBroadcast ADD_CHIRP_BROADCAST =
+      new AddChirpBroadcast(POST_ID, CHANNEL, TIMESTAMP);
 
   @Test
   public void getObjectTest() {
-    assertEquals(Objects.CHIRP.getObject(), addChirpBroadcast.getObject());
+    assertEquals(Objects.CHIRP.getObject(), ADD_CHIRP_BROADCAST.getObject());
   }
 
   @Test
   public void getActionTest() {
-    assertEquals(Action.ADD_BROADCAST.getAction(), addChirpBroadcast.getAction());
+    assertEquals(Action.ADD_BROADCAST.getAction(), ADD_CHIRP_BROADCAST.getAction());
   }
 
   @Test
   public void getPostIdTest() {
-    assertEquals(postId, addChirpBroadcast.getPostId());
+    assertEquals(POST_ID, ADD_CHIRP_BROADCAST.getPostId());
   }
 
   @Test
   public void getChannelTest() {
-    assertEquals(channel, addChirpBroadcast.getChannel());
+    assertEquals(CHANNEL, ADD_CHIRP_BROADCAST.getChannel());
   }
 
   @Test
   public void getTimestampTest() {
-    assertEquals(timestamp, addChirpBroadcast.getTimestamp());
+    assertEquals(TIMESTAMP, ADD_CHIRP_BROADCAST.getTimestamp());
   }
 
   @Test
   public void equalsTest() {
-    assertEquals(addChirpBroadcast, new AddChirpBroadcast(postId, channel, timestamp));
+    assertEquals(ADD_CHIRP_BROADCAST, new AddChirpBroadcast(POST_ID, CHANNEL, TIMESTAMP));
 
     String random = "random";
-    assertNotEquals(addChirpBroadcast, new AddChirpBroadcast(random, channel, timestamp));
-    assertNotEquals(addChirpBroadcast, new AddChirpBroadcast(postId, random, timestamp));
-    assertNotEquals(addChirpBroadcast, new AddChirpBroadcast(postId, channel, timestamp + 1));
+    assertNotEquals(ADD_CHIRP_BROADCAST, new AddChirpBroadcast(random, CHANNEL, TIMESTAMP));
+    assertNotEquals(ADD_CHIRP_BROADCAST, new AddChirpBroadcast(POST_ID, random, TIMESTAMP));
+    assertNotEquals(ADD_CHIRP_BROADCAST, new AddChirpBroadcast(POST_ID, CHANNEL, TIMESTAMP + 1));
   }
 }

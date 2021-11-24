@@ -11,11 +11,11 @@ import org.junit.Test;
 
 public class AddChirpTest {
 
-  private static final String text = "Hello guys";
-  private static final String parentId = "parentId";
-  private static final long timestamp = 1631280815;
+  private static final String TEXT = "Hello guys";
+  private static final String PARENT_ID = "parentId";
+  private static final long TIMESTAMP = 1631280815;
 
-  private static final AddChirp addChirp = new AddChirp(text, parentId, timestamp);
+  private static final AddChirp ADD_CHIRP = new AddChirp(TEXT, PARENT_ID, TIMESTAMP);
 
   @Test
   public void createAddChirpWithTextTooLongTest() {
@@ -26,41 +26,41 @@ public class AddChirpTest {
             + " screwed something up. But normally it is not that hard to write enough to reach"
             + " the threshold.";
     assertThrows(
-        IllegalArgumentException.class, () -> new AddChirp(textTooLong, parentId, timestamp));
+        IllegalArgumentException.class, () -> new AddChirp(textTooLong, PARENT_ID, TIMESTAMP));
   }
 
   @Test
   public void getObjectTest() {
-    assertEquals(Objects.CHIRP.getObject(), addChirp.getObject());
+    assertEquals(Objects.CHIRP.getObject(), ADD_CHIRP.getObject());
   }
 
   @Test
   public void getActionTest() {
-    assertEquals(Action.ADD.getAction(), addChirp.getAction());
+    assertEquals(Action.ADD.getAction(), ADD_CHIRP.getAction());
   }
 
   @Test
   public void getTextTest() {
-    assertEquals(text, addChirp.getText());
+    assertEquals(TEXT, ADD_CHIRP.getText());
   }
 
   @Test
   public void getParentIdTest() {
-    assertEquals(parentId, addChirp.getParentId().get());
+    assertEquals(PARENT_ID, ADD_CHIRP.getParentId().get());
   }
 
   @Test
   public void getTimestampTest() {
-    assertEquals(timestamp, addChirp.getTimestamp());
+    assertEquals(TIMESTAMP, ADD_CHIRP.getTimestamp());
   }
 
   @Test
   public void equalsTest() {
-    assertEquals(addChirp, new AddChirp(text, parentId, timestamp));
+    assertEquals(ADD_CHIRP, new AddChirp(TEXT, PARENT_ID, TIMESTAMP));
 
     String random = "random";
-    assertNotEquals(addChirp, new AddChirp(random, parentId, timestamp));
-    assertNotEquals(addChirp, new AddChirp(text, random, timestamp));
-    assertNotEquals(addChirp, new AddChirp(text, parentId, timestamp + 1));
+    assertNotEquals(ADD_CHIRP, new AddChirp(random, PARENT_ID, TIMESTAMP));
+    assertNotEquals(ADD_CHIRP, new AddChirp(TEXT, random, TIMESTAMP));
+    assertNotEquals(ADD_CHIRP, new AddChirp(TEXT, PARENT_ID, TIMESTAMP + 1));
   }
 }
