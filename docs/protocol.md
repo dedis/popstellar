@@ -214,10 +214,10 @@ RPC
 
 {
     "jsonrpc": "2.0",
-    "id": 999,
+    "id": 2,
     "method": "subscribe",
     "params": {
-        "channel": "/root/XXX"
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
     }
 }
 
@@ -301,10 +301,10 @@ RPC
 
 {
     "jsonrpc": "2.0",
-    "id": 999,
+    "id": 7,
     "method": "unsubscribe",
     "params": {
-        "channel": "/root/XXX"
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
     }
 }
 
@@ -390,15 +390,15 @@ RPC
 
 {
     "jsonrpc": "2.0",
-    "id": 999,
+    "id": 4,
     "method": "publish",
     "params": {
-        "channel": "/root/XXX",
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
         "message": {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
+            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+            "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
             "witness_signatures": []
         }
     }
@@ -494,12 +494,12 @@ Notification
     "jsonrpc": "2.0",
     "method": "broadcast",
     "params": {
-        "channel": "/root/XXX",
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
         "message": {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
+            "data": "eyJvYmplY3QiOiJyb2xsX2NhbGwiLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiUm9sbCBDYWxsIiwiY3JlYXRpb24iOjE2MzMwMzYxMjAsInByb3Bvc2VkX3N0YXJ0IjoxNjMzMDM2Mzg4LCJwcm9wb3NlZF9lbmQiOjE2MzMwMzk2ODgsImxvY2F0aW9uIjoiRVBGTCIsImlkIjoial9kSmhZYnpubXZNYnVMc0ZNQ2dzYlB5YjJ6Nm1vZ2VtSmFON1NWaHVVTT0ifQ==",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "FFqBXhZSaKvBnTvrDNIeEYMpFKI5oIa5SAewquxIBHTTEyTIDnUgmvkwgccV9NrujPwDnRt1f4CIEqzXqhbjCw==",
+            "message_id": "sD_PdryBuOr14_65h8L-e1lzdQpDWxUAngtu1uwqgEI=",
             "witness_signatures": []
         }
     }
@@ -575,10 +575,10 @@ RPC
 
 {
     "jsonrpc": "2.0",
-    "id": 999,
+    "id": 3,
     "method": "catchup",
     "params": {
-        "channel": "/root/XXX"
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
     }
 }
 
@@ -592,20 +592,13 @@ Response (in case of success)
 
 {
     "jsonrpc": "2.0",
-    "id": 999,
+    "id": 3,
     "result": [
         {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
-            "witness_signatures": []
-        },
-        {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
+            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
+            "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
             "witness_signatures": []
         }
     ]
@@ -703,20 +696,13 @@ valid messages:
 
 {
     "jsonrpc": "2.0",
-    "id": 999,
+    "id": 3,
     "result": [
         {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
-            "witness_signatures": []
-        },
-        {
-            "data": "XXX",
-            "sender": "XXX",
-            "signature": "XXX",
-            "message_id": "XXX",
+            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
+            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+            "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
+            "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
             "witness_signatures": []
         }
     ]
@@ -859,6 +845,7 @@ Please take notice of the error codes that have been defined as part of the spec
     "required": ["code", "description"],
     "$comment": "Note: this error object is absent if the answer is positive"
 }
+
 ```
 
 
@@ -945,7 +932,7 @@ it and process it at the application level.
             "$comment": "Note: the string is encoded in Base64"
         },
         "message_id": {
-            "description": "[Base64String] message id : Hash(data||signature)",
+            "description": "[Base64String] message id : HashLen(data, signature)",
             "type": "string",
             "contentEncoding": "base64",
             "$comment": "Note: the string is encoded in Base64"

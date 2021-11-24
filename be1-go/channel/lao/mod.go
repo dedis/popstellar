@@ -48,7 +48,7 @@ type Channel struct {
 	// /root/<ID>
 	channelID string
 
-	organizerKey kyber.Point
+	organizerPubKey kyber.Point
 
 	witnessMu sync.Mutex
 	witnesses []string
@@ -63,42 +63,30 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
-// its associated consensus channel and register it to the hub
-func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger, socket socket.Socket) channel.Channel {
+// its associated consensus channel and register it to the hub.
+func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Message,
+	log zerolog.Logger, organizerPubKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	log = log.With().Str("channel", "lao").Logger()
 
 	inbox := inbox.NewInbox(channelID)
 	inbox.StoreMessage(msg)
 
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		log.Err(err).Msgf(keyDecodeError, err)
-		return nil
-	}
-
-	organizerPoint := crypto.Suite.Point()
-	err = organizerPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		log.Err(err).Msgf(keyUnmarshalError, err)
-		return nil
-	}
-
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
-	hub.RegisterNewChannel(consensusPath, &consensusCh, socket)
+	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	return &Channel{
-		channelID:    channelID,
-		sockets:      channel.NewSockets(),
-		inbox:        inbox,
-		organizerKey: organizerPoint,
-		hub:          hub,
-		rollCall:     rollCall{},
-		attendees:    make(map[string]struct{}),
-		log:          log,
+		channelID:       channelID,
+		sockets:         channel.NewSockets(),
+		inbox:           inbox,
+		organizerPubKey: organizerPubKey,
+		hub:             hub,
+		rollCall:        rollCall{},
+		attendees:       make(map[string]struct{}),
+		log:             log,
 	}
 }
 
@@ -448,7 +436,7 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.organizerKey.Equal(senderPoint) {
+	if !c.organizerPubKey.Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
 	}
 
@@ -498,7 +486,8 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(action string, msg message.Message, socket socket.Socket) error {
+func (c *Channel) processElectionObject(action string, msg message.Message,
+	socket socket.Socket) error {
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
@@ -517,8 +506,9 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 		return answer.NewErrorf(-4, keyUnmarshalError, err)
 	}
 
-	if !c.organizerKey.Equal(senderPoint) {
-		return answer.NewError(-5, "The sender of the election setup message has a different public key from the organizer")
+	if !c.organizerPubKey.Equal(senderPoint) {
+		return answer.NewErrorf(-5, "Sender key does not match the "+
+			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
 	}
 
 	var electionSetup messagedata.ElectionSetup
@@ -538,7 +528,8 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 }
 
 // createElection creates an election in the LAO.
-func (c *Channel) createElection(msg message.Message, setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
+func (c *Channel) createElection(msg message.Message,
+	setupMsg messagedata.ElectionSetup, socket socket.Socket) error {
 
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
@@ -564,7 +555,7 @@ func (c *Channel) createElection(msg message.Message, setupMsg messagedata.Elect
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.RegisterNewChannel(channelPath, &electionCh, socket)
+	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
 
 	return nil
 }

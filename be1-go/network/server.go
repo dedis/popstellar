@@ -124,8 +124,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		go witness.ReadPump()
 		go witness.WritePump()
 
-		err = s.h.AddServerSocket(witness)
-		s.log.Err(err).Msg("error while trying to catchup server")
+		err = s.h.NotifyNewServer(witness)
+		if err != nil {
+			s.log.Err(err).Msg("error while trying to catchup to server")
+
+			http.Error(w, "failed to add socket: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 

@@ -21,7 +21,7 @@ func ConnectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sy
 	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
 	u, err := url.Parse(urlString)
 	if err != nil {
-		return xerrors.Errorf("failed to parse connection url %s %v", urlString, err)
+		return xerrors.Errorf("failed to parse connection url %s: %v", urlString, err)
 	}
 
 	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
@@ -40,7 +40,7 @@ func ConnectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sy
 		go organizerSocket.WritePump()
 		go organizerSocket.ReadPump()
 
-		err = h.AddServerSocket(organizerSocket)
+		err = h.NotifyNewServer(organizerSocket)
 		if err != nil {
 			return xerrors.Errorf("error while trying to catchup to server: %v", err)
 		}
@@ -52,7 +52,7 @@ func ConnectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sy
 		go witnessSocket.WritePump()
 		go witnessSocket.ReadPump()
 
-		err = h.AddServerSocket(witnessSocket)
+		err = h.NotifyNewServer(witnessSocket)
 		if err != nil {
 			return xerrors.Errorf("error while trying to catchup to server: %v", err)
 		}

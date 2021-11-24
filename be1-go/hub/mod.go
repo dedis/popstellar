@@ -23,8 +23,8 @@ const (
 // Hub defines the methods a PoP server must implement to receive messages
 // and handle clients.
 type Hub interface {
-	// AddServerSocket add a socket for the hub to send message to other servers
-	AddServerSocket(socket.Socket) error
+	// NotifyNewServer add a socket for the hub to send message to other servers
+	NotifyNewServer(socket.Socket) error
 
 	// Start invokes the processing loop for the hub.
 	Start()

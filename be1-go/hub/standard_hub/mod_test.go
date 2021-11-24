@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"popstellar/channel"
-	"popstellar/crypto"
 	"popstellar/hub"
 	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
@@ -34,7 +33,7 @@ func Test_Add_Server_Socket(t *testing.T) {
 
 	sock := &fakeSocket{id: "fakeID"}
 
-	err = hub.AddServerSocket(sock)
+	err = hub.NotifyNewServer(sock)
 	require.NoError(t, err)
 	require.NotNil(t, hub.queries.queries[0])
 	require.Equal(t, 1, hub.queries.nextID)
@@ -249,6 +248,7 @@ func Test_Handle_Server_Catchup(t *testing.T) {
 
 func Test_Handle_Answer(t *testing.T) {
 	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	fakeChannelFac := &fakeChannelFac{
 		c: &fakeChannel{},
@@ -257,13 +257,21 @@ func Test_Handle_Answer(t *testing.T) {
 	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	result := method.Result{
+	result := struct {
+		JSONRPC string `json:"jsonrpc"`
+		ID      int    `json:"id"`
+		Result  int    `json:"result"`
+	}{
 		JSONRPC: "2.0",
 		ID:      1,
 		Result:  0,
 	}
 
-	serverAnswer := method.Answer{
+	serverAnswer := struct {
+		JSONRPC string            `json:"jsonrpc"`
+		ID      int               `json:"id"`
+		Result  []message.Message `json:"result"`
+	}{
 		JSONRPC: "2.0",
 		ID:      1,
 		Result:  make([]message.Message, 1),
@@ -278,11 +286,16 @@ func Test_Handle_Answer(t *testing.T) {
 
 	msg := message.Message{
 		Data:              messageData,
+		Sender:            publicKey64,
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 	serverAnswer.Result[0] = msg
 
-	serverAnswerBis := method.Answer{
+	serverAnswerBis := struct {
+		JSONRPC string            `json:"jsonrpc"`
+		ID      int               `json:"id"`
+		Result  []message.Message `json:"result"`
+	}{
 		JSONRPC: "2.0",
 		ID:      2,
 		Result:  make([]message.Message, 0),
@@ -359,10 +372,13 @@ func Test_Handle_Publish(t *testing.T) {
 
 	hub.channelByID[rootPrefix+laoID] = c
 
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
+	require.NoError(t, err)
+
 	msg := message.Message{
 		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -629,7 +645,8 @@ type keypair struct {
 }
 
 var nolog = zerolog.New(io.Discard)
-var suite = crypto.Suite
+
+//var suite = crypto.Suite
 
 func generateKeyPair(t *testing.T) keypair {
 	secret := suite.Scalar().Pick(suite.RandomStream())
@@ -651,8 +668,8 @@ type fakeChannelFac struct {
 }
 
 // newChannel implement the type channel.LaoFactory
-func (c *fakeChannelFac) newChannel(channelID string,
-	hub channel.HubFunctionalities, msg message.Message, log zerolog.Logger, socket socket.Socket) channel.Channel {
+func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionalities,
+	msg message.Message, log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) channel.Channel {
 
 	c.chanID = channelID
 	c.msg = msg

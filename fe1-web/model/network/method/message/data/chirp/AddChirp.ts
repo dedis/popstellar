@@ -12,10 +12,13 @@ export class AddChirp implements MessageData {
 
   public readonly action: ActionType = ActionType.ADD;
 
+  // The text of the chirp
   public readonly text: string;
 
+  // The parent ID of the chirp (if it is a reply)
   public readonly parent_id?: Hash;
 
+  // The timestamp at which the chirp is posted
   public readonly timestamp: Timestamp;
 
   constructor(msg: Partial<AddChirp>) {
