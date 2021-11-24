@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp,
+  EventTags, getUserSocialChannel, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
   CastVote,
@@ -289,6 +289,7 @@ export function terminateElection(
 }
 
 export function requestAddChirp(
+  publicKey: PublicKey,
   text: string,
   parentId?: Hash,
 ): Promise<void> {
@@ -301,5 +302,5 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(getCurrentUserSocialChannel(currentLao.id), message);
+  return publish(getUserSocialChannel(currentLao.id, publicKey.valueOf()), message);
 }

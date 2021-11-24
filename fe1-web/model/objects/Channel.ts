@@ -1,5 +1,6 @@
-import { KeyPairStore } from 'store';
+import { KeyPairStore, OpenedLaoStore } from 'store';
 import { Hash } from './Hash';
+import { getCurrentPopToken } from './wallet';
 
 export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
@@ -17,9 +18,32 @@ export function channelFromIds(...args: Hash[]) : Channel {
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
-export function getCurrentUserSocialChannel(laoIdHash: Hash): Channel {
-  const userPublicKey = KeyPairStore.getPublicKey().valueOf();
-  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
+export function getCurrentUserSocialChannel(laoIdHash: Hash): Channel | undefined {
+  const currentLao = OpenedLaoStore.get();
+
+  const isOrganizer = (KeyPairStore.getPublicKey() === currentLao.organizer);
+  let userPublicKey = '';
+
+  // If the current user is an organizer, simply get his public key from KeyPairStore
+  if (isOrganizer) {
+    userPublicKey = KeyPairStore.getPublicKey().valueOf();
+  } else {
+    // If the current user is an attendee, we need to get his pop token
+    getCurrentPopToken(laoIdHash).catch((err) => {
+      console.error('Could not get pop token of user to send a chirp, error: ', err);
+    }).then((token) => {
+      if (token) {
+        userPublicKey = token.publicKey.valueOf();
+      } else {
+        console.error('Sending a chirp is impossible: no token found for current user');
+      }
+    });
+  }
+
+  if (userPublicKey === '') {
+    return undefined;
+  }
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey.valueOf()}`;
 }
 
 /**
