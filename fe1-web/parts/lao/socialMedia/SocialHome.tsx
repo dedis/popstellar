@@ -16,7 +16,7 @@ import STRINGS from 'res/strings';
 import { requestAddChirp } from 'network/MessageApi';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
-import { ChirpState } from 'model/objects/Chirp';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
 
 /**
  * UI for the Social Media component
@@ -58,10 +58,7 @@ const SocialHome = () => {
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
-      sender={item.sender}
-      text={item.text}
-      time={item.time}
-      likes={item.likes}
+      chirp={Chirp.fromState(item)}
     />
   );
 

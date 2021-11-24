@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { gray } from 'styles/colors';
+import { Chirp } from 'model/objects/Chirp';
 
 /**
  * Component to display a chirp
@@ -57,11 +58,8 @@ const styles = StyleSheet.create({
 });
 
 const ChirpCard = (props: IPropTypes) => {
-  const { sender } = props;
-  const { text } = props;
-  const { time } = props;
-  const { likes } = props;
-  const likesText = `  ${likes}`;
+  const { chirp } = props;
+  const likesText = `  ${chirp.likes}`;
 
   // This is temporary for now
   const zero = '  0';
@@ -73,9 +71,9 @@ const ChirpCard = (props: IPropTypes) => {
       </View>
       <View style={styles.rightView}>
         <View style={styles.senderView}>
-          <Text style={styles.senderText}>{sender}</Text>
+          <Text style={styles.senderText}>{chirp.sender.valueOf()}</Text>
         </View>
-        <Text style={styles.chirpText}>{text}</Text>
+        <Text style={styles.chirpText}>{chirp.text}</Text>
         <View style={styles.reactionsView}>
           <View style={styles.reactionView}>
             <Ionicons name="thumbs-up" size={16} color="black" />
@@ -95,7 +93,7 @@ const ChirpCard = (props: IPropTypes) => {
           </View>
         </View>
         <View style={styles.timeView}>
-          <TimeAgo date={time * 1000} />
+          <TimeAgo date={chirp.time.valueOf() * 1000} />
         </View>
       </View>
     </View>
@@ -103,19 +101,13 @@ const ChirpCard = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  sender: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
-  time: PropTypes.number.isRequired,
-  likes: PropTypes.number.isRequired,
+  chirp: PropTypes.instanceOf(Chirp).isRequired,
 };
 
 ChirpCard.prototype = propTypes;
 
 type IPropTypes = {
-  sender: string,
-  text: string,
-  time: number,
-  likes: number,
+  chirp: Chirp,
 };
 
 export default ChirpCard;
