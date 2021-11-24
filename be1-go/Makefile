@@ -1,7 +1,7 @@
 .PHONY: test
 
 build: protocol
-	go build -o pop ./cli/
+	go build -o pop ./cli/main
 
 lint:
 	@go get -v honnef.co/go/tools/cmd/staticcheck

@@ -22,12 +22,10 @@ package main
 
 import (
 	"context"
+	"github.com/urfave/cli/v2"
 	"log"
 	"os"
-	"popstellar/cli/organizer"
-	"popstellar/cli/witness"
-
-	"github.com/urfave/cli/v2"
+	cli2 "popstellar/cli"
 )
 
 func main() {
@@ -78,7 +76,10 @@ func main() {
 							clientPortFlag,
 							witnessPortFlag,
 						},
-						Action: organizer.Serve,
+						Action: func(c *cli.Context) error {
+							err := cli2.Serve(c, "organizer")
+							return err
+						},
 					},
 				},
 			},
@@ -98,7 +99,10 @@ func main() {
 							witnessPortFlag,
 							otherWitnessFlag,
 						},
-						Action: witness.Serve,
+						Action: func(c *cli.Context) error {
+							err := cli2.Serve(c, "witness")
+							return err
+						},
 					},
 				},
 			},
