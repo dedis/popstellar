@@ -263,4 +263,3 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
-
