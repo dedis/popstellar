@@ -321,7 +321,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, m, nolog, nil, nil)
+	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
