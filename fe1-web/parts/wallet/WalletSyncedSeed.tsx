@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import {
   ScrollView,
   StyleSheet, View, ViewStyle,
@@ -115,16 +115,15 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     );
   }
 
-  function displayOneToken(laoId: string, rollCallId: string) {
+  function displayOneToken(laoId: string, rollCallId: string): ReactNode {
     if (!tokensByLao) {
       console.warn('The tokensByLaoRollCall is undefined yet');
-      return;
+      return null;
     }
     const lao = laos[laoId];
     const rollCall = rollCalls[laoId][rollCallId];
     const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
-    // eslint-disable-next-line consistent-return
     return (
       <View style={styleContainer.centered}>
         <View style={styles.smallPadding} />
