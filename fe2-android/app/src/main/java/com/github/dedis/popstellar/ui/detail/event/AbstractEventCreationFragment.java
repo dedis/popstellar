@@ -141,6 +141,14 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       endTime = null;
       endTimeEditText.setText("");
     }
+
+    if (compareWithNowByDay(newDate) == 0) {
+      computeTimesInSeconds();
+      if (startTimeInSeconds < creationTimeInSeconds) {
+        startTime = null;
+        startTimeEditText.setText("");
+      }
+    }
   }
 
   private void onEndDate(String requestKey, Bundle bundle) {
@@ -180,6 +188,13 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       showToast(R.string.start_time_after_end_time_not_allowed);
       startTime = null;
       startTimeEditText.setText("");
+    } else if (startDate != null && compareWithNowByDay(startDate) == 0) {
+      computeTimesInSeconds();
+      if (startTimeInSeconds < creationTimeInSeconds) {
+        showToast(R.string.past_date_not_allowed);
+        startTime = null;
+        startTimeEditText.setText("");
+      }
     }
   }
 
