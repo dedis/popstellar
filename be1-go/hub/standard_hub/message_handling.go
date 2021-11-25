@@ -103,7 +103,7 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	}
 
 	if answerMsg.Result == nil {
-		h.log.Warn().Msg("recieved an error, nothing to handle")
+		h.log.Warn().Msg("received an error, nothing to handle")
 		// don't send any error to avoid infinite error loop as a server will
 		// send an error to another server that will create another error
 		return nil
