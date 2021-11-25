@@ -1,14 +1,21 @@
+# npm files
 node_modules/**/*
-.expo/*
 npm-debug.*
+
+# key files
 *.jks
 *.p8
 *.p12
 *.key
 *.mobileprovision
-*.orig.*
-web-build/
+
+# build files
 tsdocs/
+web-build/
+
+# expo files
+.expo/*
+.expo-shared/
 
 # Code coverage
 coverage/*
@@ -22,3 +29,6 @@ test-report.xml
 
 # macOS
 .DS_Store
+
+# original files
+*.orig.*
