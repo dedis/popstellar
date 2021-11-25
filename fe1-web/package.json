@@ -5,6 +5,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "build-web": "expo build:web",
     "eject": "expo eject",
     "startServer": "node __tests__/utils/LocalMockServer.js",
     "startMonitorServer": "nodemon __tests__/utils/LocalMockServer.js",
