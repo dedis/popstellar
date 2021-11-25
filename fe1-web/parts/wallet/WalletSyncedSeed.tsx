@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet, View, ViewStyle,
@@ -44,11 +44,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const laoSelector = makeLaosMap();
   const laos = useSelector(laoSelector);
 
-  Wallet.recoverWalletPoPTokens()
-    .then((kp) => {
-      setTokensByLao(kp);
-    })
-    .catch((err) => console.debug(err));
+  useEffect(() => {
+    Wallet.recoverWalletPoPTokens()
+      .then((kp) => {
+        setTokensByLao(kp);
+      })
+      .catch((err) => console.debug(err));
+  }, [rollCalls]);
 
   /* the below 4 functions are to manage user interaction with buttons */
   function hidePublicKeyButton() {
