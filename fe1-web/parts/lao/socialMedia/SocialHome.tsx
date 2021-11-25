@@ -11,6 +11,9 @@ import STRINGS from 'res/strings';
 import { requestAddChirp } from 'network/MessageApi';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
+import { KeyPairStore, OpenedLaoStore } from 'store';
+import { getCurrentPopToken } from 'model/objects/wallet';
+import { PublicKey } from 'model/objects';
 
 /**
  * UI for the Social Media component
@@ -30,11 +33,33 @@ const styles = StyleSheet.create({
 const SocialHome = () => {
   const [inputChirp, setInputChirp] = useState('');
 
+  const currentLao = OpenedLaoStore.get();
+  const isOrganizer = (KeyPairStore.getPublicKey() === currentLao.organizer);
+  let userPublicKey: PublicKey | undefined;
+
+  // If the current user is an organizer, simply get his public key from KeyPairStore
+  if (isOrganizer) {
+    userPublicKey = KeyPairStore.getPublicKey();
+  } else {
+    // If the current user is an attendee, we need to get his pop token
+    getCurrentPopToken(currentLao.id).catch((err) => {
+      console.error('Could not get pop token of user to send a chirp, error:', err);
+    }).then((token) => {
+      if (token) {
+        userPublicKey = token.publicKey;
+      } else {
+        console.error('Sending a chirp is impossible: no token found for current user');
+      }
+    });
+  }
+
   const publishChirp = () => {
-    requestAddChirp(inputChirp)
-      .catch((err) => {
-        console.error('Could not add chirp, error:', err);
-      });
+    if (userPublicKey) {
+      requestAddChirp(userPublicKey, inputChirp)
+        .catch((err) => {
+          console.error('Could not add chirp, error:', err);
+        });
+    }
   };
 
   const chirps = makeChirpsList();
