@@ -6,10 +6,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -195,5 +197,16 @@ public class StateLaoTest {
             modificationId,
             new HashSet<>(Collections.singletonList("0x3434")),
             modificationSignatures));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(stateLao);
+
+    String pathDir = "protocol/examples/messageData/lao_state/";
+    String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_additional_params.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_missing_params.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }

@@ -58,6 +58,27 @@ public class ElectionEnd extends Data {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ElectionEnd that = (ElectionEnd) o;
+
+    return createdAt == that.createdAt
+        && java.util.Objects.equals(electionId, that.electionId)
+        && java.util.Objects.equals(laoId, that.laoId)
+        && java.util.Objects.equals(registeredVotes, that.registeredVotes);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(electionId, createdAt, laoId, registeredVotes);
+  }
+
+  @Override
   public String toString() {
     return "ElectionEnd{"
         + "electionId='"

@@ -1,5 +1,9 @@
 package com.github.dedis.popstellar.model.network.serializer;
 
+import android.util.Log;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.method.Message;
@@ -8,6 +12,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
+import com.networknt.schema.ValidationMessage;
+
+import java.net.URI;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /** Json utility class */
 public final class JsonUtils {
@@ -16,6 +30,17 @@ public final class JsonUtils {
   public static final String JSON_RPC_VERSION = "2.0";
 
   public static final String JSON_REQUEST_ID = "id";
+
+  private static final String TAG = JsonUtils.class.getSimpleName();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  private static final JsonSchemaFactory FACTORY =
+      JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+
+  public static final String ROOT_SCHEMA = "protocol/jsonRPC.json";
+  public static final String GENERAL_MESSAGE_SCHEMA = "protocol/query/method/message/message.json";
+  public static final String DATA_SCHEMA = "protocol/query/method/message/data/data.json";
+
+  private static final Map<String, JsonSchema> schemas = new ConcurrentHashMap<>();
 
   private JsonUtils() {}
 
@@ -59,5 +84,39 @@ public final class JsonUtils {
         .registerTypeAdapter(Data.class, new JsonDataSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .create();
+  }
+
+  /**
+   * Verify the json against the given schema
+   *
+   * @param schemaPath the path of the schema resource
+   * @param json a string representing the json
+   * @throws JsonParseException if the json is invalid or cannot be parsed
+   */
+  public static void verifyJson(String schemaPath, String json) throws JsonParseException {
+    Log.d(TAG, "verifyJson for : " + json);
+
+    JsonSchema schema = loadSchema(schemaPath);
+
+    try {
+      Set<ValidationMessage> errors = schema.validate(OBJECT_MAPPER.readTree(json));
+      if (!errors.isEmpty()) {
+        throw new JsonParseException(
+            "ValidationMessage errors : " + Arrays.toString(errors.toArray()));
+      }
+    } catch (JsonProcessingException e) {
+      throw new JsonParseException(e);
+    }
+  }
+
+  /**
+   * Load a json schema from the resources directory
+   *
+   * @param resourcePath relative path inside resources directory
+   * @return the JsonSchema
+   */
+  public static JsonSchema loadSchema(String resourcePath) {
+    return schemas.computeIfAbsent(
+        resourcePath, k -> FACTORY.getSchema(URI.create("resource:/" + resourcePath)));
   }
 }
