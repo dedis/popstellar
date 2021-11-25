@@ -1,20 +1,22 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { Timestamp } from 'model/objects';
+import { Hash, PublicKey, Timestamp } from 'model/objects';
+import { Chirp } from 'model/objects/Chirp';
 import ChirpCard from '../ChirpCard';
 
-const text = 'Don\'t panic.';
-const sender = 'Douglas Adams';
-const time = new Timestamp(1609455600);
+const chirp = new Chirp({
+  id: new Hash('1234'),
+  text: 'Don\'t panic.',
+  sender: new PublicKey('Douglas Adams'),
+  time: new Timestamp(1609455600),
+  likes: 42,
+});
 
 describe('ChirpCard', () => {
   it('renders correctly', () => {
     const obj = render(
       <ChirpCard
-        sender={sender}
-        text={text}
-        time={time}
-        likes={42}
+        chirp={chirp}
       />,
     );
     expect(obj.toJSON()).toMatchSnapshot();
