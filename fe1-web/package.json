@@ -1,4 +1,5 @@
 {
+  "name": "popstellar",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -7,6 +8,7 @@
     "web": "expo start --web",
     "prebuild-web": "node_modules/expo-optimize/build/index.js",
     "build-web": "expo build:web",
+    "postbuild-web": "zip-build web-build -t %NAME%_%TIMESTAMP%.%EXT%",
     "eject": "expo eject",
     "startServer": "node __tests__/utils/LocalMockServer.js",
     "startMonitorServer": "nodemon __tests__/utils/LocalMockServer.js",
@@ -110,7 +112,8 @@
     "react-test-renderer": "^17.0.2",
     "sharp-cli": "^1.15.0",
     "ts-jest": "^26.5.1",
-    "typescript": "~4.0.0"
+    "typescript": "~4.0.0",
+    "zip-build": "^1.5.0"
   },
   "private": true
 }

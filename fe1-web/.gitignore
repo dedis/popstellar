@@ -12,6 +12,7 @@ npm-debug.*
 # build files
 tsdocs/
 web-build/
+dist/
 
 # expo files
 .expo/*
@@ -32,3 +33,4 @@ test-report.xml
 
 # original files
 *.orig.*
+
