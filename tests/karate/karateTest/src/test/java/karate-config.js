@@ -30,7 +30,7 @@ function fn() {
      //Directory to launch the server from
      config.serverDIR = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be1-go' ;
      config.serverCmd = ['bash', '-c', `./pop organizer --pk ${config.pk} serve`];
-     config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\create.log';
+     config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\go_create.log';
       
   
   } else if (env == 'scala') {
@@ -42,7 +42,7 @@ function fn() {
     config.serverDIR = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be2-scala';
     var pathConfig = `${config.serverDIR}\\src\\main\\scala\\ch\\epfl\\pop\\config`;
     config.serverCmd = ['sbt.bat', `-Dscala.config=${pathConfig}`, 'run'];
-    config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\create.log';
+    config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\scala_create.log';
   
   }
   return config;

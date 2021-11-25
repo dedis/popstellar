@@ -37,7 +37,6 @@ Feature: Create a pop LAO
         # partial comparison of res /!\ needs lao ID. 
         Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -3, description: '#string'}}  
 
-
     Scenario: Create should succeed with a valid creation request
         Given createLaoReq, createLaoRes
         * def socket = karate.webSocket(wsUrl,handle)
@@ -54,4 +53,23 @@ Feature: Create a pop LAO
         And  json err = socket.listen(timeout)
         * karate.log('Received: '+ err )
         Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+    
+    @here
+    Scenario: Create Lao with negative time should fail with an error response
+        Given string negTimeLao = read('classpath:pop/data/laoCreate/bad_lao_create_negative.json')
+        And   def socket = karate.webSocket(wsUrl,handle)
+        When  eval socket.send(negTimeLao)
+        And  json err = socket.listen(timeout)
+        *  karate.log('Received: '+ karate.pretty(err) )
+        Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+    @here
+    Scenario: Create Lao with invalid id hash should fail with an error response
+        Given string invalidIdLao = read('classpath:pop/data/laoCreate/bad_lao_create_id_invalid_hash.json')
+        And   def socket = karate.webSocket(wsUrl,handle)
+        When  eval socket.send(invalidIdLao)
+        And  json err = socket.listen(timeout)
+        *  karate.log('Received: '+ karate.pretty(err) )
+        Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+
+   
 
