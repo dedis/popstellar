@@ -103,7 +103,9 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	}
 
 	if answerMsg.Result == nil {
-		h.log.Info().Msg("revieved an error, nothing to handle")
+		h.log.Warn().Msg("recieved an error, nothing to handle")
+		// don't send any error to avoid infinite error loop as a server will
+		// send an error to another server that will create another error
 		return nil
 	}
 
@@ -118,7 +120,9 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	if val == nil {
 		h.queries.Unlock()
 		return xerrors.Errorf("no query sent with id %v", answerMsg.ID)
-	} else if *val {
+	}
+
+	if *val {
 		h.queries.Unlock()
 		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
 	}
