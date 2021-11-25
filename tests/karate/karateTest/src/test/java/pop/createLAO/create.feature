@@ -10,14 +10,13 @@ Feature: Create a pop LAO
         * call read('classpath:pop/utils/server.feature')
         * string createLaoReq =  read('classpath:pop/data/laoCreate/publish.json')
         * string createLaoRes =  read('classpath:pop/data/laoCreate/answer.json')
-        ## NOTE: How to get the laoID from the publih.json it's encoded in the data64 
         * string laoID = 'p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA='
 
     Scenario:
          * print `Test for auto ${karate.get('env')} launch`
          * print 'End scenario'
 
-    Scenario: Create a duplicated LAO should fail with an error responce
+    Scenario: Create a duplicated LAO should fail with an error response
         Given createLaoReq, createLaoRes
         * def socket = karate.webSocket(wsUrl,handle)
         * karate.log("Sending first request..")
@@ -36,7 +35,7 @@ Feature: Create a pop LAO
  
         ## match X contains deep Y for nested jsons
         # partial comparison of res /!\ needs lao ID. 
-        Then match err contains deep {id: 1, error: {code: -3}}  
+        Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -3, description: '#string'}}  
 
 
     Scenario: Create should succeed with a valid creation request
@@ -48,4 +47,11 @@ Feature: Create a pop LAO
         Then match res == createLaoRes
 
 
+    Scenario: Create Lao with invalid jsonreq should fail with an error response
+        Given string  emptyNameReq = read('classpath:pop/data/laoCreate/bad_lao_create_empty_name.json')
+        And   def socket = karate.webSocket(wsUrl,handle)
+        When  eval socket.send(emptyNameReq)
+        And  json err = socket.listen(timeout)
+        * karate.log('Received: '+ err )
+        Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
 

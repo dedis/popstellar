@@ -21,7 +21,8 @@ function fn() {
   }
   if (env == 'go') {
     // customize
-     config.pk = 'g6XxoDTcz2tQZLjiK6zK24foSLSxU5P5tUYlKqhedCo=';
+     config.pk = 'J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM='; 
+     //'g6XxoDTcz2tQZLjiK6zK24foSLSxU5P5tUYlKqhedCo=';
      config.host = '127.0.0.1';
      config.port = 9000 ;
      config.path = 'organizer/client';
