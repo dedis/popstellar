@@ -181,7 +181,7 @@ func newFakeChannel(t *testing.T) channel.Channel {
 
 	messages := make([]message.Message, numMessages)
 
-	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog, nil, nil)
+	channel := NewChannel("fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", fakeHub, messages[0], nolog, keypair.public, nil)
 
 	return channel
 }
