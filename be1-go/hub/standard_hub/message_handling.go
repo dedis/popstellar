@@ -102,6 +102,11 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return xerrors.Errorf("failed to unmarshal answer: %v", err)
 	}
 
+	if answerMsg.Result == nil {
+		h.log.Info().Msg("revieved an error, nothing to handle")
+		return nil
+	}
+
 	if answerMsg.Result.IsEmpty() {
 		h.log.Info().Msg("result isn't an answer to a catchup, nothing to handle")
 		return nil
