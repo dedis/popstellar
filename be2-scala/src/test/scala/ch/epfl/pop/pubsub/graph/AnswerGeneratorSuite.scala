@@ -1,27 +1,17 @@
 package ch.epfl.pop.pubsub.graph
 
-import akka.actor.Actor
-import akka.actor.ActorSystem
-import akka.actor.Props
+import akka.actor.{Actor,ActorSystem,Props}
 import akka.actor.typed.ActorRef
-import akka.actor.typed.scaladsl.Behaviors
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender,TestKit,TestProbe}
 import akka.util.Timeout
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.JsonRpcResponse
-import ch.epfl.pop.model.network.ResultObject
+import ch.epfl.pop.model.network.{JsonRpcRequest,JsonRpcResponse,ResultObject}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.pubsub.graph.validator.SchemaValidatorSuite._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.FunSuiteLike
-import org.scalatest.Matchers
+import org.scalatest.{BeforeAndAfterAll,FunSuiteLike,Matchers}
 import util.examples.MessageExample
-
-import scala.concurrent.duration._
-
-
+import scala.concurrent.duration.FiniteDuration
 
 class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll  {
 
@@ -136,5 +126,18 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
 
   }
 
-
+  test("Convert Right Pipeline messages into Error Messages test"){
+    val optid = Option(1)
+    val perror = PipelineError(
+         ErrorCodes.SERVER_ERROR.id,
+        "Server received a Broadcast message which should never happen (broadcast messages are only emitted by server)",
+        optid
+      )
+    val gmsg  = AnswerGenerator.generateAnswer(Right(perror))
+    gmsg shouldBe a [Left[JsonRpcResponse,_]]
+    val msg = gmsg.swap.toOption
+    msg.isDefined should be (true)
+    msg.get.asInstanceOf[JsonRpcResponse].jsonrpc should be (RpcValidator.JSON_RPC_VERSION)
+    msg.get.asInstanceOf[JsonRpcResponse].id should be (optid)
+  }
 }

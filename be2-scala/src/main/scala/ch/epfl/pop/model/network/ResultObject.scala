@@ -9,4 +9,12 @@ class ResultObject(val resultInt: Option[Int], val resultMessages: Option[List[M
   def this(result: List[Message]) = this(None, Some(result))
 
   def isIntResult: Boolean = resultInt.isDefined
+
+  override def equals(o: Any): Boolean = {
+      o match{
+          case that: ResultObject =>
+            this.resultInt == that.resultInt && that.resultMessages == this.resultMessages
+          case _=> false
+      }
+    }
 }
