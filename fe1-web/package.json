@@ -39,6 +39,7 @@
     "idb-keyval": "^5.0.4",
     "jest-expo": "^43.0.1",
     "js-sha256": "^0.9.0",
+    "madge": "^5.0.1",
     "prop-types": "^15.7.2",
     "qrcode.react": "^1.0.1",
     "react": "17.0.2",

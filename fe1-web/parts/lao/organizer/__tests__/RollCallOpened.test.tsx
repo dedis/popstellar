@@ -1,14 +1,17 @@
 import React from 'react';
-import { act, render } from '@testing-library/react-native';
-import {
-  Hash, PublicKey, Timestamp,
-} from 'model/objects';
-import keyPair from 'test_data/keypair.json';
-import RollCallOpened from '../RollCallOpened'; // Don't change the order, otherwise the tests will fail
-import { fireScan as fakeQrReaderScan } from '__mocks__/react-qr-reader';
-import { requestCloseRollCall as mockRequestCloseRollCall } from '__mocks__/MessageApi';
-import STRINGS from 'res/strings';
 import { useRoute } from '@react-navigation/core';
+import { act, fireEvent, render } from '@testing-library/react-native';
+import {
+  Hash, Lao, LaoState, PublicKey, Timestamp,
+} from 'model/objects';
+import STRINGS from 'res/strings';
+import keyPair from 'test_data/keypair.json';
+import { requestCloseRollCall as mockRequestCloseRollCall } from 'network/MessageApi';
+import { OpenedLaoStore } from 'store';
+// @ts-ignore
+import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
+
+import RollCallOpened from '../RollCallOpened'; // Don't change the order, otherwise the tests will fail
 
 jest.mock('@react-navigation/core');
 
@@ -16,12 +19,21 @@ export const mockPublicKey = new PublicKey(keyPair.publicKey);
 
 const org = mockPublicKey;
 const time = new Timestamp(1609455600).toString(); // 1st january 2021
-const name = 'mock Lao';
+const name = 'MyLao';
 const mockLaoIdHash: Hash = Hash.fromStringArray(org.toString(), time, name);
 const mockLaoId: string = mockLaoIdHash.toString();
 const rollCallId = Hash.fromStringArray('R', mockLaoId, time, name).toString();
+const laoState: LaoState = {
+  id: '1234',
+  name: 'MyLao',
+  creation: 1609455600,
+  last_modified: 1609455600,
+  organizer: '1234',
+  witnesses: [],
+};
 
 jest.mock('react-qr-reader');
+jest.mock('network/MessageApi');
 
 const mockToastShow = jest.fn();
 jest.mock('react-native-toast-notifications', () => ({
@@ -68,17 +80,35 @@ describe('RollCallOpened', () => {
     expect(mockToastShow).toHaveBeenCalledTimes(2);
   });
 
-  it('close correctly', async () => {
+  it('close correctly with no attendee', async () => {
     (useRoute as jest.Mock).mockReturnValue({
       name: STRINGS.roll_call_open,
       params: { rollCallId: rollCallId, time: time },
     });
-    render(
+    const getMock = jest.spyOn(OpenedLaoStore, 'get');
+    getMock.mockImplementation(() => Lao.fromState(laoState));
+    const button = render(
       <RollCallOpened />,
-    );
-    mockRequestCloseRollCall()
-      .then(() => {
-        expect(mockNavigate).toBeCalledTimes(1);
-      });
+    ).getByText(STRINGS.roll_call_scan_close);
+    fireEvent.press(button);
+    expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), []);
+  });
+
+  it('close correctly with two attendees', async () => {
+    (useRoute as jest.Mock).mockReturnValue({
+      name: STRINGS.roll_call_open,
+      params: { rollCallId: rollCallId, time: time },
+    });
+    const getMock = jest.spyOn(OpenedLaoStore, 'get');
+    getMock.mockImplementation(() => Lao.fromState(laoState));
+    const button = render(
+      <RollCallOpened />,
+    ).getByText(STRINGS.roll_call_scan_close);
+    act(() => {
+      fakeQrReaderScan('123');
+      fakeQrReaderScan('456');
+    });
+    fireEvent.press(button);
+    expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [new PublicKey('123'), new PublicKey('456')]);
   });
 });
