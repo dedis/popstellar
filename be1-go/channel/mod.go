@@ -14,7 +14,8 @@ import (
 
 // LaoFactory is the function passed to the organizer that it must use to
 // create a new lao channel.
-type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message, log zerolog.Logger) Channel
+type LaoFactory func(channelID string, hub HubFunctionalities, msg message.Message,
+	log zerolog.Logger, organizerKey kyber.Point, socket socket.Socket) Channel
 
 // Channel represents a PoP channel - like a LAO.
 type Channel interface {
@@ -24,8 +25,10 @@ type Channel interface {
 	// Unsubscribe is used to handle an unsubscribe message.
 	Unsubscribe(socketID string, msg method.Unsubscribe) error
 
-	// Publish is used to handle a publish message.
-	Publish(msg method.Publish) error
+	// Publish is used to handle a publish message. The sender's socket may be
+	// needed when a message creates a channel, to know if the server should
+	// catchup on this channel or not.
+	Publish(msg method.Publish, socket socket.Socket) error
 
 	// Catchup is used to handle a catchup message.
 	Catchup(msg method.Catchup) []message.Message
@@ -83,7 +86,15 @@ func (s *Sockets) Delete(ID string) bool {
 
 // HubFunctionalities defines the functions needed by a channel from the hub.
 type HubFunctionalities interface {
-	GetPubkey() kyber.Point
+	GetPubKeyOrg() kyber.Point
+	GetPubKeyServ() kyber.Point
+	GetSecKeyServ() kyber.Scalar
 	GetSchemaValidator() validation.SchemaValidator
-	RegisterNewChannel(channelID string, channel Channel)
+	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
+}
+
+// Broadcastable defines a channel that can broadcast
+type Broadcastable interface {
+	Broadcast(msg method.Broadcast) error
+	GetChannelPath() string
 }

@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -18,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
+import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
@@ -46,6 +48,14 @@ public class HomeActivity extends AppCompatActivity {
     setupHomeFragment();
 
     mViewModel = obtainViewModel(this);
+
+    // Load all the json schemas in background when the app is started.
+    AsyncTask.execute(
+        () -> {
+          JsonUtils.loadSchema(JsonUtils.ROOT_SCHEMA);
+          JsonUtils.loadSchema(JsonUtils.DATA_SCHEMA);
+          JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
+        });
 
     setupHomeButton();
     setupLaunchButton();

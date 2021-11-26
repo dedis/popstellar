@@ -58,7 +58,6 @@ const STRINGS = {
   home_launch_lao: 'To launch a new LAO as on organizer, please tap Launch tab above',
 
   /* --- Social Media Strings --- */
-  feed_description: 'User feed',
   button_publish: 'Publish',
   your_chirp: 'Your chirp',
 

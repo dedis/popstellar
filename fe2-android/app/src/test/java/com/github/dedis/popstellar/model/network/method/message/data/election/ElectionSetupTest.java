@@ -5,6 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventType;
@@ -218,5 +219,10 @@ public class ElectionSetupTest {
   @Test
   public void electionSetupEqualsTrueForSameInstance() {
     assertThat(electionSetup.equals(electionSetup), is(true));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(electionSetup);
   }
 }

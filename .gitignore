@@ -28,5 +28,7 @@
 be1-go/pop
 be1-go/validation/protocol
 
+fe2-android/app/src/main/resources/protocol
+
 .DS_Store
 **/.DS_Store

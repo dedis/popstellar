@@ -5,6 +5,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
+
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -52,5 +54,10 @@ public class CastVoteTest {
         castVote, new CastVote(Collections.singletonList(electionVote1), "random", laoId));
     assertNotEquals(
         castVote, new CastVote(Collections.singletonList(electionVote1), electionId, "random"));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(castVote);
   }
 }

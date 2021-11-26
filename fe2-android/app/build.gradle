@@ -132,6 +132,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-vision:20.1.3'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.crypto.tink:tink-android:1.5.0'
+    implementation 'com.networknt:json-schema-validator:1.0.46'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.1'
     implementation 'com.tinder.scarlet:scarlet:0.1.11'
     implementation 'com.tinder.scarlet:message-adapter-gson:0.1.11'
@@ -160,7 +161,6 @@ dependencies {
 
     testImplementation 'org.slf4j:slf4j-api:1.7.30'
     testImplementation 'org.slf4j:slf4j-simple:1.7.30'
-    testImplementation 'com.networknt:json-schema-validator:1.0.46'
 
     testImplementation 'org.mockito:mockito-core:3.9.0'
 
@@ -177,6 +177,15 @@ dependencies {
     androidTestImplementation 'org.mockito:mockito-android:3.9.0'
 
     androidTestUtil 'androidx.test:orchestrator:1.4.0'
+}
+
+copy {
+    from '../../protocol'
+    into 'src/main/resources/protocol'
+    include 'answer/**'
+    include 'examples/**'
+    include 'query/**'
+    include 'jsonRPC.json'
 }
 
 task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'createCovDebugCoverageReport']) {

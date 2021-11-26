@@ -4,18 +4,17 @@ package witness
 
 import (
 	"encoding/base64"
-	"fmt"
-	"net/url"
 	be1_go "popstellar"
 	"popstellar/channel/lao"
+	"popstellar/cli/utility"
 	"popstellar/crypto"
 	"popstellar/hub"
-	"popstellar/hub/witness"
+	"popstellar/hub/standard_hub"
 	"popstellar/network"
 	"popstellar/network/socket"
 	"sync"
+	"time"
 
-	"github.com/gorilla/websocket"
 	"github.com/urfave/cli/v2"
 	"golang.org/x/xerrors"
 )
@@ -30,6 +29,9 @@ func Serve(cliCtx *cli.Context) error {
 	organizerAddress := cliCtx.String("organizer-address")
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
+	if clientPort == witnessPort {
+		return xerrors.Errorf("client and witness ports must be different")
+	}
 	otherWitness := cliCtx.StringSlice("other-witness")
 
 	pk := cliCtx.String("public-key")
@@ -51,7 +53,7 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create witness hub
-	h, err := witness.NewHub(point, log, lao.NewChannel)
+	h, err := standard_hub.NewHub(point, log, lao.NewChannel, hub.WitnessHubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the witness hub: %v", err)
 	}
@@ -64,14 +66,14 @@ func Serve(cliCtx *cli.Context) error {
 	done := make(chan struct{})
 
 	// connect to organizer's witness endpoint
-	err = connectToWitnessSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
+	err = utility.ConnectToSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
 	if err != nil {
 		return xerrors.Errorf("failed to connect to organizer: %v", err)
 	}
 
 	// connect to other witnesses
 	for _, witness := range otherWitness {
-		err = connectToWitnessSocket(hub.WitnessHubType, witness, h, wg, done)
+		err = utility.ConnectToSocket(hub.WitnessHubType, witness, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
@@ -97,44 +99,20 @@ func Serve(cliCtx *cli.Context) error {
 	close(done)
 	wg.Wait()
 
-	return nil
-}
+	// notify channs to stop
+	close(done)
 
-// connectToSocket establishes a connection to another server's witness
-// endpoint.
-func connectToWitnessSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
-	log := be1_go.Logger
+	// wait on channs to be done
+	channsClosed := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(channsClosed)
+	}()
 
-	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
-	u, err := url.Parse(urlString)
-	if err != nil {
-		return xerrors.Errorf("failed to parse connection url %s %v", urlString, err)
-	}
-
-	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
-	if err != nil {
-		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
-	}
-
-	log.Info().Msgf("connected to %s at %s", otherHubType, urlString)
-
-	switch otherHubType {
-	case hub.OrganizerHubType:
-		organizerSocket := socket.NewOrganizerSocket(h.Receiver(),
-			h.OnSocketClose(), ws, wg, done, log)
-		wg.Add(2)
-
-		go organizerSocket.WritePump()
-		go organizerSocket.ReadPump()
-	case hub.WitnessHubType:
-		witnessSocket := socket.NewWitnessSocket(h.Receiver(),
-			h.OnSocketClose(), ws, wg, done, log)
-		wg.Add(2)
-
-		go witnessSocket.WritePump()
-		go witnessSocket.ReadPump()
-	default:
-		return xerrors.Errorf("invalid other hub type: %v", otherHubType)
+	select {
+	case <-channsClosed:
+	case <-time.After(time.Second * 10):
+		log.Error().Msg("channs didn't close after timeout, exiting")
 	}
 
 	return nil
