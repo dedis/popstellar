@@ -1,5 +1,5 @@
-// Package cli contains the entry point for starting the organizer
-// server.
+// Package main contains the entry point for starting the organizer
+// or witness server.
 package main
 
 import (
