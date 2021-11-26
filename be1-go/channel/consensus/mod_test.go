@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"io"
 	"os"
 	"path/filepath"
@@ -458,7 +459,7 @@ type fakeHub struct {
 }
 
 // NewHub returns a Organizer Hub.
-func NewfakeHub(publicOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -473,7 +474,7 @@ func NewfakeHub(publicOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoF
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOwner:     publicOwner,
+		pubKeyOrg:     	 publicOrg,
 		pubKeyServ: 	 pubServ,
 		secKeyServ: 	 secServ,
 		schemaValidator: schemaValidator,
@@ -509,9 +510,13 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyOrg
 }
 
-// GetSecKeyServ implements channel.HubFunctionalities
-func (h *fakeHub) GetSecKeyServ() kyber.Scalar {
-	return h.secKeyServ
+// Sign implements channel.HubFunctionalities
+func (h *fakeHub) Sign(data []byte) ([]byte, error) {
+	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to sign the data: %v", err)
+	}
+	return signatureBuf, nil
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {

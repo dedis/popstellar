@@ -541,13 +541,6 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-func generateKeys() (kyber.Point, kyber.Scalar) {
-	secret := suite.Scalar().Pick(suite.RandomStream())
-	point := suite.Point().Mul(secret, nil)
-
-	return point, secret
-}
-
 // ---
 // DB operations
 // --
