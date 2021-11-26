@@ -426,7 +426,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 	// message
 	if electAcceptNumber >= c.serverSockets.Number() &&
 		messageState.currentPhase == ElectAcceptPhase &&
-		messageState.proposer.Equal(c.hub.GetPubkey()) {
+		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
 		messageState.currentPhase = PromisePhase
 
@@ -541,7 +541,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 	// if enough Promise messages are received, the proposer send a Propose message
 	if len(consensusInstance.promises) >= c.serverSockets.Number()/2+1 &&
 		messageState.currentPhase == PromisePhase &&
-		messageState.proposer.Equal(c.hub.GetPubkey()) {
+		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
 		highestAccepted := int64(-1)
 		for _, promise := range consensusInstance.promises {
@@ -648,7 +648,7 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 	consensusInstance.accepts = append(consensusInstance.accepts, data)
 
 	if len(consensusInstance.accepts) >= c.serverSockets.Number()/2+1 &&
-		c.messageStates[data.MessageID].proposer.Equal(c.hub.GetPubkey()) {
+		c.messageStates[data.MessageID].proposer.Equal(c.hub.GetPubKeyOrg()) {
 
 		if !consensusInstance.decided {
 			consensusInstance.decided = true
