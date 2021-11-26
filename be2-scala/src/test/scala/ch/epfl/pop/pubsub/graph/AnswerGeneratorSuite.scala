@@ -1,42 +1,140 @@
 package ch.epfl.pop.pubsub.graph
 
-import org.scalatest.{Matchers, FunSuite, BeforeAndAfterAll}
+import akka.actor.Actor
+import akka.actor.ActorSystem
+import akka.actor.Props
+import akka.actor.typed.ActorRef
+import akka.actor.typed.scaladsl.Behaviors
+import akka.pattern.AskableActorRef
+import akka.testkit.{ImplicitSender,TestKit,TestProbe}
+import akka.util.Timeout
 import ch.epfl.pop.model.network.JsonRpcRequest
-import scala.io.Source
 import ch.epfl.pop.model.network.JsonRpcResponse
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.model.network.ResultObject
+import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.pubsub.graph.validator.SchemaValidatorSuite._
+import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.FunSuiteLike
+import org.scalatest.Matchers
+import util.examples.MessageExample
+
+import scala.concurrent.duration._
 
 
 
+class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll  {
 
-class AnswerGeneratorSuite extends FunSuite with Matchers with BeforeAndAfterAll{
+  final val pathCatchupJson = "../protocol/examples/query/catchup/catchup.json"
+  final val pathPublishJson = "../protocol/examples/query/publish/publish.json"
+  final val pathBroadcastJson = "../protocol/examples/query/broadcast/broadcast.json"
 
-  test("Publish: correct response test"){
-    val path = "../protocol/examples/query/publish/publish.json"
-    val jsonStr = getJsonStringFromFile(path)
-    val rpcRequest: JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonStr)
-    val message: GraphMessage = Left(rpcRequest)
-    val expected: GraphMessage =  Left(JsonRpcResponse(
-        RpcValidator.JSON_RPC_VERSION, Some(new ResultObject(0)), None, rpcRequest.id))
-
-    expected should be (message)
+  // Implicites for system actors
+  implicit val duration = FiniteDuration(5 ,"seconds")
+  implicit val timeout = Timeout(duration)
+  override def afterAll(): Unit = {
+    // Stops the testKit
+    TestKit.shutdownActorSystem(system)
+  }
+  /**
+    * Creates and spawns a mocked version of
+    * DBactor with special behavior when receiving Catchup
+    * @param msgs messages to send back as result
+    * @return: Askable mocked Dbactor
+    */
+  def mockDbWithMessages(msgs: List[Message]): AskableActorRef = {
+    val mockedDB = Props(new Actor(){
+          override def receive = {
+              case DbActor.Catchup(channel) =>
+                sender ! DbActor.DbActorCatchupAck(msgs)
+          }
+       }
+      )
+    system.actorOf(mockedDB)
+  }
+  /**
+    * Creates and spawns with NAck response for a
+    * catchup
+    * @param code: Error code
+    * @param description: a brief desciption of the error
+    * @return  Askable mocked Dbactor
+    */
+  def mockDbWithNack(code: Int, description: String): AskableActorRef = {
+     val mockedDB = Props(new Actor(){
+          override def receive = {
+              case DbActor.Catchup(channel) =>
+                sender !  DbActor.DbActorNAck(code,description)
+          }
+       }
+     )
+    system.actorOf(mockedDB)
   }
 
-  //FIXME: Requires Actor intervention
-  test("Catchup: correct response test"){
-    val path = "../protocol/examples/query/catchup/catchup.json"
+  def getJsonRPC(path: String): JsonRpcRequest = {
     val jsonStr = getJsonStringFromFile(path)
     val rpcRequest : JsonRpcRequest = JsonRpcRequest.buildFromJson(jsonStr)
+    rpcRequest
+  }
 
-    val channel = rpcRequest.getParamsChannel //Channel to be used for Catchup
-    val message : GraphMessage = Left(rpcRequest)
-    def objectNumber: Int = ??? //Should probably be definid by mocking the DBactor and =3
+  test("Publish: correct response test"){
+    val rpcPublishReq = getJsonRPC(pathPublishJson)
+    val message: GraphMessage = AnswerGenerator.generateAnswer(Left(rpcPublishReq))
+    val expected: GraphMessage =  Left(JsonRpcResponse(
+        RpcValidator.JSON_RPC_VERSION, Some(new ResultObject(0)), None, rpcPublishReq.id))
+
+    message should be (expected)
+  }
+
+  lazy val rpcCatchupReq = getJsonRPC(pathCatchupJson)
+  test("Catchup: correct response test for Nil Messages"){
+
+    lazy val dbActorRef = mockDbWithMessages(Nil)
+    val message : GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Left(rpcCatchupReq))
+    def resultObject: ResultObject = new ResultObject(Nil)
     val expected =  Left(JsonRpcResponse(
-        RpcValidator.JSON_RPC_VERSION, Some(new ResultObject(objectNumber)), None, rpcRequest.id))
+        RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcCatchupReq.id))
 
-    expected should be (message)
+    message should be (expected)
+    system.stop(dbActorRef.actorRef)
+  }
+
+
+  test("Catchup: correct response test for one Message"){
+
+    val messages = MessageExample.MESSAGE :: Nil
+    lazy val dbActorRef = mockDbWithMessages(messages)
+    val gmsg : GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Left(rpcCatchupReq))
+    def resultObject: ResultObject = new ResultObject(messages)
+    val expected =  Left(JsonRpcResponse(
+        RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcCatchupReq.id))
+
+    gmsg should be (expected)
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("Catchup: error on non existing channel test"){
+
+    lazy val dbActorRef =
+        mockDbWithNack(ErrorCodes.INVALID_RESOURCE.id,
+          "Database cannot catchup from a channel that does not exist in db")
+
+    val gmsg : GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Left(rpcCatchupReq))
+    val expected = Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "Database cannot catchup from a channel that does not exist in db", rpcCatchupReq.id))
+
+    gmsg should be (expected)
+    system.stop(dbActorRef.actorRef)
+  }
+
+  test("Broadcast: answer error on brodcast"){
+
+    val rpcBroadcastReq = getJsonRPC(pathBroadcastJson)
+    val message: GraphMessage = AnswerGenerator.generateAnswer(Left(rpcBroadcastReq))
+
+    message shouldBe a [Right[_,PipelineError]]
+    message.toOption.isDefined should be (true)
+    message.toOption.get.code should be (ErrorCodes.SERVER_ERROR.id)
 
   }
+
+
 }
