@@ -7,11 +7,26 @@ import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
 import ch.epfl.pop.model.network.{ResultObject, _}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import akka.pattern.AskableActorRef
 
-object AnswerGenerator extends AskPatternConstants {
+/**
+  * Object for AnswerGenerator to keep a compatible interface
+  * Since this is an object only one instance of AnswerGenerator(class) will be created
+  *
+  */
+object AnswerGenerator  extends AskPatternConstants  {
+  lazy val db = DbActor.getInstance
+  val answerGen = new AnswerGenerator(db)
+  def generateAnswer(graphMessage: GraphMessage): GraphMessage  = answerGen.generateAnswer(graphMessage)
+  val generator: Flow[GraphMessage, GraphMessage, NotUsed] = answerGen.generator
+}
+
+/**
+ * /!\ The class can now be tested as the db can directly be injected into it
+ */
+sealed class AnswerGenerator(db : => AskableActorRef)  extends AskPatternConstants {
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer
@@ -19,7 +34,7 @@ object AnswerGenerator extends AskPatternConstants {
 
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getParams match {
       case Catchup(channel) =>
-        val ask: Future[GraphMessage] = (DbActor.getInstance ? DbActor.Catchup(channel)).map {
+        val ask: Future[GraphMessage] = (db ? DbActor.Catchup(channel)).map {
           case DbActor.DbActorCatchupAck(list: List[Message]) =>
             val resultObject: ResultObject = new ResultObject(list)
             Left(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
