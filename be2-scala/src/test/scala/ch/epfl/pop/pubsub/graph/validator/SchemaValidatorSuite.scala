@@ -7,14 +7,16 @@ import ch.epfl.pop.pubsub.graph.PipelineError
 import ch.epfl.pop.pubsub.graph.ErrorCodes
 import java.io.IOException
 
-object SchemaValidatorSuite extends FunSuite with Matchers {
-
-  def getJsonStringFromFile(filePath: String): String = {
+object SchemaValidatorSuite {
+    def getJsonStringFromFile(filePath: String): String = {
       val source = Source.fromFile(filePath);
       val jsonStr = source.getLines.mkString
       source.close
       jsonStr
     }
+}
+class SchemaValidatorSuite extends FunSuite with Matchers {
+   import SchemaValidatorSuite._
 
   /* Test subscribe query without message format*/
   test("Correct subscribe JSON-RPC query"){
