@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.Injection;
@@ -8,9 +9,14 @@ import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPrepare;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
@@ -20,6 +26,7 @@ import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.KeysetHandle;
@@ -40,6 +47,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,6 +75,7 @@ public class ConsensusHandlerTest {
   private static final String VALUE = "started";
   private static final ConsensusKey KEY = new ConsensusKey(TYPE, KEY_ID, PROPERTY);
   private static final String INSTANCE_ID = Consensus.generateConsensusId(TYPE, KEY_ID, PROPERTY);
+  private static final String INVALID_MSG_ID = "Invalid messageId";
 
   private static final CreateLao CREATE_LAO =
       new CreateLao(
@@ -80,8 +89,7 @@ public class ConsensusHandlerTest {
 
   private LAORepository laoRepository;
   private MessageGeneral electMsg;
-  private ConsensusElectAccept electAccept;
-  private MessageGeneral electAcceptMsg;
+  private String messageId;
 
   @Mock LAORemoteDataSource remoteDataSource;
   @Mock LAOLocalDataSource localDataSource;
@@ -122,6 +130,9 @@ public class ConsensusHandlerTest {
 
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
     MessageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
+
+    electMsg = getMsg(NODE_2_KEY, elect);
+    messageId = electMsg.getMessageId();
   }
 
   @After
@@ -138,11 +149,11 @@ public class ConsensusHandlerTest {
     // each test need to be run one after another
     handleConsensusElectTest();
     handleConsensusElectAcceptTest();
+    handleConsensusLearnTest();
   }
 
   // handle an elect from node2
   private void handleConsensusElectTest() throws DataHandlingException {
-    electMsg = getMsg(NODE_2_KEY, elect);
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
 
     Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
@@ -172,8 +183,8 @@ public class ConsensusHandlerTest {
 
   // handle an electAccept from node3 for the elect of node2
   private void handleConsensusElectAcceptTest() throws DataHandlingException {
-    electAccept = new ConsensusElectAccept(INSTANCE_ID, electMsg.getMessageId(), true);
-    electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
+    ConsensusElectAccept electAccept = new ConsensusElectAccept(INSTANCE_ID, messageId, true);
+    MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptMsg);
 
     Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
@@ -197,5 +208,55 @@ public class ConsensusHandlerTest {
     ConsensusNode node3 =
         nodes.stream().filter(n -> n.getPublicKey().equals(NODE_3_KEY)).findAny().get();
     assertEquals(Sets.newSet(electMsg.getMessageId()), node3.getAcceptedMessageIds());
+  }
+
+  private void handleConsensusLearnTest() throws DataHandlingException {
+    ConsensusLearn learn =
+        new ConsensusLearn(INSTANCE_ID, messageId, CREATION_TIME, true, Collections.emptyList());
+    MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
+    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learnMsg);
+
+    Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
+    assertTrue(consensusOpt.isPresent());
+    Consensus consensus = consensusOpt.get();
+    assertTrue(consensus.isAccepted());
+  }
+
+  @Test
+  public void handleConsensusWithInvalidMessageIdTest() {
+    ConsensusElectAccept electAcceptInvalid =
+        new ConsensusElectAccept(INSTANCE_ID, INVALID_MSG_ID, true);
+    ConsensusLearn learnInvalid =
+        new ConsensusLearn(
+            INSTANCE_ID, INVALID_MSG_ID, CREATION_TIME, true, Collections.emptyList());
+    MessageGeneral electAcceptInvalidMsg = getMsg(ORGANIZER, electAcceptInvalid);
+    MessageGeneral learnInvalidMsg = getMsg(ORGANIZER, learnInvalid);
+
+    assertThrows(
+        InvalidMessageIdException.class,
+        () ->
+            MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptInvalidMsg));
+    assertThrows(
+        InvalidMessageIdException.class,
+        () -> MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learnInvalidMsg));
+  }
+
+  @Test
+  public void handleConsensusDoNothingOnBackendMessageTest() throws DataHandlingException {
+    LAORepository mockLAORepository = Mockito.mock(LAORepository.class);
+    Mockito.when(mockLAORepository).thenReturn(null);
+
+    ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);
+    ConsensusPromise promise =
+        new ConsensusPromise(INSTANCE_ID, messageId, CREATION_TIME, 3, true, 2);
+    ConsensusPropose propose =
+        new ConsensusPropose(
+            INSTANCE_ID, messageId, CREATION_TIME, 3, true, Collections.emptyList());
+    ConsensusAccept accept = new ConsensusAccept(INSTANCE_ID, messageId, CREATION_TIME, 3, true);
+
+    MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, prepare));
+    MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, promise));
+    MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, propose));
+    MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, accept));
   }
 }
