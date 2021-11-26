@@ -3,12 +3,12 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,6 +22,8 @@ public class ElectionQuestionTest {
   private final String question = "Question";
   private final List<String> allMethods = Arrays.asList("Plurality", "Plurality");
   private final List<String> allQuestions = Arrays.asList("Question", "Question2");
+  private final List<String> ballotOptions1 = Arrays.asList("a", "b");
+  private final List<String> ballotOptions2 = Arrays.asList("a", "b");
   private final List<Boolean> allWriteIns = Arrays.asList(false, false);
   private final ElectionSetup electionSetup =
       new ElectionSetup(
@@ -31,7 +33,7 @@ public class ElectionQuestionTest {
           end,
           allMethods,
           allWriteIns,
-          Arrays.asList(new ArrayList<>(), new ArrayList<>()),
+          Arrays.asList(ballotOptions1, ballotOptions2),
           allQuestions,
           laoId);
   private final ElectionQuestion electionQuestion = electionSetup.getQuestions().get(0);
@@ -60,6 +62,11 @@ public class ElectionQuestionTest {
 
   @Test
   public void electionQuestionGetterReturnsCorrectBallotOptions() {
-    assertThat(electionQuestion.getBallotOptions(), is(new ArrayList<>()));
+    assertThat(electionQuestion.getBallotOptions(), is(ballotOptions1));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(electionSetup);
   }
 }

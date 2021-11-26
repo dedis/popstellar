@@ -5,51 +5,95 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { Timestamp } from '../model/objects';
-import TextBlock from './TextBlock';
+import { gray } from 'styles/colors';
+import { Chirp } from 'model/objects/Chirp';
+
+/**
+ * Component to display a chirp
+ */
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
-    justifyContent: 'center',
-    borderWidth: 2,
-    flexDirection: 'column',
-    display: 'flex',
-  } as ViewStyle,
-  textView: {
-    padding: 10,
+    borderColor: gray,
+    borderTopWidth: 0,
     borderWidth: 1,
+    flexDirection: 'row',
+    padding: 10,
     width: 600,
-    alignContent: 'flex-end',
+  } as ViewStyle,
+  leftView: {
+    width: 60,
+  } as ViewStyle,
+  rightView: {
+    display: 'flex',
+    flexDirection: 'column',
+  } as ViewStyle,
+  senderText: {
+    fontSize: 18,
+    fontWeight: '600',
   } as TextStyle,
   senderView: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 18,
     marginTop: 7,
+  } as ViewStyle,
+  chirpText: {
+    fontSize: 18,
+    paddingBottom: 20,
+    paddingTop: 10,
+    width: 520,
   } as TextStyle,
+  reactionsView: {
+    flexDirection: 'row',
+    fontSize: 18,
+  } as ViewStyle,
+  reactionView: {
+    flexDirection: 'row',
+    flex: 1,
+    marginRight: 10,
+  } as ViewStyle,
+  timeView: {
+    alignSelf: 'flex-end',
+    marginTop: 10,
+  } as ViewStyle,
 });
 
 const ChirpCard = (props: IPropTypes) => {
-  const { sender } = props;
-  const { text } = props;
-  const { time } = props;
-  const { likes } = props;
+  const { chirp } = props;
+  const likesText = `  ${chirp.likes}`;
+
+  // This is temporary for now
+  const zero = '  0';
 
   return (
     <View style={styles.container}>
-      <Text style={styles.senderView}>{sender}</Text>
-      <View style={styles.textView}>
-        <TextBlock text={text} />
+      <View style={styles.leftView}>
+        <Ionicons name="person" size={40} color="black" />
       </View>
-      <View style={{ flexDirection: 'row' }}>
-        <View style={{ flex: 1 }}>
-          <Ionicons name="thumbs-up" size={16} color="black" />
+      <View style={styles.rightView}>
+        <View style={styles.senderView}>
+          <Text style={styles.senderText}>{chirp.sender.valueOf()}</Text>
         </View>
-        <View style={{ flex: 3 }}>
-          <Text>{likes}</Text>
+        <Text style={styles.chirpText}>{chirp.text}</Text>
+        <View style={styles.reactionsView}>
+          <View style={styles.reactionView}>
+            <Ionicons name="thumbs-up" size={16} color="black" />
+            <Text>{likesText}</Text>
+          </View>
+          <View style={styles.reactionView}>
+            <Ionicons name="thumbs-down" size={16} color="black" />
+            <Text>{zero}</Text>
+          </View>
+          <View style={styles.reactionView}>
+            <Ionicons name="heart" size={16} color="black" />
+            <Text>{zero}</Text>
+          </View>
+          <View style={styles.reactionView}>
+            <Ionicons name="chatbubbles" size={16} color="black" />
+            <Text>{zero}</Text>
+          </View>
         </View>
-        <View style={{ flex: 6 }}>
-          <TimeAgo date={time.valueOf() * 1000} />
+        <View style={styles.timeView}>
+          <TimeAgo date={chirp.time.valueOf() * 1000} />
         </View>
       </View>
     </View>
@@ -57,19 +101,13 @@ const ChirpCard = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  sender: PropTypes.string.isRequired,
-  text: PropTypes.string.isRequired,
-  time: PropTypes.instanceOf(Timestamp).isRequired,
-  likes: PropTypes.number.isRequired,
+  chirp: PropTypes.instanceOf(Chirp).isRequired,
 };
 
 ChirpCard.prototype = propTypes;
 
 type IPropTypes = {
-  sender: string,
-  text: string,
-  time: Timestamp,
-  likes: number,
+  chirp: Chirp,
 };
 
 export default ChirpCard;
