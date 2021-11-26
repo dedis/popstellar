@@ -1,12 +1,14 @@
 // Package cli contains the entry point for starting the organizer
 // server.
-package cli
+package main
 
 import (
 	"encoding/base64"
+	"fmt"
+	"github.com/gorilla/websocket"
+	"net/url"
 	be1_go "popstellar"
 	"popstellar/channel/lao"
-	"popstellar/cli/utility"
 	"popstellar/crypto"
 	"popstellar/hub"
 	"popstellar/hub/standard_hub"
@@ -88,7 +90,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 		organizerAddress := cliCtx.String("organizer-address")
 
 		// connect to organizer's witness endpoint
-		err = utility.ConnectToSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
+		err = connectToSocket(hub.OrganizerHubType, organizerAddress, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to organizer: %v", err)
 		}
@@ -96,7 +98,7 @@ func Serve(cliCtx *cli.Context, user string) error {
 
 	// connect to given witness
 	for _, witnessAddress := range otherWitness {
-		err = utility.ConnectToSocket(hub.WitnessHubType, witnessAddress, h, wg, done)
+		err = connectToSocket(hub.WitnessHubType, witnessAddress, h, wg, done)
 		if err != nil {
 			return xerrors.Errorf("failed to connect to witness: %v", err)
 		}
@@ -126,6 +128,56 @@ func Serve(cliCtx *cli.Context, user string) error {
 	case <-channsClosed:
 	case <-time.After(time.Second * 10):
 		log.Error().Msg("channs didn't close after timeout, exiting")
+	}
+
+	return nil
+}
+
+// connectToSocket establishes a connection to another server's witness
+// endpoint.
+func connectToSocket(otherHubType hub.HubType, address string, h hub.Hub, wg *sync.WaitGroup, done chan struct{}) error {
+	log := be1_go.Logger
+
+	urlString := fmt.Sprintf("ws://%s/%s/witness", address, otherHubType)
+	u, err := url.Parse(urlString)
+	if err != nil {
+		return xerrors.Errorf("failed to parse connection url %s: %v", urlString, err)
+	}
+
+	ws, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+	if err != nil {
+		return xerrors.Errorf("failed to dial to %s: %v", u.String(), err)
+	}
+
+	log.Info().Msgf("connected to %s at %s", otherHubType, urlString)
+
+	switch otherHubType {
+	case hub.OrganizerHubType:
+		organizerSocket := socket.NewOrganizerSocket(h.Receiver(),
+			h.OnSocketClose(), ws, wg, done, log)
+		wg.Add(2)
+
+		go organizerSocket.WritePump()
+		go organizerSocket.ReadPump()
+
+		err = h.NotifyNewServer(organizerSocket)
+		if err != nil {
+			return xerrors.Errorf("error while trying to catchup to server: %v", err)
+		}
+	case hub.WitnessHubType:
+		witnessSocket := socket.NewWitnessSocket(h.Receiver(),
+			h.OnSocketClose(), ws, wg, done, log)
+		wg.Add(2)
+
+		go witnessSocket.WritePump()
+		go witnessSocket.ReadPump()
+
+		err = h.NotifyNewServer(witnessSocket)
+		if err != nil {
+			return xerrors.Errorf("error while trying to catchup to server: %v", err)
+		}
+	default:
+		return xerrors.Errorf("invalid other hub type: %v", otherHubType)
 	}
 
 	return nil

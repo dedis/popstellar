@@ -25,7 +25,6 @@ import (
 	"github.com/urfave/cli/v2"
 	"log"
 	"os"
-	popCli "popstellar/cli"
 )
 
 func main() {
@@ -77,7 +76,7 @@ func main() {
 							witnessPortFlag,
 						},
 						Action: func(c *cli.Context) error {
-							err := popCli.Serve(c, "organizer")
+							err := Serve(c, "organizer")
 							return err
 						},
 					},
@@ -100,7 +99,7 @@ func main() {
 							otherWitnessFlag,
 						},
 						Action: func(c *cli.Context) error {
-							err := popCli.Serve(c, "witness")
+							err := Serve(c, "witness")
 							return err
 						},
 					},
