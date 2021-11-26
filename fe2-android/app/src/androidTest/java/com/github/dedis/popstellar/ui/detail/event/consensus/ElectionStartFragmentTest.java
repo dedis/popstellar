@@ -148,7 +148,7 @@ public class ElectionStartFragmentTest {
   private static final ConsensusElectAccept accept3 =
       new ConsensusElectAccept(INSTANCE_ID, "m3", true);
   private static final ConsensusLearn learn3 =
-      new ConsensusLearn(INSTANCE_ID, "m3", Collections.emptyList());
+      new ConsensusLearn(INSTANCE_ID, "m3", PAST_TIME, true, Collections.emptyList());
 
   private static final ArgumentCaptor<Message> CAPTOR = ArgumentCaptor.forClass(Message.class);
 
