@@ -233,9 +233,9 @@ public class ElectionSetupFragmentTest {
   }
 
   @Test
-  public void cannotChooseStartTimeInPast() {
+  public void cannotChooseStartTimeTooFarInPast() {
     Calendar today = Calendar.getInstance();
-    today.add(Calendar.MINUTE, -1);
+    today.add(Calendar.MINUTE, -10);
     int year = today.get(Calendar.YEAR);
     int monthOfYear = today.get(Calendar.MONTH) + 1;
     int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
@@ -255,7 +255,7 @@ public class ElectionSetupFragmentTest {
   @Test
   public void choosingStartDateInvalidateAStartTimeInPast() {
     Calendar today = Calendar.getInstance();
-    today.add(Calendar.MINUTE, -1);
+    today.add(Calendar.MINUTE, -10);
     int year = today.get(Calendar.YEAR);
     int monthOfYear = today.get(Calendar.MONTH) + 1;
     int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
