@@ -66,7 +66,7 @@ type Hub struct {
 }
 
 // NewHub returns a new Witness Hub.
-func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
+func NewHub(publicWit kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -81,7 +81,7 @@ func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOrg:       publicOrg,
+		pubKeyOrg:       publicWit,
 		pubKeyServ: 	 pubServ,
 		secKeyServ: 	 secServ,
 		schemaValidator: schemaValidator,
