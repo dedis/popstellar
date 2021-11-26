@@ -31,6 +31,7 @@ public class JsonMessageGeneralSerializer
       JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject root = json.getAsJsonObject();
+    JsonUtils.verifyJson(JsonUtils.GENERAL_MESSAGE_SCHEMA, json.toString());
 
     byte[] messageId = root.get("message_id").getAsString().getBytes(StandardCharsets.UTF_8);
     byte[] dataBuf = Base64.getUrlDecoder().decode(root.get("data").getAsString());
@@ -80,6 +81,8 @@ public class JsonMessageGeneralSerializer
     }
     result.add("witness_signatures", jsonArray);
     Log.d("JSON", result.toString());
+
+    JsonUtils.verifyJson(JsonUtils.GENERAL_MESSAGE_SCHEMA, result.toString());
 
     return result;
   }

@@ -4,89 +4,133 @@ exports[`TextInputChirp renders correctly when writing less than 300 chars 1`] =
 <View
   style={
     Object {
-      "justifyContent": "center",
-      "marginTop": 50,
+      "borderColor": "gray",
+      "borderWidth": 1,
+      "flexDirection": "row",
+      "padding": 10,
+      "width": 600,
     }
   }
 >
-  <TextInput
-    multiline={true}
-    numberOfLines={4}
-    onChangeText={[Function]}
-    placeholder="Your chirp"
-    style={
-      Object {
-        "alignContent": "flex-end",
-        "borderWidth": 1,
-        "padding": 10,
-        "width": 600,
-      }
-    }
-  />
   <View
     style={
       Object {
-        "alignSelf": "flex-end",
-        "flexDirection": "row",
+        "width": 60,
       }
     }
   >
     <Text
+      allowFontScaling={false}
       style={
-        Object {
-          "color": "black",
-          "fontSize": 25,
-          "marginHorizontal": 10,
-          "textAlign": "center",
-        }
+        Array [
+          Object {
+            "color": "black",
+            "fontSize": 40,
+          },
+          undefined,
+          Object {
+            "fontFamily": "ionicons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
+        ]
       }
     >
-      287
+      
     </Text>
-    <View
-      accessibilityRole="button"
-      accessibilityState={
-        Object {
-          "disabled": false,
-        }
+  </View>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
       }
-      accessible={true}
-      focusable={true}
-      onClick={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
+    }
+  >
+    <TextInput
+      multiline={true}
+      numberOfLines={5}
+      onChangeText={[Function]}
+      placeholder="Your chirp"
+      selectTextOnFocus={true}
       style={
         Object {
-          "opacity": 1,
+          "alignContent": "flex-end",
+          "borderColor": "gray",
+          "borderWidth": 1,
+          "fontSize": 18,
+          "padding": 10,
+          "width": 520,
+        }
+      }
+    />
+    <View
+      style={
+        Object {
+          "alignSelf": "flex-end",
+          "flexDirection": "row",
+          "fontSize": 18,
         }
       }
     >
-      <View
+      <Text
         style={
-          Array [
-            Object {},
-          ]
+          Object {
+            "color": "black",
+            "fontSize": 25,
+            "marginHorizontal": 10,
+            "textAlign": "center",
+          }
         }
       >
-        <Text
-          disabled={false}
+        287
+      </Text>
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "disabled": false,
+          }
+        }
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "opacity": 1,
+          }
+        }
+      >
+        <View
           style={
             Array [
-              Object {
-                "color": "#007AFF",
-                "fontSize": 18,
-                "margin": 8,
-                "textAlign": "center",
-              },
+              Object {},
             ]
           }
         >
-          Publish
-        </Text>
+          <Text
+            disabled={false}
+            style={
+              Array [
+                Object {
+                  "color": "#007AFF",
+                  "fontSize": 18,
+                  "margin": 8,
+                  "textAlign": "center",
+                },
+              ]
+            }
+          >
+            Publish
+          </Text>
+        </View>
       </View>
     </View>
   </View>
@@ -97,93 +141,137 @@ exports[`TextInputChirp renders correctly when writing more than 300 chars 1`] =
 <View
   style={
     Object {
-      "justifyContent": "center",
-      "marginTop": 50,
+      "borderColor": "gray",
+      "borderWidth": 1,
+      "flexDirection": "row",
+      "padding": 10,
+      "width": 600,
     }
   }
 >
-  <TextInput
-    multiline={true}
-    numberOfLines={4}
-    onChangeText={[Function]}
-    placeholder="Your chirp"
-    style={
-      Object {
-        "alignContent": "flex-end",
-        "borderWidth": 1,
-        "padding": 10,
-        "width": 600,
-      }
-    }
-  />
   <View
     style={
       Object {
-        "alignSelf": "flex-end",
-        "flexDirection": "row",
+        "width": 60,
       }
     }
   >
     <Text
+      allowFontScaling={false}
       style={
-        Object {
-          "color": "red",
-          "fontSize": 25,
-          "marginHorizontal": 10,
-          "textAlign": "center",
-        }
+        Array [
+          Object {
+            "color": "black",
+            "fontSize": 40,
+          },
+          undefined,
+          Object {
+            "fontFamily": "ionicons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
+        ]
       }
     >
-      -3
+      
     </Text>
-    <View
-      accessibilityRole="button"
-      accessibilityState={
-        Object {
-          "disabled": true,
-        }
+  </View>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
       }
-      accessible={true}
-      focusable={true}
-      onClick={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
+    }
+  >
+    <TextInput
+      multiline={true}
+      numberOfLines={5}
+      onChangeText={[Function]}
+      placeholder="Your chirp"
+      selectTextOnFocus={true}
       style={
         Object {
-          "opacity": 1,
+          "alignContent": "flex-end",
+          "borderColor": "gray",
+          "borderWidth": 1,
+          "fontSize": 18,
+          "padding": 10,
+          "width": 520,
+        }
+      }
+    />
+    <View
+      style={
+        Object {
+          "alignSelf": "flex-end",
+          "flexDirection": "row",
+          "fontSize": 18,
         }
       }
     >
-      <View
+      <Text
         style={
-          Array [
-            Object {},
-            Object {},
-          ]
+          Object {
+            "color": "red",
+            "fontSize": 25,
+            "marginHorizontal": 10,
+            "textAlign": "center",
+          }
         }
       >
-        <Text
-          disabled={true}
+        -3
+      </Text>
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "disabled": true,
+          }
+        }
+        accessible={true}
+        focusable={true}
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "opacity": 1,
+          }
+        }
+      >
+        <View
           style={
             Array [
-              Object {
-                "color": "#007AFF",
-                "fontSize": 18,
-                "margin": 8,
-                "textAlign": "center",
-              },
-              Object {
-                "color": "#cdcdcd",
-              },
+              Object {},
+              Object {},
             ]
           }
         >
-          Publish
-        </Text>
+          <Text
+            disabled={true}
+            style={
+              Array [
+                Object {
+                  "color": "#007AFF",
+                  "fontSize": 18,
+                  "margin": 8,
+                  "textAlign": "center",
+                },
+                Object {
+                  "color": "#cdcdcd",
+                },
+              ]
+            }
+          >
+            Publish
+          </Text>
+        </View>
       </View>
     </View>
   </View>
@@ -194,95 +282,139 @@ exports[`TextInputChirp renders correctly with placeholder 1`] = `
 <View
   style={
     Object {
-      "justifyContent": "center",
-      "marginTop": 50,
+      "borderColor": "gray",
+      "borderWidth": 1,
+      "flexDirection": "row",
+      "padding": 10,
+      "width": 600,
     }
   }
 >
-  <TextInput
-    multiline={true}
-    numberOfLines={4}
-    onChangeText={[Function]}
-    placeholder="Placeholder"
-    style={
-      Object {
-        "alignContent": "flex-end",
-        "borderWidth": 1,
-        "padding": 10,
-        "width": 600,
-      }
-    }
-  />
   <View
     style={
       Object {
-        "alignSelf": "flex-end",
-        "flexDirection": "row",
+        "width": 60,
       }
     }
   >
     <Text
+      allowFontScaling={false}
       style={
-        Object {
-          "color": "black",
-          "fontSize": 25,
-          "marginHorizontal": 10,
-          "textAlign": "center",
-        }
+        Array [
+          Object {
+            "color": "black",
+            "fontSize": 40,
+          },
+          undefined,
+          Object {
+            "fontFamily": "ionicons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
+        ]
       }
     >
-      300
+      
     </Text>
-    <View
-      accessibilityRole="button"
-      accessibilityState={
-        Object {
-          "disabled": true,
-        }
+  </View>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
       }
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      nativeID="animatedComponent"
-      onClick={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
+    }
+  >
+    <TextInput
+      multiline={true}
+      numberOfLines={5}
+      onChangeText={[Function]}
+      placeholder="Placeholder"
+      selectTextOnFocus={true}
       style={
         Object {
-          "opacity": 1,
+          "alignContent": "flex-end",
+          "borderColor": "gray",
+          "borderWidth": 1,
+          "fontSize": 18,
+          "padding": 10,
+          "width": 520,
+        }
+      }
+    />
+    <View
+      style={
+        Object {
+          "alignSelf": "flex-end",
+          "flexDirection": "row",
+          "fontSize": 18,
         }
       }
     >
-      <View
+      <Text
         style={
-          Array [
-            Object {},
-            Object {},
-          ]
+          Object {
+            "color": "black",
+            "fontSize": 25,
+            "marginHorizontal": 10,
+            "textAlign": "center",
+          }
         }
       >
-        <Text
-          disabled={true}
+        300
+      </Text>
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "disabled": true,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        nativeID="animatedComponent"
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "opacity": 1,
+          }
+        }
+      >
+        <View
           style={
             Array [
-              Object {
-                "color": "#007AFF",
-                "fontSize": 18,
-                "margin": 8,
-                "textAlign": "center",
-              },
-              Object {
-                "color": "#cdcdcd",
-              },
+              Object {},
+              Object {},
             ]
           }
         >
-          Publish
-        </Text>
+          <Text
+            disabled={true}
+            style={
+              Array [
+                Object {
+                  "color": "#007AFF",
+                  "fontSize": 18,
+                  "margin": 8,
+                  "textAlign": "center",
+                },
+                Object {
+                  "color": "#cdcdcd",
+                },
+              ]
+            }
+          >
+            Publish
+          </Text>
+        </View>
       </View>
     </View>
   </View>
@@ -293,95 +425,120 @@ exports[`TextInputChirp renders correctly without placeholder 1`] = `
 <View
   style={
     Object {
-      "justifyContent": "center",
-      "marginTop": 50,
+      "borderColor": "gray",
+      "borderWidth": 1,
+      "flexDirection": "row",
+      "padding": 10,
+      "width": 600,
     }
   }
 >
-  <TextInput
-    multiline={true}
-    numberOfLines={4}
-    onChangeText={[Function]}
-    placeholder="Your chirp"
-    style={
-      Object {
-        "alignContent": "flex-end",
-        "borderWidth": 1,
-        "padding": 10,
-        "width": 600,
-      }
-    }
-  />
   <View
     style={
       Object {
-        "alignSelf": "flex-end",
-        "flexDirection": "row",
+        "width": 60,
       }
     }
   >
-    <Text
+    <Text />
+  </View>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
+      }
+    }
+  >
+    <TextInput
+      multiline={true}
+      numberOfLines={5}
+      onChangeText={[Function]}
+      placeholder="Your chirp"
+      selectTextOnFocus={true}
       style={
         Object {
-          "color": "black",
-          "fontSize": 25,
-          "marginHorizontal": 10,
-          "textAlign": "center",
+          "alignContent": "flex-end",
+          "borderColor": "gray",
+          "borderWidth": 1,
+          "fontSize": 18,
+          "padding": 10,
+          "width": 520,
         }
       }
-    >
-      300
-    </Text>
+    />
     <View
-      accessibilityRole="button"
-      accessibilityState={
-        Object {
-          "disabled": true,
-        }
-      }
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      nativeID="animatedComponent"
-      onClick={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
       style={
         Object {
-          "opacity": 1,
+          "alignSelf": "flex-end",
+          "flexDirection": "row",
+          "fontSize": 18,
         }
       }
     >
-      <View
+      <Text
         style={
-          Array [
-            Object {},
-            Object {},
-          ]
+          Object {
+            "color": "black",
+            "fontSize": 25,
+            "marginHorizontal": 10,
+            "textAlign": "center",
+          }
         }
       >
-        <Text
-          disabled={true}
+        300
+      </Text>
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "disabled": true,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        nativeID="animatedComponent"
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "opacity": 1,
+          }
+        }
+      >
+        <View
           style={
             Array [
-              Object {
-                "color": "#007AFF",
-                "fontSize": 18,
-                "margin": 8,
-                "textAlign": "center",
-              },
-              Object {
-                "color": "#cdcdcd",
-              },
+              Object {},
+              Object {},
             ]
           }
         >
-          Publish
-        </Text>
+          <Text
+            disabled={true}
+            style={
+              Array [
+                Object {
+                  "color": "#007AFF",
+                  "fontSize": 18,
+                  "margin": 8,
+                  "textAlign": "center",
+                },
+                Object {
+                  "color": "#cdcdcd",
+                },
+              ]
+            }
+          >
+            Publish
+          </Text>
+        </View>
       </View>
     </View>
   </View>

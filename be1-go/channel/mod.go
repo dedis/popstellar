@@ -91,9 +91,17 @@ func (s *Sockets) Delete(ID string) bool {
 
 // HubFunctionalities defines the functions needed by a channel from the hub.
 type HubFunctionalities interface {
-	GetPubkey() kyber.Point
+	GetPubKeyOrg() kyber.Point
+	GetPubKeyServ() kyber.Point
+	GetSecKeyServ() kyber.Scalar
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	SendSubscribeToServers(channelID string) error
 	SendUnsubscribeToServers(channeID string) error
+}
+
+// Broadcastable defines a channel that can broadcast
+type Broadcastable interface {
+	Broadcast(msg method.Broadcast) error
+	GetChannelPath() string
 }
