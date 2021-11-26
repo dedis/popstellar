@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/hub"
@@ -256,9 +257,13 @@ func (h *Hub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyServ
 }
 
-// GetSecKeyServ implements channel.HubFunctionalities
-func (h *Hub) GetSecKeyServ() kyber.Scalar {
-	return h.secKeyServ
+// Sign implements channel.HubFunctionalities
+func (h *Hub) Sign(data []byte) ([]byte, error) {
+	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to sign the data: %v", err)
+	}
+	return signatureBuf, nil
 }
 
 // GetSchemaValidator implements channel.HubFunctionalities
