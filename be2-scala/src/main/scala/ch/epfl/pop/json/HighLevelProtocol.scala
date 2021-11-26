@@ -144,7 +144,6 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params: Params = method match {
-          case MethodType.BROADCAST => paramsJsObject.convertTo[Broadcast]
           case MethodType.PUBLISH => paramsJsObject.convertTo[Publish]
           case MethodType.SUBSCRIBE => paramsJsObject.convertTo[Subscribe]
           case MethodType.UNSUBSCRIBE => paramsJsObject.convertTo[Unsubscribe]
@@ -158,6 +157,15 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         }
 
         JsonRpcRequest(version, method, params, id)
+      }
+      
+      //Broadcast does not have an Id and should be treated appart
+      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_)) => {
+        val method: MethodType = methodJsString.convertTo[MethodType]
+        val params: Params = method match {
+          case MethodType.BROADCAST => paramsJsObject.convertTo[Broadcast]
+        }
+        JsonRpcRequest(version, method, params, None)
       }
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
     }
