@@ -625,5 +625,3 @@ func (f *fakeSocket) SendError(id *int, err error) {
 func (f *fakeSocket) ID() string {
 	return f.id
 }
-
-

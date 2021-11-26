@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/crypto"
@@ -137,15 +136,14 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
 
-	// Sign the data
 	pk := c.hub.GetPubKeyServ()
-	privateKey := c.hub.GetSecKeyServ()
 	pkBuf, err := pk.MarshalBinary()
 	if err != nil {
 		return xerrors.Errorf("failed to marshal the public key: %v", err)
 	}
 
-	signatureBuf, err := schnorr.Sign(crypto.Suite, privateKey, dataBuf)
+	// Sign the data
+	signatureBuf, err := c.hub.Sign(dataBuf)
 	if err != nil {
 		return xerrors.Errorf("failed to sign the data: %v", err)
 	}
