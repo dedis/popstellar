@@ -65,6 +65,27 @@ public class CloseRollCall extends Data {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    CloseRollCall that = (CloseRollCall) o;
+
+    return closedAt == that.closedAt
+        && java.util.Objects.equals(updateId, that.updateId)
+        && java.util.Objects.equals(closes, that.closes)
+        && java.util.Objects.equals(attendees, that.attendees);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(updateId, closes, closedAt, attendees);
+  }
+
+  @Override
   public String toString() {
     return "CloseRollCall{"
         + "updateId='"

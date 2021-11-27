@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventType;
@@ -62,5 +63,10 @@ public class CreateRollCallTest {
   @Test
   public void getDescriptionTest() {
     assertThat(createRollCall.getLocation(), is(location));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(createRollCall);
   }
 }
