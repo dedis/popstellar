@@ -70,6 +70,27 @@ public class OpenRollCall extends Data {
   }
 
   @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    OpenRollCall that = (OpenRollCall) o;
+
+    return openedAt == that.openedAt
+        && java.util.Objects.equals(updateId, that.updateId)
+        && java.util.Objects.equals(opens, that.opens)
+        && java.util.Objects.equals(action, that.action);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(updateId, opens, openedAt, action);
+  }
+
+  @Override
   public String toString() {
     return "OpenRollCall{"
         + "updateId='"

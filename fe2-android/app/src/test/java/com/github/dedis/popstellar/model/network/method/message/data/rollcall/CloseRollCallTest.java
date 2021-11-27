@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.rollcall;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.event.EventState;
@@ -62,5 +63,10 @@ public class CloseRollCallTest {
   @Test
   public void getClosesTest() {
     assertThat(closeRollCall.getCloses(), is(openRollCall.getUpdateId()));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(closeRollCall);
   }
 }

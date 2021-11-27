@@ -4,13 +4,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
 import android.util.ArraySet;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.security.Hash;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -85,5 +88,16 @@ public class UpdateLaoTest {
             name,
             lastModified,
             new HashSet<>(Collections.singletonList("0x3434"))));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(updateLao);
+
+    String pathDir = "protocol/examples/messageData/lao_update/";
+    String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_lao_update_additional_params.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_update_missing_params.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }

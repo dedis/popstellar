@@ -8,9 +8,9 @@
         "code": {
             "description": "[Int] error code",
             "type": "integer",
-            "minimum": -5,
+            "minimum": -6,
             "maximum": -1,
-            "$comment": "Note: should be in { -5, -4, ..., -1 }",
+            "$comment": "Note: should be in { -6, -4, ..., -1 }",
             "note": [
                 "0  operation was successful (should never be used)",
                 "-1 invalid action",
