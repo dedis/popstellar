@@ -1,5 +1,7 @@
 package be.utils;
 
+import java.nio.file.Paths;
+
 public class ScalaServer extends Server implements Configurable {
 
     @Override
@@ -14,17 +16,17 @@ public class ScalaServer extends Server implements Configurable {
 
     @Override
     public String[] getCmd() {
-        String configPath = getDir() + "\\src\\main\\scala\\ch\\epfl\\pop\\config";
-        return new String[]{"sbt.bat", "-Dscala.config="+configPath, "run"};
+        String configPath = Paths.get("src", "main", "scala", "ch", "epfl", "pop", "config").toString();
+        return new String[]{"sbt", "-Dscala.config=" + configPath, "run"};
     }
 
     @Override
     public String getDir() {
-        return "C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be2-scala";
+        return Paths.get("..", "..", "..", "be2-scala").toString();
     }
 
     @Override
     public String getLogPath() {
-        return "C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\scala_create.log";
+        return Paths.get("scala.log").toString();
     }
 }

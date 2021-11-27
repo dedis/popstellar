@@ -1,5 +1,7 @@
 package be.utils;
 
+import java.nio.file.Paths;
+
 public class GoServer extends Server implements Configurable {
 
     @Override
@@ -19,11 +21,11 @@ public class GoServer extends Server implements Configurable {
 
     @Override
     public String getDir() {
-        return "C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be1-go";
+        return Paths.get("..", "..", "..", "be1-go").toString();
     }
 
     @Override
     public String getLogPath() {
-        return "C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\go_create.log";
+        return Paths.get("go.log").toString();
     }
 }

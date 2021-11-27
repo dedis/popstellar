@@ -60,7 +60,7 @@ public abstract class Server implements Runnable {
      * @param logPath path to output log files, if null display logs in STDout & STDerr
      * @return Process as Builder instance
      */
-    private ProcessBuilder build(String[] cmd, String dir, String logPath) {
+    private static ProcessBuilder build(String[] cmd, String dir, String logPath) {
         File workingDirectory = new File(dir);
         ProcessBuilder processBuilder = new ProcessBuilder(cmd).directory(workingDirectory);
 

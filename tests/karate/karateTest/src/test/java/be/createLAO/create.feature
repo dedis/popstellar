@@ -40,9 +40,9 @@ Feature: Create a pop LAO
             )
 
         """
-        And   def socket = karate.webSocket(wsUrl,handle)
+        And   def socket = karate.webSocket(wsURL,handle)
         * karate.log('Create Request = ' + createLaoReq)
         When  eval socket.send(createLaoReq)
         And   string answer = socket.listen(timeout)
         * karate.log('Received answer = ' + answer)
-        Then match answ`er == createLaoRes
+        Then match answer == createLaoRes

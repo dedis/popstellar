@@ -27,7 +27,7 @@ Feature: This feature starts a server and stops it after every scenario.
                         karate.fail("Unknown environment for server");
                 }
             """
-        * def server = call getServer()
+        * def server = call getServer
 
         # Method that waits until host:port is available
         * def waitForPort = 
