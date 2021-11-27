@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
@@ -48,5 +49,10 @@ public class ElectionEndTest {
     assertThrows(
         IllegalArgumentException.class, () -> new ElectionEnd(electionId, null, registeredVotes));
     assertThrows(IllegalArgumentException.class, () -> new ElectionEnd(electionId, laoId, null));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(electionEnd);
   }
 }

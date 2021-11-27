@@ -109,6 +109,7 @@ public class RollCallHandlerTest {
 
     // Create one Roll Call and add it to the LAO
     rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
+    rollCall.setLocation("EPFL");
     lao.setRollCalls(
         new HashMap<String, RollCall>() {
           {

@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
+import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -76,6 +77,9 @@ public class ElectionStartFragmentTest {
       new ExternalResource() {
         @Override
         protected void before() {
+          // Preload the data schema before the test run
+          JsonUtils.loadSchema(JsonUtils.DATA_SCHEMA);
+
           when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
           when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
           Observable<GenericMessage> upstream =

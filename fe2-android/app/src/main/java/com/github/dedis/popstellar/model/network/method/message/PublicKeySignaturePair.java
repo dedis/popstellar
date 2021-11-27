@@ -4,29 +4,29 @@ import java.util.Base64;
 
 public class PublicKeySignaturePair {
 
-  private final byte[] witness;
+  private final String witness;
 
-  private final byte[] signature;
+  private final String signature;
 
   public PublicKeySignaturePair(byte[] witness, byte[] signature) {
-    this.witness = witness;
-    this.signature = signature;
+    this.witness = Base64.getUrlEncoder().encodeToString(witness);
+    this.signature = Base64.getUrlEncoder().encodeToString(signature);
   }
 
   public byte[] getWitness() {
-    return witness;
+    return Base64.getUrlDecoder().decode(witness);
   }
 
   public byte[] getSignature() {
-    return signature;
+    return Base64.getUrlDecoder().decode(signature);
   }
 
   public String getWitnessEncoded() {
-    return Base64.getUrlEncoder().encodeToString(this.witness);
+    return witness;
   }
 
   public String getSignatureEncoded() {
-    return Base64.getUrlEncoder().encodeToString(this.signature);
+    return signature;
   }
 
   @Override
