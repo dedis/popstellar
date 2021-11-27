@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+const FOUR_SECONDS = 4000;
+
 const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
@@ -37,14 +39,14 @@ const RollCallOpened = () => {
     console.error(err);
   };
 
-  const handleScan = (data: string) => {
+  const handleScan = (data: string | null) => {
     if (data) {
       if (!attendees.includes(data)) {
         updateAttendees((arr) => [...arr, data]);
         toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
           placement: 'top',
-          duration: 4000,
+          duration: FOUR_SECONDS,
         });
       }
     }
@@ -71,7 +73,7 @@ const RollCallOpened = () => {
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader
           delay={300}
-          onScan={handleScan} // {()=>handleScan} doesn't work
+          onScan={(data) => handleScan(data)}
           onError={handleError}
           style={{ width: '30%' }}
         />

@@ -10,15 +10,15 @@ import { requestCloseRollCall as mockRequestCloseRollCall } from 'network/Messag
 import { OpenedLaoStore } from 'store';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
-
-import RollCallOpened from '../RollCallOpened'; // Don't change the order, otherwise the tests will fail
+import RollCallOpened from '../RollCallOpened';
 
 jest.mock('@react-navigation/core');
 
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
 
 const org = mockPublicKey;
-const time = new Timestamp(1609455600).toString(); // 1st january 2021
+const TIMESTAMP = 1609455600;
+const time = new Timestamp(TIMESTAMP).toString(); // 1st january 2021
 const name = 'MyLao';
 const mockLaoIdHash: Hash = Hash.fromStringArray(org.toString(), time, name);
 const mockLaoId: string = mockLaoIdHash.toString();
@@ -26,8 +26,8 @@ const rollCallId = Hash.fromStringArray('R', mockLaoId, time, name).toString();
 const laoState: LaoState = {
   id: '1234',
   name: 'MyLao',
-  creation: 1609455600,
-  last_modified: 1609455600,
+  creation: TIMESTAMP,
+  last_modified: TIMESTAMP,
   organizer: '1234',
   witnesses: [],
 };
