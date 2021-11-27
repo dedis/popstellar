@@ -30,22 +30,6 @@ import com.networknt.schema.SpecVersion
 
 import scala.io.{BufferedSource, Source}
 import scala.util.{Failure, Success, Try}
-
-import spray.json._
-
-import java.io.File
-
-
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-
-import com.networknt.schema.JsonSchema
-import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.ValidationMessage
-import com.networknt.schema.SpecVersion
-
-import scala.io.{BufferedSource, Source}
-import scala.util.{Failure, Success, Try}
 import scala.collection.JavaConverters._
 
 import spray.json._

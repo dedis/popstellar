@@ -34,15 +34,6 @@ final case class Channel(channel: String) {
       Hash(Base64Data( c.last))
   }
 
-  def extractLaoId: String = {
-    if (isRootChannel){
-      null
-    }
-    else{
-      channel.split(Channel.SEPARATOR)(2) //since the channel starts with '/'
-    }
-  }
-
   def isRootChannel: Boolean = channel == Channel.rootChannel.channel
 
   def isSubChannel: Boolean = channel.startsWith(Channel.rootChannelPrefix)

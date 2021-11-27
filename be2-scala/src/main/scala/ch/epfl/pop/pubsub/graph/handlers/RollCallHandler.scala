@@ -3,9 +3,8 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Channel, PublicKey}
+import ch.epfl.pop.model.objects.{Channel, PublicKey, LaoData}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.dataObject.LaoData
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
@@ -14,6 +13,8 @@ import ch.epfl.pop.pubsub.graph.DbActor._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+
+import scala.util.Success
 
 case object RollCallHandler extends MessageHandler {
 
@@ -66,9 +67,8 @@ case object RollCallHandler extends MessageHandler {
               val socialChannel: String = generateSocialChannel(rpcMessage.getParamsChannel, head)
               val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel(socialChannel), ObjectType.CHIRP)).map {
                 case DbActorWriteAck() => createAttendeeChannels(tail, rpcMessage)
-                //FIXME: Once the real PoP tokens are implemented, the same person will not have access to the same channel name twice in a row, so we can remove this line
-                //however, this is to prevent errors for now within a LAO for multiple Roll Calls and the same participants since the public key will probably not change
-                case DbActorNAck(code, description) if description == "Database cannot create an already existing channel (" + socialChannel + ")" => createAttendeeChannels(tail, rpcMessage)
+                //the distinction between the NAck cases this is to prevent errors for now within a LAO for successive Roll Calls with the same participants since the public key should not change, as the channel already exists
+                case DbActorNAck(code, description) if code == ErrorCodes.INVALID_RESOURCE.id => createAttendeeChannels(tail, rpcMessage)
                 case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
                 case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
               }
@@ -83,13 +83,13 @@ case object RollCallHandler extends MessageHandler {
             s"There is an issue with the data of the LAO",
             rpcMessage.id
           ))
-          case Some(channel) =>
+          case Some(_) =>
             val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
             
             Await.result(askOldData, duration) match {
               case DbActorReadLaoDataAck(Some(oldLaoData)) =>
-                val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees)
-                val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(rpcMessage.getParamsChannel, message, laoData)).map {
+                val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees, List.empty)
+                val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
                   case DbActorWriteAck() => createAttendeeChannels(data.attendees, rpcMessage)
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
                   case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
@@ -111,5 +111,6 @@ case object RollCallHandler extends MessageHandler {
     }
   }
 
-  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + "/social" + pk.toString
+  private final val SOCIALCHANNELPREFIX: String = Channel.SEPARATOR + "social"
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + SOCIALCHANNELPREFIX + Channel.SEPARATOR + pk.toString
 }

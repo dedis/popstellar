@@ -23,7 +23,7 @@ object ElectionHandler extends MessageHandler {
       case message@(_: JsonRpcRequestCastVoteElection) => handleCastVoteElection(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: LaoHandler was given a message it could not recognize",
+        "Internal server fault: ElectionHandler was given a message it could not recognize",
         jsonRpcMessage match {
           case r: JsonRpcRequest => r.id
           case r: JsonRpcResponse => r.id

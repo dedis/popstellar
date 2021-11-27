@@ -1,4 +1,4 @@
-package ch.epfl.pop.model.network.method.message.data.dataObject
+package ch.epfl.pop.model.objects
 
 import org.scalatest.{FunSuite, Matchers}
 import ch.epfl.pop.model.objects.{Base64Data, Hash}
@@ -9,19 +9,19 @@ class ChannelDataSuite extends FunSuite with Matchers {
         val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
         channelData.messages should equal (List.empty)
-        channelData.channel_type should equal(ObjectType.LAO)
+        channelData.channelType should equal(ObjectType.LAO)
 
         val channelData2: ChannelData = ChannelData(ObjectType.LAO, List(Hash(Base64Data("a"))))
 
         channelData2.messages should equal (List(Hash(Base64Data("a"))))
-        channelData2.channel_type should equal(ObjectType.LAO)
+        channelData2.channelType should equal(ObjectType.LAO)
     }
 
     test("New messageId is indeed added") {
         val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
         channelData.messages should equal (List.empty)
-        channelData.channel_type should equal(ObjectType.LAO)
+        channelData.channelType should equal(ObjectType.LAO)
 
         val channelData2 = channelData.addMessage(Hash(Base64Data("a")))
 
@@ -33,8 +33,7 @@ class ChannelDataSuite extends FunSuite with Matchers {
 
         val channelData2: ChannelData = ChannelData.buildFromJson(channelData.toJsonString)
 
-        channelData2.messages should equal (List.empty)
-        channelData2.channel_type should equal (ObjectType.LAO)
+        channelData2 should equal (channelData)
     }
 
 }

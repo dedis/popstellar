@@ -4,12 +4,11 @@ import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.dataObject.LaoData
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, Hash}
-import ch.epfl.pop.pubsub.graph.DbActor.{DbActorAck, DbActorNAck, DbActorWriteAck}
+import ch.epfl.pop.model.objects.{Channel, Hash, LaoData}
+import ch.epfl.pop.pubsub.graph.DbActor.{DbActorMessage, DbActorAck, DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -35,28 +34,36 @@ case object LaoHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
+  private final val SOCIALMEDIAPOSTSPREFIX: String = Channel.SEPARATOR + "posts"
+
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
         // we are using the lao id instead of the message_id at lao creation
         val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
-        val laoData: LaoData = LaoData(message.sender, List(message.sender)) //so that the operations the owner does next are authorized
-        val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteLaoData(channel, message, laoData)).map {
-          case DbActorWriteAck() => {
-            val socialChannel: Channel = Channel(channel + "/posts")
-            val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
-              case DbActorAck() => Left(rpcMessage)
+        //this prevents a write-through to an already existing LaoId
+        val askCreate = (dbActor ? DbActor.CreateChannel(channel, ObjectType.LAO))
+        Await.result(askCreate, duration) match {
+          case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+          case DbActorAck() => {
+            val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
+              case DbActorWriteAck() => {
+                val socialChannel: Channel = Channel(channel + SOCIALMEDIAPOSTSPREFIX)
+                val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
+                  case DbActorAck() => Left(rpcMessage)
+                  case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+                  case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+                }
+                Await.result(askSocial, duration)
+              }
               case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
               case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
             }
-            Await.result(askSocial, duration)
-          }
-          case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
-        }
 
-        Await.result(ask, duration)
+            Await.result(ask, duration)
+          }
+        }
 
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
