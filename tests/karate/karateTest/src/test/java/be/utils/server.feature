@@ -8,7 +8,7 @@ Feature: This feature should be called to start a server
             """
                 function(secs){ java.lang.Thread.sleep(secs*1000) }
             """
-        * def ServerStart = Java.type("pop.utils.ServerLaunch")
+        * def ServerStart = Java.type("be.utils.ServerLaunch")
         # Wait until host:port is available.
         * def waitForPort = 
             """
