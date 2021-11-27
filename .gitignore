@@ -28,5 +28,10 @@
 be1-go/pop
 be1-go/validation/protocol
 
+# Karate files
+*.log
+**/target
+*.iml
+
 .DS_Store
 **/.DS_Store

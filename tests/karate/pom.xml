@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
  
     <groupId>ch.epfl.pop.test</groupId>
-    <artifactId>karateTest</artifactId>
+    <artifactId>karate</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
  

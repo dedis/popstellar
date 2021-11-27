@@ -2,7 +2,7 @@ package be.utils;
 
 import java.nio.file.Paths;
 
-public class ScalaServer extends Server implements Configurable {
+public class GoServer extends Server implements Configurable {
 
     @Override
     public boolean start() {
@@ -16,17 +16,16 @@ public class ScalaServer extends Server implements Configurable {
 
     @Override
     public String[] getCmd() {
-        String configPath = Paths.get("src", "main", "scala", "ch", "epfl", "pop", "config").toString();
-        return new String[]{"sbt", "-Dscala.config=" + configPath, "run"};
+        return new String[]{"bash", "-c", "./pop organizer --pk J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM= serve"};
     }
 
     @Override
     public String getDir() {
-        return Paths.get("..", "..", "..", "be2-scala").toString();
+        return Paths.get("..", "..", "be1-go").toString();
     }
 
     @Override
     public String getLogPath() {
-        return Paths.get("scala.log").toString();
+        return Paths.get("go.log").toString();
     }
 }
