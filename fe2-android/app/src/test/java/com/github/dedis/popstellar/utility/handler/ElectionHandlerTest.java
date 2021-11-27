@@ -42,6 +42,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -127,7 +128,7 @@ public class ElectionHandlerTest extends TestCase {
     election.setChannel(lao.getChannel() + "/" + election.getId());
     electionQuestion =
         new ElectionQuestion(
-            "question", "voting method", false, Collections.singletonList("a"), election.getId());
+            "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
     election.setElectionQuestions(Collections.singletonList(electionQuestion));
     lao.setElections(
         new HashMap<String, Election>() {

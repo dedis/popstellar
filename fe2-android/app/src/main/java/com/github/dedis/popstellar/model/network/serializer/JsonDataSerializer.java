@@ -24,6 +24,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
   public Data deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
     JsonObject obj = json.getAsJsonObject();
+    JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, obj.toString());
     Objects object = Objects.find(obj.get(OBJECT).getAsString());
     Action action = Action.find(obj.get(ACTION).getAsString());
 
@@ -52,6 +53,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
     JsonObject obj = context.serialize(src).getAsJsonObject();
     obj.addProperty(OBJECT, src.getObject());
     obj.addProperty(ACTION, src.getAction());
+    JsonUtils.verifyJson(JsonUtils.DATA_SCHEMA, obj.toString());
     return obj;
   }
 }

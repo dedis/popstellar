@@ -338,7 +338,9 @@ If you write E2E tests, please be mindful of making them maintainable through th
 Please reach out to the DEDIS Engineering team members to deploy a build to an
 internet accessible host.
 
-Further information will be made available at a later date. -- @pierluca, 04.09.2021
+The web application can be packaged for deploynent by executing `npm run build-web`.
+This will generate the `./web-build` folder, which can then be zip'd or tar'd.
+
 
 ## Coding Style
 

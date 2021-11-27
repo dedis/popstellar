@@ -17,9 +17,19 @@ export function channelFromIds(...args: Hash[]) : Channel {
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
-export function userSocialChannel(laoIdHash: Hash): Channel {
+export function getCurrentUserSocialChannel(laoIdHash: Hash): Channel {
   const userPublicKey = KeyPairStore.getPublicKey().valueOf();
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
+}
+
+/**
+ * Returns the social channel of the given user.
+ *
+ * @param laoIdHash - The hash containing the laoID of the currently opened LAO
+ * @param userToken - The pop token of the user
+ */
+export function getUserSocialChannel(laoIdHash: Hash, userToken: string): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userToken}`;
 }
 
 /**
@@ -27,7 +37,7 @@ export function userSocialChannel(laoIdHash: Hash): Channel {
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
  */
-export function generalChirpsChannel(laoIdHash: Hash): Channel {
+export function getGeneralChirpsChannel(laoIdHash: Hash): Channel {
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/chirps`;
 }
 
