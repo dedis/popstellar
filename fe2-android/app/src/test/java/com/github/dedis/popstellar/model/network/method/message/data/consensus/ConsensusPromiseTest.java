@@ -2,9 +2,12 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -105,5 +108,18 @@ public class ConsensusPromiseTest {
     assertEquals(
         "ConsensusPromise{instance_id='aaa', message_id='bbb', created_at=1635277619, value=PromiseValue{accepted_try=4, accepted_value=true, promised_try=4}}",
         promise.toString());
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(promise);
+
+    String dir = "protocol/examples/messageData/consensus_promise/";
+    String jsonInvalid1 = JsonTestUtils.loadFile(dir + "wrong_accept_negative_created_at.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(dir + "wrong_accept_negative_accepted_try.json");
+    String jsonInvalid3 = JsonTestUtils.loadFile(dir + "wrong_accept_negative_proposed_try.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
   }
 }

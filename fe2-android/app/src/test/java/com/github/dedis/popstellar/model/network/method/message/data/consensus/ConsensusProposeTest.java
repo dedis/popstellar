@@ -2,9 +2,12 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -128,5 +131,16 @@ public class ConsensusProposeTest {
     assertEquals(
         "ConsensusPropose{instance_id='aaa', message_id='bbb', created_at=1635277619, value=ProposeValue{proposed_try=4, proposed_value=true}, acceptor-signatures=[h1, h2]}",
         propose.toString());
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(propose);
+
+    String dir = "protocol/examples/messageData/consensus_propose/";
+    String jsonInvalid1 = JsonTestUtils.loadFile(dir + "wrong_propose_negative_created_at.json");
+    String jsonInvalid2 = JsonTestUtils.loadFile(dir + "wrong_propose_negative_proposed_try.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }
