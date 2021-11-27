@@ -34,6 +34,9 @@ Feature: This feature starts a server and stops it after every scenario.
             """
                 function() {
                     karate.waitForPort(host, port)
+                    // Scala takes more time to start the server
+                    if(env == 'scala')
+                        wait(10)
                 }
             """
 
