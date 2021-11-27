@@ -9,14 +9,10 @@ function fn() {
   var config = {
     env: env,
     host: 'hostname',    //Host of the server
-    port: 0000,  //Port 
+    port: 0o000,  //Port
     path:  'URI path', //URI Path
-    pk: 'PK orgnizer', //PK of the oranizer 
-    wsUrl: 'ws/url/port/path', //Server url 
-    timeout: 5000, //Timeout for websocket responce
-    serverCmd: 'Command to launch the server', // Cmd to launch the server
-    serverDIR: 'Path to server source directory',
-    logPath: 'path/to/log/output/file',
+    wsUrl: 'ws/url/port/path', //Server url
+    timeout: 5000, //Timeout for websocket response
     args: [],
   }
   if (env == 'go') {
@@ -27,23 +23,12 @@ function fn() {
      config.port = 9000 ;
      config.path = 'organizer/client';
      config.wsUrl = `ws://${config.host}:${config.port}/${config.path}`;
-     //Directory to launch the server from
-     config.serverDIR = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be1-go' ;
-     config.serverCmd = ['bash', '-c', `./pop organizer --pk ${config.pk} serve`];
-     config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\go_create.log';
-      
-  
   } else if (env == 'scala') {
     // customize
     config.host= '127.0.0.1';
     config.port= 8000;
     config.path= '';
     config.wsUrl= `ws://${config.host}:${config.port}/${config.path}`;
-    config.serverDIR = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\be2-scala';
-    var pathConfig = `${config.serverDIR}\\src\\main\\scala\\ch\\epfl\\pop\\config`;
-    config.serverCmd = ['sbt.bat', `-Dscala.config=${pathConfig}`, 'run'];
-    config.logPath = 'C:\\Users\\Mohamed\\GolandProjects\\student_21_pop\\tests\\karate\\karateTest\\scala_create.log';
-  
   }
   return config;
 }

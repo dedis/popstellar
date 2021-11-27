@@ -4,33 +4,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-public class Server {
+public abstract class Server implements Runnable {
 
     // Main server process (may have children processes)
     private Process process;
 
-    public Server() {
+    @Override
+    public void stop() {
+        process.children().forEach(ProcessHandle::destroyForcibly);
+        process.destroyForcibly();
     }
-    
-    /**
-     * Builds a server process
-     * @param cmd command in format [cmd, args..]
-     * @param dir directory to execute the command
-     * @param logPath path to output log files, if null display logs in STDout & STDerr
-     * @return Process as Builder instance
-     */
-    private ProcessBuilder build(String[] cmd, String dir, String logPath) {
-        File workingDirectory = new File(dir);
-        ProcessBuilder processBuilder = new ProcessBuilder(cmd).directory(workingDirectory);
 
-        if(logPath == null) {
-            processBuilder = processBuilder.inheritIO();
-        } else {
-            File logFile = new File(logPath);
-            processBuilder = processBuilder.redirectOutput(logFile);
-            processBuilder = processBuilder.redirectError(logFile);
-        }
-        return processBuilder;
+    @Override
+    public boolean isRunning() {
+        return process.isAlive();
     }
 
     /**
@@ -57,7 +44,7 @@ public class Server {
            System.out.println("Process PID = " + process.pid());
            return true;
         }
-        catch(IOException e){
+        catch(IOException e) {
             System.out.printf("Could not execute %s in directory %s%n",
                     Stream.of(cmd).reduce((s,acc)-> s + " " + acc).orElse("No command found!"),
                     dir);
@@ -67,17 +54,23 @@ public class Server {
     }
 
     /**
-     *  Force server to stop by killing the process and its children if any.
+     * Builds a server process
+     * @param cmd command in format [cmd, args..]
+     * @param dir directory to execute the command
+     * @param logPath path to output log files, if null display logs in STDout & STDerr
+     * @return Process as Builder instance
      */
-    public void stop() {
-        process.children().forEach(ProcessHandle::destroyForcibly);
-        process.destroyForcibly();
-    }
+    private ProcessBuilder build(String[] cmd, String dir, String logPath) {
+        File workingDirectory = new File(dir);
+        ProcessBuilder processBuilder = new ProcessBuilder(cmd).directory(workingDirectory);
 
-    /**
-     *  Checks if server is still running.
-     */
-    public boolean isRunning(){
-        return process.isAlive();
+        if(logPath == null) {
+            processBuilder = processBuilder.inheritIO();
+        } else {
+            File logFile = new File(logPath);
+            processBuilder = processBuilder.redirectOutput(logFile);
+            processBuilder = processBuilder.redirectError(logFile);
+        }
+        return processBuilder;
     }
 }

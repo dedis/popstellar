@@ -8,18 +8,32 @@ Feature: This feature starts a server and stops it after every scenario.
         # Method that waits/pauses for x seconds
         * def wait = 
             """
-                function(secs){
+                function(secs) {
                     java.lang.Thread.sleep(secs*1000)
                 }
             """
 
-        * def Server = Java.type("pop.utils.Server")
+        # Get the server depending on the environment
+        * def GoServer = Java.type("be.utils.GoServer")
+        * def ScalaServer = Java.type("be.utils.ScalaServer")
+        * def getServer =
+            """
+                function() {
+                    if(env == 'go')
+                        return new GoServer();
+                    else if(env == 'scala')
+                        return new ScalaServer();
+                    else
+                        karate.fail("Unknown environment for server");
+                }
+            """
+        * def server = call getServer()
 
         # Method that waits until host:port is available
         * def waitForPort = 
             """
                 function() {
-                    karate.waitForPort(host,port) 
+                    karate.waitForPort(host, port)
                 }
             """
 
@@ -27,7 +41,7 @@ Feature: This feature starts a server and stops it after every scenario.
         * def startServer = 
             """
                 function() {
-                    var success = Server.start(serverCmd, serverDIR, logPath);
+                    var success = server.start();
                     if(success)
                         return;
                     else
@@ -38,9 +52,8 @@ Feature: This feature starts a server and stops it after every scenario.
         # Method that stops the server
         * def stopServer = 
             """     
-                function(){
-                    Server.stop();
-                    wait(2);
+                function() {
+                    server.stop();
                 }
             """
 
