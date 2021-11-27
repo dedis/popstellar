@@ -4,14 +4,19 @@ package organizer
 
 import (
 	"encoding/base64"
-	"github.com/urfave/cli/v2"
-	"golang.org/x/xerrors"
 	be1_go "popstellar"
 	"popstellar/channel/lao"
+	"popstellar/cli/utility"
 	"popstellar/crypto"
-	"popstellar/hub/organizer"
+	"popstellar/hub"
+	"popstellar/hub/standard_hub"
 	"popstellar/network"
 	"popstellar/network/socket"
+	"sync"
+	"time"
+
+	"github.com/urfave/cli/v2"
+	"golang.org/x/xerrors"
 )
 
 // Serve parses the CLI arguments and spawns a hub and a websocket server for
@@ -19,13 +24,14 @@ import (
 func Serve(cliCtx *cli.Context) error {
 	log := be1_go.Logger
 
-	// get command line args which specify public key, port to use for clients
-	// and witnesses
+	// get command line args which specify public key, port to use for clients,
+	// witnesses and witness' address
 	clientPort := cliCtx.Int("client-port")
 	witnessPort := cliCtx.Int("witness-port")
 	if clientPort == witnessPort {
 		return xerrors.Errorf("client and witness ports must be different")
 	}
+	witness := cliCtx.StringSlice("other-witness")
 
 	pk := cliCtx.String("public-key")
 	if pk == "" {
@@ -46,7 +52,8 @@ func Serve(cliCtx *cli.Context) error {
 	}
 
 	// create organizer hub
-	h, err := organizer.NewHub(point, log.With().Str("role", "organizer").Logger(), lao.NewChannel)
+	h, err := standard_hub.NewHub(point, log.With().Str("role", "organizer").Logger(),
+		lao.NewChannel, hub.OrganizerHubType)
 	if err != nil {
 		return xerrors.Errorf("failed create the organizer hub: %v", err)
 	}
@@ -64,6 +71,18 @@ func Serve(cliCtx *cli.Context) error {
 	// start the processing loop
 	h.Start()
 
+	// create wait group which waits for goroutines to finish
+	wg := &sync.WaitGroup{}
+	done := make(chan struct{})
+
+	// connect to given witness
+	for _, witnessAddress := range witness {
+		err = utility.ConnectToSocket(hub.WitnessHubType, witnessAddress, h, wg, done)
+		if err != nil {
+			return xerrors.Errorf("failed to connect to witness: %v", err)
+		}
+	}
+
 	// Wait for a Ctrl-C
 	err = network.WaitAndShutdownServers(clientSrv, witnessSrv)
 	if err != nil {
@@ -73,6 +92,22 @@ func Serve(cliCtx *cli.Context) error {
 	h.Stop()
 	<-clientSrv.Stopped
 	<-witnessSrv.Stopped
+
+	// notify channs to stop
+	close(done)
+
+	// wait on channs to be done
+	channsClosed := make(chan struct{})
+	go func() {
+		wg.Wait()
+		close(channsClosed)
+	}()
+
+	select {
+	case <-channsClosed:
+	case <-time.After(time.Second * 10):
+		log.Error().Msg("channs didn't close after timeout, exiting")
+	}
 
 	return nil
 }

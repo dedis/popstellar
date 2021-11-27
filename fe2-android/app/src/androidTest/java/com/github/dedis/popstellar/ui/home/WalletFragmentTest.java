@@ -38,6 +38,7 @@ import org.junit.runner.RunWith;
 @RunWith(AndroidJUnit4ClassRunner.class)
 public class WalletFragmentTest {
 
+  // TODO: update those tests: needs to be simplified and readable
   @Rule
   public ActivityScenarioRule<HomeActivity> mActivityTestRule =
       new ActivityScenarioRule<>(HomeActivity.class);
@@ -65,7 +66,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -148,7 +149,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -274,7 +275,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -415,7 +416,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -526,7 +527,7 @@ public class WalletFragmentTest {
                     allOf(
                         withId(R.id.tab_wallet_only),
                         childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    2),
+                    3),
                 isDisplayed()));
     appCompatButton.perform(click());
 
@@ -556,7 +557,7 @@ public class WalletFragmentTest {
                 childAtPosition(
                     allOf(
                         withId(R.id.fragment_content_wallet),
-                        childAtPosition(withId(R.id.fragment_container_home), 3)),
+                        childAtPosition(withId(R.id.fragment_container_home), 4)),
                     4),
                 isDisplayed()));
     appCompatButton4.perform(click());

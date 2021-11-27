@@ -10,7 +10,7 @@ const STRINGS = {
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
-  navigation_tab_social: 'Social',
+  navigation_tab_social_media: 'Social Media',
   navigation_tab_connect: 'Connect',
   navigation_tab_launch: 'Launch',
   navigation_tab_wallet: 'Wallet',
@@ -46,13 +46,18 @@ const STRINGS = {
   navigation_synced_wallet: 'My Wallet',
   navigation_wallet_error: 'Error',
 
+  /* --- Social Media Navigation Strings --- */
+  social_media_navigation_tab_home: 'Home',
+  social_media_navigation_tab_search: 'Search',
+  social_media_navigation_tab_follows: 'My Follows',
+  social_media_navigation_tab_profile: 'My Profile',
+
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
   home_connect_lao: 'To connect to a local organization (LAO), please tap to Connect above',
   home_launch_lao: 'To launch a new LAO as on organizer, please tap Launch tab above',
 
   /* --- Social Media Strings --- */
-  feed_description: 'User feed',
   button_publish: 'Publish',
   your_chirp: 'Your chirp',
 
@@ -127,7 +132,7 @@ const STRINGS = {
 
   /* --- Event Creation Strings --- */
   modal_event_creation_failed: 'Event creation failed',
-  modal_event_ends_in_past: 'The event\'s end time in the past.',
+  modal_event_ends_in_past: 'The event\'s end time is in the past.',
   modal_event_starts_in_past: 'The event\'s start time is in the past.\nWhat do you want to do ?',
   modal_button_start_now: 'Start it now',
   modal_button_go_back: 'Cancel',

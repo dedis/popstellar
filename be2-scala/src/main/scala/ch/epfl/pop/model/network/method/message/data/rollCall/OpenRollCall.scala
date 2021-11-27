@@ -12,7 +12,7 @@ case class OpenRollCall(
                          update_id: Hash,
                          opens: Hash,
                          opened_at: Timestamp
-                       ) extends MessageData {
+                       ) extends MessageData with IOpenRollCall{
   override val _object: ObjectType = ObjectType.ROLL_CALL
   override val action: ActionType = ActionType.OPEN
 }

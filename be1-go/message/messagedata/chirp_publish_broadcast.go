@@ -6,5 +6,5 @@ type ChirpAddBroadcast struct {
 	Action    string `json:"action"`
 	PostId    string `json:"post_id"`
 	Channel   string `json:"channel"`
-	Timestamp int64    `json:"timestamp"`
+	Timestamp int64  `json:"timestamp"`
 }

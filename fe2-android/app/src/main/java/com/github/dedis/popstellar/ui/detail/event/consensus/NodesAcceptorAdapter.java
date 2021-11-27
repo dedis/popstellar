@@ -21,19 +21,19 @@ public class NodesAcceptorAdapter extends BaseAdapter {
 
   private List<ConsensusNode> nodes;
   private final ConsensusNode ownNode;
-  private final String electionId;
+  private final String instanceId;
   private final LaoDetailViewModel laoDetailViewModel;
   private final LifecycleOwner lifecycleOwner;
 
   public NodesAcceptorAdapter(
       List<ConsensusNode> nodes,
       ConsensusNode ownNode,
-      String electionId,
+      String instanceId,
       LifecycleOwner lifecycleOwner,
       LaoDetailViewModel laoDetailViewModel) {
     this.nodes = nodes;
     this.ownNode = ownNode;
-    this.electionId = electionId;
+    this.instanceId = instanceId;
     this.laoDetailViewModel = laoDetailViewModel;
     this.lifecycleOwner = lifecycleOwner;
   }
@@ -73,8 +73,8 @@ public class NodesAcceptorAdapter extends BaseAdapter {
     }
 
     ConsensusNode node = getItem(position);
-    Optional<Consensus> lastConsensus = node.getLastConsensus(electionId);
-    State state = node.getState(electionId);
+    Optional<Consensus> lastConsensus = node.getLastConsensus(instanceId);
+    State state = node.getState(instanceId);
     boolean alreadyAccepted =
         lastConsensus
             .map(consensus -> ownNode.getAcceptedMessageIds().contains(consensus.getMessageId()))
