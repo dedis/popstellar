@@ -231,6 +231,7 @@ object DbActor extends AskPatternConstants {
       }
     }
 
+    //helper functions to reduce complexity
     private def writeBatch(channel: Channel, messageId: Hash, batch: WriteBatch): DbActorMessage = {
       Try(db.write(batch)) match {
         case Success(_) =>
@@ -239,6 +240,31 @@ object DbActor extends AskPatternConstants {
         case Failure(exception) =>
           log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and batch on channel '$channel' because of the batch write")
           DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+      }
+    }
+
+    //extra cases for other data than LaoData can be added here easily later on
+    private def addToBatchThenWrite(channel: Channel, message: Message, batch: WriteBatch): DbActorMessage = {
+      val messageId: Hash = message.message_id
+      if (LaoData.isAffectedBy(message)){
+        val laoDataKey: String = generateLaoDataKey(channel)
+        Try(db.get(laoDataKey.getBytes)) match {
+          case Success(bt) =>
+            //FIXME: use some sort of compare-and-swap to prevent concurrency issues with LaoData modification if needed
+            if(bt != null){
+              val laoJson = new String(bt, StandardCharsets.UTF_8)
+              batch.put(laoDataKey.getBytes, LaoData.buildFromJson(laoJson).updateWith(message).toJsonString.getBytes)
+            } else if (bt == null) {
+              batch.put(laoDataKey.getBytes, LaoData.emptyLaoData.updateWith(message).toJsonString.getBytes)
+            }
+            //allows writing all data atomically
+            writeBatch(channel, messageId, batch)
+          case Failure(exception) =>
+            log.error(s"Actor $self (db) encountered a problem with the data of the LAO in the database.")
+            DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+        }  
+      } else{
+        writeBatch(channel, messageId, batch)
       }
     }
 
@@ -257,26 +283,7 @@ object DbActor extends AskPatternConstants {
               val json = new String(bytes, StandardCharsets.UTF_8)
               batch.put(channel.toString.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
               batch.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)
-              if (LaoData.isAffectedBy(message)){
-                val laoDataKey: String = generateLaoDataKey(channel)
-                Try(db.get(laoDataKey.getBytes)) match {
-                  case Success(bt) =>
-                    //FIXME: use some sort of compare-and-swap to prevent concurrency issues with LaoData modification if needed
-                    if(bt != null){
-                      val laoJson = new String(bt, StandardCharsets.UTF_8)
-                      batch.put(laoDataKey.getBytes, LaoData.buildFromJson(laoJson).updateWith(message).toJsonString.getBytes)
-                    } else if (bt == null) {
-                      batch.put(laoDataKey.getBytes, LaoData.emptyLaoData.updateWith(message).toJsonString.getBytes)
-                    }
-                    //allows writing all data atomically
-                    writeBatch(channel, messageId, batch)
-                  case Failure(exception) =>
-                    log.error(s"Actor $self (db) encountered a problem with the data of the LAO in the database.")
-                    DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
-                }  
-              } else{
-                writeBatch(channel, messageId, batch)
-              }
+              addToBatchThenWrite(channel, message, batch)
             }
             case Failure(exception) =>
               log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object ${ChannelData.getName} on channel '$channel' because of a batch creation")
