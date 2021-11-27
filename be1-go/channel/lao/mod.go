@@ -5,9 +5,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/rs/zerolog/log"
+	be1_go "popstellar"
 	"popstellar/channel"
+	"popstellar/channel/chirp"
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
+	"popstellar/channel/generalChirping"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/inbox"
@@ -37,13 +41,16 @@ const (
 	dbRowIterErr  = "error in row iteration: %v"
 	dbQueryRowErr = "failed to query rows: %v"
 	msgID         = "msg id"
+	social        = "/social/"
+	chirps        = "chirps"
 )
 
 // Channel defines a LAO channel
 type Channel struct {
 	sockets channel.Sockets
 
-	inbox *inbox.Inbox
+	inbox   *inbox.Inbox
+	general channel.Broadcastable
 
 	// /root/<ID>
 	channelID string
@@ -69,25 +76,34 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	log = log.With().Str("channel", "lao").Logger()
 
-	inbox := inbox.NewInbox(channelID)
-	inbox.StoreMessage(msg)
+	box := inbox.NewInbox(channelID)
+	box.StoreMessage(msg)
+
+	general := createGeneralChirpingChannel(channelID, hub, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
-
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
-	return &Channel{
+	c := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
-		inbox:           inbox,
+		inbox:           box,
+		general:         general,
 		organizerPubKey: organizerPubKey,
 		hub:             hub,
 		rollCall:        rollCall{},
 		attendees:       make(map[string]struct{}),
 		log:             log,
 	}
+	// temporary while the front-end find a solution to
+	// get the PoP token... TODO
+	pkBuf, _ := organizerPubKey.MarshalBinary()
+	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
+	c.createChirpingChannel(pk64, socket)
+
+	return c
 }
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -190,6 +206,17 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
+// createGeneralChirpingChannel creates a new general chirping channel and returns it
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
+	generalChannelPath := laoID + social + chirps
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
+	hub.NotifyNewChannel(generalChannelPath, &generalChirpingChannel, socket)
+
+	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
+
+	return &generalChirpingChannel
+}
+
 // rollCallState denotes the state of the roll call.
 type rollCallState string
 
@@ -227,6 +254,9 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get the action or the object: %v", err)
+	}
 
 	switch object {
 	case messagedata.LAOObject:
@@ -236,9 +266,11 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	case messagedata.MessageObject:
 		err = c.processMessageObject(action, msg)
 	case messagedata.RollCallObject:
-		err = c.processRollCallObject(action, msg)
+		err = c.processRollCallObject(action, msg, socket)
 	case messagedata.ElectionObject:
 		err = c.processElectionObject(action, msg, socket)
+	default:
+		err = xerrors.Errorf("object not accepted in a LAO channel.")
 	}
 
 	if err != nil {
@@ -421,7 +453,7 @@ func (c *Channel) processMessageObject(action string, msg message.Message) error
 }
 
 // processRollCallObject handles a roll call object.
-func (c *Channel) processRollCallObject(action string, msg message.Message) error {
+func (c *Channel) processRollCallObject(action string, msg message.Message, socket socket.Socket) error {
 	sender := msg.Sender
 
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
@@ -468,10 +500,11 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
 		}
 
-		err = c.processRollCallClose(rollCallClose)
+		err = c.processRollCallClose(rollCallClose, socket)
 		if err != nil {
 			return xerrors.Errorf("failed to process close roll call: %v", err)
 		}
+
 	default:
 		return answer.NewInvalidActionError(action)
 	}
@@ -483,6 +516,15 @@ func (c *Channel) processRollCallObject(action string, msg message.Message) erro
 	c.inbox.StoreMessage(msg)
 
 	return nil
+}
+
+func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) {
+	chirpingChannelPath := c.channelID + social + publicKey
+
+	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
+
+	c.hub.NotifyNewChannel(chirpingChannelPath, &cha, socket)
+	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
 // processElectionObject handles an election object.
@@ -620,7 +662,7 @@ func (c *Channel) processRollCallOpen(msg message.Message, action string) error 
 }
 
 // processRollCallClose processes a close roll call message.
-func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
+func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket socket.Socket) error {
 
 	// check that data is correct
 	err := c.verifyMessageRollCallClose(msg)
@@ -653,6 +695,8 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose) error {
 
 	for _, attendee := range msg.Attendees {
 		c.attendees[attendee] = struct{}{}
+
+		c.createChirpingChannel(attendee, socket)
 
 		if db != nil {
 			c.log.Info().Msgf("inserting attendee %s into db", attendee)

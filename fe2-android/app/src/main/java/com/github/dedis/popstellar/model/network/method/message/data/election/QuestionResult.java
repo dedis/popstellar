@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class QuestionResult {
 
   @SerializedName(value = "ballot_option")
@@ -23,6 +25,24 @@ public class QuestionResult {
 
   public Integer getCount() {
     return count;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    QuestionResult that = (QuestionResult) o;
+
+    return count == that.count && Objects.equals(ballotOption, that.ballotOption);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(ballotOption, count);
   }
 
   @Override
