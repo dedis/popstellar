@@ -4,11 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
@@ -23,6 +18,12 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
@@ -263,3 +264,11 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
+
+func (h *fakeHub) SendSubscribeToServers(channelID string) error {
+	return nil
+}
+
+func (h *fakeHub) SendUnsubscribeToServers(channelID string) error {
+	return nil
+}

@@ -20,6 +20,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -96,6 +97,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 
 	return &Channel{
 		clientSockets:      channel.NewSockets(),
+		serverSockets:      channel.NewSockets(),
 		inbox:              inbox,
 		channelID:          channelID,
 		hub:                hub,
@@ -449,7 +451,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 			CreatedAt: time.Now().Unix(),
 
 			Value: messagedata.ValuePrepare{
-				consensusInstance.proposed_try,
+				ProposedTry: consensusInstance.proposed_try,
 			},
 		}
 		byteMsg, err := json.Marshal(newData)
@@ -491,29 +493,33 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 	consensusInstance := c.consensusInstances[data.InstanceID]
 	if consensusInstance.proposed_try > consensusInstance.promised_try {
 		consensusInstance.promised_try = consensusInstance.proposed_try
+
+		newData := messagedata.ConsensusPromise{
+			Object:     "consensus",
+			Action:     "prepare",
+			InstanceID: data.InstanceID,
+			MessageID:  data.MessageID,
+
+			CreatedAt: time.Now().Unix(),
+
+			Value: messagedata.ValuePromise{
+				AcceptedTry:   consensusInstance.accepted_try,
+				AcceptedValue: *consensusInstance.accepted_value,
+				PromisedTry:   consensusInstance.promised_try,
+			},
+		}
+		byteMsg, err := json.Marshal(newData)
+		if err != nil {
+			return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+		}
+
+		err = c.publishMessage(byteMsg)
+		if err != nil {
+			return err
+		}
 	}
 
-	newData := messagedata.ConsensusPromise{
-		Object:     "consensus",
-		Action:     "prepare",
-		InstanceID: data.InstanceID,
-		MessageID:  data.MessageID,
-
-		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValuePromise{
-			AcceptedTry:   consensusInstance.accepted_try,
-			AcceptedValue: *consensusInstance.accepted_value,
-			PromisedTry:   consensusInstance.promised_try,
-		},
-	}
-	byteMsg, err := json.Marshal(newData)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
-	}
-
-	err = c.publishMessage(byteMsg)
-	return err
+	return nil
 }
 
 // ProcessConsensusPromise processes a promise action.
@@ -570,7 +576,10 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
 			}
 
-			return c.publishMessage(byteMsg)
+			err = c.publishMessage(byteMsg)
+			if err != nil {
+				return err
+			}
 		} else {
 			newData.Value.ProposedTry = highestAccepted
 			byteMsg, err := json.Marshal(newData)
@@ -578,7 +587,10 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
 			}
 
-			return c.publishMessage(byteMsg)
+			err = c.publishMessage(byteMsg)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
@@ -703,6 +715,57 @@ func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 }
 
 // publishMessage send a publish message on the current channel
-func (c *Channel) publishMessage(msg []byte) error {
+func (c *Channel) publishMessage(byteMsg []byte) error {
 
+	encryptedMsg := base64.URLEncoding.EncodeToString(byteMsg)
+
+	publicKey := c.hub.GetPubKeyServ()
+	pkBuf, err := publicKey.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the public key: %v", err)
+	}
+
+	encryptedKey := base64.URLEncoding.EncodeToString(pkBuf)
+
+	privateKey := c.hub.GetSecKeyServ()
+	signatureBuf, err := schnorr.Sign(crypto.Suite, privateKey, byteMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to sign the data: %v", err)
+	}
+
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+
+	messageID := messagedata.Hash(encryptedKey, encryptedKey)
+
+	msg := message.Message{
+		Data:              encryptedMsg,
+		Sender:            encryptedKey,
+		Signature:         signature,
+		MessageID:         messageID,
+		WitnessSignatures: make([]message.WitnessSignature, 0),
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+		},
+
+		Params: struct {
+			Channel string          "json:\"channel\""
+			Message message.Message "json:\"message\""
+		}{
+			Channel: c.channelID,
+			Message: msg,
+		},
+	}
+
+	bufPublish, err := json.Marshal(publish)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal publish message: %v", err)
+	}
+
+	c.serverSockets.SendToAll(bufPublish)
+	return nil
 }
