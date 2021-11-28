@@ -472,6 +472,11 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 // ProcessConsensusPrepare processes a prepare action.
 func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) error {
 
+	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid consensus#prepare message: %v", err)
+	}
+
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 	if !valid {
@@ -524,6 +529,11 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 
 // ProcessConsensusPromise processes a promise action.
 func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.ConsensusPromise) error {
+
+	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid consensus#promise message: %v", err)
+	}
 
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
@@ -600,6 +610,11 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 // ProcessConsensusPropose processes a propose action.
 func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) error {
 
+	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid consensus#propose message: %v", err)
+	}
+
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
@@ -645,6 +660,11 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 
 // ProcessConsensusAccept proccesses an accept action.
 func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error {
+
+	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid consensus#accept message: %v", err)
+	}
 
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)

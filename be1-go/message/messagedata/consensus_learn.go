@@ -37,6 +37,11 @@ func (message ConsensusLearn) Verify() error {
 		return xerrors.Errorf("message id is %s, should be base64URL encoded", message.MessageID)
 	}
 
+	// verify that created at is positive
+	if message.CreatedAt < 0 {
+		return xerrors.Errorf("created at is %d, should be minimum 0", message.CreatedAt)
+	}
+
 	// verify that the acceptors are base64URL encoded
 	for acceptor := range message.AcceptorSignatures {
 		if _, err := base64.URLEncoding.DecodeString(message.AcceptorSignatures[acceptor]); err != nil {
