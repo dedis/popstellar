@@ -51,7 +51,7 @@ export const {
   clearWallet,
 } = walletSlice.actions;
 
-export const walletReducer = walletSlice.reducer;
+export const walletReduce = walletSlice.reducer;
 
 export default {
   [walletReducerPath]: walletSlice.reducer,
