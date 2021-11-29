@@ -18,9 +18,9 @@ public class Chirp {
 
   public Chirp(String id) {
     if (id == null) {
-      throw new IllegalArgumentException(" The id is null");
+      throw new IllegalArgumentException("The id is null");
     } else if (id.isEmpty()) {
-      throw new IllegalArgumentException(" The id of the Chirp is empty");
+      throw new IllegalArgumentException("The id of the Chirp is empty");
     }
     this.id = id;
   }
@@ -31,9 +31,9 @@ public class Chirp {
 
   public void setId(String id) {
     if (id == null) {
-      throw new IllegalArgumentException(" The id is null");
+      throw new IllegalArgumentException("The id is null");
     } else if (id.isEmpty()) {
-      throw new IllegalArgumentException(" The id of the Chirp is empty");
+      throw new IllegalArgumentException("The id of the Chirp is empty");
     }
     this.id = id;
   }
@@ -69,7 +69,7 @@ public class Chirp {
     return timestamp;
   }
 
-  public void setTimestamp(Long timestamp) {
+  public void setTimestamp(long timestamp) {
     this.timestamp = timestamp;
   }
 
@@ -77,7 +77,7 @@ public class Chirp {
     return likes;
   }
 
-  public void setLikes(Integer likes) {
+  public void setLikes(int likes) {
     this.likes = likes;
   }
 
