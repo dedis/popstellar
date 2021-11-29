@@ -7,12 +7,12 @@ import { PublicKey } from './PublicKey';
  */
 
 export interface ChirpState {
-  id: string;
-  sender: string;
-  text: string;
-  time: number;
-  likes: number;
-  parentId: string;
+  readonly id: string;
+  readonly sender: string;
+  readonly text: string;
+  readonly time: number;
+  readonly likes: number;
+  readonly parentId: string;
 }
 
 export class Chirp {
