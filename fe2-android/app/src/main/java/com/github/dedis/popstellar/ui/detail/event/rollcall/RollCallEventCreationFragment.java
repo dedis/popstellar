@@ -135,7 +135,9 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   }
 
   private void createRollCall(boolean open) {
-    computeTimesInSeconds();
+    if (!computeTimesInSeconds()) {
+        return;
+    }
 
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
