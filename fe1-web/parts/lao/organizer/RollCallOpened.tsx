@@ -32,7 +32,7 @@ const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
-  const [attendees, updateAttendees] = useState<string[]>([]);
+  const [attendees, updateAttendees] = useState(new Set<string>());
   const toast = useToast();
 
   const handleError = (err: string) => {
@@ -41,8 +41,8 @@ const RollCallOpened = () => {
 
   const handleScan = (data: string | null) => {
     if (data) {
-      if (!attendees.includes(data)) {
-        updateAttendees((arr) => [...arr, data]);
+      if (!attendees.has(data)) {
+        updateAttendees((prev) => new Set<string>(prev.add(data)));
         toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
           placement: 'top',
@@ -57,7 +57,7 @@ const RollCallOpened = () => {
       EventTags.ROLL_CALL, OpenedLaoStore.get().id.toString(),
       rollCallID, time,
     );
-    requestCloseRollCall(updateId, attendees.map((key: string) => new PublicKey(key)))
+    requestCloseRollCall(updateId, Array.from(attendees).map((key: string) => new PublicKey(key)))
       .then(() => {
         // @ts-ignore
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
@@ -77,7 +77,7 @@ const RollCallOpened = () => {
           onError={handleError}
           style={{ width: '30%' }}
         />
-        <Badge value={attendees.length} status="success" />
+        <Badge value={attendees.size} status="success" />
         <WideButtonView
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}

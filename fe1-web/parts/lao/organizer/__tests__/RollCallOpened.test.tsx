@@ -12,8 +12,6 @@ import { OpenedLaoStore } from 'store';
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 import RollCallOpened from '../RollCallOpened';
 
-jest.mock('@react-navigation/core');
-
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
 
 const org = mockPublicKey;
@@ -32,6 +30,7 @@ const laoState: LaoState = {
   witnesses: [],
 };
 
+jest.mock('@react-navigation/core');
 jest.mock('react-qr-reader');
 jest.mock('network/MessageApi');
 
