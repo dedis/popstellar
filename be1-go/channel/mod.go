@@ -93,7 +93,7 @@ func (s *Sockets) Delete(ID string) bool {
 type HubFunctionalities interface {
 	GetPubKeyOrg() kyber.Point
 	GetPubKeyServ() kyber.Point
-	GetSecKeyServ() kyber.Scalar
+	Sign([]byte) ([]byte, error)
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	SendSubscribeToServers(channelID string) error

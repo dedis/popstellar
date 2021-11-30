@@ -182,7 +182,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           // elections at once
           submitButton.setEnabled(false);
           // When submitting, we compute the timestamps for the selected start and end time
-          computeTimesInSeconds();
+          if (!computeTimesInSeconds()) {
+            return;
+          }
 
           final List<Integer> validPositions = viewPagerAdapter.getValidInputs();
 
@@ -220,6 +222,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
               TAG,
               "Creating election with name "
                   + electionName
+                  + ", creation time "
+                  + creationTimeInSeconds
                   + ", start time "
                   + startTimeInSeconds
                   + ", end time "

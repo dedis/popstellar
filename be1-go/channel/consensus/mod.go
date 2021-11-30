@@ -20,7 +20,6 @@ import (
 
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
 
@@ -758,8 +757,7 @@ func (c *Channel) publishMessage(byteMsg []byte) error {
 
 	encryptedKey := base64.URLEncoding.EncodeToString(pkBuf)
 
-	privateKey := c.hub.GetSecKeyServ()
-	signatureBuf, err := schnorr.Sign(crypto.Suite, privateKey, byteMsg)
+	signatureBuf, err := c.hub.Sign(byteMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to sign the data: %v", err)
 	}

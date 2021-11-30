@@ -410,7 +410,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	bufPrep, err = json.Marshal(prepare)
 	require.NoError(t, err)
 
-	signatureBuf, err := schnorr.Sign(crypto.Suite, fakeHub.GetSecKeyServ(), bufPrep)
+	signatureBuf, err := fakeHub.Sign(bufPrep)
 	require.NoError(t, err)
 
 	data64 := base64.URLEncoding.EncodeToString(bufPrep)
@@ -624,9 +624,13 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyOrg
 }
 
-// GetSecKeyServ implements channel.HubFunctionalities
-func (h *fakeHub) GetSecKeyServ() kyber.Scalar {
-	return h.secKeyServ
+// Sign implements channel.HubFunctionalities
+func (h *fakeHub) Sign(data []byte) ([]byte, error) {
+	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to sign the data: %v", err)
+	}
+	return signatureBuf, nil
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
