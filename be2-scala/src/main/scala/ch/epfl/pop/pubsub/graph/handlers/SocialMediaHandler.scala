@@ -52,6 +52,7 @@ case object SocialMediaHandler extends MessageHandler {
                 val broadcastData: Base64Data = Base64Data(addBroadcastChirp.toString) //FIXME: check json/string conversion
                 //Ed25519 is used to verify the signatures, therefore I also use it to sign data
                 //FIXME: however, should we have the server generating a new keypair each time? Because it doesn't feel very secure to me.
+                //TODO: add new object keypair to LaoData (generated during LAO creation) and store it there
                 val keypair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair()
                 val pk: PublicKey = PublicKey(Base64Data.encode(keypair.getPublicKey)) // check where to generate: keypair = Ed25519Sign.KeyPair.newKeyPair() (keypair.getPublicKey())
                 val ed: Ed25519Sign = Ed25519Sign(keypair.getPrivateKey)
