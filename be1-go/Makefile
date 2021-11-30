@@ -1,12 +1,16 @@
 .PHONY: test
 
 build: protocol
-	go build -o pop ./cli/
+	go build -o pop ./cli
 
 lint:
 	@go get -v honnef.co/go/tools/cmd/staticcheck
 	@go mod tidy
 	staticcheck ./...
+
+check-cov: protocol lint vet
+	go test -v ./...
+	go test -v -race -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
 
 check: protocol lint vet
 	go test -v ./...
@@ -20,3 +24,6 @@ protocol:
 
 clean:
 	rm -rf validation/protocol
+
+fmt:
+	gofmt -s -w ./

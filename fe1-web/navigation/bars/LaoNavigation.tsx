@@ -12,9 +12,7 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
-import WalletSyncedSeed from 'parts/wallet/WalletSyncedSeed';
-import { WalletStore } from 'store/stores/WalletStore';
-import Social from 'parts/Social';
+import SocialMediaNavigation from 'parts/lao/socialMedia/SocialMediaNavigation';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
@@ -73,24 +71,6 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
   );
 }
 
-function displaySyncedWallet() {
-  return (
-    <OrganizationTopTabNavigator.Screen
-      name={STRINGS.navigation_synced_wallet}
-      component={WalletSyncedSeed}
-    />
-  );
-}
-
-function displayHomeWallet() {
-  return (
-    <OrganizationTopTabNavigator.Screen
-      name={STRINGS.navigation_home_tab_wallet}
-      component={WalletNavigation}
-    />
-  );
-}
-
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
@@ -102,8 +82,6 @@ function LaoNavigation() {
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
 
-  const walletIsInitialized = WalletStore.hasSeed(); // TODO: replace with selector
-
   const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
 
@@ -114,7 +92,9 @@ function LaoNavigation() {
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
       initialRouteName={tabName}
-      swipeEnabled={false}
+      screenOptions={{
+        swipeEnabled: false,
+      }}
     >
 
       <OrganizationTopTabNavigator.Screen
@@ -123,8 +103,8 @@ function LaoNavigation() {
       />
 
       <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_social}
-        component={Social}
+        name={STRINGS.navigation_tab_social_media}
+        component={SocialMediaNavigation}
       />
 
       { buildTabComponent(isOrganizer, isWitness) }
@@ -134,8 +114,10 @@ function LaoNavigation() {
         component={Identity}
       />
 
-      { !walletIsInitialized && displayHomeWallet() }
-      { walletIsInitialized && displaySyncedWallet() }
+      <OrganizationTopTabNavigator.Screen
+        name={STRINGS.navigation_tab_wallet}
+        component={WalletNavigation}
+      />
 
       <OrganizationTopTabNavigator.Screen
         name={laoName}

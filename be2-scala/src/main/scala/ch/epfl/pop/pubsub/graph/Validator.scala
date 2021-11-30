@@ -30,30 +30,46 @@ import com.networknt.schema.SpecVersion
 
 import scala.io.{BufferedSource, Source}
 import scala.util.{Failure, Success, Try}
-
-import spray.json._
-
-import java.io.File
-
-
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-
-import com.networknt.schema.JsonSchema
-import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.ValidationMessage
-import com.networknt.schema.SpecVersion
-
-import scala.io.{BufferedSource, Source}
-import scala.util.{Failure, Success, Try}
 import scala.collection.JavaConverters._
 
 import spray.json._
-
-import java.io.File
+import java.io.InputStream
 
 
 object Validator {
+
+  private final val queryPath = "protocol/query/query.json" //With respect to resource folder
+  final val objectMapper: ObjectMapper = new ObjectMapper()
+  final lazy val schema: JsonSchema = setupSchemaValidation
+
+  def setupSchemaValidation : JsonSchema = {
+    //Get input stream of query.json file from resources folder
+    def queryFile: InputStream = this.getClass().getClassLoader().getResourceAsStream(queryPath)
+    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
+    val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
+    // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
+    // Closing the stream is done by readTree
+    // FIXME: error handling for queryPath
+    lazy val jsonSchemaNode: JsonNode = objectMapper.readTree(queryFile)
+    // Creation of a JsonSchema from the previously created factory and JsonNode
+    factory.getSchema(jsonSchemaNode)
+  }
+
+  def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
+    // Creation of a JsonNode containing the information from the input jsonString
+    val jsonNode: JsonNode = objectMapper.readTree(jsonString)
+    // Validation of the input, the result is a set of errors (if no errors, the set is empty)
+
+    val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
+    if (errors.isEmpty){
+      Left(jsonString)
+    }
+    else {
+      val rpcId = extractRpcId(jsonString)
+      // we get and concatenate all of the JsonString messages
+      Right(PipelineError(ErrorCodes.INVALID_DATA.id, errors.mkString("; "), rpcId))
+    }
+  }
 
   private def validationError(rpcId: Option[Int]): PipelineError = PipelineError(
     ErrorCodes.INVALID_ACTION.id,
@@ -67,37 +83,6 @@ object Validator {
       case _ => None
     }
   }
-
-  // contains the relative path to our "main" query JsonSchema file
-  final val queryPath = "../protocol/query/query.json"
-
-  def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
-
-    val objectMapper: ObjectMapper = new ObjectMapper()
-    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
-    val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
-    // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
-    // FIXME: error handling for queryPath
-    val jsonSchemaNode: JsonNode = objectMapper.readTree(new File(queryPath))
-    // Creation of a JsonSchema from the previously created factory and JsonNode
-    val schema: JsonSchema = factory.getSchema(jsonSchemaNode)
-
-    // Creation of a JsonNode containing the information from the input jsonString
-    val jsonNode: JsonNode = objectMapper.readTree(jsonString)
-    // Validation of the input, the result is a set of errors (if no errors, the set is empty)
-
-    val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
-
-    if (errors.isEmpty){
-      Left(jsonString)
-    }
-    else {
-      val rpcId = extractRpcId(jsonString)
-      // we get and concatenate all of the JsonString messages
-      Right(PipelineError(ErrorCodes.INVALID_DATA.id, errors.mkString("; "), rpcId))
-    }
-  }
-
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
       case message@(_: JsonRpcRequest) => validateRpcRequest(message)

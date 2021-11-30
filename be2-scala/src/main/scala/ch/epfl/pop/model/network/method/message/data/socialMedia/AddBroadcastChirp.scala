@@ -9,7 +9,7 @@ import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 case class AddBroadcastChirp(
-                          chirp_id: Hash,
+                          chirpId: Hash,
                           channel: String,
                           timestamp: Timestamp
                         ) extends MessageData {
@@ -19,9 +19,10 @@ case class AddBroadcastChirp(
 
 object AddBroadcastChirp extends Parsable {
   def apply(
-            chirp_id: Hash,
+            chirpId: Hash,
             channel: String,
-            timestamp: Timestamp(chirp_id, channel, timestamp)
+            timestamp: Timestamp
+      ): AddBroadcastChirp = new AddBroadcastChirp(chirpId, channel, timestamp)
 
   override def buildFromJson(payload: String): AddBroadcastChirp = payload.parseJson.asJsObject.convertTo[AddBroadcastChirp]
 }

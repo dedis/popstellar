@@ -4,9 +4,12 @@ buildscript {
 
     repositories {
         google()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
+
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.2'
+        classpath 'org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:3.1.1'
 
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -14,26 +17,14 @@ buildscript {
     }
 }
 
-plugins {
-    id "org.sonarqube" version "3.1.1"
-}
-
-sonarqube {
-    properties {
-        property "sonar.projectKey", "dedis_student_21_pop_fe2"
-        property "sonar.projectName", "PoP - Fe2-Android"
-        property "sonar.organization", "dedis"
-        property "sonar.host.url", "https://sonarcloud.io"
-    }
-}
-
 allprojects {
     repositories {
         google()
         mavenCentral()
-        maven {
-            url = uri("https://jcenter.bintray.com/")
-        }
+        maven { url "https://jcenter.bintray.com/" }
+        //Simple library to use QR codes
+        //More info : https://github.com/kenglxn/QRGen
+        maven { url "https://jitpack.io" }
     }
 }
 

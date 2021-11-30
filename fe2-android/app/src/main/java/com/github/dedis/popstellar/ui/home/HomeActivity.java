@@ -2,26 +2,35 @@ package com.github.dedis.popstellar.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
+import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
+import com.github.dedis.popstellar.ui.settings.SettingsActivity;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
+import java.util.function.Supplier;
 
 /** HomeActivity represents the entry point for the application. */
 public class HomeActivity extends AppCompatActivity {
@@ -39,6 +48,14 @@ public class HomeActivity extends AppCompatActivity {
     setupHomeFragment();
 
     mViewModel = obtainViewModel(this);
+
+    // Load all the json schemas in background when the app is started.
+    AsyncTask.execute(
+        () -> {
+          JsonUtils.loadSchema(JsonUtils.ROOT_SCHEMA);
+          JsonUtils.loadSchema(JsonUtils.DATA_SCHEMA);
+          JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
+        });
 
     setupHomeButton();
     setupLaunchButton();
@@ -112,6 +129,18 @@ public class HomeActivity extends AppCompatActivity {
               }
             });
 
+    // Subscribe to "open settings" event
+    mViewModel
+        .getOpenSettingsEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSettingsActivity();
+              }
+            });
+
     subscribeWalletEvents();
   }
 
@@ -169,13 +198,28 @@ public class HomeActivity extends AppCompatActivity {
     }
   }
 
+  @Override
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.options_menu, menu);
+    return true;
+  }
+
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.getItemId() == R.id.settings) {
+      mViewModel.openSettings();
+      return true;
+    } else {
+      return super.onOptionsItemSelected(item);
+    }
+  }
+
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = ViewModelFactory.getInstance(activity.getApplication());
+    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
     return new ViewModelProvider(activity, factory).get(HomeViewModel.class);
   }
 
   public void setupHomeButton() {
-
     Button homeButton = (Button) findViewById(R.id.tab_home);
     homeButton.setOnClickListener(v -> mViewModel.openHome());
   }
@@ -196,94 +240,60 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupHomeFragment() {
-    HomeFragment homeFragment =
-        (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_home);
-    if (homeFragment == null) {
-      homeFragment = HomeFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), homeFragment, R.id.fragment_container_home);
-    }
+    setCurrentFragment(R.id.fragment_home, HomeFragment::newInstance);
   }
 
   private void setupScanFragment() {
-    QRCodeScanningFragment scanningFragment =
-        (QRCodeScanningFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_qrcode);
-    if (scanningFragment == null) {
-      Context context = getApplicationContext();
-      BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
-      int width = getResources().getInteger(R.integer.camera_preview_width);
-      int height = getResources().getInteger(R.integer.camera_preview_height);
-      scanningFragment =
-          QRCodeScanningFragment.newInstance(
-              Injection.provideCameraSource(context, qrCodeDetector, width, height),
+    setCurrentFragment(
+        R.id.fragment_qrcode,
+        () -> {
+          Context context = getApplicationContext();
+          BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
+          return QRCodeScanningFragment.newInstance(
+              Injection.provideCameraSource(
+                  getApplicationContext(),
+                  qrCodeDetector,
+                  getResources().getInteger(R.integer.camera_preview_width),
+                  getResources().getInteger(R.integer.camera_preview_height)),
               qrCodeDetector);
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), scanningFragment, R.id.fragment_container_home);
-    }
+        });
   }
 
   private void setupCameraPermissionFragment() {
-    CameraPermissionFragment cameraPermissionFragment =
-        (CameraPermissionFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_camera_perm);
-    if (cameraPermissionFragment == null) {
-      cameraPermissionFragment = CameraPermissionFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), cameraPermissionFragment, R.id.fragment_container_home);
-    }
+    // Setup result listener to open the connect tab once the permission is granted
+    getSupportFragmentManager()
+        .setFragmentResultListener(
+            CameraPermissionFragment.REQUEST_KEY, this, (k, b) -> mViewModel.openConnect());
+
+    setCurrentFragment(
+        R.id.fragment_camera_perm,
+        () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
   }
 
   private void setupLaunchFragment() {
-    LaunchFragment launchFragment =
-        (LaunchFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_launch);
-    if (launchFragment == null) {
-      launchFragment = LaunchFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), launchFragment, R.id.fragment_container_home);
-    }
+    setCurrentFragment(R.id.fragment_launch, LaunchFragment::newInstance);
   }
 
   private void setupConnectingFragment() {
-
-    ConnectingFragment connectingFragment =
-        (ConnectingFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_connecting);
-    if (connectingFragment == null) {
-      connectingFragment = ConnectingFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), connectingFragment, R.id.fragment_container_home);
-    }
+    setCurrentFragment(R.id.fragment_connecting, ConnectingFragment::newInstance);
   }
 
   private void setupWalletFragment() {
-    WalletFragment walletFragment =
-        (WalletFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_wallet);
-    if (walletFragment == null) {
-      walletFragment = WalletFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), walletFragment, R.id.fragment_container_home);
-    }
+    setCurrentFragment(R.id.fragment_wallet, WalletFragment::newInstance);
   }
 
   private void setupContentWalletFragment() {
-    ContentWalletFragment contentWalletFragment =
-        (ContentWalletFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_content_wallet);
-    if (contentWalletFragment == null) {
-      contentWalletFragment = ContentWalletFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), contentWalletFragment, R.id.fragment_container_home);
-    }
+    setCurrentFragment(R.id.fragment_content_wallet, ContentWalletFragment::newInstance);
   }
 
   private void setupSeedWalletFragment() {
-    SeedWalletFragment seedWalletFragment =
-        (SeedWalletFragment)
-            getSupportFragmentManager().findFragmentById(R.id.fragment_seed_wallet);
-    if (seedWalletFragment == null) {
-      seedWalletFragment = SeedWalletFragment.newInstance();
-      ActivityUtils.replaceFragmentInActivity(
-          getSupportFragmentManager(), seedWalletFragment, R.id.fragment_container_home);
-    }
+    setCurrentFragment(R.id.fragment_seed_wallet, SeedWalletFragment::newInstance);
+  }
+
+  private void setupSettingsActivity() {
+    Intent intent = new Intent(this, SettingsActivity.class);
+    Log.d(TAG, "Trying to open settings");
+    startActivity(intent);
   }
 
   private void openLaoDetails(String laoId) {
@@ -304,5 +314,21 @@ public class HomeActivity extends AppCompatActivity {
       intent.putExtra("FRAGMENT_TO_OPEN", "ContentWallet");
     }
     startActivityForResult(intent, LAO_DETAIL_REQUEST_CODE);
+  }
+
+  /**
+   * Set the current fragment in the container of the activity
+   *
+   * @param id of the fragment
+   * @param fragmentSupplier provides the fragment if it is missing
+   */
+  private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
+    Fragment fragment = getSupportFragmentManager().findFragmentById(id);
+    // If the fragment was not created yet, create it now
+    if (fragment == null) fragment = fragmentSupplier.get();
+
+    // Set the new fragment in the container
+    ActivityUtils.replaceFragmentInActivity(
+        getSupportFragmentManager(), fragment, R.id.fragment_container_home);
   }
 }

@@ -8,9 +8,12 @@ import ch.epfl.pop.model.network.requests.socialMedia.{JsonRpcRequestAddChirp}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash, Base64Data, Signature, Timestamp, PublicKey}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.json.MessageDataProtocol._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+
+import spray.json._
 
 import com.google.crypto.tink.subtle.Ed25519Sign
 
@@ -33,39 +36,40 @@ case object SocialMediaHandler extends MessageHandler {
   }
   
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //broadcast chirp too? On general channel?
-
-
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration) match {
-      case Success(Left(msg)) => {
+      case Left(msg) => {
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeSubChannel match {
           case(Some(lao_id)) => {
-            val broadcastChannel: String = rootChannelPrefix + lao_id + "/path"
+            val broadcastChannel: Channel = Channel(Channel.rootChannelPrefix + Base64Data.encode(lao_id) + LaoHandler.SOCIALMEDIAPOSTSPREFIX)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
                 // we can't get the message_id as a Base64Data, it is a Hash
                 val chirpId: Hash = params.message_id
-                val timestamp: Timestamp = params.getDecodedData.get.asInstanceOf[AddChirp].timestamp
-                val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirpId, channelChirp, timestamp)
-                val broadcastData: Base64Data = Base64Data(addBroadcastChirp.toString) //FIXME: check json/string conversion
-                //Ed25519 is used to verify the signatures, therefore I also use it to sign data
-                //FIXME: however, should we have the server generating a new keypair each time? Because it doesn't feel very secure to me.
-                //TODO: add new object keypair to LaoData (generated during LAO creation) and store it there
-                val keypair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair()
-                val pk: PublicKey = PublicKey(Base64Data.encode(keypair.getPublicKey)) // check where to generate: keypair = Ed25519Sign.KeyPair.newKeyPair() (keypair.getPublicKey())
-                val ed: Ed25519Sign = Ed25519Sign(keypair.getPrivateKey)
-                val broadcastSignature: Signature = Signature(Base64Data.encode(ed.sign(broadcastData.decode)))
-                val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
-                val broadcastMessage: Message = Message(broadcastData, pk, broadcastSignature, broadcastId, List.empty)
-                val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
-                  case DbActor.DbActorWriteAck() => Left(msg)
+                val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
+                val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirpId, channelChirp.channel, timestamp)
+                val broadcastData: Base64Data = Base64Data.encode(addBroadcastChirp.toJson.toString) //FIXME: check json/string conversion
+                
+                //FIXME: however, should we have a package-private getter? I don't know whether it is secure enough.
+                val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
+                Await.result(askLaoData, duration) match {
+                  case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
+                    val pk: PublicKey = PublicKey(Base64Data.encode(laoData.publicKey))
+                    val ed: Ed25519Sign = new Ed25519Sign(laoData.privateKey)
+                    val broadcastSignature: Signature = Signature(Base64Data.encode(ed.sign(broadcastData.decode)))
+                    val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
+                    val broadcastMessage: Message = Message(broadcastData, pk, broadcastSignature, broadcastId, List.empty)
+                    val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
+                      case DbActor.DbActorWriteAck() => Left(msg)
+                      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+                      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+                    }
+                    Await.result(ask, duration)
+                  }
+                  case DbActor.DbActorReadLaoDataAck(None) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Can't fetch LaoData", rpcMessage.id))
                   case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-                  case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
                 }
-                Await.result(ask, duration)
-
               }
               case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
             }
@@ -73,7 +77,7 @@ case object SocialMediaHandler extends MessageHandler {
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
         }
       }
-      case Success(Right(error)) =>
+      case error@Right(_) =>
         error
       case _ =>
         Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))

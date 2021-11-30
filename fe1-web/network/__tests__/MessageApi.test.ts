@@ -4,12 +4,18 @@ import '__tests__/utils/matchers';
 import 'store/Storage';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import {
-  ActionType, CloseRollCall,
-  CreateLao, CreateMeeting, CreateRollCall,
+  ActionType,
+  CloseRollCall,
+  CreateLao,
+  CreateMeeting,
+  CreateRollCall,
   MessageData,
-  ObjectType, OpenRollCall, ReopenRollCall,
+  ObjectType,
+  OpenRollCall,
+  ReopenRollCall,
   StateLao,
-  UpdateLao, WitnessMessage,
+  UpdateLao,
+  WitnessMessage,
 } from 'model/network/method/message/data';
 import {
   Hash, Lao, Timestamp, KeyPair, Base64UrlData, PublicKey,

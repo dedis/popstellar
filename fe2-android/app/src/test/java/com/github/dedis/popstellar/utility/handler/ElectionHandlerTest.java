@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
@@ -41,6 +42,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.security.GeneralSecurityException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,7 +128,7 @@ public class ElectionHandlerTest extends TestCase {
     election.setChannel(lao.getChannel() + "/" + election.getId());
     electionQuestion =
         new ElectionQuestion(
-            "question", "voting method", false, Collections.singletonList("a"), election.getId());
+            "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
     election.setElectionQuestions(Collections.singletonList(electionQuestion));
     lao.setElections(
         new HashMap<String, Election>() {
@@ -150,7 +152,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleElectionSetup() {
+  public void testHandleElectionSetup() throws DataHandlingException {
     // Create the setup Election message
     ElectionSetup electionSetup =
         new ElectionSetup(
@@ -171,7 +173,7 @@ public class ElectionHandlerTest extends TestCase {
             Injection.provideGson());
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL, message));
+    handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the Election is present with state OPENED and the correct ID
     Optional<Election> electionOpt =
@@ -193,7 +195,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleElectionResult() {
+  public void testHandleElectionResult() throws DataHandlingException {
     // Create the result Election message
     QuestionResult questionResult =
         new QuestionResult(electionQuestion.getBallotOptions().get(0), 2);
@@ -209,7 +211,7 @@ public class ElectionHandlerTest extends TestCase {
             Injection.provideGson());
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message));
+    handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
 
     // Check the Election is present with state RESULTS_READY and the results
     Optional<Election> electionOpt =
@@ -221,7 +223,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleElectionEnd() {
+  public void testHandleElectionEnd() throws DataHandlingException {
     // Create the end Election message
     ElectionEnd electionEnd = new ElectionEnd(election.getId(), lao.getId(), "");
     MessageGeneral message =
@@ -232,7 +234,7 @@ public class ElectionHandlerTest extends TestCase {
             Injection.provideGson());
 
     // Call the message handler
-    assertFalse(handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message));
+    handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
 
     // Check the Election is present with state CLOSED and the results
     Optional<Election> electionOpt =

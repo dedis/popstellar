@@ -9,7 +9,7 @@ import WideButtonView from 'components/WideButtonView';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import { Wallet } from 'model/objects';
-import CopiableTextInput from '../../components/CopiableTextInput';
+import CopiableTextInput from 'components/CopiableTextInput';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
 const WalletShowSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */
   const seed: string = Wallet.generateMnemonicSeed();
-  console.log(seed);
 
   function getShowSeedWalletDisplay() {
     return (

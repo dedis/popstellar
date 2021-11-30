@@ -79,14 +79,32 @@ describe("Check files", () => {
 });
 
 test("message data: lao", () => {
-    lao_create = require("../examples/messageData/lao_create.json")
+    lao_create = require("../examples/messageData/lao_create/lao_create.json")
     expect(lao_create).toBeValid(messageDataSchema);
 
-    lao_state = require("../examples/messageData/lao_state.json")
+    lao_create = require("../examples/messageData/lao_create/wrong_lao_create_additional_params.json")
+    expect(lao_create).not.toBeValid(messageDataSchema);
+
+    lao_create = require("../examples/messageData/lao_create/wrong_lao_create_missing_params.json")
+    expect(lao_create).not.toBeValid(messageDataSchema);
+
+    lao_state = require("../examples/messageData/lao_state/lao_state.json")
     expect(lao_state).toBeValid(messageDataSchema);
 
-    lao_update = require("../examples/messageData/lao_update.json")
+    lao_state = require("../examples/messageData/lao_state/wrong_lao_state_additional_params.json")
+    expect(lao_state).not.toBeValid(messageDataSchema);
+
+    lao_state = require("../examples/messageData/lao_state/wrong_lao_state_missing_params.json")
+    expect(lao_state).not.toBeValid(messageDataSchema);
+
+    lao_update = require("../examples/messageData/lao_update/lao_update.json")
     expect(lao_update).toBeValid(messageDataSchema);
+
+    lao_update = require("../examples/messageData/lao_update/wrong_lao_update_additional_params.json")
+    expect(lao_update).not.toBeValid(messageDataSchema);
+
+    lao_update = require("../examples/messageData/lao_update/wrong_lao_update_missing_params.json")
+    expect(lao_update).not.toBeValid(messageDataSchema);
 })
 
 test("message data: vote", () => {
@@ -145,13 +163,13 @@ test("message data: chirp", () => {
 })
 
 test("message data: consensus", () => {
-    elect = require("../examples/messageData/elect.json");
+    elect = require("../examples/messageData/consensus_elect/elect.json");
     expect(elect).toBeValid(messageDataSchema)
 
-    elect_accept = require("../examples/messageData/elect_accept.json");
+    elect_accept = require("../examples/messageData/consensus_elect_accept/elect_accept.json");
     expect(elect_accept).toBeValid(messageDataSchema)
 
-    learn = require("../examples/messageData/learn.json");
+    learn = require("../examples/messageData/consensus_learn/learn.json");
     expect(learn).toBeValid(messageDataSchema)
 })
 

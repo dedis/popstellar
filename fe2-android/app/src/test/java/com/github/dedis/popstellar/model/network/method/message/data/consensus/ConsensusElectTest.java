@@ -2,10 +2,13 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.utility.security.Hash;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -25,15 +28,8 @@ public class ConsensusElectTest {
 
   @Test
   public void getInstanceIdTest() {
-    // Hash("consensus"||created_at||key:type||key:id||key:property||value)
-    String expectedId =
-        Hash.hash(
-            "consensus",
-            Long.toString(timeInSeconds),
-            type,
-            objId,
-            property,
-            String.valueOf(value));
+    // Hash("consensus"||key:type||key:id||key:property)
+    String expectedId = Hash.hash("consensus", type, objId, property);
     assertEquals(expectedId, consensusElect.getInstanceId());
   }
 
@@ -76,5 +72,14 @@ public class ConsensusElectTest {
     assertNotEquals(consensusElect, new ConsensusElect(timeInSeconds, objId, type, random, value));
     assertNotEquals(
         consensusElect, new ConsensusElect(timeInSeconds, objId, type, property, random));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(consensusElect);
+    String jsonInvalid =
+            JsonTestUtils.loadFile(
+                    "protocol/examples/messageData/consensus_elect/wrong_elect_negative_created_at.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid));
   }
 }
