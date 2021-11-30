@@ -18,7 +18,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -32,7 +31,10 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.function.Supplier;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** HomeActivity represents the entry point for the application. */
+@AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
@@ -215,8 +217,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public static HomeViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
-    return new ViewModelProvider(activity, factory).get(HomeViewModel.class);
+    return new ViewModelProvider(activity).get(HomeViewModel.class);
   }
 
   public void setupHomeButton() {

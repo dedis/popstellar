@@ -16,7 +16,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
@@ -40,14 +39,16 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class LaoDetailActivity extends AppCompatActivity {
 
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
   private LaoDetailViewModel mViewModel;
 
   public static LaoDetailViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
-    return new ViewModelProvider(activity, factory).get(LaoDetailViewModel.class);
+    return new ViewModelProvider(activity).get(LaoDetailViewModel.class);
   }
 
   @Override

@@ -67,8 +67,6 @@ public class Injection {
 
   private static AndroidKeysetManager KEYSET_MANAGER;
 
-  private static ViewModelFactory viewModelFactory;
-
   public static AndroidKeysetManager provideAndroidKeysetManager(Context applicationContext)
       throws IOException, GeneralSecurityException {
 
@@ -172,15 +170,5 @@ public class Injection {
       LAO_SERVICE_INSTANCE = scarlet.create(LAOService.class);
     }
     return LAO_SERVICE_INSTANCE;
-  }
-
-  public static synchronized ViewModelFactory provideViewModelFactory(Application application) {
-    if (viewModelFactory == null) {
-      Log.d(
-          ViewModelFactory.class.getSimpleName(),
-          "Creating new instance of " + ViewModelFactory.class.getSimpleName());
-      viewModelFactory = new ViewModelFactory(application);
-    }
-    return viewModelFactory;
   }
 }
