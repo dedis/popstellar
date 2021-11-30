@@ -15,6 +15,7 @@ import { useRoute } from '@react-navigation/core';
 import { requestCloseRollCall } from 'network';
 import { EventTags, Hash, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
+import { useToast } from 'react-native-toast-notifications';
 
 const styles = StyleSheet.create({
   viewCenter: {
@@ -25,24 +26,29 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+const FOUR_SECONDS = 4000;
+
 const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
-  const [, setQrWasScanned] = useState(false);
-  const [attendeesSet, updateAttendeesSet] = useState(new Set<string>());
-  const attendees = Array.from(attendeesSet);
+  const [attendees, updateAttendees] = useState(new Set<string>());
+  const toast = useToast();
 
   const handleError = (err: string) => {
     console.error(err);
   };
 
-  const handleScan = (data: string) => {
+  const handleScan = (data: string | null) => {
     if (data) {
-      setQrWasScanned(true);
-      updateAttendeesSet((prev) => new Set<string>(prev.add(data)));
-      // TODO: use toast to display the scanned message, instead of console.log
-      console.log(STRINGS.roll_call_scan_participant);
+      if (!attendees.has(data)) {
+        updateAttendees((prev) => new Set<string>(prev.add(data)));
+        toast.show(STRINGS.roll_call_scan_participant, {
+          type: 'success',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      }
     }
   };
 
@@ -51,7 +57,7 @@ const RollCallOpened = () => {
       EventTags.ROLL_CALL, OpenedLaoStore.get().id.toString(),
       rollCallID, time,
     );
-    requestCloseRollCall(updateId, attendees.map((key: string) => new PublicKey(key)))
+    requestCloseRollCall(updateId, Array.from(attendees).map((key: string) => new PublicKey(key)))
       .then(() => {
         // @ts-ignore
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
@@ -67,11 +73,11 @@ const RollCallOpened = () => {
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader
           delay={300}
-          onScan={handleScan}
+          onScan={(data) => handleScan(data)}
           onError={handleError}
           style={{ width: '30%' }}
         />
-        <Badge value={attendeesSet.size} status="success" />
+        <Badge value={attendees.size} status="success" />
         <WideButtonView
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}
