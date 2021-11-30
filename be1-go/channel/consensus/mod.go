@@ -363,6 +363,39 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 	return nil
 }
 
+// createConsensusInstance adds a new consensus instance to the
+// consensusInstances array
+func (c *Channel) createConsensusInstance(instanceID string) {
+	c.consensusInstances[instanceID] = &ConsensusInstance{
+
+		id: instanceID,
+
+		proposed_try: 0,
+		promised_try: -1,
+		accepted_try: -1,
+
+		accepted_value: nil,
+		decided:        false,
+		decision:       nil,
+		proposed_value: nil,
+
+		promises: make([]messagedata.ConsensusPromise, 0),
+		accepts:  make([]messagedata.ConsensusAccept, 0),
+	}
+}
+
+// createMessageInstance creates a new message instance to the messageStates
+// array
+func (c *Channel) createMessageInstance(messageID string, proposer kyber.Point) {
+	newMessageState := MessageState{
+		currentPhase:      ElectAcceptPhase,
+		proposer:          proposer,
+		electAcceptNumber: 0,
+	}
+
+	c.messageStates[messageID] = &newMessageState
+}
+
 // ProcessConsensusElect processes an elect action.
 func (c *Channel) processConsensusElect(sender kyber.Point, messageID string, data messagedata.ConsensusElect) error {
 
@@ -373,31 +406,10 @@ func (c *Channel) processConsensusElect(sender kyber.Point, messageID string, da
 
 	// Creates a consensus instance if there is none on the object
 	if c.consensusInstances[data.InstanceID] == nil {
-		c.consensusInstances[data.InstanceID] = &ConsensusInstance{
-
-			id: data.InstanceID,
-
-			proposed_try: 0,
-			promised_try: -1,
-			accepted_try: -1,
-
-			accepted_value: nil,
-			decided:        false,
-			decision:       nil,
-			proposed_value: nil,
-
-			promises: make([]messagedata.ConsensusPromise, 0),
-			accepts:  make([]messagedata.ConsensusAccept, 0),
-		}
+		c.createConsensusInstance(data.InstanceID)
 	}
 
-	newMessageState := MessageState{
-		currentPhase:      ElectAcceptPhase,
-		proposer:          sender,
-		electAcceptNumber: 0,
-	}
-
-	c.messageStates[messageID] = &newMessageState
+	c.createMessageInstance(messageID, sender)
 
 	return nil
 }
@@ -463,7 +475,6 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 		if err != nil {
 			return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
 		}
-		return nil
 	}
 
 	return nil
@@ -755,7 +766,7 @@ func (c *Channel) publishMessage(byteMsg []byte) error {
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	messageID := messagedata.Hash(encryptedKey, encryptedKey)
+	messageID := messagedata.Hash(encryptedMsg, encryptedKey)
 
 	msg := message.Message{
 		Data:              encryptedMsg,
@@ -770,6 +781,7 @@ func (c *Channel) publishMessage(byteMsg []byte) error {
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
+			Method: "publish",
 		},
 
 		Params: struct {
@@ -780,6 +792,8 @@ func (c *Channel) publishMessage(byteMsg []byte) error {
 			Message: msg,
 		},
 	}
+
+	c.hub.SetMessageID(&publish)
 
 	bufPublish, err := json.Marshal(publish)
 	if err != nil {

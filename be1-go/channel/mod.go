@@ -98,6 +98,7 @@ type HubFunctionalities interface {
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	SendSubscribeToServers(channelID string) error
 	SendUnsubscribeToServers(channeID string) error
+	SetMessageID(publish *method.Publish)
 }
 
 // Broadcastable defines a channel that can broadcast

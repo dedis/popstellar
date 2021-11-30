@@ -272,3 +272,5 @@ func (h *fakeHub) SendSubscribeToServers(channelID string) error {
 func (h *fakeHub) SendUnsubscribeToServers(channelID string) error {
 	return nil
 }
+
+func (h *fakeHub) SetMessageID(publish *method.Publish) {}

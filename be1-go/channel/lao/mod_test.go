@@ -593,6 +593,8 @@ func (h *fakeHub) SendUnsubscribeToServers(channel string) error {
 	return nil
 }
 
+func (h *fakeHub) SetMessageID(publish *method.Publish) {}
+
 // fakeSocket is a fake implementation of a socket
 //
 // - implements socket.Socket

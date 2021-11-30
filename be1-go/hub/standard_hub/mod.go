@@ -5,10 +5,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
@@ -26,6 +22,11 @@ import (
 	"popstellar/validation"
 	"strings"
 	"sync"
+
+	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -605,6 +606,11 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 		h.log.Info().Msgf("catching up on channel %v", channelID)
 		h.catchupToServer(sock, channelID)
 	}
+}
+
+// SetMessageID sets the id of a publish message before sending it
+func (h *Hub) SetMessageID(publish *method.Publish) {
+	publish.ID = h.queries.getNextID()
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {
