@@ -577,8 +577,8 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 }
 
 // GetSecKeyServ implements channel.HubFunctionalities
-func (h *fakeHub) GetSecKeyServ() kyber.Scalar {
-	return h.secKeyServ
+func (h *fakeHub) Sign(data []byte) ([]byte, error) {
+	return nil, nil
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {

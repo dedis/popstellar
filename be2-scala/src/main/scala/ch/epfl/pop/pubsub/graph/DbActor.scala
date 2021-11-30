@@ -7,12 +7,14 @@ import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Channel, Hash, Signature}
+import ch.epfl.pop.model.network.method.message.data.{MessageData, ObjectType}
+import ch.epfl.pop.model.objects.{Channel, Hash, Signature, LaoData, ChannelData}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
-import org.iq80.leveldb.{DB, DBIterator, Options}
+import org.iq80.leveldb.{DB, DBIterator, Options, WriteBatch}
 
 import scala.collection.mutable
+import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success, Try}
 import org.slf4j.LoggerFactory
 import java.io.IOException
@@ -42,6 +44,20 @@ object DbActor extends AskPatternConstants {
     */
   final case class Read(channel: Channel, messageId: Hash) extends Event
 
+  /** Request to read the channelData from <channel>, with key laoId/channel
+    *
+    * @param channel
+    *   the channel we need the data for
+    */
+  final case class ReadChannelData(channel: Channel) extends Event
+
+  /** Request to read the laoData of the LAO, with key laoid/
+    *
+    * @param channel
+    *   the channel we need the LAO's data for
+    */
+  final case class ReadLaoData(channel: Channel) extends Event
+
   /** Request to read all messages from a specific <channel>
     *
     * @param channel
@@ -61,11 +77,11 @@ object DbActor extends AskPatternConstants {
   final case class WriteAndPropagate(channel: Channel, message: Message) extends Event
 
   /**
-   * Request to create channel <channel> in the db
+   * Request to create channel <channel> in the db with a type
    *
    * @param channel channel to create
    */
-  final case class CreateChannel(channel: Channel) extends Event
+  final case class CreateChannel(channel: Channel, objectType: ObjectType.ObjectType) extends Event
 
   /** Request to check if channel <channel> exists in the db
     *
@@ -93,7 +109,7 @@ object DbActor extends AskPatternConstants {
   /** Response for a [[Write]] db request Receiving [[DbActorWriteAck]] works as
     * an acknowledgement that the write request was successful
     */
-  final case object DbActorWriteAck extends DbActorMessage
+  final case class DbActorWriteAck() extends DbActorMessage
 
   /** Response for a [[Read]] db request Receiving [[DbActorReadAck]] works as
     * an acknowledgement that the read request was successful
@@ -103,6 +119,24 @@ object DbActor extends AskPatternConstants {
     */
   final case class DbActorReadAck(message: Option[Message])
       extends DbActorMessage
+
+  /** Response for a [[ReadChannelData]] db request Receiving [[DbActorReadChannelDataAck]] works as
+    * an acknowledgement that the request was successful
+    *
+    * @param channelData
+    *   requested channel data
+    */
+  final case class DbActorReadChannelDataAck(channelData: Option[ChannelData])
+      extends DbActorMessage
+
+  /** Response for a [[ReadLaoData]] db request Receiving [[DbActorReadLaoDataAck]] works as
+    * an acknowledgement that the request was successful
+    *
+    * @param laoData
+    *   requested lao data
+    */
+  final case class DbActorReadLaoDataAck(laoData: Option[LaoData])
+      extends DbActorMessage  
 
   /** Response for a [[Catchup]] db request Receiving [[DbActorCatchupAck]]
     * works as an acknowledgement that the catchup request was successful
@@ -137,157 +171,226 @@ object DbActor extends AskPatternConstants {
    */
   def apply(mediatorRef: ActorRef, DATABASE_FOLDER: String = "database"): DbActor = {
 
-    val CHANNELS_FOLDER: String = s"$DATABASE_FOLDER/channels"
-
     /* Create a logger for this DB actor"*/
     val logger = LoggerFactory.getLogger("DBLogger")
     
     val options: Options = new Options()
     options.createIfMissing(true)
-    val channelNamesDb: DB =
-      try { factory.open(new File(CHANNELS_FOLDER), options) }
+    
+    val db: DB =
+      try { factory.open(new File(DATABASE_FOLDER), options) }
       catch {
         case e: IOException => {
-          logger.error("Could not open channels folder {}", CHANNELS_FOLDER)
+          logger.error("Could not open database folder {}", DATABASE_FOLDER)
           throw e
         }
 
       }
-    val iterator: DBIterator = channelNamesDb.iterator
-    val initialChannelsMap: mutable.Map[Channel, DB] = mutable.Map.empty
-
-    iterator.seekToFirst()
-    options.createIfMissing(false)
-
-    while (iterator.hasNext) {
-      // open each db associated with each channel name
-      val channelName: String =
-        new String(iterator.next().getKey, StandardCharsets.UTF_8)
-      val channelDb: DB =
-        try { factory.open(new File(channelName), options) }
-        catch {
-          case e: IOException => {
-            logger.error("Could not open channel {}", channelName)
-            throw e
-          }
-
-        }
-
-      // store the channel name and its database in the map
-      initialChannelsMap += (Channel(
-        channelName.toString.stripPrefix(DATABASE_FOLDER)
-      ) -> channelDb)
-    }
-
-    iterator.close()
-    DbActor(mediatorRef, initialChannelsMap.toMap, channelNamesDb, DATABASE_FOLDER, CHANNELS_FOLDER)
+    DbActor(mediatorRef, db, DATABASE_FOLDER)
   }
 
-  sealed case class DbActor(mediatorRef: ActorRef, initialChannelsMap: Map[Channel, DB], channelNamesDb: DB, DATABASE_FOLDER: String, CHANNELS_FOLDER: String) extends Actor with ActorLogging {
-    private val channelsMap: mutable.Map[Channel, DB] = initialChannelsMap.to(collection.mutable.Map)
+  // FIXME: find way to keep track of db size
+  sealed case class DbActor(mediatorRef: ActorRef, db: DB, DATABASE_FOLDER: String) extends Actor with ActorLogging {
 
-    override def preStart(): Unit = {
-      log.info(
-        s"Actor $self (db) was initialised with a total of ${initialChannelsMap.size} recovered channels"
-      )
-      if (initialChannelsMap.size > DATABASE_MAX_CHANNELS) {
-        log.warning(
-          s"Actor $self (db) has surpassed a large number of active lao channels (${initialChannelsMap.size} > $DATABASE_MAX_CHANNELS)"
-        )
+    //helper function to determine if a writeCreateNewChannel may succeed despite the presence of an existing Channel (for now, SetupElection and CreateLao )
+    
+    //helper function to determine if a channel should be created during write operations
+    private def writeCreateNewChannel(channel: Channel, message: Message): DbActorMessage = {
+      
+      Try(db.get(channel.toString.getBytes)) match {
+        case Success(bytes) if bytes != null =>
+          log.info(s"Channel '$channel' already exists.")
+          DbActorAck()
+        case _ =>
+          val objectType = message.decodedData match {
+            case Some(data) if (data._object == ObjectType.ELECTION || data._object == ObjectType.CHIRP) => data._object
+            case _ => ObjectType.LAO
+          }
+          // for now, we don't have meetup or roll call channels, so we just create Lao channels instead, easy to change if needed
+          createChannel(channel, objectType) match {
+            case DbActorAck() => DbActorAck()
+            case _ =>
+              log.info(s"Actor $self (db) encountered a problem while creating channel '$channel'")
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Error when creating channel '$channel'")
+          }
       }
-
-      super.preStart()
     }
 
-    private def createDatabase(channel: Channel): DB = {
-      val options: Options = new Options()
-      options.createIfMissing(true)
+    private final val LAODATALOCATION: String = Channel.SEPARATOR + "data"
 
-      val channelName: String = s"$DATABASE_FOLDER$channel"
-      val channelDb = factory.open(new File(channelName), options)
+    //helper functions for the database key generation, could make them public later if needed elsewhere
+    private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
 
-      channelNamesDb.put(channelName.getBytes, "".getBytes)
-      channelsMap += (channel -> channelDb)
-
-      channelDb
+    //may return null if the extractLaoId fails
+    private def generateLaoDataKey(channel: Channel): String = {
+      channel.decodeSubChannel match {
+        case Some(data) => new String(data, StandardCharsets.UTF_8) + LAODATALOCATION
+        case None =>
+          log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
+          null
+      }
     }
 
-    private def write(channel: Channel, message: Message): DbActorMessage = {
-      val channelDb: DB = channelsMap.get(channel) match {
-        case Some(channelDb) => channelDb
-        case _ => createDatabase(channel)
-      }
-
-      val messageId: Hash = message.message_id
-      Try(channelDb.put(messageId.getBytes, message.toJsonString.getBytes)) match {
+    //helper functions to reduce complexity
+    private def writeBatch(channel: Channel, messageId: Hash, batch: WriteBatch): DbActorMessage = {
+      Try(db.write(batch)) match {
         case Success(_) =>
-          log.info(s"Actor $self (db) wrote message_id '$messageId' on channel '$channel'")
-          DbActorWriteAck
+          log.info(s"Actor $self (db) wrote batch and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
+          DbActorWriteAck()
         case Failure(exception) =>
-          log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
+          log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and batch on channel '$channel' because of the batch write")
           DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
       }
     }
 
-    private def read(channel: Channel, messageId: Hash): DbActorMessage = {
-      if (!channelsMap.contains(channel)) {
-        DbActorReadAck(None)
-      } else {
-        val channelDb: DB = channelsMap(channel)
-        Try(channelDb.get(messageId.getBytes)) match {
-          case Success(bytes) if bytes != null =>
-            val json = new String(bytes, StandardCharsets.UTF_8)
-            DbActorReadAck(Some(Message.buildFromJson(json)))
+    //extra cases for other data than LaoData can be added here easily later on
+    private def addToBatchThenWrite(channel: Channel, message: Message, batch: WriteBatch): DbActorMessage = {
+      val messageId: Hash = message.message_id
+      if (LaoData.isAffectedBy(message)){
+        val laoDataKey: String = generateLaoDataKey(channel)
+        Try(db.get(laoDataKey.getBytes)) match {
+          case Success(bt) =>
+            //FIXME: use some sort of compare-and-swap to prevent concurrency issues with LaoData modification if needed
+            if(bt != null){
+              val laoJson = new String(bt, StandardCharsets.UTF_8)
+              batch.put(laoDataKey.getBytes, LaoData.buildFromJson(laoJson).updateWith(message).toJsonString.getBytes)
+            } else if (bt == null) {
+              batch.put(laoDataKey.getBytes, LaoData.emptyLaoData.updateWith(message).toJsonString.getBytes)
+            }
+            //allows writing all data atomically
+            writeBatch(channel, messageId, batch)
+          case Failure(exception) =>
+            log.error(s"Actor $self (db) encountered a problem with the data of the LAO in the database.")
+            DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+        }  
+      } else{
+        writeBatch(channel, messageId, batch)
+      }
+    }
+
+    // only for the messages
+    private def write(channel: Channel, message: Message): DbActorMessage = {
+
+      val messageId: Hash = message.message_id
+
+      //if needed, it is easy to remove the "write-through" functionality (creating a new channel if it does not exist) by simply returning a DbActorNAck if the channel doesn't exist instead of using this function
+      writeCreateNewChannel(channel, message) match {
+        case nack@DbActorNAck(id, message) => nack
+        case _ => Try(db.get(channel.toString.getBytes)) match {
+          case Success(bytes) if bytes != null => Try(db.createWriteBatch()) match {
+            case Success(batch) => {
+              // this will be done whether the message affects LaoData or not
+              val json = new String(bytes, StandardCharsets.UTF_8)
+              batch.put(channel.toString.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
+              batch.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)
+              addToBatchThenWrite(channel, message, batch)
+            }
+            case Failure(exception) =>
+              log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object ${ChannelData.getName} on channel '$channel' because of a batch creation")
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+          }
+          case Failure(exception) =>
+            log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
+            DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
           case _ =>
-            DbActorNAck(ErrorCodes.SERVER_ERROR.id, "Unknown read database error")
+            log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel', as the channel does not existand wasn't created")
+            DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Channel $channel does not exist and could not be created")
+        }
+      }
+    }
+
+    private def read(channel: Channel, messageId: Hash): DbActorMessage = {
+      Try(db.get(channel.toString.getBytes)) match {
+        case Success(b) if b != null => {
+          Try (db.get(generateMessageKey(channel, messageId).getBytes)) match {
+            case Success(bytes) if bytes != null =>
+              val json = new String(bytes, StandardCharsets.UTF_8)
+              DbActorReadAck(Some(Message.buildFromJson(json)))
+            case _ =>
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, "Unknown read database error")
+          }
+        }
+        case _ => DbActorReadAck(None)
+      }
+    }
+
+    private def readChannelData(channel: Channel): DbActorMessage = {
+      Try (db.get(channel.toString.getBytes)) match {
+        case Success(bytes) if bytes != null =>
+          val json = new String(bytes, StandardCharsets.UTF_8)
+          DbActorReadChannelDataAck(Some(ChannelData.buildFromJson(json)))
+        case _ =>
+          DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Channel data not found for channel $channel")
+      }
+    }
+
+    private def readLaoData(channel: Channel): DbActorMessage = {
+      val dataKey: String = generateLaoDataKey(channel)
+      dataKey match {
+        case null => DbActorReadLaoDataAck(None)
+        case _ => {
+          Try(db.get(dataKey.getBytes)) match {
+            case Success(bytes) if bytes != null =>
+              val json = new String(bytes, StandardCharsets.UTF_8)
+              DbActorReadLaoDataAck(Some(LaoData.buildFromJson(json)))
+            case _ =>
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Lao data not found for channel $channel")
+          }
         }
       }
     }
 
     private def catchup(channel: Channel): DbActorMessage = {
       @scala.annotation.tailrec
-      def buildCatchupList(iterator: DBIterator, acc: List[Message]): List[Message] = {
-        if (iterator.hasNext) {
-          val json = new String(iterator.next().getValue, StandardCharsets.UTF_8)
-          buildCatchupList(iterator, Message.buildFromJson(json) :: acc)
-        } else {
-          acc
+      def buildCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
+        msgIds match {
+          case Nil => acc
+          case head::tail => {
+            val message: Message = Message.buildFromJson(new String(db.get(generateMessageKey(channel, head).getBytes), StandardCharsets.UTF_8))
+            buildCatchupList(tail, message :: acc)
+          }
         }
       }
 
-      if (channelsMap.contains(channel)) {
-        val iterator: DBIterator = channelsMap(channel).iterator
-
-        iterator.seekToFirst()
-        val result: List[Message] = buildCatchupList(iterator, List.empty).reverse
-        iterator.close()
-
-        DbActorCatchupAck(result)
-      } else {
-        DbActorNAck(
-          ErrorCodes.INVALID_RESOURCE.id,
-          "Database cannot catchup from a channel that does not exist in db"
-        )
-      }
-    }
-
-    private def createChannel(channel: Channel): DbActorMessage = {
-      channelsMap.get(channel) match {
-        case Some(_) => DbActorNAck(
-          ErrorCodes.INVALID_RESOURCE.id,
-          s"Database cannot create an already existing channel ($channel)"
-        )
+      Try(db.get(channel.toString.getBytes)) match {
+        case Success(bytes) if bytes != null =>
+          readChannelData(channel) match {
+            case DbActorReadChannelDataAck(Some(data)) =>
+              val messageIds: List[Hash] = data.messages
+              val result: List[Message] = buildCatchupList(messageIds, List.empty)
+              DbActorCatchupAck(result)
+            case _ =>
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Could not access the channel's ($channel) messages")
+          }
         case _ =>
-          createDatabase(channel)
-          DbActorAck()
+          DbActorNAck(
+            ErrorCodes.INVALID_RESOURCE.id,
+            s"Database cannot catchup from a channel $channel that does not exist in db"
+          )
       }
     }
+
+    private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): DbActorMessage = {
+      Try(db.get(channel.toString.getBytes)) match {
+        case Success(bytes) if bytes != null =>
+          log.info(s"Database cannot create an already existing channel $channel with a value")
+          DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Database cannot create an already existing channel ($channel)")
+        case _ =>
+          val errorMessageCreate: String = s"Error while creating channel $channel in the database"
+          Try(db.put(channel.toString.getBytes, ChannelData(objectType, List.empty).toJsonString.getBytes)) match {
+            case Success(_) => DbActorAck()
+            case _ =>
+              log.error(errorMessageCreate)
+              DbActorNAck(ErrorCodes.SERVER_ERROR.id, errorMessageCreate)
+          }
+      }
+    }
+
 
     private def channelExists(channel: Channel): DbActorMessage = {
-      if (channelsMap.contains(channel)) {
-        DbActorAck()
-      } else {
-        DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
+      Try(db.get(channel.toString.getBytes)) match {
+        case Success(bytes) if bytes != null => DbActorAck()
+        case _ => DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
       }
     }
 
@@ -300,6 +403,14 @@ object DbActor extends AskPatternConstants {
       case Read(channel, messageId) =>
         log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
         sender ! read(channel, messageId)
+      
+      case ReadChannelData(channel) =>
+        log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
+        sender ! readChannelData(channel)
+      
+      case ReadLaoData(channel) =>
+        log.info(s"Actor $self (db) received a ReadLaoData request")
+        sender ! readLaoData(channel)
 
       case Catchup(channel) =>
         log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
@@ -311,9 +422,9 @@ object DbActor extends AskPatternConstants {
         mediatorRef ! PubSubMediator.Propagate(channel, message)
         sender ! answer
 
-      case CreateChannel(channel) =>
-        log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel'")
-        sender ! createChannel(channel)
+      case CreateChannel(channel, objectType) =>
+        log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
+        sender ! createChannel(channel, objectType)
 
       case ChannelExists(channel) =>
         log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")

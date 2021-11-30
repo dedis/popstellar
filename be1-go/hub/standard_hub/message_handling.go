@@ -102,6 +102,13 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 		return xerrors.Errorf("failed to unmarshal answer: %v", err)
 	}
 
+	if answerMsg.Result == nil {
+		h.log.Warn().Msg("received an error, nothing to handle")
+		// don't send any error to avoid infinite error loop as a server will
+		// send an error to another server that will create another error
+		return nil
+	}
+
 	if answerMsg.Result.IsEmpty() {
 		h.log.Info().Msg("result isn't an answer to a catchup, nothing to handle")
 		return nil
@@ -113,7 +120,9 @@ func (h *Hub) handleAnswer(senderSocket socket.Socket, byteMessage []byte) error
 	if val == nil {
 		h.queries.Unlock()
 		return xerrors.Errorf("no query sent with id %v", answerMsg.ID)
-	} else if *val {
+	}
+
+	if *val {
 		h.queries.Unlock()
 		return xerrors.Errorf("query %v already got an answer", answerMsg.ID)
 	}
