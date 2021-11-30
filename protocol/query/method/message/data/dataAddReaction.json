@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddReaction.json",
+  "description": "Match a add reaction query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "reaction"
+    },
+    "action": {
+      "const": "add"
+    },
+    "reaction_id": {
+      "description": "Code indicating a reaction",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2,
+      "$comment": "0 for a like, 1 for a dislike and 2 for a heart"
+    },
+    "chirp_id": {
+      "description": "message_id of the tweet message",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC of this reaction request",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "reaction_id", "chirp_id", "timestamp"]
+}
