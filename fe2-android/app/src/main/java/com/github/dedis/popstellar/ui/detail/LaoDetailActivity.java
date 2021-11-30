@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.detail;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +13,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
@@ -34,7 +32,6 @@ import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -283,35 +280,11 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupScanFragmentWitness() {
-    setCurrentFragment(
-        R.id.qr_code,
-        () -> {
-          Context context = getApplicationContext();
-          BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
-          return QRCodeScanningFragment.newInstance(
-              Injection.provideCameraSource(
-                  getApplicationContext(),
-                  qrCodeDetector,
-                  getResources().getInteger(R.integer.camera_preview_width),
-                  getResources().getInteger(R.integer.camera_preview_height)),
-              qrCodeDetector);
-        });
+    setCurrentFragment(R.id.qr_code, QRCodeScanningFragment::new);
   }
 
   private void setupScanFragmentRollCall() {
-    setCurrentFragment(
-        R.id.add_attendee_layout,
-        () -> {
-          Context context = getApplicationContext();
-          BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
-          return QRCodeScanningFragment.newInstance(
-              Injection.provideCameraSource(
-                  getApplicationContext(),
-                  qrCodeDetector,
-                  getResources().getInteger(R.integer.camera_preview_width),
-                  getResources().getInteger(R.integer.camera_preview_height)),
-              qrCodeDetector);
-        });
+    setCurrentFragment(R.id.add_attendee_layout, QRCodeScanningFragment::new);
   }
 
   private void setupCameraPermissionFragment() {

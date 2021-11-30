@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
@@ -27,7 +25,6 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.function.Supplier;
 
@@ -245,19 +242,7 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupScanFragment() {
-    setCurrentFragment(
-        R.id.fragment_qrcode,
-        () -> {
-          Context context = getApplicationContext();
-          BarcodeDetector qrCodeDetector = Injection.provideQRCodeDetector(context);
-          return QRCodeScanningFragment.newInstance(
-              Injection.provideCameraSource(
-                  getApplicationContext(),
-                  qrCodeDetector,
-                  getResources().getInteger(R.integer.camera_preview_width),
-                  getResources().getInteger(R.integer.camera_preview_height)),
-              qrCodeDetector);
-        });
+    setCurrentFragment(R.id.fragment_qrcode, QRCodeScanningFragment::new);
   }
 
   private void setupCameraPermissionFragment() {
