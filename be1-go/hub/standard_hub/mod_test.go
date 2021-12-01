@@ -635,6 +635,96 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 }
 
+// Test that a correct subscribe message is sent when the server needs to
+func Test_Send_Subscribe_To_Servers(t *testing.T) {
+
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	// create a fake channel to which the server will subscribe
+	c := &fakeChannel{}
+	laoID := "XXX"
+	hub.channelByID[rootPrefix+laoID] = c
+
+	// add a fake socket to the hub
+	socket := &fakeSocket{id: "socket"}
+	hub.serverSockets.Upsert(socket)
+
+	err = hub.SendSubscribeToServers(laoID)
+	require.NoError(t, err)
+
+	expectedSubscribe := method.Subscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: "subscribe",
+		},
+
+		ID: 0,
+
+		Params: struct {
+			Channel string "json:\"channel\""
+		}{
+			Channel: "XXX",
+		},
+	}
+
+	var actualSubscribe method.Subscribe
+	err = json.Unmarshal(socket.msg, &actualSubscribe)
+	require.NoError(t, err)
+
+	require.Equal(t, expectedSubscribe, actualSubscribe)
+}
+
+// Test that a correct unsubscribe message is sent when the server needs to
+func Test_Send_Unsubscribe_To_Servers(t *testing.T) {
+
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	// create a fake channel to which the server will unsubscribe
+	c := &fakeChannel{}
+	laoID := "XXX"
+	hub.channelByID[rootPrefix+laoID] = c
+
+	// add a fake socket to the hub
+	socket := &fakeSocket{id: "socket"}
+	hub.serverSockets.Upsert(socket)
+
+	err = hub.SendUnsubscribeToServers(laoID)
+	require.NoError(t, err)
+
+	expectedUnsubscribe := method.Unsubscribe{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: "unsubscribe",
+		},
+
+		ID: 0,
+
+		Params: struct {
+			Channel string "json:\"channel\""
+		}{
+			Channel: "XXX",
+		},
+	}
+
+	var actualUnsubscribe method.Unsubscribe
+	err = json.Unmarshal(socket.msg, &actualUnsubscribe)
+	require.NoError(t, err)
+
+	require.Equal(t, expectedUnsubscribe, actualUnsubscribe)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
