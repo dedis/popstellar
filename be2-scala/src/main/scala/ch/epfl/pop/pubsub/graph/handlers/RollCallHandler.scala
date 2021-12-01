@@ -88,7 +88,6 @@ case object RollCallHandler extends MessageHandler {
             
             Await.result(askOldData, duration) match {
               case DbActorReadLaoDataAck(Some(_)) =>
-                //val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees, List.empty)
                 val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
                   case DbActorWriteAck() => createAttendeeChannels(data.attendees, rpcMessage)
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))

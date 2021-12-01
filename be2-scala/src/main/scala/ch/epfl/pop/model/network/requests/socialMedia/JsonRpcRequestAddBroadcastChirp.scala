@@ -9,4 +9,3 @@ final case class JsonRpcRequestAddBroadcastChirp(
                                                override val params: Params,
                                                override val id: Option[Int]
                                              ) extends JsonRpcRequest(jsonrpc, method, params, id)
-                                             
