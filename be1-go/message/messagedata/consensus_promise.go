@@ -10,8 +10,8 @@ import (
 type ConsensusPromise struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
-	InstanceID string `json:"id"`
-	MessageID  string `string:"message_id"`
+	InstanceID string `json:"instance_id"`
+	MessageID  string `json:"message_id"`
 
 	// CreatedAt is a Unix timestamp
 	CreatedAt int64 `json:"created_at"`
