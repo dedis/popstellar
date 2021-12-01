@@ -34,8 +34,6 @@ class LaoDataSuite extends FunSuite with Matchers {
     test("Json conversions work for LaoData") {
         val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)
 
-        println(laoData.toJsonString)
-
         val laoData2: LaoData = LaoData.buildFromJson(laoData.toJsonString)
 
         //the checks are done separately, as otherwise equals seems to compare the toString equalities, which is not the case for Arrays
