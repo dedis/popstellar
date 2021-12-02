@@ -71,6 +71,11 @@ public class ConsensusProposeTest {
   }
 
   @Test
+  public void getAcceptorSignaturesTest() {
+    assertEquals(acceptorSignatures, propose.getAcceptorSignatures());
+  }
+
+  @Test
   public void equalsTest() {
     ConsensusPropose propose2 =
         new ConsensusPropose(

@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConsensusPropose extends Data {
+public final class ConsensusPropose extends Data {
 
   @SerializedName("instance_id")
   private final String instanceId;
