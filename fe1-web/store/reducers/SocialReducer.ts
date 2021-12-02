@@ -41,39 +41,18 @@ const socialReducerPath = 'social';
 function findInsertIdx(
   array: string[], byId: Record<string, ChirpState>, element: number,
 ): number {
-  if (array.length === 0) {
-    return 0;
-  }
-
   let left: number = 0;
-  let right: number = array.length - 1;
-  let mid: number = -1;
-  let index: number = -1;
+  let right: number = array.length;
 
-  while (left <= right) {
-    if (byId[array[right]].time >= element) {
-      index = right + 1;
-      break;
-    } else if (byId[array[left]].time <= element) {
-      index = left;
-      break;
-    } else if (right - left === 1) {
-      index = right;
-      break;
+  while (left < right) {
+    let mid = (left + right) >>> 1;
+    if (byId[array[mid]].time > element) {
+      left = mid + 1;
     } else {
-      mid = Math.floor((right + left) / 2);
-      if (byId[array[mid]].time === element) {
-        index = mid;
-        break;
-      }
-      if (byId[array[mid]].time > element) {
-        left = mid;
-      } else {
-        right = mid;
-      }
+      right = mid;
     }
   }
-  return index;
+  return left;
 }
 
 const socialSlice = createSlice({
