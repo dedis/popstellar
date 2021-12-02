@@ -21,7 +21,9 @@ import com.github.dedis.popstellar.ui.detail.event.pickers.TimePickerFragment;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -39,8 +41,7 @@ public abstract class AbstractEventCreationFragment extends Fragment {
   private final Calendar completeStartTime = Calendar.getInstance();
   private final Calendar completeEndTime = Calendar.getInstance();
 
-  protected final long creationTimeInSeconds = Instant.now().getEpochSecond();
-
+  protected long creationTimeInSeconds;
   protected long startTimeInSeconds;
   protected long endTimeInSeconds;
 
@@ -141,6 +142,10 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       endTime = null;
       endTimeEditText.setText("");
     }
+
+    if (compareWithNowByDay(newDate) == 0) {
+      computeTimesInSeconds();
+    }
   }
 
   private void onEndDate(String requestKey, Bundle bundle) {
@@ -180,6 +185,8 @@ public abstract class AbstractEventCreationFragment extends Fragment {
       showToast(R.string.start_time_after_end_time_not_allowed);
       startTime = null;
       startTimeEditText.setText("");
+    } else if (startDate != null && compareWithNowByDay(startDate) == 0) {
+      computeTimesInSeconds();
     }
   }
 
@@ -220,37 +227,69 @@ public abstract class AbstractEventCreationFragment extends Fragment {
     Toast.makeText(getActivity(), getString(text), Toast.LENGTH_LONG).show();
   }
 
-  public void computeTimesInSeconds() {
-    if (startDate == null) {
-      startDate = Calendar.getInstance();
-    }
-    if (startTime == null) {
-      startTime = Calendar.getInstance();
+  /**
+   * Compute the creationTimeInSeconds, completeStartTime, completeEndTime. And check if the
+   * start/end are still valid. (end can be null in the case of RollCall)
+   *
+   * @return true if the date/times are all valid
+   */
+  public boolean computeTimesInSeconds() {
+    if (startDate == null || startTime == null) {
+      return false;
     }
     completeStartTime.set(
         startDate.get(Calendar.YEAR),
         startDate.get(Calendar.MONTH),
         startDate.get(Calendar.DAY_OF_MONTH),
         startTime.get(Calendar.HOUR_OF_DAY),
-        startTime.get(Calendar.MINUTE));
-    Instant start = Instant.ofEpochMilli(completeStartTime.getTimeInMillis());
-    startTimeInSeconds = start.getEpochSecond();
-    if (endDate != null) {
-      if (endTime == null) {
-        completeEndTime.set(
-            endDate.get(Calendar.YEAR),
-            endDate.get(Calendar.MONTH),
-            endDate.get(Calendar.DAY_OF_MONTH));
+        startTime.get(Calendar.MINUTE),
+        0);
+
+    Instant creation = Instant.now();
+    Instant start = completeStartTime.toInstant();
+    if (start.isBefore(creation)) {
+      // If the start is more than 5 minutes in the past, invalidate the time
+      if (start.plus(5, ChronoUnit.MINUTES).isBefore(creation)) {
+        showToast(R.string.past_date_not_allowed);
+        startTime = null;
+        startTimeEditText.setText("");
+        return false;
       } else {
-        completeEndTime.set(
-            endDate.get(Calendar.YEAR),
-            endDate.get(Calendar.MONTH),
-            endDate.get(Calendar.DAY_OF_MONTH),
-            endTime.get(Calendar.HOUR_OF_DAY),
-            endTime.get(Calendar.MINUTE));
+        // Else (if start is only a little in the past), set the start to creation
+        start = creation;
+        startTimeEditText.setText(timeFormat.format(Date.from(start).getTime()));
       }
-      Instant end = Instant.ofEpochMilli(completeEndTime.getTimeInMillis());
-      endTimeInSeconds = end.getEpochSecond();
     }
+    creationTimeInSeconds = creation.getEpochSecond();
+    startTimeInSeconds = start.getEpochSecond();
+    if (endDate == null ^ endTime == null) {
+      return false;
+    }
+    if (endDate != null) {
+      completeEndTime.set(
+          endDate.get(Calendar.YEAR),
+          endDate.get(Calendar.MONTH),
+          endDate.get(Calendar.DAY_OF_MONTH),
+          endTime.get(Calendar.HOUR_OF_DAY),
+          endTime.get(Calendar.MINUTE),
+          0);
+      Instant end = completeEndTime.toInstant();
+      if (end.isBefore(start)) {
+        if (end.truncatedTo(ChronoUnit.MINUTES).equals(start.truncatedTo(ChronoUnit.MINUTES))) {
+          // If the endTime was set on the same minute as the start, use same time for start and end
+          end = start;
+          endTimeEditText.setText(timeFormat.format(Date.from(end).getTime()));
+        } else {
+          showToast(R.string.past_date_not_allowed);
+          endTime = null;
+          endTimeEditText.setText("");
+          return false;
+        }
+      }
+      endTimeInSeconds = end.getEpochSecond();
+      return true;
+    }
+    endTimeInSeconds = 0;
+    return true;
   }
 }

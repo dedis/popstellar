@@ -169,6 +169,44 @@ test("message data: consensus", () => {
     elect_accept = require("../examples/messageData/consensus_elect_accept/elect_accept.json");
     expect(elect_accept).toBeValid(messageDataSchema)
 
+    // Prepare
+    prepare = require("../examples/messageData/consensus_prepare/prepare.json");
+    expect(prepare).toBeValid(messageDataSchema)
+
+    prepare = require("../examples/messageData/consensus_prepare/wrong_prepare_negative_created_at.json");
+    expect(prepare).not.toBeValid(messageDataSchema)
+
+    prepare = require("../examples/messageData/consensus_prepare/wrong_prepare_negative_proposed_try.json");
+    expect(prepare).not.toBeValid(messageDataSchema)
+
+    // Promise
+    promise = require("../examples/messageData/consensus_promise/promise.json");
+    expect(promise).toBeValid(messageDataSchema)
+
+    promise = require("../examples/messageData/consensus_promise/wrong_promise_negative_created_at.json");
+    expect(promise).not.toBeValid(messageDataSchema)
+
+    promise = require("../examples/messageData/consensus_promise/wrong_promise_negative_accepted_try.json");
+    expect(promise).not.toBeValid(messageDataSchema)
+
+    // Propose
+    propose = require("../examples/messageData/consensus_propose/propose.json");
+    expect(propose).toBeValid(messageDataSchema)
+
+    propose = require("../examples/messageData/consensus_propose/wrong_propose_negative_created_at.json");
+    expect(propose).not.toBeValid(messageDataSchema)
+
+    propose = require("../examples/messageData/consensus_propose/wrong_propose_negative_proposed_try.json");
+    expect(propose).not.toBeValid(messageDataSchema)
+
+    // Accept
+    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
+    expect(accept).not.toBeValid(messageDataSchema)
+
+    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
+    expect(accept).not.toBeValid(messageDataSchema)
+
+    // Learn
     learn = require("../examples/messageData/consensus_learn/learn.json");
     expect(learn).toBeValid(messageDataSchema)
 })

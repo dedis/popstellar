@@ -6,6 +6,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/require"
 	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 	"io"
@@ -258,9 +259,13 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyOrg
 }
 
-// GetSecKeyServ implements channel.HubFunctionalities
-func (h *fakeHub) GetSecKeyServ() kyber.Scalar {
-	return h.secKeyServ
+// Sign implements channel.HubFunctionalities
+func (h *fakeHub) Sign(data []byte) ([]byte, error) {
+	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to sign the data: %v", err)
+	}
+	return signatureBuf, nil
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {

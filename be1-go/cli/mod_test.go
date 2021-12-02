@@ -1,4 +1,4 @@
-package utility
+package main
 
 import (
 	"io"
@@ -35,7 +35,7 @@ func TestConnectToSocket(t *testing.T) {
 	wh.Start()
 
 	wg := &sync.WaitGroup{}
-	err = ConnectToSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
+	err = connectToSocket(hub.OrganizerHubType, "localhost:9001", wh, wg, wDone)
 	require.NoError(t, err)
 
 	err = witnessSrv.Shutdown()

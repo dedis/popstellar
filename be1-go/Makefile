@@ -1,7 +1,7 @@
 .PHONY: test
 
 build: protocol
-	go build -o pop ./cli/
+	go build -o pop ./cli
 
 lint:
 	@go get -v honnef.co/go/tools/cmd/staticcheck
@@ -10,7 +10,7 @@ lint:
 
 check-cov: protocol lint vet
 	go test -v ./...
-	go test -v -race -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
+	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
 
 check: protocol lint vet
 	go test -v ./...
@@ -27,3 +27,6 @@ clean:
 
 fmt:
 	gofmt -s -w ./
+
+check-fmt:
+	gofmt -d -e -s ./
