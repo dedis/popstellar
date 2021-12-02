@@ -66,38 +66,3 @@ export async function getCurrentPopToken(): Promise<PopToken | undefined> {
   }
   return undefined;
 }
-
-/**
- * Returns the current public key of the current user.
- */
-export async function getCurrentPublicKey(): Promise<PublicKey | undefined> {
-  const laoSelect = makeCurrentLao();
-  const lao = useSelector(laoSelect);
-  if (lao === undefined) {
-    console.log('Undefined lao');
-    return undefined;
-  }
-
-  // If the current user is the organizer, return his public key
-  const publicKeyString = getKeyPairState(getStore().getState()).keyPair?.publicKey;
-  if (publicKeyString && publicKeyString === lao.organizer.valueOf()) {
-    console.log('Organizer');
-    return new PublicKey(publicKeyString);
-  }
-
-  // Otherwise, get the pop token of the attendee using the last tokenized roll call
-  const rollCallId = lao.last_tokenized_roll_call_id;
-  if (rollCallId === undefined) {
-    console.log('Undefined roll call');
-    return undefined;
-  }
-
-  console.log('Attendee');
-  const eventSelect = makeEventGetter(lao.id, rollCallId);
-  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
-  const token = await generateToken(lao.id, rollCallId);
-  if (rollCall.containsToken(token)) {
-    return token.publicKey;
-  }
-  return undefined;
-}
