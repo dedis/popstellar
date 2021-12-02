@@ -15,12 +15,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentActivity;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.Message;
@@ -38,7 +35,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
-import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
@@ -46,13 +43,14 @@ import com.github.dedis.popstellar.utility.handler.ConsensusHandler;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.gson.Gson;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -67,36 +65,42 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.Observable;
 
-@RunWith(AndroidJUnit4ClassRunner.class)
+@HiltAndroidTest
 public class ElectionStartFragmentTest {
+
+  @Inject AndroidKeysetManager keysetManager;
+  @Inject Gson gson;
 
   // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
         protected void before() {
+          // Injection with hilt
+          hiltRule.inject();
           // Preload the data schema before the test run
           JsonUtils.loadSchema(JsonUtils.DATA_SCHEMA);
 
           when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
           when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
-          Observable<GenericMessage> upstream =
-              Observable.fromArray((GenericMessage) new Result(42));
+          Observable<GenericMessage> upstream = Observable.fromArray(new Result(42));
 
           // Mock the remote data source to receive a response
           when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
           try {
-            LAORepository.destroyInstance();
             laoRepository =
-                LAORepository.getInstance(
+                new LAORepository(
                     remoteDataSource,
                     localDataSource,
-                    Injection.provideAndroidKeysetManager(
-                        ApplicationProvider.getApplicationContext()),
-                    Injection.provideGson(),
+                    keysetManager,
+                    gson,
                     new ProdSchedulerProvider());
             publicKey = getPublicKey();
           } catch (Exception e) {
@@ -111,20 +115,19 @@ public class ElectionStartFragmentTest {
           laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
           laoRepository.updateNodes(LAO_CHANNEL);
         }
-
-        @Override
-        protected void after() {
-          LAORepository.destroyInstance();
-        }
       };
 
   private final FragmentScenarioRule<ElectionStartFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(
-          ElectionStartFragment.class, ElectionStartFragment::newInstance);
+      FragmentScenarioRule.launch(ElectionStartFragment.class, ElectionStartFragment::newInstance);
+
+  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
   @Rule
   public final RuleChain chain =
-      RuleChain.outerRule(MockitoJUnit.testRule(this)).around(setupRule).around(fragmentRule);
+      RuleChain.outerRule(MockitoJUnit.testRule(this))
+          .around(hiltRule)
+          .around(setupRule)
+          .around(fragmentRule);
 
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss z").withZone(ZoneId.systemDefault());
@@ -281,10 +284,7 @@ public class ElectionStartFragmentTest {
   }
 
   private String getPublicKey() throws IOException, GeneralSecurityException {
-    KeysetHandle publicKeysetHandle =
-        Injection.provideAndroidKeysetManager(ApplicationProvider.getApplicationContext())
-            .getKeysetHandle()
-            .getPublicKeysetHandle();
+    KeysetHandle publicKeysetHandle = keysetManager.getKeysetHandle().getPublicKeysetHandle();
     return Keys.getEncodedKey(publicKeysetHandle);
   }
 }
