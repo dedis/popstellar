@@ -9,12 +9,15 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import java.util.Calendar;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * This fragment shows a dialog to choose a time. It takes as argument (set with setArguments) a *
  * request key that will be used to give the response.
  *
  * <p>More info : https://developer.android.com/guide/fragments/communicate
  */
+@AndroidEntryPoint
 public final class TimePickerFragment extends AppCompatDialogFragment
     implements TimePickerDialog.OnTimeSetListener {
 
