@@ -13,6 +13,7 @@ This repository contains the UI side implementation of the PoP project.
   * [Getting messages over the wire](#getting-messages-over-the-wire)
   * [Message definitions](#message-definitions)
   * [User Interface](#user-interface)
+  * [Dependency Injection](#dependency-injection)
 * [Testing](#testing)
 * [Debugging Tips](#debugging-tips)
 * [Coding Standards](#coding-standards)
@@ -36,7 +37,9 @@ app/src
 │    │                           
 │    ├── res                    # resources (layouts, strings, dimensions, etc.)
 │    │    
-│    └── java/P                 
+│    └── java/P       
+│         ├── di                # module containing the hilt modules used for dependecy injection
+│         │    
 │         ├── model             # module containing the data model & objects
 │         │    ├── network      # ... of the objects sent over the network
 │         │    └── objects      # ... of the application's entities
@@ -49,11 +52,9 @@ app/src
 │         │    
 │         └── utility           # module containg the utility classes
 │
-├── prod                        # module containing the injection file of the prod build variant
-│
-├── mock                        # module containing the injection file of the mock build variant
-│
 ├── androidTest                 # tests needing an emulator/android phone
+│
+├── debug                       # module containing the debug files. Currently only an empty activity used for androidTest
 │
 └── test                        # unit tests
 ```
@@ -110,8 +111,7 @@ A particular sub-problem of storing the application data is the management of se
 For this, [Android KeyStore](https://developer.android.com/training/articles/keystore) is used for the Android front-end to safely store keys that will then be used to encrypt and decrypt the application secrets, including the Ed25519 cryptographic material. This ensures that all application secrets are encrypted-at-rest,
 that the encryption and decryption keys are stored securely, and that the application is free to use any convenient cryptographic primitive.
 
-The `Injection` file in the `prod` package manages the secure storage, and the Keys file in the `utility/security` package retrieves the public key of the user.
-
+The AndroidKeysetManager instance is provided via injection through Hilt. It is instantiated in the `KeysetModule`.
 
 ### Sending messages over the wire
 
@@ -165,12 +165,60 @@ This is the current organization, but as this project evolves you should feel fr
 
 For more information on linking up together the user interface with the application state, please make sure you have a solid understanding of the [MVVM pattern](#application-design) and look at the `ViewModel` classes and the `LAORepository`.
 
+### Dependency Injection
+
+The project uses dependency injection to provide the different dependencies instances. If you don't know what it is, android provides a [simple guide](https://developer.android.com/training/dependency-injection).
+
+Hilt is used to do the injection. It is an annotation based frameworks. It is especially useful when writing tests because it allows the user to choose specifically what is injected and thus what module is mocked and how it is mocked.
+
+For detailed information, take a look at those :
+* [Manual dependency injection](https://developer.android.com/training/dependency-injection/manual) To take a look at what hilt does by himself.
+* [Dependency injection using Hilt](https://developer.android.com/training/dependency-injection/hilt-android) For an overview of the framework.
+* [Testing using Hilt](https://developer.android.com/training/dependency-injection/hilt-testing) To learn how to test
+
+#### Hilt quick start
+
+To provide an instance, you need to define it in a Module. A Module is a collection of rules on how to provide a dependency. The modules of the project are defined in the [di package](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/di).
+
+You can either directly provide an instance with arguments or a binding to link a type to another. Providing an instance is done with a static function annotated with @Provides. Binding the types A -> B is done through an abstract method that returns A and takes B as argument.
+
+Example :
+In a project where we have the interface Database and its implementation DatabaseImpl we could find the module :
+```java
+@Module
+public abstract class DatabaseModule {
+
+  @Binds
+  public abstract Database bindDatabase(DatabaseImpl impl);
+
+  @Provides
+  public static DatabaseImpl provideDatabaseImpl(NetworkService networkService) {
+    return new DatabaseImpl(networkService);
+  }
+}
+```
+
+If a module needs Database, Hilt will find the Binds rule that specifies it should look for a DatabaseImpl. Then it finds the Provides rule and can provide the actual instance of the Database object. Here, the `networkService` argument is provided by Hilt.
+
+A final way to provide a type is to annotate the constructor Hilt should use with `@Inject`. As an example, we could remove the methode `provideDatabaseImpl()` in the module if DatabaseImpl's constructor looked like this :
+
+```java
+@Inject
+public DatabaseImpl(NetworkService networkService){
+  [...]
+}
+```
+
+This solution is equivalent to `provideDatabaseImpl()` and it is widely used in the project.
+
+If the class is an Activity or a Fragment, you need to annotate it with `@AndroidEntryPoint` and you can create package-private fields annotated with @Inject that will be provided by Hilt when they are constructed. You can see this usage in [SettingsActivity](https://github.com/dedis/student_21_pop/blob/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/settings/SettingsActivity.java)
+
 
 ## Testing
 
-For testing go to `Build Variants` and choose *mockDebug* as the `Active Build Variant`. 
-
 The [Mockito](https://site.mockito.org) library is used to mock the classes depending on the backend.
+
+To inject custom modules using Hilt, this [guide](https://developer.android.com/training/dependency-injection/hilt-testing) might help you.
 
 
 ## Debugging Tips
