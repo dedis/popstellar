@@ -5,8 +5,6 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.Injection;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
@@ -23,7 +21,6 @@ import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
@@ -31,8 +28,8 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
+import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
 
 import org.junit.After;
@@ -48,13 +45,12 @@ import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.schedulers.TestScheduler;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
@@ -84,51 +80,34 @@ public class ConsensusHandlerTest {
       new ConsensusElect(CREATION_TIME, KEY_ID, TYPE, PROPERTY, VALUE);
 
   private static final Gson GSON = Injection.provideGson();
-  private static final int REQUEST_ID = 42;
-  private static final int RESPONSE_DELAY = 1000;
 
   private LAORepository laoRepository;
   private MessageGeneral electMsg;
+  private PublicKeySign signer;
   private String messageId;
 
   @Mock LAORemoteDataSource remoteDataSource;
-  @Mock LAOLocalDataSource localDataSource;
-  @Mock AndroidKeysetManager androidKeysetManager;
-  @Mock PublicKeySign signer;
 
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException {
     SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
 
-    // Mock the signing of of any data for the MessageGeneral constructor
-    byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
-    Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
-    MessageGeneral createLaoMessage = getMsg(ORGANIZER, CREATE_LAO);
-
-    // Simulate a network response from the server after the response delay
-    Observable<GenericMessage> upstream =
-        Observable.fromArray((GenericMessage) new Result(REQUEST_ID))
-            .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
-
-    Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
+    Mockito.when(remoteDataSource.observeMessage()).thenReturn(Observable.empty());
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
 
     Ed25519PrivateKeyManager.registerPair(true);
+    PublicKeySignWrapper.register();
     KeysetHandle keysetHandle =
         KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
-    Mockito.when(androidKeysetManager.getKeysetHandle()).thenReturn(keysetHandle);
+    signer = keysetHandle.getPrimitive(PublicKeySign.class);
 
     LAORepository.destroyInstance();
     laoRepository =
         LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+            remoteDataSource, null, null, Injection.provideGson(), testSchedulerProvider);
 
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
+    MessageGeneral createLaoMessage = getMsg(ORGANIZER, CREATE_LAO);
     MessageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
 
     electMsg = getMsg(NODE_2_KEY, elect);
@@ -244,7 +223,8 @@ public class ConsensusHandlerTest {
   @Test
   public void handleConsensusDoNothingOnBackendMessageTest() throws DataHandlingException {
     LAORepository mockLAORepository = Mockito.mock(LAORepository.class);
-    Mockito.when(mockLAORepository).thenReturn(null);
+    Map<String, MessageGeneral> messageById = new HashMap<>();
+    Mockito.when(mockLAORepository.getMessageById()).thenReturn(messageById);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);
     ConsensusPromise promise =
@@ -258,5 +238,8 @@ public class ConsensusHandlerTest {
     MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, promise));
     MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, propose));
     MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, accept));
+
+    Mockito.verify(mockLAORepository, Mockito.never()).getLaoByChannel(Mockito.anyString());
+    Mockito.verify(mockLAORepository, Mockito.never()).updateNodes(Mockito.anyString());
   }
 }
