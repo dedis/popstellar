@@ -102,6 +102,6 @@ public class ConsensusAcceptTest {
     String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_accept_negative_created_at.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_accept_negative_accepted_try.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
-    //assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }
