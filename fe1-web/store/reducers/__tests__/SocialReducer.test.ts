@@ -5,12 +5,10 @@ import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { Chirp } from 'model/objects/Chirp';
 import { socialReducer, addChirp } from '../SocialReducer';
 
-export const mockPublicKey = new PublicKey(keyPair.publicKey);
+const mockPublicKey = new PublicKey(keyPair.publicKey);
 const org = mockPublicKey;
-const TIMESTAMP = 1609455600;
-const time = new Timestamp(TIMESTAMP).toString(); // 1st january 2021
 const name = 'MyLao';
-const mockLaoIdHash: Hash = Hash.fromStringArray(org.toString(), time, name);
+const mockLaoIdHash: Hash = Hash.fromStringArray(org.toString(), new Timestamp(160000000).toString(), name);
 const mockLaoId: string = mockLaoIdHash.toString();
 
 const chirp1 = new Chirp({

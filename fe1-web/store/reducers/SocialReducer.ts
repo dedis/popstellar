@@ -12,9 +12,9 @@ interface SocialReducerState {
 
   // stores all chirps id in order from the newest to the oldest
   allIdsInOrder: string[],
-  // byId maps a chirpId to the ChirpState
+  // byId maps a chirpId to its ChirpState
   byId: Record<string, ChirpState>,
-  // byUser maps an sender to the list of ChirpId he sent
+  // byUser maps a sender to the list of ChirpId he sent
   byUser: Record<string, string[]>,
 }
 
@@ -105,7 +105,6 @@ const socialSlice = createSlice({
         if (!store.byId[chirp.id]) {
           store.byId[chirp.id] = chirp;
 
-          // eslint-disable-next-line max-len
           const insertIdxInAll = findInsertIdx(store.allIdsInOrder, store.byId, chirp.time);
           store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
 
