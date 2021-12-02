@@ -45,7 +45,7 @@ function findInsertIdx(
   let right: number = array.length;
 
   while (left < right) {
-    let mid = (left + right) >>> 1;
+    const mid = Math.floor((right + left) / 2);
     if (byId[array[mid]].time > element) {
       left = mid + 1;
     } else {
