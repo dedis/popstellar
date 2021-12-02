@@ -34,6 +34,12 @@ case object SocialMediaHandler extends MessageHandler {
     }
     case graphMessage@_ => graphMessage
   }
+
+  // helper function to sign data (can be used later elsewhere if we remove the private attribute if needed)
+  private def signData(data: Base64Data, privateKey: Array[Byte]): Signature = {
+    val ed: Ed25519Sign = new Ed25519Sign(privateKey)
+    Signature(Base64Data.encode(ed.sign(data.decode)))
+  }
   
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
@@ -49,15 +55,14 @@ case object SocialMediaHandler extends MessageHandler {
                 val chirpId: Hash = params.message_id
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
                 val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirpId, channelChirp.channel, timestamp)
-                val broadcastData: Base64Data = Base64Data.encode(addBroadcastChirp.toJson.toString) //FIXME: check json/string conversion
+                val broadcastData: Base64Data = Base64Data.encode(addBroadcastChirp.toJson.toString)
                 
                 //FIXME: however, should we have a package-private getter? I don't know whether it is secure enough.
                 val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
                 Await.result(askLaoData, duration) match {
                   case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
                     val pk: PublicKey = PublicKey(Base64Data.encode(laoData.publicKey))
-                    val ed: Ed25519Sign = new Ed25519Sign(laoData.privateKey)
-                    val broadcastSignature: Signature = Signature(Base64Data.encode(ed.sign(broadcastData.decode)))
+                    val broadcastSignature: Signature = signData(broadcastData, laoData.privateKey)
                     val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
                     val broadcastMessage: Message = Message(broadcastData, pk, broadcastSignature, broadcastId, List.empty)
                     val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
