@@ -87,6 +87,7 @@ public final class ConsensusHandler {
     consensus.setNodes(nodes);
 
     lao.updateConsensus(consensus);
+    laoRepository.updateNodes(channel.replace("/consensus", ""));
   }
 
   public static void handleConsensusElectAccept(
@@ -110,6 +111,7 @@ public final class ConsensusHandler {
     }
 
     lao.updateConsensus(consensus);
+    laoRepository.updateNodes(channel.replace("/consensus", ""));
   }
 
   public static void handleConsensusLearn(
@@ -127,5 +129,6 @@ public final class ConsensusHandler {
 
     consensus.setAccepted(true);
     lao.updateConsensus(consensus);
+    laoRepository.updateNodes(channel.replace("/consensus", ""));
   }
 }
