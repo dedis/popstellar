@@ -80,12 +80,8 @@ type Phase int
 
 const (
 	ElectAcceptPhase Phase = 1
-	PreparePhase     Phase = 2
-	PromisePhase     Phase = 3
-	ProposePhase     Phase = 4
-	AcceptPhase      Phase = 5
-	LearnPhase       Phase = 6
-	Finished         Phase = 7
+	PromisePhase     Phase = 2
+	AcceptPhase      Phase = 3
 )
 
 // NewChannel returns a new initialized consensus channel
@@ -470,7 +466,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 			return xerrors.Errorf("failed to marshal new consensus#prepare message: %v", err)
 		}
 
-		err = c.publishMessage(byteMsg)
+		err = c.publishNewMessage(byteMsg)
 		if err != nil {
 			return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
 		}
@@ -528,7 +524,7 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 			return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
 		}
 
-		err = c.publishMessage(byteMsg)
+		err = c.publishNewMessage(byteMsg)
 		if err != nil {
 			return err
 		}
@@ -596,7 +592,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
 			}
 
-			err = c.publishMessage(byteMsg)
+			err = c.publishNewMessage(byteMsg)
 			if err != nil {
 				return err
 			}
@@ -607,7 +603,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
 			}
 
-			err = c.publishMessage(byteMsg)
+			err = c.publishNewMessage(byteMsg)
 			if err != nil {
 				return err
 			}
@@ -630,6 +626,13 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
+	}
+
+	messageState := c.messageStates[data.MessageID]
+
+	if messageState.currentPhase < PromisePhase {
+		return xerrors.Errorf("consensus corresponding to the message hasn't" +
+			" entered the promise phase")
 	}
 
 	consensusInstance := c.consensusInstances[data.InstanceID]
@@ -662,7 +665,7 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 			return xerrors.Errorf("failed to marshal new consensus#accept message: %v", err)
 		}
 
-		return c.publishMessage(byteMsg)
+		return c.publishNewMessage(byteMsg)
 	}
 
 	return nil
@@ -681,6 +684,13 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 
 	if !valid {
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
+	}
+
+	messageState := c.messageStates[data.MessageID]
+
+	if messageState.currentPhase < AcceptPhase {
+		return xerrors.Errorf("consensus corresponding to the message hasn't" +
+			" entered the accept phase")
 	}
 
 	consensusInstance := c.consensusInstances[data.InstanceID]
@@ -713,7 +723,7 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 				return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
 			}
 
-			return c.publishMessage(byteMsg)
+			return c.publishNewMessage(byteMsg)
 		}
 	}
 
@@ -744,8 +754,8 @@ func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 	return nil
 }
 
-// publishMessage send a publish message on the current channel
-func (c *Channel) publishMessage(byteMsg []byte) error {
+// publishNewMessage send a publish message on the current channel
+func (c *Channel) publishNewMessage(byteMsg []byte) error {
 
 	encryptedMsg := base64.URLEncoding.EncodeToString(byteMsg)
 
