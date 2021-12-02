@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/greeting.json",
+  "description": "Match propagation of a greeting on a channel query",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "method": {
+      "description": "[String] operation to be performed by the query",
+      "const": "greeting"
+    },
+
+    "params": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "description": "[String] name of the channel",
+          "type": "string",
+          "pattern": "^/root(/[^/]+)+$"
+        },
+
+        "sender": {
+          "description": "[Base64String] public key of the server",
+          "type": "string",
+          "contentEncoding": "base64",
+          "$comment": "Note: the string is encoded in Base64"
+        },
+
+        "address": {
+          "description": "Address of the server",
+          "type": "string"
+        }
+      },
+
+      "required": ["channel", "sender", "address"]
+    },
+
+    "jsonrpc": {
+      "$comment": "Defined by the parent, but needed here for the validation"
+    }
+  },
+
+  "required": ["sender", "address", "params", "jsonrpc"]
+}
