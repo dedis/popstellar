@@ -85,7 +85,7 @@ const socialSlice = createSlice({
           store.byId[chirp.id] = chirp;
 
           const insertIdxInAll = findInsertIdx(
-            store.allIdsInOrder, store.byId, chirp.time
+            store.allIdsInOrder, store.byId, chirp.time,
           );
           store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
 

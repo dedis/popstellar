@@ -8,7 +8,9 @@ import { socialReducer, addChirp } from '../SocialReducer';
 const mockPublicKey = new PublicKey(keyPair.publicKey);
 const org = mockPublicKey;
 const name = 'MyLao';
-const mockLaoIdHash: Hash = Hash.fromStringArray(org.toString(), new Timestamp(160000000).toString(), name);
+const mockLaoIdHash: Hash = Hash.fromStringArray(
+  org.toString(), new Timestamp(160000000).toString(), name,
+);
 const mockLaoId: string = mockLaoIdHash.toString();
 
 const chirp1 = new Chirp({
