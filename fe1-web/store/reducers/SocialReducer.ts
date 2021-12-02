@@ -14,7 +14,7 @@ interface SocialReducerState {
   allIdsInOrder: string[],
   // byId maps a chirpId to its ChirpState
   byId: Record<string, ChirpState>,
-  // byUser maps a sender to the list of ChirpId he sent
+  // byUser maps a sender to the list of ChirpIds he sent
   byUser: Record<string, string[]>,
 }
 
@@ -106,7 +106,7 @@ export const {
   addChirp,
 } = socialSlice.actions;
 
-export const socialReducer = socialSlice.reducer;
+export const socialReduce = socialSlice.reducer;
 
 export default {
   [socialReducerPath]: socialSlice.reducer,
