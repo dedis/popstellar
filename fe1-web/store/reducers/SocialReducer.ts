@@ -28,7 +28,6 @@ interface SocialLaoReducerState {
 const initialState: SocialLaoReducerState = {
   byLaoId: {
     myLaoId: {
-      // allChirps: [],
       allIdsInOrder: [],
       byId: {},
       byUser: {},

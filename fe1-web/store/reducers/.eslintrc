@@ -2,6 +2,7 @@
   "root": false,
   "rules": {
     /* All reducers use the createSlice function, which requires the user to param-reassign */
-    "no-param-reassign": "off"
+    "no-param-reassign": "off",
+    "import/no-named-as-default": 0
   }
 }
