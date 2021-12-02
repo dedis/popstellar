@@ -67,6 +67,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   }
 
   test("Publish: correct response test"){
+
     val rpcPublishReq = getJsonRPC(pathPublishJson)
     val message: GraphMessage = AnswerGenerator.generateAnswer(Left(rpcPublishReq))
     val expected: GraphMessage =  Left(JsonRpcResponse(
@@ -87,7 +88,6 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     message should be (expected)
     system.stop(dbActorRef.actorRef)
   }
-
 
   test("Catchup: correct response test for one Message"){
 
@@ -123,10 +123,10 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     message shouldBe a [Right[_,PipelineError]]
     message.toOption.isDefined should be (true)
     message.toOption.get.code should be (ErrorCodes.SERVER_ERROR.id)
-
   }
 
   test("Convert Right Pipeline messages into Error Messages test"){
+    
     val optid = Option(1)
     val perror = PipelineError(
          ErrorCodes.SERVER_ERROR.id,

@@ -16,17 +16,14 @@ import akka.pattern.AskableActorRef
   * Since this is an object only one instance of AnswerGenerator(class) will be created
   *
   */
-object AnswerGenerator  extends AskPatternConstants  {
+object AnswerGenerator extends AskPatternConstants {
   lazy val db = DbActor.getInstance
   val answerGen = new AnswerGenerator(db)
   def generateAnswer(graphMessage: GraphMessage): GraphMessage  = answerGen.generateAnswer(graphMessage)
   val generator: Flow[GraphMessage, GraphMessage, NotUsed] = answerGen.generator
 }
 
-/**
- * /!\ The class can now be tested as the db can directly be injected into it
- */
-sealed class AnswerGenerator(db : => AskableActorRef)  extends AskPatternConstants {
+sealed class AnswerGenerator(db : => AskableActorRef) extends AskPatternConstants {
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer
