@@ -2,22 +2,16 @@ import { ChirpState } from 'model/objects/Chirp';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash } from 'model/objects';
 import { getLaosState } from './LaoReducer';
-import AVLTree, {IAVLTree} from 'avl-bst';
 
 /**
  * Stores all the Social Media related content
  */
-interface TimeChirps {
-  time: number;
-  chirps: string[];
-}
 
 // Stores all Social Media related information for a given LAO
 interface SocialReducerState {
 
-  // Stores all chirps for a given LAO
-  // allChirps: ChirpState[],
-  byTime: IAVLTree<number, TimeChirps>
+  // stores all chirps id in order from the newest to the oldest
+  allIdsInOrder: string[],
   // byId maps a chirpId to the ChirpState
   byId: Record<string, ChirpState>,
   // byUser maps an sender to the list of ChirpId he sent
@@ -34,8 +28,8 @@ interface SocialLaoReducerState {
 const initialState: SocialLaoReducerState = {
   byLaoId: {
     myLaoId: {
-      //allChirps: [],
-      byTime: AVLTree.create<number, TimeChirps>((timeState) => timeState.time),
+      // allChirps: [],
+      allIdsInOrder: [],
       byId: {},
       byUser: {},
     },
@@ -43,6 +37,45 @@ const initialState: SocialLaoReducerState = {
 };
 
 const socialReducerPath = 'social';
+
+// helper function to find where to insert the new chirp in ascending order
+function findInsertIdx(
+  array: string[], byId: Record<string, ChirpState>, element: number,
+): number {
+  if (array.length === 0) {
+    return 0;
+  }
+
+  let left: number = 0;
+  let right: number = array.length - 1;
+  let mid: number = -1;
+  let index: number = -1;
+
+  while (left <= right) {
+    if (byId[array[right]].time >= element) {
+      index = right + 1;
+      break;
+    } else if (byId[array[left]].time <= element) {
+      index = left;
+      break;
+    } else if (right - left === 1) {
+      index = right;
+      break;
+    } else {
+      mid = Math.floor((right + left) / 2);
+      if (byId[array[mid]].time === element) {
+        index = mid;
+        break;
+      }
+      if (byId[array[mid]].time > element) {
+        left = mid;
+      } else {
+        right = mid;
+      }
+    }
+  }
+  return index;
+}
 
 const socialSlice = createSlice({
   name: socialReducerPath,
@@ -62,35 +95,29 @@ const socialSlice = createSlice({
 
         if (!(laoId in state.byLaoId)) {
           state.byLaoId[laoId] = {
-            //allChirps: [],
-            byTime: AVLTree.create<number, TimeChirps>((timeState) => timeState.time),
+            allIdsInOrder: [],
             byId: {},
             byUser: {},
           };
         }
 
-        if (!state.byLaoId[laoId].byId[chirp.id]) {
-          state.byLaoId[laoId].byId[chirp.id] = chirp;
+        const store = state.byLaoId[laoId];
 
-          const node = state.byLaoId[laoId].byTime.search(chirp.time);
-          if (node === null) {
-            state.byLaoId[laoId].byTime.insert({ time: chirp.time, chirps: [chirp.id]});
-          } else {
-            node.chirps.push(chirp.id);
-          }
+        if (!store.byId[chirp.id]) {
+          store.byId[chirp.id] = chirp;
+
+          // eslint-disable-next-line max-len
+          const insertIdxInAll = findInsertIdx(store.allIdsInOrder, store.byId, chirp.time);
+          store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
 
           if (!state.byLaoId[laoId].byUser[chirp.sender]) {
-            state.byLaoId[laoId].byUser[chirp.sender] = [chirp.id];
+            store.byUser[chirp.sender] = [chirp.id];
           } else {
-            // TODO: add chirp ID to the sender's chirp list at the right position
+            const senderChirps = store.byUser[chirp.sender];
+            const insertIdxInUser = findInsertIdx(senderChirps, store.byId, chirp.time);
+            senderChirps.splice(insertIdxInUser, 0, chirp.id);
           }
-
-
         }
-
-
-        /*state.byLaoId[laoId].allChirps.unshift(chirp);
-        console.log(`New chirp added:\n\tSender: ${chirp.sender}\n\tMessage: ${chirp.text}`);*/
       },
     },
   },
@@ -99,6 +126,8 @@ const socialSlice = createSlice({
 export const {
   addChirp,
 } = socialSlice.actions;
+
+export const socialReducer = socialSlice.reducer;
 
 export default {
   [socialReducerPath]: socialSlice.reducer,
@@ -116,11 +145,10 @@ export const makeChirpsList = () => createSelector(
       return [];
     }
     if (chirpList.byLaoId[laoId]) {
-      //return chirpList.byLaoId[laoId].allChirps;
       const allChirps: ChirpState[] = [];
-      chirpList.byLaoId[laoId].byTime.forEach(e => {
-        e.chirps.forEach(id => allChirps.unshift(chirpList.byLaoId[laoId].byId[id]))
-      });
+      chirpList.byLaoId[laoId].allIdsInOrder.forEach(
+        (id) => allChirps.push(chirpList.byLaoId[laoId].byId[id]),
+      );
       return allChirps;
     }
     return [];
