@@ -22,7 +22,7 @@ public class ConsensusPropose extends Data {
   @SerializedName("value")
   private final ProposeValue proposeValue;
 
-  @SerializedName("acceptor-signature")
+  @SerializedName("acceptor-signatures")
   private final List<String> acceptorSignatures;
 
   public ConsensusPropose(
