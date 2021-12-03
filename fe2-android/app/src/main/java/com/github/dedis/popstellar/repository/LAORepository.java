@@ -46,6 +46,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -58,7 +60,6 @@ public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
   private static final String ROOT = "/root/";
-  private static LAORepository INSTANCE = null;
 
   @SuppressWarnings({"Implementation of LAOLocalDataSource is not complete.", "FieldCanBeLocal"})
   private final LAODataSource.Local mLocalDataSource;
@@ -104,7 +105,8 @@ public class LAORepository {
   // Disposable of with the lifetime of an LAORepository instance
   private final Disposable disposables;
 
-  private LAORepository(
+  @Inject
+  public LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
       @NonNull AndroidKeysetManager keysetManager,
@@ -136,27 +138,6 @@ public class LAORepository {
 
     // subscribe to incoming messages and the unprocessed message queue
     disposables = new CompositeDisposable(subscribeToUpstream(), subscribeToWebsocketEvents());
-  }
-
-  public static synchronized LAORepository getInstance(
-      LAODataSource.Remote laoRemoteDataSource,
-      LAODataSource.Local localDataSource,
-      AndroidKeysetManager keysetManager,
-      Gson gson,
-      SchedulerProvider schedulerProvider) {
-    if (INSTANCE == null) {
-      INSTANCE =
-          new LAORepository(
-              laoRemoteDataSource, localDataSource, keysetManager, gson, schedulerProvider);
-    }
-    return INSTANCE;
-  }
-
-  public static void destroyInstance() {
-    if (INSTANCE != null) {
-      INSTANCE.dispose();
-      INSTANCE = null;
-    }
   }
 
   private Disposable subscribeToWebsocketEvents() {

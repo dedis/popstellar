@@ -19,13 +19,8 @@ import com.github.dedis.popstellar.model.network.serializer.JsonGenericMessageDe
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageGeneralSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonResultSerializer;
-import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.local.LAODatabase;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
 import com.github.dedis.popstellar.repository.remote.LAOService;
-import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
@@ -177,17 +172,6 @@ public class Injection {
       LAO_SERVICE_INSTANCE = scarlet.create(LAOService.class);
     }
     return LAO_SERVICE_INSTANCE;
-  }
-
-  public static LAORepository provideLAORepository(
-      Application application, LAOService service, AndroidKeysetManager keysetManager, Gson gson) {
-    LAODatabase db = LAODatabase.getDatabase(application);
-    return LAORepository.getInstance(
-        LAORemoteDataSource.getInstance(service),
-        LAOLocalDataSource.getInstance(db),
-        keysetManager,
-        gson,
-        new ProdSchedulerProvider());
   }
 
   public static synchronized ViewModelFactory provideViewModelFactory(Application application) {

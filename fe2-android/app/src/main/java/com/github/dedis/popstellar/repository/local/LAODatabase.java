@@ -1,9 +1,6 @@
 package com.github.dedis.popstellar.repository.local;
 
-import android.content.Context;
-
 import androidx.room.Database;
-import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
 import com.github.dedis.popstellar.repository.local.dao.LAODao;
@@ -29,26 +26,10 @@ import java.util.concurrent.Executors;
     version = 1)
 public abstract class LAODatabase extends RoomDatabase {
 
-  private static final String DATABASE_NAME = "lao_database";
-
   public abstract LAODao laoDao();
 
   private static volatile LAODatabase INSTANCE;
   private static final int NUMBER_OF_THREADS = 4;
   static final ExecutorService databaseWriteExecutor =
       Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-
-  public static LAODatabase getDatabase(final Context context) {
-    if (INSTANCE == null) {
-      synchronized (LAODatabase.class) {
-        if (INSTANCE == null) {
-          INSTANCE =
-              Room.databaseBuilder(
-                      context.getApplicationContext(), LAODatabase.class, DATABASE_NAME)
-                  .build();
-        }
-      }
-    }
-    return INSTANCE;
-  }
 }
