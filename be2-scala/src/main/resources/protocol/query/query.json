@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/query.json",
+    "title": "Match a custom JsonRpc 2.0 query message",
+    "description": "Match a client query",
+    "type": "object",
+    "properties": {
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        },
+
+        "method": {
+            "type": "string"
+        },
+
+        "params": {
+            "type": "object"
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "method/subscribe.json"
+        },
+        {
+            "$ref": "method/broadcast.json"
+        },
+        {
+            "$ref": "method/unsubscribe.json"
+        },
+        {
+            "$ref": "method/publish.json"
+        },
+        {
+            "$ref": "method/catchup.json"
+        }
+    ],
+
+    "required": ["method", "params", "jsonrpc"],
+
+    "$comment": "can have an additional property `id` if not a broadcast"
+}
