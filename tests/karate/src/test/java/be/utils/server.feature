@@ -1,12 +1,12 @@
 @ignore @report=false
 Feature: This feature starts a server and stops it after every scenario.
 
-    Scenario: Start the server and configure Karate
-        # Handler can be used to filter websocket messages 
-        * def handle = function(msg){ karate.signal(msg); return msg.startsWith('{')}
+  Scenario: Start the server and configure Karate
+        # Handler can be used to filter websocket messages
+    * def handle = function(msg){ karate.signal(msg); return msg.startsWith('{')}
 
         # Method that waits/pauses for x seconds
-        * def wait = 
+    * def wait =
             """
                 function(secs) {
                     java.lang.Thread.sleep(secs*1000)
@@ -14,9 +14,9 @@ Feature: This feature starts a server and stops it after every scenario.
             """
 
         # Get the server depending on the environment
-        * def GoServer = Java.type("be.utils.GoServer")
-        * def ScalaServer = Java.type("be.utils.ScalaServer")
-        * def getServer =
+    * def GoServer = Java.type("be.utils.GoServer")
+    * def ScalaServer = Java.type("be.utils.ScalaServer")
+    * def getServer =
             """
                 function() {
                     if(env == 'go')
@@ -27,10 +27,10 @@ Feature: This feature starts a server and stops it after every scenario.
                         karate.fail("Unknown environment for server");
                 }
             """
-        * def server = call getServer
+    * def server = call getServer
 
         # Method that waits until host:port is available
-        * def waitForPort = 
+    * def waitForPort =
             """
                 function() {
                     karate.waitForPort(host, port)
@@ -41,7 +41,7 @@ Feature: This feature starts a server and stops it after every scenario.
             """
 
         # Method that starts the server
-        * def startServer = 
+    * def startServer =
             """
                 function() {
                     var success = server.start();
@@ -53,23 +53,23 @@ Feature: This feature starts a server and stops it after every scenario.
             """
 
         # Method that stops the server
-        * def stopServer = 
-            """     
+    * def stopServer =
+            """
                 function() {
                     server.stop();
                 }
             """
 
-        # Start server 
-        * call startServer
-        * karate.log('Waiting for server start up ....')
+        # Start server
+    * call startServer
+    * karate.log('Waiting for server start up ....')
 
-        # Wait for server to be ready by polling 
-        * call waitForPort
-        * karate.log('Executing tests')
+        # Wait for server to be ready by polling
+    * call waitForPort
+    * karate.log('Executing tests')
 
         # Shutdown server automatically after the end of a scenario and  feature
-        * configure afterScenario = stopServer
+    * configure afterScenario = stopServer
 
         # Configure an after feature function
-        * configure afterFeature = karate.get('afterScenario')
+    * configure afterFeature = karate.get('afterScenario')
