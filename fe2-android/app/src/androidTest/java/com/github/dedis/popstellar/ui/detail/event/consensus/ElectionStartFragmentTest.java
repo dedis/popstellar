@@ -31,10 +31,9 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.repository.LAODataSource;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
@@ -67,6 +66,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.Observable;
@@ -76,6 +76,11 @@ public class ElectionStartFragmentTest {
 
   @Inject AndroidKeysetManager keysetManager;
   @Inject Gson gson;
+
+  @BindValue LAORepository laoRepository;
+
+  @Mock LAODataSource.Remote remoteDataSource;
+  @Mock LAODataSource.Local localDataSource;
 
   // A custom rule to call setup and teardown before the fragment rule and after the mockito rule
   private final TestRule setupRule =
@@ -156,10 +161,6 @@ public class ElectionStartFragmentTest {
   private static final ArgumentCaptor<Message> CAPTOR = ArgumentCaptor.forClass(Message.class);
 
   private String publicKey;
-  private LAORepository laoRepository;
-
-  @Mock private LAORemoteDataSource remoteDataSource;
-  @Mock private LAOLocalDataSource localDataSource;
 
   @Test
   public void displayWithUpdatesIsCorrectAndButtonsProduceCorrectMessages()
