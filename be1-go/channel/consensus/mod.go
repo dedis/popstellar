@@ -473,19 +473,22 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 		return xerrors.Errorf("message doesn't correspond to any previously received message")
 	}
 
+	messageState := c.messageStates[data.MessageID]
+	messageState.Lock()
+	defer messageState.Unlock()
+
 	// check wether the consensus finished the elect accept phase
-	if c.messageStates[data.MessageID].currentPhase <= ElectAcceptPhase {
+	if messageState.currentPhase <= ElectAcceptPhase {
 		return xerrors.Errorf("consensus corresponding to the message hasn't " +
 			"finished the elect_accept phase")
 	}
 
-	// If the server has no client subscribed to the consensus channel, it
-	// doesn't take part in it
-	if c.sockets.Number() == 0 {
-		return nil
-	}
+	messageState.currentPhase = PromisePhase
 
 	consensusInstance := c.consensusInstances[data.InstanceID]
+	consensusInstance.Lock()
+	defer consensusInstance.Unlock()
+
 	if consensusInstance.proposed_try > consensusInstance.promised_try {
 		consensusInstance.promised_try = data.Value.ProposedTry
 
@@ -567,6 +570,8 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 			Value: messagedata.ValuePropose{
 				ProposedValue: true,
 			},
+
+			AcceptorSignatures: make([]string, 0),
 		}
 
 		if highestAccepted == -1 {
@@ -619,7 +624,11 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 			" entered the promise phase")
 	}
 
+	messageState.currentPhase = AcceptPhase
+
 	consensusInstance := c.consensusInstances[data.InstanceID]
+	consensusInstance.Lock()
+	defer consensusInstance.Unlock()
 
 	// If the server has no client subscribed to the consensus channel, it
 	// doesn't take part in it
@@ -701,16 +710,20 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 				Value: messagedata.ValueLearn{
 					Decision: consensusInstance.decision,
 				},
+
+				AcceptorSignatures: make([]string, 0),
 			}
 			byteMsg, err := json.Marshal(newData)
 			if err != nil {
 				return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
 			}
 
-			return c.publishNewMessage(byteMsg)
+			err = c.publishNewMessage(byteMsg)
+			if err != nil {
+				return err
+			}
 		}
 	}
-
 	return nil
 }
 

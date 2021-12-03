@@ -268,12 +268,16 @@ func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
 		return xerrors.Errorf("failed to marshal publish message: %v", err)
 	}
 
+	h.log.Info().Str("msg", string(byteMsg)).Msg("sending new message")
+
 	h.serverSockets.SendToAll(byteMsg)
 
-	_, err = h.handlePublish(nil, byteMsg)
-	if err != nil {
-		return xerrors.Errorf("Failed to handle self-produced message: %v", err)
-	}
+	go func() {
+		_, err = h.handlePublish(nil, byteMsg)
+		if err != nil {
+			h.log.Err(err).Msgf("Failed to handle self-produced message")
+		}
+	}()
 
 	return nil
 }

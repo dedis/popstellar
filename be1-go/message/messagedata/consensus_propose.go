@@ -18,7 +18,7 @@ type ConsensusPropose struct {
 
 	Value ValuePropose `json:"value"`
 
-	AcceptorSignatures []string `json:"acceptor_signatures"`
+	AcceptorSignatures []string `json:"acceptor-signatures"`
 }
 
 type ValuePropose struct {
