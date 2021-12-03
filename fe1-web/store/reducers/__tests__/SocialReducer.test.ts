@@ -3,7 +3,7 @@ import { AnyAction } from 'redux';
 import keyPair from 'test_data/keypair.json';
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { Chirp } from 'model/objects/Chirp';
-import { socialReduce, addChirp } from '../SocialReducer';
+import { socialReduce, addChirp, makeChirpsList } from '../SocialReducer';
 
 const mockPublicKey = new PublicKey(keyPair.publicKey);
 const org = mockPublicKey;
@@ -123,24 +123,34 @@ const filledState4 = {
 test('should return the initial state', () => {
   expect(socialReduce(undefined, {} as AnyAction))
     .toEqual(emptyState);
+  expect(makeChirpsList().resultFunc(emptyState, mockLaoId))
+    .toEqual([]);
 });
 
 test('should add the first chirp correctly', () => {
   expect(socialReduce(emptyState, addChirp(mockLaoId, chirp1)))
     .toEqual(filledState1);
+  expect(makeChirpsList().resultFunc(filledState1, mockLaoId))
+    .toEqual([chirp1]);
 });
 
 test('should add the newer chirp before the first chirp', () => {
   expect(socialReduce(filledState1, addChirp(mockLaoId, chirp2)))
     .toEqual(filledState2);
+  expect(makeChirpsList().resultFunc(filledState2, mockLaoId))
+    .toEqual([chirp2, chirp1]);
 });
 
 test('should add the newer chirp after the second chirp', () => {
   expect(socialReduce(filledState2, addChirp(mockLaoId, chirp3)))
     .toEqual(filledState3);
+  expect(makeChirpsList().resultFunc(filledState3, mockLaoId))
+    .toEqual([chirp2, chirp3, chirp1]);
 });
 
 test('should add the newer chirp on top', () => {
   expect(socialReduce(filledState3, addChirp(mockLaoId, chirp4)))
     .toEqual(filledState4);
+  expect(makeChirpsList().resultFunc(filledState4, mockLaoId))
+    .toEqual([chirp4, chirp2, chirp3, chirp1]);
 });
