@@ -231,4 +231,45 @@ public class ElectionSetupFragmentTest {
     pickerAcceptButton().perform(click());
     endTimeView().check(matches(withText(String.format(TIME_FORMAT, HOURS + 1, MINUTES))));
   }
+
+  @Test
+  public void cannotChooseStartTimeTooFarInPast() {
+    Calendar today = Calendar.getInstance();
+    today.add(Calendar.MINUTE, -10);
+    int year = today.get(Calendar.YEAR);
+    int monthOfYear = today.get(Calendar.MONTH) + 1;
+    int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+    int hourOfDay = today.get(Calendar.HOUR_OF_DAY);
+    int minutes = today.get(Calendar.MINUTE);
+
+    startDateView().perform(click());
+    datePicker().perform(PickerActions.setDate(year, monthOfYear, dayOfMonth));
+    pickerAcceptButton().perform(click());
+
+    startTimeView().perform(click());
+    timePicker().perform(PickerActions.setTime(hourOfDay, minutes));
+    pickerAcceptButton().perform(click());
+    startTimeView().check(matches(withText("")));
+  }
+
+  @Test
+  public void choosingStartDateInvalidateAStartTimeInPast() {
+    Calendar today = Calendar.getInstance();
+    today.add(Calendar.MINUTE, -10);
+    int year = today.get(Calendar.YEAR);
+    int monthOfYear = today.get(Calendar.MONTH) + 1;
+    int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+    int hourOfDay = today.get(Calendar.HOUR_OF_DAY);
+    int minutes = today.get(Calendar.MINUTE);
+
+    startTimeView().perform(click());
+    timePicker().perform(PickerActions.setTime(hourOfDay, minutes));
+    pickerAcceptButton().perform(click());
+    startTimeView().check(matches(withText(String.format(TIME_FORMAT, hourOfDay, minutes))));
+
+    startDateView().perform(click());
+    datePicker().perform(PickerActions.setDate(year, monthOfYear, dayOfMonth));
+    pickerAcceptButton().perform(click());
+    startTimeView().check(matches(withText("")));
+  }
 }

@@ -41,7 +41,7 @@
                             "question": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "ID of the question"
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             }
                         },
                         "required": ["id", "question"]

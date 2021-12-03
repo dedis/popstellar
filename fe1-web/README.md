@@ -18,6 +18,9 @@ npm start
 >
 > The following times, running the command  `expo start` is enough
 
+> If 'npm install' fails because of sharp (verify by running 'npm install -g sharp-cli').
+> [This post](https://stackoverflow.com/questions/68710308/sharp-error-package-openexr-was-not-found-in-the-pkg-config-search-path) may be helpful
+
 
 
 `expo start` automatically starts **Metro packager**.
