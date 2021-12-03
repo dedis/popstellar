@@ -120,6 +120,11 @@ const filledState4 = {
   },
 };
 
+test('should return an empty list of chirpState when no lao is opened', () => {
+  expect(makeChirpsList().resultFunc(emptyState, undefined))
+    .toEqual([]);
+});
+
 test('should return the initial state', () => {
   expect(socialReduce(undefined, {} as AnyAction))
     .toEqual(emptyState);
