@@ -61,4 +61,32 @@ class SchemaValidatorSuite extends FunSuite with Matchers {
 
     validateSchema(broadcastJson) shouldBe a [Right[_,PipelineError]]
   }
+
+  test("Correct unsubscribe JSON-RPC query"){
+    val unsubscribePath = "../protocol/examples/query/unsubscribe/unsubscribe.json"
+    val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
+
+    validateSchema(unsubscribeJson) should be (Left(unsubscribeJson))
+  }
+
+  test("Incorrect unsubscribe query: additional params"){
+    val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe__additional_params.json"
+    val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
+
+    validateSchema(unsubscribeJson) shouldBe a [Right[_,PipelineError]]
+  }
+
+  test("Incorrect unsubscribe query: missing channel"){
+    val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe_missing_channel.json"
+    val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
+
+    validateSchema(unsubscribeJson) shouldBe a [Right[_,PipelineError]]
+  }
+
+  test("Incorrect unsubscribe query: wrong channel"){
+    val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe_channel.json"
+    val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
+
+    validateSchema(unsubscribeJson) shouldBe a [Right[_,PipelineError]]
+  }
 }
