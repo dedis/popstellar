@@ -56,11 +56,11 @@ type ConsensusInstance struct {
 	promised_try int64
 	accepted_try int64
 
-	accepted_value *bool
+	accepted_value bool
 
 	decided        bool
-	decision       *bool
-	proposed_value *bool
+	decision       bool
+	proposed_value bool
 
 	promises []messagedata.ConsensusPromise
 	accepts  []messagedata.ConsensusAccept
@@ -369,10 +369,10 @@ func (c *Channel) createConsensusInstance(instanceID string) {
 		promised_try: -1,
 		accepted_try: -1,
 
-		accepted_value: nil,
+		accepted_value: false,
 		decided:        false,
-		decision:       nil,
-		proposed_value: nil,
+		decision:       false,
+		proposed_value: false,
 
 		promises: make([]messagedata.ConsensusPromise, 0),
 		accepts:  make([]messagedata.ConsensusAccept, 0),
@@ -503,11 +503,11 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 
 	consensusInstance := c.consensusInstances[data.InstanceID]
 	if consensusInstance.proposed_try > consensusInstance.promised_try {
-		consensusInstance.promised_try = consensusInstance.proposed_try
+		consensusInstance.promised_try = data.Value.ProposedTry
 
 		newData := messagedata.ConsensusPromise{
 			Object:     "consensus",
-			Action:     "prepare",
+			Action:     "promise",
 			InstanceID: data.InstanceID,
 			MessageID:  data.MessageID,
 
@@ -515,7 +515,7 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 
 			Value: messagedata.ValuePromise{
 				AcceptedTry:   consensusInstance.accepted_try,
-				AcceptedValue: *consensusInstance.accepted_value,
+				AcceptedValue: consensusInstance.accepted_value,
 				PromisedTry:   consensusInstance.promised_try,
 			},
 		}
@@ -645,7 +645,7 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 
 	if consensusInstance.promised_try <= data.Value.ProposedTry {
 		consensusInstance.accepted_try = data.Value.ProposedTry
-		consensusInstance.accepted_value = &data.Value.ProposedValue
+		consensusInstance.accepted_value = data.Value.ProposedValue
 
 		newData := messagedata.ConsensusAccept{
 			Object:     "consensus",
@@ -657,7 +657,7 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 
 			Value: messagedata.ValueAccept{
 				AcceptedTry:   consensusInstance.accepted_try,
-				AcceptedValue: *consensusInstance.accepted_value,
+				AcceptedValue: consensusInstance.accepted_value,
 			},
 		}
 		byteMsg, err := json.Marshal(newData)
@@ -715,7 +715,7 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 				CreatedAt: time.Now().Unix(),
 
 				Value: messagedata.ValueLearn{
-					Decision: *consensusInstance.decision,
+					Decision: consensusInstance.decision,
 				},
 			}
 			byteMsg, err := json.Marshal(newData)
@@ -748,7 +748,7 @@ func (c *Channel) processConsensusLearn(data messagedata.ConsensusLearn) error {
 	consensusInstance := c.consensusInstances[data.InstanceID]
 	if !consensusInstance.decided {
 		consensusInstance.decided = true
-		consensusInstance.decision = &data.Value.Decision
+		consensusInstance.decision = data.Value.Decision
 	}
 
 	return nil

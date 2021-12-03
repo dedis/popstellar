@@ -419,7 +419,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	require.Equal(t, consensusInstance, prepare.InstanceID)
 	require.Equal(t, messageID, prepare.MessageID)
 	require.GreaterOrEqual(t, prepare.CreatedAt, int64(0))
-	require.Equal(t, int64(4), prepare.Value.ProposedTry)
+	require.Equal(t, int64(1), prepare.Value.ProposedTry)
 }
 
 // Tests that the channel works correctly when it receives a prepare message
@@ -534,7 +534,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	sentMsg := sentPublish.Params.Message
 
 	// Unmarshal the promise message data to check its values
-	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
+	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
 	var promise messagedata.ConsensusPromise
 	err = json.Unmarshal(jsonData, &promise)
@@ -546,7 +546,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	require.Equal(t, messageID, promise.MessageID)
 	require.GreaterOrEqual(t, promise.CreatedAt, int64(0))
 	require.Equal(t, int64(-1), promise.Value.AcceptedTry)
-	require.True(t, promise.Value.AcceptedValue)
+	require.False(t, promise.Value.AcceptedValue)
 	require.Equal(t, int64(4), promise.Value.PromisedTry)
 }
 
@@ -662,7 +662,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	sentMsg := sentPublish.Params.Message
 
 	// Unmarshal the promise message data to check its values
-	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
+	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
 	var propose messagedata.ConsensusPropose
 	err = json.Unmarshal(jsonData, &propose)
@@ -789,14 +789,14 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	sentMsg := sentPublish.Params.Message
 
 	// Unmarshal the promise message data to check its values
-	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
+	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
 	var accept messagedata.ConsensusAccept
 	err = json.Unmarshal(jsonData, &accept)
 	require.NoError(t, err)
 
 	require.Equal(t, "consensus", accept.Object)
-	require.Equal(t, "propose", accept.Action)
+	require.Equal(t, "accept", accept.Action)
 	require.Equal(t, consensusInstance, accept.InstanceID)
 	require.Equal(t, messageID, accept.MessageID)
 	require.GreaterOrEqual(t, accept.CreatedAt, int64(0))
@@ -889,6 +889,9 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	// Update the state of the message
 	consensusChannel.messageStates[messageID].currentPhase = AcceptPhase
 
+	// Update the proposed value to true
+	consensusChannel.consensusInstances[consensusInstance].proposed_value = true
+
 	// Create the broadcast message to check that it is sent
 	fileBroadcast := filepath.Join(protocolRelativePath,
 		"examples", "query", "broadcast", "broadcast.json")
@@ -916,14 +919,14 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	sentMsg := sentPublish.Params.Message
 
 	// Unmarshal the promise message data to check its values
-	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
+	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
 	var learn messagedata.ConsensusLearn
 	err = json.Unmarshal(jsonData, &learn)
 	require.NoError(t, err)
 
 	require.Equal(t, "consensus", learn.Object)
-	require.Equal(t, "propose", learn.Action)
+	require.Equal(t, "learn", learn.Action)
 	require.Equal(t, consensusInstance, learn.InstanceID)
 	require.Equal(t, messageID, learn.MessageID)
 	require.GreaterOrEqual(t, learn.CreatedAt, int64(0))
@@ -1077,7 +1080,13 @@ func Test_Publish_New_Message(t *testing.T) {
 	err = json.Unmarshal(servSocket.msg, &publish)
 	require.NoError(t, err)
 
-	require.Equal(t, expectedMessage, publish.Params.Message)
+	sentMsg := publish.Params.Message
+
+	// Doesn't compare the signature, as it has a random element
+	require.Equal(t, expectedMessage.Data, sentMsg.Data)
+	require.Equal(t, expectedMessage.Sender, sentMsg.Sender)
+	require.Equal(t, expectedMessage.MessageID, sentMsg.MessageID)
+	require.Equal(t, expectedMessage.WitnessSignatures, sentMsg.WitnessSignatures)
 }
 
 // -----------------------------------------------------------------------------
