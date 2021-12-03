@@ -275,11 +275,11 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 
 func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
 
-func (h *fakeHub) SendSubscribeToServers(channelID string) error {
-	return nil
+func (h *fakeHub) GetServerNumber() int {
+	return 0
 }
 
-func (h *fakeHub) SendUnsubscribeToServers(channelID string) error {
+func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
 	return nil
 }
 

@@ -635,94 +635,81 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 }
 
-// Test that a correct subscribe message is sent when the server needs to
-func Test_Send_Subscribe_To_Servers(t *testing.T) {
-
+// Test that the GetServerNumber works
+func Test_Get_Server_Number(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	// create a fake channel to which the server will subscribe
-	c := &fakeChannel{}
-	laoID := "XXX"
-	hub.channelByID[rootPrefix+laoID] = c
+	sock1 := &fakeSocket{id: "fakeID1"}
+	sock2 := &fakeSocket{id: "fakeID2"}
+	sock3 := &fakeSocket{id: "fakeID3"}
 
-	// add a fake socket to the hub
-	socket := &fakeSocket{id: "socket"}
-	hub.serverSockets.Upsert(socket)
+	hub.serverSockets.Upsert(sock1)
+	hub.serverSockets.Upsert(sock2)
+	hub.serverSockets.Upsert(sock3)
 
-	err = hub.SendSubscribeToServers(laoID)
-	require.NoError(t, err)
-
-	expectedSubscribe := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: "subscribe",
-		},
-
-		ID: 0,
-
-		Params: struct {
-			Channel string "json:\"channel\""
-		}{
-			Channel: "XXX",
-		},
-	}
-
-	var actualSubscribe method.Subscribe
-	err = json.Unmarshal(socket.msg, &actualSubscribe)
-	require.NoError(t, err)
-
-	require.Equal(t, expectedSubscribe, actualSubscribe)
+	require.Equal(t, 4, hub.GetServerNumber())
 }
 
-// Test that a correct unsubscribe message is sent when the server needs to
-func Test_Send_Unsubscribe_To_Servers(t *testing.T) {
-
+// Test that SendAndHandleMessage works
+func Test_Send_And_Handle_Message(t *testing.T) {
 	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
 
 	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	// create a fake channel to which the server will unsubscribe
-	c := &fakeChannel{}
 	laoID := "XXX"
+
 	hub.channelByID[rootPrefix+laoID] = c
 
-	// add a fake socket to the hub
-	socket := &fakeSocket{id: "socket"}
-	hub.serverSockets.Upsert(socket)
-
-	err = hub.SendUnsubscribeToServers(laoID)
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
 
-	expectedUnsubscribe := method.Unsubscribe{
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: "unsubscribe",
+			Method: query.MethodPublish,
 		},
 
-		ID: 0,
+		ID: 1,
 
 		Params: struct {
-			Channel string "json:\"channel\""
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
 		}{
-			Channel: "XXX",
+			Channel: rootPrefix + laoID,
+			Message: msg,
 		},
 	}
 
-	var actualUnsubscribe method.Unsubscribe
-	err = json.Unmarshal(socket.msg, &actualUnsubscribe)
+	publishBuf, err := json.Marshal(&publish)
 	require.NoError(t, err)
 
-	require.Equal(t, expectedUnsubscribe, actualUnsubscribe)
+	sock := &fakeSocket{}
+	hub.serverSockets.Upsert(sock)
+
+	err = hub.SendAndHandleMessage(publish)
+	require.NoError(t, err)
+
+	// > check the socket
+	require.Equal(t, publishBuf, sock.msg)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, publish, c.publish)
 }
 
 // -----------------------------------------------------------------------------

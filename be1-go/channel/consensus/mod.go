@@ -29,8 +29,7 @@ const (
 
 // Channel defines a consensus channel
 type Channel struct {
-	clientSockets channel.Sockets
-	serverSockets channel.Sockets
+	sockets channel.Sockets
 
 	inbox *inbox.Inbox
 
@@ -91,8 +90,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 	log = log.With().Str("channel", "consensus").Logger()
 
 	return &Channel{
-		clientSockets:      channel.NewSockets(),
-		serverSockets:      channel.NewSockets(),
+		sockets:            channel.NewSockets(),
 		inbox:              inbox,
 		channelID:          channelID,
 		hub:                hub,
@@ -107,15 +105,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 func (c *Channel) Subscribe(sock socket.Socket, msg method.Subscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received a subscribe")
 
-	if sock.Type() == socket.ClientSocketType {
-		c.clientSockets.Upsert(sock)
-
-		if c.clientSockets.Number() == 1 {
-			c.hub.SendSubscribeToServers(c.channelID)
-		}
-	} else {
-		c.serverSockets.Upsert(sock)
-	}
+	c.sockets.Upsert(sock)
 
 	return nil
 }
@@ -124,15 +114,9 @@ func (c *Channel) Subscribe(sock socket.Socket, msg method.Subscribe) error {
 func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received an unsubscribe")
 
-	okClient := c.clientSockets.Delete(socketID)
-	okServer := c.serverSockets.Delete(socketID)
-
-	if !okClient && !okServer {
+	ok := c.sockets.Delete(socketID)
+	if !ok {
 		return answer.NewError(-2, "client is not subscribed to this channel")
-	}
-
-	if okClient && c.clientSockets.Number() == 0 {
-		c.hub.SendUnsubscribeToServers(c.channelID)
 	}
 
 	return nil
@@ -178,7 +162,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
 	}
 
-	c.clientSockets.SendToAll(buf)
+	c.sockets.SendToAll(buf)
 	return nil
 }
 
@@ -433,7 +417,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 
 	// Once all Elect_Accept have been received, proposer creates new prepare
 	// message
-	if electAcceptNumber >= c.serverSockets.Number() &&
+	if electAcceptNumber >= c.hub.GetServerNumber() &&
 		messageState.currentPhase == ElectAcceptPhase &&
 		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
@@ -497,7 +481,7 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 
 	// If the server has no client subscribed to the consensus channel, it
 	// doesn't take part in it
-	if c.clientSockets.Number() == 0 {
+	if c.sockets.Number() == 0 {
 		return nil
 	}
 
@@ -561,7 +545,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 	consensusInstance.promises = append(consensusInstance.promises, data)
 
 	// if enough Promise messages are received, the proposer send a Propose message
-	if len(consensusInstance.promises) >= c.serverSockets.Number()/2+1 &&
+	if len(consensusInstance.promises) >= c.hub.GetServerNumber()/2+1 &&
 		messageState.currentPhase == PromisePhase &&
 		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
@@ -639,7 +623,7 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 
 	// If the server has no client subscribed to the consensus channel, it
 	// doesn't take part in it
-	if c.clientSockets.Number() == 0 {
+	if c.sockets.Number() == 0 {
 		return nil
 	}
 
@@ -699,7 +683,7 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 
 	consensusInstance.accepts = append(consensusInstance.accepts, data)
 
-	if len(consensusInstance.accepts) >= c.serverSockets.Number()/2+1 &&
+	if len(consensusInstance.accepts) >= c.hub.GetServerNumber()/2+1 &&
 		c.messageStates[data.MessageID].proposer.Equal(c.hub.GetPubKeyOrg()) {
 
 		if !consensusInstance.decided {
@@ -803,11 +787,10 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 
 	c.hub.SetMessageID(&publish)
 
-	bufPublish, err := json.Marshal(publish)
+	err = c.hub.SendAndHandleMessage(publish)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal publish message: %v", err)
+		return xerrors.Errorf("failed to send new message: %v", err)
 	}
 
-	c.serverSockets.SendToAll(bufPublish)
 	return nil
 }

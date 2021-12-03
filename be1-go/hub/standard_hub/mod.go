@@ -254,70 +254,26 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 	return err
 }
 
-// SendSubscribeToServers informs other server that this begins to take part in
-// the operations of a channel
-func (h *Hub) SendSubscribeToServers(channel string) error {
-
-	subscribeID := h.queries.getNextID()
-
-	subscribeMessage := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: "subscribe",
-		},
-
-		ID: subscribeID,
-
-		Params: struct {
-			Channel string `json:"channel"`
-		}{
-			Channel: channel,
-		},
-	}
-
-	subscribeBuf, err := json.Marshal(subscribeMessage)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal subscribe message: %v", err)
-	}
-
-	h.serverSockets.SendToAll(subscribeBuf)
-
-	return nil
+// GetServerNumber returns the number of servers known by this one
+func (h *Hub) GetServerNumber() int {
+	// serverSockets + 1 as the server also know itself
+	return h.serverSockets.Number() + 1
 }
 
-// SendUnsubscribeToServers informs other server that this begins to take part in
-// the operations of a channel
-func (h *Hub) SendUnsubscribeToServers(channel string) error {
-
-	unsubscribeID := h.queries.getNextID()
-
-	unsubscribeMessage := method.Subscribe{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: "unsubscribe",
-		},
-
-		ID: unsubscribeID,
-
-		Params: struct {
-			Channel string `json:"channel"`
-		}{
-			Channel: channel,
-		},
-	}
-
-	unsubscribeBuf, err := json.Marshal(unsubscribeMessage)
+// SendAndHandleMessage sends a publish message to all other known servers and
+// handle it
+func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
+	byteMsg, err := json.Marshal(publishMsg)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal subscribe message: %v", err)
+		return xerrors.Errorf("failed to marshal publish message: %v", err)
 	}
 
-	h.serverSockets.SendToAll(unsubscribeBuf)
+	h.serverSockets.SendToAll(byteMsg)
+
+	_, err = h.handlePublish(nil, byteMsg)
+	if err != nil {
+		return xerrors.Errorf("Failed to handle self-produced message: %v", err)
+	}
 
 	return nil
 }

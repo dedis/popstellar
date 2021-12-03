@@ -30,7 +30,7 @@ const protocolRelativePath string = "../../../protocol"
 
 // Tests that the channel works correctly when it receives a subscribe from a
 // client
-func Test_Consensus_Channel_Subscribe_Client(t *testing.T) {
+func Test_Consensus_Channel_Subscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
@@ -53,42 +53,12 @@ func Test_Consensus_Channel_Subscribe_Client(t *testing.T) {
 	err = channel.Subscribe(socket, message)
 	require.NoError(t, err)
 
-	require.False(t, consensusChannel.serverSockets.Delete("socket"))
-	require.True(t, consensusChannel.clientSockets.Delete("socket"))
-}
-
-// Tests that the channel works correctly when it receives a subscribe from a
-// server
-func Test_Consensus_Channel_Subscribe_Server(t *testing.T) {
-	keypair := generateKeyPair(t)
-
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
-	require.NoError(t, err)
-
-	channel := NewChannel("channel0", fakeHub, nolog)
-	consensusChannel, ok := channel.(*Channel)
-	require.True(t, ok)
-
-	file := filepath.Join(protocolRelativePath, "examples", "query", "subscribe", "subscribe.json")
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	var message method.Subscribe
-	err = json.Unmarshal(buf, &message)
-	require.NoError(t, err)
-
-	socket := &fakeSocket{id: "socket", sockType: socket.WitnessSocketType}
-
-	err = channel.Subscribe(socket, message)
-	require.NoError(t, err)
-
-	require.False(t, consensusChannel.clientSockets.Delete("socket"))
-	require.True(t, consensusChannel.serverSockets.Delete("socket"))
+	require.True(t, consensusChannel.sockets.Delete("socket"))
 }
 
 // Tests that the channel works correctly when it receives an unsubscribe from a
 // client
-func Test_Consensus_Channel_Unsubscribe_Client(t *testing.T) {
+func Test_Consensus_Channel_Unsubscribe(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
@@ -107,41 +77,12 @@ func Test_Consensus_Channel_Unsubscribe_Client(t *testing.T) {
 	require.NoError(t, err)
 
 	socket := &fakeSocket{id: "socket", sockType: socket.ClientSocketType}
-	consensusChannel.clientSockets.Upsert(socket)
+	consensusChannel.sockets.Upsert(socket)
 
 	err = channel.Unsubscribe("socket", message)
 	require.NoError(t, err)
 
-	require.False(t, consensusChannel.clientSockets.Delete("socket"))
-}
-
-// Tests that the channel works correctly when it receives an unsubscribe from a
-// server
-func Test_Consensus_Channel_Unsubscribe_Server(t *testing.T) {
-	keypair := generateKeyPair(t)
-
-	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
-	require.NoError(t, err)
-
-	channel := NewChannel("channel0", fakeHub, nolog)
-	consensusChannel, ok := channel.(*Channel)
-	require.True(t, ok)
-
-	file := filepath.Join(protocolRelativePath, "examples", "query", "unsubscribe", "unsubscribe.json")
-	buf, err := os.ReadFile(file)
-	require.NoError(t, err)
-
-	var message method.Unsubscribe
-	err = json.Unmarshal(buf, &message)
-	require.NoError(t, err)
-
-	socket := &fakeSocket{id: "socket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(socket)
-
-	err = channel.Unsubscribe("socket", message)
-	require.NoError(t, err)
-
-	require.False(t, consensusChannel.serverSockets.Delete("socket"))
+	require.False(t, consensusChannel.sockets.Delete("socket"))
 }
 
 // Test that the channel throws an error when it receives an unsubscribe from a
@@ -251,7 +192,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 
 	// Create a socket subscribed to the channel
 	socket := &fakeSocket{id: "socket"}
-	consensusChannel.clientSockets.Upsert(socket)
+	consensusChannel.sockets.Upsert(socket)
 
 	// Create a consensus elect message
 	file := filepath.Join(protocolRelativePath,
@@ -323,11 +264,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
-	consensusChannel.clientSockets.Upsert(cliSocket)
-
-	// Create a witness socket subscribed to the channel
-	servSocket := &fakeSocket{id: "servSocket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(servSocket)
+	consensusChannel.sockets.Upsert(cliSocket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,
@@ -402,7 +339,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	// Unmarshal the prepare message sent to other servers to verify its values
 	var sentPublish method.Publish
-	err = json.Unmarshal(servSocket.msg, &sentPublish)
+	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
 	sentMsg := sentPublish.Params.Message
@@ -442,11 +379,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
-	consensusChannel.clientSockets.Upsert(cliSocket)
-
-	// Create a witness socket subscribed to the channel
-	servSocket := &fakeSocket{id: "servSocket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(servSocket)
+	consensusChannel.sockets.Upsert(cliSocket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,
@@ -528,7 +461,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	// Unmarshal the prepare message sent to other servers to verify its values
 	var sentPublish method.Publish
-	err = json.Unmarshal(servSocket.msg, &sentPublish)
+	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
 	sentMsg := sentPublish.Params.Message
@@ -570,11 +503,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
-	consensusChannel.clientSockets.Upsert(cliSocket)
-
-	// Create a witness socket subscribed to the channel
-	servSocket := &fakeSocket{id: "servSocket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(servSocket)
+	consensusChannel.sockets.Upsert(cliSocket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,
@@ -656,7 +585,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	// Unmarshal the prepare message sent to other servers to verify its values
 	var sentPublish method.Publish
-	err = json.Unmarshal(servSocket.msg, &sentPublish)
+	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
 	sentMsg := sentPublish.Params.Message
@@ -697,11 +626,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
-	consensusChannel.clientSockets.Upsert(cliSocket)
-
-	// Create a witness socket subscribed to the channel
-	servSocket := &fakeSocket{id: "servSocket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(servSocket)
+	consensusChannel.sockets.Upsert(cliSocket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,
@@ -783,7 +708,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	// Unmarshal the prepare message sent to other servers to verify its values
 	var sentPublish method.Publish
-	err = json.Unmarshal(servSocket.msg, &sentPublish)
+	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
 	sentMsg := sentPublish.Params.Message
@@ -824,11 +749,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
-	consensusChannel.clientSockets.Upsert(cliSocket)
-
-	// Create a witness socket subscribed to the channel
-	servSocket := &fakeSocket{id: "servSocket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(servSocket)
+	consensusChannel.sockets.Upsert(cliSocket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,
@@ -913,7 +834,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	// Unmarshal the prepare message sent to other servers to verify its values
 	var sentPublish method.Publish
-	err = json.Unmarshal(servSocket.msg, &sentPublish)
+	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
 	sentMsg := sentPublish.Params.Message
@@ -953,11 +874,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
-	consensusChannel.clientSockets.Upsert(cliSocket)
-
-	// Create a server socket subscribed to the channel
-	servSocket := &fakeSocket{id: "servSocket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(servSocket)
+	consensusChannel.sockets.Upsert(cliSocket)
 
 	// Create a consensus elect message into the inbox of the channel
 	file := filepath.Join(protocolRelativePath,
@@ -1047,10 +964,6 @@ func Test_Publish_New_Message(t *testing.T) {
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
-	// Create a server socket subscribed to the channel
-	servSocket := &fakeSocket{id: "servSocket", sockType: socket.WitnessSocketType}
-	consensusChannel.serverSockets.Upsert(servSocket)
-
 	// Get the data for the sent message
 	file := filepath.Join(protocolRelativePath,
 		"examples", "messageData", "consensus_learn", "learn.json")
@@ -1077,7 +990,7 @@ func Test_Publish_New_Message(t *testing.T) {
 
 	// Unmarshal the sent message
 	var publish method.Publish
-	err = json.Unmarshal(servSocket.msg, &publish)
+	err = json.Unmarshal(fakeHub.fakeSock.msg, &publish)
 	require.NoError(t, err)
 
 	sentMsg := publish.Params.Message
@@ -1133,6 +1046,8 @@ type fakeHub struct {
 	log zerolog.Logger
 
 	laoFac channel.LaoFactory
+
+	fakeSock fakeSocket
 }
 
 // NewHub returns a Organizer Hub.
@@ -1159,6 +1074,7 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		workers:         semaphore.NewWeighted(10),
 		log:             log,
 		laoFac:          laoFac,
+		fakeSock:        fakeSocket{id: "hubSock"},
 	}
 
 	return &hub, nil
@@ -1200,11 +1116,18 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-func (h *fakeHub) SendSubscribeToServers(channel string) error {
-	return nil
+func (h *fakeHub) GetServerNumber() int {
+	return 1
 }
 
-func (h *fakeHub) SendUnsubscribeToServers(channel string) error {
+func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
+	byteMsg, err := json.Marshal(publishMsg)
+	if err != nil {
+		return err
+	}
+
+	h.fakeSock.msg = byteMsg
+
 	return nil
 }
 

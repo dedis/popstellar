@@ -96,8 +96,8 @@ type HubFunctionalities interface {
 	Sign([]byte) ([]byte, error)
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
-	SendSubscribeToServers(channelID string) error
-	SendUnsubscribeToServers(channeID string) error
+	GetServerNumber() int
+	SendAndHandleMessage(method.Publish) error
 	SetMessageID(publish *method.Publish)
 }
 

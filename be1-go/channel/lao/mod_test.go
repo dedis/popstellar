@@ -585,11 +585,11 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
 }
 
-func (h *fakeHub) SendSubscribeToServers(channel string) error {
-	return nil
+func (h *fakeHub) GetServerNumber() int {
+	return 0
 }
 
-func (h *fakeHub) SendUnsubscribeToServers(channel string) error {
+func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
 	return nil
 }
 
