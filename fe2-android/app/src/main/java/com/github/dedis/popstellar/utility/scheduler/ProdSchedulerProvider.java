@@ -8,7 +8,10 @@ import io.reactivex.schedulers.Schedulers;
 public class ProdSchedulerProvider implements SchedulerProvider {
 
   @Inject
-  public ProdSchedulerProvider() {}
+  public ProdSchedulerProvider() {
+    // This constructor is needed because Hilt needs a constructor annotated with @Inject
+    // to find out how the type should be provided
+  }
 
   @Override
   public Scheduler io() {

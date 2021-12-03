@@ -425,7 +425,7 @@ public class LAORepository {
     return messageById;
   }
 
-  private void dispose() {
+  public void dispose() {
     disposables.dispose();
   }
 }

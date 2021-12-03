@@ -28,7 +28,6 @@ public abstract class LAODatabase extends RoomDatabase {
 
   public abstract LAODao laoDao();
 
-  private static volatile LAODatabase INSTANCE;
   private static final int NUMBER_OF_THREADS = 4;
   static final ExecutorService databaseWriteExecutor =
       Executors.newFixedThreadPool(NUMBER_OF_THREADS);
