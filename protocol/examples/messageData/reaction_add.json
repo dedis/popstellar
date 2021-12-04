@@ -1,6 +1,6 @@
 {
   "action": "add",
-  "reaction_id": 0,
+  "reaction_id": "XXX",
   "chirp_id": "XXX",
   "timestamp": 123
 }

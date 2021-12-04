@@ -12,13 +12,11 @@
     },
     "reaction_id": {
       "description": "Code indicating a reaction",
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 2,
-      "$comment": "0 for a like, 1 for a dislike and 2 for a heart"
+      "type": "string",
+      "$comment": "unicode of the reaction (ex: \"U+1F44D\" for like)"
     },
     "chirp_id": {
-      "description": "message_id of the tweet message",
+      "description": "message_id of the chirp message",
       "type": "string",
       "contentEncoding": "base64"
     },
