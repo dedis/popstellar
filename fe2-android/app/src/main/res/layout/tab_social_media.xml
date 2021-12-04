@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:id="@+id/tab_social_media_only"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
 
-  <androidx.constraintlayout.widget.Guideline
-    android:id="@+id/guideline_horizontal_tab_social_media"
+  <data>
+
+    <variable
+      name="viewmodel"
+      type="com.github.dedis.popstellar.ui.home.HomeViewModel" />
+  </data>
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/tab_social_media_only"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
+    android:layout_height="match_parent">
 
-  <androidx.constraintlayout.widget.Guideline
-    android:id="@+id/guideline_vertical_tab_social_media"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_social_media" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline_horizontal_tab_social_media"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="horizontal"
+      app:layout_constraintGuide_percent="@dimen/guideline_horizontal_tab" />
 
-  <Button
-    android:id="@+id/tab_social_media"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
-    android:text="@string/tab_social_media"
-    android:textSize="@dimen/size_small"
-    app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_social_media"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_social_media"
-    app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.Guideline
+      android:id="@+id/guideline_vertical_tab_social_media"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical"
+      app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_social_media" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+      android:id="@+id/tab_social_media"
+      android:layout_width="0dp"
+      android:layout_height="0dp"
+      android:enabled="@{!viewmodel.getLAOs().isEmpty() &amp;&amp; viewmodel.getLAOs() != null}"
+      android:text="@string/tab_social_media"
+      android:textSize="@dimen/size_small"
+      app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_social_media"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_social_media"
+      app:layout_constraintTop_toTopOf="parent" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

@@ -29,7 +29,6 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 /** HomeActivity represents the entry point for the application. */
@@ -308,9 +307,9 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSocialMediaActivity() {
     Intent intent = new Intent(this, SocialMediaActivity.class);
-    String laoId = Objects.requireNonNull(mViewModel.getLAOs().getValue()).get(0).getId();
-    Log.d(TAG, "Trying to open social media with lao id " + laoId);
-    intent.putExtra("LAO_ID", laoId);
+    // ArrayList<Lao> laos = new ArrayList<Lao>(mViewModel.getLAOs().getValue());
+    Log.d(TAG, "Trying to open social media");
+    // intent.putExtra("LAOS", laos);
     startActivity(intent);
   }
 

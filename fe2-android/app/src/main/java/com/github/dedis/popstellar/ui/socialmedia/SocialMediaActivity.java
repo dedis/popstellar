@@ -18,7 +18,6 @@ import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 
 public class SocialMediaActivity extends AppCompatActivity {
@@ -30,9 +29,6 @@ public class SocialMediaActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.social_media_activity);
     mViewModel = obtainViewModel(this);
-    // mViewModel.subscribeToChannel(
-    //     (String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
-    mViewModel.setLaoId((String) Objects.requireNonNull(getIntent().getExtras()).get("LAO_ID"));
 
     setupSocialMediaHomeFragment();
     setupNavigationBar();
@@ -88,17 +84,23 @@ public class SocialMediaActivity extends AppCompatActivity {
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.subscription_general_channel, menu);
+    getMenuInflater().inflate(R.menu.social_media_top_menu, menu);
     return true;
   }
 
+  @SuppressLint("NonConstantResourceId")
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    if (item.getItemId() == R.id.subscription_icon) {
-      mViewModel.subscribeToGeneralChannel(mViewModel.getLaoId().getValue());
-      return true;
-    } else {
-      return super.onOptionsItemSelected(item);
+    switch (item.getItemId()) {
+      case R.id.subscription_icon:
+        mViewModel.subscribeToGeneralChannel(mViewModel.getLaoId().getValue());
+        return true;
+      case R.id.laos_list:
+        // TODO: create a small window to show lao id.
+        return true;
+
+      default:
+        return super.onOptionsItemSelected(item);
     }
   }
 

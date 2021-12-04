@@ -10,6 +10,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
@@ -18,6 +19,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -41,6 +43,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
+  private final MutableLiveData<List<Lao>> mLAOs = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
 
   /*
@@ -100,6 +103,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mNumberCharsLeft;
   }
 
+  public LiveData<List<Lao>> getLAOs() {
+    return mLAOs;
+  }
+
   public LiveData<String> getLaoId() {
     return mLaoId;
   }
@@ -133,6 +140,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   public void setNumberCharsLeft(Integer numberChars) {
     mNumberCharsLeft.setValue(numberChars);
+  }
+
+  public void setLAOs(List<Lao> laos) {
+    mLAOs.setValue(laos);
   }
 
   public void setLaoId(String laoId) {
