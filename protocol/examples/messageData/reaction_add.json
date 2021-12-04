@@ -1,4 +1,5 @@
 {
+  "object": "reaction",
   "action": "add",
   "reaction_id": "XXX",
   "chirp_id": "XXX",
