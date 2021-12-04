@@ -12,6 +12,9 @@ import dagger.hilt.android.testing.HiltTestApplication;
  * JUnit Runner provider the HiltTestApplication that will inject dependencies into the tested code.
  *
  * <p>All tests using hilt injected dependencies should be annotated with {@link HiltAndroidTest}
+ *
+ * <p>For more information : <a
+ * href="https://developer.android.com/training/dependency-injection/hilt-testing">https://developer.android.com/training/dependency-injection/hilt-testing</a>
  */
 @SuppressWarnings("unused")
 public final class HiltTestRunner extends AndroidJUnitRunner {
