@@ -26,8 +26,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         } else if (!validateTimestampOrder(data.start_time, data.end_time)) {
           Right(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
         } else if (expectedHash != data.id) {
-          //Right(validationError("unexpected id"))
-          Right(validationError(data.id.toString() + " : actual left | expected right : " + expectedHash.toString()))
+          Right(validationError("unexpected id"))
         } else {
           Left(rpcMessage)
         }

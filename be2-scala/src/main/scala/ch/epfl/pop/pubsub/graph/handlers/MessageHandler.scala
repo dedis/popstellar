@@ -25,7 +25,7 @@ trait MessageHandler extends AskPatternConstants {
   def dbAskWrite(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
     val m: Message =  if (message != null) message else rpcMessage.getParamsMessage.get
     val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, m)).map {
-      case DbActor.DbActorWriteAck => Left(rpcMessage)
+      case DbActor.DbActorWriteAck() => Left(rpcMessage)
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
@@ -44,7 +44,7 @@ trait MessageHandler extends AskPatternConstants {
   def dbAskWritePropagate(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
     val m: Message =  if (message != null) message else rpcMessage.getParamsMessage.get
     val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, m)).map {
-      case DbActor.DbActorWriteAck => Left(rpcMessage)
+      case DbActor.DbActorWriteAck() => Left(rpcMessage)
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }

@@ -1,0 +1,125 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`RollCallOpened renders correctly when no scan 1`] = `
+<View
+  style={
+    Object {
+      "flex": 1,
+      "justifyContent": "space-evenly",
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "borderWidth": 1,
+        "flex": 8,
+        "justifyContent": "center",
+        "margin": 10,
+      }
+    }
+  >
+    <Text
+      style={
+        Object {
+          "color": "black",
+          "fontSize": 25,
+          "marginHorizontal": 10,
+          "textAlign": "center",
+        }
+      }
+    >
+      Please scan each participant’s Roll-call QR code exactly once.
+    </Text>
+    <View />
+    <View
+      style={Object {}}
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "alignSelf": "center",
+            "backgroundColor": "#52c41a",
+            "borderColor": "#fff",
+            "borderRadius": 9,
+            "borderWidth": 0.5,
+            "height": 18,
+            "justifyContent": "center",
+            "minWidth": 18,
+          }
+        }
+      >
+        <Text
+          style={
+            Object {
+              "color": "white",
+              "fontSize": 12,
+              "paddingHorizontal": 4,
+            }
+          }
+        >
+          0
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        Object {
+          "marginHorizontal": 50,
+          "marginVertical": 10,
+        }
+      }
+    >
+      <View
+        accessibilityRole="button"
+        accessibilityState={
+          Object {
+            "disabled": false,
+          }
+        }
+        accessible={true}
+        collapsable={false}
+        focusable={true}
+        nativeID="animatedComponent"
+        onClick={[Function]}
+        onResponderGrant={[Function]}
+        onResponderMove={[Function]}
+        onResponderRelease={[Function]}
+        onResponderTerminate={[Function]}
+        onResponderTerminationRequest={[Function]}
+        onStartShouldSetResponder={[Function]}
+        style={
+          Object {
+            "opacity": 1,
+          }
+        }
+      >
+        <View
+          style={
+            Array [
+              Object {},
+            ]
+          }
+        >
+          <Text
+            disabled={false}
+            style={
+              Array [
+                Object {
+                  "color": "#007AFF",
+                  "fontSize": 18,
+                  "margin": 8,
+                  "textAlign": "center",
+                },
+              ]
+            }
+          >
+            Close Roll-Call
+          </Text>
+        </View>
+      </View>
+    </View>
+  </View>
+</View>
+`;
