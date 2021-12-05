@@ -533,7 +533,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message,
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
-		return answer.NewErrorf(-4, "invalid action: %s != %s)", action, expectedAction)
+		return answer.NewErrorf(-4, "invalid action %s, should be %s)", action, expectedAction)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -584,14 +584,6 @@ func (c *Channel) createElection(msg message.Message,
 
 	// Create the new election channel
 	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false, setupMsg.Questions, c.attendees, msg, c.hub, c.log)
-	// {
-	// 	createBaseChannel(organizerHub, channelPath),
-	// 	setupMsg.StartTime,
-	// 	setupMsg.EndTime,
-	// 	false,
-	// 	getAllQuestionsForElectionChannel(setupMsg.Questions),
-	// 	c.attendees,
-	// }
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)
