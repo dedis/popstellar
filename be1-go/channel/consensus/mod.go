@@ -421,8 +421,6 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 		messageState.currentPhase == ElectAcceptPhase &&
 		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
-		messageState.currentPhase = PromisePhase
-
 		consensusInstance := c.consensusInstances[data.InstanceID]
 		consensusInstance.Lock()
 		defer consensusInstance.Unlock()
@@ -476,12 +474,6 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 	messageState := c.messageStates[data.MessageID]
 	messageState.Lock()
 	defer messageState.Unlock()
-
-	// check wether the consensus finished the elect accept phase
-	if messageState.currentPhase <= ElectAcceptPhase {
-		return xerrors.Errorf("consensus corresponding to the message hasn't " +
-			"finished the elect_accept phase")
-	}
 
 	messageState.currentPhase = PromisePhase
 
@@ -693,7 +685,7 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 	consensusInstance.accepts = append(consensusInstance.accepts, data)
 
 	if len(consensusInstance.accepts) >= c.hub.GetServerNumber()/2+1 &&
-		c.messageStates[data.MessageID].proposer.Equal(c.hub.GetPubKeyOrg()) {
+		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
 		if !consensusInstance.decided {
 			consensusInstance.decided = true
