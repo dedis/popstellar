@@ -68,6 +68,18 @@
             "$ref": "dataElectAccept.json"
         },
         {
+            "$ref": "dataPrepare.json"
+        },
+        {
+            "$ref": "dataPromise.json"
+        },
+        {
+            "$ref": "dataPropose.json"
+        },
+        {
+            "$ref": "dataAccept.json"
+        },
+        {
             "$ref": "dataLearn.json"
         }
     ]

@@ -36,6 +36,10 @@ const message_data_reaction_delete_schema = require("../query/method/message/dat
 
 const message_data_elect_schema = require("../query/method/message/data/dataElect.json")
 const message_data_elect_accept_schema = require("../query/method/message/data/dataElectAccept.json")
+const message_data_prepare_schema = require("../query/method/message/data/dataPrepare.json")
+const message_data_promise_schema = require("../query/method/message/data/dataPromise.json")
+const message_data_propose_schema = require("../query/method/message/data/dataPropose.json")
+const message_data_accept_schema = require("../query/method/message/data/dataAccept.json")
 const message_data_learn_schema = require("../query/method/message/data/dataLearn.json")
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -81,6 +85,10 @@ ajv.addSchema([
 
     message_data_elect_schema,
     message_data_elect_accept_schema,
+    message_data_prepare_schema,
+    message_data_promise_schema,
+    message_data_propose_schema,
+    message_data_accept_schema,
     message_data_learn_schema
 ]);
 
