@@ -411,13 +411,13 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 	messageState := c.messageStates[data.MessageID]
 	messageState.Lock()
 	defer messageState.Unlock()
-	messageState.electAcceptNumber += 1
-
-	electAcceptNumber := messageState.electAcceptNumber
+	if data.Accept {
+		messageState.electAcceptNumber += 1
+	}
 
 	// Once all Elect_Accept have been received, proposer creates new prepare
 	// message
-	if electAcceptNumber >= c.hub.GetServerNumber() &&
+	if messageState.electAcceptNumber >= c.hub.GetServerNumber() &&
 		messageState.currentPhase == ElectAcceptPhase &&
 		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
@@ -430,6 +430,8 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 		} else {
 			consensusInstance.proposed_try = consensusInstance.promised_try + 1
 		}
+		// For now the consensus always accept a true if it complete
+		consensusInstance.proposed_value = true
 
 		newData := messagedata.ConsensusPrepare{
 			Object:     "consensus",
@@ -481,7 +483,7 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	if consensusInstance.proposed_try > consensusInstance.promised_try {
+	if consensusInstance.promised_try < data.Value.ProposedTry {
 		consensusInstance.promised_try = data.Value.ProposedTry
 
 		newData := messagedata.ConsensusPromise{
@@ -545,9 +547,11 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
 
 		highestAccepted := int64(-1)
+		highestAcceptedValue := true
 		for _, promise := range consensusInstance.promises {
 			if promise.Value.AcceptedTry > highestAccepted {
 				highestAccepted = promise.Value.AcceptedTry
+				highestAcceptedValue = promise.Value.AcceptedValue
 			}
 		}
 
@@ -560,7 +564,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 			CreatedAt: time.Now().Unix(),
 
 			Value: messagedata.ValuePropose{
-				ProposedValue: true,
+				ProposedValue: highestAcceptedValue,
 			},
 
 			AcceptorSignatures: make([]string, 0),
@@ -682,7 +686,10 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	consensusInstance.accepts = append(consensusInstance.accepts, data)
+	if data.Value.AcceptedTry == consensusInstance.proposed_try &&
+		data.Value.AcceptedValue == consensusInstance.proposed_value {
+		consensusInstance.accepts = append(consensusInstance.accepts, data)
+	}
 
 	if len(consensusInstance.accepts) >= c.hub.GetServerNumber()/2+1 &&
 		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
