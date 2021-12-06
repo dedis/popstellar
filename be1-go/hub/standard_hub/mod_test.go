@@ -705,6 +705,9 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	err = hub.SendAndHandleMessage(publish)
 	require.NoError(t, err)
 
+	// wait for the goroutine created by the function
+	time.Sleep(100 * time.Millisecond)
+
 	// > check the socket
 	require.Equal(t, publishBuf, sock.msg)
 
