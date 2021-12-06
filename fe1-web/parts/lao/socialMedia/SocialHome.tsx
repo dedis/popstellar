@@ -51,20 +51,19 @@ const SocialHome = () => {
 
   // Otherwise, get the pop token of the attendee using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
-  if (rollCallId) {
-    console.log('Attendee');
-    const eventSelect = makeEventGetter(lao.id, rollCallId);
-    const rollCall: RollCall = useSelector(eventSelect) as RollCall;
+  console.log('Attendee');
+  const eventSelect = makeEventGetter(lao.id, rollCallId);
+  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
 
-    // This will be run again each time the lao.last_tokenized_roll_call_id changes
-    useEffect(() => {
-      generateToken(lao.id, rollCallId).then((token) => {
-        if (rollCall.containsToken(token)) {
-          userPublicKey = token.publicKey;
-        }
-      });
-    }, [lao.last_tokenized_roll_call_id]);
-  }
+  // This will be run again each time the lao.last_tokenized_roll_call_id changes
+  useEffect(() => {
+    console.log('useEffects runs');
+    generateToken(lao.id, rollCallId).then((token) => {
+      if (rollCall.containsToken(token)) {
+        userPublicKey = token.publicKey;
+      }
+    });
+  }, [lao.last_tokenized_roll_call_id]);
 
   const publishChirp = () => {
     if (userPublicKey) {
