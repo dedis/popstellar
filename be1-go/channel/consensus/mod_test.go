@@ -767,6 +767,8 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	// Add a new consensus instance to the channel
 	consensusChannel.createConsensusInstance(consensusInstance)
+	consensusChannel.consensusInstances[consensusInstance].proposed_try = 4
+	consensusChannel.consensusInstances[consensusInstance].proposed_value = true
 
 	// Create a consensus propose message
 	file = filepath.Join(protocolRelativePath,
