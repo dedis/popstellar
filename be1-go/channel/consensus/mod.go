@@ -24,7 +24,9 @@ import (
 )
 
 const (
-	msgID = "msg id"
+	msgID                    = "msg id"
+	messageIDNonExistant     = "message doesn't correspond to any previously received message"
+	messageNotInCorrectPhase = "consensus corresponding to the message hasn't entered"
 )
 
 // Channel defines a consensus channel
@@ -405,7 +407,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
-		return xerrors.Errorf("message doesn't correspond to any previously received message")
+		return xerrors.Errorf(messageIDNonExistant)
 	}
 
 	messageState := c.messageStates[data.MessageID]
@@ -417,43 +419,48 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, data messageda
 
 	// Once all Elect_Accept have been received, proposer creates new prepare
 	// message
-	if messageState.electAcceptNumber >= c.hub.GetServerNumber() &&
-		messageState.currentPhase == ElectAcceptPhase &&
-		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+	if messageState.electAcceptNumber < c.hub.GetServerNumber() {
+		return nil
+	}
+	if messageState.currentPhase != ElectAcceptPhase ||
+		!messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+		return nil
+	}
 
-		consensusInstance := c.consensusInstances[data.InstanceID]
-		consensusInstance.Lock()
-		defer consensusInstance.Unlock()
+	consensusInstance := c.consensusInstances[data.InstanceID]
+	consensusInstance.Lock()
+	defer consensusInstance.Unlock()
 
-		if consensusInstance.proposed_try >= consensusInstance.promised_try {
-			consensusInstance.proposed_try += 1
-		} else {
-			consensusInstance.proposed_try = consensusInstance.promised_try + 1
-		}
-		// For now the consensus always accept a true if it complete
-		consensusInstance.proposed_value = true
+	if consensusInstance.proposed_try >= consensusInstance.promised_try {
+		consensusInstance.proposed_try += 1
+	} else {
+		consensusInstance.proposed_try = consensusInstance.promised_try + 1
+	}
 
-		newData := messagedata.ConsensusPrepare{
-			Object:     "consensus",
-			Action:     "prepare",
-			InstanceID: data.InstanceID,
-			MessageID:  data.MessageID,
+	// For now the consensus always accept a true if it complete
+	consensusInstance.proposed_value = true
 
-			CreatedAt: time.Now().Unix(),
+	newData := messagedata.ConsensusPrepare{
+		Object:     "consensus",
+		Action:     "prepare",
+		InstanceID: data.InstanceID,
+		MessageID:  data.MessageID,
 
-			Value: messagedata.ValuePrepare{
-				ProposedTry: consensusInstance.proposed_try,
-			},
-		}
-		byteMsg, err := json.Marshal(newData)
-		if err != nil {
-			return xerrors.Errorf("failed to marshal new consensus#prepare message: %v", err)
-		}
+		CreatedAt: time.Now().Unix(),
 
-		err = c.publishNewMessage(byteMsg)
-		if err != nil {
-			return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
-		}
+		Value: messagedata.ValuePrepare{
+			ProposedTry: consensusInstance.proposed_try,
+		},
+	}
+
+	byteMsg, err := json.Marshal(newData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal new consensus#prepare message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
 	}
 
 	return nil
@@ -470,7 +477,7 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 	if !valid {
-		return xerrors.Errorf("message doesn't correspond to any previously received message")
+		return xerrors.Errorf(messageIDNonExistant)
 	}
 
 	messageState := c.messageStates[data.MessageID]
@@ -483,32 +490,35 @@ func (c *Channel) processConsensusPrepare(data messagedata.ConsensusPrepare) err
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	if consensusInstance.promised_try < data.Value.ProposedTry {
-		consensusInstance.promised_try = data.Value.ProposedTry
+	if consensusInstance.promised_try >= data.Value.ProposedTry {
+		return nil
+	}
 
-		newData := messagedata.ConsensusPromise{
-			Object:     "consensus",
-			Action:     "promise",
-			InstanceID: data.InstanceID,
-			MessageID:  data.MessageID,
+	consensusInstance.promised_try = data.Value.ProposedTry
 
-			CreatedAt: time.Now().Unix(),
+	newData := messagedata.ConsensusPromise{
+		Object:     "consensus",
+		Action:     "promise",
+		InstanceID: data.InstanceID,
+		MessageID:  data.MessageID,
 
-			Value: messagedata.ValuePromise{
-				AcceptedTry:   consensusInstance.accepted_try,
-				AcceptedValue: consensusInstance.accepted_value,
-				PromisedTry:   consensusInstance.promised_try,
-			},
-		}
-		byteMsg, err := json.Marshal(newData)
-		if err != nil {
-			return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
-		}
+		CreatedAt: time.Now().Unix(),
 
-		err = c.publishNewMessage(byteMsg)
-		if err != nil {
-			return err
-		}
+		Value: messagedata.ValuePromise{
+			AcceptedTry:   consensusInstance.accepted_try,
+			AcceptedValue: consensusInstance.accepted_value,
+			PromisedTry:   consensusInstance.promised_try,
+		},
+	}
+
+	byteMsg, err := json.Marshal(newData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -525,14 +535,13 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 	// check wether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 	if !valid {
-		return xerrors.Errorf("message doesn't correspond to any previously received message")
+		return xerrors.Errorf(messageIDNonExistant)
 	}
 
 	messageState := c.messageStates[data.MessageID]
 
 	if messageState.currentPhase < PromisePhase {
-		return xerrors.Errorf("consensus corresponding to the message hasn't" +
-			" entered the promise phase")
+		return xerrors.Errorf(messageNotInCorrectPhase + " the promise phase")
 	}
 
 	consensusInstance := c.consensusInstances[data.InstanceID]
@@ -542,57 +551,52 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, data messagedata.C
 	consensusInstance.promises = append(consensusInstance.promises, data)
 
 	// if enough Promise messages are received, the proposer send a Propose message
-	if len(consensusInstance.promises) >= c.hub.GetServerNumber()/2+1 &&
-		messageState.currentPhase == PromisePhase &&
-		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+	if len(consensusInstance.promises) < c.hub.GetServerNumber()/2+1 {
+		return nil
+	}
+	if messageState.currentPhase != PromisePhase ||
+		!messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+		return nil
+	}
 
-		highestAccepted := int64(-1)
-		highestAcceptedValue := true
-		for _, promise := range consensusInstance.promises {
-			if promise.Value.AcceptedTry > highestAccepted {
-				highestAccepted = promise.Value.AcceptedTry
-				highestAcceptedValue = promise.Value.AcceptedValue
-			}
+	highestAccepted := int64(-1)
+	highestAcceptedValue := true
+	for _, promise := range consensusInstance.promises {
+		if promise.Value.AcceptedTry > highestAccepted {
+			highestAccepted = promise.Value.AcceptedTry
+			highestAcceptedValue = promise.Value.AcceptedValue
 		}
+	}
 
-		newData := messagedata.ConsensusPropose{
-			Object:     "consensus",
-			Action:     "propose",
-			InstanceID: data.InstanceID,
-			MessageID:  data.MessageID,
+	newData := messagedata.ConsensusPropose{
+		Object:     "consensus",
+		Action:     "propose",
+		InstanceID: data.InstanceID,
+		MessageID:  data.MessageID,
 
-			CreatedAt: time.Now().Unix(),
+		CreatedAt: time.Now().Unix(),
 
-			Value: messagedata.ValuePropose{
-				ProposedValue: highestAcceptedValue,
-			},
+		Value: messagedata.ValuePropose{
+			ProposedValue: highestAcceptedValue,
+		},
 
-			AcceptorSignatures: make([]string, 0),
-		}
+		AcceptorSignatures: make([]string, 0),
+	}
 
-		if highestAccepted == -1 {
-			newData.Value.ProposedTry = consensusInstance.proposed_try
-			byteMsg, err := json.Marshal(newData)
-			if err != nil {
-				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
-			}
+	if highestAccepted == -1 {
+		newData.Value.ProposedTry = consensusInstance.proposed_try
+	} else {
+		newData.Value.ProposedTry = highestAccepted
+	}
 
-			err = c.publishNewMessage(byteMsg)
-			if err != nil {
-				return err
-			}
-		} else {
-			newData.Value.ProposedTry = highestAccepted
-			byteMsg, err := json.Marshal(newData)
-			if err != nil {
-				return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
-			}
+	byteMsg, err := json.Marshal(newData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
+	}
 
-			err = c.publishNewMessage(byteMsg)
-			if err != nil {
-				return err
-			}
-		}
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -610,14 +614,13 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
-		return xerrors.Errorf("message doesn't correspond to any previously received message")
+		return xerrors.Errorf(messageIDNonExistant)
 	}
 
 	messageState := c.messageStates[data.MessageID]
 
 	if messageState.currentPhase < PromisePhase {
-		return xerrors.Errorf("consensus corresponding to the message hasn't" +
-			" entered the promise phase")
+		return xerrors.Errorf(messageNotInCorrectPhase + " the promise phase")
 	}
 
 	messageState.currentPhase = AcceptPhase
@@ -632,29 +635,34 @@ func (c *Channel) processConsensusPropose(data messagedata.ConsensusPropose) err
 		return nil
 	}
 
-	if consensusInstance.promised_try <= data.Value.ProposedTry {
-		consensusInstance.accepted_try = data.Value.ProposedTry
-		consensusInstance.accepted_value = data.Value.ProposedValue
+	if consensusInstance.promised_try > data.Value.ProposedTry {
+		return nil
+	}
 
-		newData := messagedata.ConsensusAccept{
-			Object:     "consensus",
-			Action:     "accept",
-			InstanceID: data.InstanceID,
-			MessageID:  data.MessageID,
+	consensusInstance.accepted_try = data.Value.ProposedTry
+	consensusInstance.accepted_value = data.Value.ProposedValue
 
-			CreatedAt: time.Now().Unix(),
+	newData := messagedata.ConsensusAccept{
+		Object:     "consensus",
+		Action:     "accept",
+		InstanceID: data.InstanceID,
+		MessageID:  data.MessageID,
 
-			Value: messagedata.ValueAccept{
-				AcceptedTry:   consensusInstance.accepted_try,
-				AcceptedValue: consensusInstance.accepted_value,
-			},
-		}
-		byteMsg, err := json.Marshal(newData)
-		if err != nil {
-			return xerrors.Errorf("failed to marshal new consensus#accept message: %v", err)
-		}
+		CreatedAt: time.Now().Unix(),
 
-		return c.publishNewMessage(byteMsg)
+		Value: messagedata.ValueAccept{
+			AcceptedTry:   consensusInstance.accepted_try,
+			AcceptedValue: consensusInstance.accepted_value,
+		},
+	}
+	byteMsg, err := json.Marshal(newData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal new consensus#accept message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -672,14 +680,13 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
-		return xerrors.Errorf("message doesn't correspond to any previously received message")
+		return xerrors.Errorf(messageIDNonExistant)
 	}
 
 	messageState := c.messageStates[data.MessageID]
 
 	if messageState.currentPhase < AcceptPhase {
-		return xerrors.Errorf("consensus corresponding to the message hasn't" +
-			" entered the accept phase")
+		return xerrors.Errorf(messageNotInCorrectPhase + " the accept phase")
 	}
 
 	consensusInstance := c.consensusInstances[data.InstanceID]
@@ -691,38 +698,44 @@ func (c *Channel) processConsensusAccept(data messagedata.ConsensusAccept) error
 		consensusInstance.accepts = append(consensusInstance.accepts, data)
 	}
 
-	if len(consensusInstance.accepts) >= c.hub.GetServerNumber()/2+1 &&
-		messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
-
-		if !consensusInstance.decided {
-			consensusInstance.decided = true
-			consensusInstance.decision = consensusInstance.proposed_value
-
-			newData := messagedata.ConsensusLearn{
-				Object:     "consensus",
-				Action:     "learn",
-				InstanceID: data.InstanceID,
-				MessageID:  data.MessageID,
-
-				CreatedAt: time.Now().Unix(),
-
-				Value: messagedata.ValueLearn{
-					Decision: consensusInstance.decision,
-				},
-
-				AcceptorSignatures: make([]string, 0),
-			}
-			byteMsg, err := json.Marshal(newData)
-			if err != nil {
-				return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
-			}
-
-			err = c.publishNewMessage(byteMsg)
-			if err != nil {
-				return err
-			}
-		}
+	if len(consensusInstance.accepts) < c.hub.GetServerNumber()/2+1 {
+		return nil
 	}
+	if !messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+		return nil
+	}
+
+	if consensusInstance.decided {
+		return nil
+	}
+
+	consensusInstance.decided = true
+	consensusInstance.decision = consensusInstance.proposed_value
+
+	newData := messagedata.ConsensusLearn{
+		Object:     "consensus",
+		Action:     "learn",
+		InstanceID: data.InstanceID,
+		MessageID:  data.MessageID,
+
+		CreatedAt: time.Now().Unix(),
+
+		Value: messagedata.ValueLearn{
+			Decision: consensusInstance.decision,
+		},
+
+		AcceptorSignatures: make([]string, 0),
+	}
+	byteMsg, err := json.Marshal(newData)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
