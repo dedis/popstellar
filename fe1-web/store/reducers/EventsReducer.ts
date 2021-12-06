@@ -218,9 +218,9 @@ export const makeEventsMap = (laoId: string | undefined = undefined) => createSe
   },
 );
 
-export const makeEventGetter = (laoId: Hash | string, eventId: Hash | string) => {
+export const makeEventGetter = (laoId: Hash | string, eventId: Hash | string | undefined) => {
   const id = laoId.valueOf();
-  const evtId = eventId.valueOf();
+  const evtId = eventId?.valueOf();
 
   return createSelector(
     // First input: Get all events across all LAOs

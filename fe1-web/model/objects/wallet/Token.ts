@@ -32,12 +32,16 @@ export async function generateTokenFromPath(path: string): Promise<PopToken> {
 }
 
 /**
- * Generates a token for a given LAOId and RollCallId
+ * Generates a token for a given LAOId and RollCallId if it exists
  * @param laoId the id of the LAO
  * @param rollCallId the id of the Roll Call
  * @returns a Promise resolving to a PopToken
  */
-export function generateToken(laoId: Hash, rollCallId: Hash): Promise<PopToken> {
+export function generateToken(laoId: Hash, rollCallId: Hash | undefined)
+  : Promise<PopToken | undefined> {
+  if (rollCallId === undefined) {
+    return Promise.resolve(undefined);
+  }
   const path = bip39path.fromLaoRollCall(laoId, rollCallId);
   return generateTokenFromPath(path);
 }
@@ -61,7 +65,7 @@ export async function getCurrentPopToken(): Promise<PopToken | undefined> {
   const eventSelect = makeEventGetter(lao.id, rollCallId);
   const rollCall: RollCall = useSelector(eventSelect) as RollCall;
   const token = await generateToken(lao.id, rollCallId);
-  if (rollCall.containsToken(token)) {
+  if (token && rollCall.containsToken(token)) {
     return token;
   }
   return undefined;

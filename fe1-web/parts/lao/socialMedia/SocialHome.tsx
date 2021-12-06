@@ -18,7 +18,7 @@ import {
 } from 'store';
 
 /**
- * UI for the Social Media component
+ * UI for the Social Media home screen component
  */
 const styles = StyleSheet.create({
   view: {
@@ -51,7 +51,6 @@ const SocialHome = () => {
 
   // Otherwise, get the pop token of the attendee using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
-  console.log('Attendee');
   const eventSelect = makeEventGetter(lao.id, rollCallId);
   const rollCall: RollCall = useSelector(eventSelect) as RollCall;
 
@@ -59,7 +58,7 @@ const SocialHome = () => {
   useEffect(() => {
     console.log('useEffects runs');
     generateToken(lao.id, rollCallId).then((token) => {
-      if (rollCall.containsToken(token)) {
+      if (token && rollCall.containsToken(token)) {
         userPublicKey = token.publicKey;
       }
     });
