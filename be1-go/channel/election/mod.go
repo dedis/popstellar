@@ -146,6 +146,9 @@ type question struct {
 }
 
 type validVote struct {
+	// msgID represents the ID of the message containing the cast vote
+	msgID string
+
 	// ID represents the ID of the valid cast vote
 	ID string
 
@@ -185,6 +188,15 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 	c.broadcastToAllClients(msg)
 
+	// send the results only after broadcasting the end message
+	if object == messagedata.ElectionObject && action == messagedata.ElectionActionEnd {
+		// broadcast election result message
+		err = c.broadcastElectionResult()
+		if err != nil {
+			return xerrors.Errorf("problem sending election#result message: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -221,13 +233,12 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 			return xerrors.Errorf("failed to end election: %v", err)
 		}
 	case messagedata.ElectionActionResult:
-		err := c.processElectionResult(msg)
-		if err != nil {
-			return xerrors.Errorf("failed to result election: %v", err)
-		}
+		// nothing to do
 	default:
 		return answer.NewInvalidActionError(action)
 	}
+
+	c.inbox.StoreMessage(msg)
 
 	return nil
 }
@@ -347,12 +358,11 @@ func (c *Channel) processCastVote(msg message.Message) error {
 	}
 
 	// this should update any previously set vote if the message ids are the same
-	c.inbox.StoreMessage(msg)
-	for _, q := range castVote.Votes {
+	for _, vote := range castVote.Votes {
 
-		qs, ok := c.questions[q.Question]
+		qs, ok := c.questions[vote.Question]
 		if !ok {
-			return answer.NewErrorf(-4, "no Question with question ID %s exists", q.Question)
+			return answer.NewErrorf(-4, "no Question with question ID %s exists", vote.Question)
 		}
 
 		// this is to handle the case when the organizer must handle multiple
@@ -362,18 +372,19 @@ func (c *Channel) processCastVote(msg message.Message) error {
 
 		// if the sender didn't previously cast a vote or if the vote is no
 		// longer valid update it
-		if err := checkMethodProperties(qs.method, len(q.Vote)); err != nil {
+		if err := checkMethodProperties(qs.method, len(vote.Vote)); err != nil {
 			return xerrors.Errorf("failed to validate voting method props: %w", err)
 		}
 
 		if !ok {
 			qs.validVotes[msg.Sender] = validVote{
-				q.ID,
+				msg.MessageID,
+				vote.ID,
 				castVote.CreatedAt,
-				q.Vote,
+				vote.Vote,
 			}
 		} else {
-			changeVote(qs, earlierVote, msg.Sender, castVote.CreatedAt, q.Vote)
+			changeVote(qs, earlierVote, vote, msg.Sender, msg.MessageID, castVote.CreatedAt)
 		}
 
 		// other votes can now change the list of valid votes
@@ -396,16 +407,6 @@ func (c *Channel) processElectionEnd(msg message.Message) error {
 	err = c.verifyMessageElectionEnd(electionEnd)
 	if err != nil {
 		return xerrors.Errorf("invalid election#end message: %v", err)
-	}
-
-	c.broadcastToAllClients(msg)
-
-	c.inbox.StoreMessage(msg)
-
-	// broadcast election result message
-	err = c.broadcastElectionResult()
-	if err != nil {
-		return xerrors.Errorf("problem sending election#result message: %v", err)
 	}
 
 	return nil
@@ -470,7 +471,7 @@ func (c *Channel) broadcastElectionResult() error {
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
-	resultElectionMsg := message.Message{
+	electionResultMsg := message.Message{
 		Data:              newData64,
 		Sender:            base64.URLEncoding.EncodeToString(pkBuf),
 		Signature:         signature,
@@ -478,25 +479,7 @@ func (c *Channel) broadcastElectionResult() error {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	c.broadcastToAllClients(resultElectionMsg)
-
-	c.inbox.StoreMessage(resultElectionMsg)
-
-	return nil
-}
-
-func (c *Channel) processElectionResult(msg message.Message) error {
-
-	var electionResult messagedata.ElectionResult
-
-	err := msg.UnmarshalData(&electionResult)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal publish election end: %v", err)
-	}
-
-	c.broadcastToAllClients(msg)
-
-	c.inbox.StoreMessage(msg)
+	c.broadcastToAllClients(electionResultMsg)
 
 	return nil
 }
@@ -522,11 +505,13 @@ func checkMethodProperties(method string, length int) error {
 	return nil
 }
 
-func changeVote(qs *question, earlierVote validVote, sender string, created int64, indexes []int) {
+func changeVote(qs *question, earlierVote validVote, newVote messagedata.Vote, msgID string, sender string, created int64) {
 	if earlierVote.voteTime > created {
 		qs.validVotes[sender] = validVote{
+			msgID:    msgID,
+			ID:       newVote.ID,
 			voteTime: created,
-			indexes:  indexes,
+			indexes:  newVote.Vote,
 		}
 	}
 }
@@ -540,7 +525,7 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 			ballotOpts[i] = b
 		}
 
-		qs[q.ID] = &question{
+		qs[q.ID] = &question {
 			id:            []byte(q.ID),
 			ballotOptions: ballotOpts,
 			validVotesMu:  sync.RWMutex{},

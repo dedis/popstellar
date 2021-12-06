@@ -110,8 +110,8 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 
 	// verify order of registered votes
 	if len(electionEnd.RegisteredVotes) != 0 {
-		// get hashed valid votes sorted by vote ID
-		validVotes := make([]string, 0)
+		// get hashed ID of valid votes sorted by msg ID
+		validVotes := make(map[string]string)
 		for _, question := range c.questions {
 			question.validVotesMu.Lock()
 
@@ -119,20 +119,31 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 			for _, validVote := range question.validVotes {
 				// since we eliminated (in cast vote) the duplicate votes we are sure
 				// that the validVotes contain one vote for one question by every voter
-				validVotes = append(validVotes, validVote.ID)
+				validVotes[validVote.msgID] = validVote.ID
 			}
 
 			question.validVotesMu.Unlock()
 		}
 
-		// sort all valid votes by vote id and hash
-		sort.Strings(validVotes)
-		validVotesHash := messagedata.Hash(validVotes...)
+		// sort all valid votes by message id
+		messageIDs := make([]string, 0)
+		for _, messageID := range validVotes {
+			messageIDs = append(messageIDs, messageID)
+		}
+		sort.Strings(messageIDs)
+
+		// hash all valid vote ids
+		votes := make([]string, 0)
+		for _, messageID := range messageIDs {
+			votes = append(votes, validVotes[messageID])
+		}
+		validVotesHash := messagedata.Hash(votes...)
 
 		// compare registered votes with local saved votes
 		if electionEnd.RegisteredVotes != validVotesHash {
-			c.log.Error().Msgf("not same registered votes, had %s wanted %s", electionEnd.RegisteredVotes, validVotesHash)
-			//return xerrors.Errorf("received registered votes is not correct, should be %s", validVotesHash)
+			c.log.Error().Msgf("not same registered votes, had %s wanted %s",
+				electionEnd.RegisteredVotes,
+				validVotesHash)
 		}
 	}
 
