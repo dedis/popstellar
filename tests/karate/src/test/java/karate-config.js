@@ -27,5 +27,19 @@ function fn() {
     config.path = '';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
   }
+
+  const android = {};
+  android["desiredConfig"] = {
+   "app" : "C:/Users/Gabriel/Documents/Etudes/EPFL/Cours/MA1-1/Semster_Project/student_21_pop-repo/fe2-android/app/build/outputs/apk/prod/debug/app-prod-debug.apk",
+   "newCommandTimeout" : 300,
+   "platformVersion" : "9.0",
+   "platformName" : "Android",
+   "connectHardwareKeyboard" : true,
+   "deviceName" : "emulator-5554",
+   "avd" : "Pixel_2_API_29",
+   "automationName" : "UiAutomator2"
+  }
+  config["android"] = android
+
   return config;
 }
