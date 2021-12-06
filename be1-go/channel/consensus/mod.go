@@ -260,9 +260,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		}
 
 		err = c.processConsensusElect(senderPoint, msg.MessageID, consensusElect)
-		if err != nil {
-			return xerrors.Errorf("failed to process elect action: %w", err)
-		}
+
 	case messagedata.ConsensusActionElectAccept:
 		var consensusElectAccept messagedata.ConsensusElectAccept
 
@@ -272,9 +270,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		}
 
 		err = c.processConsensusElectAccept(senderPoint, consensusElectAccept)
-		if err != nil {
-			return xerrors.Errorf("failed to process elect accept action: %w", err)
-		}
+
 	case messagedata.ConsensusActionPrepare:
 		var consensusPrepare messagedata.ConsensusPrepare
 
@@ -284,9 +280,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		}
 
 		err = c.processConsensusPrepare(consensusPrepare)
-		if err != nil {
-			return xerrors.Errorf("failed to process prepare action: %w", err)
-		}
+
 	case messagedata.ConsensusActionPromise:
 		var consensusPromise messagedata.ConsensusPromise
 
@@ -296,9 +290,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		}
 
 		err = c.processConsensusPromise(senderPoint, consensusPromise)
-		if err != nil {
-			return xerrors.Errorf("failed to process promise action: %w", err)
-		}
+
 	case messagedata.ConsensusActionPropose:
 		var consensusPropose messagedata.ConsensusPropose
 
@@ -308,9 +300,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		}
 
 		err = c.processConsensusPropose(consensusPropose)
-		if err != nil {
-			return xerrors.Errorf("failed to process propose action: %w", err)
-		}
+
 	case messagedata.ConsensusActionAccept:
 		var consensusAccept messagedata.ConsensusAccept
 
@@ -320,9 +310,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		}
 
 		err = c.processConsensusAccept(consensusAccept)
-		if err != nil {
-			return xerrors.Errorf("failed to process accept action: %w", err)
-		}
+
 	case messagedata.ConsensuisActionLearn:
 		var consensusLearn messagedata.ConsensusLearn
 
@@ -332,11 +320,12 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 		}
 
 		err = c.processConsensusLearn(consensusLearn)
-		if err != nil {
-			return xerrors.Errorf("failed to process learn action: %w", err)
-		}
+
 	default:
 		return answer.NewInvalidActionError(action)
+	}
+	if err != nil {
+		return xerrors.Errorf("failed to process %s action: %w", action, err)
 	}
 
 	c.inbox.StoreMessage(msg)
