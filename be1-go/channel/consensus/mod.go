@@ -254,73 +254,66 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 	case messagedata.ConsensusActionElect:
 		var consensusElect messagedata.ConsensusElect
 
-		err := msg.UnmarshalData(&consensusElect)
+		err = msg.UnmarshalData(&consensusElect)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal consensus#elect: %v", err)
 		}
 
 		err = c.processConsensusElect(senderPoint, msg.MessageID, consensusElect)
-
 	case messagedata.ConsensusActionElectAccept:
 		var consensusElectAccept messagedata.ConsensusElectAccept
 
-		err := msg.UnmarshalData(&consensusElectAccept)
+		err = msg.UnmarshalData(&consensusElectAccept)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal consensus#elect-accept: %v", err)
 		}
 
 		err = c.processConsensusElectAccept(senderPoint, consensusElectAccept)
-
 	case messagedata.ConsensusActionPrepare:
 		var consensusPrepare messagedata.ConsensusPrepare
 
-		err := msg.UnmarshalData(&consensusPrepare)
+		err = msg.UnmarshalData(&consensusPrepare)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal consensus#prepare: %v", err)
 		}
 
 		err = c.processConsensusPrepare(consensusPrepare)
-
 	case messagedata.ConsensusActionPromise:
 		var consensusPromise messagedata.ConsensusPromise
 
-		err := msg.UnmarshalData(&consensusPromise)
+		err = msg.UnmarshalData(&consensusPromise)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal consensus#promise: %v", err)
 		}
 
 		err = c.processConsensusPromise(senderPoint, consensusPromise)
-
 	case messagedata.ConsensusActionPropose:
 		var consensusPropose messagedata.ConsensusPropose
 
-		err := msg.UnmarshalData(&consensusPropose)
+		err = msg.UnmarshalData(&consensusPropose)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal consensus#propose: %v", err)
 		}
 
 		err = c.processConsensusPropose(consensusPropose)
-
 	case messagedata.ConsensusActionAccept:
 		var consensusAccept messagedata.ConsensusAccept
 
-		err := msg.UnmarshalData(&consensusAccept)
+		err = msg.UnmarshalData(&consensusAccept)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal consensus#accept: %v", err)
 		}
 
 		err = c.processConsensusAccept(consensusAccept)
-
 	case messagedata.ConsensuisActionLearn:
 		var consensusLearn messagedata.ConsensusLearn
 
-		err := msg.UnmarshalData(&consensusLearn)
+		err = msg.UnmarshalData(&consensusLearn)
 		if err != nil {
 			return xerrors.Errorf("failed to unmarshal consensus#learn: %v", err)
 		}
 
 		err = c.processConsensusLearn(consensusLearn)
-
 	default:
 		return answer.NewInvalidActionError(action)
 	}
