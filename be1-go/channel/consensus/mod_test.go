@@ -433,13 +433,6 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	messagePublish.Params.Message = msg
 
-	// Error should be sent if not enough elect accept have been received
-	require.Error(t, channel.Publish(messagePublish, nil), "consensus corresponding to"+
-		"the message hasn't finished the elect_accept phase")
-
-	// Update the state of the message
-	consensusChannel.messageStates[messageID].currentPhase = PromisePhase
-
 	// Create the broadcast message to check that it is sent
 	fileBroadcast := filepath.Join(protocolRelativePath,
 		"examples", "query", "broadcast", "broadcast.json")
@@ -713,7 +706,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	sentMsg := sentPublish.Params.Message
 
-	// Unmarshal the promise message data to check its values
+	// Unmarshal the accept message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
 	var accept messagedata.ConsensusAccept
@@ -832,14 +825,14 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	require.NoError(t, channel.Publish(messagePublish, nil))
 	require.Equal(t, byteBroad, cliSocket.msg)
 
-	// Unmarshal the prepare message sent to other servers to verify its values
+	// Unmarshal the learn message sent to other servers to verify its values
 	var sentPublish method.Publish
 	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
 	require.NoError(t, err)
 
 	sentMsg := sentPublish.Params.Message
 
-	// Unmarshal the promise message data to check its values
+	// Unmarshal the learn message data to check its values
 	jsonData, err := base64.URLEncoding.DecodeString(sentMsg.Data)
 	require.NoError(t, err)
 	var learn messagedata.ConsensusLearn
