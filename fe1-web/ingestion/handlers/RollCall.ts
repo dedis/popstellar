@@ -113,12 +113,16 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
+  // Add the token of the organizer in the list of attendees
+  const { attendees } = rcMsgData;
+  Wallet.generateToken(lao.id, oldRC.id).then((token) => attendees.push(token.publicKey));
+
   const rc = new RollCall({
     ...oldRC,
     idAlias: rcMsgData.update_id,
     closed_at: rcMsgData.closed_at,
     status: RollCallStatus.CLOSED,
-    attendees: rcMsgData.attendees,
+    attendees: attendees,
   });
 
   // We can now dispatch an updated (closed) roll call, containing the attendees' public keys.
