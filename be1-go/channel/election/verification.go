@@ -3,15 +3,13 @@ package election
 import (
 	"encoding/base64"
 	"golang.org/x/xerrors"
-	"popstellar/crypto"
-	"popstellar/message/answer"
 	"popstellar/message/messagedata"
 	"sort"
 	"strings"
 )
 
 // verifyMessageCastVote checks the election#cast_vote message data is valid.
-func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote, sender string) error {
+func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error {
 	c.log.Info().Msgf("verifying election#cast_vote message of election with id %s", castVote.Election)
 
 	// verify lao id is base64URL encoded
@@ -58,23 +56,6 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote, sende
 			castVote.CreatedAt, c.end)
 	}
 
-	senderBuf, err := base64.URLEncoding.DecodeString(sender)
-	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
-	}
-
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
-	}
-
-	// verify sender is an attendee or the organizer
-	ok := c.attendees.IsPresent(sender) || c.hub.GetPubKeyOrg().Equal(senderPoint)
-	if !ok {
-		return answer.NewError(-4, "only attendees can cast a vote in an election")
-	}
-
 	return nil
 }
 
@@ -90,6 +71,21 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	// verify election id is base64URL encoded
 	if _, err := base64.URLEncoding.DecodeString(electionEnd.Election); err != nil {
 		return xerrors.Errorf("election id is %s, should be base64URL encoded", electionEnd.Election)
+	}
+
+	// split channel to [lao id, election id]
+	IDs := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	laoId := strings.Split(IDs, "/")[0]
+	electionId := strings.Split(IDs, "/")[1]
+
+	// verify if lao id is the same as the channel
+	if electionEnd.LAO != laoId {
+		return xerrors.Errorf("lao id is %s, should be %s", laoId, electionEnd.LAO)
+	}
+
+	// verify if election id is the same as the channel
+	if electionEnd.Election != electionId {
+		return xerrors.Errorf("election id is %s, should be %s", electionId, electionEnd.Election)
 	}
 
 	// verify created at is positive

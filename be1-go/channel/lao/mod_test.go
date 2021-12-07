@@ -447,7 +447,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	file := filepath.Join(relativePath, "election_setup.json")
+	file := filepath.Join(relativePath, "election_setup", "election_setup.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -576,7 +576,7 @@ func (h *fakeHub) GetPubKeyServ() kyber.Point {
 	return h.pubKeyOrg
 }
 
-// GetSecKeyServ implements channel.HubFunctionalities
+// Sign implements channel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return nil, nil
 }

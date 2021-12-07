@@ -11,6 +11,12 @@ import (
 // rollCallFlag for the RollCall ID
 const rollCallFlag = "R"
 
+// electionFlag for the Election ID
+const electionFlag = "Election"
+
+// questionFlag for the Question ID
+const questionFlag = "Question"
+
 // verifyMessageLaoState checks the lao#state message data is valid.
 func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
 	c.log.Info().Msgf("verifying lao#state message of lao %s", laoState.ID)
@@ -198,6 +204,115 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose messagedata.RollCallC
 		if _, err := base64.URLEncoding.DecodeString(attendee); err != nil {
 			return xerrors.Errorf("roll call attendee is %s, should be base64URL encoded", attendee)
 		}
+	}
+
+	return nil
+}
+
+// verifyMessageElectionSetup checks the election#setup message data is valid.
+func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionSetup) error {
+	c.log.Info().Msgf("verifying election#setup message of election with id %s", electionSetup.ID)
+
+	// verify lao id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(electionSetup.Lao); err != nil {
+		return xerrors.Errorf("lao id is %s, should be base64URL encoded", electionSetup.Lao)
+	}
+
+	// verify lao id is channel's lao id
+	laoId := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	if electionSetup.Lao != laoId {
+		return xerrors.Errorf("lao id is %s, should be %s", electionSetup.Lao, laoId)
+	}
+
+	// verify election id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(electionSetup.ID); err != nil {
+		return xerrors.Errorf("election id is %s, should be base64URL encoded", electionSetup.ID)
+	}
+
+	// verify election setup message id
+	expectedID := messagedata.Hash(
+		electionFlag,
+		laoId,
+		fmt.Sprintf("%d", electionSetup.CreatedAt),
+		electionSetup.Name,
+	)
+	if electionSetup.ID != expectedID {
+		return xerrors.Errorf("election setup id is %s, should be %s", electionSetup.ID, expectedID)
+	}
+
+	// verify election name non-empty
+	if len(electionSetup.Name) == 0 {
+		return xerrors.Errorf("election name should not be empty")
+	}
+
+	// verify created at is positive
+	if electionSetup.CreatedAt < 0 {
+		return xerrors.Errorf("election setup created at is %d, should be minimum 0", electionSetup.CreatedAt)
+	}
+
+	// verify start time is positive
+	if electionSetup.StartTime < 0 {
+		return xerrors.Errorf("election setup start time is %d, should be minimum 0", electionSetup.StartTime)
+	}
+
+	// verify end time is positive
+	if electionSetup.EndTime < 0 {
+		return xerrors.Errorf("election setup end time is %d, should be minimum 0", electionSetup.EndTime)
+	}
+
+	// verify start time after created at
+	if electionSetup.StartTime < electionSetup.CreatedAt {
+		return xerrors.Errorf("election setup start time is %d, should be greater or equal to created at %d",
+			electionSetup.StartTime, electionSetup.CreatedAt)
+	}
+
+	// verify end time after created at
+	if electionSetup.EndTime < electionSetup.CreatedAt {
+		return xerrors.Errorf("election setup end time is %d, should be greater or equal to created at %d",
+			electionSetup.EndTime, electionSetup.CreatedAt)
+	}
+
+	// verify end time after start time
+	if electionSetup.EndTime < electionSetup.StartTime {
+		return xerrors.Errorf("election end time is %d, should be greater or equal to start time %d",
+			electionSetup.EndTime, electionSetup.StartTime)
+	}
+
+	// verify the questions
+	for _, question := range electionSetup.Questions {
+		err := verifyElectionSetupQuestion(question, electionSetup.ID)
+		if err != nil {
+			return xerrors.Errorf("problem verifying question: %v", err)
+		}
+	}
+
+	return nil
+}
+
+func verifyElectionSetupQuestion(question messagedata.ElectionSetupQuestion, electionID string) error {
+	// verify question id is base64URL encoded
+	if _, err := base64.URLEncoding.DecodeString(question.ID); err != nil {
+		return xerrors.Errorf("question id is %s, should be base64URL encoded", question.ID)
+	}
+
+	// verify question id
+	expectedID := messagedata.Hash(
+		questionFlag,
+		electionID,
+		question.Question,
+	)
+	if question.ID != expectedID {
+		return xerrors.Errorf("question id is %s, should be %s", question.ID, expectedID)
+	}
+
+	// verify question not empty
+	if len(question.Question) == 0 {
+		return xerrors.Errorf("question should not be empty")
+	}
+
+	// verify voting method
+	if question.VotingMethod != "Plurality" && question.VotingMethod != "Approval" {
+		return xerrors.Errorf("voting method is %s, should be either Plurality or Approval", question.VotingMethod)
 	}
 
 	return nil
