@@ -158,7 +158,7 @@ func TestLAOChannel_Catchup(t *testing.T) {
 	messages[0] = message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, messages[0], nolog, nil, nil)
+	channel := NewChannel("channel0", fakeHub, messages[0], nolog, keypair.public, nil)
 
 	laoChannel, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -321,7 +321,7 @@ func TestBaseChannel_ConsensusIsCreated(t *testing.T) {
 	m := message.Message{MessageID: "0"}
 
 	// Create the channel
-	channel := NewChannel("channel0", fakeHub, m, nolog, nil, nil)
+	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
 
 	_, ok := channel.(*Channel)
 	require.True(t, ok)
@@ -508,7 +508,10 @@ type fakeHub struct {
 
 	closedSockets chan string
 
-	public kyber.Point
+	pubKeyOrg kyber.Point
+
+	pubKeyServ kyber.Point
+	secKeyServ kyber.Scalar
 
 	schemaValidator *validation.SchemaValidator
 
@@ -522,7 +525,7 @@ type fakeHub struct {
 }
 
 // NewHub returns a Organizer Hub.
-func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -531,11 +534,15 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 
 	log = log.With().Str("role", "base hub").Logger()
 
+	pubServ, secServ := generateKeys()
+
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		public:          public,
+		pubKeyOrg:       publicOrg,
+		pubKeyServ:      pubServ,
+		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(10),
@@ -546,14 +553,32 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 	return &hub, nil
 }
 
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Mul(secret, nil)
+
+	return point, secret
+}
+
 func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, socket socket.Socket) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
 }
 
-func (h *fakeHub) GetPubkey() kyber.Point {
-	return h.public
+// GetPubKeyOrg implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOrg() kyber.Point {
+	return h.pubKeyOrg
+}
+
+// GetPubKeyServ implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyServ() kyber.Point {
+	return h.pubKeyOrg
+}
+
+// GetSecKeyServ implements channel.HubFunctionalities
+func (h *fakeHub) Sign(data []byte) ([]byte, error) {
+	return nil, nil
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {

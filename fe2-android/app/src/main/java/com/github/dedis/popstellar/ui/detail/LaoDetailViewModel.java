@@ -462,7 +462,6 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd the proposed end time of the roll call
    * @param open true if we want to directly open the roll call
-   * @return the id of the newly created roll call event, null if fails to create the event
    */
   public void createNewRollCall(
       String title,

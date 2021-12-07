@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
@@ -45,5 +46,10 @@ public class ElectionResultTest {
   @Test
   public void electionResultGetterReturnsCorrectAction() {
     assertThat(electionResult.getAction(), is(Action.RESULT.getAction()));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(electionResult);
   }
 }

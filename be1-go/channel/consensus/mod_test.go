@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"io"
 	"os"
 	"path/filepath"
@@ -441,7 +442,10 @@ type fakeHub struct {
 
 	closedSockets chan string
 
-	public kyber.Point
+	pubKeyOrg kyber.Point
+
+	pubKeyServ kyber.Point
+	secKeyServ kyber.Scalar
 
 	schemaValidator *validation.SchemaValidator
 
@@ -455,7 +459,7 @@ type fakeHub struct {
 }
 
 // NewHub returns a Organizer Hub.
-func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -464,11 +468,15 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 
 	log = log.With().Str("role", "base hub").Logger()
 
+	pubServ, secServ := generateKeys()
+
 	hub := fakeHub{
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		public:          public,
+		pubKeyOrg:       publicOrg,
+		pubKeyServ:      pubServ,
+		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
 		stop:            make(chan struct{}),
 		workers:         semaphore.NewWeighted(10),
@@ -479,14 +487,36 @@ func NewfakeHub(public kyber.Point, log zerolog.Logger, laoFac channel.LaoFactor
 	return &hub, nil
 }
 
+func generateKeys() (kyber.Point, kyber.Scalar) {
+	secret := suite.Scalar().Pick(suite.RandomStream())
+	point := suite.Point().Mul(secret, nil)
+
+	return point, secret
+}
+
 func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Lock()
 	h.channelByID[channeID] = channel
 	h.Unlock()
 }
 
-func (h *fakeHub) GetPubkey() kyber.Point {
-	return h.public
+// GetPubKeyOrg implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOrg() kyber.Point {
+	return h.pubKeyOrg
+}
+
+// GetPubKeyServ implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyServ() kyber.Point {
+	return h.pubKeyOrg
+}
+
+// Sign implements channel.HubFunctionalities
+func (h *fakeHub) Sign(data []byte) ([]byte, error) {
+	signatureBuf, err := schnorr.Sign(crypto.Suite, h.secKeyServ, data)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to sign the data: %v", err)
+	}
+	return signatureBuf, nil
 }
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {

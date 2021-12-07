@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  FlatList, StyleSheet, TextStyle, View, ViewStyle,
+  FlatList,
+  ListRenderItemInfo,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
 } from 'react-native';
 
-import TextBlock from 'components/TextBlock';
-import TextInputChirp from 'components/TextInputChirp';
 import ChirpCard from 'components/ChirpCard';
+import TextInputChirp from 'components/TextInputChirp';
+import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
 
 import { requestAddChirp } from 'network/MessageApi';
@@ -16,13 +21,23 @@ import { generateToken } from 'model/objects/wallet/Token';
 import {
   getKeyPairState, getStore, makeCurrentLao, makeEventGetter,
 } from 'store';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
 
 /**
  * UI for the Social Media home screen component
  */
 const styles = StyleSheet.create({
-  view: {
-    alignItems: 'center',
+  viewCenter: {
+    alignSelf: 'center',
+    width: 600,
+  } as ViewStyle,
+  homeTextView: {
+    alignSelf: 'flex-start',
+    marginTop: 20,
+  } as ViewStyle,
+  userFeed: {
+    flexDirection: 'column',
+    marginTop: 20,
   } as ViewStyle,
   textInput: {
     padding: 10,
@@ -79,27 +94,28 @@ const SocialHome = () => {
   const chirps = makeChirpsList();
   const chirpList = useSelector(chirps);
 
-  const renderChirpState = ({ item }) => (
+  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
-      sender={item.sender}
-      text={item.text}
-      time={item.time}
-      likes={item.likes}
+      chirp={Chirp.fromState(item)}
     />
   );
 
   return (
-    <View style={styles.view}>
-      <TextInputChirp
-        onChangeText={setInputChirp}
-        onPress={publishChirp}
-      />
-      <TextBlock text={STRINGS.feed_description} />
-      <FlatList
-        data={chirpList}
-        renderItem={renderChirpState}
-        keyExtractor={(item) => item.id.toString()}
-      />
+    <View style={styles.viewCenter}>
+      <View style={styles.homeTextView}>
+        <TextBlock text={STRINGS.social_media_navigation_tab_home} />
+      </View>
+      <View style={styles.userFeed}>
+        <TextInputChirp
+          onChangeText={setInputChirp}
+          onPress={publishChirp}
+        />
+        <FlatList
+          data={chirpList}
+          renderItem={renderChirpState}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
     </View>
   );
 };

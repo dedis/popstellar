@@ -4,7 +4,8 @@ import {
   StyleSheet, ViewStyle, TextInput, TextStyle, Button, View,
 } from 'react-native';
 import STRINGS from 'res/strings';
-import { red } from 'styles/colors';
+import { gray, red } from 'styles/colors';
+import { Ionicons } from '@expo/vector-icons';
 import TextBlock from './TextBlock';
 
 const MAX_CHIRP_CHARS = 300;
@@ -15,17 +16,34 @@ const MAX_CHIRP_CHARS = 300;
  */
 
 const styles = StyleSheet.create({
+  container: {
+    borderColor: gray,
+    borderWidth: 1,
+    flexDirection: 'row',
+    padding: 10,
+    width: 600,
+  } as ViewStyle,
+  leftView: {
+    width: 60,
+  } as ViewStyle,
+  rightView: {
+    display: 'flex',
+    flexDirection: 'column',
+  } as ViewStyle,
   viewPublishChirp: {
     marginTop: 50,
     justifyContent: 'center',
   } as ViewStyle,
   textInput: {
+    fontSize: 18,
     padding: 10,
-    borderWidth: 1,
-    width: 600,
+    width: 520,
     alignContent: 'flex-end',
+    borderColor: gray,
+    borderWidth: 1,
   } as TextStyle,
   buttonView: {
+    fontSize: 18,
     alignSelf: 'flex-end',
     flexDirection: 'row',
   } as ViewStyle,
@@ -42,24 +60,30 @@ const TextInputChirp = (props: IPropTypes) => {
   const publishIsDisabled = textIsRed || charsLeft === MAX_CHIRP_CHARS;
 
   return (
-    <View style={styles.viewPublishChirp}>
-      <TextInput
-        placeholder={placeholder}
-        multiline
-        numberOfLines={numberOfLines}
-        style={styles.textInput}
-        onChangeText={(input: string) => {
-          onChangeText(input);
-          setCharsLeft(MAX_CHIRP_CHARS - input.length);
-        }}
-      />
-      <View style={styles.buttonView}>
-        <TextBlock text={charsLeft.toString()} color={textIsRed ? red : undefined} />
-        <Button
-          title={STRINGS.button_publish}
-          onPress={() => onPress()}
-          disabled={publishIsDisabled}
+    <View style={styles.container}>
+      <View style={styles.leftView}>
+        <Ionicons name="person" size={40} color="black" />
+      </View>
+      <View style={styles.rightView}>
+        <TextInput
+          placeholder={placeholder}
+          multiline
+          selectTextOnFocus
+          numberOfLines={numberOfLines}
+          style={styles.textInput}
+          onChangeText={(input: string) => {
+            onChangeText(input);
+            setCharsLeft(MAX_CHIRP_CHARS - input.length);
+          }}
         />
+        <View style={styles.buttonView}>
+          <TextBlock text={charsLeft.toString()} color={textIsRed ? red : undefined} />
+          <Button
+            title={STRINGS.button_publish}
+            onPress={() => onPress()}
+            disabled={publishIsDisabled}
+          />
+        </View>
       </View>
     </View>
   );
@@ -76,7 +100,7 @@ TextInputChirp.propTypes = propTypes;
 
 TextInputChirp.defaultProps = {
   placeholder: STRINGS.your_chirp,
-  numberOfLines: 4,
+  numberOfLines: 5,
 };
 
 type IPropTypes = {

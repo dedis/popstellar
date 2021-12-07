@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
@@ -54,5 +55,10 @@ public class ConsensusElectAcceptTest {
     assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, "random", true));
     assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, messageId, false));
     assertNotEquals(consensusElectAcceptReject, new ConsensusElectAccept(instanceId, messageId, true));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(consensusElectAcceptAccept);
   }
 }
