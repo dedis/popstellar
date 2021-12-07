@@ -288,6 +288,13 @@ export function terminateElection(
   return publish(elecCh, message);
 }
 
+/**
+ * Sends a query to the server to add a new chirp.
+ *
+ * @param publicKey - The public key of the sender
+ * @param text - The text contained in the chirp
+ * @param parentId - The id of the parent chirp (if it is a reply)
+ */
 export function requestAddChirp(
   publicKey: PublicKey,
   text: string,
