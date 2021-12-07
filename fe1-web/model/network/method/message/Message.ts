@@ -1,7 +1,7 @@
 import {
   Base64UrlData,
   Channel,
-  Hash,
+  Hash, PopToken,
   PublicKey,
   Signature,
   WitnessSignature,
@@ -12,6 +12,7 @@ import { ProtocolError } from 'model/network/ProtocolError';
 import {
   buildMessageData, encodeMessageData, MessageData,
 } from './data';
+import { getCurrentPopToken } from '../../../objects/wallet';
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -124,14 +125,28 @@ export class Message {
     data: MessageData, witnessSignatures?: WitnessSignature[],
   ): Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-    const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
+    let privateKey = KeyPairStore.getPrivateKey();
+    let publicKey = KeyPairStore.getPublicKey();
+
+    let popToken: PopToken | undefined;
+    getCurrentPopToken().then((token) => {
+      popToken = token;
+    });
+
+    if (popToken) {
+      console.log('PoP token exists !');
+      privateKey = popToken.privateKey;
+      publicKey = popToken.publicKey;
+    }
+
+    const signature: Signature = privateKey.sign(encodedDataJson);
 
     return new Message({
       data: encodedDataJson,
-      sender: KeyPairStore.getPublicKey(),
+      sender: publicKey,
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+      witness_signatures: witnessSignatures ? [] : witnessSignatures,
     });
   }
 
@@ -141,55 +156,6 @@ export class Message {
   // This method is only a temporary solution for the demo and should be removed once a better
   // solution is found
   private isElectionResultMessage():boolean {
-    if (this.data.decode().includes('"result":')) {
-      return true;
-    }
-    return false;
+    return this.data.decode().includes('"result":');
   }
 }
-
-/*
-public static async fromData(
-    data: MessageData, witnessSignatures?: WitnessSignature[],
-  ): Promise<Message> {
-    const encodedDataJson: Base64UrlData = encodeMessageData(data);
-
-    let signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
-    let keyPair: KeyPair | undefined;
-
-    WalletStore.get().then((encryptedSeed) => {
-      if (encryptedSeed !== undefined) {
-        HDWallet.fromState(encryptedSeed)
-          .then((wallet) => {
-            keyPair = wallet.recoverLastGeneratedPoPToken();
-            console.log('Pop token in message is: ', keyPair);
-            signature = (keyPair) ? keyPair?.privateKey.sign(encodedDataJson) : signature;
-          });
-      }
-    }).catch((e) => {
-      console.debug('error when getting last pop token from wallet: ', e);
-    });
-
-    return new Message({
-      data: encodedDataJson,
-      sender: (keyPair) ? keyPair.publicKey : KeyPairStore.getPublicKey(),
-      signature,
-      message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
-    });
-  }
-
-  // This function disables the checks of signature and messageID for eleciton result messages
-  // Because the message comes from the back-end and it can't sign the messages since it hasn't
-  // access to the private key
-  // This method is only a temporary solution for the demo and should be removed once a better
-  // solution is found
-  private isElectionResultMessage():boolean {
-    if (this.data.decode().includes('"result":')) {
-      return true;
-    }
-    return false;
-  }
-}
-
-*/

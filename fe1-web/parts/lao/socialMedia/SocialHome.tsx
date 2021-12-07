@@ -71,7 +71,6 @@ const SocialHome = () => {
 
   // This will be run again each time the lao.last_tokenized_roll_call_id changes
   useEffect(() => {
-    console.log('useEffects runs');
     generateToken(lao.id, rollCallId).then((token) => {
       if (token && rollCall.containsToken(token)) {
         userPublicKey = token.publicKey;
