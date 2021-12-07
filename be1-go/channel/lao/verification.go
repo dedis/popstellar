@@ -289,6 +289,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 	return nil
 }
 
+// verifyElectionSetupQuestion checks the question of an election setup message is valid.
 func verifyElectionSetupQuestion(question messagedata.ElectionSetupQuestion, electionID string) error {
 	// verify question id is base64URL encoded
 	if _, err := base64.URLEncoding.DecodeString(question.ID); err != nil {
