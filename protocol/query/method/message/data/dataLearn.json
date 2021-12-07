@@ -18,8 +18,25 @@
             "description": "message_id of the elect message",
             "type": "string"
         },
-        "acceptors": {
-            "description": "Array of the message_ids of the elect-accept messages that accepted this proposal",
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "decision": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "decision"
+            ]
+        },
+        "acceptor-signatures": {
+            "description": "Signatures of all received Accept messages",
             "type": "array",
             "items": {
                 "type": "string"
@@ -32,6 +49,8 @@
         "action",
         "instance_id",
         "message_id",
-        "acceptors"
+        "created_at",
+        "value",
+        "acceptor-signatures"
     ]
 }

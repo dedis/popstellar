@@ -28,7 +28,7 @@ public class AddChirp extends Data {
    * @param parentId message ID of parent chirp, can be null
    * @param timestamp UNIX timestamp in UTC
    */
-  public AddChirp(String text, @Nullable String parentId, int timestamp) {
+  public AddChirp(String text, @Nullable String parentId, long timestamp) {
     if (text.length() > MAX_CHIRP_CHARS) {
       throw new IllegalArgumentException("the text exceed the maximum numbers of characters");
     }
