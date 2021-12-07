@@ -972,14 +972,16 @@ func Test_Publish_New_Message(t *testing.T) {
 	// Create the expected sent message
 	data64 := base64.URLEncoding.EncodeToString(buf)
 
-	signature, err := fakeHub.Sign(buf)
+	signatureBuf, err := fakeHub.Sign(buf)
 	require.NoError(t, err)
+
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
 	expectedMessage := message.Message{
 		Data:              data64,
 		Sender:            publicKey64,
-		Signature:         base64.URLEncoding.EncodeToString(signature),
-		MessageID:         messagedata.Hash(data64, publicKey64),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(data64, signature),
 		WitnessSignatures: make([]message.WitnessSignature, 0),
 	}
 
