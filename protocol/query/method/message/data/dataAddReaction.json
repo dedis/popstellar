@@ -14,7 +14,7 @@
       "description": "Backslash-escaped unicode indicating a reaction",
       "type": "string",
       "examples": ["\uD83D\uDC4D", "\uD83D\uDCA9"],
-      "$comment": "We prefer the following escape sequence: \uhhhh where h is a hexadecimal digit.",
+      "$comment": "We prefer the following escape sequence: \\uhhhh where h is a hexadecimal digit.",
       "$comment" : "SurrogatePair are used if the emoji does not fit on 16 bits."
     },
     "chirp_id": {
@@ -29,5 +29,5 @@
     }
   },
   "additionalProperties": false,
-  "required": ["object", "action", "reaction_id", "chirp_id", "timestamp"]
+  "required": ["object", "action", "reaction_codepoint", "chirp_id", "timestamp"]
 }
