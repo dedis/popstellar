@@ -1,12 +1,9 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.util.Objects;
 
 public final class LearnValue {
 
-  @SerializedName("decision")
   private final boolean decision;
 
   public LearnValue(boolean decision) {
