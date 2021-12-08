@@ -361,7 +361,7 @@ func (c *Channel) processElectionEnd(msg message.Message) error {
 		return xerrors.Errorf("sender is %s, should be base64", sender)
 	}
 
-	// Check if the sender of the roll call message is the organizer
+	// check sender is a valid public key
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
@@ -369,7 +369,7 @@ func (c *Channel) processElectionEnd(msg message.Message) error {
 		return answer.NewErrorf(-4, "sender is %s, should be a valid public key: %v", sender, err)
 	}
 
-	// check the sender of the election end message is the organizer
+	// check sender of the election end message is the organizer
 	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
