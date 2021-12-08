@@ -68,7 +68,7 @@ android {
             testInstrumentationRunnerArguments clearPackageData: 'true'
         }
 
-        // Flavor used only to compute the coverage of teh tests as it cannot be done with
+        // Flavor used only to compute the coverage of the tests as it cannot be done with
         // the android orchestrator enabled. More informations :
         // https://developer.android.com/training/testing/junit-runner#using-android-test-orchestrator
         cov {
@@ -109,13 +109,14 @@ jacoco {
     toolVersion = "0.8.7"
 }
 
-tasks.withType(Test) {
-    jacoco.excludes = ['jdk.internal.*']
-}
-
 project.gradle.taskGraph.whenReady {
     connectedCovDebugAndroidTest {
         ignoreFailures = true
+    }
+
+    tasks.withType(Test) {
+        jacoco.includeNoLocationClasses = true
+        jacoco.excludes = ['jdk.internal.*']
     }
 }
 
@@ -197,7 +198,7 @@ copy {
     include 'jsonRPC.json'
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'createCovDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovReleaseUnitTest', 'createCovDebugCoverageReport']) {
     reports {
         xml.enabled = true
         html.enabled = true
@@ -209,13 +210,25 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'c
         '**/BuildConfig.*',
         '**/Manifest*.*',
         '**/*Test*.*',
-        'android/**/*.*',
+        'androidx/**/*.*',
         // Exclude Hilt generated classes
-        '**/*Hilt*.*',
-        'hilt_aggregated_deps/**',
-        '**/*_HiltComponents*.class',
-        '**/*_Factory.class',
-        '**/*_MembersInjector.class'
+        '*_*Factory.class',
+        '*_ComponentTreeDeps.class',
+        '*_Factory.class',
+        '*_GeneratedInjector.class',
+        '*_HiltComponents.class',
+        '*_HiltModules.class',
+        '*_HiltModules_BindsModule.class',
+        '*_HiltModules_KeyModule.class',
+        '*_MembersInjector.class',
+        '*_ProvideFactory.class',
+        '*_SingletonC.class',
+        '*_TestComponentDataSupplier.class',
+        'BR.class',
+        'BuildConfig.class',
+        'DataBinderMapperImpl.class',
+        'Hilt_*.class',
+        '_test_*.class'
     ]
     def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/covDebug/classes", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
@@ -223,7 +236,7 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'c
     sourceDirectories.setFrom(files([mainSrc]))
     classDirectories.setFrom(files([debugTree]))
     executionData.setFrom(fileTree(dir: project.buildDir, includes: [
-        'outputs/unit_test_code_coverage/covDebugUnitTest/testCovDebugUnitTest.exec',
-        'outputs/code_coverage/covDebugAndroidTest/connected/**/*.ec'
+        'jacoco/*.exec',
+        'outputs/code_coverage/covDebugAndroidTest/connected/**/*.ec',
     ]))
 }
