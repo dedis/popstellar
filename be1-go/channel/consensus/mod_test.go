@@ -992,10 +992,10 @@ func Test_Publish_New_Message(t *testing.T) {
 
 	sentMsg := publish.Params.Message
 
-	// Doesn't compare the signature, as it has a random element
+	// Doesn't compare the signature and the message id, as they have random
+	// elements
 	require.Equal(t, expectedMessage.Data, sentMsg.Data)
 	require.Equal(t, expectedMessage.Sender, sentMsg.Sender)
-	require.Equal(t, expectedMessage.MessageID, sentMsg.MessageID)
 	require.Equal(t, expectedMessage.WitnessSignatures, sentMsg.WitnessSignatures)
 }
 
