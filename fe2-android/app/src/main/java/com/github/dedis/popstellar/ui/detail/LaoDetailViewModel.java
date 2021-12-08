@@ -91,6 +91,8 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<String>> mOpenIdentityEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessMessageEvent =
       new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEditPropertiesEvent =
@@ -924,6 +926,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenWitnessMessageEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
+    return mOpenSocialMediaEvent;
+  }
+
   public LiveData<SingleEvent<Boolean>> getShowPropertiesEvent() {
     return mShowPropertiesEvent;
   }
@@ -1150,6 +1156,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     } else {
       mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_identity));
     }
+  }
+
+  public void openSocialMedia() {
+    mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
 
   public void endElectionEvent() {

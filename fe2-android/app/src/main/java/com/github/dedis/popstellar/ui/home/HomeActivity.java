@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
@@ -29,6 +30,8 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import java.util.ArrayList;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 /** HomeActivity represents the entry point for the application. */
@@ -307,9 +310,12 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSocialMediaActivity() {
     Intent intent = new Intent(this, SocialMediaActivity.class);
-    // ArrayList<Lao> laos = new ArrayList<Lao>(mViewModel.getLAOs().getValue());
+    ArrayList<Lao> laos = new ArrayList<>(Objects.requireNonNull(mViewModel.getLAOs().getValue()));
     Log.d(TAG, "Trying to open social media");
-    // intent.putExtra("LAOS", laos);
+    Bundle extra = new Bundle();
+    extra.putSerializable("LAOS", laos);
+    intent.putExtra("extra", extra);
+    intent.putExtra("OPENED_FROM", "HomeActivity");
     startActivity(intent);
   }
 

@@ -45,6 +45,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final MutableLiveData<List<Lao>> mLAOs = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
+  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
@@ -111,6 +112,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mLaoId;
   }
 
+  public LiveData<String> getLaoName() {
+    return mLaoName;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -148,6 +153,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   public void setLaoId(String laoId) {
     mLaoId.setValue(laoId);
+  }
+
+  public void setLaoName(String laoName) {
+    mLaoName.setValue(laoName);
   }
 
   /** Subscribe to the general channel: /root/<lao_id>/social/chirps */

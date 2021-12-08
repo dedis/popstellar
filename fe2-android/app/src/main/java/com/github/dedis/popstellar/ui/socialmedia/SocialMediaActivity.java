@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -15,9 +16,13 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.ViewModelFactory;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class SocialMediaActivity extends AppCompatActivity {
@@ -29,9 +34,31 @@ public class SocialMediaActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.social_media_activity);
     mViewModel = obtainViewModel(this);
+    if (getIntent().getExtras().get("OPENED_FROM").equals("HomeActivity")) {
+      mViewModel.setLAOs(
+          (List<Lao>)
+              Objects.requireNonNull(getIntent().getBundleExtra("extra").getSerializable("LAOS")));
+    } else if (getIntent().getExtras().get("OPENED_FROM").equals("LaoDetailActivity")) {
+      Lao lao = (Lao) getIntent().getExtras().get("LAO");
+      mViewModel.setLAOs(Collections.singletonList(lao));
+      mViewModel.setLaoId(lao.getId());
+      mViewModel.setLaoName(lao.getName());
+    }
 
     setupSocialMediaHomeFragment();
     setupNavigationBar();
+
+    // Subscribe to "lao name" string
+    mViewModel
+        .getLaoName()
+        .observe(
+            this,
+            newLaoName -> {
+              if (newLaoName != null) {
+                Objects.requireNonNull(getSupportActionBar())
+                    .setTitle(String.format("popstellar - %s", newLaoName));
+              }
+            });
 
     // Subscribe to "open home" event
     mViewModel
@@ -85,6 +112,21 @@ public class SocialMediaActivity extends AppCompatActivity {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.social_media_top_menu, menu);
+
+    SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
+    laosList.clear();
+
+    for (int i = 0; i < Objects.requireNonNull(mViewModel.getLAOs().getValue()).size(); ++i) {
+      /**
+       * Creating a unique id using subscription_icon and laos_list such that it doesn't override
+       * them in onOptionsItemSelected
+       */
+      laosList.add(
+          Menu.NONE,
+          R.id.subscription_icon + R.id.laos_list + i,
+          i,
+          mViewModel.getLAOs().getValue().get(i).getName());
+    }
     return true;
   }
 
@@ -96,10 +138,16 @@ public class SocialMediaActivity extends AppCompatActivity {
         mViewModel.subscribeToGeneralChannel(mViewModel.getLaoId().getValue());
         return true;
       case R.id.laos_list:
-        // TODO: create a small window to show lao id.
         return true;
 
       default:
+        int i = item.getItemId() - R.id.subscription_icon - R.id.laos_list;
+        if (i >= 0) {
+          mViewModel.setLaoId(
+              Objects.requireNonNull(mViewModel.getLAOs().getValue()).get(i).getId());
+          mViewModel.setLaoName(mViewModel.getLAOs().getValue().get(i).getName());
+          return true;
+        }
         return super.onOptionsItemSelected(item);
     }
   }
