@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp,
+  EventTags, Hash, Lao, PublicKey, Timestamp, Wallet,
 } from 'model/objects';
 import {
   CastVote,
@@ -209,6 +209,10 @@ export function requestCloseRollCall(
 ): Promise<void> {
   const lao: Lao = OpenedLaoStore.get();
   const time = (close === undefined) ? Timestamp.EpochNow() : close;
+
+  // The organizer adds his own token to the list of attendees before closing the roll call
+  const organizerToken = await Wallet.generateToken(lao.id, rollCallId);
+  attendees.push(organizerToken.publicKey);
 
   const message = new CloseRollCall({
     update_id: Hash.fromStringArray(
