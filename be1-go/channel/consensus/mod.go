@@ -237,7 +237,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
-// ProcessConsensusObject processes a Consensus Object.
+// processConsensusObject processes a Consensus Object.
 func (c *Channel) processConsensusObject(action string, msg message.Message) error {
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -319,7 +319,7 @@ func (c *Channel) createMessageInstance(messageID string, proposer kyber.Point) 
 	c.messageStates[messageID] = &newMessageState
 }
 
-// ProcessConsensusElect processes an elect action.
+// processConsensusElect processes an elect action.
 func (c *Channel) processConsensusElect(sender kyber.Point, msg message.Message) error {
 
 	var data messagedata.ConsensusElect
@@ -347,7 +347,7 @@ func (c *Channel) processConsensusElect(sender kyber.Point, msg message.Message)
 	return nil
 }
 
-// ProcessConsensusElectAccept processes an elect accept action.
+// processConsensusElectAccept processes an elect accept action.
 func (c *Channel) processConsensusElectAccept(sender kyber.Point, msg message.Message) error {
 
 	var data messagedata.ConsensusElectAccept
@@ -364,7 +364,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, msg message.Me
 		return xerrors.Errorf("invalid consensus#elect-accept message: %v", err)
 	}
 
-	// check wether a message with the correct ID was received previously
+	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
@@ -433,7 +433,7 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, msg message.Me
 	return nil
 }
 
-// ProcessConsensusPrepare processes a prepare action.
+// processConsensusPrepare processes a prepare action.
 func (c *Channel) processConsensusPrepare(msg message.Message) error {
 
 	var data messagedata.ConsensusPrepare
@@ -454,7 +454,7 @@ func (c *Channel) processConsensusPrepare(msg message.Message) error {
 		return xerrors.Errorf("invalid consensus#prepare message: %v", err)
 	}
 
-	// check wether a message with the correct ID was received previously
+	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 	if !valid {
 		return xerrors.Errorf(messageNotReceived)
@@ -510,7 +510,7 @@ func (c *Channel) processConsensusPrepare(msg message.Message) error {
 	return nil
 }
 
-// ProcessConsensusPromise processes a promise action.
+// processConsensusPromise processes a promise action.
 func (c *Channel) processConsensusPromise(sender kyber.Point, msg message.Message) error {
 
 	var data messagedata.ConsensusPromise
@@ -527,7 +527,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, msg message.Messag
 		return xerrors.Errorf("invalid consensus#promise message: %v", err)
 	}
 
-	// check wether a message with the correct ID was received previously
+	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 	if !valid {
 		return xerrors.Errorf(messageNotReceived)
@@ -605,7 +605,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, msg message.Messag
 	return nil
 }
 
-// ProcessConsensusPropose processes a propose action.
+// processConsensusPropose processes a propose action.
 func (c *Channel) processConsensusPropose(msg message.Message) error {
 
 	var data messagedata.ConsensusPropose
@@ -622,7 +622,7 @@ func (c *Channel) processConsensusPropose(msg message.Message) error {
 		return xerrors.Errorf("invalid consensus#propose message: %v", err)
 	}
 
-	// check wether a message with the correct ID was received previously
+	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
@@ -688,7 +688,7 @@ func (c *Channel) processConsensusPropose(msg message.Message) error {
 	return nil
 }
 
-// ProcessConsensusAccept proccesses an accept action.
+// processConsensusAccept proccesses an accept action.
 func (c *Channel) processConsensusAccept(msg message.Message) error {
 
 	var data messagedata.ConsensusAccept
@@ -705,7 +705,7 @@ func (c *Channel) processConsensusAccept(msg message.Message) error {
 		return xerrors.Errorf("invalid consensus#accept message: %v", err)
 	}
 
-	// check wether a message with the correct ID was received previously
+	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
@@ -776,7 +776,7 @@ func (c *Channel) processConsensusAccept(msg message.Message) error {
 	return nil
 }
 
-// ProcessConsensusLearn processes a learn action.
+// processConsensusLearn processes a learn action.
 func (c *Channel) processConsensusLearn(msg message.Message) error {
 
 	var data messagedata.ConsensusLearn
@@ -793,7 +793,7 @@ func (c *Channel) processConsensusLearn(msg message.Message) error {
 		return xerrors.Errorf("invalid consensus#learn message: %v", err)
 	}
 
-	// check wether a message with the correct ID was received previously
+	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
 
 	if !valid {
