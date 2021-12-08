@@ -25,6 +25,15 @@ public final class ConsensusLearn extends Data {
   @SerializedName("acceptor-signatures")
   private final List<String> acceptorSignatures;
 
+  /**
+   * Constructor for a data Learn
+   *
+   * @param instanceId unique id of the consensus instance
+   * @param messageId message id of the Elect message
+   * @param creation UNIX timestamp in UTC
+   * @param decision true if the consensus was successful
+   * @param acceptorSignatures signatures of all the received Accept messages
+   */
   public ConsensusLearn(
       String instanceId,
       String messageId,

@@ -19,6 +19,16 @@ public final class ConsensusPromise extends Data {
   @SerializedName("value")
   private final PromiseValue promiseValue;
 
+  /**
+   * Constructor for a data Promise
+   *
+   * @param instanceId unique id of the consensus instance
+   * @param messageId message id of the Elect message
+   * @param creation UNIX timestamp in UTC
+   * @param acceptedTry previous accepted try number
+   * @param acceptedValue previous accepted value
+   * @param promisedTry promised try number
+   */
   public ConsensusPromise(
       String instanceId,
       String messageId,

@@ -19,6 +19,15 @@ public final class ConsensusAccept extends Data {
   @SerializedName("value")
   private final AcceptValue acceptValue;
 
+  /**
+   * Constructor for a data Accept
+   *
+   * @param instanceId unique id of the consensus instance
+   * @param messageId message id of the Elect message
+   * @param creation UNIX timestamp in UTC
+   * @param acceptedTry the accepted try number
+   * @param acceptedValue the value accepted
+   */
   public ConsensusAccept(
       String instanceId, String messageId, long creation, int acceptedTry, boolean acceptedValue) {
     this.instanceId = instanceId;

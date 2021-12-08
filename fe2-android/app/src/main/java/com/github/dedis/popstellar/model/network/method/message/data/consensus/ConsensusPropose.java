@@ -25,6 +25,16 @@ public final class ConsensusPropose extends Data {
   @SerializedName("acceptor-signatures")
   private final List<String> acceptorSignatures;
 
+  /**
+   * Constructor for a data Propose
+   *
+   * @param instanceId unique id of the consensus instance
+   * @param messageId message id of the Elect message
+   * @param creation UNIX timestamp in UTC
+   * @param proposedTry proposed try number used in Paxos
+   * @param proposedValue proposed value
+   * @param acceptorSignatures signatures of all received Promise messages
+   */
   public ConsensusPropose(
       String instanceId,
       String messageId,

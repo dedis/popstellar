@@ -19,6 +19,14 @@ public final class ConsensusPrepare extends Data {
   @SerializedName("value")
   private final PrepareValue prepareValue;
 
+  /**
+   * Constructor for a data Prepare
+   *
+   * @param instanceId unique id of the consensus instance
+   * @param messageId message id of the Elect message
+   * @param creation UNIX timestamp in UTC
+   * @param proposedTry proposed try number
+   */
   public ConsensusPrepare(String instanceId, String messageId, long creation, int proposedTry) {
     this.instanceId = instanceId;
     this.messageId = messageId;
