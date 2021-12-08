@@ -28,6 +28,11 @@
 be1-go/pop
 be1-go/validation/protocol
 
+# Karate files
+*.log
+**/target
+*.iml
+
 fe2-android/app/src/main/resources/protocol
 
 .DS_Store
