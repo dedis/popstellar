@@ -42,4 +42,7 @@ type Hub interface {
 
 	// Type returns the type of Hub.
 	Type() HubType
+
+	// GetGreeting returns the greeting query to send.
+	GetGreeting()
 }

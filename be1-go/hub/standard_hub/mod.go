@@ -262,6 +262,23 @@ func (h *Hub) OnSocketClose() chan<- string {
 	return h.closedSockets
 }
 
+// GetGreeting implements hub.Hub
+func (h *Hub) GetGreeting() (method.Greeting, error) {
+	h.log.Info().Msgf("getting greeting message for server %s", h.hubType)
+
+	greeting := method.Greeting{}
+
+	// add public key of server
+	pubKeyBuf, err := h.pubKeyServ.MarshalBinary()
+	if err != nil {
+		h.log.Error().Msgf("can't marshal public key of server: %v", err)
+		return method.Greeting{}, xerrors.Errorf("can't marshal public key of server: %v", err)
+	}
+	greeting.Params.Sender = base64.URLEncoding.EncodeToString(pubKeyBuf)
+
+	return greeting, nil
+}
+
 func (h *Hub) getChan(channelPath string) (channel.Channel, error) {
 	if !strings.HasPrefix(channelPath, rootPrefix) {
 		return nil, xerrors.Errorf("channel not prefixed with '%s': %q", rootPrefix, channelPath)
