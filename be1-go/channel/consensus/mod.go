@@ -438,9 +438,13 @@ func (c *Channel) processConsensusPrepare(msg message.Message) error {
 
 	var data messagedata.ConsensusPrepare
 
-	err := msg.UnmarshalData(&msg)
+	err := msg.UnmarshalData(&data)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal consensus#prepare: %v", err)
+	}
+
+	if data.Value.ProposedTry == 0 {
+		return xerrors.Errorf("test")
 	}
 
 	c.log.Info().Msg("received a consensus#prepare message")
