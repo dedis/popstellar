@@ -13,9 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -153,10 +151,7 @@ public class SocialMediaActivity extends AppCompatActivity {
   }
 
   public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
-    SocialMediaViewModel viewModel =
-        new ViewModelProvider(activity, factory).get(SocialMediaViewModel.class);
-    return viewModel;
+    return new ViewModelProvider(activity).get(SocialMediaViewModel.class);
   }
 
   public void setupNavigationBar() {

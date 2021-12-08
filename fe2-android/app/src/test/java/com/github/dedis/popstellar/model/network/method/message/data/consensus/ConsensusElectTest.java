@@ -78,8 +78,8 @@ public class ConsensusElectTest {
   public void jsonValidationTest() {
     JsonTestUtils.testData(consensusElect);
     String jsonInvalid =
-            JsonTestUtils.loadFile(
-                    "protocol/examples/messageData/consensus_elect/wrong_elect_negative_created_at.json");
+        JsonTestUtils.loadFile(
+            "protocol/examples/messageData/consensus_elect/wrong_elect_negative_created_at.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid));
   }
 }

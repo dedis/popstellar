@@ -204,7 +204,8 @@ public class StateLaoTest {
     JsonTestUtils.testData(stateLao);
 
     String pathDir = "protocol/examples/messageData/lao_state/";
-    String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_additional_params.json");
+    String jsonInvalid1 =
+        JsonTestUtils.loadFile(pathDir + "wrong_lao_state_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_missing_params.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
