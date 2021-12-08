@@ -141,8 +141,10 @@ func (s *baseSocket) WritePump() {
 
 			w.Write(message)
 
-			if err := w.Close(); err != nil {
-				s.log.Err(err).Msg("failed to close writer")
+			err = w.Close()
+			if err != nil {
+				s.log.Err(err).Msg("failed to close writer, closing the write pump")
+				s.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
 		case <-ticker.C:
