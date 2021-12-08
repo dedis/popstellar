@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { PersistGate } from 'redux-persist/integration/react';
+import { ToastProvider } from 'react-native-toast-notifications';
 
 import { Provider } from 'react-redux';
 import { store, persist } from 'store/Storage';
@@ -35,7 +36,9 @@ export default function App() {
           <SafeAreaProvider>
             {Platform.OS === 'ios'
             && <StatusBar barStyle="dark-content" backgroundColor="white" />}
-            <AppNavigation />
+            <ToastProvider>
+              <AppNavigation />
+            </ToastProvider>
           </SafeAreaProvider>
         </NavigationContainer>
       </PersistGate>

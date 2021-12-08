@@ -31,6 +31,7 @@ public final class Lao implements Serializable {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
+  private Map<String, Chirp> chirps;
   private final Map<String, Consensus> messageIdToConsensus;
   private final List<ConsensusNode> nodes;
 
@@ -44,6 +45,7 @@ public final class Lao implements Serializable {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
+    this.chirps = new HashMap<>();
     this.nodes = new ArrayList<>();
     this.messageIdToConsensus = new HashMap<>();
     this.witnessMessages = new HashMap<>();
@@ -118,6 +120,21 @@ public final class Lao implements Serializable {
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
   }
 
+  /**
+   * Update the list of chirps that have been sent in the lao. If the list of chirps contain one
+   * with Id prevId, it will remove it from the list then add the new chirp into it.
+   *
+   * @param prevId the previous id of a chirp
+   * @param chirp the chirp
+   */
+  public void updateChirp(String prevId, Chirp chirp) {
+    if (chirp == null) {
+      throw new IllegalArgumentException("The chirp is null");
+    }
+    chirps.remove(prevId);
+    chirps.put(chirp.getId(), chirp);
+  }
+
   public Optional<RollCall> getRollCall(String id) {
     return Optional.ofNullable(rollCalls.get(id));
   }
@@ -132,6 +149,10 @@ public final class Lao implements Serializable {
 
   public Optional<WitnessMessage> getWitnessMessage(String id) {
     return Optional.ofNullable(witnessMessages.get(id));
+  }
+
+  public Optional<Chirp> getChirp(String id) {
+    return Optional.ofNullable(chirps.get(id));
   }
 
   /**
@@ -279,6 +300,10 @@ public final class Lao implements Serializable {
 
   public Map<String, WitnessMessage> getWitnessMessages() {
     return witnessMessages;
+  }
+
+  public Map<String, Chirp> getChirps() {
+    return chirps;
   }
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {

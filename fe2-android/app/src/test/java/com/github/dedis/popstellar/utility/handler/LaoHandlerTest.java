@@ -5,7 +5,7 @@ import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleM
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -22,10 +22,12 @@ import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
+import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
+import com.google.gson.Gson;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,12 +50,11 @@ import io.reactivex.schedulers.TestScheduler;
 public class LaoHandlerTest {
 
   @Mock LAORemoteDataSource remoteDataSource;
-
   @Mock LAOLocalDataSource localDataSource;
-
   @Mock AndroidKeysetManager androidKeysetManager;
-
   @Mock PublicKeySign signer;
+
+  private static final Gson GSON = JsonModule.provideGson();
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -72,14 +73,11 @@ public class LaoHandlerTest {
     TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
 
     // Mock the signing of of any data for the MessageGeneral constructor
-    byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
+    byte[] dataBuf = GSON.toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
     createLaoMessage =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            CREATE_LAO,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), CREATE_LAO, signer, GSON);
 
     // Simulate a network response from the server after the response delay
     Observable<GenericMessage> upstream =
@@ -89,13 +87,14 @@ public class LaoHandlerTest {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
 
+    Ed25519PrivateKeyManager.registerPair(true);
+    KeysetHandle keysetHandle =
+        KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
+    Mockito.when(androidKeysetManager.getKeysetHandle()).thenReturn(keysetHandle);
+
     laoRepository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -105,12 +104,6 @@ public class LaoHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
-  }
-
-  @After
-  public void destroy() {
-    // Ensure every test has a new LAORepository instance with a different TestSchedulerProvider
-    LAORepository.destroyInstance();
   }
 
   @Test
@@ -125,10 +118,7 @@ public class LaoHandlerTest {
             new HashSet<>());
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            updateLao,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), updateLao, signer, GSON);
 
     // Create the expected WitnessMessage
     WitnessMessage expectedMessage =
@@ -160,10 +150,7 @@ public class LaoHandlerTest {
             new ArrayList<>());
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            stateLao,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), stateLao, signer, GSON);
 
     // Call the message handler
     handleMessage(laoRepository, LAO_CHANNEL, message);

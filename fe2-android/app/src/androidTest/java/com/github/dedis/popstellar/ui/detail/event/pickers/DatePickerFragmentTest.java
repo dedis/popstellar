@@ -1,162 +1,52 @@
 package com.github.dedis.popstellar.ui.detail.event.pickers;
 
+import static com.github.dedis.popstellar.pages.detail.event.pickers.DatePickerPageObject.getBundleResponseKey;
+import static com.github.dedis.popstellar.pages.detail.event.pickers.DatePickerPageObject.getRequestKey;
+import static org.junit.Assert.assertEquals;
+
+import android.widget.DatePicker;
+
+import com.github.dedis.popstellar.testutils.ResultReceiver;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+
+import java.util.Calendar;
+import java.util.concurrent.TimeoutException;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
+@HiltAndroidTest
 public class DatePickerFragmentTest {
-  //  private final int YEAR = 2022;
-  //  private final int MONTH_OF_YEAR = 10;
-  //  private final int DAY_OF_MONTH = 10;
-  //  private final String DATE = "" + DAY_OF_MONTH + "/" + MONTH_OF_YEAR + "/" + YEAR;
-  //
-  //  @Rule
-  //  public ActivityScenarioRule<OrganizerActivity> activityScenarioRule =
-  //      new ActivityScenarioRule<>(OrganizerActivity.class);
-  //
-  //  private View decorView;
-  //
-  //  @Before
-  //  public void setUp() {
-  //    activityScenarioRule
-  //        .getScenario()
-  //        .onActivity(
-  //            new ActivityScenario.ActivityAction<OrganizerActivity>() {
-  //
-  //              /**
-  //               * This method is invoked on the main thread with the reference to the Activity.
-  //               *
-  //               * @param activity an Activity instrumented by the {@link ActivityScenario}. It
-  // never
-  //               *     be null.
-  //               */
-  //              @Override
-  //              public void perform(OrganizerActivity activity) {
-  //                decorView = activity.getWindow().getDecorView();
-  //              }
-  //            });
-  //
-  //    onView(
-  //            allOf(
-  //                withId(R.id.add_future_event_button),
-  //                withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)))
-  //        .perform(click());
-  //
-  // onView(withText(getApplicationContext().getString(R.string.meeting_event))).perform(click());
-  //    onView(withId(R.id.fragment_meeting_event_creation)).check(matches(isDisplayed()));
-  //  }
-  //
-  //  @Test
-  //  public void canLaunchDatePickerFragmentFromStartDateButton() {
-  //    onView(withId(R.id.start_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .check(matches(isDisplayed()));
-  //  }
-  //
-  //  @Test
-  //  public void canLaunchDatePickerFragmentFromEndDateButton() {
-  //    onView(withId(R.id.end_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .check(matches(isDisplayed()));
-  //  }
-  //
-  //  @Test
-  //  public void canChooseRandomDate() {
-  //    onView(withId(R.id.start_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //    onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
-  //  }
-  //
-  //  @Test
-  //  public void datePickerChoosesTodayByDefault() {
-  //    final Calendar currentCalendar = Calendar.getInstance();
-  //    int year = currentCalendar.get(Calendar.YEAR);
-  //    int month = currentCalendar.get(Calendar.MONTH) + 1;
-  //    int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
-  //    final String DATE =
-  //        (day < 10 ? "0" : "") + day + "/" + (month < 10 ? "0" : "") + month + "/" + year;
-  //    onView(withId(R.id.start_date_edit_text)).perform(click());
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //    onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
-  //  }
-  //
-  //  @Test
-  //  public void choosingDateInPastShowsToast() {
-  //    String expectedWarning = getApplicationContext().getString(R.string.past_date_not_allowed);
-  //    final int YEAR = 2010;
-  //    final int MONTH_OF_YEAR = 10;
-  //    final int DAY_OF_MONTH = 10;
-  //
-  //    onView(withId(R.id.start_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //    onView(withText(expectedWarning))
-  //        .inRoot(withDecorView(not(decorView)))
-  //        .check(matches(isDisplayed()));
-  //    onView(withId(R.id.start_date_edit_text))
-  //
-  // .check(matches(withHint(getApplicationContext().getString(R.string.start_date_required))));
-  //  }
-  //
-  //  @Test
-  //  public void startDateAndEndDateCanBothBeSameDay() {
-  //    onView(withId(R.id.start_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //    onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
-  //
-  //    onView(withId(R.id.end_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //    onView(withId(R.id.end_date_edit_text)).check(matches(withText(DATE)));
-  //  }
-  //
-  //  @Test
-  //  public void startDateAfterEndDateShowsToast() {
-  //    String expectedWarning =
-  //        getApplicationContext().getString(R.string.start_date_after_end_date_not_allowed);
-  //
-  //    onView(withId(R.id.end_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //    onView(withId(R.id.end_date_edit_text)).check(matches(withText(DATE)));
-  //
-  //    onView(withId(R.id.start_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH + 1));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //
-  //    onView(withText(expectedWarning))
-  //        .inRoot(withDecorView(not(decorView)))
-  //        .check(matches(isDisplayed()));
-  //    onView(withId(R.id.start_date_edit_text))
-  //
-  // .check(matches(withHint(getApplicationContext().getString(R.string.start_date_required))));
-  //  }
-  //
-  //  @Test
-  //  public void endDateBeforeStartDateShowsToast() {
-  //    String expectedWarning =
-  //        getApplicationContext().getString(R.string.end_date_after_start_date_not_allowed);
-  //
-  //    onView(withId(R.id.start_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //    onView(withId(R.id.start_date_edit_text)).check(matches(withText(DATE)));
-  //
-  //    onView(withId(R.id.end_date_edit_text)).perform(click());
-  //    onView(withClassName(Matchers.equalTo(DatePicker.class.getName())))
-  //        .perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH - 1));
-  //    onView(withId(android.R.id.button1)).perform(click());
-  //
-  //    onView(withText(expectedWarning))
-  //        .inRoot(withDecorView(not(decorView)))
-  //        .check(matches(isDisplayed()));
-  //    onView(withId(R.id.end_date_edit_text))
-  //
-  // .check(matches(withHint(getApplicationContext().getString(R.string.end_date_optional))));
-  //  }
+
+  private static final int YEAR = 2022;
+  private static final int MONTH_OF_YEAR = 10;
+  private static final int DAY_OF_MONTH = 10;
+
+  private final FragmentScenarioRule<DatePickerFragment> fragmentRule =
+      FragmentScenarioRule.launch(DatePickerFragment.class);
+
+  @Rule
+  public final RuleChain chain =
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
+
+  @Test
+  public void choosingADateReturnTheCorrectValue() throws TimeoutException, InterruptedException {
+    ResultReceiver<Calendar> receiver =
+        ResultReceiver.createFakeListener(
+            fragmentRule.getScenario(), getRequestKey(), getBundleResponseKey());
+
+    fragmentRule
+        .getScenario()
+        .onFragment(
+            f -> f.onDateSet(new DatePicker(f.getContext()), YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
+
+    Calendar response = receiver.get(500);
+    assertEquals(YEAR, response.get(Calendar.YEAR));
+    assertEquals(MONTH_OF_YEAR, response.get(Calendar.MONTH));
+    assertEquals(DAY_OF_MONTH, response.get(Calendar.DAY_OF_MONTH));
+  }
 }

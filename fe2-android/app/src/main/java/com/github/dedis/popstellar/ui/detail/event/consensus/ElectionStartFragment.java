@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -39,6 +40,7 @@ import io.reactivex.observers.DisposableObserver;
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
  * method to create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class ElectionStartFragment extends Fragment {
 
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
@@ -93,7 +95,7 @@ public class ElectionStartFragment extends Fragment {
 
     setupTimerUpdate(election);
 
-    setupButtonListeners(binding, mLaoDetailViewModel, electionId, instanceId);
+    setupButtonListeners(binding, mLaoDetailViewModel, electionId);
 
     List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
 
@@ -181,21 +183,11 @@ public class ElectionStartFragment extends Fragment {
   private void setupButtonListeners(
       ElectionStartFragmentBinding binding,
       LaoDetailViewModel mLaoDetailViewModel,
-      String electionId,
-      String instanceId) {
+      String electionId) {
     electionStart.setOnClickListener(
-        clicked -> {
-          Optional<Consensus> acceptedConsensus =
-              ownNode
-                  .getLastConsensus(instanceId)
-                  .filter(consensus -> consensus.canBeAccepted() && !consensus.isFailed());
-          if (acceptedConsensus.isPresent()) {
-            mLaoDetailViewModel.sendConsensusLearn(acceptedConsensus.get());
-          } else {
+        clicked ->
             mLaoDetailViewModel.createNewConsensus(
-                Instant.now().getEpochSecond(), electionId, "election", "state", "started");
-          }
-        });
+                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
 
     binding
         .backLayout
@@ -220,10 +212,7 @@ public class ElectionStartFragment extends Fragment {
       electionStart.setEnabled(false);
     } else {
       State ownState = ownNode.getState(instanceId);
-      boolean canAccept =
-          ownState == State.STARTING
-              && ownNode.getLastConsensus(instanceId).map(Consensus::canBeAccepted).orElse(false);
-      boolean canClick = canAccept || ownState == State.WAITING || ownState == State.FAILED;
+      boolean canClick = ownState == State.WAITING || ownState == State.FAILED;
       electionStart.setEnabled(canClick);
     }
   }

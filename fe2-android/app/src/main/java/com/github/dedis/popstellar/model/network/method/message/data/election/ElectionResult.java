@@ -5,6 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ElectionResult extends Data {
@@ -15,7 +16,7 @@ public class ElectionResult extends Data {
     if (questions == null || questions.isEmpty()) {
       throw new IllegalArgumentException();
     }
-    this.questions = questions;
+    this.questions = Collections.unmodifiableList(questions);
   }
 
   @Override
@@ -30,6 +31,24 @@ public class ElectionResult extends Data {
 
   public List<ElectionResultQuestion> getElectionQuestionResults() {
     return questions;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ElectionResult that = (ElectionResult) o;
+
+    return java.util.Objects.equals(questions, that.questions);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(questions);
   }
 
   @Override

@@ -16,7 +16,7 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromIds, ROOT_CHANNEL, userSocialChannel,
+  Channel, channelFromIds, ROOT_CHANNEL, getCurrentUserSocialChannel,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
@@ -301,5 +301,5 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(userSocialChannel(currentLao.id), message);
+  return publish(getCurrentUserSocialChannel(currentLao.id), message);
 }

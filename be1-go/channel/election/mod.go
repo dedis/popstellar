@@ -3,11 +3,9 @@ package election
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
-	"popstellar/channel/inbox"
 	"popstellar/crypto"
+	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
 	"popstellar/message/messagedata"
@@ -18,9 +16,12 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
-const msgID		 = "msg id"
+const msgID = "msg id"
 
 // attendees represents the attendees in an election.
 type attendees struct {
@@ -153,7 +154,7 @@ type validVote struct {
 }
 
 // Publish is used to handle publish messages in the election channel.
-func (c *Channel) Publish(publish method.Publish) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.VerifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an "+
@@ -372,7 +373,7 @@ func (c *Channel) getAndVerifyCastVoteMessage(msg message.Message) (messagedata.
 		return voteMsg, answer.NewError(-4, "invalid sender public key")
 	}
 
-	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubkey().Equal(senderPoint)
+	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubKeyOrg().Equal(senderPoint)
 	if !ok {
 		return voteMsg, answer.NewError(-4, "only attendees can cast a vote in an election")
 	}

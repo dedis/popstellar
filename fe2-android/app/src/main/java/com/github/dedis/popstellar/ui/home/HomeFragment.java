@@ -17,7 +17,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment used to display the Home UI */
+@AndroidEntryPoint
 public final class HomeFragment extends Fragment {
 
   public static final String TAG = HomeFragment.class.getSimpleName();

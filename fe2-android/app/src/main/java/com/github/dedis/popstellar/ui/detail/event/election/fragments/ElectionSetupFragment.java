@@ -25,8 +25,10 @@ import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSet
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
+@AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = ElectionSetupFragment.class.getSimpleName();
@@ -93,7 +95,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
     // Set the view for the date and time
-    setDateAndTimeView(mSetupElectionFragBinding.getRoot(), this, getParentFragmentManager());
+    setDateAndTimeView(mSetupElectionFragBinding.getRoot());
     // Make the textWatcher listen to changes in the start and end date/time
     addEndDateAndTimeListener(submitTextWatcher);
     addStartDateAndTimeListener(submitTextWatcher);
@@ -182,7 +184,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           // elections at once
           submitButton.setEnabled(false);
           // When submitting, we compute the timestamps for the selected start and end time
-          computeTimesInSeconds();
+          if (!computeTimesInSeconds()) {
+            return;
+          }
 
           final List<Integer> validPositions = viewPagerAdapter.getValidInputs();
 
@@ -220,6 +224,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
               TAG,
               "Creating election with name "
                   + electionName
+                  + ", creation time "
+                  + creationTimeInSeconds
                   + ", start time "
                   + startTimeInSeconds
                   + ", end time "
@@ -234,7 +240,7 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
                   + ballotsOptionsFiltered);
           mLaoDetailViewModel.createNewElection(
               electionName,
-              CREATION_TIME_IN_SECONDS,
+              creationTimeInSeconds,
               startTimeInSeconds,
               endTimeInSeconds,
               votingMethodFiltered,

@@ -22,11 +22,15 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+@HiltViewModel
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
@@ -55,6 +59,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final AndroidKeysetManager mKeysetManager;
   private final CompositeDisposable disposables;
 
+  @Inject
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,

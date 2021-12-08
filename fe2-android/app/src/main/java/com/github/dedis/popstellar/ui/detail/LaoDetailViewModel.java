@@ -22,7 +22,6 @@ import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
-import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -69,12 +68,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+@HiltViewModel
 public class LaoDetailViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
@@ -201,6 +204,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
   private ScanningAction scanningAction;
 
+  @Inject
   public LaoDetailViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
@@ -465,7 +469,6 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd the proposed end time of the roll call
    * @param open true if we want to directly open the roll call
-   * @return the id of the newly created roll call event, null if fails to create the event
    */
   public void createNewRollCall(
       String title,
@@ -635,61 +638,6 @@ public class LaoDetailViewModel extends AndroidViewModel
                           TAG,
                           "timed out waiting for result on consensus/elect-accept",
                           throwable));
-
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
-  }
-
-  /**
-   * Sends a ConsensusLearn
-   *
-   * <p>Publish a GeneralMessage containing ConsensusLearn data.
-   *
-   * @param consensus the corresponding consensus
-   */
-  public void sendConsensusLearn(Consensus consensus) {
-    Log.d(
-        TAG,
-        "sending a consensus learn for consensus with messageId : " + consensus.getMessageId());
-
-    List<String> acceptorsMessageIds =
-        new ArrayList<>(consensus.getAcceptorsToMessageId().values());
-    ConsensusLearn consensusLearn =
-        new ConsensusLearn(consensus.getId(), consensus.getMessageId(), acceptorsMessageIds);
-
-    try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, consensusLearn, signer, mGson);
-
-      Log.d(TAG, PUBLISH_MESSAGE);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(consensus.getChannel(), msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(
-                          TAG,
-                          "sent a consensus learn successfully for consensus with messageId : "
-                              + consensusLearn.getMessageId());
-                    } else {
-                      Log.d(
-                          TAG,
-                          "failed to send the learn for consensus with messageId : "
-                              + consensusLearn.getMessageId());
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on consensus/learn", throwable));
 
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {

@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
 import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
@@ -22,7 +23,7 @@ object ElectionHandler extends MessageHandler {
       case message@(_: JsonRpcRequestCastVoteElection) => handleCastVoteElection(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: LaoHandler was given a message it could not recognize",
+        "Internal server fault: ElectionHandler was given a message it could not recognize",
         jsonRpcMessage match {
           case r: JsonRpcRequest => r.id
           case r: JsonRpcResponse => r.id
@@ -34,13 +35,14 @@ object ElectionHandler extends MessageHandler {
   }
 
   def handleSetupElection(rpcMessage: JsonRpcRequestSetupElection): GraphMessage = {
+    //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.SEPARATOR}$electionId")
 
     val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
-      case DbActor.DbActorWriteAck => Await.result((dbActor ? DbActor.CreateChannel(electionChannel)).map {
-        case DbActor.DbActorAck => Left(rpcMessage)
+      case DbActor.DbActorWriteAck() => Await.result((dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)).map {
+        case DbActor.DbActorAck() => Left(rpcMessage)
         case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
       }, duration)
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))

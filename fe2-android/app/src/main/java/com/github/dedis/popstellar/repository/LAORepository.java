@@ -19,6 +19,7 @@ import com.github.dedis.popstellar.model.network.method.Publish;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
 import com.github.dedis.popstellar.model.network.method.Unsubscribe;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
@@ -45,6 +46,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
@@ -53,11 +57,11 @@ import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
+@Singleton
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
   private static final String ROOT = "/root/";
-  private static LAORepository INSTANCE = null;
 
   @SuppressWarnings({"Implementation of LAOLocalDataSource is not complete.", "FieldCanBeLocal"})
   private final LAODataSource.Local mLocalDataSource;
@@ -103,7 +107,8 @@ public class LAORepository {
   // Disposable of with the lifetime of an LAORepository instance
   private final Disposable disposables;
 
-  private LAORepository(
+  @Inject
+  public LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
       @NonNull AndroidKeysetManager keysetManager,
@@ -135,27 +140,6 @@ public class LAORepository {
 
     // subscribe to incoming messages and the unprocessed message queue
     disposables = new CompositeDisposable(subscribeToUpstream(), subscribeToWebsocketEvents());
-  }
-
-  public static synchronized LAORepository getInstance(
-      LAODataSource.Remote laoRemoteDataSource,
-      LAODataSource.Local localDataSource,
-      AndroidKeysetManager keysetManager,
-      Gson gson,
-      SchedulerProvider schedulerProvider) {
-    if (INSTANCE == null) {
-      INSTANCE =
-          new LAORepository(
-              laoRemoteDataSource, localDataSource, keysetManager, gson, schedulerProvider);
-    }
-    return INSTANCE;
-  }
-
-  public static void destroyInstance() {
-    if (INSTANCE != null) {
-      INSTANCE.dispose();
-      INSTANCE = null;
-    }
   }
 
   private Disposable subscribeToWebsocketEvents() {
@@ -288,6 +272,9 @@ public class LAORepository {
 
     Single<Answer> answer = createSingle(id);
     mRemoteDataSource.sendMessage(unsubscribe);
+
+    subscribedChannels.remove(channel);
+
     return answer;
   }
 
@@ -310,6 +297,43 @@ public class LAORepository {
         .firstOrError()
         .subscribeOn(schedulerProvider.io())
         .cache();
+  }
+
+  /**
+   * Publish a MessageGeneral containing the given data.
+   *
+   * @param channel the channel on which the message will be send
+   * @param data the data to encapsulate in the message
+   */
+  public Single<Answer> sendMessageGeneral(String channel, Data data) {
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      MessageGeneral msg = new MessageGeneral(sender, data, signer, mGson);
+
+      return sendPublish(channel, msg);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.e(TAG, "failed to retrieve public key");
+      return Single.error(e);
+    }
+  }
+
+  /**
+   * Returns the public key or null if an error occurred.
+   *
+   * @return the public key
+   */
+  public String getPublicKey() {
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      return Keys.getEncodedKey(publicKeysetHandle);
+    } catch (Exception e) {
+      Log.e(TAG, "failed to retrieve public key", e);
+      return null;
+    }
   }
 
   /**
@@ -401,7 +425,7 @@ public class LAORepository {
     return messageById;
   }
 
-  private void dispose() {
+  public void dispose() {
     disposables.dispose();
   }
 }

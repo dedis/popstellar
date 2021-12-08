@@ -10,7 +10,9 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import akka.pattern.ask
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, Signature, WitnessSignaturePair}
+import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, Signature, WitnessSignaturePair, LaoData, ChannelData}
 import util.examples.MessageExample
 
 import scala.reflect.io.Directory
@@ -27,6 +29,11 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
   final val DB_TEST_FOLDER: String = "databaseTest"
   final val DB_TEST_CHANNEL: String = "/root/testChannel"
+
+  final val TEST_CHANNEL_WRITELAO_1: String = "/root/channelNumber2056764657"
+  final val TEST_CHANNEL_WRITELAO_2: String = "/root/channelNumber277501811"
+  final val TEST_CHANNEL_WRITELAO_3: String = "/root/channelNumber456561164"
+  final val TEST_CHANNEL_WRITELAO_4: String = "/root/channelNumber2056764656"
 
   final val GENERATOR = scala.util.Random
 
@@ -55,6 +62,44 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     expectMsg(message)
   }
 
+  test("DbActor creates channel"){
+    val channel: Channel = generateUniqueChannel
+    val ask = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a [DbActor.DbActorAck]
+  }
+
+  test("DbActor doesn't create same channel twice"){
+    val channel: Channel = generateUniqueChannel
+    val ask = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a [DbActor.DbActorAck]
+
+    val ask2 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorNAck]
+  }
+
+  test("DbActor knows whether channel exists or not"){
+    val channel: Channel = generateUniqueChannel
+    val ask = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    Await.ready(ask, duration)
+
+    val ask2 = dbActorRef ? DbActor.ChannelExists(channel)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorAck]
+
+    val channel3: Channel = new Channel("channel")
+    val ask3 = dbActorRef ? DbActor.ChannelExists(channel3)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorNAck]
+  }
+
   test("DbActor creates missing channels during WRITE") {
     val channel: Channel = generateUniqueChannel
     val message: Message = MessageExample.MESSAGE
@@ -74,17 +119,18 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer shouldBe a [DbActor.DbActorAck]
   }
-
+  
   test("DbActor fails during CATCHUP on a missing channel") {
-    val expected: DbActor.DbActorNAck = DbActor.DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, "Database cannot catchup from a channel that does not exist in db")
+    val channel: Channel = generateUniqueChannel
+    val expected: DbActor.DbActorNAck = DbActor.DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Database cannot catchup from a channel $channel that does not exist in db")
 
-    val ask = dbActorRef ? DbActor.Catchup(generateUniqueChannel)
+    val ask = dbActorRef ? DbActor.Catchup(channel)
     val answer = Await.result(ask, duration)
 
     answer shouldBe a [DbActor.DbActorNAck]
     answer.asInstanceOf[DbActor.DbActorNAck] should equal (expected)
   }
-
+  
   test("DbActor succeeds during CATCHUP on a channel with one message") {
     val message: Message = MessageExample.MESSAGE
     val channel: Channel = generateUniqueChannel
@@ -134,7 +180,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer shouldBe a [DbActor.DbActorReadAck]
     answer.asInstanceOf[DbActor.DbActorReadAck].message should equal (Some(message))
   }
-
+  
   test("DbActor can overwrite messages") {
     val message: Message = MessageExample.MESSAGE
     val messageModified: Message = message.addWitnessSignature(WitnessSignaturePair(PublicKey(Base64Data("myKey")), Signature(Base64Data("mySig"))))
@@ -151,5 +197,138 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer shouldBe a [DbActor.DbActorReadAck]
     answer.asInstanceOf[DbActor.DbActorReadAck].message should equal (Some(messageModified))
+  }
+
+  test("DbActor will fail when creating same channel twice, but then still write in the channel") {
+    val channel: Channel = generateUniqueChannel
+    val message: Message = MessageExample.MESSAGE
+
+    val ask1 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer1 = Await.result(ask1, duration)
+
+    answer1 shouldBe a [DbActor.DbActorAck]
+
+    val ask2 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorNAck]
+
+    val ask3 = dbActorRef ? DbActor.Write(channel, message)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask4 = dbActorRef ? DbActor.Read(channel, message.message_id)
+    val answer4 = Await.result(ask4, duration)
+
+    answer4 shouldBe a [DbActor.DbActorReadAck]
+
+  }
+
+  test("DbActor reads ChannelData"){
+    val channel: Channel = generateUniqueChannel
+    val ask1 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
+    Await.ready(ask1, duration)
+
+    val ask2 = dbActorRef ? DbActor.ReadChannelData(channel)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorReadChannelDataAck]
+
+    answer2.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List.empty)))
+  }
+
+  test("DbActor stores and reads LaoData at creation"){
+    val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_1)
+    val message: Message = MessageExample.MESSAGE_CREATELAO
+    message.decodedData.get.isInstanceOf[CreateLao] should equal(true)
+
+    val ask1 = dbActorRef ? DbActor.Write(channel, message)
+    val answer1 = Await.result(ask1, duration)
+
+    answer1 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask3 = dbActorRef ? DbActor.ReadChannelData(channel)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorReadChannelDataAck]
+
+    answer3.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List(message.message_id))))
+
+    val ask2 = dbActorRef ? DbActor.ReadLaoData(channel)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("key"))), List.empty)))
+  }
+
+  test("DbActor stores and reads LaoData at creation and at roll call closing"){
+    val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_2)
+    val messageLao: Message = MessageExample.MESSAGE_CREATELAO
+    val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
+
+    val ask1 = dbActorRef ? DbActor.Write(channel, messageLao)
+    val answer1 = Await.result(ask1, duration)
+
+    answer1 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask2 = dbActorRef ? DbActor.ReadLaoData(channel)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("key"))), List.empty)))
+
+    val ask3 = dbActorRef ? DbActor.Write(channel, messageRollCall)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask4 = dbActorRef ? DbActor.ReadLaoData(channel)
+    val answer4 = Await.result(ask4, duration)
+
+    answer4 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("keyAttendee"))), List.empty)))
+  }
+
+  test("DbActor stores and reads two distinct LaoData objects, to simulate two LAOs in the same database"){
+    val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_4)
+    val channel2: Channel = Channel(TEST_CHANNEL_WRITELAO_3)
+    val message: Message = MessageExample.MESSAGE_CREATELAO
+    val message2: Message = MessageExample.MESSAGE_CREATELAO2
+
+    val ask1 = dbActorRef ? DbActor.Write(channel, message)
+    val answer1 = Await.result(ask1, duration)
+
+    answer1 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask2 = dbActorRef ? DbActor.Write(channel2, message2)
+    val answer2 = Await.result(ask2, duration)
+
+    answer2 shouldBe a [DbActor.DbActorWriteAck]
+
+    val ask3 = dbActorRef ? DbActor.ReadChannelData(channel)
+    val answer3 = Await.result(ask3, duration)
+
+    answer3 shouldBe a [DbActor.DbActorReadChannelDataAck]
+
+    answer3.asInstanceOf[DbActor.DbActorReadChannelDataAck].channelData should equal(Some(ChannelData(ObjectType.LAO, List(message.message_id))))
+
+    val ask4 = dbActorRef ? DbActor.ReadLaoData(channel)
+    val answer4 = Await.result(ask4, duration)
+
+    answer4 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("key"))), List.empty)))
+
+    val ask5 = dbActorRef ? DbActor.ReadLaoData(channel2)
+    val answer5 = Await.result(ask5, duration)
+
+    answer5 shouldBe a [DbActor.DbActorReadLaoDataAck]
+
+    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key2")), List(PublicKey(Base64Data("key2"))), List.empty)))
+
   }
 }

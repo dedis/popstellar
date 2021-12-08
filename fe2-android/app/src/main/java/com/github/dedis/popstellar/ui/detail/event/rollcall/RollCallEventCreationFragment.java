@@ -18,7 +18,10 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment that shows up when user wants to create a Roll-Call Event */
+@AndroidEntryPoint
 public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
@@ -65,7 +68,7 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
 
     mLaoDetailViewModel = LaoDetailActivity.obtainViewModel(requireActivity());
 
-    setDateAndTimeView(mFragBinding.getRoot(), this, getParentFragmentManager());
+    setDateAndTimeView(mFragBinding.getRoot());
     addStartDateAndTimeListener(confirmTextWatcher);
 
     rollCallTitleEditText = mFragBinding.rollCallTitleText;
@@ -135,11 +138,13 @@ public final class RollCallEventCreationFragment extends AbstractEventCreationFr
   }
 
   private void createRollCall(boolean open) {
-    computeTimesInSeconds();
+    if (!computeTimesInSeconds()) {
+      return;
+    }
 
     String title = mFragBinding.rollCallTitleText.getText().toString();
     String description = mFragBinding.rollCallEventDescriptionText.getText().toString();
     mLaoDetailViewModel.createNewRollCall(
-        title, description, CREATION_TIME_IN_SECONDS, startTimeInSeconds, endTimeInSeconds, open);
+        title, description, creationTimeInSeconds, startTimeInSeconds, endTimeInSeconds, open);
   }
 }

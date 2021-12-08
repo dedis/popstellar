@@ -12,43 +12,54 @@ import android.os.Bundle;
 
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
 import com.github.dedis.popstellar.testutils.MockResultRegistry;
+import com.github.dedis.popstellar.testutils.ResultReceiver;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.rules.RuleChain;
+
+import java.util.concurrent.TimeoutException;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 
 /** Test for the CameraPermissionFragment */
-@RunWith(AndroidJUnit4ClassRunner.class)
+@HiltAndroidTest
 public class CameraPermissionFragmentTest {
 
   private final MockResultRegistry mockRegistry = new MockResultRegistry();
 
-  @Rule
-  public final FragmentScenarioRule<CameraPermissionFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(
+  private final FragmentScenarioRule<CameraPermissionFragment> fragmentRule =
+      FragmentScenarioRule.launch(
           CameraPermissionFragment.class, () -> CameraPermissionFragment.newInstance(mockRegistry));
 
+  @Rule
+  public final RuleChain chain =
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
+
   @Test
-  public void allowButtonMakesPermissionRequestAndProducesResult() {
+  public void allowButtonMakesPermissionRequestAndProducesResult()
+      throws TimeoutException, InterruptedException {
     setupAllowPermission();
-    Receiver<Bundle> receiver = setupResultListener();
+    ResultReceiver<Bundle> receiver =
+        ResultReceiver.createFakeListener(fragmentRule.getScenario(), getRequestKey());
 
     ViewInteraction allowButton = allowCameraButton().check(matches(ViewMatchers.isClickable()));
     allowButton.perform(click());
 
     assertTrue("No response were received", receiver.received());
-    assertEquals("The response is not valid", Bundle.EMPTY, receiver.get());
+    assertEquals("The response is not valid", Bundle.EMPTY, receiver.get(500));
   }
 
   @Test
   public void denyPermissionDoesNothing() {
     setupDenyPermission();
-    Receiver<Bundle> receiver = setupResultListener();
+    ResultReceiver<Bundle> receiver =
+        ResultReceiver.createFakeListener(fragmentRule.getScenario(), getRequestKey());
 
     ViewInteraction allowButton = allowCameraButton().check(matches(ViewMatchers.isClickable()));
     allowButton.perform(click());
@@ -64,39 +75,5 @@ public class CameraPermissionFragmentTest {
   /** Permission request will be allowed after this call */
   private void setupDenyPermission() {
     mockRegistry.setResultProvider(r -> false);
-  }
-
-  private Receiver<Bundle> setupResultListener() {
-    Receiver<Bundle> receiver = new Receiver<>();
-    fragmentRule
-        .getScenario()
-        .onFragment(
-            fragment ->
-                fragment
-                    .getParentFragmentManager()
-                    .setFragmentResultListener(
-                        getRequestKey(),
-                        fragment.getViewLifecycleOwner(),
-                        (k, bundle) -> receiver.give(bundle)));
-
-    return receiver;
-  }
-
-  private static final class Receiver<T> {
-    private boolean received = false;
-    private T value;
-
-    public void give(T val) {
-      value = val;
-      received = true;
-    }
-
-    public boolean received() {
-      return received;
-    }
-
-    public T get() {
-      return value;
-    }
   }
 }

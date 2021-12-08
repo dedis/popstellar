@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet, View, ViewStyle,
@@ -36,6 +36,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const [showTokens, setShowTokens] = useState(false);
   const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
+  const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
 
   const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
   const rollCalls = useSelector(rollCallSelector);
@@ -43,13 +44,13 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const laoSelector = makeLaosMap();
   const laos = useSelector(laoSelector);
 
-  let tokensByLaoRollCall: Record<string, Record<string, PopToken>> = {};
-
-  Wallet.recoverWalletPoPTokens()
-    .then((kp) => {
-      tokensByLaoRollCall = kp;
-    })
-    .catch((err) => console.debug(err));
+  useEffect(() => {
+    Wallet.recoverWalletPoPTokens()
+      .then((kp) => {
+        setTokensByLao(kp);
+      })
+      .catch((err) => console.debug(err));
+  }, [rollCalls]);
 
   /* the below 4 functions are to manage user interaction with buttons */
   function hidePublicKeyButton() {
@@ -116,20 +117,24 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     );
   }
 
-  function displayOneToken(laoId: string, rollCallId: string) {
+  function displayOneToken(laoId: string, rollCallId: string): ReactNode {
+    if (!tokensByLao) {
+      console.warn('The tokensByLaoRollCall is undefined yet');
+      return null;
+    }
     const lao = laos[laoId];
     const rollCall = rollCalls[laoId][rollCallId];
-    const tokenPk = tokensByLaoRollCall[laoId][rollCallId].publicKey;
+    const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
     return (
       <View style={styleContainer.centered}>
         <View style={styles.smallPadding} />
         <TextBlock bold text={STRINGS.lao_id} />
-        <CopiableTextInput text={lao.name} visibility />
+        <CopiableTextInput text={lao.name} />
         <TextBlock bold text={STRINGS.roll_call_name} />
         <TextBlock text={rollCall.name} visibility />
         <View style={styles.smallPadding} />
-        <CopiableTextInput text={tokenPk.valueOf()} visibility={showPublicKey} />
+        <CopiableTextInput text={tokenPk.valueOf()} />
         <View style={styles.smallPadding} />
         <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey} />
       </View>
@@ -137,7 +142,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   }
 
   function displayTokens() {
-    if (Object.keys(tokensByLaoRollCall).length === 0) {
+    if (!tokensByLao || Object.keys(tokensByLao).length === 0) {
       return displayNoTokens();
     }
 
@@ -148,8 +153,8 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         <View style={styles.smallPadding} />
         <View>
           {
-            Object.keys(tokensByLaoRollCall).map(
-              (laoId) => Object.keys(tokensByLaoRollCall[laoId]).map(
+            Object.keys(tokensByLao).map(
+              (laoId) => Object.keys(tokensByLao[laoId]).map(
                 (rollCallId) => displayOneToken(laoId, rollCallId),
               ),
             )

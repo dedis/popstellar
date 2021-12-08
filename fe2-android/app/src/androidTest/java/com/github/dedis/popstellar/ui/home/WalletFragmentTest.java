@@ -22,7 +22,6 @@ import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.LargeTest;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
 import com.github.dedis.popstellar.R;
 
@@ -32,15 +31,20 @@ import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.rules.RuleChain;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 
 @LargeTest
-@RunWith(AndroidJUnit4ClassRunner.class)
+@HiltAndroidTest
 public class WalletFragmentTest {
 
+  // TODO: update those tests: needs to be simplified and readable
   @Rule
-  public ActivityScenarioRule<HomeActivity> mActivityTestRule =
-      new ActivityScenarioRule<>(HomeActivity.class);
+  public final RuleChain rule =
+      RuleChain.outerRule(new HiltAndroidRule(this))
+          .around(new ActivityScenarioRule<>(HomeActivity.class));
 
   @Test
   public void HomeWalletUITest() {

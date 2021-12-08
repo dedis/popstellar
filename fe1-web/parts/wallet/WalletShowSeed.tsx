@@ -27,7 +27,6 @@ const styles = StyleSheet.create({
 const WalletShowSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */
   const seed: string = Wallet.generateMnemonicSeed();
-  console.log(seed);
 
   function getShowSeedWalletDisplay() {
     return (

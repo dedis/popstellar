@@ -7,7 +7,7 @@ import static com.github.dedis.popstellar.utility.handler.RollCallHandler.openRo
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -29,8 +29,8 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.gson.Gson;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,12 +53,11 @@ import io.reactivex.schedulers.TestScheduler;
 public class RollCallHandlerTest {
 
   @Mock LAORemoteDataSource remoteDataSource;
-
   @Mock LAOLocalDataSource localDataSource;
-
   @Mock AndroidKeysetManager androidKeysetManager;
-
   @Mock PublicKeySign signer;
+
+  private static final Gson GSON = JsonModule.provideGson();
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -78,14 +77,11 @@ public class RollCallHandlerTest {
     TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
 
     // Mock the signing of of any data for the MessageGeneral constructor
-    byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
+    byte[] dataBuf = GSON.toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
     createLaoMessage =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            CREATE_LAO,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), CREATE_LAO, signer, GSON);
 
     // Simulate a network response from the server after the response delay
     Observable<GenericMessage> upstream =
@@ -96,12 +92,8 @@ public class RollCallHandlerTest {
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
 
     laoRepository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -109,6 +101,7 @@ public class RollCallHandlerTest {
 
     // Create one Roll Call and add it to the LAO
     rollCall = new RollCall(lao.getId(), Instant.now().getEpochSecond(), "roll call 1");
+    rollCall.setLocation("EPFL");
     lao.setRollCalls(
         new HashMap<String, RollCall>() {
           {
@@ -122,12 +115,6 @@ public class RollCallHandlerTest {
 
     // Add the CreateLao message to the LAORepository
     laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
-  }
-
-  @After
-  public void destroy() {
-    // Ensure every test has a new LAORepository instance with a different TestSchedulerProvider
-    LAORepository.destroyInstance();
   }
 
   @Test
@@ -144,10 +131,7 @@ public class RollCallHandlerTest {
             CREATE_LAO.getId());
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            createRollCall,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), createRollCall, signer, GSON);
 
     // Call the message handler
     handleMessage(laoRepository, LAO_CHANNEL, message);
@@ -179,10 +163,7 @@ public class RollCallHandlerTest {
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            openRollCall,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), openRollCall, signer, GSON);
 
     // Call the message handler
     handleMessage(laoRepository, LAO_CHANNEL, message);
@@ -214,10 +195,7 @@ public class RollCallHandlerTest {
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            closeRollCall,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), closeRollCall, signer, GSON);
 
     // Call the message handler
     handleMessage(laoRepository, LAO_CHANNEL, message);
