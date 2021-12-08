@@ -23,6 +23,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SocialMediaActivity extends AppCompatActivity {
   private final String TAG = SocialMediaActivity.class.getSimpleName();
   private SocialMediaViewModel mViewModel;

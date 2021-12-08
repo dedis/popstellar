@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.SocialMediaSearchFragmentBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SocialMediaSearchFragment extends Fragment {
   private SocialMediaSearchFragmentBinding mSocialMediaSearchFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;

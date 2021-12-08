@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.util.ArrayList;
 import java.util.Objects;

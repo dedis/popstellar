@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SocialMediaSendFragment extends Fragment {
   private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;

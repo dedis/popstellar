@@ -11,6 +11,9 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.SocialMediaFollowingFragmentBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SocialMediaFollowingFragment extends Fragment {
   private SocialMediaFollowingFragmentBinding mSocialMediaFollowingFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;

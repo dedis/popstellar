@@ -16,6 +16,9 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import java.util.function.Supplier;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SocialMediaHomeFragment extends Fragment {
   private SocialMediaHomeFragmentBinding mSocialMediaHomeFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
