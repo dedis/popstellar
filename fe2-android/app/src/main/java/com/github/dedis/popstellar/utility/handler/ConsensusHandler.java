@@ -127,7 +127,7 @@ public final class ConsensusHandler {
 
     Consensus consensus = consensusOpt.get();
 
-    consensus.setAccepted(true);
+    consensus.setAccepted(consensusLearn.getLearnValue().isDecision());
     lao.updateConsensus(consensus);
     laoRepository.updateNodes(lao.getChannel());
   }
