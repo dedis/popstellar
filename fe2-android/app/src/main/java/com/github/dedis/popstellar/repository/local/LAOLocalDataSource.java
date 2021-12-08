@@ -11,21 +11,15 @@ import com.github.dedis.popstellar.repository.local.entities.RollCallEntity;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class LAOLocalDataSource implements Local {
 
   private final LAODao laoDao;
 
-  private static LAOLocalDataSource INSTANCE;
-
-  private LAOLocalDataSource(LAODatabase database) {
+  @Inject
+  public LAOLocalDataSource(LAODatabase database) {
     laoDao = database.laoDao();
-  }
-
-  public static LAOLocalDataSource getInstance(LAODatabase database) {
-    if (INSTANCE == null) {
-      INSTANCE = new LAOLocalDataSource(database);
-    }
-    return INSTANCE;
   }
 
   @Override

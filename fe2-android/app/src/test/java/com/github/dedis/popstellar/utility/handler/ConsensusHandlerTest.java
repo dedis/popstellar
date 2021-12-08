@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
@@ -21,6 +21,7 @@ import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
@@ -28,11 +29,11 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.PublicKeySign;
+import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +80,7 @@ public class ConsensusHandlerTest {
   private static final ConsensusElect elect =
       new ConsensusElect(CREATION_TIME, KEY_ID, TYPE, PROPERTY, VALUE);
 
-  private static final Gson GSON = Injection.provideGson();
+  private static final Gson GSON = JsonModule.provideGson();
 
   private LAORepository laoRepository;
   private MessageGeneral electMsg;
@@ -87,6 +88,8 @@ public class ConsensusHandlerTest {
   private String messageId;
 
   @Mock LAORemoteDataSource remoteDataSource;
+  @Mock LAOLocalDataSource localDataSource;
+  @Mock AndroidKeysetManager androidKeysetManager;
 
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException {
@@ -101,10 +104,9 @@ public class ConsensusHandlerTest {
         KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
     signer = keysetHandle.getPrimitive(PublicKeySign.class);
 
-    LAORepository.destroyInstance();
     laoRepository =
-        LAORepository.getInstance(
-            remoteDataSource, null, null, Injection.provideGson(), testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
     MessageGeneral createLaoMessage = getMsg(ORGANIZER, CREATE_LAO);
@@ -112,11 +114,6 @@ public class ConsensusHandlerTest {
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
-  }
-
-  @After
-  public void clean() {
-    LAORepository.destroyInstance();
   }
 
   private MessageGeneral getMsg(String key, Data data) {

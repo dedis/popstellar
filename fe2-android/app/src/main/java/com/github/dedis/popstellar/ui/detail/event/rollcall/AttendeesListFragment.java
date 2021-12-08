@@ -19,6 +19,9 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class AttendeesListFragment extends Fragment {
 
   public static final String TAG = AttendeesListFragment.class.getSimpleName();
