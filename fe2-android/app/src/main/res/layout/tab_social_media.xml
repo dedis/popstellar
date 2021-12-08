@@ -32,7 +32,6 @@
       android:id="@+id/tab_social_media"
       android:layout_width="0dp"
       android:layout_height="0dp"
-      android:enabled="@{!viewmodel.getLAOs().isEmpty() &amp;&amp; viewmodel.getLAOs() != null}"
       android:text="@string/tab_social_media"
       android:textSize="@dimen/size_small"
       app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_social_media"

@@ -4,12 +4,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
+
+import java.time.Instant;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -64,7 +67,16 @@ public class SocialMediaSendFragment extends Fragment {
   }
 
   private void sendNewChirp() {
-    mSocialMediaViewModel.sendChirp();
-    mSocialMediaViewModel.openHome();
+    if (mSocialMediaViewModel.getLaoId().getValue() == null) {
+      Toast.makeText(
+              requireContext().getApplicationContext(), "You are not in a lao", Toast.LENGTH_LONG)
+          .show();
+    } else {
+      mSocialMediaViewModel.sendChirp(
+          mSocialMediaSendFragBinding.entryBoxChirp.getText().toString(),
+          null,
+          Instant.now().getEpochSecond());
+      mSocialMediaViewModel.openHome();
+    }
   }
 }

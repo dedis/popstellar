@@ -2,23 +2,29 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -33,7 +39,9 @@ import io.reactivex.schedulers.Schedulers;
 @HiltViewModel
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
+  private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
+  private static final String PUBLISH_MESSAGE = "sending publish message";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
   /*
@@ -224,5 +232,47 @@ public class SocialMediaViewModel extends AndroidViewModel {
   }
 
   /** Send a chirp to your own channel */
-  public void sendChirp() {}
+  public void sendChirp(String text, @Nullable String parentId, long timestamp) {
+    Log.d(TAG, "Sending a chirp");
+    String laoChannel = "/root/" + getLaoId().getValue();
+    Lao lao = mLaoRepository.getLaoByChannel(laoChannel);
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+    }
+    AddChirp addChirp = new AddChirp(text, parentId, timestamp);
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      String channel = laoChannel + "/social/" + publicKey;
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      Log.d(TAG, PUBLISH_MESSAGE);
+      MessageGeneral msg = new MessageGeneral(sender, addChirp, signer, mGson);
+
+      Disposable disposable =
+          mLaoRepository
+              .sendPublish(channel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId());
+                    } else {
+                      Log.d(TAG, "failed to send chirp");
+                      Toast.makeText(
+                              getApplication().getApplicationContext(),
+                              "Error when sending chirp. Please try again",
+                              Toast.LENGTH_LONG)
+                          .show();
+                    }
+                  },
+                  throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
+  }
 }
