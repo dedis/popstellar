@@ -9,8 +9,11 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.SingleEvent;
 
-import io.reactivex.disposables.CompositeDisposable;
+import javax.inject.Inject;
 
+import dagger.hilt.android.lifecycle.HiltViewModel;
+
+@HiltViewModel
 public class SettingsViewModel extends AndroidViewModel {
 
   public static final String TAG = SettingsViewModel.class.getSimpleName();
@@ -28,14 +31,9 @@ public class SettingsViewModel extends AndroidViewModel {
   /** Stores the server URL when we open settings to check whether we changed it or not. */
   private final MutableLiveData<String> mCheckServerUrl = new MutableLiveData<>();
 
-  /*
-   * Dependencies for this class
-   */
-  private final CompositeDisposable disposables;
-
+  @Inject
   public SettingsViewModel(@NonNull Application application) {
     super(application);
-    disposables = new CompositeDisposable();
   }
 
   /*

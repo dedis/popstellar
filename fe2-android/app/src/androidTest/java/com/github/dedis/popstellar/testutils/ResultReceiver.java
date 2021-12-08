@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.testutils;
 
 import android.os.Bundle;
 
-import androidx.fragment.app.testing.FragmentScenario;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenario;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ public class ResultReceiver<T> {
   }
 
   public static ResultReceiver<Bundle> createFakeListener(
-      FragmentScenario<?> scenario, String requestKey) {
+      FragmentScenario<?, ?> scenario, String requestKey) {
     ResultReceiver<Bundle> receiver = new ResultReceiver<>();
     scenario.onFragment(
         f ->
@@ -47,7 +47,7 @@ public class ResultReceiver<T> {
   }
 
   public static <T> ResultReceiver<T> createFakeListener(
-      FragmentScenario<?> scenario, String requestKey, String bundleKey) {
+      FragmentScenario<?, ?> scenario, String requestKey, String bundleKey) {
     ResultReceiver<T> receiver = new ResultReceiver<>();
     //noinspection unchecked
     scenario.onFragment(

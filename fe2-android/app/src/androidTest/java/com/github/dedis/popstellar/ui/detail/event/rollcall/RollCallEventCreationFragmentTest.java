@@ -16,16 +16,18 @@ import android.icu.util.Calendar;
 
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.filters.LargeTest;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.rules.RuleChain;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 
 @LargeTest
-@RunWith(AndroidJUnit4ClassRunner.class)
+@HiltAndroidTest
 public class RollCallEventCreationFragmentTest {
 
   private static final String DATE_FORMAT = "%02d/%02d/%02d";
@@ -52,9 +54,12 @@ public class RollCallEventCreationFragmentTest {
     DATE = String.format(DATE_FORMAT, DAY_OF_MONTH, MONTH_OF_YEAR, YEAR);
   }
 
+  private final FragmentScenarioRule<RollCallEventCreationFragment> fragmentRule =
+      FragmentScenarioRule.launch(RollCallEventCreationFragment.class);
+
   @Rule
-  public final FragmentScenarioRule<RollCallEventCreationFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(RollCallEventCreationFragment.class);
+  public final RuleChain chain =
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
 
   @Test
   public void canLaunchDatePickerFragmentFromStartDateButton() {

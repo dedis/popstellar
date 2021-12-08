@@ -21,7 +21,10 @@ import com.github.dedis.popstellar.ui.home.LAOListAdapter;
 
 import java.util.ArrayList;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment used to display the content wallet UI */
+@AndroidEntryPoint
 public class ContentWalletFragment extends Fragment {
 
   public static final String TAG = ContentWalletFragment.class.getSimpleName();
