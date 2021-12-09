@@ -61,6 +61,7 @@ public final class ChirpHandler {
     chirp.setSender(senderPk);
     chirp.setText(addChirp.getText());
     chirp.setTimestamp(addChirp.getTimestamp());
+    chirp.setLikes(0);
     chirp.setParentId(addChirp.getParentId().orElse(""));
 
     lao.updateChirp(messageId, chirp);

@@ -35,6 +35,9 @@ public class SocialMediaActivity extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.social_media_activity);
     mViewModel = obtainViewModel(this);
+
+    // When we launch the social media from the home activity, it has the list of all opened laos
+    // but when it is launched in a lao, it only has its id
     if (getIntent().getExtras().get("OPENED_FROM").equals("HomeActivity")) {
       mViewModel.setLAOs(
           (List<Lao>)
@@ -114,14 +117,14 @@ public class SocialMediaActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.social_media_top_menu, menu);
 
+    // Get the submenu and clear its unique item. The item was needed to create the submenu
     SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
     laosList.clear();
 
+    // Adding all currently opened lao name to the submenu
     for (int i = 0; i < Objects.requireNonNull(mViewModel.getLAOs().getValue()).size(); ++i) {
-      /**
-       * Creating a unique id using subscription_icon and laos_list such that it doesn't override
-       * them in onOptionsItemSelected
-       */
+      // Creating a unique id using subscription_icon and laos_list such that it doesn't override
+      // them in onOptionsItemSelected
       laosList.add(
           Menu.NONE,
           R.id.subscription_icon + R.id.laos_list + i,
@@ -134,22 +137,18 @@ public class SocialMediaActivity extends AppCompatActivity {
   @SuppressLint("NonConstantResourceId")
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
-    switch (item.getItemId()) {
-      case R.id.subscription_icon:
-        mViewModel.subscribeToGeneralChannel(mViewModel.getLaoId().getValue());
+    if (item.getItemId() == R.id.subscription_icon) {
+      mViewModel.subscribeToGeneralChannel(mViewModel.getLaoId().getValue());
+      return true;
+    } else {
+      // Retrieve the index of the lao within the list
+      int i = item.getItemId() - R.id.subscription_icon - R.id.laos_list;
+      if (i >= 0) {
+        mViewModel.setLaoId(Objects.requireNonNull(mViewModel.getLAOs().getValue()).get(i).getId());
+        mViewModel.setLaoName(mViewModel.getLAOs().getValue().get(i).getName());
         return true;
-      case R.id.laos_list:
-        return true;
-
-      default:
-        int i = item.getItemId() - R.id.subscription_icon - R.id.laos_list;
-        if (i >= 0) {
-          mViewModel.setLaoId(
-              Objects.requireNonNull(mViewModel.getLAOs().getValue()).get(i).getId());
-          mViewModel.setLaoName(mViewModel.getLAOs().getValue().get(i).getName());
-          return true;
-        }
-        return super.onOptionsItemSelected(item);
+      }
+      return super.onOptionsItemSelected(item);
     }
   }
 

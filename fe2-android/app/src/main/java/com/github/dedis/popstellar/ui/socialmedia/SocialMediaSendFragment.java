@@ -67,6 +67,7 @@ public class SocialMediaSendFragment extends Fragment {
   }
 
   private void sendNewChirp() {
+    // Doesn't send chirp if you haven't chosen a lao when connecting from home activity
     if (mSocialMediaViewModel.getLaoId().getValue() == null) {
       Toast.makeText(
               requireContext().getApplicationContext(), "You are not in a lao", Toast.LENGTH_LONG)

@@ -231,7 +231,15 @@ public class SocialMediaViewModel extends AndroidViewModel {
     }
   }
 
-  /** Send a chirp to your own channel */
+  /**
+   * Send a chirp to your own channel.
+   *
+   * <p>Publish a MessageGeneral containing AddChirp data.
+   *
+   * @param text the text written in the chirp
+   * @param parentId the id of the chirp to which you replied
+   * @param timestamp the time at which you sent the chirp
+   */
   public void sendChirp(String text, @Nullable String parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
     String laoChannel = "/root/" + getLaoId().getValue();
