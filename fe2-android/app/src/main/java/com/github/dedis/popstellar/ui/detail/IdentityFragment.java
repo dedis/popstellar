@@ -17,12 +17,15 @@ import com.github.dedis.popstellar.R;
 
 import net.glxn.qrgen.android.QRCode;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * Represents the identity of a user within an organization (which allows users to “wear different
  * hats” in different organizations) TODO : For the moment, the goal of this UI is just to show a QR
  * code, but in the future, it will be needed to store identity information somewhere to make it
  * dependent of the current user and LAO
  */
+@AndroidEntryPoint
 public class IdentityFragment extends Fragment {
 
   public static final String TAG = IdentityFragment.class.getSimpleName();

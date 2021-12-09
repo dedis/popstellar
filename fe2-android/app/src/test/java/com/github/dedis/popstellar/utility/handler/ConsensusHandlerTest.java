@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.utility.handler;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -28,7 +28,6 @@ import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.gson.Gson;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -74,7 +73,7 @@ public class ConsensusHandlerTest {
   private static final ConsensusElect elect =
       new ConsensusElect(CREATION_TIME, KEY_ID, TYPE, PROPERTY, VALUE);
 
-  private static final Gson GSON = Injection.provideGson();
+  private static final Gson GSON = JsonModule.provideGson();
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
 
@@ -94,7 +93,7 @@ public class ConsensusHandlerTest {
     TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
 
     // Mock the signing of of any data for the MessageGeneral constructor
-    byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
+    byte[] dataBuf = GSON.toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
     MessageGeneral createLaoMessage = getMsg(ORGANIZER, CREATE_LAO);
 
@@ -111,22 +110,12 @@ public class ConsensusHandlerTest {
         KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
     Mockito.when(androidKeysetManager.getKeysetHandle()).thenReturn(keysetHandle);
 
-    LAORepository.destroyInstance();
     laoRepository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
     MessageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
-  }
-
-  @After
-  public void clean() {
-    LAORepository.destroyInstance();
   }
 
   private MessageGeneral getMsg(String key, Data data) {

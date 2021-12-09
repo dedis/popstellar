@@ -24,6 +24,9 @@ import java.security.GeneralSecurityException;
 import java.util.Base64;
 import java.util.Optional;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class RollCallTokenFragment extends Fragment {
 
   public static final String TAG = RollCallTokenFragment.class.getSimpleName();

@@ -38,10 +38,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 
+@HiltViewModel
 public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
@@ -85,6 +89,7 @@ public class HomeViewModel extends AndroidViewModel
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
+  @Inject
   public HomeViewModel(
       @NonNull Application application,
       Gson gson,

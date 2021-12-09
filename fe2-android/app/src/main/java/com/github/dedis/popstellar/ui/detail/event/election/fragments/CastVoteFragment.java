@@ -23,12 +23,14 @@ import com.github.dedis.popstellar.ui.detail.event.election.adapters.CastVoteVie
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
 /**
  * A simple {@link Fragment} subclass. Use the {@link CastVoteFragment#newInstance} factory method
  * to create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class CastVoteFragment extends Fragment {
 
   private Button voteButton;

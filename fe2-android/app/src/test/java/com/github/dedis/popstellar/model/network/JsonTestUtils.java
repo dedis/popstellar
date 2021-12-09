@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.model.network;
 
 import static org.junit.Assert.assertEquals;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.Gson;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class JsonTestUtils {
 
-  private static final Gson GSON = Injection.provideGson();
+  private static final Gson GSON = JsonModule.provideGson();
 
   public static String loadFile(String path) {
     InputStream is = JsonTestUtils.class.getClassLoader().getResourceAsStream(path);

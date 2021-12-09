@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 
 import net.i2p.crypto.eddsa.Utils;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -19,7 +20,13 @@ import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.StringJoiner;
 
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
+@HiltAndroidTest
 public class WalletTest {
+
+  @Rule public HiltAndroidRule rule = new HiltAndroidRule(this);
 
   private final Context context = ApplicationProvider.getApplicationContext();
 

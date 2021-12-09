@@ -25,8 +25,10 @@ import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSet
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
+@AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = ElectionSetupFragment.class.getSimpleName();

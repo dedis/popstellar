@@ -6,28 +6,32 @@ import static org.junit.Assert.assertEquals;
 
 import android.widget.DatePicker;
 
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
-
-import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
 import com.github.dedis.popstellar.testutils.ResultReceiver;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.rules.RuleChain;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
 
-@RunWith(AndroidJUnit4ClassRunner.class)
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
+@HiltAndroidTest
 public class DatePickerFragmentTest {
 
   private static final int YEAR = 2022;
   private static final int MONTH_OF_YEAR = 10;
   private static final int DAY_OF_MONTH = 10;
 
+  private final FragmentScenarioRule<DatePickerFragment> fragmentRule =
+      FragmentScenarioRule.launch(DatePickerFragment.class);
+
   @Rule
-  public final FragmentScenarioRule<DatePickerFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(DatePickerFragment.class);
+  public final RuleChain chain =
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
 
   @Test
   public void choosingADateReturnTheCorrectValue() throws TimeoutException, InterruptedException {
