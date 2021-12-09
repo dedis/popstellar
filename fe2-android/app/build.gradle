@@ -97,11 +97,11 @@ sonarqube {
         property "sonar.organization", "dedis"
         property "sonar.host.url", "https://sonarcloud.io"
         // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
-        property "sonar.junit.reportPaths", "./build/test-results/*/TEST-*.xml"
+        property "sonar.junit.reportPaths", "${project.buildDir}/test-results/testMockDebugUnitTest/,${project.buildDir}/outputs/connected/flavors/mock/"
         // Paths (absolute or relative) to xml files with Android Lint issues.
-        property "sonar.androidLint.reportPaths", "./build/reports/lint-results-*.xml"
+        property "sonar.androidLint.reportPaths", "${project.buildDir}/reports/lint-results-*.xml"
         // Paths to JaCoCo XML coverage report files.
-        property "sonar.coverage.jacoco.xmlReportPaths", "./build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
     }
 }
 
