@@ -88,6 +88,10 @@ android {
             resources.srcDirs += mock.resources.srcDirs
         }
     }
+
+    jacoco {
+        jacocoVersion = "0.8.7"
+    }
 }
 
 sonarqube {
@@ -105,18 +109,9 @@ sonarqube {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.7"
-}
-
 project.gradle.taskGraph.whenReady {
     connectedCovDebugAndroidTest {
         ignoreFailures = true
-    }
-
-    tasks.withType(Test) {
-        jacoco.includeNoLocationClasses = true
-        jacoco.excludes = ['jdk.internal.*']
     }
 }
 
@@ -198,7 +193,7 @@ copy {
     include 'jsonRPC.json'
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovReleaseUnitTest', 'createCovDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'createCovDebugCoverageReport']) {
     reports {
         xml.enabled = true
         html.enabled = true
