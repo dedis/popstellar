@@ -177,13 +177,15 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action: %v", err)
+	}
 
 	if object == messagedata.ElectionObject {
 		err = c.processElectionObject(action, msg, socket)
-	}
-
-	if err != nil {
-		return xerrors.Errorf("failed to process %q action: %w", action, err)
+		if err != nil {
+			return xerrors.Errorf("failed to process %q action: %w", action, err)
+		}
 	}
 
 	return nil
@@ -341,7 +343,7 @@ func (c *Channel) processCastVote(msg message.Message) error {
 		return xerrors.Errorf("invalid election#cast_vote message: %v", err)
 	}
 
-	err = updateVote(msg.MessageID, msg.Sender, castVote, &c.questions)
+	err = updateVote(msg.MessageID, msg.Sender, castVote, c.questions)
 	if err != nil {
 		xerrors.Errorf("failed to update vote: %v", err)
 	}
@@ -452,7 +454,7 @@ func gatherResults(questions map[string]*question, log zerolog.Logger) (messaged
 	for id := range questions {
 		question, ok := questions[id]
 		if !ok {
-			return resultElection, xerrors.Errorf("No question with this questionId '%s' was recorded", id)
+			return resultElection, xerrors.Errorf("no question with this questionId '%s' was recorded", id)
 		}
 
 		votes := question.validVotes
@@ -503,11 +505,11 @@ func checkMethodProperties(method string, length int) error {
 	return nil
 }
 
-func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, questions *map[string]*question) error {
+func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, questions map[string]*question) error {
 	// this should update any previously set vote if the message ids are the same
 	for _, vote := range castVote.Votes {
 
-		qs, ok := (*questions)[vote.Question]
+		qs, ok := questions[vote.Question]
 		if !ok {
 			return answer.NewErrorf(-4, "no Question with question ID %s exists", vote.Question)
 		}
@@ -519,7 +521,8 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, 
 
 		// if the sender didn't previously cast a vote or if the vote is no
 		// longer valid update it
-		if err := checkMethodProperties(qs.method, len(vote.Vote)); err != nil {
+		err := checkMethodProperties(qs.method, len(vote.Vote))
+		if err != nil {
 			return xerrors.Errorf("failed to validate voting method props: %w", err)
 		}
 

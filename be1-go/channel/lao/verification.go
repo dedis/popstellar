@@ -2,9 +2,9 @@ package lao
 
 import (
 	"encoding/base64"
-	"fmt"
 	"golang.org/x/xerrors"
 	"popstellar/message/messagedata"
+	"strconv"
 	"strings"
 )
 
@@ -22,7 +22,8 @@ func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
 	c.log.Info().Msgf("verifying lao#state message of lao %s", laoState.ID)
 
 	// verify id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(laoState.ID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(laoState.ID)
+	if err != nil {
 		return xerrors.Errorf("lao id is %s, should be base64URL encoded", laoState.ID)
 	}
 
@@ -54,25 +55,29 @@ func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
 	}
 
 	// verify organizer is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(laoState.Organizer); err != nil {
+	_, err = base64.URLEncoding.DecodeString(laoState.Organizer)
+	if err != nil {
 		return xerrors.Errorf("lao organizer is %s, should be base64URL encoded", laoState.Organizer)
 	}
 
 	// verify if all witnesses are base64URL encoded
 	for _, witness := range laoState.Witnesses {
-		if _, err := base64.URLEncoding.DecodeString(witness); err != nil {
+		_, err := base64.URLEncoding.DecodeString(witness)
+		if err != nil {
 			return xerrors.Errorf("lao witness is %s, should be base64URL encoded", witness)
 		}
 	}
 
 	// verify modification id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(laoState.ModificationID); err != nil {
+	_, err = base64.URLEncoding.DecodeString(laoState.ModificationID)
+	if err != nil {
 		return xerrors.Errorf("lao modification id is %s, should be base64URL encoded", laoState.ModificationID)
 	}
 
 	// verify all witnesses in modification signatures are base64URL encoded
 	for _, mod := range laoState.ModificationSignatures {
-		if _, err := base64.URLEncoding.DecodeString(mod.Witness); err != nil {
+		_, err := base64.URLEncoding.DecodeString(mod.Witness)
+		if err != nil {
 			return xerrors.Errorf("lao modification signature witness is %s, should be base64URL encoded", mod.Witness)
 		}
 	}
@@ -85,7 +90,8 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate messagedata.RollCal
 	c.log.Info().Msgf("verifying roll_call#create message of roll call %s", rollCallCreate.ID)
 
 	// verify id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(rollCallCreate.ID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(rollCallCreate.ID)
+	if err != nil {
 		return xerrors.Errorf("roll call id is %s, should be base64URL encoded", rollCallCreate.ID)
 	}
 
@@ -93,7 +99,7 @@ func (c *Channel) verifyMessageRollCallCreate(rollCallCreate messagedata.RollCal
 	expectedID := messagedata.Hash(
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
-		fmt.Sprintf("%d", rollCallCreate.Creation),
+		strconv.Itoa(int(rollCallCreate.Creation)),
 		rollCallCreate.Name,
 	)
 	if rollCallCreate.ID != expectedID {
@@ -141,7 +147,8 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 	c.log.Info().Msgf("verifying roll_call#open message of roll call with update id %s", rollCallOpen.UpdateID)
 
 	// verify update id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(rollCallOpen.UpdateID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(rollCallOpen.UpdateID)
+	if err != nil {
 		return xerrors.Errorf("roll call update id is %s, should be base64URL encoded", rollCallOpen.UpdateID)
 	}
 
@@ -150,14 +157,15 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallOpen.Opens,
-		fmt.Sprintf("%d", rollCallOpen.OpenedAt),
+		strconv.Itoa(int(rollCallOpen.OpenedAt)),
 	)
 	if rollCallOpen.UpdateID != expectedID {
 		return xerrors.Errorf("roll call update id is %s, should be %s", rollCallOpen.UpdateID, expectedID)
 	}
 
 	// verify opens is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(rollCallOpen.Opens); err != nil {
+	_, err = base64.URLEncoding.DecodeString(rollCallOpen.Opens)
+	if err != nil {
 		return xerrors.Errorf("roll call opens is %s, should be base64URL encoded", rollCallOpen.Opens)
 	}
 
@@ -174,7 +182,8 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose messagedata.RollCallC
 	c.log.Info().Msgf("verifying roll_call#close message of roll call with update id %s", rollCallClose.UpdateID)
 
 	// verify update id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(rollCallClose.UpdateID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(rollCallClose.UpdateID)
+	if err != nil {
 		return xerrors.Errorf("roll call update id is %s, should be base64URL encoded", rollCallClose.UpdateID)
 	}
 
@@ -183,14 +192,15 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose messagedata.RollCallC
 		rollCallFlag,
 		strings.ReplaceAll(c.channelID, messagedata.RootPrefix, ""),
 		rollCallClose.Closes,
-		fmt.Sprintf("%d", rollCallClose.ClosedAt),
+		strconv.Itoa(int(rollCallClose.ClosedAt)),
 	)
 	if rollCallClose.UpdateID != expectedID {
 		return xerrors.Errorf("roll call update id is %s, should be %s", rollCallClose.UpdateID, expectedID)
 	}
 
 	// verify closes is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(rollCallClose.Closes); err != nil {
+	_, err = base64.URLEncoding.DecodeString(rollCallClose.Closes)
+	if err != nil {
 		return xerrors.Errorf("roll call closes is %s, should be base64URL encoded", rollCallClose.Closes)
 	}
 
@@ -201,7 +211,8 @@ func (c *Channel) verifyMessageRollCallClose(rollCallClose messagedata.RollCallC
 
 	// verify all attendees are base64URL encoded
 	for _, attendee := range rollCallClose.Attendees {
-		if _, err := base64.URLEncoding.DecodeString(attendee); err != nil {
+		_, err := base64.URLEncoding.DecodeString(attendee)
+		if err != nil {
 			return xerrors.Errorf("roll call attendee is %s, should be base64URL encoded", attendee)
 		}
 	}
@@ -225,7 +236,8 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 	}
 
 	// verify election id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(electionSetup.ID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(electionSetup.ID)
+	if err != nil {
 		return xerrors.Errorf("election id is %s, should be base64URL encoded", electionSetup.ID)
 	}
 
@@ -233,7 +245,7 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 	expectedID := messagedata.Hash(
 		electionFlag,
 		laoId,
-		fmt.Sprintf("%d", electionSetup.CreatedAt),
+		strconv.Itoa(int(electionSetup.CreatedAt)),
 		electionSetup.Name,
 	)
 	if electionSetup.ID != expectedID {
@@ -292,7 +304,8 @@ func (c *Channel) verifyMessageElectionSetup(electionSetup messagedata.ElectionS
 // verifyElectionSetupQuestion checks the question of an election setup message is valid.
 func verifyElectionSetupQuestion(question messagedata.ElectionSetupQuestion, electionID string) error {
 	// verify question id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(question.ID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(question.ID)
+	if err != nil {
 		return xerrors.Errorf("question id is %s, should be base64URL encoded", question.ID)
 	}
 

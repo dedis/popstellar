@@ -26,8 +26,11 @@ const relativeExamplePath string = "../../../protocol/examples/messageData"
 
 func Test_CastVoteAndResult(t *testing.T) {
 
-	// create election channel
+	// create election channel: election with one question
 	electChannel, pkOrganizer := newFakeChannel(t)
+
+	// check the created election has only one question
+	require.Equal(t, 1, len(electChannel.questions))
 
 	// get cast vote message data
 	file := filepath.Join(relativeExamplePath, "vote_cast_vote", "vote_cast_vote.json")
@@ -44,15 +47,19 @@ func Test_CastVoteAndResult(t *testing.T) {
 	err = json.Unmarshal(buf, &castVote)
 	require.NoError(t, err)
 
-	// update vote
-	err = updateVote("123", pkOrganizer, castVote, &electChannel.questions)
+	// update vote with the valid cast vote data
+	// this should add one vote made by the organizer for the question
+	err = updateVote("123", pkOrganizer, castVote, electChannel.questions)
 	require.NoError(t, err)
 
-	// check new vote is in map
+	// check new vote is in the valid votes map
 	for _, question := range electChannel.questions {
 		question.validVotesMu.RLock()
 
+		// check the question has one valid vote
 		require.Equal(t, len(question.validVotes), 1)
+
+		// check that the valid vote was done by the organizer
 		_, ok := question.validVotes[pkOrganizer]
 		require.True(t, ok)
 
@@ -78,11 +85,15 @@ func Test_CastVoteAndResult(t *testing.T) {
 	results, err := gatherResults(electChannel.questions, nolog)
 	require.NoError(t, err)
 
-	// check the results are as expected
+	// check the result contains one question
 	require.Equal(t, 1, len(results.Questions))
+
+	// check the
 	expectedRes := electionResult.Questions[0].Result
 	res := results.Questions[0].Result
 	require.Equal(t, len(expectedRes), len(res))
+
+	// check the election result contain the same count for the same ballot options as expected
 	require.Equal(t, expectedRes[0].Count, res[0].Count)
 	require.Equal(t, expectedRes[0].BallotOption, res[0].BallotOption)
 	require.Equal(t, expectedRes[1].Count, res[1].Count)

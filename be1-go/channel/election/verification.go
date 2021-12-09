@@ -2,6 +2,7 @@ package election
 
 import (
 	"encoding/base64"
+	"github.com/rs/zerolog/log"
 	"golang.org/x/xerrors"
 	"popstellar/message/messagedata"
 	"sort"
@@ -13,19 +14,25 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	c.log.Info().Msgf("verifying election#cast_vote message of election with id %s", castVote.Election)
 
 	// verify lao id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(castVote.Lao); err != nil {
+	_, err := base64.URLEncoding.DecodeString(castVote.Lao)
+	if err != nil {
 		return xerrors.Errorf("lao id is %s, should be base64URL encoded", castVote.Lao)
 	}
 
 	// verify election id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(castVote.Election); err != nil {
+	_, err = base64.URLEncoding.DecodeString(castVote.Election)
+	if err != nil {
 		return xerrors.Errorf("election id is %s, should be base64URL encoded", castVote.Election)
 	}
 
 	// split channel to [lao id, election id]
-	IDs := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
-	laoId := strings.Split(IDs, "/")[0]
-	electionId := strings.Split(IDs, "/")[1]
+	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	IDs := strings.Split(noRoot, "/")
+	if len(IDs) != 2 {
+		return xerrors.Errorf("election channel id is %s, should be formatted as /root/laoID/electionID", c.channelID)
+	}
+	laoId := IDs[0]
+	electionId := IDs[1]
 
 	// verify if lao id is the same as the channel
 	if castVote.Lao != laoId {
@@ -64,19 +71,25 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	c.log.Info().Msgf("verifying election#end message of election with id %s", electionEnd.Election)
 
 	// verify lao id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(electionEnd.LAO); err != nil {
+	_, err := base64.URLEncoding.DecodeString(electionEnd.LAO)
+	if err != nil {
 		return xerrors.Errorf("lao id is %s, should be base64URL encoded", electionEnd.LAO)
 	}
 
 	// verify election id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(electionEnd.Election); err != nil {
+	_, err = base64.URLEncoding.DecodeString(electionEnd.Election)
+	if err != nil {
 		return xerrors.Errorf("election id is %s, should be base64URL encoded", electionEnd.Election)
 	}
 
 	// split channel to [lao id, election id]
-	IDs := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
-	laoId := strings.Split(IDs, "/")[0]
-	electionId := strings.Split(IDs, "/")[1]
+	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+	IDs := strings.Split(noRoot, "/")
+	if len(IDs) != 2 {
+		return xerrors.Errorf("election channel id is %s, should be formatted as /root/laoID/electionID", c.channelID)
+	}
+	laoId := IDs[0]
+	electionId := IDs[1]
 
 	// verify if lao id is the same as the channel
 	if electionEnd.LAO != laoId {
@@ -107,7 +120,10 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	// verify order of registered votes
 	if len(electionEnd.RegisteredVotes) != 0 {
 		err := verifyRegisteredVotes(electionEnd, &c.questions)
-		c.log.Err(err).Msgf("problem with registered votes: %v", err)
+		if err != nil {
+			c.log.Err(err).Msgf("problem with registered votes: %v", err)
+			return nil
+		}
 	}
 
 	return nil
@@ -118,6 +134,7 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions *map[s
 	// get hashed ID of valid votes sorted by msg ID
 	validVotes := make(map[string]string)
 	validVotesSorted := make([]string, 0)
+
 	for _, question := range *questions {
 		msgIDs := make([]string, 0)
 
@@ -133,10 +150,12 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions *map[s
 		// sort the valid votes alphabetically by msg ID
 		sort.Strings(msgIDs)
 		for _, msgID := range msgIDs {
+			log.Info().Msgf("valid votes is %s for msg id %s", validVotes[msgID], msgID)
 			validVotesSorted = append(validVotesSorted, validVotes[msgID])
 		}
 
 	}
+
 	// hash all valid vote ids
 	validVotesHash := messagedata.Hash(validVotesSorted...)
 
@@ -146,5 +165,6 @@ func verifyRegisteredVotes(electionEnd messagedata.ElectionEnd, questions *map[s
 			electionEnd.RegisteredVotes,
 			validVotesHash)
 	}
+
 	return nil
 }

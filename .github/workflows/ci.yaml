@@ -133,7 +133,7 @@ jobs:
 
     - name: Run check target
       run: |
-        make check-cov
+        make check
 
     - name: Run go vet
       run: |
