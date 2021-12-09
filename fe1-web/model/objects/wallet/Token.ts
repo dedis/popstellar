@@ -43,7 +43,9 @@ export function generateToken(laoId: Hash, rollCallId: Hash): Promise<PopToken> 
 
 /**
  * Retrieve the latest PoP token associated with the current LAO from the store.
- * /!\ Do not use it inside of a react component, this is meant to be used only where you cannot
+ *
+ * @remarks
+ * Do not use it inside of a react component, this is meant to be used only where you cannot
  * access to reducers.
  *
  * @returns A Promise that resolves to a PoP token or to undefined if no token exists
