@@ -18,7 +18,7 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Hash, Lao, Timestamp, KeyPair, Base64UrlData, PublicKey,
+  Hash, Lao, Timestamp, KeyPair, Base64UrlData, PublicKey, PopToken,
 } from 'model/objects';
 
 // @ts-ignore
@@ -31,6 +31,14 @@ jest.mock('network/JsonRpcApi.ts', () => ({
   publish: jest.fn(() => Promise.resolve()),
 }));
 const publishMock = publish as jest.MockedFunction<typeof publish>;
+
+const mockPopToken = PopToken.fromState({
+  publicKey: '123',
+  privateKey: '456',
+});
+jest.mock('model/objects/wallet/Token.ts', () => ({
+  generateToken: jest.fn(async () => mockPopToken),
+}));
 
 const mockEventName = 'Random Name';
 const mockLocation = 'EPFL';
@@ -498,7 +506,7 @@ describe('=== WebsocketApi tests ===', () => {
       expect(channel).toBe(`/root/${sampleLao.id}`);
 
       const { attendees } = checkDataCloseRollCall(msgData);
-      expect(attendees).toEqual(attendees);
+      expect(attendees).toEqual(attendeePks);
     });
 
     it('should create the correct request for requestCloseRollCall 3', async () => {
