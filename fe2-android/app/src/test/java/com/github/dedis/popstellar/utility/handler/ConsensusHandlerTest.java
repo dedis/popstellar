@@ -116,6 +116,13 @@ public class ConsensusHandlerTest {
     messageId = electMsg.getMessageId();
   }
 
+  /**
+   * Create a MessageGeneral containing the given data, with the given public key sender
+   *
+   * @param key public key of sender
+   * @param data the data to encapsulated
+   * @return a MessageGeneral
+   */
   private MessageGeneral getMsg(String key, Data data) {
     return new MessageGeneral(Base64.getUrlDecoder().decode(key), data, signer, GSON);
   }
@@ -129,6 +136,7 @@ public class ConsensusHandlerTest {
   }
 
   // handle an elect from node2
+  // This should add an attempt from node2 to start a consensus (in this case for starting an election)
   private void handleConsensusElectTest() throws DataHandlingException {
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
 
@@ -158,6 +166,7 @@ public class ConsensusHandlerTest {
   }
 
   // handle an electAccept from node3 for the elect of node2
+  // This test need be run after the elect message was handled, else the messageId would be invalid
   private void handleConsensusElectAcceptTest() throws DataHandlingException {
     ConsensusElectAccept electAccept = new ConsensusElectAccept(INSTANCE_ID, messageId, true);
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
@@ -186,6 +195,8 @@ public class ConsensusHandlerTest {
     assertEquals(Sets.newSet(electMsg.getMessageId()), node3.getAcceptedMessageIds());
   }
 
+  // handle a learn from node3 for the elect of node2
+  // This test need be run after the elect message was handled, else the messageId would be invalid
   private void handleConsensusLearnTest() throws DataHandlingException {
     ConsensusLearn learn =
         new ConsensusLearn(INSTANCE_ID, messageId, CREATION_TIME, true, Collections.emptyList());
@@ -200,6 +211,9 @@ public class ConsensusHandlerTest {
 
   @Test
   public void handleConsensusWithInvalidMessageIdTest() {
+    // When an invalid instance id is used in handler for elect-accept and learn,
+    // it should throw an InvalidMessageIdException
+
     ConsensusElectAccept electAcceptInvalid =
         new ConsensusElectAccept(INSTANCE_ID, INVALID_MSG_ID, true);
     ConsensusLearn learnInvalid =
@@ -235,6 +249,9 @@ public class ConsensusHandlerTest {
     MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, promise));
     MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, propose));
     MessageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, accept));
+
+    // The handlers for prepare/promise/propose/accept should do nothing (call or update nothing)
+    // because theses messages should only be handle in the backend server.
 
     Mockito.verify(mockLAORepository, Mockito.never()).getLaoByChannel(Mockito.anyString());
     Mockito.verify(mockLAORepository, Mockito.never()).updateNodes(Mockito.anyString());

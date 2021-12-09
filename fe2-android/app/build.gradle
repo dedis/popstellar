@@ -198,6 +198,9 @@ copy {
     include 'jsonRPC.json'
 
     // Replace the remote part of the base URL ($id) to the local resource path
+    // This modification is done to force the use of local files when loading json sub-schemas ($ref)
+    // https://json-schema.org/understanding-json-schema/structuring.html#base-uri
+
     filter {
         String line -> line.replaceAll("https://raw\\.githubusercontent\\.com/dedis/[a-zA-Z0-9_-]+/master/", "resource:/")
     }
