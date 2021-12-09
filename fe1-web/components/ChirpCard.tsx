@@ -7,6 +7,9 @@ import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
+import DeleteButton from 'components/DeleteButton';
+import { requestDeleteChirp } from '../network';
+import { KeyPairStore } from '../store';
 
 /**
  * Component to display a chirp
@@ -64,6 +67,15 @@ const ChirpCard = (props: IPropTypes) => {
   // This is temporary for now
   const zero = '  0';
 
+  const deleteChirp = () => {
+    requestDeleteChirp(chirp.id)
+      .catch((err) => {
+        console.error('Could not remove chirp, error:', err);
+      });
+  };
+
+  const isSender = KeyPairStore.getPublicKey().valueOf() === chirp.sender.valueOf();
+
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
@@ -95,6 +107,7 @@ const ChirpCard = (props: IPropTypes) => {
         <View style={styles.timeView}>
           <TimeAgo date={chirp.time.valueOf() * 1000} />
         </View>
+        { isSender && <DeleteButton action={() => { deleteChirp(); }} />}
       </View>
     </View>
   );

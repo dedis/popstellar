@@ -2,11 +2,13 @@ import {
   EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
+  AddChirp,
   CastVote,
   CloseRollCall,
   CreateLao,
   CreateMeeting,
   CreateRollCall,
+  DeleteChirp,
   EndElection,
   OpenRollCall,
   ReopenRollCall,
@@ -22,7 +24,6 @@ import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
 import { Question, Vote } from 'model/objects/Election';
-import { AddChirp } from 'model/network/method/message/data/chirp/AddChirp';
 import { publish } from './JsonRpcApi';
 
 /**
@@ -288,6 +289,7 @@ export function terminateElection(
   return publish(elecCh, message);
 }
 
+/** Sends a server query which add a chirp */
 export function requestAddChirp(
   text: string,
   parentId?: Hash,
@@ -298,6 +300,21 @@ export function requestAddChirp(
   const message = new AddChirp({
     text: text,
     parent_id: parentId,
+    timestamp: timestamp,
+  });
+
+  return publish(getCurrentUserSocialChannel(currentLao.id), message);
+}
+
+/** Sends a server query which delete a chirp */
+export function requestDeleteChirp(
+  chirpId: Hash,
+): Promise<void> {
+  const timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+
+  const message = new DeleteChirp({
+    chirp_id: chirpId,
     timestamp: timestamp,
   });
 

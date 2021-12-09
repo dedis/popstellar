@@ -29,6 +29,7 @@ export enum ActionType {
   CLOSE = 'close',
   ADD = 'add',
   ADD_BROADCAST = 'addBroadcast',
+  DELETE = 'delete',
 }
 
 export interface MessageData {
