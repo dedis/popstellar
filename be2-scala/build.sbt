@@ -105,14 +105,12 @@ libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
 libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 
 // Scala unit tests
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.9" % Test
 
 // Jackson Databind (for Json Schema Validation)
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
 
 // Json Schema Validator
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
-
-
 
 conflictManager := ConflictManager.latestCompatible
