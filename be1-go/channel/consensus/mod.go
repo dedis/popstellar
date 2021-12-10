@@ -407,11 +407,29 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, msg message.Me
 	// For now the consensus always accept a true if it complete
 	consensusInstance.proposed_value = true
 
+	byteMsg, err := c.createPrepareMessage(data.InstanceID,
+		data.MessageID, consensusInstance)
+	if err != nil {
+		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
+	}
+
+	return nil
+}
+
+// createPrepareMessage creates the data for a new prepare message
+func (c *Channel) createPrepareMessage(instanceID string, messageID string,
+	consensusInstance *ConsensusInstance) ([]byte, error) {
+
 	newData := messagedata.ConsensusPrepare{
 		Object:     "consensus",
 		Action:     "prepare",
-		InstanceID: data.InstanceID,
-		MessageID:  data.MessageID,
+		InstanceID: instanceID,
+		MessageID:  messageID,
 
 		CreatedAt: time.Now().Unix(),
 
@@ -422,15 +440,10 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, msg message.Me
 
 	byteMsg, err := json.Marshal(newData)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal new consensus#prepare message: %v", err)
+		return nil, xerrors.Errorf("failed to marshal new consensus#prepare message: %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
-	}
-
-	return nil
+	return byteMsg, nil
 }
 
 // processConsensusPrepare processes a prepare action.
@@ -478,11 +491,29 @@ func (c *Channel) processConsensusPrepare(msg message.Message) error {
 
 	consensusInstance.promised_try = data.Value.ProposedTry
 
+	byteMsg, err := c.createPromiseMessage(data.InstanceID,
+		data.MessageID, consensusInstance)
+	if err != nil {
+		return xerrors.Errorf("failed to create consensus#promise message, %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// createPromiseMessage creates the data for a new prepare message
+func (c *Channel) createPromiseMessage(instanceID string, messageID string,
+	consensusInstance *ConsensusInstance) ([]byte, error) {
+
 	newData := messagedata.ConsensusPromise{
 		Object:     "consensus",
 		Action:     "promise",
-		InstanceID: data.InstanceID,
-		MessageID:  data.MessageID,
+		InstanceID: instanceID,
+		MessageID:  messageID,
 
 		CreatedAt: time.Now().Unix(),
 
@@ -495,15 +526,10 @@ func (c *Channel) processConsensusPrepare(msg message.Message) error {
 
 	byteMsg, err := json.Marshal(newData)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+		return nil, xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return byteMsg, nil
 }
 
 // processConsensusPromise processes a promise action.
@@ -567,16 +593,34 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, msg message.Messag
 		}
 	}
 
+	byteMsg, err := c.createProposeMessage(data.InstanceID, data.MessageID,
+		consensusInstance, highestAccepted, highestAcceptedValue)
+	if err != nil {
+		return xerrors.Errorf("failed to create consensus#propose message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// createProposeMessage creates the data for a new propose message
+func (c *Channel) createProposeMessage(instanceID string, messageID string, consensusInstance *ConsensusInstance,
+	highestAccepted int64, highestValue bool) ([]byte, error) {
+
 	newData := messagedata.ConsensusPropose{
 		Object:     "consensus",
 		Action:     "propose",
-		InstanceID: data.InstanceID,
-		MessageID:  data.MessageID,
+		InstanceID: instanceID,
+		MessageID:  messageID,
 
 		CreatedAt: time.Now().Unix(),
 
 		Value: messagedata.ValuePropose{
-			ProposedValue: highestAcceptedValue,
+			ProposedValue: highestValue,
 		},
 
 		AcceptorSignatures: make([]string, 0),
@@ -590,15 +634,10 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, msg message.Messag
 
 	byteMsg, err := json.Marshal(newData)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
+		return nil, xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return byteMsg, nil
 }
 
 // processConsensusPropose processes a propose action.
@@ -658,22 +697,10 @@ func (c *Channel) processConsensusPropose(msg message.Message) error {
 	consensusInstance.accepted_try = data.Value.ProposedTry
 	consensusInstance.accepted_value = data.Value.ProposedValue
 
-	newData := messagedata.ConsensusAccept{
-		Object:     "consensus",
-		Action:     "accept",
-		InstanceID: data.InstanceID,
-		MessageID:  data.MessageID,
-
-		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValueAccept{
-			AcceptedTry:   consensusInstance.accepted_try,
-			AcceptedValue: consensusInstance.accepted_value,
-		},
-	}
-	byteMsg, err := json.Marshal(newData)
+	byteMsg, err := c.createAcceptMessage(data.InstanceID,
+		data.MessageID, consensusInstance)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal new consensus#accept message: %v", err)
+		return xerrors.Errorf("failed to create consensus#accept message: %v", err)
 	}
 
 	err = c.publishNewMessage(byteMsg)
@@ -682,6 +709,32 @@ func (c *Channel) processConsensusPropose(msg message.Message) error {
 	}
 
 	return nil
+}
+
+// createAcceptMessage creates the data for a new accept message
+func (c *Channel) createAcceptMessage(instanceID string, messageID string,
+	consensusInstance *ConsensusInstance) ([]byte, error) {
+
+	newData := messagedata.ConsensusAccept{
+		Object:     "consensus",
+		Action:     "accept",
+		InstanceID: instanceID,
+		MessageID:  messageID,
+
+		CreatedAt: time.Now().Unix(),
+
+		Value: messagedata.ValueAccept{
+			AcceptedTry:   consensusInstance.accepted_try,
+			AcceptedValue: consensusInstance.accepted_value,
+		},
+	}
+
+	byteMsg, err := json.Marshal(newData)
+	if err != nil {
+		return nil, xerrors.Errorf("failed to marshal new consensus#accept message: %v", err)
+	}
+
+	return byteMsg, nil
 }
 
 // processConsensusAccept proccesses an accept action.
@@ -745,11 +798,29 @@ func (c *Channel) processConsensusAccept(msg message.Message) error {
 	consensusInstance.decided = true
 	consensusInstance.decision = consensusInstance.proposed_value
 
+	byteMsg, err := c.createLearnMessage(data.InstanceID,
+		data.MessageID, consensusInstance)
+	if err != nil {
+		return xerrors.Errorf("failed to create new consensus#learn message")
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// createLearnMessage creates the data for a learn message
+func (c *Channel) createLearnMessage(instanceID string, messageID string,
+	consensusInstance *ConsensusInstance) ([]byte, error) {
+
 	newData := messagedata.ConsensusLearn{
 		Object:     "consensus",
 		Action:     "learn",
-		InstanceID: data.InstanceID,
-		MessageID:  data.MessageID,
+		InstanceID: instanceID,
+		MessageID:  messageID,
 
 		CreatedAt: time.Now().Unix(),
 
@@ -759,17 +830,13 @@ func (c *Channel) processConsensusAccept(msg message.Message) error {
 
 		AcceptorSignatures: make([]string, 0),
 	}
+
 	byteMsg, err := json.Marshal(newData)
 	if err != nil {
-		return xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+		return nil, xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return byteMsg, nil
 }
 
 // processConsensusLearn processes a learn action.
