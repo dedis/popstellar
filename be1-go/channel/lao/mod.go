@@ -283,6 +283,11 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 // processLaoObject processes a LAO object.
 func (c *Channel) processLaoObject(action string, msg message.Message) error {
+	err := verifySenderIsOrganizer(msg, c.organizerPubKey)
+	if err != nil {
+		return err
+	}
+
 	switch action {
 	case messagedata.LAOActionUpdate:
 	case messagedata.LAOActionState:
@@ -454,22 +459,9 @@ func (c *Channel) processMessageObject(action string, msg message.Message) error
 
 // processRollCallObject handles a roll call object.
 func (c *Channel) processRollCallObject(action string, msg message.Message, socket socket.Socket) error {
-	sender := msg.Sender
-
-	senderBuf, err := base64.URLEncoding.DecodeString(sender)
+	err := verifySenderIsOrganizer(msg, c.organizerPubKey)
 	if err != nil {
-		return xerrors.Errorf(keyDecodeError, err)
-	}
-
-	// Check if the sender of the roll call message is the organizer
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewErrorf(-4, keyUnmarshalError, err)
-	}
-
-	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
+		return err
 	}
 
 	switch action {
@@ -530,27 +522,15 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 // processElectionObject handles an election object.
 func (c *Channel) processElectionObject(action string, msg message.Message,
 	socket socket.Socket) error {
+	err := verifySenderIsOrganizer(msg, c.organizerPubKey)
+	if err != nil {
+		return err
+	}
+
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
 		return answer.NewErrorf(-4, "invalid action: %s != %s)", action, expectedAction)
-	}
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		return xerrors.Errorf(keyDecodeError, err)
-	}
-
-	// Check if the sender of election creation message is the organizer
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewErrorf(-4, keyUnmarshalError, err)
-	}
-
-	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "Sender key does not match the "+
-			"organizer's one: %s != %s", senderPoint, c.organizerPubKey)
 	}
 
 	var electionSetup messagedata.ElectionSetup
@@ -708,6 +688,22 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		}
 	}
 
+	return nil
+}
+
+func verifySenderIsOrganizer(msg message.Message, org kyber.Point) error {
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return answer.NewError(-4, "invalid sender public key")
+	}
+
+	// Check if the sender of the message is the organizer
+	senderPoint := crypto.Suite.Point()
+	err = senderPoint.UnmarshalBinary(senderBuf)
+
+	if !senderPoint.Equal(org) {
+		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
+	}
 	return nil
 }
 
