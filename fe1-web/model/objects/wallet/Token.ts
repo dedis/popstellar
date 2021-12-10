@@ -54,16 +54,13 @@ export async function getCurrentPopTokenFromStore(): Promise<PopToken | undefine
   const lao = OpenedLaoStore.get();
 
   const rollCallId = lao.last_tokenized_roll_call_id;
-  console.log(rollCallId);
   if (rollCallId === undefined) {
     return undefined;
   }
 
   const rollCall = EventStore.getEvent(rollCallId) as RollCall;
   const token = await generateToken(lao.id, rollCallId);
-  console.log(token.publicKey);
   if (rollCall.containsToken(token)) {
-    console.log(token);
     return token;
   }
   return undefined;
