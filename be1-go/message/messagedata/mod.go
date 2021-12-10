@@ -45,7 +45,7 @@ const (
 	ChirpActionAdd             = "add"
 	ChirpActionDelete          = "delete"
 	ChirpActionAddBroadcast    = "add_broadcast"
-	ChirpActionDeleteBroadcast = "deleteBroadcast"
+	ChirpActionDeleteBroadcast = "delete_broadcast"
 
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
