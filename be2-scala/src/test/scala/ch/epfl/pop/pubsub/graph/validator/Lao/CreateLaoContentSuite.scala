@@ -15,6 +15,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import org.scalatest.GivenWhenThen
 import ch.epfl.pop.model.network.JsonRpcResponse
 import org.scalatest.Inside
+import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
 
 class MessageDataContentValidatorSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
@@ -25,8 +26,9 @@ class MessageDataContentValidatorSuite extends FlatSpec with Matchers with Insid
     // Decode data
     val decoded = MessageDecoder.parseData(message)
     decoded match {
-      case decoded @ Left(_) =>
+      case decoded @ Left(_: JsonRpcRequestCreateLao) =>
         testCode(decoded)
+      case decode @ Left(_) => fail("Decoder decoded to bad type: expeted type is JsonRpcRequestCreateLao")
       case decoded @ Right(_) =>
         fail("Message could not be decoded/parsed")
     }
