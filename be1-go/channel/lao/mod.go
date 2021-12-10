@@ -33,9 +33,6 @@ import (
 )
 
 const (
-	keyDecodeError    = "failed to decode sender key: %v"
-	keyUnmarshalError = "failed to unmarshal public key of the sender: %v"
-
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
@@ -700,6 +697,9 @@ func verifySenderIsOrganizer(msg message.Message, org kyber.Point) error {
 	// Check if the sender of the message is the organizer
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal public key of the sender: %v", msg.Sender)
+	}
 
 	if !senderPoint.Equal(org) {
 		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
