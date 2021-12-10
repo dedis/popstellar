@@ -142,7 +142,7 @@ func Test_SendChirp(t *testing.T) {
 
 	checkData := messagedata.ChirpBroadcast{
 		Object:    "chirp",
-		Action:    "addBroadcast",
+		Action:    "add_broadcast",
 		ChirpId:   messagedata.Hash(buf64, "h"),
 		Channel:   root + laoID + social + posts,
 		Timestamp: 123,

@@ -207,7 +207,7 @@ func (c *Channel) processConsensusObject(action string, msg message.Message) err
 
 		err := msg.UnmarshalData(&consensusElectAccept)
 		if err != nil {
-			return xerrors.Errorf("failed to unmarshal consensus#elect-accept: %v", err)
+			return xerrors.Errorf("failed to unmarshal consensus#elect_accept: %v", err)
 		}
 
 		err = c.processConsensusElectAccept(consensusElectAccept)
