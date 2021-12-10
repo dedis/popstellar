@@ -50,4 +50,5 @@ class MessageDataContentValidatorSuite extends FlatSpec with Matchers with Insid
       validated should equal(msg)
     }
   }
+  //TODO: add tests for bad create lao data content
 }
