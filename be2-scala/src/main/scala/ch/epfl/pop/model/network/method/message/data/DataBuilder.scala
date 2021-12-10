@@ -7,6 +7,8 @@ import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, U
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
+import spray.json._
+import scala.util.{Try,Success,Failure}
 
 /*
  * Helps building MessageData instances
@@ -31,10 +33,21 @@ object DataBuilder {
     case _ => throw new ProtocolException(s"Unknown object '${_object}' encountered while creating a Data")
   }
 
+  /**
+    * builds MessageData from payload conformly to the protocol
+    * after validating its schema
+    * @param action action type
+    * @param payload message data in json string format
+    * @return parsed MessageData if the validation and build succedds, throws ProtocolException otherwise
+    */
+  @throws(classOf[ProtocolException])
   private def buildLaoData(action: ActionType, payload: String): MessageData = action match {
-    case ActionType.CREATE => CreateLao.buildFromJson(payload)
-    case ActionType.STATE => StateLao.buildFromJson(payload)
-    case ActionType.UPDATE_PROPERTIES => UpdateLao.buildFromJson(payload)
+    case ActionType.CREATE =>
+      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.CREATE))(CreateLao.buildFromJson)("CreateLao data could not be parsed")
+    case ActionType.STATE =>
+      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.STATE))(CreateLao.buildFromJson)("StateLao data could not be parsed")
+    case ActionType.UPDATE_PROPERTIES =>
+      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.UPDATE_PROPERTIES))(CreateLao.buildFromJson)("UpdateLao data could not be parsed")
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Lao Data")
   }
 
@@ -63,5 +76,21 @@ object DataBuilder {
   private def buildWitnessData(action: ActionType, payload: String): MessageData = action match {
     case ActionType.WITNESS => WitnessMessage.buildFromJson(payload)
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Witness Data")
+  }
+  /**
+    * Builds a message payload after passing a schema validation check
+    *
+    * @param payload payload to build
+    * @param validator one of the validators at [[DataSchemaValidator]] to valid the schema of the payload
+    * @param buildFromJson the data builder
+    * @param errMsg error message to include in description in case of error
+    * @return built MessageData or throws an exceptition in case of schema failure
+    */
+  @throws(classOf[ProtocolException])
+  private def buildOrReject(payload: String)(validator: String => Try[Unit])(buildFromJson: String => MessageData )(errMsg: String): MessageData = {
+      validator(payload) match {
+        case Success(_) => buildFromJson(payload)
+        case Failure(e) => throw new ProtocolException(errMsg + ": " + e.getMessage)
+      }
   }
 }
