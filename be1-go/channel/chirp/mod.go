@@ -313,6 +313,7 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
+	
 	if err != nil {
 		return answer.NewError(-4, "invalid sender public key")
 	}
