@@ -1,0 +1,49 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPrepare.json",
+    "description": "Match a prepare query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "prepare"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance",
+            "type": "string"
+        },
+        "message_id": {
+            "type": "string",
+            "description": "message_id of the elect message"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "proposed_try": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "proposed_try"
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "created_at",
+        "value"
+    ]
+}

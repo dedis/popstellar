@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.repository;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
 import com.github.dedis.popstellar.model.network.answer.Result;
@@ -15,10 +15,10 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,12 +40,11 @@ import io.reactivex.schedulers.TestScheduler;
 public class LAORepositoryTest extends TestCase {
 
   @Mock LAORemoteDataSource remoteDataSource;
-
   @Mock LAOLocalDataSource localDataSource;
-
   @Mock AndroidKeysetManager androidKeysetManager;
-
   @Mock PublicKeySign signer;
+
+  private static final Gson GSON = JsonModule.provideGson();
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -69,13 +68,12 @@ public class LAORepositoryTest extends TestCase {
     testScheduler = (TestScheduler) testSchedulerProvider.io();
 
     // Mock the signing of the data CreateLao
-    byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
+    byte[] dataBuf = GSON.toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(dataBuf)).thenReturn(dataBuf);
 
     // Create the message containing a CreateLao data
     createLaoMessage =
-        new MessageGeneral(
-            Base64.getUrlDecoder().decode(ORGANIZER), CREATE_LAO, signer, Injection.provideGson());
+        new MessageGeneral(Base64.getUrlDecoder().decode(ORGANIZER), CREATE_LAO, signer, GSON);
 
     // Check the correct data is signed during the creation of MessageGeneral
     Mockito.verify(signer, Mockito.times(1)).sign(dataBuf);
@@ -92,12 +90,6 @@ public class LAORepositoryTest extends TestCase {
     laoListTestObserver = TestObserver.create();
   }
 
-  @After
-  public void destroy() {
-    // Ensure every test has a new LAORepository instance with a different TestSchedulerProvider
-    LAORepository.destroyInstance();
-  }
-
   @Test
   public void testSendCatchup() {
     // Simulate a network response from the server after the response delay
@@ -109,12 +101,8 @@ public class LAORepositoryTest extends TestCase {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
     repository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Send a catchup request and subscribe to the answer
     Single<Answer> answerCatchup = repository.sendCatchup(CHANNEL);
@@ -144,12 +132,8 @@ public class LAORepositoryTest extends TestCase {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
     repository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Publish a CreateLao message and subscribe to the answer
     Single<Answer> answerPublish = repository.sendPublish(CHANNEL, createLaoMessage);
@@ -182,12 +166,8 @@ public class LAORepositoryTest extends TestCase {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
     repository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Send a subscribe request and subscribe to the answer
     Single<Answer> answerSubscribe = repository.sendSubscribe(CHANNEL);
@@ -217,12 +197,8 @@ public class LAORepositoryTest extends TestCase {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
     repository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Send a subscribe request and subscribe to the answer
     Single<Answer> answerSubscribe = repository.sendSubscribe(LAO_CHANNEL);
@@ -255,12 +231,8 @@ public class LAORepositoryTest extends TestCase {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
     repository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Send an unsubscribe request and subscribe to the answer
     Single<Answer> answerUnsubscribe = repository.sendUnsubscribe(CHANNEL);
@@ -292,12 +264,8 @@ public class LAORepositoryTest extends TestCase {
     Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
     repository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Subscribe to a LAO and wait for the request to finish
     repository.sendPublish(LAO_CHANNEL, createLaoMessage);

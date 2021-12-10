@@ -25,8 +25,10 @@ import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionSet
 import java.util.ArrayList;
 import java.util.List;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
+@AndroidEntryPoint
 public class ElectionSetupFragment extends AbstractEventCreationFragment {
 
   public static final String TAG = ElectionSetupFragment.class.getSimpleName();
@@ -182,7 +184,9 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
           // elections at once
           submitButton.setEnabled(false);
           // When submitting, we compute the timestamps for the selected start and end time
-          computeTimesInSeconds();
+          if (!computeTimesInSeconds()) {
+            return;
+          }
 
           final List<Integer> validPositions = viewPagerAdapter.getValidInputs();
 
@@ -220,6 +224,8 @@ public class ElectionSetupFragment extends AbstractEventCreationFragment {
               TAG,
               "Creating election with name "
                   + electionName
+                  + ", creation time "
+                  + creationTimeInSeconds
                   + ", start time "
                   + startTimeInSeconds
                   + ", end time "

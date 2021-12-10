@@ -7,6 +7,8 @@ import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, U
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
+import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
+
 import spray.json._
 import scala.util.{Try,Success,Failure}
 
@@ -30,6 +32,7 @@ object DataBuilder {
     case ObjectType.ROLL_CALL => buildRollCallData(action, payload)
     case ObjectType.ELECTION => buildElectionData(action, payload)
     case ObjectType.MESSAGE => buildWitnessData(action, payload)
+    case ObjectType.CHIRP => buildSocialMediaData(action, payload)
     case _ => throw new ProtocolException(s"Unknown object '${_object}' encountered while creating a Data")
   }
 
@@ -77,6 +80,12 @@ object DataBuilder {
     case ActionType.WITNESS => WitnessMessage.buildFromJson(payload)
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Witness Data")
   }
+  
+  private def buildSocialMediaData(action: ActionType, payload: String): MessageData = action match {
+    case ActionType.ADD => AddChirp.buildFromJson(payload)
+    case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Social Media Data")
+  }
+  
   /**
     * Builds a message payload after passing a schema validation check
     *
@@ -91,6 +100,5 @@ object DataBuilder {
       validator(payload) match {
         case Success(_) => buildFromJson(payload)
         case Failure(e) => throw new ProtocolException(errMsg + ": " + e.getMessage)
-      }
   }
 }

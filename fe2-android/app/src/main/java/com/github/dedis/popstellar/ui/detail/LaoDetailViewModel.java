@@ -68,12 +68,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+@HiltViewModel
 public class LaoDetailViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
@@ -198,6 +202,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
   private ScanningAction scanningAction;
 
+  @Inject
   public LaoDetailViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
@@ -462,7 +467,6 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param proposedStart the proposed start time of the roll call
    * @param proposedEnd the proposed end time of the roll call
    * @param open true if we want to directly open the roll call
-   * @return the id of the newly created roll call event, null if fails to create the event
    */
   public void createNewRollCall(
       String title,

@@ -19,7 +19,7 @@ public class AddChirpBroadcast extends Data {
    * @param channel channel where the post is located
    * @param timestamp UNIX timestamp in UTC
    */
-  public AddChirpBroadcast(String postId, String channel, int timestamp) {
+  public AddChirpBroadcast(String postId, String channel, long timestamp) {
     this.postId = postId;
     this.channel = channel;
     this.timestamp = timestamp;
@@ -32,7 +32,7 @@ public class AddChirpBroadcast extends Data {
 
   @Override
   public String getAction() {
-    return Action.ADD.getAction();
+    return Action.ADD_BROADCAST.getAction();
   }
 
   public String getPostId() {

@@ -17,7 +17,10 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment handling permission granting for the camera */
+@AndroidEntryPoint
 public final class CameraPermissionFragment extends Fragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();

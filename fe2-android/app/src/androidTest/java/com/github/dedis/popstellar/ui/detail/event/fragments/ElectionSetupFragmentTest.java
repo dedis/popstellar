@@ -16,17 +16,19 @@ import android.icu.util.Calendar;
 
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.filters.LargeTest;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.rules.RuleChain;
+
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 
 @LargeTest
-@RunWith(AndroidJUnit4ClassRunner.class)
+@HiltAndroidTest
 public class ElectionSetupFragmentTest {
 
   private static final String DATE_FORMAT = "%02d/%02d/%02d";
@@ -53,9 +55,12 @@ public class ElectionSetupFragmentTest {
     DATE = String.format(DATE_FORMAT, DAY_OF_MONTH, MONTH_OF_YEAR, YEAR);
   }
 
+  private final FragmentScenarioRule<ElectionSetupFragment> fragmentRule =
+      FragmentScenarioRule.launch(ElectionSetupFragment.class);
+
   @Rule
-  public final FragmentScenarioRule<ElectionSetupFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(ElectionSetupFragment.class);
+  public final RuleChain chain =
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
 
   @Test
   public void canLaunchDatePickerFragmentFromStartDateButton() {
@@ -230,5 +235,46 @@ public class ElectionSetupFragmentTest {
     timePicker().perform(PickerActions.setTime(HOURS + 1, MINUTES));
     pickerAcceptButton().perform(click());
     endTimeView().check(matches(withText(String.format(TIME_FORMAT, HOURS + 1, MINUTES))));
+  }
+
+  @Test
+  public void cannotChooseStartTimeTooFarInPast() {
+    Calendar today = Calendar.getInstance();
+    today.add(Calendar.MINUTE, -10);
+    int year = today.get(Calendar.YEAR);
+    int monthOfYear = today.get(Calendar.MONTH) + 1;
+    int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+    int hourOfDay = today.get(Calendar.HOUR_OF_DAY);
+    int minutes = today.get(Calendar.MINUTE);
+
+    startDateView().perform(click());
+    datePicker().perform(PickerActions.setDate(year, monthOfYear, dayOfMonth));
+    pickerAcceptButton().perform(click());
+
+    startTimeView().perform(click());
+    timePicker().perform(PickerActions.setTime(hourOfDay, minutes));
+    pickerAcceptButton().perform(click());
+    startTimeView().check(matches(withText("")));
+  }
+
+  @Test
+  public void choosingStartDateInvalidateAStartTimeInPast() {
+    Calendar today = Calendar.getInstance();
+    today.add(Calendar.MINUTE, -10);
+    int year = today.get(Calendar.YEAR);
+    int monthOfYear = today.get(Calendar.MONTH) + 1;
+    int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+    int hourOfDay = today.get(Calendar.HOUR_OF_DAY);
+    int minutes = today.get(Calendar.MINUTE);
+
+    startTimeView().perform(click());
+    timePicker().perform(PickerActions.setTime(hourOfDay, minutes));
+    pickerAcceptButton().perform(click());
+    startTimeView().check(matches(withText(String.format(TIME_FORMAT, hourOfDay, minutes))));
+
+    startDateView().perform(click());
+    datePicker().perform(PickerActions.setDate(year, monthOfYear, dayOfMonth));
+    pickerAcceptButton().perform(click());
+    startTimeView().check(matches(withText("")));
   }
 }

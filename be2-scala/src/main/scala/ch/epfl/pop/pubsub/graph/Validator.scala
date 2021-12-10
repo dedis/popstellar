@@ -8,6 +8,7 @@ import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcR
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
+import ch.epfl.pop.model.network.requests.socialMedia.JsonRpcRequestAddChirp
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph.validators.ElectionValidator._
 import ch.epfl.pop.pubsub.graph.validators.LaoValidator._
@@ -17,6 +18,7 @@ import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
 import ch.epfl.pop.pubsub.graph.validators.RollCallValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
 import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
+import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator._
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -56,7 +58,8 @@ object Validator {
   def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
     // Creation of a JsonNode containing the information from the input jsonString
     val jsonNode: JsonNode = objectMapper.readTree(jsonString)
-    // Validation of the input, the result is a set of errors (if no errors, size == 0)
+    // Validation of the input, the result is a set of errors (if no errors, the set is empty)
+
     val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
     if (errors.isEmpty){
       Left(jsonString)
@@ -148,6 +151,7 @@ object Validator {
       case message@(_: JsonRpcRequestResultElection) => validateResultElection(message)
       case message@(_: JsonRpcRequestEndElection) => validateEndElection(message)
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
+      case message@(_: JsonRpcRequestAddChirp) => validateAddChirp(message)
       case _ => Right(validationError(jsonRpcMessage match {
         case r: JsonRpcRequest => r.id
         case r: JsonRpcResponse => r.id
