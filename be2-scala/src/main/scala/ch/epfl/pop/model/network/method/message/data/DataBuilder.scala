@@ -100,5 +100,6 @@ object DataBuilder {
       validator(payload) match {
         case Success(_) => buildFromJson(payload)
         case Failure(e) => throw new ProtocolException(errMsg + ": " + e.getMessage)
+      }
   }
 }
