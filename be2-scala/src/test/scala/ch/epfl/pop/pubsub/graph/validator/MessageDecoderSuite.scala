@@ -47,7 +47,19 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
             val optDecodedData =  createJsonRpc.getDecodedData
             optDecodedData should be (defined)
             And("is of correct type: CreateLao")
-            optDecodedData.get shouldBe a [CreateLao]
+            val message = optDecodedData.get
+            message shouldBe a [CreateLao]
+            val laoData = message.asInstanceOf[CreateLao]
+            And("lao has a valid name")
+            laoData.name.length should be >= 1
+            And("the timestamp exists")
+            laoData.creation shouldNot be (null)
+            laoData.creation.time should be > (0L)
+            And("the organizer public key is base64")
+            noException shouldBe thrownBy (laoData.organizer.base64Data.decodeToString())
+            And("the witnesses points to a non null list")
+            laoData.witnesses shouldNot be (null)
+            alert(s"The witnesses list was ${laoData.witnesses}")
           }
           case Right(_) => fail(s"The message data format should succeeds with a Left[JsonRpcRequestCreateLao] but was <$parsed>")
           case _ => fail(s"The message data format format yield an unexpected result <$parsed>")
@@ -89,7 +101,10 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
   "A valid rpc request but non-valid message data format createLao --additional param" should "fail" in
       withCreateLaoFixiture(CreateLaoExamples.laoCreateAdditionalParam)(testBadFormat)
 
-  // TODO: Add test for base64
-  // laoCreateOrgNot64
-  // laoCreateWitNot64
+
+  "A valid rpc request but non-valid message data format createLao --organizer pk not base64" should "fail" in
+    withCreateLaoFixiture(CreateLaoExamples.laoCreateOrgNot64)(testBadFormat)
+
+  "A valid rpc request but non-valid message data format createLao --witness pk not base64" should "fail" in
+    withCreateLaoFixiture(CreateLaoExamples.laoCreateWitNot64)(testBadFormat)
 }
