@@ -3,6 +3,7 @@ package fe.utils;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
 
+import common.net.MessageBuffer;
 import common.net.MessageQueue;
 import karate.io.netty.channel.Channel;
 import karate.io.netty.channel.ChannelHandlerContext;
@@ -16,7 +17,7 @@ import java.util.function.Predicate;
 /**
  * Defines a mock backend server that is fully customisable.
  */
-public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
+public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> implements MessageBuffer {
 
   private final MessageQueue queue = new MessageQueue();
   private final WebSocketServerBase server;
@@ -33,7 +34,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   /**
-   * Set the reply producer of the backend.
+   * Sets the reply producer of the backend.
    * It can be set to null if no reply should be sent back
    *
    * @param replyProducer to set
@@ -49,7 +50,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) throws Exception {
+  protected void channelRead0(ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
     logger.trace("message received : {}", frame.text());
     queue.onNewMsg(frame.text());
 
@@ -72,25 +73,65 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     channel.eventLoop().submit(() -> channel.writeAndFlush(new TextWebSocketFrame(text)));
   }
 
-  // ========= Delegate functions of MessageQueue =======
+  // ========= Delegate functions of MessageBuffer =======
 
-  public List<String> allMessages() {
-    return queue.allMessages();
+  @Override
+  public String peek() {
+    return queue.peek();
   }
 
-  public List<String> messages(int firstN) {
-    return queue.messages(firstN);
+  @Override
+  public String peek(final Predicate<String> filter) {
+    return queue.peek(filter);
   }
 
-  public List<String> messages(Predicate<String> filter) {
-    return queue.messages(filter);
+  @Override
+  public List<String> peekAll() {
+    return queue.peekAll();
   }
 
-  public String lastMessage() {
-    return queue.lastMessage();
+  @Override
+  public List<String> peekAll(final Predicate<String> filter) {
+    return queue.peekAll(filter);
   }
 
-  public String lastMessage(Predicate<String> filter) {
-    return queue.lastMessage(filter);
+  @Override
+  public List<String> peekN(final int firstN) {
+    return queue.peekN(firstN);
+  }
+
+  @Override
+  public String poll() {
+    return queue.poll();
+  }
+
+  @Override
+  public String poll(final Predicate<String> filter) {
+    return queue.poll(filter);
+  }
+
+  @Override
+  public List<String> pollAll() {
+    return queue.pollAll();
+  }
+
+  @Override
+  public List<String> pollAll(final Predicate<String> filter) {
+    return queue.pollAll(filter);
+  }
+
+  @Override
+  public List<String> pollN(final int limit) {
+    return queue.pollN(limit);
+  }
+
+  @Override
+  public String pollTimeout(final long timeout) {
+    return queue.pollTimeout(timeout);
+  }
+
+  @Override
+  public String pollTimeout(final Predicate<String> filter, final long timeout) {
+    return queue.pollTimeout(filter, timeout);
   }
 }

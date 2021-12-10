@@ -16,12 +16,8 @@ public class MessageQueueTest {
     Semaphore lock = new Semaphore(0);
 
     new Thread(() -> {
-      try {
-        Assertions.assertEquals(MESSAGE, queue.lastMessage(5000));
-        lock.release();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      Assertions.assertEquals(MESSAGE, queue.pollTimeout(5000));
+      lock.release();
     }).start();
 
     queue.onNewMsg(MESSAGE);
@@ -37,12 +33,8 @@ public class MessageQueueTest {
 
     for (int i = 0; i < n; i++) {
       new Thread(() -> {
-        try {
-          Assertions.assertEquals(MESSAGE, queue.lastMessage(5000));
-          lock.release();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
+        Assertions.assertEquals(MESSAGE, queue.pollTimeout(5000));
+        lock.release();
       }).start();
     }
 
@@ -59,12 +51,8 @@ public class MessageQueueTest {
     Semaphore lock = new Semaphore(0);
 
     new Thread(() -> {
-      try {
-        Assertions.assertNull(queue.lastMessage(500));
-        lock.release();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      Assertions.assertNull(queue.pollTimeout(500));
+      lock.release();
     }).start();
 
     lock.acquire();
