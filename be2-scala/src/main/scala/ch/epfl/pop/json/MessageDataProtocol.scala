@@ -14,7 +14,6 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 
 import scala.collection.immutable.ListMap
-import com.google.crypto.tink.subtle.Ed25519Sign
 
 object MessageDataProtocol extends DefaultJsonProtocol {
 
@@ -232,8 +231,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val endElectionFormat: JsonFormat[EndElection] = jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes")
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp")
-  implicit val addBroadcastChirpFormat: JsonFormat[AddBroadcastChirp] = jsonFormat[Hash, String, Timestamp, AddBroadcastChirp](AddBroadcastChirp.apply, "chirpId", "channel", "timestamp")
+  implicit val addBroadcastChirpFormat: JsonFormat[AddBroadcastChirp] = jsonFormat[Hash, String, Timestamp, AddBroadcastChirp](AddBroadcastChirp.apply, "chirp_id", "channel", "timestamp")
 
-  implicit val channelDataFormat: JsonFormat[ChannelData] = jsonFormat[ObjectType.ObjectType, List[Hash], ChannelData](ChannelData.apply, "channelType", "messages")
-  implicit val laoDataFormat: JsonFormat[LaoData] = jsonFormat[PublicKey, List[PublicKey], Array[Byte], Array[Byte], List[PublicKey], LaoData](LaoData.apply, "owner", "attendees", "privateKey", "publicKey", "witnesses")
 }

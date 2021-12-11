@@ -2,14 +2,16 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
-import ch.epfl.pop.model.objects.PublicKey
+import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 
 
-case object SocialMediaValidator extends MessageDataContentValidator {
+case object SocialMediaValidator extends MessageDataContentValidator with EventValidator {
+
+    override def EVENT_HASH_PREFIX: String = Channel.SEPARATOR + "posts"
 
     def validateAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         def validationError(reason: String): PipelineError = super.validationError(reason, "AddChirp", rpcMessage.id)
@@ -34,5 +36,8 @@ case object SocialMediaValidator extends MessageDataContentValidator {
         }
     }
 
-    //no need for a addBroadcastChirpValidator, since the server will never receive one in theory
+    
+    def validateAddBroadcastChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
+        Left(rpcMessage)
+    }
 }

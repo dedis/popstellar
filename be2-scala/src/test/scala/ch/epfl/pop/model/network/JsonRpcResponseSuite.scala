@@ -9,11 +9,15 @@ class JsonRpcResponseSuite extends FunSuite with Matchers {
         val err: Option[ErrorObject] = Some(new ErrorObject(1, "Error"))
         val id: Option[Int] = Some(0)
 
-        val response: JsonRpcResponse = JsonRpcResponse(rpc, res, err, id)
+        val response: JsonRpcResponse = JsonRpcResponse(rpc, res, id)
         response.jsonrpc should equal(rpc)
         response.result should equal(res)
-        response.error should equal(err)
+        response.error should equal(None)
         response.id should equal(id)
+
+        val response2: JsonRpcResponse = JsonRpcResponse(rpc, err, id)
+        response2.result should equal(None)
+        response2.error should equal(err)
     }
 
     test("isPositive returns right Result"){
@@ -22,8 +26,8 @@ class JsonRpcResponseSuite extends FunSuite with Matchers {
         val err: Option[ErrorObject] = Some(new ErrorObject(1, "Error"))
         val id: Option[Int] = Some(0)
 
-        val response: JsonRpcResponse = JsonRpcResponse(rpc, res, err, id)
-        val response2: JsonRpcResponse = JsonRpcResponse(rpc, None, err, id)
+        val response: JsonRpcResponse = JsonRpcResponse(rpc, res, id)
+        val response2: JsonRpcResponse = JsonRpcResponse(rpc, err, id)
 
         response.isPositive should equal(true)
         response2.isPositive should equal(false)

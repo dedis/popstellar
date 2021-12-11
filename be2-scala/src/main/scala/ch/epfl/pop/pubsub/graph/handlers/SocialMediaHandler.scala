@@ -8,14 +8,13 @@ import ch.epfl.pop.model.network.requests.socialMedia.{JsonRpcRequestAddChirp}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash, Base64Data, Signature, Timestamp, PublicKey}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator
 import ch.epfl.pop.json.MessageDataProtocol._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 import spray.json._
-
-import com.google.crypto.tink.subtle.Ed25519Sign
 
 case object SocialMediaHandler extends MessageHandler {
 
@@ -34,12 +33,6 @@ case object SocialMediaHandler extends MessageHandler {
     }
     case graphMessage@_ => graphMessage
   }
-
-  // helper function to sign data (can be used later elsewhere if we remove the private attribute if needed)
-  private def signData(data: Base64Data, privateKey: Array[Byte]): Signature = {
-    val ed: Ed25519Sign = new Ed25519Sign(privateKey)
-    Signature(Base64Data.encode(ed.sign(data.decode)))
-  }
   
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
@@ -48,21 +41,20 @@ case object SocialMediaHandler extends MessageHandler {
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeSubChannel match {
           case(Some(lao_id)) => {
-            val broadcastChannel: Channel = Channel(Channel.rootChannelPrefix + Base64Data.encode(lao_id) + LaoHandler.SOCIALMEDIAPOSTSPREFIX)
+            val broadcastChannel: Channel = Channel(Channel.rootChannelPrefix + Base64Data.encode(lao_id) + Channel.SOCIALMEDIAPOSTSPREFIX)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
                 // we can't get the message_id as a Base64Data, it is a Hash
-                val chirpId: Hash = params.message_id
+                val chirp_id: Hash = params.message_id
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
-                val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirpId, channelChirp.channel, timestamp)
+                val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(addBroadcastChirp.toJson.toString)
                 
-                //FIXME: however, should we have a package-private getter? I don't know whether it is secure enough.
                 val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
                 Await.result(askLaoData, duration) match {
                   case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
-                    val pk: PublicKey = PublicKey(Base64Data.encode(laoData.publicKey))
-                    val broadcastSignature: Signature = signData(broadcastData, laoData.privateKey)
+                    val pk: PublicKey = laoData.publicKey
+                    val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
                     val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
                     val broadcastMessage: Message = Message(broadcastData, pk, broadcastSignature, broadcastId, List.empty)
                     val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
