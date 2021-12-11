@@ -1,3 +1,4 @@
 export * from './AddChirp';
 export * from './AddChirpBroadcast';
-export * from './deleteChirp';
+export * from './DeleteChirp';
+export * from './NotifyDeleteChirp';

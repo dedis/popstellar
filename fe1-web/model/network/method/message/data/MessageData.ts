@@ -30,6 +30,7 @@ export enum ActionType {
   ADD = 'add',
   ADD_BROADCAST = 'addBroadcast',
   DELETE = 'delete',
+  NOTIFY_DELETE = 'deleteBroadcast',
 }
 
 export interface MessageData {

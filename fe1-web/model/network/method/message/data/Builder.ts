@@ -9,7 +9,9 @@ import { WitnessMessage } from './witness';
 import {
   CastVote, ElectionResult, EndElection, SetupElection,
 } from './election';
-import { AddChirp, AddChirpBroadcast, DeleteChirp } from './chirp';
+import {
+  AddChirp, AddChirpBroadcast, DeleteChirp, NotifyDeleteChirp,
+} from './chirp';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -78,6 +80,8 @@ function buildChirpMessage(msgData: MessageData): MessageData {
       return AddChirpBroadcast.fromJson(msgData);
     case ActionType.DELETE:
       return DeleteChirp.fromJson(msgData);
+    case ActionType.NOTIFY_DELETE:
+      return NotifyDeleteChirp.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while adding a chirp MessageData`);
   }
