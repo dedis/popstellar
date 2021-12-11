@@ -98,7 +98,7 @@ object DataBuilder {
   private def buildOrReject(payload: String)(validator: String => Try[Unit])(buildFromJson: String => MessageData )(errMsg: String): MessageData = {
       validator(payload) match {
         case Success(_) => buildFromJson(payload)
-        case Failure(e) => throw new ProtocolException(errMsg + ": " + e.getMessage)
+        case Failure(e) => throw new ProtocolException(s"$errMsg: ${e.getMessage}")
       }
   }
 }
