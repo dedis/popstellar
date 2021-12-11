@@ -9,15 +9,13 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { getCurrentPopTokenFromStore } from 'model/objects/wallet';
 import {
-  ActionType,
   buildMessageData,
   encodeMessageData,
   isSignedWithToken,
   MessageData,
-  ObjectType,
 } from './data';
-import { getCurrentPopTokenFromStore } from '../../../objects/wallet';
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
