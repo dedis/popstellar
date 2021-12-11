@@ -80,12 +80,12 @@ object DataBuilder {
     case ActionType.WITNESS => WitnessMessage.buildFromJson(payload)
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Witness Data")
   }
-  
+
   private def buildSocialMediaData(action: ActionType, payload: String): MessageData = action match {
     case ActionType.ADD => AddChirp.buildFromJson(payload)
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Social Media Data")
   }
-  
+
   /**
     * Builds a message payload after passing a schema validation check
     *
@@ -99,7 +99,7 @@ object DataBuilder {
   private def buildOrReject(payload: String)(validator: String => Try[Unit])(buildFromJson: String => MessageData )(errMsg: String): MessageData = {
       validator(payload) match {
         case Success(_) => buildFromJson(payload)
-        case Failure(e) => throw new ProtocolException(errMsg + ": " + e.getMessage)
+        case Failure(e) => throw new ProtocolException(s"$errMsg: ${e.getMessage}")
       }
   }
 }
