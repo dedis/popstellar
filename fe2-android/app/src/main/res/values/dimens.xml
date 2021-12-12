@@ -91,5 +91,6 @@
 
   <!-- Social Media dimensions -->
   <dimen name="min_height_entry_box_chirp">245dp</dimen>
+  <dimen name="social_media_divider_height">1dp</dimen>
 
 </resources>
