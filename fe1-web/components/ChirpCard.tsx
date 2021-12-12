@@ -1,65 +1,17 @@
 import React from 'react';
-import {
-  StyleSheet, ViewStyle, View, TextStyle, Text,
-} from 'react-native';
+import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
 import DeleteButton from 'components/DeleteButton';
+import styles from 'styles/stylesheets/chirpCard';
 import { requestDeleteChirp } from '../network';
 import { KeyPairStore } from '../store';
 
 /**
  * Component to display a chirp
  */
-
-const styles = StyleSheet.create({
-  container: {
-    borderColor: gray,
-    borderTopWidth: 0,
-    borderWidth: 1,
-    flexDirection: 'row',
-    padding: 10,
-    width: 600,
-  } as ViewStyle,
-  leftView: {
-    width: 60,
-  } as ViewStyle,
-  rightView: {
-    display: 'flex',
-    flexDirection: 'column',
-  } as ViewStyle,
-  senderText: {
-    fontSize: 18,
-    fontWeight: '600',
-  } as TextStyle,
-  senderView: {
-    fontSize: 18,
-    marginTop: 7,
-  } as ViewStyle,
-  chirpText: {
-    fontSize: 18,
-    paddingBottom: 20,
-    paddingTop: 10,
-    width: 520,
-  } as TextStyle,
-  reactionsView: {
-    flexDirection: 'row',
-    fontSize: 18,
-  } as ViewStyle,
-  reactionView: {
-    flexDirection: 'row',
-    flex: 1,
-    marginRight: 10,
-  } as ViewStyle,
-  timeView: {
-    alignSelf: 'flex-end',
-    marginTop: 10,
-  } as ViewStyle,
-});
-
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const likesText = `  ${chirp.likes}`;

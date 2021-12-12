@@ -21,21 +21,21 @@ const chirp1 = new Chirp({
   text: 'Don\'t panic.',
   time: new Timestamp(1605555500),
   likes: 100,
-  isDeleted: 0,
+  isDeleted: false,
 }).toState();
 
 const chirp1Deleted = new Chirp({
   id: Hash.fromString('1234'),
   sender: new PublicKey('Douglas Adams'),
   time: new Timestamp(1605555500),
-  isDeleted: 1,
+  isDeleted: true,
 }).toState();
 
 const chirp0 = new Chirp({
   id: Hash.fromString('000'),
   sender: new PublicKey('Joker'),
   time: new Timestamp(1605555500),
-  isDeleted: 1,
+  isDeleted: true,
 }).toState();
 
 const chirp2 = new Chirp({

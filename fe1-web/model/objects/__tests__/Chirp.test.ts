@@ -22,7 +22,7 @@ describe('Chirp object', () => {
       time: 1234,
       likes: 6,
       parentId: '5678',
-      isDeleted: 0,
+      isDeleted: false,
     };
     const chirp = Chirp.fromState(chirpState);
     expect(chirp.toState()).toStrictEqual(chirpState);

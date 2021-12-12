@@ -60,6 +60,7 @@ const STRINGS = {
   /* --- Social Media Strings --- */
   button_publish: 'Publish',
   your_chirp: 'Your chirp',
+  deleted_chirp: 'This chirp was deleted',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',

@@ -13,7 +13,7 @@ export interface ChirpState {
   time: number;
   likes: number;
   parentId?: string;
-  isDeleted?: number;
+  isDeleted?: boolean;
 }
 
 export class Chirp {
@@ -34,8 +34,7 @@ export class Chirp {
   // The id of the parent chirp (if it is a reply)
   public readonly parentId?: Hash;
 
-  // set to 1 means the chirp is deleted, 0 otherwise
-  public readonly isDeleted?: number;
+  public readonly isDeleted?: boolean;
 
   constructor(obj: Partial<Chirp>) {
     if (obj === undefined || obj === null) {
@@ -58,7 +57,7 @@ export class Chirp {
       this.likes = obj.likes;
     }
     if (obj.isDeleted === undefined) {
-      this.isDeleted = 0;
+      this.isDeleted = false;
     } else {
       this.isDeleted = obj.isDeleted;
     }

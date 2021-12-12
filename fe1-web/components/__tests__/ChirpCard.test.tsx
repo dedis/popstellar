@@ -27,7 +27,7 @@ const chirp = new Chirp({
   sender: sender,
   time: new Timestamp(1609455600),
   likes: 42,
-  isDeleted: 0,
+  isDeleted: false,
 });
 
 describe('ChirpCard', () => {
