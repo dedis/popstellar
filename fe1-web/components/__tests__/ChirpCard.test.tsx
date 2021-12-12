@@ -16,9 +16,7 @@ const chirp = new Chirp({
 describe('ChirpCard', () => {
   it('renders correctly', () => {
     const obj = render(
-      <ChirpCard
-        chirp={chirp}
-      />,
+      <ChirpCard chirp={chirp} />,
     );
     expect(obj.toJSON()).toMatchSnapshot();
   });
