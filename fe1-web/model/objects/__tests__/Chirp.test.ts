@@ -22,6 +22,7 @@ describe('Chirp object', () => {
       time: 1234,
       likes: 6,
       parentId: '5678',
+      isDeleted: 0,
     };
     const chirp = Chirp.fromState(chirpState);
     expect(chirp.toState()).toStrictEqual(chirpState);
@@ -55,17 +56,6 @@ describe('Chirp object', () => {
       const createWrongChirp = () => new Chirp({
         id: HASH_ID,
         text: TEXT,
-        time: TIMESTAMP,
-        likes: 0,
-        parentId: HASH_PARENT,
-      });
-      expect(createWrongChirp).toThrow(Error);
-    });
-
-    it('throws an error when text is undefined', () => {
-      const createWrongChirp = () => new Chirp({
-        id: HASH_ID,
-        sender: PK,
         time: TIMESTAMP,
         likes: 0,
         parentId: HASH_PARENT,

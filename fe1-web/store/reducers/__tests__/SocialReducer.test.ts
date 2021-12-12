@@ -3,7 +3,9 @@ import { AnyAction } from 'redux';
 import keyPair from 'test_data/keypair.json';
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { Chirp } from 'model/objects/Chirp';
-import { socialReduce, addChirp, makeChirpsList } from '../SocialReducer';
+import {
+  socialReduce, addChirp, makeChirpsList, deleteChirp,
+} from '../SocialReducer';
 
 const mockPublicKey = new PublicKey(keyPair.publicKey);
 const org = mockPublicKey;
@@ -19,6 +21,21 @@ const chirp1 = new Chirp({
   text: 'Don\'t panic.',
   time: new Timestamp(1605555500),
   likes: 100,
+  isDeleted: 0,
+}).toState();
+
+const chirp1Deleted = new Chirp({
+  id: Hash.fromString('1234'),
+  sender: new PublicKey('Douglas Adams'),
+  time: new Timestamp(1605555500),
+  isDeleted: 1,
+}).toState();
+
+const chirp0 = new Chirp({
+  id: Hash.fromString('000'),
+  sender: new PublicKey('Joker'),
+  time: new Timestamp(1605555500),
+  isDeleted: 1,
 }).toState();
 
 const chirp2 = new Chirp({
@@ -120,6 +137,26 @@ const filledState4 = {
   },
 };
 
+const filledState5 = {
+  byLaoId: {
+    myLaoId: {
+      allIdsInOrder: [],
+      byId: {},
+      byUser: {},
+    },
+    [mockLaoId]: {
+      allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
+      byId: {
+        [chirp1.id]: chirp1Deleted,
+        [chirp2.id]: chirp2,
+        [chirp3.id]: chirp3,
+        [chirp4.id]: chirp4,
+      },
+      byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
+    },
+  },
+};
+
 test('reducer should return the initial state', () => {
   expect(socialReduce(undefined, {} as AnyAction))
     .toEqual(emptyState);
@@ -142,6 +179,16 @@ test('reducer should add the newer chirp after the second chirp', () => {
 
 test('reducer should add the newest chirp on top', () => {
   expect(socialReduce(filledState3, addChirp(mockLaoId, chirp4)))
+    .toEqual(filledState4);
+});
+
+test('reducer should mark chirp 1 as deleted', () => {
+  expect(socialReduce(filledState4, deleteChirp(mockLaoId, chirp1Deleted)))
+    .toEqual(filledState5);
+});
+
+test('delete a non-stored chirp should do nothing', () => {
+  expect(socialReduce(filledState4, deleteChirp(mockLaoId, chirp0)))
     .toEqual(filledState4);
 });
 

@@ -99,11 +99,29 @@ const socialSlice = createSlice({
         }
       },
     },
+
+    // Delete a chirp in the list of chirps
+    deleteChirp: {
+      prepare(laoId: Hash | string, chirp: ChirpState): any {
+        return { payload: { laoId: laoId.valueOf(), chirp: chirp } };
+      },
+      reducer(state, action: PayloadAction<{
+        laoId: string,
+        chirp: ChirpState,
+      }>) {
+        const { laoId, chirp } = action.payload;
+        const store = state.byLaoId[laoId];
+
+        if (store.byId[chirp.id]) {
+          store.byId[chirp.id] = chirp;
+        }
+      },
+    },
   },
 });
 
 export const {
-  addChirp,
+  addChirp, deleteChirp,
 } = socialSlice.actions;
 
 export const socialReduce = socialSlice.reducer;

@@ -10,6 +10,7 @@ const chirp = new Chirp({
   sender: new PublicKey('Douglas Adams'),
   time: new Timestamp(1609455600),
   likes: 42,
+  isDeleted: 0,
 });
 
 describe('ChirpCard', () => {

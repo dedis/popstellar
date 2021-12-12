@@ -1,10 +1,13 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, AddChirp, ObjectType } from 'model/network/method/message/data';
+import {
+  ActionType, AddChirp, ObjectType, DeleteChirp,
+} from 'model/network/method/message/data';
 import {
   addChirp,
   dispatch,
   getStore,
   makeCurrentLao,
+  deleteChirp,
 } from 'store';
 import { Chirp } from 'model/objects/Chirp';
 
@@ -52,6 +55,41 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
+ * Handles an deleteChirp message
+ *
+ * @param msg - The extended message for deleting a chirp
+ */
+function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
+  if (msg.messageData.object !== ObjectType.CHIRP
+    || msg.messageData.action !== ActionType.DELETE) {
+    console.warn('handleDeleteChirp was called to process an unsupported message');
+    return false;
+  }
+
+  const makeErr = (err: string) => `chirp/delete was not processed: ${err}`;
+
+  const storeState = getStore().getState();
+  const lao = getCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+
+  const { sender } = msg;
+  const chirpMessage = msg.messageData as DeleteChirp;
+
+  const chirp = new Chirp({
+    id: chirpMessage.chirp_id,
+    sender: sender,
+    time: chirpMessage.timestamp,
+    isDeleted: 1,
+  });
+
+  dispatch(deleteChirp(lao.id, chirp.toState()));
+  return true;
+}
+
+/**
  * Handles all social media messages by redirecting them to the correct function based on the
  * action.
  *
@@ -66,6 +104,8 @@ export function handleSocialMessage(msg: ExtendedMessage): boolean {
   switch (msg.messageData.action) {
     case ActionType.ADD:
       return handleAddChirpMessage(msg);
+    case ActionType.DELETE:
+      return handleDeleteChirpMessage(msg);
     default:
       console.warn('A Social Media message was received but its processing logic is not '
         + 'yet implemented:', msg);
