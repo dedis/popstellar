@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
@@ -305,14 +306,19 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
-    Intent intent = new Intent(this, SocialMediaActivity.class);
-    ArrayList<Lao> laos = new ArrayList<>(Objects.requireNonNull(mViewModel.getLAOs().getValue()));
-    Log.d(TAG, "Trying to open social media");
-    Bundle extra = new Bundle();
-    extra.putSerializable("LAOS", laos);
-    intent.putExtra("extra", extra);
-    intent.putExtra("OPENED_FROM", "HomeActivity");
-    startActivity(intent);
+    if (mViewModel.getLAOs().getValue() == null) {
+      Toast.makeText(getApplicationContext(), "You are not in a lao", Toast.LENGTH_LONG).show();
+    } else {
+      Intent intent = new Intent(this, SocialMediaActivity.class);
+      ArrayList<Lao> laos =
+          new ArrayList<>(Objects.requireNonNull(mViewModel.getLAOs().getValue()));
+      Log.d(TAG, "Trying to open social media");
+      Bundle extra = new Bundle();
+      extra.putSerializable("LAOS", laos);
+      intent.putExtra("extra", extra);
+      intent.putExtra("OPENED_FROM", "HomeActivity");
+      startActivity(intent);
+    }
   }
 
   private void openLaoDetails(String laoId) {
