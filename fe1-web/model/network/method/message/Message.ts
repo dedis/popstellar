@@ -16,6 +16,7 @@ import {
   isSignedWithToken,
   MessageData,
 } from './data';
+import { getPublicationDetailAsync } from 'expo-cli/build/commands/utils/PublishUtils';
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -117,7 +118,7 @@ export class Message {
   /**
    * Creates a Message object from a given MessageData and signatures.
    * We don't add the channel property here as we don't want to send that over the network.
-   * It signs the messages with the public key of the user, or the pop token's public key
+   * It signs the messages with the key pair of the user, or the pop token's key pair
    * according to the type of message.
    *
    * @param data - The MessageData to be signed and hashed
@@ -130,12 +131,16 @@ export class Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     let publicKey = KeyPairStore.getPublicKey();
     let privateKey = KeyPairStore.getPrivateKey();
+    console.log(`Private key length: ${privateKey.length}`);
+    console.log(`Public key length: ${publicKey.length}`);
 
     if (isSignedWithToken(data)) {
       return getCurrentPopTokenFromStore().then((token) => {
         if (token) {
           publicKey = token.publicKey;
           privateKey = token.privateKey;
+          console.log(`Token private key length: ${privateKey.length}`);
+          console.log(`Token public key length: ${publicKey.length}`);
         } else {
           console.error('Impossible to sign the message with a pop token: no token found for '
             + 'current user in this LAO');
