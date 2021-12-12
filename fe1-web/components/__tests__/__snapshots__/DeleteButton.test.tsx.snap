@@ -16,6 +16,7 @@ exports[`DeleteButton renders correctly 1`] = `
   onStartShouldSetResponder={[Function]}
 >
   <Image
+    accessibilityLabel="delete"
     source={1}
     style={
       Object {

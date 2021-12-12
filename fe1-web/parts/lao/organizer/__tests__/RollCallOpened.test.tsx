@@ -12,9 +12,7 @@ import { OpenedLaoStore } from 'store';
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 import RollCallOpened from '../RollCallOpened';
 
-export const mockPublicKey = new PublicKey(keyPair.publicKey);
-
-const org = mockPublicKey;
+const org = new PublicKey(keyPair.publicKey);
 const TIMESTAMP = 1609455600;
 const time = new Timestamp(TIMESTAMP).toString(); // 1st january 2021
 const name = 'MyLao';

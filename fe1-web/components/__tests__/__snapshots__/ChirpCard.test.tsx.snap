@@ -1,6 +1,246 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ChirpCard renders correctly 1`] = `
+exports[`ChirpCard renders correctly for non-sender 1`] = `
+<View
+  style={
+    Object {
+      "borderColor": "gray",
+      "borderTopWidth": 0,
+      "borderWidth": 1,
+      "flexDirection": "row",
+      "padding": 10,
+      "width": 600,
+    }
+  }
+>
+  <View
+    style={
+      Object {
+        "width": 60,
+      }
+    }
+  >
+    <Text
+      allowFontScaling={false}
+      style={
+        Array [
+          Object {
+            "color": "black",
+            "fontSize": 40,
+          },
+          undefined,
+          Object {
+            "fontFamily": "ionicons",
+            "fontStyle": "normal",
+            "fontWeight": "normal",
+          },
+          Object {},
+        ]
+      }
+    >
+      
+    </Text>
+  </View>
+  <View
+    style={
+      Object {
+        "display": "flex",
+        "flexDirection": "column",
+      }
+    }
+  >
+    <View
+      style={
+        Object {
+          "fontSize": 18,
+          "marginTop": 7,
+        }
+      }
+    >
+      <Text
+        style={
+          Object {
+            "fontSize": 18,
+            "fontWeight": "600",
+          }
+        }
+      >
+        Douglas Adams
+      </Text>
+    </View>
+    <Text
+      style={
+        Object {
+          "fontSize": 18,
+          "paddingBottom": 20,
+          "paddingTop": 10,
+          "width": 520,
+        }
+      }
+    >
+      Don't panic.
+    </Text>
+    <View
+      style={
+        Object {
+          "flexDirection": "row",
+          "fontSize": 18,
+        }
+      }
+    >
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text
+          allowFontScaling={false}
+          style={
+            Array [
+              Object {
+                "color": "black",
+                "fontSize": 16,
+              },
+              undefined,
+              Object {
+                "fontFamily": "ionicons",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              Object {},
+            ]
+          }
+        >
+          
+        </Text>
+        <Text>
+            42
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text
+          allowFontScaling={false}
+          style={
+            Array [
+              Object {
+                "color": "black",
+                "fontSize": 16,
+              },
+              undefined,
+              Object {
+                "fontFamily": "ionicons",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              Object {},
+            ]
+          }
+        >
+          
+        </Text>
+        <Text>
+            0
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text
+          allowFontScaling={false}
+          style={
+            Array [
+              Object {
+                "color": "black",
+                "fontSize": 16,
+              },
+              undefined,
+              Object {
+                "fontFamily": "ionicons",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              Object {},
+            ]
+          }
+        >
+          
+        </Text>
+        <Text>
+            0
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <Text
+          allowFontScaling={false}
+          style={
+            Array [
+              Object {
+                "color": "black",
+                "fontSize": 16,
+              },
+              undefined,
+              Object {
+                "fontFamily": "ionicons",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              Object {},
+            ]
+          }
+        >
+          
+        </Text>
+        <Text>
+            0
+        </Text>
+      </View>
+    </View>
+    <View
+      style={
+        Object {
+          "alignSelf": "flex-end",
+          "marginTop": 10,
+        }
+      }
+    >
+      <time
+        dateTime="2020-12-31T23:00:00.000Z"
+        title="2020-12-31 23:00"
+      >
+        12 months ago
+      </time>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`ChirpCard renders correctly for sender 1`] = `
 <View
   style={
     Object {
@@ -140,6 +380,31 @@ exports[`ChirpCard renders correctly 1`] = `
       >
         12 months ago
       </time>
+    </View>
+    <View
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      onBlur={[Function]}
+      onClick={[Function]}
+      onFocus={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+    >
+      <Image
+        accessibilityLabel="delete"
+        source={1}
+        style={
+          Object {
+            "height": 26,
+            "width": 26,
+          }
+        }
+      />
     </View>
   </View>
 </View>

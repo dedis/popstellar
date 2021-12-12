@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 function DeleteButton({ action }: IPropTypes) {
   return (
     <Pressable onPress={action}>
-      <Image style={styles.icon} source={trashcan} />
+      <Image style={styles.icon} source={trashcan} accessibilityLabel="delete" />
     </Pressable>
   );
 }
