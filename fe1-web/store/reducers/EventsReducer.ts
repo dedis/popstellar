@@ -1,6 +1,6 @@
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import {
-  Hash, LaoEvent, LaoEventState, eventFromState,
+  Hash, LaoEvent, LaoEventState, eventFromState, RollCall, PublicKey,
 } from 'model/objects';
 // import eventsData from 'res/EventData';
 import { getLaosState } from './LaoReducer';
@@ -267,6 +267,35 @@ export const makeEventByTypeSelector = <T extends LaoEvent>(eventType: string) =
     return evtByLao;
   },
 );
+
+export const makeLastRollCallAttendeesList = (laoId: Hash | string,
+  rollCallId: Hash | string | undefined) => {
+  const id = laoId.valueOf();
+  const evtId = rollCallId?.valueOf();
+
+  return createSelector(
+    // First input: Get all events across all LAOs
+    (state) => getEventsState(state),
+    // Selector: returns a map of ids -> LaoEvents
+    (eventMap: EventLaoReducerState) : PublicKey[] => {
+      if (!id || !eventMap.byLaoId[id]) {
+        console.log('Undefined LAO id');
+        return [];
+      }
+      if (!evtId || !eventMap.byLaoId[id].byId[evtId]) {
+        console.log('Undefined roll call id');
+        return [];
+      }
+
+      const rollCall = eventFromState(eventMap.byLaoId[id].byId[evtId]) as RollCall;
+      if (!rollCall) {
+        console.log('Roll call not found');
+        return [];
+      }
+      return rollCall.attendees ? rollCall.attendees : [];
+    },
+  );
+};
 
 export default {
   [eventReducerPath]: eventsSlice.reducer,
