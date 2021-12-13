@@ -11,6 +11,7 @@ import karate.io.netty.channel.SimpleChannelInboundHandler;
 import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
 import java.util.List;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -21,16 +22,18 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   private final MessageQueue queue = new MessageQueue();
   private final WebSocketServerBase server;
-  private final Logger logger;
+  private final Logger logger = new Logger(getClass().getSimpleName());
+  // Will be set to true once the connection is established
+  private final CompletableFuture<Boolean> connected = new CompletableFuture<>();
 
   // Defines the rule to apply on incoming messages to produce its reply.
   // Can be null if no reply should be sent back.
   private Function<String, String> replyProducer;
   private Channel channel;
 
-  public MockBackend(int port, Logger logger) {
-    this.logger = logger;
+  public MockBackend(int port) {
     server = new WebSocketServerBase(port, "/", this);
+    logger.info("Mock Backend started");
   }
 
   /**
@@ -45,8 +48,9 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   @Override
   public void channelActive(ChannelHandlerContext ctx) {
-    logger.trace("client connected from the server side");
     channel = ctx.channel();
+    connected.complete(true);
+    logger.trace("Client connected from the server side");
   }
 
   @Override
@@ -61,6 +65,26 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   public int getPort() {
     return server.getPort();
+  }
+
+  public boolean waitForConnection(long timeout) {
+    logger.info("Waiting for connection...");
+    long start = System.currentTimeMillis();
+    try {
+      connected.get(timeout, TimeUnit.MILLISECONDS);
+      logger.info("Connection established in {}s", (System.currentTimeMillis() - start) / 1000.0);
+      return true;
+    } catch (InterruptedException | ExecutionException e) {
+      e.printStackTrace();
+      return false;
+    } catch (TimeoutException e) {
+      logger.error("timeout while waiting for connection to backend");
+      return false;
+    }
+  }
+
+  public boolean isConnected() {
+    return connected.isDone();
   }
 
   public void stop() {
