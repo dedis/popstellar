@@ -2,6 +2,7 @@ package ch.epfl.pop.model.objects
 
 import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.model.network.method.message.Message
@@ -13,6 +14,14 @@ import spray.json._
 import com.google.crypto.tink.subtle.Ed25519Sign
 
 //a pair of byte arrays works better as keypair than the actual keypair object, since Ed25519Sign.Keypair isn't directly convertible to json with spray
+//FIXME: the private key should be stored in a secure way in the future
+/**
+* @param owner: the LAO owner's public key, with which the signed messages can be authenticated
+* @param attendees: list of the last roll call attendees
+* @param privateKey: the LAO's own private key, used to sign messages
+* @param publicKey: the LAO's own public key, used to sign messages
+* @param witnesses: the LAO'slist of witnesses 
+*/
 case class LaoData(
     owner: PublicKey,
     attendees: List[PublicKey],
@@ -26,18 +35,16 @@ case class LaoData(
     }
 
     def updateWith(message: Message): LaoData = {
-      if (message.decodedData == None){
+      if (message.decodedData.isEmpty){
         this
-      }
-      else if (message.decodedData.get.isInstanceOf[CloseRollCall]){
-        LaoData(owner, message.decodedData.get.asInstanceOf[CloseRollCall].attendees, privateKey, publicKey, List.empty)
-      }
-      else if (message.decodedData.get.isInstanceOf[CreateLao]){
-        val ownerPk: PublicKey = message.decodedData.get.asInstanceOf[CreateLao].organizer
-        LaoData(ownerPk, List(ownerPk), privateKey, publicKey, List.empty)
-      }
-      else {
-        this
+      } else message.decodedData.get match {
+        case call: CloseRollCall =>
+          LaoData(owner, call.attendees, privateKey, publicKey, List.empty)
+        case lao: CreateLao =>
+          val ownerPk: PublicKey = lao.organizer
+          LaoData(ownerPk, List(ownerPk), privateKey, publicKey, List.empty)
+        case _ =>
+          this
       }
     }
 

@@ -8,14 +8,13 @@ import ch.epfl.pop.model.network.requests.socialMedia.{JsonRpcRequestAddChirp}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash, Base64Data, Signature, Timestamp, PublicKey}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator
 import ch.epfl.pop.json.MessageDataProtocol._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 import spray.json._
-
-import com.google.crypto.tink.subtle.Ed25519Sign
 
 case object SocialMediaHandler extends MessageHandler {
 
@@ -51,10 +50,13 @@ case object SocialMediaHandler extends MessageHandler {
                 val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(addBroadcastChirp.toJson.toString)
                 
-                //FIXME: however, should we have a package-private getter? I don't know whether it is secure enough.
                 val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
                 Await.result(askLaoData, duration) match {
                   case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
+<<<<<<< HEAD
+=======
+                    val pk: PublicKey = laoData.publicKey
+>>>>>>> b5f38d817d041d3e55ba3f0b0640d3cdea1ca483
                     val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
                     val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
                     val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)

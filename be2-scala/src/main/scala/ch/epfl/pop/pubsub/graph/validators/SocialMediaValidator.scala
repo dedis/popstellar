@@ -9,7 +9,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 
 
-case object SocialMediaValidator extends MessageDataContentValidator {
+case object SocialMediaValidator extends MessageDataContentValidator with EventValidator {
+
+    override def EVENT_HASH_PREFIX: String = Channel.SEPARATOR + "posts"
 
     def validateAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         def validationError(reason: String): PipelineError = super.validationError(reason, "AddChirp", rpcMessage.id)
@@ -34,6 +36,10 @@ case object SocialMediaValidator extends MessageDataContentValidator {
         }
     }
 
+<<<<<<< HEAD
+=======
+    
+>>>>>>> b5f38d817d041d3e55ba3f0b0640d3cdea1ca483
     def validateAddBroadcastChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         Left(rpcMessage)
     }
