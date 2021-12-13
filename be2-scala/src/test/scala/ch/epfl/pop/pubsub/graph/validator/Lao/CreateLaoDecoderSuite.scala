@@ -1,4 +1,4 @@
-package ch.epfl.pop.pubsub.graph.validator
+package ch.epfl.pop.pubsub.graph.validator.lao
 
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers
@@ -18,7 +18,7 @@ import ch.epfl.pop.pubsub.graph.ErrorCodes
 import ch.epfl.pop.pubsub.graph.PipelineError
 import org.scalatest.Inside
 
-class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
+class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   def withCreateLaoFixiture(msg: Message)(testCode: (GraphMessage, Message) => Any){
     val jsonReq = CreateLaoExamples.getJsonRequestFromMessage(msg)
@@ -51,7 +51,7 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
             message shouldBe a [CreateLao]
             val laoData = message.asInstanceOf[CreateLao]
             And("lao has a valid name")
-            laoData.name.length should be >= 1
+            laoData.name shouldNot be (null)
             And("the timestamp exists")
             laoData.creation shouldNot be (null)
             laoData.creation.time should be > (0L)

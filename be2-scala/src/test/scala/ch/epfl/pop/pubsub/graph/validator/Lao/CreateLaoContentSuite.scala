@@ -1,4 +1,4 @@
-package ch.epfl.pop.pubsub.graph.validator
+package ch.epfl.pop.pubsub.graph.validator.lao
 
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.Outcome
@@ -17,7 +17,7 @@ import ch.epfl.pop.model.network.JsonRpcResponse
 import org.scalatest.Inside
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
 
-class MessageDataContentValidatorSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
+class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   /**Decodes data before passing it to the test**/
   def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any) {
