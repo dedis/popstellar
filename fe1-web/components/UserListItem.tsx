@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import {
   View, Text, StyleSheet, ViewStyle, TextStyle,
 } from 'react-native';
-import { getUserSocialChannel, PublicKey } from 'model/objects';
+import { getUserSocialChannel, Hash, PublicKey } from 'model/objects';
 import { gray } from 'styles/colors';
 import { Ionicons } from '@expo/vector-icons';
 import STRINGS from 'res/strings';
@@ -41,12 +41,10 @@ const styles = StyleSheet.create({
 
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
-  const { publicKey } = props;
-  const laoSelect = makeCurrentLao();
-  const lao = useSelector(laoSelect);
+  const { laoId, publicKey } = props;
 
   const followUser = () => {
-    subscribeToChannel(getUserSocialChannel(lao!!.id, publicKey.valueOf()))
+    subscribeToChannel(getUserSocialChannel(laoId, publicKey))
       .catch((error) => {
         console.error(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`);
       });
@@ -82,12 +80,14 @@ const UserListItem = (props: IPropTypes) => {
 };
 
 const propTypes = {
+  laoId: PropTypes.instanceOf(Hash).isRequired,
   publicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 UserListItem.prototype = propTypes;
 
 type IPropTypes = {
+  laoId: Hash,
   publicKey: PublicKey,
 };
 
