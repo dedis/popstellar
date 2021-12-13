@@ -279,17 +279,14 @@ export const makeLastRollCallAttendeesList = (laoId: Hash | string,
     // Selector: returns a map of ids -> LaoEvents
     (eventMap: EventLaoReducerState) : PublicKey[] => {
       if (!id || !eventMap.byLaoId[id]) {
-        console.log('Undefined LAO id');
         return [];
       }
       if (!evtId || !eventMap.byLaoId[id].byId[evtId]) {
-        console.log('Undefined roll call id');
         return [];
       }
 
       const rollCall = eventFromState(eventMap.byLaoId[id].byId[evtId]) as RollCall;
       if (!rollCall) {
-        console.log('Roll call not found');
         return [];
       }
       return rollCall.attendees ? rollCall.attendees : [];
