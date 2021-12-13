@@ -1,4 +1,4 @@
-package ch.epfl.pop.pubsub.graph.validator
+package ch.epfl.pop.pubsub.graph.validator.lao
 
 import org.scalatest.{FlatSpec, Matchers}
 import org.scalatest.Outcome
