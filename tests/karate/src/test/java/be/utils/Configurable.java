@@ -16,4 +16,9 @@ public interface Configurable {
    * Returns the path to output log files.
    */
   String getLogPath();
+
+  /**
+   * Deletes database of the server
+   */
+  void deleteDatabaseDir();
 }

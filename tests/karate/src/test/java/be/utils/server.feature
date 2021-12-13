@@ -33,10 +33,16 @@ Feature: This feature starts a server and stops it after every scenario.
     * def waitForPort =
             """
                 function() {
-                    karate.waitForPort(host, port)
-                    // Scala takes more time to start the server
-                    if(env == 'scala')
-                        wait(10)
+                    var i = 0;
+                    while(i < 5 && !karate.waitForPort(host, port)){
+                      //Wait 5 secs before polling again
+                      wait(5)
+                      i++
+                    }
+                    if(i >= 5){
+                      server.stop()
+                      karate.fail(`Failed waiting for ${wsURL}`)
+                    }
                 }
             """
 
@@ -59,8 +65,13 @@ Feature: This feature starts a server and stops it after every scenario.
                     server.stop();
                 }
             """
-
-        # Start server
+    * def deleteDB =
+            """
+              function() {
+                  server.deleteDatabaseDir();
+              }
+            """
+    # Start server
     * call startServer
     * karate.log('Waiting for server start up ....')
 
@@ -69,7 +80,12 @@ Feature: This feature starts a server and stops it after every scenario.
     * karate.log('Executing tests')
 
         # Shutdown server automatically after the end of a scenario and  feature
-    * configure afterScenario = stopServer
-
-        # Configure an after feature function
+    * configure afterScenario =
+          """
+            function() {
+              stopServer();
+              deleteDB();
+            }
+          """
+    # Configure an after feature function
     * configure afterFeature = karate.get('afterScenario')

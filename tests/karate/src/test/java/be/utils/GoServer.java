@@ -28,4 +28,11 @@ public class GoServer extends Server implements Configurable {
   public String getLogPath() {
     return Paths.get("go.log").toString();
   }
+
+  @Override
+  public void deleteDatabaseDir() {
+    // TODO Auto-generated method stub
+
+  }
+
 }
