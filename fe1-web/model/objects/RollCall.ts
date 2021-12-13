@@ -135,7 +135,7 @@ export class RollCall implements LaoEvent {
     }
 
     return this.attendees.some(
-      (attendee: PublicKey) => attendee.equals(token.publicKey),
+      (attendee: PublicKey) => attendee.valueOf() === token.publicKey.valueOf(),
     );
   }
 }

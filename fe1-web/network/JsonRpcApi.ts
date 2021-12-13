@@ -8,20 +8,21 @@ import { getNetworkManager } from './NetworkManager';
 export const AUTO_ASSIGN_ID = -1;
 
 export function publish(channel: Channel, msgData: MessageData): Promise<void> {
-  const message = Message.fromData(msgData);
+  return Message.fromData(msgData).then((message) => {
+    const request = new JsonRpcRequest({
+      method: JsonRpcMethod.PUBLISH,
+      params: new Publish({
+        channel: channel,
+        message: message,
+      }),
+      id: AUTO_ASSIGN_ID,
+    });
 
-  const request = new JsonRpcRequest({
-    method: JsonRpcMethod.PUBLISH,
-    params: new Publish({
-      channel: channel,
-      message: message,
-    }),
-    id: AUTO_ASSIGN_ID,
+    return getNetworkManager().sendPayload(request)
+      .then(() => { /* discard JsonRpcResponse, as publish only returns an ack */ });
+    // propagate the catch() with the full error message, as it needs to be handled on a higher
+    // level
   });
-
-  return getNetworkManager().sendPayload(request)
-    .then(() => { /* discard JsonRpcResponse, as publish only returns an ack */ });
-  // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
 
 export function subscribe(channel: Channel): Promise<void> {

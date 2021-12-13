@@ -1,6 +1,5 @@
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
-import { makeEventGetter, makeLao, WalletStore } from 'store';
-import { useSelector } from 'react-redux';
+import { EventStore, OpenedLaoStore, WalletStore } from 'store';
 import { Hash } from '../Hash';
 import { PopToken } from '../PopToken';
 import { Base64UrlData } from '../Base64Url';
@@ -43,24 +42,23 @@ export function generateToken(laoId: Hash, rollCallId: Hash): Promise<PopToken> 
 }
 
 /**
- * Retrieve the latest PoP token associated with the current LAO
- * @param laoId the ID of the LAO to retrieve the PoP token for
+ * Retrieve the latest PoP token associated with the current LAO from the store.
+ *
+ * @remarks
+ * Do not use it inside of a react component, this is meant to be used only where you cannot
+ * access to reducers.
+ *
  * @returns A Promise that resolves to a PoP token or to undefined if no token exists
  */
-export async function getCurrentPopToken(laoId: Hash): Promise<PopToken | undefined> {
-  const laoSelect = makeLao(laoId.toString());
-  const lao = useSelector(laoSelect);
-  if (lao === undefined) {
-    return undefined;
-  }
+export async function getCurrentPopTokenFromStore(): Promise<PopToken | undefined> {
+  const lao = OpenedLaoStore.get();
 
   const rollCallId = lao.last_tokenized_roll_call_id;
   if (rollCallId === undefined) {
     return undefined;
   }
 
-  const eventSelect = makeEventGetter(laoId, rollCallId);
-  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
+  const rollCall = EventStore.getEvent(rollCallId) as RollCall;
   const token = await generateToken(lao.id, rollCallId);
   if (rollCall.containsToken(token)) {
     return token;
