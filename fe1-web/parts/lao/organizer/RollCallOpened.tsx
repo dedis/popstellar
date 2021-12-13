@@ -13,7 +13,9 @@ import { Badge } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/core';
 import { requestCloseRollCall } from 'network';
-import { EventTags, Hash, PublicKey, Wallet } from 'model/objects';
+import {
+  EventTags, Hash, PublicKey, Wallet,
+} from 'model/objects';
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
