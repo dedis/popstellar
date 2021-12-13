@@ -20,6 +20,7 @@ const message_data_lao_create_schema = require("../query/method/message/data/dat
 const message_data_lao_update_schema = require("../query/method/message/data/dataUpdateLao.json")
 const message_data_lao_state_schema = require("../query/method/message/data/dataStateLao.json")
 const message_data_vote_cast_schema = require("../query/method/message/data/dataCastVote.json")
+const message_data_election_open_schema = require("../query/method/message/data/dataOpenElection.json")
 const message_data_election_end_schema = require("../query/method/message/data/dataEndElection.json")
 const message_data_election_result_schema = require("../query/method/message/data/dataResultElection.json")
 const message_data_election_setup_schema = require("../query/method/message/data/dataSetupElection.json")
@@ -66,6 +67,7 @@ ajv.addSchema([
 
     message_data_vote_cast_schema,
 
+    message_data_election_open_schema,
     message_data_election_end_schema,
     message_data_election_result_schema,
     message_data_election_setup_schema,

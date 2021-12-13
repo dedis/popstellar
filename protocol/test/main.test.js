@@ -146,6 +146,9 @@ test("message data: election", () => {
 
     election_setup = require("../examples/messageData/election_setup.json")
     expect(election_setup).toBeValid(messageDataSchema)
+
+    election_open = require("../examples/messageData/election_open.json")
+    expect(election_open).toBeValid(messageDataSchema)
 })
 
 test("message data: message", () => {
