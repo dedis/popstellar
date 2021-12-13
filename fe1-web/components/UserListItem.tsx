@@ -8,8 +8,6 @@ import { gray } from 'styles/colors';
 import { Ionicons } from '@expo/vector-icons';
 import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { makeCurrentLao } from 'store';
-import { useSelector } from 'react-redux';
 import WideButtonView from './WideButtonView';
 
 const styles = StyleSheet.create({
