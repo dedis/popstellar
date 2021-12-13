@@ -5,10 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collections;
-import java.util.List;
-
-public final class ConsensusLearn extends Data {
+public final class ConsensusPromise extends Data {
 
   @SerializedName("instance_id")
   private final String instanceId;
@@ -20,31 +17,39 @@ public final class ConsensusLearn extends Data {
   private final long creation;
 
   @SerializedName("value")
-  private final LearnValue learnValue;
-
-  @SerializedName("acceptor-signatures")
-  private final List<String> acceptorSignatures;
+  private final PromiseValue promiseValue;
 
   /**
-   * Constructor for a data Learn
+   * Constructor for a data Promise
    *
    * @param instanceId unique id of the consensus instance
    * @param messageId message id of the Elect message
    * @param creation UNIX timestamp in UTC
-   * @param decision true if the consensus was successful
-   * @param acceptorSignatures signatures of all the received Accept messages
+   * @param acceptedTry previous accepted try number
+   * @param acceptedValue previous accepted value
+   * @param promisedTry promised try number
    */
-  public ConsensusLearn(
+  public ConsensusPromise(
       String instanceId,
       String messageId,
       long creation,
-      boolean decision,
-      List<String> acceptorSignatures) {
+      int acceptedTry,
+      boolean acceptedValue,
+      int promisedTry) {
     this.instanceId = instanceId;
     this.messageId = messageId;
     this.creation = creation;
-    this.learnValue = new LearnValue(decision);
-    this.acceptorSignatures = Collections.unmodifiableList(acceptorSignatures);
+    this.promiseValue = new PromiseValue(acceptedTry, acceptedValue, promisedTry);
+  }
+
+  @Override
+  public String getObject() {
+    return Objects.CONSENSUS.getObject();
+  }
+
+  @Override
+  public String getAction() {
+    return Action.PROMISE.getAction();
   }
 
   public String getInstanceId() {
@@ -55,31 +60,12 @@ public final class ConsensusLearn extends Data {
     return messageId;
   }
 
-  public List<String> getAcceptorSignatures() {
-    return acceptorSignatures;
-  }
-
   public long getCreation() {
     return creation;
   }
 
-  public LearnValue getLearnValue() {
-    return learnValue;
-  }
-
-  @Override
-  public String getObject() {
-    return Objects.CONSENSUS.getObject();
-  }
-
-  @Override
-  public String getAction() {
-    return Action.LEARN.getAction();
-  }
-
-  @Override
-  public int hashCode() {
-    return java.util.Objects.hash(instanceId, messageId, creation, learnValue, acceptorSignatures);
+  public PromiseValue getPromiseValue() {
+    return promiseValue;
   }
 
   @Override
@@ -90,19 +76,23 @@ public final class ConsensusLearn extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ConsensusLearn that = (ConsensusLearn) o;
+    ConsensusPromise that = (ConsensusPromise) o;
 
     return creation == that.creation
         && java.util.Objects.equals(instanceId, that.instanceId)
         && java.util.Objects.equals(messageId, that.messageId)
-        && java.util.Objects.equals(learnValue, that.learnValue)
-        && java.util.Objects.equals(acceptorSignatures, that.acceptorSignatures);
+        && java.util.Objects.equals(promiseValue, that.promiseValue);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(instanceId, messageId, creation, promiseValue);
   }
 
   @Override
   public String toString() {
     return String.format(
-        "ConsensusLearn{instance_id='%s', message_id='%s', acceptor-signatures=%s}",
-        instanceId, messageId, acceptorSignatures);
+        "ConsensusPromise{instance_id='%s', message_id='%s', created_at=%s, value=%s}",
+        instanceId, messageId, creation, promiseValue);
   }
 }
