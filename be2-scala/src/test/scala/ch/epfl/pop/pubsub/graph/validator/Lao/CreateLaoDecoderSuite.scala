@@ -18,7 +18,7 @@ import ch.epfl.pop.pubsub.graph.ErrorCodes
 import ch.epfl.pop.pubsub.graph.PipelineError
 import org.scalatest.Inside
 
-class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
+class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   def withCreateLaoFixiture(msg: Message)(testCode: (GraphMessage, Message) => Any){
     val jsonReq = CreateLaoExamples.getJsonRequestFromMessage(msg)
