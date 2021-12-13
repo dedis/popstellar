@@ -686,7 +686,7 @@ func (c *Channel) processConsensusPropose(msg message.Message) error {
 
 	// If the server has no client subscribed to the consensus channel, it
 	// doesn't take part in it
-	if c.sockets.Number() == 0 {
+	if c.sockets.Len() == 0 {
 		return nil
 	}
 

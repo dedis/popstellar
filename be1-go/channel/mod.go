@@ -50,8 +50,8 @@ type Sockets struct {
 	store map[string]socket.Socket
 }
 
-// Number returns the numbre of sockets.
-func (s *Sockets) Number() int {
+// Len returns the numbre of sockets.
+func (s *Sockets) Len() int {
 	return len(s.store)
 }
 
