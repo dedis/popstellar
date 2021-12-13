@@ -41,6 +41,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Ca
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
@@ -103,6 +104,7 @@ public abstract class Data {
 
     // Election
     messagesMap.put(pair(ELECTION, SETUP), ElectionSetup.class);
+    messagesMap.put(pair(ELECTION, OPEN), OpenElection.class);
     messagesMap.put(pair(ELECTION, CAST_VOTE), CastVote.class);
     messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
     messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
