@@ -33,15 +33,6 @@ object ObjectProtocol extends DefaultJsonProtocol {
     override def write(obj: Hash): JsValue = obj.base64Data.toJson
   }
 
-  implicit object PrivateKeyFormat extends JsonFormat[PrivateKey] {
-    override def read(json: JsValue): PrivateKey = json match {
-      case dataJs@JsString(_) => PrivateKey(dataJs.convertTo[Base64Data])
-      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a PrivateKey object")
-    }
-
-    override def write(obj: PrivateKey): JsValue = obj.base64Data.toJson
-  }
-
   implicit object PublicKeyFormat extends JsonFormat[PublicKey] {
     override def read(json: JsValue): PublicKey = json match {
       case dataJs@JsString(_) => PublicKey(dataJs.convertTo[Base64Data])

@@ -37,10 +37,6 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
   final val GENERATOR = scala.util.Random
 
-<<<<<<< HEAD
-=======
-
->>>>>>> b5f38d817d041d3e55ba3f0b0640d3cdea1ca483
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
   val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, DB_TEST_FOLDER)), "DbActor")
 

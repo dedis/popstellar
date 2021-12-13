@@ -53,10 +53,6 @@ case object SocialMediaHandler extends MessageHandler {
                 val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
                 Await.result(askLaoData, duration) match {
                   case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
-<<<<<<< HEAD
-=======
-                    val pk: PublicKey = laoData.publicKey
->>>>>>> b5f38d817d041d3e55ba3f0b0640d3cdea1ca483
                     val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
                     val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
                     val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
