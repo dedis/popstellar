@@ -82,6 +82,7 @@ function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
     id: chirpMessage.chirp_id,
     sender: sender,
     time: chirpMessage.timestamp,
+    text: '',
     isDeleted: true,
   });
 

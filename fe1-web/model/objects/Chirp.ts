@@ -9,7 +9,7 @@ import { PublicKey } from './PublicKey';
 export interface ChirpState {
   id: string;
   sender: string;
-  text?: string;
+  text: string;
   time: number;
   likes: number;
   parentId?: string;
@@ -23,7 +23,7 @@ export class Chirp {
   public readonly sender: PublicKey;
 
   // The text of the chirp if it's not deleted
-  public readonly text?: string;
+  public readonly text: string;
 
   // The time where the chirp was posted
   public readonly time: Timestamp;
@@ -47,6 +47,9 @@ export class Chirp {
     }
     if (obj.sender === undefined) {
       throw new Error("Undefined 'sender' when creating 'Chirp'");
+    }
+    if (obj.text === undefined) {
+      throw new Error("Undefined 'text' when creating 'Chirp'");
     }
     if (obj.time === undefined) {
       throw new Error("Undefined 'id' when creating 'Chirp'");
@@ -78,7 +81,7 @@ export class Chirp {
     return new Chirp({
       id: new Hash(chirpState.id),
       sender: new PublicKey(chirpState.sender),
-      text: chirpState.text ? chirpState.text : undefined,
+      text: chirpState.text,
       time: new Timestamp(chirpState.time),
       likes: chirpState.likes,
       parentId: chirpState.parentId ? new Hash(chirpState.parentId) : undefined,

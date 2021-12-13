@@ -27,6 +27,7 @@ const chirp1 = new Chirp({
 const chirp1Deleted = new Chirp({
   id: Hash.fromString('1234'),
   sender: new PublicKey('Douglas Adams'),
+  text: '',
   time: new Timestamp(1605555500),
   isDeleted: true,
 }).toState();
@@ -34,6 +35,7 @@ const chirp1Deleted = new Chirp({
 const chirp0 = new Chirp({
   id: Hash.fromString('000'),
   sender: new PublicKey('Joker'),
+  text: '',
   time: new Timestamp(1605555500),
   isDeleted: true,
 }).toState();

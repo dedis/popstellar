@@ -63,6 +63,17 @@ describe('Chirp object', () => {
       expect(createWrongChirp).toThrow(Error);
     });
 
+    it('throws an error when text is undefined', () => {
+      const createWrongChirp = () => new Chirp({
+        id: HASH_ID,
+        sender: PK,
+        time: TIMESTAMP,
+        likes: 0,
+        parentId: HASH_PARENT,
+      });
+      expect(createWrongChirp).toThrow(Error);
+    });
+
     it('throws an error when time is undefined', () => {
       const createWrongChirp = () => new Chirp({
         id: HASH_ID,
