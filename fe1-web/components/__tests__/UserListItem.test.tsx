@@ -2,8 +2,8 @@ import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import STRINGS from 'res/strings';
 import { Channel, Hash, PublicKey } from 'model/objects';
+import { subscribeToChannel } from 'network/CommunicationApi';
 import UserListItem from '../UserListItem';
-import { subscribeToChannel } from '../../network/CommunicationApi';
 
 const publicKey = new PublicKey('PublicKey');
 const laoId = new Hash('LaoId');
