@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
+	"popstellar/channel/register"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -14,6 +15,7 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
+	"reflect"
 	"strconv"
 	"sync"
 	"time"
@@ -45,6 +47,8 @@ type Channel struct {
 	attendees map[string]struct{}
 
 	log zerolog.Logger
+
+	register register.MessageRegistry
 
 	consensusInstances map[string]*ConsensusInstance
 	messageStates      map[string]*MessageState
@@ -93,7 +97,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 
 	log = log.With().Str("channel", "consensus").Logger()
 
-	return &Channel{
+	newChannel := &Channel{
 		sockets:            channel.NewSockets(),
 		inbox:              inbox,
 		channelID:          channelID,
@@ -103,13 +107,25 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 		consensusInstances: make(map[string]*ConsensusInstance),
 		messageStates:      make(map[string]*MessageState),
 	}
+
+	newChannel.register = newChannel.NewConsensusRegistry()
+
+	return newChannel
 }
 
 // NewConsensusRegistry creates a new registry for the consensus channel
-func NewConsensusRegistry() messageRegistry {
-	registry := messageRegistry{make(map[string]callbackData)}
+func (c *Channel) NewConsensusRegistry() register.MessageRegistry {
+	registry := register.NewMessageRegistry()
 
-	registry.register("elect", processConsensusElect, messagedata.ConsensusElect{})
+	registry.Register("elect", c.processConsensusElect, messagedata.ConsensusElect{})
+	registry.Register("elect-accept", c.processConsensusElectAccept, messagedata.ConsensusElectAccept{})
+	registry.Register("prepare", c.processConsensusPrepare, messagedata.ConsensusPrepare{})
+	registry.Register("promise", c.processConsensusPromise, messagedata.ConsensusPromise{})
+	registry.Register("propose", c.processConsensusPropose, messagedata.ConsensusPropose{})
+	registry.Register("accept", c.processConsensusAccept, messagedata.ConsensusAccept{})
+	registry.Register("learn", c.processConsensusLearn, messagedata.ConsensusLearn{})
+
+	return registry
 }
 
 // Subscribe is used to handle a subscribe message from the client
@@ -247,50 +263,41 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 // processConsensusObject processes a Consensus Object.
 func (c *Channel) processConsensusObject(action string, msg message.Message) error {
 
+	data, found := c.register.Registry[action]
+	if !found {
+		return xerrors.Errorf("action '%s' not found", action)
+	}
+
+	concreteType := reflect.New(reflect.ValueOf(data.ConcreteType).Type()).Interface()
+
+	err := msg.UnmarshalData(&concreteType)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal data: %v", err)
+	}
+
+	err = data.Callback(msg, concreteType)
+	if err != nil {
+		return xerrors.Errorf("failed to process action '%s': %v", action, err)
+	}
+
+	return nil
+}
+
+// getSender unmarshal the sender from a message.Message
+func getSender(msg message.Message) (kyber.Point, error) {
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
+		return nil, xerrors.Errorf("failed to decode sender key: %v", err)
 	}
 
 	// Unmarshal sender of the message, used to know who is the propose
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+		return nil, answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	switch action {
-	case messagedata.ConsensusActionElect:
-		err = c.processConsensusElect(senderPoint, msg)
-
-	case messagedata.ConsensusActionElectAccept:
-		err = c.processConsensusElectAccept(senderPoint, msg)
-
-	case messagedata.ConsensusActionPrepare:
-		err = c.processConsensusPrepare(msg)
-
-	case messagedata.ConsensusActionPromise:
-		err = c.processConsensusPromise(senderPoint, msg)
-
-	case messagedata.ConsensusActionPropose:
-		err = c.processConsensusPropose(msg)
-
-	case messagedata.ConsensusActionAccept:
-		err = c.processConsensusAccept(msg)
-
-	case messagedata.ConsensuisActionLearn:
-		err = c.processConsensusLearn(msg)
-
-	default:
-		return answer.NewInvalidActionError(action)
-	}
-	if err != nil {
-		return xerrors.Errorf("failed to process %s action: %w", action, err)
-	}
-
-	c.inbox.StoreMessage(msg)
-
-	return nil
+	return senderPoint, nil
 }
 
 // createConsensusInstance adds a new consensus instance to the
@@ -327,11 +334,11 @@ func (c *Channel) createMessageInstance(messageID string, proposer kyber.Point) 
 }
 
 // processConsensusElect processes an elect action.
-func (c *Channel) processConsensusElect(sender kyber.Point, msgID string, msg interface{}) error {
+func (c *Channel) processConsensusElect(message message.Message, msgData interface{}) error {
 
-	data, ok := msg.(messagedata.ConsensusElect)
+	data, ok := msgData.(*messagedata.ConsensusElect)
 	if !ok {
-		return xerrors.Errorf("message isn't a consensus#elect message")
+		return xerrors.Errorf("message %v isn't a consensus#elect message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#elect message")
@@ -347,17 +354,22 @@ func (c *Channel) processConsensusElect(sender kyber.Point, msgID string, msg in
 		c.createConsensusInstance(data.InstanceID)
 	}
 
-	c.createMessageInstance(msgID, sender)
+	sender, err := getSender(message)
+	if err != nil {
+		return xerrors.Errorf("failed to get consensus#elect message sender: %v", err)
+	}
+
+	c.createMessageInstance(message.MessageID, sender)
 
 	return nil
 }
 
 // processConsensusElectAccept processes an elect accept action.
-func (c *Channel) processConsensusElectAccept(sender kyber.Point, msg interface{}) error {
+func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interface{}) error {
 
-	data, ok := msg.(messagedata.ConsensusElectAccept)
+	data, ok := msgData.(*messagedata.ConsensusElectAccept)
 	if !ok {
-		return xerrors.Errorf("message isn't a consensus#elect-accept message")
+		return xerrors.Errorf("message %v isn't a consensus#elect-accept message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#elect-accept message")
@@ -437,11 +449,11 @@ func (c *Channel) processConsensusElectAccept(sender kyber.Point, msg interface{
 }
 
 // processConsensusPrepare processes a prepare action.
-func (c *Channel) processConsensusPrepare(msg interface{}) error {
+func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}) error {
 
-	data, ok := msg.(messagedata.ConsensusPrepare)
+	data, ok := msgData.(*messagedata.ConsensusPrepare)
 	if !ok {
-		return xerrors.Errorf("message isn't a consensus#prepare message")
+		return xerrors.Errorf("message %v isn't a consensus#prepare message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#prepare message")
@@ -508,11 +520,11 @@ func (c *Channel) processConsensusPrepare(msg interface{}) error {
 }
 
 // processConsensusPromise processes a promise action.
-func (c *Channel) processConsensusPromise(sender kyber.Point, msg interface{}) error {
+func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}) error {
 
-	data, ok := msg.(messagedata.ConsensusPromise)
+	data, ok := msgData.(*messagedata.ConsensusPromise)
 	if !ok {
-		return xerrors.Errorf("message isn't a consensus#promise message")
+		return xerrors.Errorf("message %v isn't a consensus#promise message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#promise message")
@@ -546,7 +558,7 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, msg interface{}) e
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	consensusInstance.promises = append(consensusInstance.promises, data)
+	consensusInstance.promises = append(consensusInstance.promises, *data)
 
 	// if enough Promise messages are received, the proposer send a Propose message
 	if len(consensusInstance.promises) < c.hub.GetServerNumber()/2+1 {
@@ -602,11 +614,11 @@ func (c *Channel) processConsensusPromise(sender kyber.Point, msg interface{}) e
 }
 
 // processConsensusPropose processes a propose action.
-func (c *Channel) processConsensusPropose(msg interface{}) error {
+func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}) error {
 
-	data, ok := msg.(messagedata.ConsensusPropose)
+	data, ok := msgData.(*messagedata.ConsensusPropose)
 	if !ok {
-		return xerrors.Errorf("message isn't a consensus#propose message")
+		return xerrors.Errorf("message %v isn't a consensus#propose message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#propose message")
@@ -683,11 +695,11 @@ func (c *Channel) processConsensusPropose(msg interface{}) error {
 }
 
 // processConsensusAccept proccesses an accept action.
-func (c *Channel) processConsensusAccept(msg interface{}) error {
+func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{}) error {
 
-	data, ok := msg.(messagedata.ConsensusAccept)
+	data, ok := msgData.(*messagedata.ConsensusAccept)
 	if !ok {
-		return xerrors.Errorf("message isn't a consensus#elect message")
+		return xerrors.Errorf("message %v isn't a consensus#accept message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#accept message")
@@ -724,7 +736,7 @@ func (c *Channel) processConsensusAccept(msg interface{}) error {
 
 	if data.Value.AcceptedTry == consensusInstance.proposed_try &&
 		data.Value.AcceptedValue == consensusInstance.proposed_value {
-		consensusInstance.accepts = append(consensusInstance.accepts, data)
+		consensusInstance.accepts = append(consensusInstance.accepts, *data)
 	}
 
 	if len(consensusInstance.accepts) < c.hub.GetServerNumber()/2+1 {
@@ -769,11 +781,11 @@ func (c *Channel) processConsensusAccept(msg interface{}) error {
 }
 
 // processConsensusLearn processes a learn action.
-func (c *Channel) processConsensusLearn(msg interface{}) error {
+func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}) error {
 
-	data, ok := msg.(messagedata.ConsensusLearn)
+	data, ok := msgData.(*messagedata.ConsensusLearn)
 	if !ok {
-		return xerrors.Errorf("message isn't a consensus#learn message")
+		return xerrors.Errorf("message %v isn't a consensus#learn message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#learn message")

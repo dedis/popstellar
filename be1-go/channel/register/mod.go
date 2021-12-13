@@ -1,12 +1,20 @@
-package consensus
+package register
 
-type messageRegistry struct {
-	registry map[string]callbackData
+import "popstellar/message/query/method/message"
+
+type MessageRegistry struct {
+	Registry map[string]CallbackData
 }
 
-type callbackData struct {
-	callback     func(interface{}) error
-	concreteType interface{}
+type CallbackData struct {
+	Callback     func(message.Message, interface{}) error
+	ConcreteType interface{}
+}
+
+func NewMessageRegistry() MessageRegistry {
+	return MessageRegistry{
+		Registry: make(map[string]CallbackData),
+	}
 }
 
 // register registers a new action that will be associated to a callback
@@ -16,7 +24,7 @@ type callbackData struct {
 //
 //   // define a callback
 //   func execElect(msg interface) error {
-//	   m, ok := msg.(messagedata.ConsensusElect)
+//	   m, ok := msg.(*messagedata.ConsensusElect)
 //     if !ok {...}
 //     // ...
 //   }
@@ -27,9 +35,9 @@ type callbackData struct {
 //   // when we need to process a message we call "processMsg"
 //   err = registry.processMsg(msg)
 //
-func (m messageRegistry) register(action string, f func(interface{}) error, c interface{}) {
-	m.registry[action] = callbackData{
-		callback:     f,
-		concreteType: c,
+func (m MessageRegistry) Register(action string, f func(message.Message, interface{}) error, c interface{}) {
+	m.Registry[action] = CallbackData{
+		Callback:     f,
+		ConcreteType: c,
 	}
 }
