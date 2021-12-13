@@ -635,6 +635,86 @@ func TestOrganizer_Handle_Catchup(t *testing.T) {
 	require.Equal(t, fakeMessages, c.msgs)
 }
 
+// Test that the GetServerNumber works
+func Test_Get_Server_Number(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	sock1 := &fakeSocket{id: "fakeID1"}
+	sock2 := &fakeSocket{id: "fakeID2"}
+	sock3 := &fakeSocket{id: "fakeID3"}
+
+	hub.serverSockets.Upsert(sock1)
+	hub.serverSockets.Upsert(sock2)
+	hub.serverSockets.Upsert(sock3)
+
+	require.Equal(t, 4, hub.GetServerNumber())
+}
+
+// Test that SendAndHandleMessage works
+func Test_Send_And_Handle_Message(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	laoID := "XXX"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	publish := method.Publish{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodPublish,
+		},
+
+		ID: 1,
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&publish)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+	hub.serverSockets.Upsert(sock)
+
+	err = hub.SendAndHandleMessage(publish)
+	require.NoError(t, err)
+
+	// wait for the goroutine created by the function
+	time.Sleep(100 * time.Millisecond)
+
+	// > check the socket
+	require.Equal(t, publishBuf, sock.msg)
+
+	// > check that the channel has been called with the publish message
+	require.Equal(t, publish, c.publish)
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 
