@@ -1,7 +1,7 @@
 package ch.epfl.pop.model.objects
 
 import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.{Base64Data, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Hash, PrivateKey, PublicKey}
 import ch.epfl.pop.model.network.method.message.Message
 
 import util.examples.MessageExample
@@ -10,8 +10,8 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 
 class LaoDataSuite extends FunSuite with Matchers {
     final val KEYPAIR: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-    final val PUBLICKEY: Array[Byte] = KEYPAIR.getPublicKey
-    final val PRIVATEKEY: Array[Byte] = KEYPAIR.getPrivateKey
+    final val PUBLICKEY: PublicKey = PublicKey(Base64Data.encode(KEYPAIR.getPublicKey))
+    final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data.encode(KEYPAIR.getPrivateKey))
 
     test("Apply works with empty/full list for LaoData"){
         val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)

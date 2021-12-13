@@ -34,8 +34,6 @@ case object LaoHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
-  final val SOCIALMEDIAPOSTSPREFIX: String = Channel.SEPARATOR + "posts"
-
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -49,7 +47,7 @@ case object LaoHandler extends MessageHandler {
           case DbActorAck() => {
             val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
               case DbActorWriteAck() => {
-                val socialChannel: Channel = Channel(channel + SOCIALMEDIAPOSTSPREFIX)
+                val socialChannel: Channel = Channel(channel + Channel.SOCIALMEDIAPOSTSPREFIX)
                 val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
                   case DbActorAck() => Left(rpcMessage)
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))

@@ -110,6 +110,5 @@ case object RollCallHandler extends MessageHandler {
     }
   }
 
-  private final val SOCIALCHANNELPREFIX: String = Channel.SEPARATOR + "social"
-  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + SOCIALCHANNELPREFIX + Channel.SEPARATOR + pk.toString
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + Channel.SOCIALCHANNELPREFIX + Channel.SEPARATOR + pk.toString
 }

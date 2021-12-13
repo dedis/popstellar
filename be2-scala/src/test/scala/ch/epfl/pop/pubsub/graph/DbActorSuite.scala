@@ -18,8 +18,6 @@ import util.examples.MessageExample
 import scala.reflect.io.Directory
 import java.io.File
 
-import com.google.crypto.tink.subtle.Ed25519Sign
-
 import scala.concurrent.Await
 
 class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
@@ -38,8 +36,6 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   final val TEST_CHANNEL_WRITELAO_4: String = "/root/channelNumber2056764656"
 
   final val GENERATOR = scala.util.Random
-
-  //final val KEYPAIR: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
   val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, DB_TEST_FOLDER)), "DbActor")

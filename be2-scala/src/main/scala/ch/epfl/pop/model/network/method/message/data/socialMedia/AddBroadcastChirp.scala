@@ -5,12 +5,12 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.objects.{Hash, Timestamp}
+import ch.epfl.pop.model.objects.{Channel, Hash, Timestamp}
 import spray.json._
 
 case class AddBroadcastChirp(
-                          chirpId: Hash,
-                          channel: String,
+                          chirp_id: Hash,
+                          channel: Channel,
                           timestamp: Timestamp
                         ) extends MessageData {
   override val _object: ObjectType = ObjectType.CHIRP
@@ -19,10 +19,10 @@ case class AddBroadcastChirp(
 
 object AddBroadcastChirp extends Parsable {
   def apply(
-            chirpId: Hash,
-            channel: String,
+            chirp_id: Hash,
+            channel: Channel,
             timestamp: Timestamp
-      ): AddBroadcastChirp = new AddBroadcastChirp(chirpId, channel, timestamp)
+      ): AddBroadcastChirp = new AddBroadcastChirp(chirp_id, channel, timestamp)
 
   override def buildFromJson(payload: String): AddBroadcastChirp = payload.parseJson.asJsObject.convertTo[AddBroadcastChirp]
 }

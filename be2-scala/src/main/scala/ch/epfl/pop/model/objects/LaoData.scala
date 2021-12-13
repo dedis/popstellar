@@ -16,8 +16,8 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 case class LaoData(
     owner: PublicKey,
     attendees: List[PublicKey],
-    privateKey: Array[Byte], 
-    publicKey: Array[Byte],
+    privateKey: PrivateKey, 
+    publicKey: PublicKey,
     witnesses: List[PublicKey]
 ){
     def toJsonString: String = {
@@ -47,8 +47,8 @@ object LaoData extends Parsable {
   def apply(
              owner: PublicKey,
              attendees: List[PublicKey],
-             privateKey: Array[Byte],
-             publicKey: Array[Byte],
+             privateKey: PrivateKey,
+             publicKey: PublicKey,
              witnesses: List[PublicKey]
            ): LaoData = {
     new LaoData(owner, attendees, privateKey, publicKey, witnesses)
@@ -60,13 +60,13 @@ object LaoData extends Parsable {
 
   //function for write to decide whether a message should change LaoData
   def isAffectedBy(message: Message): Boolean = {
-    message.decodedData != None && (message.decodedData.get.isInstanceOf[CloseRollCall] || message.decodedData.get.isInstanceOf[CreateLao])
+    message.decodedData.isDefined && (message.decodedData.get.isInstanceOf[CloseRollCall] || message.decodedData.get.isInstanceOf[CreateLao])
   }
 
 
   //to simplify the use of updateWith during a CreateLao process, the keypair is generated here in the same way as it would be elsewhere
   def emptyLaoData: LaoData = {
     val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-    LaoData(null, List.empty, keyPair.getPrivateKey, keyPair.getPublicKey, List.empty)
+    LaoData(null, List.empty, PrivateKey(Base64Data.encode(keyPair.getPrivateKey)), PublicKey(Base64Data.encode(keyPair.getPublicKey)), List.empty)
   }
 }
