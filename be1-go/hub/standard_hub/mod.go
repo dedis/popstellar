@@ -257,7 +257,7 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 // GetServerNumber returns the number of servers known by this one
 func (h *Hub) GetServerNumber() int {
 	// serverSockets + 1 as the server also know itself
-	return h.serverSockets.Number() + 1
+	return h.serverSockets.Len() + 1
 }
 
 // SendAndHandleMessage sends a publish message to all other known servers and

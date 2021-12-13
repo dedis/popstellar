@@ -12,7 +12,7 @@ export interface ChirpState {
   text: string;
   time: number;
   likes: number;
-  parentId: string;
+  parentId?: string;
 }
 
 export class Chirp {

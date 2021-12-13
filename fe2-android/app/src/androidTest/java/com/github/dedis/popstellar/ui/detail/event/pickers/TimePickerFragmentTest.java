@@ -6,27 +6,31 @@ import static org.junit.Assert.assertEquals;
 
 import android.widget.TimePicker;
 
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
-
-import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
 import com.github.dedis.popstellar.testutils.ResultReceiver;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.rules.RuleChain;
 
 import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
 
-@RunWith(AndroidJUnit4ClassRunner.class)
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
+@HiltAndroidTest
 public class TimePickerFragmentTest {
 
   private static final int HOURS = 8;
   private static final int MINUTES = 37;
 
+  private final FragmentScenarioRule<TimePickerFragment> fragmentRule =
+      FragmentScenarioRule.launch(TimePickerFragment.class);
+
   @Rule
-  public final FragmentScenarioRule<TimePickerFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(TimePickerFragment.class);
+  public final RuleChain chain =
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
 
   @Test
   public void choosingADateReturnTheCorrectValue() throws TimeoutException, InterruptedException {

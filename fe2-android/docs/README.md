@@ -4,15 +4,16 @@ This repository contains the UI side implementation of the PoP project.
 
 ## Table of contents
 
-* [Getting Started](#getting-started) 
-* [Project Structure](#project-structure) 
-* [Architecture](#architecture) 
+* [Getting Started](#getting-started)
+* [Project Structure](#project-structure)
+* [Architecture](#architecture)
   * [Application design](#application-design)
   * [Managing the application state](#managing-the-application-state)
   * [Sending messages over the wire](#sending-messages-over-the-wire)
   * [Getting messages over the wire](#getting-messages-over-the-wire)
   * [Message definitions](#message-definitions)
   * [User Interface](#user-interface)
+  * [Dependency Injection](#dependency-injection)
 * [Testing](#testing)
 * [Debugging Tips](#debugging-tips)
 * [Coding Standards](#coding-standards)
@@ -36,7 +37,9 @@ app/src
 │    │                           
 │    ├── res                    # resources (layouts, strings, dimensions, etc.)
 │    │    
-│    └── java/P                 
+│    └── java/P       
+│         ├── di                # module containing the hilt modules used for dependecy injection
+│         │    
 │         ├── model             # module containing the data model & objects
 │         │    ├── network      # ... of the objects sent over the network
 │         │    └── objects      # ... of the application's entities
@@ -49,11 +52,9 @@ app/src
 │         │    
 │         └── utility           # module containg the utility classes
 │
-├── prod                        # module containing the injection file of the prod build variant
-│
-├── mock                        # module containing the injection file of the mock build variant
-│
 ├── androidTest                 # tests needing an emulator/android phone
+│
+├── debug                       # module containing the debug files. Currently only an empty activity used for androidTest
 │
 └── test                        # unit tests
 ```
@@ -73,13 +74,13 @@ All the messages are encoded using JSON and are validated using [JSON Schemas](h
 
 ### Application design
 
-The application follows the Model-View-ViewModel (MVVM) pattern and uses this [guide to app architecture](https://developer.android.com/jetpack/guide). 
+The application follows the Model-View-ViewModel (MVVM) pattern and uses this [guide to app architecture](https://developer.android.com/jetpack/guide).
 
-- The **View** consists of all the activities and fragments of the application. In this project there are only two activities respectively representing the detail and home view, this might change because one activity should represent one functionality of the application. The fragments represent a part of the UI within one of those activities.  
+- The **View** consists of all the activities and fragments of the application. In this project there are only two activities respectively representing the detail and home view, this might change because one activity should represent one functionality of the application. The fragments represent a part of the UI within one of those activities.
 - The **ViewModel** implements the UI logic and prepares and manages the data used by the activities and fragments. In this project each activity has its own view model.
-- The **Model** consists of the local and remote data source, the model classes and the repository. The repository eases the data retrieval for the rest of the application. It is a mediator between the view model and the different data sources. In this application there are two data sources, the database and the PoP backend. The [Room](https://developer.android.com/reference/androidx/room/package-summary) persistence library is used to define the application's database, the entities and Data Access Object.  
+- The **Model** consists of the local and remote data source, the model classes and the repository. The repository eases the data retrieval for the rest of the application. It is a mediator between the view model and the different data sources. In this application there are two data sources, the database and the PoP backend. The [Room](https://developer.android.com/reference/androidx/room/package-summary) persistence library is used to define the application's database, the entities and Data Access Object.
 
-Below is the diagram from the [guide to app architecture](https://developer.android.com/jetpack/guide) 
+Below is the diagram from the [guide to app architecture](https://developer.android.com/jetpack/guide)
 written to fit this project.
 
 <div align="center">
@@ -92,7 +93,7 @@ In order for the application to perform as a user would expect, it needs to mana
 
 The latter needs to be eventually consistent, i.e., sooner or later all frontend users obtain the same "view" of the system. This translates to a basic expectation that, one would expect all devices connected to a LAO to "see" the same thing. Drawing a parallel, one would expect all social media users to be able to access the same posts, see (roughly) the same number of associated likes, etc.
 
-In order to achieve this, and as a general rule, the UI displays information from the [`LAORepository`](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/LAORepository.java) class (the application state container for now), but it **doesn't** modify the LAO-wide information contained in it. The list of LAOs contained in the `LAORepository` only gets updated in response to messages from the backends. 
+In order to achieve this, and as a general rule, the UI displays information from the [`LAORepository`](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/LAORepository.java) class (the application state container for now), but it **doesn't** modify the LAO-wide information contained in it. The list of LAOs contained in the `LAORepository` only gets updated in response to messages from the backends.
 
 As such, let's take the example of a user who wants to publish or modify LAO-wide information. In our example, the user wants to cast a vote in an election and does the necessary UI operations. In turn, the application will send a message to the backend (which the backend should acknowledge), which will then validate it and propagate it in the system. Eventually, the vote is sent back to the application (through the publish/subscribe channel), and upon receiving it the application would update its state. By doing so, the list of LAOs in `LAORepository` would contain new information that would automatically be reflected in the UI.
 
@@ -107,11 +108,9 @@ To better understand how the information is automatically reflected in the UI, c
 
 A particular sub-problem of storing the application data is the management of secret data. While any secret could be encrypted, this just shifts the problem to securely storing cryptographic material and making sure that it is not leaked by the device running the application.
 
-For this, [Android KeyStore](https://developer.android.com/training/articles/keystore) is used for the Android front-end to safely store keys that will then be used to encrypt and decrypt the application secrets, including the Ed25519 cryptographic material. This ensures that all application secrets are encrypted-at-rest,
-that the encryption and decryption keys are stored securely, and that the application is free to use any convenient cryptographic primitive.
+For this, [Android KeyStore](https://developer.android.com/training/articles/keystore) is used for the Android front-end to safely store keys that will then be used to encrypt and decrypt the application secrets, including the Ed25519 cryptographic material. This ensures that all application secrets are encrypted-at-rest, that the encryption and decryption keys are stored securely, and that the application is free to use any convenient cryptographic primitive.
 
-The `Injection` file in the `prod` package manages the secure storage, and the Keys file in the `utility/security` package retrieves the public key of the user.
-
+The AndroidKeysetManager instance is provided via injection through Hilt. It is instantiated in the `KeysetModule`.
 
 ### Sending messages over the wire
 
@@ -120,9 +119,9 @@ The communication stack within the PoP project is made of [multiple layers](http
 The [repository module](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository) contains some of the network communication logic, it is organized as follows:
 
 * The `remote` module deals with the WebSocket-based connections, using the [Scarlet](https://github.com/Tinder/Scarlet) library.
-* The `LAORepository` exposes the [JSON-RPC](https://www.jsonrpc.org/specification) -based API that provides the publish/subscribe communication abstraction. In it, you will find functions to publish a message, subscribe and unsubscribe to a channel, and so on. 
+* The `LAORepository` exposes the [JSON-RPC](https://www.jsonrpc.org/specification) -based API that provides the publish/subscribe communication abstraction. In it, you will find functions to publish a message, subscribe and unsubscribe to a channel, and so on.
 
-The application-level message generation logic is implemented in the `ViewModel` classes, for example the request for a LAO creation is in `HomeViewModel`. In the future an API could be created to simplify the logic in the application code and reduce repetition. 
+The application-level message generation logic is implemented in the `ViewModel` classes, for example the request for a LAO creation is in `HomeViewModel`. In the future an API could be created to simplify the logic in the application code and reduce repetition.
 
 For more information on sending messages on the network, please refer to the [repository module](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository) and the `ViewModel` classes. Also, make sure you have a solid understanding of [JSON-RPC](https://www.jsonrpc.org/specification), the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM) and their actual implementation in the [protocol schemas](https://github.com/dedis/student_21_pop/tree/master/protocol)
 
@@ -144,7 +143,7 @@ For more information on processing messages received from the network, please re
 
 All objects referred to in the protocol specification are defined in `model/network` package, closely mirroring the [JSON-Schema](https://github.com/dedis/student_21_pop/tree/master/protocol) folder structure.
 
-The logic for parsing them is defined in `model/network/json` package. 
+The logic for parsing them is defined in `model/network/json` package.
 
 When you need to create a new object please refer to existing message types. If the attribute's name of the object differ from the JSON-Schema then use the `@SerializedName` annotation to specify the field name. The file `CreateRollCall.java` is a good example.
 
@@ -165,12 +164,68 @@ This is the current organization, but as this project evolves you should feel fr
 
 For more information on linking up together the user interface with the application state, please make sure you have a solid understanding of the [MVVM pattern](#application-design) and look at the `ViewModel` classes and the `LAORepository`.
 
+### Dependency Injection
+
+The project uses Dependency Injection (DI) to provide an object with the objects it depends on. If you are not familiar with dependency injection, Android provides a [simple guide](https://developer.android.com/training/dependency-injection).
+
+Hilt is used to do the injection. It is an annotation-based framework. It is especially useful when writing tests because it allows the user to choose specifically what is injected and thus which modules are mocked and how.
+
+For detailed information, take a look at the following resources:
+* [Manual dependency injection](https://developer.android.com/training/dependency-injection/manual) To take a look at what hilt does by himself.
+* [Dependency injection using Hilt](https://developer.android.com/training/dependency-injection/hilt-android) For an overview of the framework.
+* [Testing using Hilt](https://developer.android.com/training/dependency-injection/hilt-testing) To learn how to use hilt in tests.
+* [Annotation Cheatsheet](https://developer.android.com/training/dependency-injection/hilt-cheatsheet) If you ever forget what annotation to use where.
+
+#### Hilt quick start
+
+To provide an instance, you need to define it in a Module. A Module is a collection of rules on how to provide a dependency. The modules of the project are defined in the [di package](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/di).
+
+You can either directly provide an instance with arguments or a binding to link a type to another.
+
+Providing an instance is done with a static function annotated with `@Provides`. The arguments of the static function are also injected by Hilt.\
+Binding the types A -> B is done through an abstract method annotated with `@Binds` that returns A and takes B as argument.
+
+Example :\
+In a project where we have the interface Database and its implementation DatabaseImpl we could find the module :
+
+Here, the `NetworkService` argument is provided by Hilt in another by another rule.
+```java
+
+@Module
+public abstract class DatabaseModule {
+
+  @Binds
+  public abstract Database bindDatabase(DatabaseImpl impl);
+
+  @Provides
+  public static DatabaseImpl provideDatabaseImpl(NetworkService networkService) {
+    return new DatabaseImpl(networkService);
+  }
+}
+```
+
+If a module needs a `Database` instance, Hilt will find the Binds rule that specifies it should look for a `DatabaseImpl`.\ Then it finds the Provides rule and needs a `NetworkService` instance.\
+After finding the `NetworkService`, it can provide the actual instance of the Database object.
+
+A final way to provide a type is to annotate the constructor Hilt should use with `@Inject`. As an example, we could remove the methode `provideDatabaseImpl()` in the module if DatabaseImpl's constructor looked like this :
+
+```java
+@Inject
+public DatabaseImpl(NetworkService networkService){
+        [...]
+        }
+```
+
+This solution is equivalent to `provideDatabaseImpl()` and it is widely used in the project.
+
+If the class is an Activity or a Fragment, you need to annotate it with `@AndroidEntryPoint` and you can create package-private fields annotated with @Inject that will be provided by Hilt when they are constructed. You can see this usage in [SettingsActivity](https://github.com/dedis/student_21_pop/blob/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/settings/SettingsActivity.java)
+
 
 ## Testing
 
-For testing go to `Build Variants` and choose *mockDebug* as the `Active Build Variant`. 
-
 The [Mockito](https://site.mockito.org) library is used to mock the classes depending on the backend.
+
+To inject custom modules using Hilt, this [guide](https://developer.android.com/training/dependency-injection/hilt-testing) might help you.
 
 
 ## Debugging Tips
@@ -186,8 +241,7 @@ This project follows the [Google Java Style Guide](https://google.github.io/styl
 
 Please ensure that you configure Android Studio to use `google-java-format`. As of now, v1.9 of the plugin requires JDK11 which is not shipped with Android Studio 4.0. Please install the `Choose Runtime` plugin from the Marketplace and install a JDK11 runtime by double pressing shift and searching for `Choose Runtime` in the popup.
 
-`google-java-format` does not handle import orders unfortunately. Please import the [google-style scheme](https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml) in Android Studio by going to `Preferences` -> `Editor` -> `Code Style` -> `Import Scheme...` on the Gear Icon for Scheme.
-After the plugin is installed, it needs to be enabled. Go to `File -> Settings... -> Other Settings -> google-java-format Settings` and make sure `Enable google-java-format` is checked and the Code style is set to `Default Google Java style`
+`google-java-format` does not handle import orders unfortunately. Please import the [google-style scheme](https://raw.githubusercontent.com/google/styleguide/gh-pages/intellij-java-google-style.xml) in Android Studio by going to `Preferences` -> `Editor` -> `Code Style` -> `Import Scheme...` on the Gear Icon for Scheme. After the plugin is installed, it needs to be enabled. Go to `File -> Settings... -> Other Settings -> google-java-format Settings` and make sure `Enable google-java-format` is checked and the Code style is set to `Default Google Java style`
 
 Additionally, make sure `EditorConfig` is enabled. Go to `File -> Settings... -> Code Style` and check `Enable EditorConfig support`.
 
@@ -198,7 +252,7 @@ Finally, you may want to install `Save Actions` plugin and configure it to `Opti
 
 The values used for the UI are stored in the corresponding xml files (colors, dimens, strings or styles) in the res/values folder.
 
-The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the IDs of all the resources, the values can be accessed using 
+The [R class in Android](https://stackoverflow.com/questions/4953077/what-is-the-class-r-in-android) is an auto-generated class containing the IDs of all the resources, the values can be accessed using
 ```R.id``` or ```getResources()```.
 
 The strings and dimensions are divided by usage, for example all strings or dimensions used for the home view are grouped together.
@@ -207,5 +261,4 @@ The strings and dimensions are divided by usage, for example all strings or dime
 
 This project uses Github Actions as a CI, for more information go to the [workflows](https://github.com/dedis/student_21_pop/blob/master/.github/workflows/ci.yaml) of this project.
 
-This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner) Android Emulator is used, which is limited. 
-There are issues finding the resource values and checking [Toast messages](https://developer.android.com/reference/android/widget/Toast) appearance.
+This CI builds and runs the Unit Tests. For the Android Tests, the [reactivecircus](https://github.com/ReactiveCircus/android-emulator-runner) Android Emulator is used, which is limited. There are issues finding the resource values and checking [Toast messages](https://developer.android.com/reference/android/widget/Toast) appearance.

@@ -20,7 +20,10 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 
 import java.util.StringJoiner;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment used to display the new seed UI */
+@AndroidEntryPoint
 public class SeedWalletFragment extends Fragment {
 
   public static final String TAG = SeedWalletFragment.class.getSimpleName();

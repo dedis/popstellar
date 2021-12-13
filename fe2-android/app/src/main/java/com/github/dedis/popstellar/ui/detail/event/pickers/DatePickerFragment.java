@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatDialogFragment;
 
 import java.util.Calendar;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * This fragment shows a dialog to choose a date. It takes as argument (set with setArguments) a
  * request key that will be used to give the response.
@@ -18,6 +20,7 @@ import java.util.Calendar;
  * <p>Help found here (outdated) :
  * https://brandonlehr.com/android/learn-to-code/2018/08/19/callling-android-datepicker-fragment-from-a-fragment-and-getting-the-date
  */
+@AndroidEntryPoint
 public final class DatePickerFragment extends AppCompatDialogFragment
     implements DatePickerDialog.OnDateSetListener {
 

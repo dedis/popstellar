@@ -29,6 +29,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
@@ -39,6 +40,7 @@ import io.reactivex.observers.DisposableObserver;
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
  * method to create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class ElectionStartFragment extends Fragment {
 
   private static final String TAG = ElectionStartFragment.class.getSimpleName();

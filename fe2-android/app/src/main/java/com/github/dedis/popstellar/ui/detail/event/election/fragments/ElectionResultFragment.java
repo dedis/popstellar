@@ -19,8 +19,10 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionResultPagerAdapter;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
+@AndroidEntryPoint
 public class ElectionResultFragment extends Fragment {
 
   private LaoDetailViewModel mLaoDetailViewModel;
