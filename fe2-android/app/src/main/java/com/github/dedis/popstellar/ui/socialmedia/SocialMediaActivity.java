@@ -7,7 +7,6 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -155,9 +154,29 @@ public class SocialMediaActivity extends AppCompatActivity {
     return new ViewModelProvider(activity).get(SocialMediaViewModel.class);
   }
 
+  @SuppressLint("NonConstantResourceId")
   public void setupNavigationBar() {
-    BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
-    bottomNavigationView.setOnItemSelectedListener(listener);
+    BottomNavigationView bottomNavigationView =
+        (BottomNavigationView) findViewById(R.id.social_media_nav_bar);
+    bottomNavigationView.setOnItemSelectedListener(
+        item -> {
+          switch (item.getItemId()) {
+            case R.id.social_media_home_menu:
+              mViewModel.openHome();
+              break;
+            case R.id.social_media_search_menu:
+              mViewModel.openSearch();
+              break;
+            case R.id.social_media_following_menu:
+              mViewModel.openFollowing();
+              break;
+            case R.id.social_media_profile_menu:
+              mViewModel.openProfile();
+              break;
+            default:
+          }
+          return true;
+        });
   }
 
   public void setupSocialMediaHomeFragment() {
@@ -176,30 +195,6 @@ public class SocialMediaActivity extends AppCompatActivity {
   public void setupSocialMediaProfileFragment() {
     setCurrentFragment(R.id.fragment_social_media_profile, SocialMediaProfileFragment::newInstance);
   }
-
-  private BottomNavigationView.OnItemSelectedListener listener =
-      new BottomNavigationView.OnItemSelectedListener() {
-        @SuppressLint("NonConstantResourceId")
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-          switch (item.getItemId()) {
-            case R.id.social_media_home_menu:
-              mViewModel.openHome();
-              break;
-            case R.id.social_media_search_menu:
-              mViewModel.openSearch();
-              break;
-            case R.id.social_media_following_menu:
-              mViewModel.openFollowing();
-              break;
-            case R.id.social_media_profile_menu:
-              mViewModel.openProfile();
-              break;
-            default:
-          }
-          return true;
-        }
-      };
 
   /**
    * Set the current fragment in the container of the activity
