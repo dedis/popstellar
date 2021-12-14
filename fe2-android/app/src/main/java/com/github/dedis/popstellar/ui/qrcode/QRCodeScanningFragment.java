@@ -28,28 +28,27 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment handling the QR code scanning */
+@AndroidEntryPoint
 public final class QRCodeScanningFragment extends Fragment {
 
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
   private static final int HANDLE_GMS = 9001;
+
+  @Inject BarcodeDetector barcodeDetector;
+  @Inject CameraProvider cameraProvider;
+
+  private CameraSource camera;
+
   private QrcodeFragmentBinding mQrCodeFragBinding;
   private QRCodeScanningViewModel mQRCodeScanningViewModel;
-  private final CameraSource camera;
   private CameraPreview mPreview;
-  private final BarcodeDetector barcodeDetector;
   private Integer nbAttendees = 0;
   private AlertDialog closeRollCallAlert;
-
-  /** Fragment constructor */
-  public QRCodeScanningFragment(CameraSource camera, BarcodeDetector detector) {
-    this.camera = camera;
-    this.barcodeDetector = detector;
-  }
-
-  public static QRCodeScanningFragment newInstance(CameraSource camera, BarcodeDetector detector) {
-    return new QRCodeScanningFragment(camera, detector);
-  }
 
   @Override
   public void onAttach(@NonNull Context context) {
@@ -62,6 +61,11 @@ public final class QRCodeScanningFragment extends Fragment {
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     mQrCodeFragBinding = QrcodeFragmentBinding.inflate(inflater, container, false);
+    camera =
+        cameraProvider.provide(
+            getResources().getInteger(R.integer.camera_preview_width),
+            getResources().getInteger(R.integer.camera_preview_height));
+
     FragmentActivity activity = getActivity();
 
     if (activity instanceof HomeActivity) {

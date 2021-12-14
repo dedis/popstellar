@@ -3,12 +3,6 @@ package generalChirping
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
@@ -21,6 +15,13 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const protocolRelativePath string = "../../../protocol"
@@ -273,6 +274,16 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
+
+func (h *fakeHub) GetServerNumber() int {
+	return 0
+}
+
+func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
+	return nil
+}
+
+func (h *fakeHub) SetMessageID(publish *method.Publish) {}
 
 // fakeSocket is a fake implementation of a socket
 //

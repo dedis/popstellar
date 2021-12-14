@@ -17,10 +17,12 @@ import java.util.List;
 public class ConsensusLearnTest {
 
   private static final String messageId = Hash.hash("aaa");
-  private static final List<String> acceptors = Arrays.asList("aaa", "bbb");
+  private static final long timeInSeconds = 1635277619;
+  private static final boolean decision = true;
+  private static final List<String> acceptorSignatures = Arrays.asList("aaa", "bbb");
   private static final String instanceId = Hash.hash("ccc");
   private static final ConsensusLearn consensusLearn =
-      new ConsensusLearn(instanceId, messageId, acceptors);
+      new ConsensusLearn(instanceId, messageId, timeInSeconds, decision, acceptorSignatures);
 
   @Test
   public void getInstanceIdTest() {
@@ -33,8 +35,8 @@ public class ConsensusLearnTest {
   }
 
   @Test
-  public void getAcceptorsTest() {
-    assertEquals(acceptors, consensusLearn.getAcceptors());
+  public void getAcceptorSignaturesTest() {
+    assertEquals(acceptorSignatures, consensusLearn.getAcceptorSignatures());
   }
 
   @Test
@@ -48,12 +50,48 @@ public class ConsensusLearnTest {
   }
 
   @Test
-  public void equalsTest() {
-    assertEquals(
-        consensusLearn, new ConsensusLearn(instanceId, messageId, new ArrayList<>(acceptors)));
+  public void getCreationTest() {
+    assertEquals(timeInSeconds, consensusLearn.getCreation());
+  }
 
-    assertNotEquals(consensusLearn, new ConsensusLearn(instanceId, "random", acceptors));
+  @Test
+  public void getLearnValueTest() {
+    LearnValue value = consensusLearn.getLearnValue();
+
+    assertEquals(decision, value.isDecision());
+
+    LearnValue value2 = new LearnValue(decision);
+    assertEquals(value, value2);
+    assertEquals(value.hashCode(), value2.hashCode());
+
+    assertNotEquals(value, null);
+    assertNotEquals(value, new LearnValue(!decision));
+  }
+
+  @Test
+  public void equalsTest() {
+    ConsensusLearn learn2 =
+        new ConsensusLearn(
+            instanceId, messageId, timeInSeconds, decision, new ArrayList<>(acceptorSignatures));
+    assertEquals(consensusLearn, learn2);
+    assertEquals(consensusLearn.hashCode(), learn2.hashCode());
+
+    String random = "random";
+    assertNotEquals(consensusLearn, null);
     assertNotEquals(
-        consensusLearn, new ConsensusLearn(instanceId, messageId, Collections.emptyList()));
+        consensusLearn,
+        new ConsensusLearn(random, messageId, timeInSeconds, decision, acceptorSignatures));
+    assertNotEquals(
+        consensusLearn,
+        new ConsensusLearn(instanceId, random, timeInSeconds, decision, acceptorSignatures));
+    assertNotEquals(
+        consensusLearn, new ConsensusLearn(instanceId, messageId, 0, decision, acceptorSignatures));
+    assertNotEquals(
+        consensusLearn,
+        new ConsensusLearn(instanceId, messageId, timeInSeconds, !decision, acceptorSignatures));
+    assertNotEquals(
+        consensusLearn,
+        new ConsensusLearn(
+            instanceId, messageId, timeInSeconds, decision, Collections.emptyList()));
   }
 }

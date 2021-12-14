@@ -19,6 +19,10 @@ public enum Action {
   CAST_VOTE("cast_vote"),
   ELECT("elect"),
   ELECT_ACCEPT("elect-accept"),
+  PREPARE("prepare"),
+  PROMISE("promise"),
+  PROPOSE("propose"),
+  ACCEPT("accept"),
   LEARN("learn"),
   ADD("add"),
   ADD_BROADCAST("addBroadcast");

@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAccept.json",
+    "description": "Match an accept query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "accept"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance",
+            "type": "string"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "accepted_try": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "accepted_value": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "accepted_try",
+                "accepted_value"
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "created_at",
+        "value"
+    ]
+}

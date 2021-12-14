@@ -5,7 +5,6 @@ import ch.epfl.pop.model.objects._
 import org.scalatest.{FunSuite, Matchers}
 import org.scalatest.Inspectors.{forAll,forEvery}
 import org.scalatest.Matchers._
-//import ch.epfl.pop.json.MsgField._
 import org.scalactic.Prettifier
 
 class HighLevelProtocolSuite extends FunSuite with Matchers  {
