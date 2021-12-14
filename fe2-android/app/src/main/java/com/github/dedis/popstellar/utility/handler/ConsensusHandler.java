@@ -6,8 +6,11 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.objects.Consensus;
+import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
@@ -130,5 +133,20 @@ public final class ConsensusHandler {
     consensus.setAccepted(consensusLearn.getLearnValue().isDecision());
     lao.updateConsensus(consensus);
     laoRepository.updateNodes(lao.getChannel());
+
+    boolean isProposer = consensus.getProposer().equals(laoRepository.getPublicKey());
+    if (isProposer && consensus.isAccepted()) {
+      ConsensusKey key = consensus.getKey();
+      if (key.getProperty().equals("state") && consensus.getValue().equals("started")) {
+        Optional<Election> electionOpt = lao.getElection(key.getId());
+        if (!electionOpt.isPresent()) {
+          throw new DataHandlingException(consensusLearn, "election not found : " + key.getId());
+        }
+        Election election = electionOpt.get();
+        OpenElection openElection =
+            new OpenElection(lao.getId(), election.getId(), consensusLearn.getCreation());
+        laoRepository.sendMessageGeneral(election.getChannel(), openElection);
+      }
+    }
   }
 }
