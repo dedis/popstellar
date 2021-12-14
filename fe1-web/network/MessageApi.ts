@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp, Wallet,
+  EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
   CastVote,
