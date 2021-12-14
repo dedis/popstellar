@@ -5,7 +5,7 @@ Feature: Mock Backend
     * def getBackend =
             """
               function() {
-                var Backend = Java.type("fe.utils.MockBackend")
+                var Backend = Java.type("fe.net.MockBackend")
                 return new Backend(9005)
               }
             """

@@ -16,7 +16,7 @@ public class MessageQueueTest {
     Semaphore lock = new Semaphore(0);
 
     new Thread(() -> {
-      Assertions.assertEquals(MESSAGE, queue.pollTimeout(5000));
+      Assertions.assertEquals(MESSAGE, queue.takeTimeout(5000));
       lock.release();
     }).start();
 
@@ -33,7 +33,7 @@ public class MessageQueueTest {
 
     for (int i = 0; i < n; i++) {
       new Thread(() -> {
-        Assertions.assertEquals(MESSAGE, queue.pollTimeout(5000));
+        Assertions.assertEquals(MESSAGE, queue.takeTimeout(5000));
         lock.release();
       }).start();
     }
@@ -51,7 +51,7 @@ public class MessageQueueTest {
     Semaphore lock = new Semaphore(0);
 
     new Thread(() -> {
-      Assertions.assertNull(queue.pollTimeout(500));
+      Assertions.assertNull(queue.takeTimeout(500));
       lock.release();
     }).start();
 

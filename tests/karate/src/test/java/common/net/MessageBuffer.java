@@ -38,7 +38,7 @@ public interface MessageBuffer {
    *
    * @return the first message in the buffer (null if empty)
    */
-  String poll();
+  String take();
 
   /**
    * Removes and returns the first message left in the buffer matching the filter.
@@ -47,21 +47,21 @@ public interface MessageBuffer {
    * @param filter of the message, must return true for the valid message
    * @return the first message in the buffer matching the filter (null if empty)
    */
-  String poll(Predicate<String> filter);
+  String take(Predicate<String> filter);
 
   /**
    * Removes and returns all the messages left in the buffer
    *
    * @return all the messages left in the buffer
    */
-  List<String> pollAll();
+  List<String> takeAll();
 
   /**
    * Removes and returns all the messages left in the buffer matching the filter
    *
    * @return all the messages left in the buffer matching the filter
    */
-  List<String> pollAll(Predicate<String> filter);
+  List<String> takeAll(Predicate<String> filter);
 
   /**
    * Removes and returns the first n messages left in the buffer
@@ -69,7 +69,7 @@ public interface MessageBuffer {
    * @param limit of the number to the number of messages the take
    * @return the first n messages left in the buffer
    */
-  List<String> pollN(int limit);
+  List<String> takeN(int limit);
 
   /**
    * Removes and returns the first message  left in the buffer.
@@ -80,7 +80,7 @@ public interface MessageBuffer {
    * @param timeout in millis
    * @return the first message in the buffer (null if no message until the timeout)
    */
-  String pollTimeout(long timeout);
+  String takeTimeout(long timeout);
 
   /**
    * Removes and returns the first message left in the buffer matching the filter.
@@ -92,5 +92,10 @@ public interface MessageBuffer {
    * @param timeout in millis
    * @return the first message in the buffer (null if no message until the timeout)
    */
-  String pollTimeout(Predicate<String> filter, long timeout);
+  String takeTimeout(Predicate<String> filter, long timeout);
+
+  /**
+   * Clear the buffer and remove any message pending
+   */
+  void clear();
 }

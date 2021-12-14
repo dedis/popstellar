@@ -1,4 +1,4 @@
-package fe.utils;
+package fe.net;
 
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
@@ -20,15 +20,16 @@ import java.util.function.Predicate;
  */
 public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> implements MessageBuffer {
 
+  private final Logger logger = new Logger(getClass().getSimpleName());
+
   private final MessageQueue queue = new MessageQueue();
   private final WebSocketServerBase server;
-  private final Logger logger = new Logger(getClass().getSimpleName());
   // Will be set to true once the connection is established
   private final CompletableFuture<Boolean> connected = new CompletableFuture<>();
 
   // Defines the rule to apply on incoming messages to produce its reply.
   // Can be null if no reply should be sent back.
-  private Function<String, String> replyProducer;
+  private Function<String, String> replyProducer = ReplyMethods.ALWAYS_VALID;
   private Channel channel;
 
   public MockBackend(int port) {
@@ -55,7 +56,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   @Override
   protected void channelRead0(ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
-    logger.trace("message received : {}", frame.text());
+    logger.info("message received : {}", frame.text());
     queue.onNewMsg(frame.text());
 
     // Send back the reply
@@ -88,12 +89,12 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   public void stop() {
-    logger.trace("stopping server...");
+    logger.info("stopping server...");
     server.stop();
   }
 
   public void send(String text) {
-    logger.trace("sending message : {}", text);
+    logger.info("sending message : {}", text);
     channel.eventLoop().submit(() -> channel.writeAndFlush(new TextWebSocketFrame(text)));
   }
 
@@ -125,37 +126,42 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   @Override
-  public String poll() {
-    return queue.poll();
+  public String take() {
+    return queue.take();
   }
 
   @Override
-  public String poll(final Predicate<String> filter) {
-    return queue.poll(filter);
+  public String take(final Predicate<String> filter) {
+    return queue.take(filter);
   }
 
   @Override
-  public List<String> pollAll() {
-    return queue.pollAll();
+  public List<String> takeAll() {
+    return queue.takeAll();
   }
 
   @Override
-  public List<String> pollAll(final Predicate<String> filter) {
-    return queue.pollAll(filter);
+  public List<String> takeAll(final Predicate<String> filter) {
+    return queue.takeAll(filter);
   }
 
   @Override
-  public List<String> pollN(final int limit) {
-    return queue.pollN(limit);
+  public List<String> takeN(final int limit) {
+    return queue.takeN(limit);
   }
 
   @Override
-  public String pollTimeout(final long timeout) {
-    return queue.pollTimeout(timeout);
+  public String takeTimeout(final long timeout) {
+    return queue.takeTimeout(timeout);
   }
 
   @Override
-  public String pollTimeout(final Predicate<String> filter, final long timeout) {
-    return queue.pollTimeout(filter, timeout);
+  public String takeTimeout(final Predicate<String> filter, final long timeout) {
+    return queue.takeTimeout(filter, timeout);
+  }
+
+  @Override
+  public void clear() {
+    queue.clear();
   }
 }

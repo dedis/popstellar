@@ -40,12 +40,12 @@ public class MessageQueue implements MessageBuffer {
   }
 
   @Override
-  public synchronized String poll() {
+  public synchronized String take() {
     return queue.isEmpty() ? null : queue.remove(0);
   }
 
   @Override
-  public synchronized String poll(Predicate<String> filter) {
+  public synchronized String take(Predicate<String> filter) {
     Iterator<String> it = queue.iterator();
     while (it.hasNext()) {
       String msg = it.next();
@@ -60,14 +60,14 @@ public class MessageQueue implements MessageBuffer {
   }
 
   @Override
-  public synchronized List<String> pollAll() {
+  public synchronized List<String> takeAll() {
     List<String> messages =  new ArrayList<>(queue);
     queue.clear();
     return messages;
   }
 
   @Override
-  public synchronized List<String> pollAll(final Predicate<String> filter) {
+  public synchronized List<String> takeAll(final Predicate<String> filter) {
     List<String> messages = new LinkedList<>();
     Iterator<String> it = queue.iterator();
 
@@ -83,7 +83,7 @@ public class MessageQueue implements MessageBuffer {
   }
 
   @Override
-  public synchronized List<String> pollN(int limit) {
+  public synchronized List<String> takeN(int limit) {
     List<String> messages = new LinkedList<>();
     for (int i = 0; i < limit && !queue.isEmpty(); i++)
       messages.add(queue.remove(0));
@@ -92,13 +92,18 @@ public class MessageQueue implements MessageBuffer {
   }
 
   @Override
-  public synchronized String pollTimeout(long timeout) {
-    return retrieveWithTimeout(this::poll, timeout);
+  public synchronized String takeTimeout(long timeout) {
+    return retrieveWithTimeout(this::take, timeout);
   }
 
   @Override
-  public synchronized String pollTimeout(Predicate<String> filter, long timeout) {
-    return retrieveWithTimeout(() -> poll(filter), timeout);
+  public synchronized String takeTimeout(Predicate<String> filter, long timeout) {
+    return retrieveWithTimeout(() -> take(filter), timeout);
+  }
+
+  @Override
+  public synchronized void clear() {
+    queue.clear();
   }
 
   private synchronized String retrieveWithTimeout(Supplier<String> dataSupplier, long timeout) {

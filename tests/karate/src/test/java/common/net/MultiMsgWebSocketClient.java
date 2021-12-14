@@ -29,7 +29,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient implements MessageB
   @Override
   public synchronized Object listen(long timeout) {
     logger.trace("entered listen wait state");
-    String msg = queue.poll();
+    String msg = queue.take();
 
     if (msg == null)
       logger.error("listen timed out");
@@ -65,37 +65,42 @@ public class MultiMsgWebSocketClient extends WebSocketClient implements MessageB
   }
 
   @Override
-  public String poll() {
-    return queue.poll();
+  public String take() {
+    return queue.take();
   }
 
   @Override
-  public String poll(final Predicate<String> filter) {
-    return queue.poll(filter);
+  public String take(final Predicate<String> filter) {
+    return queue.take(filter);
   }
 
   @Override
-  public List<String> pollAll() {
-    return queue.pollAll();
+  public List<String> takeAll() {
+    return queue.takeAll();
   }
 
   @Override
-  public List<String> pollAll(final Predicate<String> filter) {
-    return queue.pollAll(filter);
+  public List<String> takeAll(final Predicate<String> filter) {
+    return queue.takeAll(filter);
   }
 
   @Override
-  public List<String> pollN(final int limit) {
-    return queue.pollN(limit);
+  public List<String> takeN(final int limit) {
+    return queue.takeN(limit);
   }
 
   @Override
-  public String pollTimeout(final long timeout) {
-    return queue.pollTimeout(timeout);
+  public String takeTimeout(final long timeout) {
+    return queue.takeTimeout(timeout);
   }
 
   @Override
-  public String pollTimeout(final Predicate<String> filter, final long timeout) {
-    return queue.pollTimeout(filter, timeout);
+  public String takeTimeout(final Predicate<String> filter, final long timeout) {
+    return queue.takeTimeout(filter, timeout);
+  }
+
+  @Override
+  public void clear() {
+    queue.clear();
   }
 }
