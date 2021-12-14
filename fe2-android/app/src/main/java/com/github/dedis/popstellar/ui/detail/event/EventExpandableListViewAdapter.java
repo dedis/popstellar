@@ -320,18 +320,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
-    viewModel.setCurrentElection(election);
-    viewModel
-        .getEndElectionEvent()
-        .observe(
-            lifecycleOwner,
-            end -> {
-              electionBinding.electionActionButton.setText(R.string.election_ended);
-              electionBinding.electionActionButton.setEnabled(false);
-            });
 
     boolean isOrganizer = viewModel.isOrganizer().getValue();
     boolean isNode = isOrganizer || viewModel.isWitness().getValue();
+
+    // detailsButton is shown and disabled by default
+    electionBinding.electionActionButton.setEnabled(false);
+    electionBinding.electionActionButton.setVisibility(View.VISIBLE);
 
     // detailsButton is hidden and disabled by default
     electionBinding.detailsButton.setEnabled(false);
@@ -342,7 +337,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         // electionActionButton is hidden and disabled
         // detailsButton is enabled for nodes a consensus to start
         electionBinding.electionActionButton.setVisibility(View.GONE);
-        electionBinding.electionActionButton.setEnabled(false);
         electionBinding.detailsButton.setText(R.string.start);
         electionBinding.detailsButton.setEnabled(isNode);
         electionBinding.detailsButton.setVisibility(isNode ? View.VISIBLE : View.GONE);
@@ -378,7 +372,6 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         // electionActionButton is disabled
         // detailsButton is hidden and disabled
         electionBinding.electionActionButton.setText(R.string.election_ended);
-        electionBinding.electionActionButton.setEnabled(false);
         break;
 
       case RESULTS_READY:
