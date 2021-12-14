@@ -117,7 +117,8 @@ public class ConsensusPromiseTest {
     String dir = "protocol/examples/messageData/consensus_promise/";
     String jsonInvalid1 = JsonTestUtils.loadFile(dir + "wrong_promise_negative_created_at.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(dir + "wrong_promise_negative_accepted_try.json");
-    String jsonInvalid3 = JsonTestUtils.loadFile(dir + "wrong_promise_negative_proposed_try.json");
+    String jsonInvalid3 = JsonTestUtils.loadFile(dir + "wrong_promise_negative_promised_try.json");
+
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid3));
