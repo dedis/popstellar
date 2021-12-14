@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
@@ -13,6 +14,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Ca
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -63,6 +65,9 @@ public final class ElectionHandler {
       case CAST_VOTE:
         handleCastVote(laoRepository, channel, (CastVote) data, senderPk, messageId);
         break;
+      case OPEN:
+        handleOpenElection(laoRepository, channel, (OpenElection) data);
+        break;
       default:
         Log.w(TAG, "Invalid action for a consensus object : " + data.getAction());
         throw new UnhandledDataTypeException(data, action.getAction());
@@ -90,7 +95,7 @@ public final class ElectionHandler {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
-      election.setEventState(OPENED);
+      election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
       laoRepository.sendSubscribe(election.getChannel());
@@ -158,8 +163,7 @@ public final class ElectionHandler {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
-    // Verify the vote was created before the end of the election or the election is not closed yet
-    if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
+    if (election.getState() == OPENED) {
       // Retrieve previous cast vote message stored for the given sender
       Optional<String> previousMessageIdOption =
           election.getMessageMap().entrySet().stream()
@@ -182,7 +186,34 @@ public final class ElectionHandler {
         election.putSenderByMessageId(senderPk, messageId);
         lao.updateElection(election.getId(), election);
       }
+    } else {
+      Log.w(TAG, "Received a CastVote but the election state was : " + election.getState());
     }
+  }
+
+  /**
+   * Process an OpenElection message.
+   *
+   * @param laoRepository the repository to access the LAO of the channel
+   * @param channel the channel on which the message was received
+   * @param openElection the message that was received
+   */
+  public static void handleOpenElection(
+      LAORepository laoRepository, String channel, OpenElection openElection)
+      throws DataHandlingException {
+    Log.d(TAG, "handleOpenElection: channel " + channel);
+    Lao lao = laoRepository.getLaoByChannel(channel);
+    Election election = laoRepository.getElectionByChannel(channel);
+
+    if (election.getState() != CREATED) {
+      throw new DataHandlingException(
+          openElection,
+          "received an OpenElection but the election state was : " + election.getState());
+    }
+
+    election.setEventState(OPENED);
+    election.setStart(openElection.getOpenedAt());
+    lao.updateElection(election.getId(), election);
   }
 
   public static WitnessMessage electionSetupWitnessMessage(String messageId, Election election) {
