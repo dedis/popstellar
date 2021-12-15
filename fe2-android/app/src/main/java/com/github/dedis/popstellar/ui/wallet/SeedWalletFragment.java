@@ -16,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -80,7 +81,7 @@ public class SeedWalletFragment extends Fragment {
               ClipData.newPlainText("Seed", mWalletSeedFragBinding.seedWallet.getText()));
           Toast.makeText(
                   requireContext().getApplicationContext(),
-                  "Copied to clipboard",
+                  R.string.copied_to_clipboard,
                   Toast.LENGTH_LONG)
               .show();
         });

@@ -226,7 +226,7 @@ public class WalletFragmentTest {
     textView4.perform(click());
 
     ViewInteraction toast =
-        onView(withText("Copied to clipboard")).inRoot(withDecorView(not(decorView)));
+        onView(withText(R.string.copied_to_clipboard)).inRoot(withDecorView(not(decorView)));
     toast.check(matches(isDisplayed()));
 
     ViewInteraction button2 =
