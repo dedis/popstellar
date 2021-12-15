@@ -131,16 +131,12 @@ export class Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     let publicKey = KeyPairStore.getPublicKey();
     let privateKey = KeyPairStore.getPrivateKey();
-    console.log(`Private key length: ${privateKey.length}`);
-    console.log(`Public key length: ${publicKey.length}`);
 
     if (isSignedWithToken(data)) {
       return getCurrentPopTokenFromStore().then((token) => {
         if (token) {
           publicKey = token.publicKey;
           privateKey = token.privateKey;
-          console.log(`Token private key length: ${privateKey.length}`);
-          console.log(`Token public key length: ${publicKey.length}`);
         } else {
           console.error('Impossible to sign the message with a pop token: no token found for '
             + 'current user in this LAO');
