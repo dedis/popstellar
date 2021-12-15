@@ -19,7 +19,8 @@
 
     <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="match_parent">
+      android:layout_height="match_parent"
+      android:layout_marginBottom="@dimen/bottom_navigation_view_height">
 
       <LinearLayout
         android:layout_width="match_parent"
@@ -47,7 +48,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/margin_top"
-        android:layout_marginBottom="70dp"
+        android:layout_marginBottom="@dimen/margin_top"
         android:background="@drawable/round_button"
         android:contentDescription="@string/send_button_desc"
         android:src="@drawable/ic_social_media_send_foreground" />
