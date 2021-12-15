@@ -9,10 +9,13 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { getCurrentPopTokenFromStore } from 'model/objects/wallet';
 import {
-  buildMessageData, encodeMessageData, MessageData,
+  buildMessageData,
+  encodeMessageData,
+  isSignedWithToken,
+  MessageData,
 } from './data';
-import { getCurrentPopToken } from '../../../objects/wallet';
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -112,42 +115,51 @@ export class Message {
   }
 
   /**
-   * Creates a Message object from a given MessageData and signatures
-   * We don't add the channel property here as we don't want to send that over the network
-   * It signs the messages with the most recent pop token if it exists. Otherwise it uses the
-   * public key
+   * Creates a Message object from a given MessageData and signatures.
+   * We don't add the channel property here as we don't want to send that over the network.
+   * It signs the messages with the key pair of the user, or the pop token's key pair
+   * according to the type of message.
    *
-   * @param data The MessageData to be signed and hashed
-   * @param witnessSignatures The signatures of the witnesses
-   *
+   * @param data - The MessageData to be signed and hashed
+   * @param witnessSignatures- The signatures of the witnesses
+   * @returns - The created message
    */
   public static fromData(
     data: MessageData, witnessSignatures?: WitnessSignature[],
-  ): Message {
+  ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-    let privateKey = KeyPairStore.getPrivateKey();
     let publicKey = KeyPairStore.getPublicKey();
+    let privateKey = KeyPairStore.getPrivateKey();
 
-    let popToken: PopToken | undefined;
-    getCurrentPopToken().then((token) => {
-      popToken = token;
-    });
+    if (isSignedWithToken(data)) {
+      return getCurrentPopTokenFromStore().then((token) => {
+        if (token) {
+          publicKey = token.publicKey;
+          privateKey = token.privateKey;
+        } else {
+          console.error('Impossible to sign the message with a pop token: no token found for '
+            + 'current user in this LAO');
+        }
+        const signature: Signature = privateKey.sign(encodedDataJson);
 
-    if (popToken) {
-      console.log('PoP token exists !');
-      privateKey = popToken.privateKey;
-      publicKey = popToken.publicKey;
+        return new Message({
+          data: encodedDataJson,
+          sender: publicKey,
+          signature,
+          message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+          witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+        });
+      });
     }
-
     const signature: Signature = privateKey.sign(encodedDataJson);
 
-    return new Message({
+    return Promise.resolve(new Message({
       data: encodedDataJson,
       sender: publicKey,
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: witnessSignatures ? [] : witnessSignatures,
-    });
+    }));
   }
 
   // This function disables the checks of signature and messageID for eleciton result messages

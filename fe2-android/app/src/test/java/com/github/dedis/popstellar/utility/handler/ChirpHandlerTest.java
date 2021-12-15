@@ -4,7 +4,7 @@ import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleM
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -26,7 +26,6 @@ import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.gson.Gson;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +61,7 @@ public class ChirpHandlerTest {
       new CreateLao(LAO_ID, LAO_NAME, CREATION_TIME, SENDER, new ArrayList<>());
   private static final AddChirp ADD_CHIRP = new AddChirp(TEXT, PARENT_ID, CREATION_TIME);
 
-  private static final Gson GSON = Injection.provideGson();
+  private static final Gson GSON = JsonModule.provideGson();
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
 
@@ -95,18 +94,12 @@ public class ChirpHandlerTest {
         KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
     Mockito.when(androidKeysetManager.getKeysetHandle()).thenReturn(keysetHandle);
 
-    LAORepository.destroyInstance();
     laoRepository =
-        LAORepository.getInstance(
+        new LAORepository(
             remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
     handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
-  }
-
-  @After
-  public void clean() {
-    LAORepository.destroyInstance();
   }
 
   @Test

@@ -7,6 +7,8 @@ import com.tinder.scarlet.WebSocket;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
+
 import io.reactivex.Observable;
 
 public class LAORemoteDataSource implements Remote {
@@ -15,18 +17,10 @@ public class LAORemoteDataSource implements Remote {
 
   private final AtomicInteger requestId;
 
-  private static LAORemoteDataSource INSTANCE;
-
-  private LAORemoteDataSource(LAOService service) {
+  @Inject
+  public LAORemoteDataSource(LAOService service) {
     this.laoService = service;
     requestId = new AtomicInteger();
-  }
-
-  public static LAORemoteDataSource getInstance(LAOService laoService) {
-    if (INSTANCE == null) {
-      INSTANCE = new LAORemoteDataSource(laoService);
-    }
-    return INSTANCE;
   }
 
   public Observable<GenericMessage> observeMessage() {

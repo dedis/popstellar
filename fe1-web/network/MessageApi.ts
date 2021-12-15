@@ -1,5 +1,5 @@
 import {
-  EventTags, getUserSocialChannel, Hash, Lao, PublicKey, Timestamp,
+  EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
   CastVote,
@@ -16,7 +16,7 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromIds, ROOT_CHANNEL, getCurrentUserSocialChannel,
+  Channel, channelFromIds, ROOT_CHANNEL, getUserSocialChannel
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
