@@ -7,6 +7,6 @@ public class ServerTest {
   // see https://github.com/intuit/karate#naming-conventions
   @Karate.Test
   Karate testCreateLAO() {
-    return Karate.run("classpath:be/createLAO").tags("here");
+    return Karate.run("classpath:be/createLAO");
   }
 }
