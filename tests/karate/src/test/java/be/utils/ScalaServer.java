@@ -52,21 +52,21 @@ public class ScalaServer extends Server implements Configurable {
     assertFalse(Files.exists(path));
   }
 
- private static void deleteHandled(File file){
+  private static void deleteHandled(File file){
     int i = 0;
-    while(i < 3 && !file.delete()){
+    while(i < Configurable.MAX_DB_DELETE_ATTEMPTS && !file.delete()){
       try{
         //Wait for the server to realease the resource(database)
         //and try again
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         i++;
       }
       catch(InterruptedException e){
-        System.out.println("Delete thread of file " + file.toPath() + " was interrupted");
+        System.err.println("Delete thread of file " + file.toPath() + " was interrupted");
       }
     }
-    if(i >= 3){
-      System.out.println("Could not delete database folder" + file.toPath());
+    if(i >= Configurable.MAX_DB_DELETE_ATTEMPTS){
+      System.err.println("Could not delete database folder" + file.toPath());
     }
- }
+  }
 }

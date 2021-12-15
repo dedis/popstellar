@@ -1,6 +1,9 @@
 @ignore @report=false
 Feature: This feature starts a server and stops it after every scenario.
 
+  Background:
+    * def MAX_CONNECTION_ATTEMPTS = 5
+
   Scenario: Start the server and configure Karate
         # Handler can be used to filter websocket messages
     * def handle = function(msg){ karate.signal(msg); return msg.startsWith('{')}
@@ -34,12 +37,12 @@ Feature: This feature starts a server and stops it after every scenario.
             """
                 function() {
                     var i = 0;
-                    while(i < 5 && !karate.waitForPort(host, port)){
+                    while(i < MAX_CONNECTION_ATTEMPTS && !karate.waitForPort(host, port)){
                       //Wait 5 secs before polling again
                       wait(5)
                       i++
                     }
-                    if(i >= 5){
+                    if(i >= MAX_CONNECTION_ATTEMPTS){
                       server.stop()
                       karate.fail(`Failed waiting for ${wsURL}`)
                     }

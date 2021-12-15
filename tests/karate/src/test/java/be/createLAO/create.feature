@@ -8,7 +8,7 @@ Feature: Create a pop LAO
         # * call wait <timeout>
         # * karate.set(varName, newValue)
     * call read('classpath:be/utils/server.feature')
-  @here
+
   Scenario: Create should succeed with a valid creation request
     Given def createLaoReq =
         """
@@ -43,6 +43,7 @@ Feature: Create a pop LAO
     And   def socket = karate.webSocket(wsURL,handle)
     * karate.log('Create Request = ' + createLaoReq)
     When  eval socket.send(createLaoReq)
+    *  karate.log('Sent: '+ karate.pretty(createLaoReq))
     And   string answer = socket.listen(timeout)
     * karate.log('Received answer = ' + answer)
     Then match answer == createLaoRes
@@ -51,6 +52,7 @@ Feature: Create a pop LAO
     Given string  emptyNameReq = read('classpath:data/lao/bad_lao_create_empty_name.json')
     And   def socket = karate.webSocket(wsURL,handle)
     When  eval socket.send(emptyNameReq)
+    *  karate.log('Sent: '+ karate.pretty(emptyNameReq))
     And  json err = socket.listen(timeout)
     * karate.log('Received: '+ err )
     Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
@@ -59,6 +61,7 @@ Feature: Create a pop LAO
       Given string negTimeLao = read('classpath:data/lao/bad_lao_create_negative.json')
       And   def socket = karate.webSocket(wsURL,handle)
       When  eval socket.send(negTimeLao)
+      *  karate.log('Sent: '+ karate.pretty(negTimeLao))
       And  json err = socket.listen(timeout)
       *  karate.log('Received: '+ karate.pretty(err) )
       Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
@@ -67,6 +70,7 @@ Feature: Create a pop LAO
       Given string invalidIdLao = read('classpath:data/lao/bad_lao_create_id_invalid_hash.json')
       And   def socket = karate.webSocket(wsURL,handle)
       When  eval socket.send(invalidIdLao)
+      *  karate.log('Sent: '+ karate.pretty(invalidIdLao))
       And  json err = socket.listen(timeout)
       *  karate.log('Received: '+ karate.pretty(err) )
       Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
