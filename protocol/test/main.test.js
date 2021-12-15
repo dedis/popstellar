@@ -214,7 +214,7 @@ test("message data: consensus", () => {
     accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
     expect(accept).not.toBeValid(messageDataSchema)
 
-    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
+    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_accepted_try.json");
     expect(accept).not.toBeValid(messageDataSchema)
 
     // Learn

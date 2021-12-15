@@ -27,7 +27,10 @@ import net.glxn.qrgen.android.QRCode;
 
 import java.util.ArrayList;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /** Fragment used to display the LAO Detail UI */
+@AndroidEntryPoint
 public class LaoDetailFragment extends Fragment {
 
   public static final String TAG = LaoDetailFragment.class.getSimpleName();

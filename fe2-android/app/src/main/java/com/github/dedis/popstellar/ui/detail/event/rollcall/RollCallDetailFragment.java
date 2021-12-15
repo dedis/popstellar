@@ -16,6 +16,9 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import net.glxn.qrgen.android.QRCode;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class RollCallDetailFragment extends Fragment {
 
   public static final String TAG = RollCallDetailFragment.class.getSimpleName();

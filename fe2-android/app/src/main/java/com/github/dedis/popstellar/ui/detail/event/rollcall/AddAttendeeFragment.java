@@ -16,6 +16,8 @@ import com.github.dedis.popstellar.R;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * This fragment wraps the QRCodeScanningFragment in order to show the user how many attendees he
  * has added so far and here the QRCode Fragment won't disappear after scanning a QR code, but will
@@ -23,6 +25,7 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
  *
  * <p>The attribute eventId represents the Roll-Call Event's id the user wants to add attendees to.
  */
+@AndroidEntryPoint
 public final class AddAttendeeFragment extends Fragment {
 
   public static final String TAG = AddAttendeeFragment.class.getSimpleName();

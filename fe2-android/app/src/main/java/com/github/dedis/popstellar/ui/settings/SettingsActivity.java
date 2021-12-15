@@ -6,11 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.ViewModelFactory;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SettingsActivity extends AppCompatActivity {
 
   @Override
@@ -22,8 +23,7 @@ public class SettingsActivity extends AppCompatActivity {
   }
 
   public static SettingsViewModel obtainViewModel(FragmentActivity activity) {
-    ViewModelFactory factory = Injection.provideViewModelFactory(activity.getApplication());
-    return new ViewModelProvider(activity, factory).get(SettingsViewModel.class);
+    return new ViewModelProvider(activity).get(SettingsViewModel.class);
   }
 
   private void setupSettingsFragment() {
