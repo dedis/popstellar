@@ -23,10 +23,11 @@ export async function generateTokenFromPath(path: string): Promise<PopToken> {
 
   const { key } = derivePath(path, hexSeed);
   const pubKey = getPublicKey(key, false);
+  const privateKeyBuffer = Buffer.concat([key, pubKey]);
 
   return new PopToken({
     publicKey: new PublicKey(Base64UrlData.fromBuffer(pubKey).valueOf()),
-    privateKey: new PrivateKey(Base64UrlData.fromBuffer(key).valueOf()),
+    privateKey: new PrivateKey(Base64UrlData.fromBuffer(privateKeyBuffer).valueOf()),
   });
 }
 
