@@ -11,11 +11,10 @@
       "const": "add"
     },
     "reaction_codepoint": {
-      "description": "Backslash-escaped unicode indicating a reaction",
+      "description": "Emoji indicating a reaction",
       "type": "string",
-      "examples": ["\uD83D\uDC4D", "\uD83D\uDCA9"],
-      "$comment": "We prefer the following escape sequence: \\uhhhh where h is a hexadecimal digit.",
-      "$comment" : "SurrogatePair are used if the emoji does not fit on 16 bits."
+      "examples": ["👍", "👎"],
+      "$comment": "We represent the emojis with the character itself"
     },
     "chirp_id": {
       "description": "message_id of the chirp message",
