@@ -1,3 +1,4 @@
+@env=go,scala
 Feature: Create a pop LAO
 
   Background:

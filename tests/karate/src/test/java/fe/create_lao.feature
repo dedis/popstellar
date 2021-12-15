@@ -1,15 +1,17 @@
+@env=android,web
 Feature: Create LAO
 
   Background: Driver setup
-    * call read('classpath:fe/utils/web.feature')
+    * def page_object = 'classpath:fe/utils/<env>.feature'
+    * replace page_object.env = karate.env
+    * call read(page_object)
 
   Scenario: Create LAO
-    When driver.click(tab_launch_selector)
-    * delay(1000)
-    And driver.input(tab_launch_lao_name_selector, 'Lao Name')
-    And driver.click(tab_launch_create_lao_selector)
+    When click(tab_launch_selector)
+    And fill(tab_launch_lao_name_selector, 'Lao Name')
+    And click(tab_launch_create_lao_selector)
 
-    * json create_lao = backend.takeTimeout(1000)
+    * json create_lao = backend.takeTimeout(1000000)
     * json subscribe = backend.takeTimeout(withMethod('subscribe'), 1000)
     * json catchup = backend.takeTimeout(withMethod('catchup'), 1000)
 

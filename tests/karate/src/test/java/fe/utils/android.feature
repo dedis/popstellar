@@ -2,12 +2,17 @@ Feature: android page object
 
   Background: Android Preset
     * configure driver = { type: 'android', webDriverPath : "/wd/hub", start: false, httpConfig : { readTimeout: 120000 }}
-    * def driverOptions = { webDriverSession: { desiredCapabilities : "#(android.desiredConfig)"} }
+    * def capabilities = android.desiredConfig
+    * capabilities.app = karate.toAbsolutePath('file:' + capabilities.app)
+
+    * def driverOptions = { webDriverSession: { desiredCapabilities : "#(capabilities)" } }
     # Create and import mock backend
     * call read('classpath:fe/net/mockbackend.feature')
     * def backendURL = 'ws://10.0.2.2:' + backend.getPort()
     # Import message filters
     * call read('classpath:common/net/filters.feature')
+
+    * def fill = function(selector, data) { driver.input(selector, data) }
 
     # Tab buttons
     * def tab_home_selector = '#com.github.dedis.popstellar:id/tab_home'
@@ -25,10 +30,10 @@ Feature: android page object
       # If this breaks, use this code to log the page hierarchy :
       # karate.log(driver.getHttp().path("source").get().value)
 
-      * driver.click('//*[@content-desc="More options"]')
-      * driver.click('#com.github.dedis.popstellar:id/title')
+      And click('//*[@content-desc="More options"]')
+      And click('#com.github.dedis.popstellar:id/title')
 
       # Input the mock backend url and connect to it
-      * driver.input('#com.github.dedis.popstellar:id/entry_box_server_url', backendURL)
-      * driver.click('#com.github.dedis.popstellar:id/button_apply')
-      * match backend.waitForConnection(5000) == true
+      And fill('#com.github.dedis.popstellar:id/entry_box_server_url', backendURL)
+      And click('#com.github.dedis.popstellar:id/button_apply')
+      And match backend.waitForConnection(5000) == true
