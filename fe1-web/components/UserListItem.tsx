@@ -10,6 +10,15 @@ import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import WideButtonView from './WideButtonView';
 
+/**
+ * Component that shows a user's profile picture, his public key and two buttons:
+ * - Follow, which subscribes to the user's social channel.
+ * - Profile, that navigates to the user's profile page.
+ *
+ * @remarks
+ * For now, it is not possible to unfollow users, and you have to follow someone to access to
+ * his profile.
+ */
 const styles = StyleSheet.create({
   container: {
     borderColor: gray,
@@ -49,6 +58,9 @@ const UserListItem = (props: IPropTypes) => {
     setIsFollowing(true);
   };
 
+  // TODO: Navigates to the profile of the user
+  const goToUserProfile = () => {};
+
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
@@ -67,7 +79,7 @@ const UserListItem = (props: IPropTypes) => {
           <View style={styles.buttonView}>
             <WideButtonView
               title={STRINGS.profile_button}
-              onPress={() => {}}
+              onPress={goToUserProfile}
               disabled={!isFollowing}
             />
           </View>

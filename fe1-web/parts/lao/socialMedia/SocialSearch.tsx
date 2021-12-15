@@ -34,7 +34,12 @@ const styles = StyleSheet.create({
 
 const SocialSearch = () => {
   const laoSelect = makeCurrentLao();
-  const currentLao = useSelector(laoSelect)!!;
+  const currentLao = useSelector(laoSelect);
+
+  if (!currentLao) {
+    throw new Error('Impossible to open Social media Search if you are not connected to a LAO');
+  }
+
   const rollCallId = currentLao.last_tokenized_roll_call_id;
   const attendeesSelect = makeLastRollCallAttendeesList(currentLao.id, rollCallId);
   const attendees = useSelector(attendeesSelect);

@@ -40,6 +40,10 @@ const RollCallOpened = () => {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
+  if (!lao) {
+    throw new Error('Impossible to open a Roll Call without being connected to an LAO');
+  }
+
   const handleError = (err: string) => {
     console.error(err);
   };
@@ -64,7 +68,7 @@ const RollCallOpened = () => {
     );
 
     // Add the token of the organizer before closing the roll call
-    Wallet.generateToken(lao!!.id, new Hash(rollCallID)).then((token) => {
+    Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
       const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
       attendeesList.push(token.publicKey);
       requestCloseRollCall(updateId, attendeesList).then(() => {
