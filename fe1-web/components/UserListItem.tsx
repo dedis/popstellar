@@ -59,7 +59,9 @@ const UserListItem = (props: IPropTypes) => {
   };
 
   // TODO: Navigates to the profile of the user
-  const goToUserProfile = () => {};
+  const goToUserProfile = () => {
+    console.error('Profile navigation is not implemented yet.');
+  };
 
   return (
     <View style={styles.container}>
