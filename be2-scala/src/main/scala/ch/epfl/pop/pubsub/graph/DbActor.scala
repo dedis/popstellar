@@ -334,7 +334,7 @@ object DbActor extends AskPatternConstants {
       dataKey match {
         case null => DbActorReadLaoDataAck(None)
         case _ => {
-          if(laoDataCache.keySet.contains(dataKey)){
+          if(laoDataCache.keySet.contains(dataKey) && laoDataCache.get(dataKey) != None && laoDataCache.get(dataKey).get != null){
             //with our implementation, if a key is in the map, there is always a LaoData value attached to it
             DbActorReadLaoDataAck(Some(laoDataCache.get(dataKey).get))
           } else{
