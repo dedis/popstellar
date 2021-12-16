@@ -110,5 +110,5 @@ case object RollCallHandler extends MessageHandler {
     }
   }
 
-  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + Channel.SOCIALCHANNELPREFIX + Channel.SEPARATOR + pk.toString
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + Channel.SOCIAL_CHANNEL_PREFIX + Channel.SEPARATOR + pk.toString
 }

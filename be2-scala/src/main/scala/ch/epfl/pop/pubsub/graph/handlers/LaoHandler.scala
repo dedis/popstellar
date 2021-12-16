@@ -48,7 +48,7 @@ case object LaoHandler extends MessageHandler {
           case DbActorAck() => {
             val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
               case DbActorWriteAck() => {
-                val socialChannel: Channel = Channel(channel + Channel.SOCIALMEDIAPOSTSPREFIX)
+                val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
                 val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
                   case DbActorAck() => Left(rpcMessage)
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
