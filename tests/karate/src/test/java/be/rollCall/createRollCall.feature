@@ -1,11 +1,11 @@
 Feature: Create a RollCall
-  # TODO: Add missing test data 
+  # TODO: Add missing test data
   Background:
     * call read('classpath:be/utils/server.feature')
     * def createLAO = read('classpath:be/createLAO/create.feature@name=createLAO')
     * def badMessageDataTest = read('classpath:be/common/badMessageDataRequest.feature')
-    * def valideRollCall = {} /
-    * def success = {"jsonrpc": "2.0","id": 'id here',"result": 0}
+    * def valideRollCall = {} 
+    * def success = {jsonrpc: "2.0", id: #(valideRollCall.id), result: 0}
     * def socket = karate.webSocket(wsURL,handle)
 
   @name=rollcall
@@ -23,19 +23,19 @@ Feature: Create a RollCall
     # First roll call same lao
     And valideRollCall, success
     # Second different rollcall same lao
-    And string createRollCall_2 = ""
-    *   string success_id2 = {"jsonrpc": "2.0","id": 'id here',"result": 0}
+    And string createRollCall_2nd = ""
+    *   json succes_2nd = {"jsonrpc": "2.0","id":  #(valideRollCall.id),"result": 0}
     * karate.log('Creating first rollcall...')
-    When eval socket.send(createRollCall_1)
+    When eval socket.send(valideRollCall)
     * listen timeout
     * karate.log('First response = ' + listenResult')
-    Then match listenResult == expected_1
+    Then match listenResult == success
 
     * karate.log('Creating second rollcall...')
-    When eval socket.send(createLaoReq)
+    When eval socket.send(createRollCall_2nd)
     * karate.log('Second response = ' + listenResult)
     * listen timeout
-    Then match listenResult == expected_2
+    Then match listenResult == success_2nd
 
   Scenario: Creating same/duplicate RollCalls should fail with correct error
     Given call createLAO
