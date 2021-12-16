@@ -12,6 +12,7 @@ public interface MessageBuffer {
 
   /**
    * @param filter of the message, must return true for the valid message
+   *               Some useful filters are implemented in {@link MessageFilters}
    * @return the first message in the buffer matching the filter (null if empty)
    */
   String peek(Predicate<String> filter);
@@ -23,6 +24,7 @@ public interface MessageBuffer {
 
   /**
    * @param filter of the message, must return true for the valid message
+   *               Some useful filters are implemented in {@link MessageFilters}
    * @return all the messages left in the buffer matching the filter
    */
   List<String> peekAll(Predicate<String> filter);
@@ -45,6 +47,7 @@ public interface MessageBuffer {
    * If no message matches, returns null.
    *
    * @param filter of the message, must return true for the valid message
+   *               Some useful filters are implemented in {@link MessageFilters}
    * @return the first message in the buffer matching the filter (null if empty)
    */
   String take(Predicate<String> filter);
@@ -59,6 +62,8 @@ public interface MessageBuffer {
   /**
    * Removes and returns all the messages left in the buffer matching the filter
    *
+   * @param filter of the message, must return true for the valid message
+   *               Some useful filters are implemented in {@link MessageFilters}
    * @return all the messages left in the buffer matching the filter
    */
   List<String> takeAll(Predicate<String> filter);
@@ -89,6 +94,7 @@ public interface MessageBuffer {
    * If after the timeout there is still no match, returns null
    *
    * @param filter  of the message, must return true for the valid message
+   *                Some useful filters are implemented in {@link MessageFilters}
    * @param timeout in millis
    * @return the first message in the buffer (null if no message until the timeout)
    */
