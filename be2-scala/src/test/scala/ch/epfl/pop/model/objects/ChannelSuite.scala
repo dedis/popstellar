@@ -36,8 +36,8 @@ class ChannelSuite extends FunSuite with Matchers {
   }
 
   test("Slash single child channel test") {
-    def channel = Channel(Channel.rootChannelPrefix + "channelID")
-    val expected = Hash(Base64Data("channelID"))
+    def channel = Channel(Channel.rootChannelPrefix + "base64==")
+    val expected = Hash(Base64Data("base64=="))
     noException shouldBe thrownBy(channel)
     channel.extractChildChannel should equal(expected)
   }
@@ -65,7 +65,7 @@ class ChannelSuite extends FunSuite with Matchers {
     noException shouldBe thrownBy(channel)
     channel.decodeSubChannel.get should equal(expected)
   }
-  
+
   test("Real LaoId extraction channel test") {
     val laoId = "mEKXWFCMwb";
     def channel = Channel(Channel.rootChannelPrefix + Base64Data.encode(laoId))
