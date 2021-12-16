@@ -1,9 +1,14 @@
-package register
+package registry
 
-import "popstellar/message/query/method/message"
+import (
+	"popstellar/message/query/method/message"
+	"reflect"
+
+	"golang.org/x/xerrors"
+)
 
 type MessageRegistry struct {
-	Registry map[string]CallbackData
+	registry map[reflect.Type]CallbackData
 }
 
 type CallbackData struct {
@@ -13,7 +18,7 @@ type CallbackData struct {
 
 func NewMessageRegistry() MessageRegistry {
 	return MessageRegistry{
-		Registry: make(map[string]CallbackData),
+		registry: make(map[reflect.Type]CallbackData),
 	}
 }
 
@@ -36,8 +41,33 @@ func NewMessageRegistry() MessageRegistry {
 //   err = registry.processMsg(msg)
 //
 func (m MessageRegistry) Register(action string, f func(message.Message, interface{}) error, c interface{}) {
-	m.Registry[action] = CallbackData{
+	key := reflect.TypeOf(c)
+
+	m.registry[key] = CallbackData{
 		Callback:     f,
 		ConcreteType: c,
 	}
+}
+
+func (m MessageRegistry) Process(c interface{}, msg message.Message) error {
+	key := reflect.TypeOf(c)
+
+	data, found := m.registry[key]
+	if !found {
+		return xerrors.Errorf("action '%s' not found", key)
+	}
+
+	concreteType := reflect.New(reflect.ValueOf(data.ConcreteType).Type()).Interface
+
+	err := msg.UnmarshalData(&concreteType)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal data: %v", err)
+	}
+
+	err = data.Callback(msg, concreteType)
+	if err != nil {
+		return xerrors.Errorf("failed to process action '%s': %v", key, err)
+	}
+
+	return nil
 }

@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
-	"popstellar/channel/register"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -48,7 +48,7 @@ type Channel struct {
 
 	log zerolog.Logger
 
-	register register.MessageRegistry
+	registry registry.MessageRegistry
 
 	consensusInstances map[string]*ConsensusInstance
 	messageStates      map[string]*MessageState
@@ -108,14 +108,14 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 		messageStates:      make(map[string]*MessageState),
 	}
 
-	newChannel.register = newChannel.NewConsensusRegistry()
+	newChannel.registry = newChannel.NewConsensusRegistry()
 
 	return newChannel
 }
 
 // NewConsensusRegistry creates a new registry for the consensus channel
-func (c *Channel) NewConsensusRegistry() register.MessageRegistry {
-	registry := register.NewMessageRegistry()
+func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
 
 	registry.Register("elect", c.processConsensusElect, messagedata.ConsensusElect{})
 	registry.Register("elect-accept", c.processConsensusElectAccept, messagedata.ConsensusElectAccept{})
@@ -263,7 +263,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 // processConsensusObject processes a Consensus Object.
 func (c *Channel) processConsensusObject(action string, msg message.Message) error {
 
-	data, found := c.register.Registry[action]
+	data, found := c.registry.Registry[action]
 	if !found {
 		return xerrors.Errorf("action '%s' not found", action)
 	}
