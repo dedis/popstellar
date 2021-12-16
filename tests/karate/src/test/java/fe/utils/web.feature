@@ -32,7 +32,10 @@ Feature: web test
     * def input =
           """
             function(selector, data) {
+              tries = 0
               while (driver.attribute(selector, "value") != data) {
+                if (tries++ >= max_input_retry)
+                  throw "Could not input " + data + " - max number of retry reached."
                 driver.clear(selector)
                 driver.input(selector, data)
                 delay(10)

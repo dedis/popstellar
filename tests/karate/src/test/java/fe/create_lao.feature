@@ -12,13 +12,13 @@ Feature: Create LAO
     And click(tab_launch_create_lao_selector)
 
     # Retrieving sent messages
-    * json create_lao = backend.takeTimeout(1000)
-    * json subscribe = backend.takeTimeout(withMethod('subscribe'), 1000)
-    * json catchup = backend.takeTimeout(withMethod('catchup'), 1000)
+    * json create_lao = backend.takeTimeout(timeout)
+    * json subscribe = backend.takeTimeout(withMethod('subscribe'), timeout)
+    * json catchup = backend.takeTimeout(withMethod('catchup'), timeout)
 
     # TODO Test consensus subscription when it is implemented on both fe
-    # * json subscribe_consensus = backend.takeTimeout(withMethod('subscribe'), 1000)
-    # * json catchup_consensus = backend.takeTimeout(withMethod('catchup'), 1000)
+    # * json subscribe_consensus = backend.takeTimeout(withMethod('subscribe'), timeout)
+    # * json catchup_consensus = backend.takeTimeout(withMethod('catchup'), timeout)
 
     Then match create_lao contains deep { method: 'publish', params: { channel: '/root' }}
     Then match subscribe contains deep { method: 'subscribe' }

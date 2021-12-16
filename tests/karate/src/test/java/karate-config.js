@@ -26,20 +26,27 @@ function fn() {
     config.port = 8000;
     config.path = '';
     config.wsURL = `ws://${config.host}:${config.port}/${config.path}`;
-  }
+  } else {
+    config.port = 9005;
+    config.timeout = 1000;
 
-  const android = {};
-  android["desiredConfig"] = {
-   "app" : "../../fe2-android/app/build/outputs/apk/prod/debug/app-prod-debug.apk",
-   "newCommandTimeout" : 300,
-   "platformVersion" : "9.0",
-   "platformName" : "Android",
-   "connectHardwareKeyboard" : true,
-   "deviceName" : "emulator-5554",
-   "avd" : "Pixel_2_API_30",
-   "automationName" : "UiAutomator2"
+    if (env === 'web') {
+      config.max_input_retry = 10;
+    } else if (env === 'android') {
+      const android = {};
+      android["desiredConfig"] = {
+        "app" : "../../fe2-android/app/build/outputs/apk/prod/debug/app-prod-debug.apk",
+        "newCommandTimeout" : 300,
+        "platformVersion" : "9.0",
+        "platformName" : "Android",
+        "connectHardwareKeyboard" : true,
+        "deviceName" : "emulator-5554",
+        "avd" : "Pixel_2_API_29",
+        "automationName" : "UiAutomator2"
+      }
+      config["android"] = android
+    }
   }
-  config["android"] = android
 
   return config;
 }

@@ -6,7 +6,7 @@ Feature: Mock Backend
             """
               function() {
                 var Backend = Java.type("fe.net.MockBackend")
-                return new Backend(9005)
+                return new Backend(port)
               }
             """
 
