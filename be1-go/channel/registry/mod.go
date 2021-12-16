@@ -54,7 +54,7 @@ func (m MessageRegistry) Process(key string, msg message.Message) error {
 		return xerrors.Errorf("action '%s' not found", key)
 	}
 
-	concreteType := reflect.New(reflect.ValueOf(data.ConcreteType).Type()).Interface
+	concreteType := reflect.New(reflect.ValueOf(data.ConcreteType).Type()).Interface()
 
 	err := msg.UnmarshalData(&concreteType)
 	if err != nil {
