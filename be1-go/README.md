@@ -6,6 +6,28 @@
 
 > Welcome to the go-side of popstellar.
 
+# Want to submit a PR ? Here are 3 points that will make sure things run smoothly
+
+1. Make sure your code fits nicely with the code base and follows the SAME
+   philosophy/ADN (format, pattern, organization, etc..). Notably: how errors
+   are handled, how the code is spaced (use of newlines!), how the code is
+   commented (80 chars!), structured, etc.. One shouldn't be able to
+   differentiate between your code and the existing one. If you have a doubts
+   about something just have a look around the existing code to find an example.
+
+2. You just opened a PR ? Good. Make a review of your PR before requesting for a
+   review. We all forget small details like a typo in comment, a commented line
+   that should be removed, a debug print, etc.. If you missed them in your code
+   editor there is a chance you can catch them from the Github review interface.
+   It then spares time for everyone.
+
+3. Got comments on your PR ? Great. To help the reviewer please do NOT resolve
+   conversations, as it helps the reviewer check if its comments have been
+   addressed (or not). You can use the 👍 reaction on the comment if you need to keep
+   track of your progress, or comment them if discussion is needed.
+   Additionally, when you address comments, make a single commit with a title
+   "addresses X's comments".
+
 ## Overview
 
 ### Requirements
