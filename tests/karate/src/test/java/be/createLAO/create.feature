@@ -8,7 +8,7 @@ Feature: Create a pop LAO
         # * call wait <timeout>
         # * karate.set(varName, newValue)
     * call read('classpath:be/utils/server.feature')
-
+  @name=createLAO
   Scenario: Create should succeed with a valid creation request
     Given def createLaoReq =
         """

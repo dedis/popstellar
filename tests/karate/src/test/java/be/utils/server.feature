@@ -59,6 +59,12 @@ Feature: This feature starts a server and stops it after every scenario.
                     server.stop();
                 }
             """
+    * def isServerRunning =
+            """
+                function() {
+                    return server.isRunning();
+                }
+            """
 
         # Start server
     * call startServer
