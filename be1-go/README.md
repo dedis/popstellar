@@ -22,7 +22,7 @@
    It then spares time for everyone.
 
 3. Got comments on your PR ? Great. To help the reviewer please do NOT resolve
-   conversations, as it helps the reviewer check if its comments have been
+   conversations, as it helps the reviewer check if his/her comments have been
    addressed (or not). You can use the 👍 reaction on the comment if you need to keep
    track of your progress, or comment them if discussion is needed.
    Additionally, when you address comments, make a single commit with a title
