@@ -19,4 +19,4 @@ Feature: Test behavior of server given invalid message data
     When eval socket.send(bad_request)
     * json answer = socket.listen(timeout)
     * karate.log("Answer: "+ karate.pretty(answer))
-    Then match answer == deep {jsonrpc: '2.0', id: 1, error: {code: #(err_code), description: '#string'}
+    Then match answer == deep {jsonrpc: '2.0', id: #(bad_request.id), error: {code: #(err_code), description: '#string'}
