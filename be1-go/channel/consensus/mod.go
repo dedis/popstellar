@@ -59,6 +59,9 @@ type ConsensusInstance struct {
 	sync.RWMutex
 	id string
 
+	timeout   chan string
+	last_sent string
+
 	proposed_try int64
 	promised_try int64
 	accepted_try int64
@@ -71,6 +74,40 @@ type ConsensusInstance struct {
 
 	promises []messagedata.ConsensusPromise
 	accepts  []messagedata.ConsensusAccept
+}
+
+func (i *ConsensusInstance) startTimer() {
+
+	lastSent := i.last_sent
+
+	if lastSent == "learn" {
+		return
+	}
+
+	select {
+	case action := <-i.timeout:
+
+	case <-time.After(time.Second):
+		switch lastSent {
+		case "elect-accept":
+			byteMsg, err := c.createPrepareMessage(data.InstanceID,
+				data.MessageID, consensusInstance)
+			if err != nil {
+				return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
+			}
+
+			consensusInstance.last_sent = "prepare"
+			err = c.publishNewMessage(consensusInstance, byteMsg)
+			if err != nil {
+				return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
+			}
+		case "prepare":
+		case "promise":
+		case "propose":
+		case "accept":
+
+		}
+	}
 }
 
 // State of a consensus by messageID, used when two messages on the same object
@@ -307,6 +344,9 @@ func (c *Channel) createConsensusInstance(instanceID string) {
 
 		id: instanceID,
 
+		timeout:   make(chan string, 1),
+		last_sent: "",
+
 		proposed_try: 0,
 		promised_try: -1,
 		accepted_try: -1,
@@ -428,7 +468,8 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
+	consensusInstance.last_sent = "prepare"
+	err = c.publishNewMessage(consensusInstance, byteMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
 	}
@@ -510,7 +551,8 @@ func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}
 		return xerrors.Errorf("failed to create consensus#promise message, %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
+	consensusInstance.last_sent = "promise"
+	err = c.publishNewMessage(consensusInstance, byteMsg)
 	if err != nil {
 		return err
 	}
@@ -611,7 +653,8 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 		return xerrors.Errorf("failed to create consensus#propose message: %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
+	consensusInstance.last_sent = "propose"
+	err = c.publishNewMessage(consensusInstance, byteMsg)
 	if err != nil {
 		return err
 	}
@@ -713,7 +756,8 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 		return xerrors.Errorf("failed to create consensus#accept message: %v", err)
 	}
 
-	err = c.publishNewMessage(byteMsg)
+	consensusInstance.last_sent = "accept"
+	err = c.publishNewMessage(consensusInstance, byteMsg)
 	if err != nil {
 		return err
 	}
@@ -812,7 +856,8 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 		return xerrors.Errorf("failed to create new consensus#learn message")
 	}
 
-	err = c.publishNewMessage(byteMsg)
+	consensusInstance.last_sent = "learn"
+	err = c.publishNewMessage(consensusInstance, byteMsg)
 	if err != nil {
 		return err
 	}
@@ -885,7 +930,7 @@ func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}) 
 }
 
 // publishNewMessage send a publish message on the current channel
-func (c *Channel) publishNewMessage(byteMsg []byte) error {
+func (c *Channel) publishNewMessage(consensusInstance *ConsensusInstance, byteMsg []byte) error {
 
 	encryptedMsg := base64.URLEncoding.EncodeToString(byteMsg)
 
@@ -933,6 +978,7 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 
 	c.hub.SetMessageID(&publish)
 
+	go consensusInstance.startTimer()
 	err = c.hub.SendAndHandleMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to send new message: %v", err)

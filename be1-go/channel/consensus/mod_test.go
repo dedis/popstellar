@@ -966,7 +966,7 @@ func Test_Publish_New_Message(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create and send the new message
-	err = consensusChannel.publishNewMessage(buf)
+	err = consensusChannel.publishNewMessage("learn", buf)
 	require.NoError(t, err)
 
 	// Create the expected sent message
