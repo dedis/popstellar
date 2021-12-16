@@ -1,7 +1,5 @@
 Feature: web test
 
-  # Important fact to know :
-  # You should use the fill function instead of the input function as it is why more reliable
   Background: App Preset
     * configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
@@ -11,17 +9,8 @@ Feature: web test
     # Import message filters
     * call read('classpath:common/net/filters.feature')
 
-    # The input function does not work every time.
-    # So we just try again until it works. Bruteforce always works.
-    * def fill =
-          """
-            function(selector, data) {
-              while (driver.attribute(selector, "value") != data) {
-                driver.clear(selector)
-                driver.input(selector, data)
-              }
-            }
-          """
+    # ================= Page Object Start ====================
+
 
     # Tab buttons
     * def tab_home_selector = '{}Home'
@@ -34,8 +23,21 @@ Feature: web test
     * def tab_launch_address_selector = "input[placeholder='Address']"
     * def tab_launch_create_lao_selector = '{}Launch -- Connect, Create LAO & Open UI'
 
-  Scenario: web app UI tests
+  Scenario: Setup connection to the backend and complete on the home page
     Given driver driverOptions
+
+    # The default input function is not consistent and does not work every time.
+    # This replaces the input function with one that just tries again until it works.
+    * def input =
+          """
+            function(selector, data) {
+              while (driver.attribute(selector, "value") != data) {
+                driver.clear(selector)
+                driver.input(selector, data)
+              }
+            }
+          """
+
     And click(tab_launch_selector)
-    And fill(tab_launch_address_selector, backendURL)
+    And input(tab_launch_address_selector, backendURL)
     And click(tab_home_selector)

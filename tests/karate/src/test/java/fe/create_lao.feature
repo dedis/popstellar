@@ -6,12 +6,13 @@ Feature: Create LAO
     * replace page_object.env = karate.env
     * call read(page_object)
 
-  Scenario: Create LAO
+  Scenario: Create a LAO send the right messages to the backend
     When click(tab_launch_selector)
-    And fill(tab_launch_lao_name_selector, 'Lao Name')
+    And input(tab_launch_lao_name_selector, 'Lao Name')
     And click(tab_launch_create_lao_selector)
 
-    * json create_lao = backend.takeTimeout(1000000)
+    # Retrieving sent messages
+    * json create_lao = backend.takeTimeout(1000)
     * json subscribe = backend.takeTimeout(withMethod('subscribe'), 1000)
     * json catchup = backend.takeTimeout(withMethod('catchup'), 1000)
 
