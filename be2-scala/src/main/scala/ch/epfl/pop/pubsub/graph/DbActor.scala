@@ -195,6 +195,11 @@ object DbActor extends AskPatternConstants {
     //Map which serves as a cache of keys made from channels with generateLaoDataKey mapped to their LaoDatas (instead of going to the database)
     private val laoDataCache: collection.mutable.Map[String, LaoData] = collection.mutable.Map[String, LaoData]()
 
+    //Generic helper function to check if a key-value pair is valid inside a map (cache in this context)
+    private def keyValuePairIsValid[K, V](key: K, cache: collection.mutable.Map[K, V]): Boolean = {
+      cache.keySet.contains(key) && cache.get(key) != None && cache.get(key).get != null
+    }
+
     //helper function to determine if a channel should be created during write operations
     private def writeCreateNewChannel(channel: Channel, message: Message): DbActorMessage = {
       
@@ -225,7 +230,7 @@ object DbActor extends AskPatternConstants {
     //may return null if the extractLaoId fails
     private def generateLaoDataKey(channel: Channel): String = {
       channel.decodeSubChannel match {
-        case Some(data) => new String(data, StandardCharsets.UTF_8) + Channel.LAODATALOCATION
+        case Some(data) => new String(data, StandardCharsets.UTF_8) + Channel.LAO_DATA_LOCATION
         case None =>
           log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
           null
@@ -334,7 +339,7 @@ object DbActor extends AskPatternConstants {
       dataKey match {
         case null => DbActorReadLaoDataAck(None)
         case _ => {
-          if(laoDataCache.keySet.contains(dataKey) && laoDataCache.get(dataKey) != None && laoDataCache.get(dataKey).get != null){
+          if(keyValuePairIsValid[String, LaoData](dataKey, laoDataCache)){
             //with our implementation, if a key is in the map, there is always a LaoData value attached to it
             DbActorReadLaoDataAck(Some(laoDataCache.get(dataKey).get))
           } else{

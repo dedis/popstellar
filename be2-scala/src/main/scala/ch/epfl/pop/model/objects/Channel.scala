@@ -51,7 +51,7 @@ object Channel {
   final val rootChannel: Channel = Channel(s"${SEPARATOR}root")
   final val rootChannelPrefix: String = s"${SEPARATOR}root${SEPARATOR}"
   private final def channelRegex: String = "^/root(/[^/]+)*$"
-  final val LAODATALOCATION: String = Channel.SEPARATOR + "data"
+  final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
 
   def apply(channel: String): Channel = {
     if(channel.isBlank() || !channel.matches(channelRegex)){
