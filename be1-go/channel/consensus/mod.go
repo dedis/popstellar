@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
-	"popstellar/channel/register"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -15,7 +15,6 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
-	"reflect"
 	"strconv"
 	"sync"
 	"time"
@@ -48,7 +47,7 @@ type Channel struct {
 
 	log zerolog.Logger
 
-	register register.MessageRegistry
+	registry registry.MessageRegistry
 
 	consensusInstances map[string]*ConsensusInstance
 	messageStates      map[string]*MessageState
@@ -108,22 +107,29 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 		messageStates:      make(map[string]*MessageState),
 	}
 
-	newChannel.register = newChannel.NewConsensusRegistry()
+	newChannel.registry = newChannel.NewConsensusRegistry()
 
 	return newChannel
 }
 
 // NewConsensusRegistry creates a new registry for the consensus channel
-func (c *Channel) NewConsensusRegistry() register.MessageRegistry {
-	registry := register.NewMessageRegistry()
+func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
 
-	registry.Register("elect", c.processConsensusElect, messagedata.ConsensusElect{})
-	registry.Register("elect-accept", c.processConsensusElectAccept, messagedata.ConsensusElectAccept{})
-	registry.Register("prepare", c.processConsensusPrepare, messagedata.ConsensusPrepare{})
-	registry.Register("promise", c.processConsensusPromise, messagedata.ConsensusPromise{})
-	registry.Register("propose", c.processConsensusPropose, messagedata.ConsensusPropose{})
-	registry.Register("accept", c.processConsensusAccept, messagedata.ConsensusAccept{})
-	registry.Register("learn", c.processConsensusLearn, messagedata.ConsensusLearn{})
+	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionElect,
+		c.processConsensusElect, messagedata.ConsensusElect{})
+	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionElectAccept,
+		c.processConsensusElectAccept, messagedata.ConsensusElectAccept{})
+	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionPrepare,
+		c.processConsensusPrepare, messagedata.ConsensusPrepare{})
+	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionPromise,
+		c.processConsensusPromise, messagedata.ConsensusPromise{})
+	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionPropose,
+		c.processConsensusPropose, messagedata.ConsensusPropose{})
+	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionAccept,
+		c.processConsensusAccept, messagedata.ConsensusAccept{})
+	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionLearn,
+		c.processConsensusLearn, messagedata.ConsensusLearn{})
 
 	return registry
 }
@@ -214,13 +220,7 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 		return xerrors.Errorf("failed to get object or action: %v", err)
 	}
 
-	switch object {
-	case messagedata.ConsensusObject:
-		err = c.processConsensusObject(action, msg)
-	default:
-		return answer.NewInvalidObjectError(object)
-	}
-
+	err = c.registry.Process(object+"#"+action, msg)
 	if err != nil {
 		return xerrors.Errorf("failed to process %q object: %w", object, err)
 	}
@@ -255,29 +255,6 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
 		return answer.NewError(-3, "message already exists")
-	}
-
-	return nil
-}
-
-// processConsensusObject processes a Consensus Object.
-func (c *Channel) processConsensusObject(action string, msg message.Message) error {
-
-	data, found := c.register.Registry[action]
-	if !found {
-		return xerrors.Errorf("action '%s' not found", action)
-	}
-
-	concreteType := reflect.New(reflect.ValueOf(data.ConcreteType).Type()).Interface()
-
-	err := msg.UnmarshalData(&concreteType)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal data: %v", err)
-	}
-
-	err = data.Callback(msg, concreteType)
-	if err != nil {
-		return xerrors.Errorf("failed to process action '%s': %v", action, err)
 	}
 
 	return nil
