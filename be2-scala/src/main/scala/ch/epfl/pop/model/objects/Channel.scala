@@ -52,6 +52,9 @@ object Channel {
   final val rootChannelPrefix: String = s"${SEPARATOR}root${SEPARATOR}"
   private final def channelRegex: String = "^/root(/[^/]+)*$"
 
+  final val SOCIAL_MEDIA_POSTS_PREFIX: String = s"${SEPARATOR}posts"
+  final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social"
+
   def apply(channel: String): Channel = {
     if(channel.isBlank() || !channel.matches(channelRegex)){
         throw new IllegalArgumentException("The channel name is invalid")
