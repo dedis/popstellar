@@ -1,8 +1,8 @@
 @env=android,web
 Feature: Create LAO
 
-  Background: Driver setup
-    * def page_object = 'classpath:fe/utils/<env>.feature'
+  Background: Driver basic setup
+    * def page_object = 'classpath:fe/utils/<env>.feature@name=basic_setup'
     * replace page_object.env = karate.env
     * call read(page_object)
 

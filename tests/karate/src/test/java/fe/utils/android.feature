@@ -8,12 +8,6 @@ Feature: android page object
     * capabilities.app = karate.toAbsolutePath('file:' + capabilities.app)
     * def driverOptions = { webDriverSession: { desiredCapabilities : "#(capabilities)" } }
 
-    # Create and import mock backend
-    * call read('classpath:fe/net/mockbackend.feature')
-    * def backendURL = 'ws://10.0.2.2:' + backend.getPort()
-    # Import message filters
-    * call read('classpath:common/net/filters.feature')
-
     # ================= Page Object Start ====================
 
     # Tab buttons
@@ -26,8 +20,16 @@ Feature: android page object
     * def tab_launch_lao_name_selector = '#com.github.dedis.popstellar:id/entry_box_launch'
     * def tab_launch_create_lao_selector = '#com.github.dedis.popstellar:id/button_launch'
 
+  @name=basic_setup
     Scenario: Setup connection to the backend and complete on the home page
       Given driver driverOptions
+
+      # Create and import mock backend
+    * call read('classpath:fe/net/mockbackend.feature')
+    * def backendURL = 'ws://10.0.2.2:' + backend.getPort()
+      # Import message filters
+    * call read('classpath:common/net/filters.feature')
+
       # As the settings tab does not have an id, this is how we click on it.
       # If this breaks, use this code to log the page hierarchy :
       # karate.log(driver.getHttp().path("source").get().value)
