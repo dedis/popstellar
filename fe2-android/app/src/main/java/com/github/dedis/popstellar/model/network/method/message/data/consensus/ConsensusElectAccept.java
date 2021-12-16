@@ -16,7 +16,7 @@ public final class ConsensusElectAccept extends Data {
   private final boolean accept;
 
   /**
-   * Constructor for a data Elect-Accept
+   * Constructor for a data Elect_Accept
    *
    * @param instanceId unique id of the consensus instance
    * @param messageId message id of the Elect message
