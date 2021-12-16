@@ -12,7 +12,7 @@
    philosophy/ADN (format, pattern, organization, etc..). Notably: how errors
    are handled, how the code is spaced (use of newlines!), how the code is
    commented (80 chars!), structured, etc.. One shouldn't be able to
-   differentiate between your code and the existing one. If you have a doubts
+   differentiate between your code and the existing one. If you have any doubt
    about something just have a look around the existing code to find an example.
 
 2. You just opened a PR ? Good. Make a review of your PR before requesting for a
