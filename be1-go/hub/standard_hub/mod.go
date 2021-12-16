@@ -5,11 +5,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
@@ -27,6 +22,12 @@ import (
 	"popstellar/validation"
 	"strings"
 	"sync"
+
+	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -139,6 +140,16 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 	return rpcMessage
 }
 
+func (q *queries) getNextID() int {
+	q.Lock()
+	defer q.Unlock()
+
+	nextID := q.nextID
+	q.nextID++
+
+	return nextID
+}
+
 // NewHub returns a new Hub.
 func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
 	hubType hub.HubType) (*Hub, error) {
@@ -241,6 +252,34 @@ func (h *Hub) NotifyNewServer(socket socket.Socket) error {
 	h.serverSockets.Upsert(socket)
 	err := h.catchupToServer(socket, rootChannel)
 	return err
+}
+
+// GetServerNumber returns the number of servers known by this one
+func (h *Hub) GetServerNumber() int {
+	// serverSockets + 1 as the server also know itself
+	return h.serverSockets.Len() + 1
+}
+
+// SendAndHandleMessage sends a publish message to all other known servers and
+// handle it
+func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
+	byteMsg, err := json.Marshal(publishMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal publish message: %v", err)
+	}
+
+	h.log.Info().Str("msg", string(byteMsg)).Msg("sending new message")
+
+	h.serverSockets.SendToAll(byteMsg)
+
+	go func() {
+		_, err = h.handlePublish(nil, byteMsg)
+		if err != nil {
+			h.log.Err(err).Msgf("Failed to handle self-produced message")
+		}
+	}()
+
+	return nil
 }
 
 // catchupToServer sends a catchup query to another server
@@ -532,6 +571,11 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 		h.log.Info().Msgf("catching up on channel %v", channelID)
 		h.catchupToServer(sock, channelID)
 	}
+}
+
+// SetMessageID sets the id of a publish message before sending it
+func (h *Hub) SetMessageID(publish *method.Publish) {
+	publish.ID = h.queries.getNextID()
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {

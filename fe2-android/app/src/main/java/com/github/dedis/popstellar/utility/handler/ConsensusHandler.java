@@ -15,9 +15,7 @@ import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
 import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,6 +52,12 @@ public final class ConsensusHandler {
         handleConsensusElectAccept(
             laoRepository, channel, (ConsensusElectAccept) data, messageId, senderPk);
         break;
+      case PREPARE:
+      case PROMISE:
+      case PROPOSE:
+      case ACCEPT:
+        Log.w(TAG, "Received a consensus message only for backend with action=" + data.getAction());
+        break;
       case LEARN:
         handleConsensusLearn(laoRepository, channel, (ConsensusLearn) data);
         break;
@@ -83,6 +87,7 @@ public final class ConsensusHandler {
     consensus.setNodes(nodes);
 
     lao.updateConsensus(consensus);
+    laoRepository.updateNodes(lao.getChannel());
   }
 
   public static void handleConsensusElectAccept(
@@ -105,18 +110,8 @@ public final class ConsensusHandler {
       consensus.putPositiveAcceptorResponse(senderPk, messageId);
     }
 
-    // If we are the proposer and if it can be accepted => send a learn message (stage 1 only)
-    boolean isProposer = consensus.getProposer().equals(laoRepository.getPublicKey());
-    if (isProposer && consensus.canBeAccepted()) {
-      String instanceId = consensusElectAccept.getInstanceId();
-      String electMessageId = consensusElectAccept.getMessageId();
-      List<String> acceptors = new ArrayList<>(consensus.getAcceptorsToMessageId().values());
-
-      ConsensusLearn learn = new ConsensusLearn(instanceId, electMessageId, acceptors);
-      laoRepository.sendMessageGeneral(channel, learn);
-    }
-
     lao.updateConsensus(consensus);
+    laoRepository.updateNodes(lao.getChannel());
   }
 
   public static void handleConsensusLearn(
@@ -132,7 +127,8 @@ public final class ConsensusHandler {
 
     Consensus consensus = consensusOpt.get();
 
-    consensus.setAccepted(true);
+    consensus.setAccepted(consensusLearn.getLearnValue().isDecision());
     lao.updateConsensus(consensus);
+    laoRepository.updateNodes(lao.getChannel());
   }
 }

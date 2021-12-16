@@ -6,8 +6,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ConsensusLearn defines a message data
-type ConsensusLearn struct {
+// ConsensusPromise defines a message data
+type ConsensusPromise struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
 	InstanceID string `json:"instance_id"`
@@ -16,17 +16,17 @@ type ConsensusLearn struct {
 	// CreatedAt is a Unix timestamp
 	CreatedAt int64 `json:"created_at"`
 
-	Value ValueLearn `json:"value"`
-
-	AcceptorSignatures []string `json:"acceptor-signatures"`
+	Value ValuePromise `json:"value"`
 }
 
-type ValueLearn struct {
-	Decision bool `json:"decision"`
+type ValuePromise struct {
+	AcceptedTry   int64 `json:"accepted_try"`
+	AcceptedValue bool  `json:"accepted_value"`
+	PromisedTry   int64 `json:"promised_try"`
 }
 
-// Verify verifies that the ConsensusLearn message is correct
-func (message ConsensusLearn) Verify() error {
+// Verify verifies that the ConsensusPromis message is correct
+func (message ConsensusPromise) Verify() error {
 	// verify that the instance id is base64URL encoded
 	if _, err := base64.URLEncoding.DecodeString(message.InstanceID); err != nil {
 		return xerrors.Errorf("instance id is %s, should be base64URL encoded", message.InstanceID)
@@ -42,11 +42,14 @@ func (message ConsensusLearn) Verify() error {
 		return xerrors.Errorf("created at is %d, should be minimum 0", message.CreatedAt)
 	}
 
-	// verify that the acceptors are base64URL encoded
-	for acceptor := range message.AcceptorSignatures {
-		if _, err := base64.URLEncoding.DecodeString(message.AcceptorSignatures[acceptor]); err != nil {
-			return xerrors.Errorf("acceptor id is %s, should be base64URL encoded", message.AcceptorSignatures[acceptor])
-		}
+	// verify that the accepted try is greater or equal than -1
+	if message.Value.AcceptedTry < -1 {
+		return xerrors.Errorf("accepted try is %d, should be minimum -1", message.Value.AcceptedTry)
+	}
+
+	// verify that the promised try is greater or equal than 1
+	if message.Value.PromisedTry < 1 {
+		return xerrors.Errorf("promised try is %d, should be minimum 1", message.Value.PromisedTry)
 	}
 
 	return nil

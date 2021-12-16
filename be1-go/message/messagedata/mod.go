@@ -11,9 +11,13 @@ import (
 
 const (
 	ConsensusObject            = "consensus"
+	ConsensusActionAccept      = "accept"
 	ConsensusActionElect       = "elect"
 	ConsensusActionElectAccept = "elect_accept"
-	ConsensusActionLearn       = "learn"
+	ConsensuisActionLearn      = "learn"
+	ConsensusActionPrepare     = "prepare"
+	ConsensusActionPromise     = "promise"
+	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"

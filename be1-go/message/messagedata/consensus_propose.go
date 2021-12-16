@@ -6,8 +6,8 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ConsensusLearn defines a message data
-type ConsensusLearn struct {
+// ConsensusPropose defines a message data
+type ConsensusPropose struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
 	InstanceID string `json:"instance_id"`
@@ -16,17 +16,18 @@ type ConsensusLearn struct {
 	// CreatedAt is a Unix timestamp
 	CreatedAt int64 `json:"created_at"`
 
-	Value ValueLearn `json:"value"`
+	Value ValuePropose `json:"value"`
 
 	AcceptorSignatures []string `json:"acceptor-signatures"`
 }
 
-type ValueLearn struct {
-	Decision bool `json:"decision"`
+type ValuePropose struct {
+	ProposedTry   int64 `json:"proposed_try"`
+	ProposedValue bool  `json:"proposed_value"`
 }
 
-// Verify verifies that the ConsensusLearn message is correct
-func (message ConsensusLearn) Verify() error {
+// Verify verifies that the ConsensusPropose message is correct
+func (message ConsensusPropose) Verify() error {
 	// verify that the instance id is base64URL encoded
 	if _, err := base64.URLEncoding.DecodeString(message.InstanceID); err != nil {
 		return xerrors.Errorf("instance id is %s, should be base64URL encoded", message.InstanceID)
@@ -40,6 +41,11 @@ func (message ConsensusLearn) Verify() error {
 	// verify that created at is positive
 	if message.CreatedAt < 0 {
 		return xerrors.Errorf("created at is %d, should be minimum 0", message.CreatedAt)
+	}
+
+	// verify that the proposed try is positive
+	if message.Value.ProposedTry < 0 {
+		return xerrors.Errorf("proposed try is %d, should be minimum 0", message.Value.ProposedTry)
 	}
 
 	// verify that the acceptors are base64URL encoded
