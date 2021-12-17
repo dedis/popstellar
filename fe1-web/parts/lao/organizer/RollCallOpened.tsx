@@ -13,7 +13,9 @@ import { Badge } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/core';
 import { requestCloseRollCall } from 'network';
-import { EventTags, Hash, PublicKey, Wallet } from 'model/objects';
+import {
+  EventTags, Hash, PublicKey, Wallet,
+} from 'model/objects';
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -37,6 +39,10 @@ const RollCallOpened = () => {
   const toast = useToast();
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
+
+  if (!lao) {
+    throw new Error('Impossible to open a Roll Call without being connected to an LAO');
+  }
 
   const handleError = (err: string) => {
     console.error(err);
@@ -62,7 +68,7 @@ const RollCallOpened = () => {
     );
 
     // Add the token of the organizer before closing the roll call
-    Wallet.generateToken(lao!!.id, new Hash(rollCallID)).then((token) => {
+    Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
       const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
       attendeesList.push(token.publicKey);
       requestCloseRollCall(updateId, attendeesList).then(() => {

@@ -9,14 +9,10 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { getCurrentPopTokenFromStore } from 'model/objects/wallet';
+import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
 import {
-  buildMessageData,
-  encodeMessageData,
-  isSignedWithToken,
-  MessageData,
+  buildMessageData, encodeMessageData, isSignedWithToken, MessageData,
 } from './data';
-import { getPublicationDetailAsync } from 'expo-cli/build/commands/utils/PublishUtils';
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -169,9 +165,6 @@ export class Message {
   // This method is only a temporary solution for the demo and should be removed once a better
   // solution is found
   private isElectionResultMessage():boolean {
-    if (this.data.decode().includes('"result":')) {
-      return true;
-    }
-    return false;
+    return this.data.decode().includes('"result":');
   }
 }
