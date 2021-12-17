@@ -51,6 +51,7 @@ object Channel {
   final val rootChannel: Channel = Channel(s"${SEPARATOR}root")
   final val rootChannelPrefix: String = s"${SEPARATOR}root${SEPARATOR}"
   private final def channelRegex: String = "^/root(/[^/]+)*$"
+  final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
 
   final val SOCIAL_MEDIA_POSTS_PREFIX: String = s"${SEPARATOR}posts"
   final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social"
