@@ -40,7 +40,7 @@ case object LaoHandler extends MessageHandler {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
         // we are using the lao id instead of the message_id at lao creation
-        val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
+        val channel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         //this prevents a write-through to an already existing LaoId
         val askCreate = (dbActor ? DbActor.CreateChannel(channel, ObjectType.LAO))
         Await.result(askCreate, duration) match {

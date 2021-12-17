@@ -13,7 +13,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
     final val messageEx: Message = MessageExample.MESSAGE
     final val messageLao: Message = MessageExample.MESSAGE_CREATELAO
     private final val laoId: String = "abcd"
-    private final val channelEx: Channel = Channel(Channel.rootChannelPrefix + laoId)
+    private final val channelEx: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId)
     private final val params: Params = new Params(channelEx)
     private final val paramsWithMessage: ParamsWithMessage = new ParamsWithMessage(channelEx, messageEx)
     private final val rpc: String = "rpc"

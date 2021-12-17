@@ -24,4 +24,15 @@ class ResultObjectSuite extends FunSuite with Matchers {
         obj.isIntResult should equal(true)
         obj2.isIntResult should equal (false)
     }
+
+    test("equals works"){
+        val obj: ResultObject = new ResultObject(1)
+        val obj2: ResultObject = new ResultObject(List.empty)
+        val obj3: ResultObject = new ResultObject(1)
+        val obj4: ResultObject = new ResultObject(List.empty)
+
+        obj.equals(obj3) should equal(true)
+        obj2.equals(obj4) should equal(true)
+        obj2.equals(obj) should equal (false)
+    }
 }
