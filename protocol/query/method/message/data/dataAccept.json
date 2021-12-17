@@ -27,7 +27,8 @@
             "type": "object",
             "properties": {
                 "accepted_try": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 },
                 "accepted_value": {
                     "type": "boolean"
