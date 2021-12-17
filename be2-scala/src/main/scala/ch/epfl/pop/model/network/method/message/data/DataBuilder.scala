@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, U
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
-import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddBroadcastChirp}
+import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddBroadcastChirp, DeleteChirp, DeleteBroadcastChirp}
 
 /*
  * Helps building MessageData instances
@@ -70,6 +70,8 @@ object DataBuilder {
   private def buildSocialMediaData(action: ActionType, payload: String): MessageData = action match {
     case ActionType.ADD => AddChirp.buildFromJson(payload)
     case ActionType.ADD_BROADCAST => AddBroadcastChirp.buildFromJson(payload)
+    case ActionType.DELETE => DeleteChirp.buildFromJson(payload)
+    case ActionType.DELETE_BROADCAST => DeleteBroadcastChirp.buildFromJson(payload)
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Social Media Data")
   }
 }

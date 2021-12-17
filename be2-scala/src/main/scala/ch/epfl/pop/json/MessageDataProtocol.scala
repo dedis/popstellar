@@ -232,6 +232,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp")
   implicit val addBroadcastChirpFormat: JsonFormat[AddBroadcastChirp] = jsonFormat[Hash, Channel, Timestamp, AddBroadcastChirp](AddBroadcastChirp.apply, "chirp_id", "channel", "timestamp")
+  implicit val deleteChirpFormat: JsonFormat[DeleteChirp] = jsonFormat[Hash, Timestamp, DeleteChirp](DeleteChirp.apply, "chirp_id", "timestamp")
+  implicit val deleteBroadcastChirpFormat: JsonFormat[DeleteBroadcastChirp] = jsonFormat[Hash, Channel, Timestamp, DeleteBroadcastChirp](DeleteBroadcastChirp.apply, "chirp_id", "channel", "timestamp")
 
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNELTYPE: String = "channelType"
