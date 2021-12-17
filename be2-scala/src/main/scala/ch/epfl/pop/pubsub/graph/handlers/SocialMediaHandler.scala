@@ -41,7 +41,7 @@ case object SocialMediaHandler extends MessageHandler {
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeSubChannel match {
           case(Some(lao_id)) => {
-            val broadcastChannel: Channel = Channel(Channel.rootChannelPrefix + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
+            val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
                 // we can't get the message_id as a Base64Data, it is a Hash
