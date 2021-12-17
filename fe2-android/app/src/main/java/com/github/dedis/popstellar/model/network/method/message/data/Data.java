@@ -11,6 +11,7 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PREPARE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROMISE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROPOSE;
@@ -34,6 +35,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPrepare;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
@@ -115,6 +117,7 @@ public abstract class Data {
     messagesMap.put(pair(CONSENSUS, PROPOSE), ConsensusPropose.class);
     messagesMap.put(pair(CONSENSUS, ACCEPT), ConsensusAccept.class);
     messagesMap.put(pair(CONSENSUS, LEARN), ConsensusLearn.class);
+    messagesMap.put(pair(CONSENSUS, FAILURE), ConsensusFailure.class);
 
     // Social Media
     messagesMap.put(pair(CHIRP, ADD), AddChirp.class);
