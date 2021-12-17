@@ -58,13 +58,7 @@ const SocialHome = () => {
     throw new Error('LAO is currently undefined, impossible to access to Social Media');
   }
 
-  // If the current user is the organizer, return his public key
-  const publicKeyString = getKeyPairState(getStore().getState()).keyPair?.publicKey;
-  if (publicKeyString && publicKeyString === lao.organizer.valueOf()) {
-    userPublicKey = new PublicKey(publicKeyString);
-  }
-
-  // Otherwise, get the pop token of the attendee using the last tokenized roll call
+  // Get the pop token of the user using the last tokenized roll call
   const rollCallId = lao.last_tokenized_roll_call_id;
   const eventSelect = makeEventGetter(lao.id, rollCallId);
   const rollCall: RollCall = useSelector(eventSelect) as RollCall;

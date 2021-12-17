@@ -1,7 +1,7 @@
 import {
   Base64UrlData,
   Channel,
-  Hash, PopToken,
+  Hash,
   PublicKey,
   Signature,
   WitnessSignature,
@@ -158,7 +158,7 @@ export class Message {
       sender: publicKey,
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-      witness_signatures: witnessSignatures ? [] : witnessSignatures,
+      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
     }));
   }
 
