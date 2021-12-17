@@ -1,5 +1,7 @@
 package common.net;
 
+import com.intuit.karate.Json;
+
 import java.util.function.Predicate;
 
 /**
@@ -24,6 +26,6 @@ public final class MessageFilters {
    * @return true if the message is accepted
    */
   public static Predicate<String> withMethod(String method) {
-    return msg -> msg.contains("\"method\":\"" + method + "\"");
+    return msg -> Json.of(msg).getOptional("method").map(method::equals).orElse(false);
   }
 }
