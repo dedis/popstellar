@@ -212,10 +212,10 @@ test("message data: consensus", () => {
 
     // Failure
     failure = require("../examples/messageData/consensus_failure/failure.json");
-    expect(paxos_failure).toBeValid(messageDataSchema)
+    expect(failure).toBeValid(messageDataSchema)
 
     failure = require("../examples/messageData/consensus_failure/wrong_failure_negative_created_at.json");
-    expect(paxos_failure).not.toBeValid(messageDataSchema)
+    expect(failure).not.toBeValid(messageDataSchema)
 })
 
 function printError(errors) {
