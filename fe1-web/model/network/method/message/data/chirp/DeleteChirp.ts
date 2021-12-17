@@ -32,7 +32,7 @@ export class DeleteChirp implements MessageData {
   }
 
   /**
-   * Creates an RemoveChirp object from a given object
+   * Creates a RemoveChirp object from a given object
    * @param obj
    */
   public static fromJson(obj: any): DeleteChirp {
