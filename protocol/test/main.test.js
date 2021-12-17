@@ -210,11 +210,11 @@ test("message data: consensus", () => {
     learn = require("../examples/messageData/consensus_learn/learn.json");
     expect(learn).toBeValid(messageDataSchema)
 
-    // Paxos Failure
-    paxos_failure = require("../examples/messageData/consensus_paxos_failure/paxos_failure.json");
+    // Failure
+    failure = require("../examples/messageData/consensus_failure/failure.json");
     expect(paxos_failure).toBeValid(messageDataSchema)
 
-    paxos_failure = require("../examples/messageData/consensus_paxos_failure/wrong_paxos_failure_negative_created_at.json");
+    failure = require("../examples/messageData/consensus_failure/wrong_failure_negative_created_at.json");
     expect(paxos_failure).not.toBeValid(messageDataSchema)
 })
 

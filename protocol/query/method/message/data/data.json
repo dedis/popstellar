@@ -71,7 +71,7 @@
             "$ref": "dataLearn.json"
         },
         {
-            "$ref": "dataPaxosFailure.json"
+            "$ref": "dataFailure.json"
         }
     ]
 }

@@ -1,14 +1,14 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPaxosFailure.json",
-    "description": "Match a PaxosFailure query",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataFailure.json",
+    "description": "Match a Failure query",
     "type": "object",
     "properties": {
         "object": {
             "const": "consensus"
         },
         "action": {
-            "const": "paxos_failure"
+            "const": "failure"
         },
         "instance_id": {
             "description": "Unique id of the consensus instance",
