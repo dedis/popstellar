@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPrepare;
@@ -64,7 +65,6 @@ public class ConsensusHandlerTest {
   private static final String LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION_TIME, LAO_NAME);
   private static final String LAO_CHANNEL = "/root/" + LAO_ID;
   private static final String CONSENSUS_CHANNEL = LAO_CHANNEL + "/consensus";
-  private static final Lao LAO = new Lao(LAO_CHANNEL);
 
   private static final String TYPE = "election";
   private static final String KEY_ID = "-t0xoQZa-ryiW18JnTjJHCsCNehFxuXOFOsfgKHHkj0=";
@@ -86,6 +86,7 @@ public class ConsensusHandlerTest {
   private MessageGeneral electMsg;
   private PublicKeySign signer;
   private String messageId;
+  private Lao lao;
 
   @Mock LAORemoteDataSource remoteDataSource;
   @Mock LAOLocalDataSource localDataSource;
@@ -108,7 +109,8 @@ public class ConsensusHandlerTest {
         new LAORepository(
             remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
-    laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
+    lao = new Lao(LAO_CHANNEL);
+    laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
     MessageGeneral createLaoMessage = getMsg(ORGANIZER, CREATE_LAO);
     MessageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
 
@@ -135,12 +137,35 @@ public class ConsensusHandlerTest {
     handleConsensusLearnTest();
   }
 
+  @Test
+  public void handleConsensusFailure() throws DataHandlingException {
+    // handle an elect from node2 then handle a failure for this elect
+    // the state of the node2 for this instanceId should be FAILED
+
+    ConsensusFailure failure = new ConsensusFailure(INSTANCE_ID, messageId, CREATION_TIME);
+    MessageGeneral failureMsg = getMsg(ORGANIZER, failure);
+
+    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
+    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failureMsg);
+
+    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
+    assertTrue(consensusOpt.isPresent());
+    Consensus consensus = consensusOpt.get();
+
+    assertTrue(consensus.isFailed());
+    Optional<ConsensusNode> node2Opt =
+        lao.getNodes().stream().filter(n -> n.getPublicKey().equals(NODE_2_KEY)).findAny();
+    assertTrue(node2Opt.isPresent());
+    assertEquals(ConsensusNode.State.FAILED, node2Opt.get().getState(INSTANCE_ID));
+  }
+
   // handle an elect from node2
-  // This should add an attempt from node2 to start a consensus (in this case for starting an election)
+  // This should add an attempt from node2 to start a consensus (in this case for starting an
+  // election)
   private void handleConsensusElectTest() throws DataHandlingException {
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
 
-    Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
+    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
     assertTrue(consensusOpt.isPresent());
     Consensus consensus = consensusOpt.get();
 
@@ -154,11 +179,11 @@ public class ConsensusHandlerTest {
     assertTrue(consensus.getAcceptorsToMessageId().isEmpty());
     assertEquals(Sets.newSet(ORGANIZER, NODE_2_KEY, NODE_3_KEY), consensus.getNodes());
 
-    Map<String, Consensus> messageIdToConsensus = LAO.getMessageIdToConsensus();
+    Map<String, Consensus> messageIdToConsensus = lao.getMessageIdToConsensus();
     assertEquals(1, messageIdToConsensus.size());
     assertEquals(consensus, messageIdToConsensus.get(consensus.getMessageId()));
 
-    List<ConsensusNode> nodes = LAO.getNodes();
+    List<ConsensusNode> nodes = lao.getNodes();
     assertEquals(3, nodes.size());
     assertEquals(Optional.empty(), nodes.get(0).getLastConsensus(INSTANCE_ID));
     assertEquals(Optional.empty(), nodes.get(2).getLastConsensus(INSTANCE_ID));
@@ -172,7 +197,7 @@ public class ConsensusHandlerTest {
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptMsg);
 
-    Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
+    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
     assertTrue(consensusOpt.isPresent());
     Consensus consensus = consensusOpt.get();
 
@@ -181,7 +206,7 @@ public class ConsensusHandlerTest {
     assertEquals(electAcceptMsg.getMessageId(), acceptorsToMessageId.get(NODE_3_KEY));
 
     // only the node3 has accepted the elect of node2
-    List<ConsensusNode> nodes = LAO.getNodes();
+    List<ConsensusNode> nodes = lao.getNodes();
     ConsensusNode organizerNode =
         nodes.stream().filter(n -> n.getPublicKey().equals(ORGANIZER)).findAny().get();
     assertTrue(organizerNode.getAcceptedMessageIds().isEmpty());
@@ -203,7 +228,7 @@ public class ConsensusHandlerTest {
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learnMsg);
 
-    Optional<Consensus> consensusOpt = LAO.getConsensus(electMsg.getMessageId());
+    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
     assertTrue(consensusOpt.isPresent());
     Consensus consensus = consensusOpt.get();
     assertTrue(consensus.isAccepted());
@@ -219,8 +244,11 @@ public class ConsensusHandlerTest {
     ConsensusLearn learnInvalid =
         new ConsensusLearn(
             INSTANCE_ID, INVALID_MSG_ID, CREATION_TIME, true, Collections.emptyList());
+    ConsensusFailure failureInvalid =
+        new ConsensusFailure(INSTANCE_ID, INVALID_MSG_ID, CREATION_TIME);
     MessageGeneral electAcceptInvalidMsg = getMsg(ORGANIZER, electAcceptInvalid);
     MessageGeneral learnInvalidMsg = getMsg(ORGANIZER, learnInvalid);
+    MessageGeneral failureMsg = getMsg(ORGANIZER, failureInvalid);
 
     assertThrows(
         InvalidMessageIdException.class,
@@ -229,6 +257,9 @@ public class ConsensusHandlerTest {
     assertThrows(
         InvalidMessageIdException.class,
         () -> MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learnInvalidMsg));
+    assertThrows(
+        InvalidMessageIdException.class,
+        () -> MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failureMsg));
   }
 
   @Test
