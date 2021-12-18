@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
 
 import java.time.Instant;
@@ -70,7 +71,7 @@ public class SocialMediaSendFragment extends Fragment {
     // Doesn't send chirp if you haven't chosen a lao when connecting from home activity
     if (mSocialMediaViewModel.getLaoId().getValue() == null) {
       Toast.makeText(
-              requireContext().getApplicationContext(), "You are not in a lao", Toast.LENGTH_LONG)
+              requireContext().getApplicationContext(), R.string.toast_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
       mSocialMediaViewModel.sendChirp(

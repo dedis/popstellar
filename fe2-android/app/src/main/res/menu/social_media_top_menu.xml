@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto">
   <item
-    android:id="@+id/subscription_icon"
-    android:title="@string/subscription"
-    android:icon="@drawable/ic_social_media_subscribe_foreground"
-    app:showAsAction="ifRoom" />
-  <item
     android:id="@+id/laos_list"
     android:title="@string/laos_list"
     android:icon="@drawable/ic_social_media_laos_foreground"

@@ -307,7 +307,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSocialMediaActivity() {
     if (mViewModel.getLAOs().getValue() == null) {
-      Toast.makeText(getApplicationContext(), "You are not in a lao", Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(), R.string.toast_no_lao, Toast.LENGTH_LONG).show();
     } else {
       Intent intent = new Intent(this, SocialMediaActivity.class);
       ArrayList<Lao> laos =

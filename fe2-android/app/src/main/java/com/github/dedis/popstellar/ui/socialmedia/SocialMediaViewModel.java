@@ -42,6 +42,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   private static final String PUBLISH_MESSAGE = "sending publish message";
+  private static final String ROOT = "/root/";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
   /*
@@ -174,9 +175,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   /** Subscribe to the general channel: /root/<lao_id>/social/chirps */
   public void subscribeToGeneralChannel(String laoId) {
-    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/chirps");
+    Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/chirps");
 
-    String channel = "/root/" + laoId + "/social/chirps";
+    String channel = ROOT + laoId + "/social/chirps";
 
     Disposable disposable =
         mLaoRepository
@@ -200,12 +201,12 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   /** Subscribe to a channel: /root/<lao_id>/social/<sender> */
   public void subscribeToChannel(String laoId) {
-    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/<sender>");
+    Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/<sender>");
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      String channel = "/root/" + laoId + "/social/" + publicKey;
+      String channel = ROOT + laoId + "/social/" + publicKey;
 
       Disposable disposable =
           mLaoRepository
@@ -242,7 +243,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public void sendChirp(String text, @Nullable String parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
-    String laoChannel = "/root/" + getLaoId().getValue();
+    String laoChannel = ROOT + getLaoId().getValue();
     Lao lao = mLaoRepository.getLaoByChannel(laoChannel);
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
