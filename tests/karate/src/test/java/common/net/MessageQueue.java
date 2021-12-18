@@ -106,19 +106,24 @@ public class MessageQueue implements MessageBuffer {
     queue.clear();
   }
 
-  private synchronized String retrieveWithTimeout(Supplier<String> dataSupplier, long timeout) {
+  private synchronized String retrieveWithTimeout(Supplier<String> retriever, long timeout) {
     long start = System.currentTimeMillis();
-    String date = dataSupplier.get();
+    String msg = retriever.get();
 
     try {
-      while (date == null && System.currentTimeMillis() - start < timeout) {
-        wait(timeout);
-        date = dataSupplier.get();
+      long timeSinceStart = 0;
+      while (msg == null && timeSinceStart < timeout) {
+        // Wait for the remaining time before the timout.
+        // If a notify signal is received, the wait is ended prematurely.
+        wait(timeout - timeSinceStart);
+        msg = retriever.get();
+
+        timeSinceStart = System.currentTimeMillis() - start;
       }
     } catch (InterruptedException e) {
       return null;
     }
 
-    return date;
+    return msg;
   }
 }
