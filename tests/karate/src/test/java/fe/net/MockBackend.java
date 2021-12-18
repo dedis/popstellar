@@ -10,19 +10,15 @@ import karate.io.netty.channel.ChannelHandlerContext;
 import karate.io.netty.channel.SimpleChannelInboundHandler;
 import karate.io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 
-import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
-/**
- * Defines a mock backend server that is fully customisable.
- */
-public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> implements MessageBuffer {
+/** Defines a mock backend server that is fully customisable. */
+public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame> {
 
   private final Logger logger = new Logger(getClass().getSimpleName());
 
-  private final MessageQueue queue = new MessageQueue();
+  private final MessageQueue queue;
   private final WebSocketServerBase server;
   // Will be set to true once the connection is established
   private final CompletableFuture<Boolean> connected = new CompletableFuture<>();
@@ -32,7 +28,8 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   private Function<String, String> replyProducer = ReplyMethods.ALWAYS_VALID;
   private Channel channel;
 
-  public MockBackend(int port) {
+  public MockBackend(MessageQueue queue, int port) {
+    this.queue = queue;
     server = new WebSocketServerBase(port, "/", this);
     logger.info("Mock Backend started");
   }
@@ -98,70 +95,7 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     channel.eventLoop().submit(() -> channel.writeAndFlush(new TextWebSocketFrame(text)));
   }
 
-  // ========= Delegate functions of MessageBuffer =======
-
-  @Override
-  public String peek() {
-    return queue.peek();
-  }
-
-  @Override
-  public String peek(final Predicate<String> filter) {
-    return queue.peek(filter);
-  }
-
-  @Override
-  public List<String> peekAll() {
-    return queue.peekAll();
-  }
-
-  @Override
-  public List<String> peekAll(final Predicate<String> filter) {
-    return queue.peekAll(filter);
-  }
-
-  @Override
-  public List<String> peekN(final int firstN) {
-    return queue.peekN(firstN);
-  }
-
-  @Override
-  public String take() {
-    return queue.take();
-  }
-
-  @Override
-  public String take(final Predicate<String> filter) {
-    return queue.take(filter);
-  }
-
-  @Override
-  public List<String> takeAll() {
-    return queue.takeAll();
-  }
-
-  @Override
-  public List<String> takeAll(final Predicate<String> filter) {
-    return queue.takeAll(filter);
-  }
-
-  @Override
-  public List<String> takeN(final int limit) {
-    return queue.takeN(limit);
-  }
-
-  @Override
-  public String takeTimeout(final long timeout) {
-    return queue.takeTimeout(timeout);
-  }
-
-  @Override
-  public String takeTimeout(final Predicate<String> filter, final long timeout) {
-    return queue.takeTimeout(filter, timeout);
-  }
-
-  @Override
-  public void clear() {
-    queue.clear();
+  public MessageBuffer getBuffer() {
+    return queue;
   }
 }

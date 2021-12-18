@@ -12,9 +12,9 @@ Feature: Create LAO
     And click(tab_launch_create_lao_selector)
 
     # Retrieving sent messages
-    * json create_lao = backend.takeTimeout(timeout)
-    * json subscribe = backend.takeTimeout(withMethod('subscribe'), timeout)
-    * json catchup = backend.takeTimeout(withMethod('catchup'), timeout)
+    * json create_lao = buffer.takeTimeout(timeout)
+    * json subscribe = buffer.takeTimeout(withMethod('subscribe'), timeout)
+    * json catchup = buffer.takeTimeout(withMethod('catchup'), timeout)
 
     # TODO Test consensus subscription when it is implemented on both fe
     # * json subscribe_consensus = backend.takeTimeout(withMethod('subscribe'), timeout)
