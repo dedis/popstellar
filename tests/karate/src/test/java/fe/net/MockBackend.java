@@ -36,7 +36,8 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
 
   /**
    * Sets the reply producer of the backend.
-   * It can be set to null if no reply should be sent back
+   *
+   * <p>It can be set to null if no reply should be sent back
    *
    * @param replyProducer to set
    */
@@ -52,13 +53,13 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   }
 
   @Override
-  protected void channelRead0(ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
+  protected void channelRead0(
+      ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
     logger.info("message received : {}", frame.text());
     queue.onNewMsg(frame.text());
 
     // Send back the reply
-    if (replyProducer != null)
-      send(replyProducer.apply(frame.text()));
+    if (replyProducer != null) send(replyProducer.apply(frame.text()));
   }
 
   public int getPort() {

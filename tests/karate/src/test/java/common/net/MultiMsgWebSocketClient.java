@@ -27,8 +27,7 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     logger.trace("entered listen wait state");
     String msg = queue.take();
 
-    if (msg == null)
-      logger.error("listen timed out");
+    if (msg == null) logger.error("listen timed out");
 
     return msg;
   }

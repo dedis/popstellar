@@ -61,7 +61,7 @@ public class MessageQueue implements MessageBuffer {
 
   @Override
   public synchronized List<String> takeAll() {
-    List<String> messages =  new ArrayList<>(queue);
+    List<String> messages = new ArrayList<>(queue);
     queue.clear();
     return messages;
   }
@@ -85,8 +85,7 @@ public class MessageQueue implements MessageBuffer {
   @Override
   public synchronized List<String> takeN(int limit) {
     List<String> messages = new LinkedList<>();
-    for (int i = 0; i < limit && !queue.isEmpty(); i++)
-      messages.add(queue.remove(0));
+    for (int i = 0; i < limit && !queue.isEmpty(); i++) messages.add(queue.remove(0));
 
     return messages;
   }

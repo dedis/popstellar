@@ -6,18 +6,17 @@ import java.util.function.Predicate;
 
 /**
  * This class contains useful message filters that can be used when using :
- *  - {@link MessageBuffer#peek(Predicate)}
- *  - {@link MessageBuffer#peekAll(Predicate)}
- *  - {@link MessageBuffer#take(Predicate)}
- *  - {@link MessageBuffer#takeAll(Predicate)}
- *  - {@link MessageBuffer#takeTimeout(Predicate, long)}
+ * <li>{@link MessageBuffer#peek(Predicate)}
+ * <li>{@link MessageBuffer#peekAll(Predicate)}
+ * <li>{@link MessageBuffer#take(Predicate)}
+ * <li>{@link MessageBuffer#takeAll(Predicate)}
+ * <li>{@link MessageBuffer#takeTimeout(Predicate, long)}
  */
 public final class MessageFilters {
 
   private MessageFilters() {
     // Static lass, this should never be called
   }
-
 
   /**
    * Only accept the messages with the given method
