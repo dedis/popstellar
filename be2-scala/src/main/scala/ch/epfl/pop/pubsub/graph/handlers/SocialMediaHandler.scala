@@ -99,7 +99,7 @@ case object SocialMediaHandler extends MessageHandler {
               case Some(params) => {
                 // we can't get the message_id as a Base64Data, it is a Hash
                 val chirp_id: Hash = params.message_id
-                val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
+                val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
                 val deleteBroadcastChirp: DeleteBroadcastChirp = DeleteBroadcastChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(deleteBroadcastChirp.toJson.toString)
                 
