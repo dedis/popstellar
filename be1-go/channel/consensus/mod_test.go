@@ -767,8 +767,8 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	// Add a new consensus instance to the channel
 	consensusChannel.createConsensusInstance(consensusInstance)
-	consensusChannel.consensusInstances[consensusInstance].proposed_try = 4
-	consensusChannel.consensusInstances[consensusInstance].proposed_value = true
+	consensusChannel.consensusInstances[consensusInstance].proposedTry = 4
+	consensusChannel.consensusInstances[consensusInstance].proposedValue = true
 
 	// Create a consensus propose message
 	file = filepath.Join(protocolRelativePath,
@@ -806,7 +806,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusChannel.messageStates[messageID].currentPhase = AcceptPhase
 
 	// Update the proposed value to true
-	consensusChannel.consensusInstances[consensusInstance].proposed_value = true
+	consensusChannel.consensusInstances[consensusInstance].proposedValue = true
 
 	// Create the broadcast message to check that it is sent
 	fileBroadcast := filepath.Join(protocolRelativePath,
