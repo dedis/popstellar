@@ -1,0 +1,48 @@
+package com.github.dedis.popstellar.model.objects.security;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
+import com.github.dedis.popstellar.model.objects.security.privatekey.ProtectedPrivateKey;
+import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.PublicKeySign;
+import com.google.crypto.tink.subtle.Ed25519Sign;
+
+import net.i2p.crypto.eddsa.Utils;
+
+import org.junit.Test;
+
+import java.security.GeneralSecurityException;
+
+public class PrivateKeyTest {
+
+  private static final Base64URLData DATA = new Base64URLData("REFUQQ==");
+  private static final byte[] VALID_PRIVATE_KEY =
+      Utils.hexToBytes("3b28b4ab2fe355a13d7b24f90816ff0676f7978bf462fc84f1d5d948b119ec66");
+
+  @Test
+  public void signGivesSameValueForBothKeyType() throws GeneralSecurityException {
+    PrivateKey key1 = new PlainPrivateKey(VALID_PRIVATE_KEY);
+
+    KeysetHandle keyset = mock(KeysetHandle.class);
+    when(keyset.getPrimitive(PublicKeySign.class)).thenReturn(new Ed25519Sign(VALID_PRIVATE_KEY));
+    PrivateKey key2 = new ProtectedPrivateKey(keyset);
+
+    Signature sign1 = key1.sign(DATA);
+    Signature sign2 = key2.sign(DATA);
+
+    assertEquals(sign1, sign2);
+  }
+
+  @Test
+  public void badKeyFailsAtConstruction() throws GeneralSecurityException {
+    assertThrows(IllegalArgumentException.class, () -> new PlainPrivateKey(new byte[] {0, 1, 2}));
+
+    KeysetHandle keyset = mock(KeysetHandle.class);
+    when(keyset.getPrimitive(PublicKeySign.class)).thenThrow(new GeneralSecurityException());
+    assertThrows(IllegalArgumentException.class, () -> new ProtectedPrivateKey(keyset));
+  }
+}
