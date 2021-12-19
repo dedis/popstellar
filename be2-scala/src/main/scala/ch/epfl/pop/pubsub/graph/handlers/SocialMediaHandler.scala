@@ -37,6 +37,8 @@ case object SocialMediaHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
+  private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
+
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
     val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
     Await.result(askLaoData, duration) match {
@@ -47,7 +49,7 @@ case object SocialMediaHandler extends MessageHandler {
         val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
           case DbActor.DbActorWriteAck() => Left(rpcMessage)
           case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
         }
         Await.result(ask, duration)
       }
@@ -83,7 +85,7 @@ case object SocialMediaHandler extends MessageHandler {
       case error@Right(_) =>
         error
       case _ =>
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
     }  
   }
 
@@ -114,7 +116,7 @@ case object SocialMediaHandler extends MessageHandler {
       case error@Right(_) =>
         error
       case _ =>
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
     }
   }
 
