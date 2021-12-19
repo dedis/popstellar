@@ -203,12 +203,19 @@ test("message data: consensus", () => {
     accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
     expect(accept).not.toBeValid(messageDataSchema)
 
-    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
+    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_accepted_try.json");
     expect(accept).not.toBeValid(messageDataSchema)
 
     // Learn
     learn = require("../examples/messageData/consensus_learn/learn.json");
     expect(learn).toBeValid(messageDataSchema)
+
+    // Failure
+    failure = require("../examples/messageData/consensus_failure/failure.json");
+    expect(failure).toBeValid(messageDataSchema)
+
+    failure = require("../examples/messageData/consensus_failure/wrong_failure_negative_created_at.json");
+    expect(failure).not.toBeValid(messageDataSchema)
 })
 
 function printError(errors) {

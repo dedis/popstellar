@@ -15,6 +15,13 @@ public final class ConsensusElectAccept extends Data {
 
   private final boolean accept;
 
+  /**
+   * Constructor for a data Elect-Accept
+   *
+   * @param instanceId unique id of the consensus instance
+   * @param messageId message id of the Elect message
+   * @param accept true if the node agrees with the proposal
+   */
   public ConsensusElectAccept(String instanceId, String messageId, boolean accept) {
     this.instanceId = instanceId;
     this.messageId = messageId;

@@ -39,6 +39,7 @@ const message_data_promise_schema = require("../query/method/message/data/dataPr
 const message_data_propose_schema = require("../query/method/message/data/dataPropose.json")
 const message_data_accept_schema = require("../query/method/message/data/dataAccept.json")
 const message_data_learn_schema = require("../query/method/message/data/dataLearn.json")
+const message_data_failure_schema = require("../query/method/message/data/dataFailure.json")
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 
@@ -85,7 +86,8 @@ ajv.addSchema([
     message_data_promise_schema,
     message_data_propose_schema,
     message_data_accept_schema,
-    message_data_learn_schema
+    message_data_learn_schema,
+    message_data_failure_schema
 ]);
 
 module.exports = ajv;

@@ -1,14 +1,14 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAccept.json",
-    "description": "Match an accept query",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataFailure.json",
+    "description": "Match a Failure query",
     "type": "object",
     "properties": {
         "object": {
             "const": "consensus"
         },
         "action": {
-            "const": "accept"
+            "const": "failure"
         },
         "instance_id": {
             "description": "Unique id of the consensus instance",
@@ -22,32 +22,13 @@
             "description": "[Timestamp] creation time",
             "type": "integer",
             "minimum": 0
-        },
-        "value": {
-            "type": "object",
-            "properties": {
-                "accepted_try": {
-                    "type": "integer",
-                    "minimum": 0
-                },
-                "accepted_value": {
-                    "type": "boolean"
-                }
-            },
-            "additionalProperties": false,
-            "required": [
-                "accepted_try",
-                "accepted_value"
-            ]
         }
     },
     "additionalProperties": false,
     "required": [
         "object",
-        "action",
         "instance_id",
         "message_id",
-        "created_at",
-        "value"
+        "created_at"
     ]
 }

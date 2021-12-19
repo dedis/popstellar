@@ -5,10 +5,10 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
-public final class ConsensusLearn extends Data {
+public final class ConsensusPropose extends Data {
 
   @SerializedName("instance_id")
   private final String instanceId;
@@ -20,31 +20,43 @@ public final class ConsensusLearn extends Data {
   private final long creation;
 
   @SerializedName("value")
-  private final LearnValue learnValue;
+  private final ProposeValue proposeValue;
 
   @SerializedName("acceptor-signatures")
   private final List<String> acceptorSignatures;
 
   /**
-   * Constructor for a data Learn
+   * Constructor for a data Propose
    *
    * @param instanceId unique id of the consensus instance
    * @param messageId message id of the Elect message
    * @param creation UNIX timestamp in UTC
-   * @param decision true if the consensus was successful
-   * @param acceptorSignatures signatures of all the received Accept messages
+   * @param proposedTry proposed try number used in Paxos
+   * @param proposedValue proposed value
+   * @param acceptorSignatures signatures of all received Promise messages
    */
-  public ConsensusLearn(
+  public ConsensusPropose(
       String instanceId,
       String messageId,
       long creation,
-      boolean decision,
+      int proposedTry,
+      boolean proposedValue,
       List<String> acceptorSignatures) {
     this.instanceId = instanceId;
     this.messageId = messageId;
     this.creation = creation;
-    this.learnValue = new LearnValue(decision);
-    this.acceptorSignatures = Collections.unmodifiableList(acceptorSignatures);
+    this.proposeValue = new ProposeValue(proposedTry, proposedValue);
+    this.acceptorSignatures = acceptorSignatures;
+  }
+
+  @Override
+  public String getObject() {
+    return Objects.CONSENSUS.getObject();
+  }
+
+  @Override
+  public String getAction() {
+    return Action.PROPOSE.getAction();
   }
 
   public String getInstanceId() {
@@ -55,31 +67,16 @@ public final class ConsensusLearn extends Data {
     return messageId;
   }
 
-  public List<String> getAcceptorSignatures() {
-    return acceptorSignatures;
-  }
-
   public long getCreation() {
     return creation;
   }
 
-  public LearnValue getLearnValue() {
-    return learnValue;
+  public ProposeValue getProposeValue() {
+    return proposeValue;
   }
 
-  @Override
-  public String getObject() {
-    return Objects.CONSENSUS.getObject();
-  }
-
-  @Override
-  public String getAction() {
-    return Action.LEARN.getAction();
-  }
-
-  @Override
-  public int hashCode() {
-    return java.util.Objects.hash(instanceId, messageId, creation, learnValue, acceptorSignatures);
+  public List<String> getAcceptorSignatures() {
+    return acceptorSignatures;
   }
 
   @Override
@@ -90,19 +87,29 @@ public final class ConsensusLearn extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ConsensusLearn that = (ConsensusLearn) o;
+    ConsensusPropose that = (ConsensusPropose) o;
 
     return creation == that.creation
         && java.util.Objects.equals(instanceId, that.instanceId)
         && java.util.Objects.equals(messageId, that.messageId)
-        && java.util.Objects.equals(learnValue, that.learnValue)
+        && java.util.Objects.equals(proposeValue, that.proposeValue)
         && java.util.Objects.equals(acceptorSignatures, that.acceptorSignatures);
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(
+        instanceId, messageId, creation, proposeValue, acceptorSignatures);
   }
 
   @Override
   public String toString() {
     return String.format(
-        "ConsensusLearn{instance_id='%s', message_id='%s', acceptor-signatures=%s}",
-        instanceId, messageId, acceptorSignatures);
+        "ConsensusPropose{instance_id='%s', message_id='%s', created_at=%s, value=%s, acceptor-signatures=%s}",
+        instanceId,
+        messageId,
+        creation,
+        proposeValue,
+        Arrays.toString(acceptorSignatures.toArray()));
   }
 }
