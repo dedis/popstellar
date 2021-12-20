@@ -35,7 +35,7 @@ const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
-  const [attendees, updateAttendees] = useState(new Set<string>());
+  const [attendees, updateAttendees] = useState(new Set<PublicKey>());
   const toast = useToast();
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
@@ -50,8 +50,9 @@ const RollCallOpened = () => {
 
   const handleScan = (data: string | null) => {
     if (data) {
-      if (!attendees.has(data)) {
-        updateAttendees((prev) => new Set<string>(prev.add(data)));
+      const publicKey = new PublicKey(data);
+      if (!attendees.has(publicKey)) {
+        updateAttendees((prev) => new Set<PublicKey>(prev.add(publicKey)));
         toast.show(STRINGS.roll_call_scan_participant, {
           type: 'success',
           placement: 'top',
@@ -67,11 +68,11 @@ const RollCallOpened = () => {
       rollCallID, time,
     );
 
-    // Add the token of the organizer before closing the roll call
+    // Add the token of the organizer as soon as we open the roll call
     Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
-      const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
+      const attendeesList = Array.from(attendees);
       attendeesList.push(token.publicKey);
-      requestCloseRollCall(updateId, attendeesList).then(() => {
+      return requestCloseRollCall(updateId, attendeesList).then(() => {
         // @ts-ignore
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       }).catch((err) => {

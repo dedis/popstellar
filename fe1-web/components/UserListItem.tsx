@@ -17,7 +17,7 @@ import WideButtonView from './WideButtonView';
  *
  * @remarks
  * For now, it is not possible to unfollow users, and you have to follow someone to access to
- * his profile.
+ * their profile. (2021-12-20, Xelowak)
  */
 const styles = StyleSheet.create({
   container: {
@@ -53,6 +53,11 @@ const UserListItem = (props: IPropTypes) => {
   const followUser = () => {
     subscribeToChannel(getUserSocialChannel(laoId, publicKey))
       .catch((error) => {
+        toast.show(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`, {
+          type: 'success',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
         console.error(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`);
       });
     setIsFollowing(true);
