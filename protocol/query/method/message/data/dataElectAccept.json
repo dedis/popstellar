@@ -1,14 +1,14 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataElectAccept.json",
-    "description": "Match an elect-accept query",
+    "description": "Match an elect_accept query",
     "type": "object",
     "properties": {
         "object": {
             "const": "consensus"
         },
         "action": {
-            "const": "elect-accept"
+            "const": "elect_accept"
         },
         "instance_id": {
             "description": "Unique id of the consensus instance taken from the elect message",

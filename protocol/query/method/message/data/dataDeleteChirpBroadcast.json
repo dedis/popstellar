@@ -8,7 +8,7 @@
       "const": "chirp"
     },
     "action": {
-      "const": "deleteBroadcast"
+      "const": "delete_broadcast"
     },
     "chirp_id": {
       "description": "message_id of the chirp message above",
@@ -18,7 +18,7 @@
     "channel": {
       "description": "The channel where the chirp is located (starting from social/ inclusive)",
       "type": "string",
-      "pattern": "^social(/[^/]+)*$",
+      "pattern": "^/root/([^/]+)/social/([^/]+)",
       "$comment": "Note: the regex matches a \"social\" or a \"social/<channel>\""
     },
     "timestamp": {

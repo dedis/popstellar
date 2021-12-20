@@ -11,9 +11,13 @@ import (
 
 const (
 	ConsensusObject            = "consensus"
+	ConsensusActionAccept      = "accept"
 	ConsensusActionElect       = "elect"
-	ConsensusActionElectAccept = "elect-accept"
-	ConsensusActionLearn       = "learn"
+	ConsensusActionElectAccept = "elect_accept"
+	ConsensuisActionLearn      = "learn"
+	ConsensusActionPrepare     = "prepare"
+	ConsensusActionPromise     = "promise"
+	ConsensusActionPropose     = "propose"
 
 	ElectionObject       = "election"
 	ElectionActionEnd    = "end"
@@ -44,8 +48,8 @@ const (
 	ChirpObject                = "chirp"
 	ChirpActionAdd             = "add"
 	ChirpActionDelete          = "delete"
-	ChirpActionAddBroadcast    = "addBroadcast"
-	ChirpActionDeleteBroadcast = "deleteBroadcast"
+	ChirpActionAddBroadcast    = "add_broadcast"
+	ChirpActionDeleteBroadcast = "delete_broadcast"
 
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
