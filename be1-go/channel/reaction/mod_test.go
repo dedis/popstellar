@@ -1,6 +1,7 @@
 package reaction
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"github.com/rs/zerolog"
@@ -14,6 +15,7 @@ import (
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	"popstellar/message/messagedata"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -149,7 +151,7 @@ func TestReactionChannel_Broadcast_mustFail(t *testing.T) {
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	// a lao channel isn't supposed to broadcast a message - must fail
+	// a reaction channel isn't supposed to broadcast a message - must fail
 	require.Error(t, cha.Broadcast(message))
 }
 
@@ -200,11 +202,209 @@ func Test_Catchup(t *testing.T) {
 }
 
 func Test_SendReaction(t *testing.T) {
-	//TODO
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	reactionChannelName := root + laoID + social + reactions
+
+	// Create the channel
+	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	_, found := fakeHub.channelByID[root+laoID+social+reactions]
+	require.True(t, found)
+
+	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+
+	// Create the message
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	file := filepath.Join(relativePath, "reaction_add.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var message method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &message)
+	require.NoError(t, err)
+
+	message.Params.Message = m
+	message.Params.Channel = root + laoID + social + reactions
+
+	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
+}
+
+func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	reactionChannelName := root + laoID + social + reactions
+
+	// Create the channel
+	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	_, found := fakeHub.channelByID[root+laoID+social+reactions]
+	require.True(t, found)
+
+	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+
+	// Create delete reaction message
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+	file := filepath.Join(relativePath, "reaction_delete.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = root + laoID + social + reactions
+
+	// If the reaction to delete does not exit, it must fail
+	require.Error(t, cha.Publish(pub, socket.ClientSocket{}))
 }
 
 func Test_DeleteReaction(t *testing.T) {
-	//TODO
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	reactionChannelName := root + laoID + social + reactions
+
+	// Create the channel
+	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+
+	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	_, found := fakeHub.channelByID[root+laoID+social+reactions]
+	require.True(t, found)
+
+	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+
+	// First we send a reaction to be deleted
+	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	file := filepath.Join(relativePath, "reaction_add.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	addReactionID := m.MessageID
+
+	relativePathCreatePub := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = root + laoID + social + reactions
+
+	// We send the reaction to be deleted
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	// Create delete reaction message
+	file = filepath.Join(relativePath, "reaction_delete.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var del messagedata.ReactionDelete
+
+	err = json.Unmarshal(buf, &del)
+	require.NoError(t, err)
+
+	// We set the reactionId with the ID obtain above
+	del.ReactionId = addReactionID
+
+	buf, err = json.Marshal(del)
+	require.NoError(t, err)
+
+	buf64 = base64.URLEncoding.EncodeToString(buf)
+
+	m = message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	deleteReactionId := m.MessageID
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = root + laoID + social + reactions
+
+	// If there is no error, the delete request has been properly received
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	// Check that the messages are stored in the inbox
+	require.Equal(t, addReactionID, cha.inbox.GetSortedMessages()[0].MessageID)
+	require.Equal(t, deleteReactionId, cha.inbox.GetSortedMessages()[1].MessageID)
 }
 
 // -----------------------------------------------------------------------------
@@ -319,6 +519,16 @@ func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 }
 
 func (h *fakeHub) NotifyNewChannel(channelID string, channel channel.Channel, socket socket.Socket) {}
+
+func (h *fakeHub) GetServerNumber() int {
+	return 0
+}
+
+func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
+	return nil
+}
+
+func (h *fakeHub) SetMessageID(publish *method.Publish) {}
 
 // fakeSocket is a fake implementation of a socket
 //

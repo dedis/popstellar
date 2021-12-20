@@ -202,7 +202,7 @@ func (c *Channel) verifyPublishMessage(publish method.Publish) error {
 func (c *Channel) publishAddReaction(msg message.Message) error {
 	err := c.verifyAddReactionMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to verify add chirp message: %v", err)
+		return xerrors.Errorf("failed to verify add reaction message: %v", err)
 	}
 	c.inbox.StoreMessage(msg)
 	return nil
