@@ -11,13 +11,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.github.dedis.popstellar.Injection;
 import com.github.dedis.popstellar.databinding.SettingsFragmentBinding;
+import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class SettingsFragment extends Fragment {
 
   private final String TAG = SettingsFragment.class.getSimpleName();
+
+  @Inject LAORequestFactory requestFactory;
 
   private SettingsFragmentBinding mSettingsFragBinding;
   private SettingsViewModel mSettingsViewModel;
@@ -46,8 +53,8 @@ public class SettingsFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     setupApplyButton();
-    mSettingsViewModel.setServerUrl(Injection.provideRequestFactory().getUrl());
-    mSettingsViewModel.setCheckServerUrl(Injection.provideRequestFactory().getUrl());
+    mSettingsViewModel.setServerUrl(requestFactory.getUrl());
+    mSettingsViewModel.setCheckServerUrl(requestFactory.getUrl());
 
     // Subscribe to "apply changes" event
     mSettingsViewModel
@@ -67,8 +74,7 @@ public class SettingsFragment extends Fragment {
   }
 
   private void applyChanges() {
-    Injection.provideRequestFactory()
-        .setUrl(mSettingsFragBinding.entryBoxServerUrl.getText().toString());
+    requestFactory.setUrl(mSettingsFragBinding.entryBoxServerUrl.getText().toString());
     Intent intent = new Intent(getActivity(), HomeActivity.class);
     Log.d(TAG, "Trying to open home");
     startActivity(intent);

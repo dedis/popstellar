@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.utility.handler;
 import static com.github.dedis.popstellar.utility.handler.ElectionHandler.electionSetupWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
 
-import com.github.dedis.popstellar.Injection;
+import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
@@ -29,10 +29,10 @@ import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,12 +56,11 @@ import io.reactivex.schedulers.TestScheduler;
 public class ElectionHandlerTest extends TestCase {
 
   @Mock LAORemoteDataSource remoteDataSource;
-
   @Mock LAOLocalDataSource localDataSource;
-
   @Mock AndroidKeysetManager androidKeysetManager;
-
   @Mock PublicKeySign signer;
+
+  private static final Gson GSON = JsonModule.provideGson();
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -83,14 +82,11 @@ public class ElectionHandlerTest extends TestCase {
     TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
 
     // Mock the signing of of any data for the MessageGeneral constructor
-    byte[] dataBuf = Injection.provideGson().toJson(CREATE_LAO, Data.class).getBytes();
+    byte[] dataBuf = GSON.toJson(CREATE_LAO, Data.class).getBytes();
     Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
     createLaoMessage =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            CREATE_LAO,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), CREATE_LAO, signer, GSON);
 
     // Simulate a network response from the server after the response delay
     Observable<GenericMessage> upstream =
@@ -101,12 +97,8 @@ public class ElectionHandlerTest extends TestCase {
     Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
 
     laoRepository =
-        LAORepository.getInstance(
-            remoteDataSource,
-            localDataSource,
-            androidKeysetManager,
-            Injection.provideGson(),
-            testSchedulerProvider);
+        new LAORepository(
+            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -145,12 +137,6 @@ public class ElectionHandlerTest extends TestCase {
     laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
   }
 
-  @After
-  public void destroy() {
-    // Ensure every test has a new LAORepository instance with a different TestSchedulerProvider
-    LAORepository.destroyInstance();
-  }
-
   @Test
   public void testHandleElectionSetup() throws DataHandlingException {
     // Create the setup Election message
@@ -167,10 +153,7 @@ public class ElectionHandlerTest extends TestCase {
             lao.getId());
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            electionSetup,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionSetup, signer, GSON);
 
     // Call the message handler
     handleMessage(laoRepository, LAO_CHANNEL, message);
@@ -205,10 +188,7 @@ public class ElectionHandlerTest extends TestCase {
         new ElectionResult(Collections.singletonList(electionResultQuestion));
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            electionResult,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionResult, signer, GSON);
 
     // Call the message handler
     handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
@@ -228,10 +208,7 @@ public class ElectionHandlerTest extends TestCase {
     ElectionEnd electionEnd = new ElectionEnd(election.getId(), lao.getId(), "");
     MessageGeneral message =
         new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()),
-            electionEnd,
-            signer,
-            Injection.provideGson());
+            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionEnd, signer, GSON);
 
     // Call the message handler
     handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);

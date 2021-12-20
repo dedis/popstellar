@@ -19,6 +19,9 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.util.ArrayList;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class LaoWalletFragment extends Fragment {
 
   public static final String TAG = LaoWalletFragment.class.getSimpleName();

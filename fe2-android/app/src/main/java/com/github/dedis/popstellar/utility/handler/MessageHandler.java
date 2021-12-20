@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import static com.github.dedis.popstellar.utility.handler.ChirpHandler.handleChirpMessage;
 import static com.github.dedis.popstellar.utility.handler.ConsensusHandler.handleConsensusMessage;
 import static com.github.dedis.popstellar.utility.handler.ElectionHandler.handleElectionMessage;
 import static com.github.dedis.popstellar.utility.handler.LaoHandler.handleLaoMessage;
@@ -65,7 +66,9 @@ public final class MessageHandler {
         break;
       case CONSENSUS:
         handleConsensusMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
-        laoRepository.updateNodes(channel.replace("/consensus", ""));
+        break;
+      case CHIRP:
+        handleChirpMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
         break;
       case MESSAGE:
         handleWitnessMessage(laoRepository, channel, senderPk, data);

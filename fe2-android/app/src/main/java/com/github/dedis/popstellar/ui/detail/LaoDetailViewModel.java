@@ -68,12 +68,16 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
+@HiltViewModel
 public class LaoDetailViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
@@ -198,6 +202,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
   private ScanningAction scanningAction;
 
+  @Inject
   public LaoDetailViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
@@ -586,7 +591,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
     Log.d(
         TAG,
-        "sending a new elect-accept for consensus with messageId : "
+        "sending a new elect_accept for consensus with messageId : "
             + consensus.getMessageId()
             + " with value "
             + accept);
@@ -618,18 +623,18 @@ public class LaoDetailViewModel extends AndroidViewModel
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "sent an elect-accept successfully");
+                      Log.d(TAG, "sent an elect_accept successfully");
                     } else {
                       Log.d(
                           TAG,
-                          "failed to send the elect-accept for consensus with messageId : "
+                          "failed to send the elect_accept for consensus with messageId : "
                               + consensus.getMessageId());
                     }
                   },
                   throwable ->
                       Log.d(
                           TAG,
-                          "timed out waiting for result on consensus/elect-accept",
+                          "timed out waiting for result on consensus/elect_accept",
                           throwable));
 
       disposables.add(disposable);

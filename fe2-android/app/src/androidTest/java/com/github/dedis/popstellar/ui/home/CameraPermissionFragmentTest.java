@@ -12,29 +12,34 @@ import android.os.Bundle;
 
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner;
 
-import com.github.dedis.popstellar.testutils.FragmentScenarioRule;
 import com.github.dedis.popstellar.testutils.MockResultRegistry;
 import com.github.dedis.popstellar.testutils.ResultReceiver;
+import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.rules.RuleChain;
 
 import java.util.concurrent.TimeoutException;
 
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
+
 /** Test for the CameraPermissionFragment */
-@RunWith(AndroidJUnit4ClassRunner.class)
+@HiltAndroidTest
 public class CameraPermissionFragmentTest {
 
   private final MockResultRegistry mockRegistry = new MockResultRegistry();
 
-  @Rule
-  public final FragmentScenarioRule<CameraPermissionFragment> fragmentRule =
-      FragmentScenarioRule.launchInContainer(
+  private final FragmentScenarioRule<CameraPermissionFragment> fragmentRule =
+      FragmentScenarioRule.launch(
           CameraPermissionFragment.class, () -> CameraPermissionFragment.newInstance(mockRegistry));
+
+  @Rule
+  public final RuleChain chain =
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
 
   @Test
   public void allowButtonMakesPermissionRequestAndProducesResult()
