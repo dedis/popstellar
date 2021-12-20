@@ -53,11 +53,6 @@ const UserListItem = (props: IPropTypes) => {
   const followUser = () => {
     subscribeToChannel(getUserSocialChannel(laoId, publicKey))
       .catch((error) => {
-        toast.show(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`, {
-          type: 'success',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
         console.error(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`);
       });
     setIsFollowing(true);
