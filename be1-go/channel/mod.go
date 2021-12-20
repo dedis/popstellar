@@ -50,6 +50,11 @@ type Sockets struct {
 	store map[string]socket.Socket
 }
 
+// Len returns the numbre of sockets.
+func (s *Sockets) Len() int {
+	return len(s.store)
+}
+
 // SendToAll sends a message to all sockets.
 func (s *Sockets) SendToAll(buf []byte) {
 	s.RLock()
@@ -91,6 +96,9 @@ type HubFunctionalities interface {
 	Sign([]byte) ([]byte, error)
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
+	GetServerNumber() int
+	SendAndHandleMessage(method.Publish) error
+	SetMessageID(publish *method.Publish)
 }
 
 // Broadcastable defines a channel that can broadcast

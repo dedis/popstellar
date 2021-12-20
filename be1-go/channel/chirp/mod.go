@@ -123,7 +123,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	newData := messagedata.ChirpBroadcast{
 		Object:    object,
-		Action:    "addBroadcast",
+		Action:    "add_broadcast",
 		ChirpId:   msg.MessageID,
 		Channel:   c.generalChannel.GetChannelPath(),
 		Timestamp: time,

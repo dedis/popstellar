@@ -10,6 +10,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash, LaoData}
 import ch.epfl.pop.pubsub.graph.DbActor.{DbActorMessage, DbActorAck, DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -34,14 +35,12 @@ case object LaoHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
-  private final val SOCIALMEDIAPOSTSPREFIX: String = Channel.SEPARATOR + "posts"
-
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
         // we are using the lao id instead of the message_id at lao creation
-        val channel: Channel = Channel(s"${Channel.rootChannelPrefix}${data.id}")
+        val channel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         //this prevents a write-through to an already existing LaoId
         val askCreate = (dbActor ? DbActor.CreateChannel(channel, ObjectType.LAO))
         Await.result(askCreate, duration) match {
@@ -49,7 +48,7 @@ case object LaoHandler extends MessageHandler {
           case DbActorAck() => {
             val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
               case DbActorWriteAck() => {
-                val socialChannel: Channel = Channel(channel + SOCIALMEDIAPOSTSPREFIX)
+                val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
                 val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
                   case DbActorAck() => Left(rpcMessage)
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))

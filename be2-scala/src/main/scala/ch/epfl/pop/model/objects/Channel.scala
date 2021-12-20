@@ -12,8 +12,8 @@ final case class Channel(channel: String) {
    * @return an array of bytes corresponding to the decoded sub-channel name or None if an error occurred
    */
   def decodeSubChannel: Option[Array[Byte]] = channel match {
-    case _ if channel.startsWith(Channel.rootChannelPrefix) =>
-      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.rootChannelPrefix.length).getBytes)) match {
+    case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
+      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).getBytes)) match {
         case Success(value) => Some(value)
         case _ => None
       }
@@ -34,9 +34,9 @@ final case class Channel(channel: String) {
       Hash(Base64Data( c.last))
   }
 
-  def isRootChannel: Boolean = channel == Channel.rootChannel.channel
+  def isRootChannel: Boolean = channel == Channel.ROOT_CHANNEL.channel
 
-  def isSubChannel: Boolean = channel.startsWith(Channel.rootChannelPrefix)
+  def isSubChannel: Boolean = channel.startsWith(Channel.ROOT_CHANNEL_PREFIX)
 
   override def equals(that: Any): Boolean = that match {
     case that: Channel => channel == that.channel
@@ -48,9 +48,13 @@ final case class Channel(channel: String) {
 
 object Channel {
   final val SEPARATOR: Char = '/'
-  final val rootChannel: Channel = Channel(s"${SEPARATOR}root")
-  final val rootChannelPrefix: String = s"${SEPARATOR}root${SEPARATOR}"
+  final val ROOT_CHANNEL: Channel = Channel(s"${SEPARATOR}root")
+  final val ROOT_CHANNEL_PREFIX: String = s"${SEPARATOR}root${SEPARATOR}"
   private final def channelRegex: String = "^/root(/[^/]+)*$"
+  final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
+
+  final val SOCIAL_MEDIA_POSTS_PREFIX: String = s"${SEPARATOR}posts"
+  final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social"
 
   def apply(channel: String): Channel = {
     if(channel.isBlank() || !channel.matches(channelRegex)){
