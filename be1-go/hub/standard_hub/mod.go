@@ -272,12 +272,10 @@ func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
 
 	h.serverSockets.SendToAll(byteMsg)
 
-	go func() {
-		_, err = h.handlePublish(nil, byteMsg)
-		if err != nil {
-			h.log.Err(err).Msgf("Failed to handle self-produced message")
-		}
-	}()
+	_, err = h.handlePublish(nil, byteMsg)
+	if err != nil {
+		h.log.Err(err).Msgf("Failed to handle self-produced message")
+	}
 
 	return nil
 }
