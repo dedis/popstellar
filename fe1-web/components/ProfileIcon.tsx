@@ -9,10 +9,10 @@ const ProfileIcon = (props: IPropTypes) => {
   return (
     <Blockies
       seed={publicKey.valueOf()}
-      size={10}
-      scale={4}
-      color="#ffffff"
-      bgColor="#008ec2"
+      size={8}
+      scale={5}
+      color="#008ec2"
+      bgColor="#ffffff"
       spotColor="#363636"
     />
   );
