@@ -26,14 +26,13 @@ import (
 )
 
 const (
-	laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
-	sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	root = "/root/"
-	social = "/social/"
-	reactions = "reactions"
+	laoID                       = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	sender                      = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	root                        = "/root/"
+	social                      = "/social/"
+	reactions                   = "reactions"
 	protocolRelativePath string = "../../../protocol"
 )
-
 
 func TestReactionChannel_Subscribe(t *testing.T) {
 	// Create the hub

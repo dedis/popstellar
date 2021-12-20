@@ -39,15 +39,15 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 
 // Channel is used to handle reaction messages.
 type Channel struct {
-	sockets channel.Sockets
-	inbox   *inbox.Inbox
+	sockets   channel.Sockets
+	inbox     *inbox.Inbox
 	attendees *attendees
 
 	// channel path
 	channelID string
 
-	hub       channel.HubFunctionalities
-	log       zerolog.Logger
+	hub channel.HubFunctionalities
+	log zerolog.Logger
 }
 
 // Publish is used to handle publish messages in the reaction channel.
