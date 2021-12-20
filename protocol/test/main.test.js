@@ -154,7 +154,7 @@ test("message data: message", () => {
 })
 
 test("message data: chirp", () => {
-    chirp_add = require("../examples/messageData/chirp_add_publish.json")
+    chirp_add = require("../examples/messageData/chirp_add_publish/chirp_add_publish.json")
     expect(chirp_add).toBeValid(messageDataSchema)
 
     chirp_add_broadcast = require("../examples/messageData/chirp_add_broadcast.json")
