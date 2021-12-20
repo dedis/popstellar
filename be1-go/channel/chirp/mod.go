@@ -59,7 +59,6 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	}
 
 	msg := publish.Params.Message
-
 	data := msg.Data
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)

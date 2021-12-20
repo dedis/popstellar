@@ -34,6 +34,8 @@ const (
 	protocolRelativePath string = "../../../protocol"
 )
 
+// Tests that the channel works correctly when it receives a subscribe from a
+// client
 func TestReactionChannel_Subscribe(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -65,6 +67,8 @@ func TestReactionChannel_Subscribe(t *testing.T) {
 	require.True(t, cha.sockets.Delete("socket"))
 }
 
+// Tests that the channel works correctly when it receives an unsubscribe from a
+// client
 func TestReactionChannel_Unsubscribe(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -100,6 +104,8 @@ func TestReactionChannel_Unsubscribe(t *testing.T) {
 	require.Error(t, cha.Unsubscribe("socket", message))
 }
 
+// Test that the channel throws an error when it receives an unsubscribe from a
+// non-subscribed source
 func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -127,6 +133,7 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.Error(t, cha.Unsubscribe("inexistingSocket", message))
 }
 
+// Tests that the channel throws an error when it receives a broadcast message
 func TestReactionChannel_Broadcast_mustFail(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -154,6 +161,7 @@ func TestReactionChannel_Broadcast_mustFail(t *testing.T) {
 	require.Error(t, cha.Broadcast(message))
 }
 
+// Tests that the channel works correctly when it receives a catchup
 func Test_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -200,6 +208,7 @@ func Test_Catchup(t *testing.T) {
 	}
 }
 
+// Tests that the channel works correctly when it receives a reaction
 func Test_SendReaction(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -254,6 +263,8 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
 }
 
+// Tests that the channel throws an error when it receives a delete reaction
+// request on a reaction that has never been posted
 func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -308,6 +319,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	require.Error(t, cha.Publish(pub, socket.ClientSocket{}))
 }
 
+// Tests that the channel works correctly when it receives a delete reaction request
 func Test_DeleteReaction(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -361,7 +373,7 @@ func Test_DeleteReaction(t *testing.T) {
 	pub.Params.Message = m
 	pub.Params.Channel = root + laoID + social + reactions
 
-	// We send the reaction to be deleted
+	// We publish the reaction to be deleted
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
 
 	// Create delete reaction message

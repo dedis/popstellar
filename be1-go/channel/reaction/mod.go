@@ -24,7 +24,6 @@ const msgID = "msg id"
 
 // NewChannel returns a new initialized reaction channel
 func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
-
 	log = log.With().Str("channel", "reaction").Logger()
 
 	return Channel{
@@ -204,7 +203,9 @@ func (c *Channel) publishAddReaction(msg message.Message) error {
 	if err != nil {
 		return xerrors.Errorf("failed to verify add reaction message: %v", err)
 	}
+
 	c.inbox.StoreMessage(msg)
+
 	return nil
 }
 
@@ -213,7 +214,9 @@ func (c *Channel) publishDeleteReaction(msg message.Message) error {
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete reaction message: %v", err)
 	}
+
 	c.inbox.StoreMessage(msg)
+
 	return nil
 }
 
@@ -237,7 +240,7 @@ func (c *Channel) verifyAddReactionMessage(msg message.Message) error {
 	}
 
 	if !c.attendees.isPresent(msg.Sender) {
-		return answer.NewError(-4, "the sender is not a valid PoP token")
+		return answer.NewError(-4, "the sender's PoP token was not verified in a roll-call")
 	}
 
 	return nil
@@ -285,7 +288,7 @@ type attendees struct {
 	store map[string]struct{}
 }
 
-// newAttendees returns a new instance of Attendees.
+// newAttendees returns a new instance of attendees.
 func newAttendees() *attendees {
 	return &attendees{
 		store: make(map[string]struct{}),
