@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security;
 
+import androidx.annotation.NonNull;
+
 import com.google.crypto.tink.PublicKeySign;
 
 import java.security.GeneralSecurityException;
@@ -37,6 +39,17 @@ public class KeyPair {
 
   public PublicKey getPublicKey() {
     return publicKey;
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return getClass().getSimpleName()
+        + "{privateKey="
+        + privateKey.toString()
+        + ", publicKey="
+        + publicKey.toString()
+        + "}";
   }
 
   @Override
