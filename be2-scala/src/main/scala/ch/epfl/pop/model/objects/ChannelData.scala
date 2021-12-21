@@ -2,6 +2,7 @@ package ch.epfl.pop.model.objects
 
 import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.{ObjectType}
 import ch.epfl.pop.model.objects._

@@ -100,7 +100,7 @@ public final class ConsensusHandler {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusElectAccept.getMessageId());
     if (!consensusOpt.isPresent()) {
-      Log.w(TAG, "elect-accept for invalid messageId : " + consensusElectAccept.getMessageId());
+      Log.w(TAG, "elect_accept for invalid messageId : " + consensusElectAccept.getMessageId());
       throw new InvalidMessageIdException(
           consensusElectAccept, consensusElectAccept.getMessageId());
     }
