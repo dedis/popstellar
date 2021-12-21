@@ -108,7 +108,7 @@ func Test_SendChirp(t *testing.T) {
 	relativePath := filepath.Join("..", "..", "..", "protocol",
 		"examples", "messageData")
 
-	file := filepath.Join(relativePath, "chirp_add_publish.json")
+	file := filepath.Join(relativePath, "chirp_add_publish", "chirp_add_publish.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -121,6 +121,9 @@ func Test_SendChirp(t *testing.T) {
 		MessageID:         messagedata.Hash(buf64, "h"),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
+
+	//print(m.MessageID)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", m.MessageID)
 
 	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
 		"examples", "query", "publish")
@@ -146,7 +149,7 @@ func Test_SendChirp(t *testing.T) {
 		Action:    "add_broadcast",
 		ChirpId:   messagedata.Hash(buf64, "h"),
 		Channel:   root + laoID + social + posts,
-		Timestamp: 123,
+		Timestamp: 1634760180,
 	}
 
 	checkDataBuf, err := json.Marshal(checkData)
