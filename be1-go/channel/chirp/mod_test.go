@@ -220,7 +220,7 @@ func Test_DeleteChirp(t *testing.T) {
 	file = filepath.Join(relativePath, "chirp_delete_publish", "chirp_delete_publish.json")
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
-	
+
 	var chirpDel messagedata.ChirpDelete
 
 	err = json.Unmarshal(buf, &chirpDel)
