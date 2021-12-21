@@ -215,8 +215,7 @@ public class ElectionStartFragmentTest {
     nodeAssertions(grid, 2, "Waiting\n" + NODE_3_KEY, false);
 
     // Nodes 3 try to start
-    ConsensusHandler.handleConsensusMessage(
-        laoRepository, CONSENSUS_CHANNEL, elect, "m3", NODE_3_KEY);
+    ConsensusHandler.handleElect(laoRepository, CONSENSUS_CHANNEL, elect, "m3", NODE_3_KEY);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 2, "Approve Start by\n" + NODE_3_KEY, true);
@@ -237,8 +236,7 @@ public class ElectionStartFragmentTest {
     assertEquals("started", elect.getValue());
     assertTrue(minCreation <= elect.getCreation() && elect.getCreation() <= maxCreation);
 
-    ConsensusHandler.handleConsensusMessage(
-        laoRepository, CONSENSUS_CHANNEL, elect, "m1", publicKey);
+    ConsensusHandler.handleElect(laoRepository, CONSENSUS_CHANNEL, elect, "m1", publicKey);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
@@ -254,14 +252,13 @@ public class ElectionStartFragmentTest {
     assertEquals(new ConsensusElectAccept(INSTANCE_ID, "m3", true), electAccept);
 
     // We accepted node 3 (it should disable button for node3)
-    ConsensusHandler.handleConsensusMessage(
-        laoRepository, CONSENSUS_CHANNEL, accept3, "a3", publicKey);
+    ConsensusHandler.handleElectAccept(laoRepository, CONSENSUS_CHANNEL, accept3, "a3", publicKey);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 2, "Approve Start by\n" + NODE_3_KEY, false);
 
     // Receive a learn message => node3 was accepted and has started the election
-    ConsensusHandler.handleConsensusMessage(laoRepository, CONSENSUS_CHANNEL, learn3, "l3", null);
+    ConsensusHandler.handleLearn(laoRepository, CONSENSUS_CHANNEL, learn3, "l3", null);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     electionStatus().check(matches(withText(expectedStatusStarted))).check(matches(isDisplayed()));

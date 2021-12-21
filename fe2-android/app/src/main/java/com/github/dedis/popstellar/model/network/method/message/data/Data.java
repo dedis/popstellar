@@ -30,6 +30,8 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Obje
 
 import android.util.Log;
 
+import androidx.core.util.Pair;
+
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
@@ -52,6 +54,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cr
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirpBroadcast;
+import com.github.dedis.popstellar.utility.handler.ChirpHandler;
+import com.github.dedis.popstellar.utility.handler.ConsensusHandler;
+import com.github.dedis.popstellar.utility.handler.DataConsumer;
+import com.github.dedis.popstellar.utility.handler.ElectionHandler;
+import com.github.dedis.popstellar.utility.handler.LaoHandler;
+import com.github.dedis.popstellar.utility.handler.RollCallHandler;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -61,8 +69,9 @@ import java.util.Optional;
 /** An abstract high level message */
 public abstract class Data {
 
-  /** A mapping of (object, action) -> class */
-  private static final Map<EntryPair, Class<? extends Data>> messages = buildMessagesMap();
+  /** A mapping of (object, action) -> (class, consumer) */
+  private static final Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>>
+      messages = buildMessagesMap();
 
   /**
    * Create an entry pair given obj and action
@@ -75,52 +84,67 @@ public abstract class Data {
     return new EntryPair(obj, action);
   }
 
+  private static <T extends Data> void add(
+      Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>> map,
+      Objects obj,
+      Action action,
+      Class<T> dataClass,
+      DataConsumer<T> dataConsumer) {
+    map.put(pair(obj, action), Pair.create(dataClass, dataConsumer));
+  }
+
   /**
    * Build the protocol messages map
    *
    * @return the built map (Unmodifiable)
    */
-  private static Map<EntryPair, Class<? extends Data>> buildMessagesMap() {
-    Map<EntryPair, Class<? extends Data>> messagesMap = new HashMap<>();
+  private static Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>>
+      buildMessagesMap() {
+    Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>> map = new HashMap<>();
 
     // Lao
-    messagesMap.put(pair(LAO, CREATE), CreateLao.class);
-    messagesMap.put(pair(LAO, UPDATE), UpdateLao.class);
-    messagesMap.put(pair(LAO, STATE), StateLao.class);
+    add(map, LAO, CREATE, CreateLao.class, LaoHandler::handleCreateLao);
+    add(map, LAO, UPDATE, UpdateLao.class, LaoHandler::handleUpdateLao);
+    add(map, LAO, STATE, StateLao.class, LaoHandler::handleStateLao);
 
     // Meeting
-    messagesMap.put(pair(MEETING, CREATE), CreateMeeting.class);
-    messagesMap.put(pair(MEETING, STATE), StateMeeting.class);
+    add(map, MEETING, CREATE, CreateMeeting.class, null);
+    add(map, MEETING, STATE, StateMeeting.class, null);
 
     // Message
-    messagesMap.put(pair(MESSAGE, WITNESS), WitnessMessageSignature.class);
+    add(map, MESSAGE, WITNESS, WitnessMessageSignature.class, null);
 
     // Roll Call
-    messagesMap.put(pair(ROLL_CALL, CREATE), CreateRollCall.class);
-    messagesMap.put(pair(ROLL_CALL, OPEN), OpenRollCall.class);
-    messagesMap.put(pair(ROLL_CALL, REOPEN), OpenRollCall.class);
-    messagesMap.put(pair(ROLL_CALL, CLOSE), CloseRollCall.class);
+    add(map, ROLL_CALL, CREATE, CreateRollCall.class, RollCallHandler::handleCreateRollCall);
+    add(map, ROLL_CALL, OPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall);
+    add(map, ROLL_CALL, REOPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall);
+    add(map, ROLL_CALL, CLOSE, CloseRollCall.class, RollCallHandler::handleCloseRollCall);
 
     // Election
-    messagesMap.put(pair(ELECTION, SETUP), ElectionSetup.class);
-    messagesMap.put(pair(ELECTION, CAST_VOTE), CastVote.class);
-    messagesMap.put(pair(ELECTION, END), ElectionEnd.class);
-    messagesMap.put(pair(ELECTION, RESULT), ElectionResult.class);
+    add(map, ELECTION, SETUP, ElectionSetup.class, ElectionHandler::handleElectionSetup);
+    add(map, ELECTION, CAST_VOTE, CastVote.class, ElectionHandler::handleCastVote);
+    add(map, ELECTION, END, ElectionEnd.class, ElectionHandler::handleElectionEnd);
+    add(map, ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult);
 
     // Consensus
-    messagesMap.put(pair(CONSENSUS, ELECT), ConsensusElect.class);
-    messagesMap.put(pair(CONSENSUS, ELECT_ACCEPT), ConsensusElectAccept.class);
-    messagesMap.put(pair(CONSENSUS, PREPARE), ConsensusPrepare.class);
-    messagesMap.put(pair(CONSENSUS, PROMISE), ConsensusPromise.class);
-    messagesMap.put(pair(CONSENSUS, PROPOSE), ConsensusPropose.class);
-    messagesMap.put(pair(CONSENSUS, ACCEPT), ConsensusAccept.class);
-    messagesMap.put(pair(CONSENSUS, LEARN), ConsensusLearn.class);
+    add(map, CONSENSUS, ELECT, ConsensusElect.class, ConsensusHandler::handleElect);
+    add(
+        map,
+        CONSENSUS,
+        ELECT_ACCEPT,
+        ConsensusElectAccept.class,
+        ConsensusHandler::handleElectAccept);
+    add(map, CONSENSUS, PREPARE, ConsensusPrepare.class, ConsensusHandler::handleBackend);
+    add(map, CONSENSUS, PROMISE, ConsensusPromise.class, ConsensusHandler::handleBackend);
+    add(map, CONSENSUS, PROPOSE, ConsensusPropose.class, ConsensusHandler::handleBackend);
+    add(map, CONSENSUS, ACCEPT, ConsensusAccept.class, ConsensusHandler::handleBackend);
+    add(map, CONSENSUS, LEARN, ConsensusLearn.class, ConsensusHandler::handleLearn);
 
     // Social Media
-    messagesMap.put(pair(CHIRP, ADD), AddChirp.class);
-    messagesMap.put(pair(CHIRP, ADD_BROADCAST), AddChirpBroadcast.class);
+    add(map, CHIRP, ADD, AddChirp.class, ChirpHandler::handleChirpAdd);
+    add(map, CHIRP, ADD_BROADCAST, AddChirpBroadcast.class, null);
 
-    return Collections.unmodifiableMap(messagesMap);
+    return Collections.unmodifiableMap(map);
   }
 
   /**
@@ -128,11 +152,22 @@ public abstract class Data {
    *
    * @param obj of the entry
    * @param action of the entry
-   * @return the class assigned to the pair of empty if none are defined
+   * @return the class assigned to the pair or empty if none are defined
    */
   public static Optional<Class<? extends Data>> getType(Objects obj, Action action) {
     Log.d("data", "getting data type");
-    return Optional.ofNullable(messages.get(pair(obj, action)));
+    return Optional.ofNullable(messages.get(pair(obj, action))).map(p -> p.first);
+  }
+
+  /**
+   * Return the data consumer assigned to the pair (obj, action)
+   *
+   * @param obj of the entry
+   * @param action of the entry
+   * @return the DataConsumer assigned to the pair or empty if none are defined
+   */
+  public static Optional<DataConsumer<? extends Data>> getDataConsumer(Objects obj, Action action) {
+    return Optional.ofNullable(messages.get(pair(obj, action))).map(p -> p.second);
   }
 
   /** Returns the object the message is referring to. */

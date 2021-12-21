@@ -1,15 +1,9 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.utility.handler.ChirpHandler.handleChirpMessage;
-import static com.github.dedis.popstellar.utility.handler.ConsensusHandler.handleConsensusMessage;
-import static com.github.dedis.popstellar.utility.handler.ElectionHandler.handleElectionMessage;
-import static com.github.dedis.popstellar.utility.handler.LaoHandler.handleLaoMessage;
-import static com.github.dedis.popstellar.utility.handler.RollCallHandler.handleRollCallMessage;
-import static com.github.dedis.popstellar.utility.handler.WitnessMessageHandler.handleWitnessMessage;
-
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
@@ -19,6 +13,7 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
+import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 import com.github.dedis.popstellar.utility.error.UnknownDataObjectException;
 
 /** General message handler class */
@@ -53,29 +48,12 @@ public final class MessageHandler {
     Objects dataObj = Objects.find(data.getObject());
     if (dataObj == null) throw new UnknownDataObjectException(data);
 
-    switch (dataObj) {
-      case LAO:
-        handleLaoMessage(laoRepository, channel, data, message.getMessageId());
-        laoRepository.updateNodes(channel);
-        break;
-      case ROLL_CALL:
-        handleRollCallMessage(laoRepository, channel, data, message.getMessageId());
-        break;
-      case ELECTION:
-        handleElectionMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
-        break;
-      case CONSENSUS:
-        handleConsensusMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
-        break;
-      case CHIRP:
-        handleChirpMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
-        break;
-      case MESSAGE:
-        handleWitnessMessage(laoRepository, channel, senderPk, data);
-        break;
-      default:
-        throw new UnhandledDataTypeException(data, dataObj.getObject());
-    }
+    Action dataAction = Action.find(data.getAction());
+    if (dataAction == null) throw new UnknownDataActionException(data);
+
+    Data.getDataConsumer(dataObj, dataAction)
+        .orElseThrow(() -> new UnhandledDataTypeException(data, dataObj + "#" + dataAction))
+        .accept(laoRepository, channel, data, message.getMessageId(), senderPk);
 
     notifyLaoUpdate(laoRepository, data, channel);
   }

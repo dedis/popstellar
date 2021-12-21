@@ -2,8 +2,6 @@ package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
 
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
@@ -14,8 +12,6 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidDataException;
-import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
-import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 
 import java.util.Optional;
 
@@ -32,49 +28,20 @@ public final class RollCallHandler {
   }
 
   /**
-   * Process a Roll Call message.
-   *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
-   * @param data the data of the message received
-   * @param messageId the ID of the message received
-   */
-  public static void handleRollCallMessage(
-      LAORepository laoRepository, String channel, Data data, String messageId)
-      throws DataHandlingException {
-    Log.d(TAG, "handle Roll Call message id=" + messageId);
-
-    Action action = Action.find(data.getAction());
-    if (action == null) throw new UnknownDataActionException(data);
-
-    switch (action) {
-      case CREATE:
-        handleCreateRollCall(laoRepository, channel, (CreateRollCall) data, messageId);
-        break;
-      case OPEN:
-      case REOPEN:
-        handleOpenRollCall(laoRepository, channel, (OpenRollCall) data, messageId);
-        break;
-      case CLOSE:
-        handleCloseRollCall(laoRepository, channel, (CloseRollCall) data, messageId);
-        break;
-      default:
-        throw new UnhandledDataTypeException(data, action.getAction());
-    }
-  }
-
-  /**
    * Process a CreateRollCall message.
    *
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
    * @param createRollCall the message that was received
+   * @param messageId the ID of the received message
+   * @param senderPk the public key of the sender of this message
    */
   public static void handleCreateRollCall(
       LAORepository laoRepository,
       String channel,
       CreateRollCall createRollCall,
-      String messageId) {
+      String messageId,
+      String senderPk) {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
 
@@ -100,9 +67,15 @@ public final class RollCallHandler {
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
    * @param openRollCall the message that was received
+   * @param messageId the ID of the received message
+   * @param senderPk the public key of the sender of this message
    */
   public static void handleOpenRollCall(
-      LAORepository laoRepository, String channel, OpenRollCall openRollCall, String messageId)
+      LAORepository laoRepository,
+      String channel,
+      OpenRollCall openRollCall,
+      String messageId,
+      String senderPk)
       throws DataHandlingException {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
@@ -134,9 +107,15 @@ public final class RollCallHandler {
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
    * @param closeRollCall the message that was received
+   * @param messageId the ID of the received message
+   * @param senderPk the public key of the sender of this message
    */
   public static void handleCloseRollCall(
-      LAORepository laoRepository, String channel, CloseRollCall closeRollCall, String messageId)
+      LAORepository laoRepository,
+      String channel,
+      CloseRollCall closeRollCall,
+      String messageId,
+      String senderPk)
       throws DataHandlingException {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCloseRollCall: " + channel);
