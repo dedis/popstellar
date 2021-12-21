@@ -22,6 +22,9 @@ public class PrivateKeyTest {
   private static final Base64URLData DATA = new Base64URLData("REFUQQ==");
   private static final byte[] VALID_PRIVATE_KEY =
       Utils.hexToBytes("3b28b4ab2fe355a13d7b24f90816ff0676f7978bf462fc84f1d5d948b119ec66");
+  private static final Signature EXPECTED_SIGNATURE =
+      new Signature(
+          "hhJwFWUwcm1B9PapIQ6Ct6NDRBpITP_AGsIHaU6biJ8d94uDEydGrRZ5NInIjwBqoqUa2rROgx0xA705pXkgDQ==");
 
   @Test
   public void signGivesSameValueForBothKeyType() throws GeneralSecurityException {
@@ -35,6 +38,14 @@ public class PrivateKeyTest {
     Signature sign2 = key2.sign(DATA);
 
     assertEquals(sign1, sign2);
+  }
+
+  @Test
+  public void signGivesExpectedValue() throws GeneralSecurityException {
+    PrivateKey key = new PlainPrivateKey(VALID_PRIVATE_KEY);
+
+    Signature sign = key.sign(DATA);
+    assertEquals(EXPECTED_SIGNATURE, sign);
   }
 
   @Test
