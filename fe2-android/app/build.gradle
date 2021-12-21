@@ -198,6 +198,7 @@ copy {
     // This modification is done to force the use of local files when loading json sub-schemas ($ref)
     // https://json-schema.org/understanding-json-schema/structuring.html#base-uri
 
+    filteringCharset = 'UTF-8'
     filter {
         String line -> line.replaceAll("https://raw\\.githubusercontent\\.com/dedis/[a-zA-Z0-9_-]+/master/", "resource:/")
     }
