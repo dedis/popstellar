@@ -18,7 +18,7 @@ import ch.epfl.pop.model.objects.Channel
 object CreateLaoExamples{
 
   def getJsonRequestFromMessage(msg: Message): JsonRpcRequest = {
-       JsonRpcRequest("2.0",MethodType.PUBLISH, new ParamsWithMessage(Channel.rootChannel,msg), Some(1))
+       JsonRpcRequest("2.0",MethodType.PUBLISH, new ParamsWithMessage(Channel.ROOT_CHANNEL,msg), Some(1))
   }
 
   private final val witnessSigs = WitnessSignaturePair(PublicKey(Base64Data("wit1")), Signature(Base64Data("sig1"))) :: WitnessSignaturePair(PublicKey(Base64Data("wit2")), Signature(Base64Data("sig2"))) :: Nil
