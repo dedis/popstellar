@@ -42,7 +42,8 @@ public class KeyPair {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof KeyPair)) return false;
+    if (o == null || getClass() != o.getClass()) return false;
+
     KeyPair keyPair = (KeyPair) o;
     return Objects.equals(privateKey, keyPair.privateKey)
         && Objects.equals(publicKey, keyPair.publicKey);
