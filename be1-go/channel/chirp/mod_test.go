@@ -196,7 +196,7 @@ func Test_DeleteChirp(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	//addChirpId := m.MessageID
+	addChirpId := m.MessageID
 
 	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
 		"examples", "query", "publish")
@@ -219,6 +219,16 @@ func Test_DeleteChirp(t *testing.T) {
 	// create delete chirp message
 	file = filepath.Join(relativePath, "chirp_delete_publish", "chirp_delete_publish.json")
 	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+	
+	var chirpDel messagedata.ChirpDelete
+
+	err = json.Unmarshal(buf, &chirpDel)
+	require.NoError(t, err)
+
+	chirpDel.ChirpId = addChirpId
+
+	buf, err = json.Marshal(chirpDel)
 	require.NoError(t, err)
 
 	buf64delete := base64.URLEncoding.EncodeToString(buf)
