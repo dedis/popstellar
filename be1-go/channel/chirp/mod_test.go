@@ -261,7 +261,6 @@ func Test_DeleteChirp(t *testing.T) {
 	require.Nil(t, err)
 	checkData64Delete := base64.URLEncoding.EncodeToString(checkDataBufDelete)
 
-
 	// check if the data on the general is the same as the one we sent
 	require.Equal(t, checkData64Add, msg[0].Data)
 	require.Equal(t, checkData64Delete, msg[1].Data)

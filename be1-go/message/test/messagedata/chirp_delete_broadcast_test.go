@@ -89,4 +89,3 @@ func Test_Chirp_Delete_Broadcast_Not_Base64_Message(t *testing.T) {
 	err = msg.Verify()
 	require.Error(t, err)
 }
-
