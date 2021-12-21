@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security;
 
+import androidx.annotation.NonNull;
+
 import java.util.Arrays;
 import java.util.Base64;
 
@@ -31,6 +33,12 @@ public class Base64URLData {
 
   private static String encode(byte[] data) {
     return Base64.getUrlEncoder().encodeToString(data);
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    return getClass().getSimpleName() + "(" + getEncoded() + ")";
   }
 
   @Override
