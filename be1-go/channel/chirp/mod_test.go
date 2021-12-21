@@ -122,9 +122,6 @@ func Test_SendChirp(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	//print(m.MessageID)
-	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", m.MessageID)
-
 	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
 		"examples", "query", "publish")
 
@@ -158,6 +155,116 @@ func Test_SendChirp(t *testing.T) {
 
 	// check if the data on the general is the same as the one we sent
 	require.Equal(t, checkData64, msg[0].Data)
+}
+
+func Test_DeleteChirp(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+	generalName := root + laoID + social + posts
+	chirpChannelName := root + laoID + social + sender
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
+	// Create the channel
+	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
+
+	fakeHub.RegisterNewChannel(generalName, &generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
+	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	require.True(t, found)
+	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	require.True(t, found)
+
+	time.Sleep(time.Millisecond)
+
+	// Create the add chirp message
+	relativePath := filepath.Join("..", "..", "..", "protocol",
+		"examples", "messageData")
+
+	file := filepath.Join(relativePath, "chirp_add_publish", "chirp_add_publish.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64add := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64add,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64add, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	//addChirpId := m.MessageID
+
+	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = root + laoID + social + sender
+
+	// publish add chirp message
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	// create delete chirp message
+	file = filepath.Join(relativePath, "chirp_delete_publish", "chirp_delete_publish.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64delete := base64.URLEncoding.EncodeToString(buf)
+
+	m = message.Message{
+		Data:              buf64delete,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64delete, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	pub.Params.Message = m
+	pub.Params.Channel = root + laoID + social + sender
+
+	// publish delete chirp message
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	msg := generalCha.Catchup(method.Catchup{ID: 0})
+
+	checkDataAdd := messagedata.ChirpBroadcast{
+		Object:    "chirp",
+		Action:    "add_broadcast",
+		ChirpId:   messagedata.Hash(buf64add, "h"),
+		Channel:   root + laoID + social + posts,
+		Timestamp: 1634760180,
+	}
+	checkDataBufAdd, err := json.Marshal(checkDataAdd)
+	require.Nil(t, err)
+	checkData64Add := base64.URLEncoding.EncodeToString(checkDataBufAdd)
+
+	checkDataDelete := messagedata.ChirpBroadcast{
+		Object:    "chirp",
+		Action:    "delete_broadcast",
+		ChirpId:   messagedata.Hash(buf64delete, "h"),
+		Channel:   root + laoID + social + posts,
+		Timestamp: 1634760180,
+	}
+	checkDataBufDelete, err := json.Marshal(checkDataDelete)
+	require.Nil(t, err)
+	checkData64Delete := base64.URLEncoding.EncodeToString(checkDataBufDelete)
+
+
+	// check if the data on the general is the same as the one we sent
+	require.Equal(t, checkData64Add, msg[0].Data)
+	require.Equal(t, checkData64Delete, msg[1].Data)
 }
 
 // -----------------------------------------------------------------------------

@@ -111,7 +111,8 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
-	object, _, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	action = action + "_broadcast"
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
@@ -123,7 +124,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	newData := messagedata.ChirpBroadcast{
 		Object:    object,
-		Action:    "add_broadcast",
+		Action:    action,
 		ChirpId:   msg.MessageID,
 		Channel:   c.generalChannel.GetChannelPath(),
 		Timestamp: time,
