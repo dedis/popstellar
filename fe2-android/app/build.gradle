@@ -189,6 +189,7 @@ delete 'src/main/resources/protocol'
 copy {
     from '../../protocol'
     into 'src/main/resources/protocol'
+
     include 'answer/**'
     include 'examples/**'
     include 'query/**'
