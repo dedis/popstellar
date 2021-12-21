@@ -62,6 +62,6 @@ public class Base64URLDataTest {
     Signature signature = new Signature(DATA_1);
 
     assertNotEquals(data, null);
-    assertEquals(data, signature);
+    assertNotEquals(data, signature);
   }
 }
