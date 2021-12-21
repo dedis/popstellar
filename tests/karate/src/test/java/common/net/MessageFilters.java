@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 public final class MessageFilters {
 
   private MessageFilters() {
-    // Static lass, this should never be called
+    // Static class, this should never be called
   }
 
   /**

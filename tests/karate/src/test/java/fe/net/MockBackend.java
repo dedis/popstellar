@@ -52,6 +52,10 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     logger.trace("Client connected from the server side");
   }
 
+  // As this object is the channel handler of the server, this function is called whenever a new
+  // message is received by it.
+  // The text message is held is a TextWebSocketFrame which is the primitive that is sent over the
+  // network
   @Override
   protected void channelRead0(
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {

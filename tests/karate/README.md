@@ -13,7 +13,7 @@ those projects.
 
 To test the Android Frontend, you need to have an Android emulator installed. The easiest way to achieve it is to
 install it through [Android Studio](https://developer.android.com/studio) :
-Go to `Tools -> ADV Manager` and create an emulator.
+Go to `Tools -> AVD Manager` and create an emulator.
 
 Then you need to install Appium. You can install either the command line app with `npm install -g appium`, or
 the [Desktop App](https://github.com/appium/appium-desktop/releases/).
@@ -49,8 +49,8 @@ Ex: `Android Emulator - Pixel_2_API_30:5554`
 
 Make sure the karate-config is correct, more precisely :
 
-- The `deviceName` is set to `emulator-<id>` where id is the one found on the emulator window
-- avd is set the avd name found on the emulator window
+- `deviceName` is set to `emulator-<id>` where id is the one found on the emulator window, here it would be `emulator-5554`.
+- `avd` is set to the avd name indicated on the emulator window, here it would be `Pixel_2_API_30`.
 
 Run the test with :
 `mvn test -DargLine="-Dkarate.env=android"`

@@ -2,6 +2,9 @@
 Feature: Create LAO
 
   Background: Driver basic setup
+    # This page object will add view selectors variables to the current scope, start the app and setup mock backend
+    # The is a basic setup (selected by its name tag): it will start on the home page being connected to the backend
+    # More info on tag selection: https://github.com/karatelabs/karate#call-tag-selector
     * def page_object = 'classpath:fe/utils/<env>.feature@name=basic_setup'
     * replace page_object.env = karate.env
     * call read(page_object)
