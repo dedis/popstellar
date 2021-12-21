@@ -5,16 +5,17 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ChirpDelete defines a message data
-type ChirpDelete struct {
-	Object    string `json:"object"`
-	Action    string `json:"action"`
-	ChirpId   string `json:"chirp_id"`
-	Timestamp int64  `json:"timestamp"`
+// ReactionAdd defines a message data
+type ReactionAdd struct {
+	Object            string `json:"object"`
+	Action            string `json:"action"`
+	ReactionCodepoint string `json:"reaction_codepoint"`
+	ChirpId           string `json:"chirp_id"`
+	Timestamp         int64  `json:"timestamp"`
 }
 
-// Verify verifies that the ChirpDelete message is correct
-func (message ChirpDelete) Verify() error {
+// Verify verifies that the ReactionAdd message is correct
+func (message ReactionAdd) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {
 		return xerrors.Errorf("timestamp is %d, should be minimum 0", message.Timestamp)
