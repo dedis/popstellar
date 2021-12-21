@@ -1,12 +1,12 @@
 package messagedata
 
 import (
-"encoding/json"
-"github.com/stretchr/testify/require"
-"os"
-"path/filepath"
-"popstellar/message/messagedata"
-"testing"
+	"encoding/json"
+	"github.com/stretchr/testify/require"
+	"os"
+	"path/filepath"
+	"popstellar/message/messagedata"
+	"testing"
 )
 
 func Test_Reaction_Add(t *testing.T) {
