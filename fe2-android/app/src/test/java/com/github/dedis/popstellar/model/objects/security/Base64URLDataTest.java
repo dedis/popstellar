@@ -64,4 +64,13 @@ public class Base64URLDataTest {
     assertNotEquals(data, null);
     assertNotEquals(data, signature);
   }
+
+  @Test
+  public void toStringShowsExpectedValue() {
+    Base64URLData data = new Base64URLData(DATA_1);
+    Signature signature = new Signature(DATA_1);
+
+    assertEquals("Base64URLData(" + ENCODED_1 + ")", data.toString());
+    assertEquals("Signature(" + ENCODED_1 + ")", signature.toString());
+  }
 }
