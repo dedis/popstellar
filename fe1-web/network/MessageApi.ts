@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp, Wallet,
+  EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
   AddChirp,
@@ -211,21 +211,16 @@ export function requestCloseRollCall(
   const lao: Lao = OpenedLaoStore.get();
   const time = (close === undefined) ? Timestamp.EpochNow() : close;
 
-  // The organizer adds his own token to the list of attendees before closing the roll call
-  return Wallet.generateToken(lao.id, rollCallId).then((token) => {
-    attendees.push(token.publicKey);
-
-    const message = new CloseRollCall({
-      update_id: Hash.fromStringArray(
-        EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
-      ),
-      closes: rollCallId,
-      closed_at: time,
-      attendees: attendees,
-    });
-
-    return publish(channelFromIds(lao.id), message);
+  const message = new CloseRollCall({
+    update_id: Hash.fromStringArray(
+      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+    ),
+    closes: rollCallId,
+    closed_at: time,
+    attendees: attendees,
   });
+
+  return publish(channelFromIds(lao.id), message);
 }
 
 /** Sends a server query asking for creation of an Election with a given name (String),
