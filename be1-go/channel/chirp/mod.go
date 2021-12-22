@@ -307,6 +307,11 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
 	}
 
+	err = chirpMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid add chirp message: %v", err)
+	}
+
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
@@ -331,6 +336,11 @@ func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
 	err := msg.UnmarshalData(&chirpMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
+	}
+
+	err = chirpMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid delete chirp message: %v", err)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
