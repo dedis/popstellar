@@ -1,7 +1,8 @@
 import scala.util.{Try, Success, Failure}
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
 import sbt.IO._
-
+import scala.reflect.io.Directory
+import java.io.File
 
 name := "pop"
 
@@ -29,6 +30,15 @@ copyProtocolTask := {
                 exception.printStackTrace()
         }
     }
+}
+lazy val deleteDBTask = taskKey[Unit]("Delete databaseTest")
+deleteDBTask := {
+    val log = streams.value.log
+    val dir = new Directory(new File("databaseTest"))
+    if(!dir.deleteRecursively()){
+        log.warn("Directory could/was  not be deleted")
+    }
+    log.info("The database test was deleted")
 }
 //Add task to compile time
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
@@ -74,6 +84,7 @@ assemblyMergeStrategy in assembly := {
     case _ => MergeStrategy.defaultMergeStrategy("")
 }
 
+cleanFiles += baseDirectory.value / "databaseTest"
 // For websockets
 val AkkaVersion = "2.6.8"
 val AkkaHttpVersion = "10.2.0"

@@ -41,14 +41,12 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, DB_TEST_FOLDER)), "DbActor")
 
   override def afterAll(): Unit = {
-    // Stops the test actor system
-    TestKit.shutdownActorSystem(system)
+     TestKit.shutdownActorSystem(system, verifySystemShutdown = true)
 
     // Deletes the test database
     val directory = new Directory(new File(DB_TEST_FOLDER))
     directory.deleteRecursively()
   }
-
 
   private def generateUniqueChannel: Channel = {
     Channel(s"/root/channelNumber${GENERATOR.nextInt(Int.MaxValue)}")
@@ -119,7 +117,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer shouldBe a [DbActor.DbActorAck]
   }
-  
+
   test("DbActor fails during CATCHUP on a missing channel") {
     val channel: Channel = generateUniqueChannel
     val expected: DbActor.DbActorNAck = DbActor.DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Database cannot catchup from a channel $channel that does not exist in db")
@@ -130,7 +128,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer shouldBe a [DbActor.DbActorNAck]
     answer.asInstanceOf[DbActor.DbActorNAck] should equal (expected)
   }
-  
+
   test("DbActor succeeds during CATCHUP on a channel with one message") {
     val message: Message = MessageExample.MESSAGE
     val channel: Channel = generateUniqueChannel
@@ -180,10 +178,10 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer shouldBe a [DbActor.DbActorReadAck]
     answer.asInstanceOf[DbActor.DbActorReadAck].message should equal (Some(message))
   }
-  
+
   test("DbActor can overwrite messages") {
     val message: Message = MessageExample.MESSAGE
-    val messageModified: Message = message.addWitnessSignature(WitnessSignaturePair(PublicKey(Base64Data("myKey")), Signature(Base64Data("mySig"))))
+    val messageModified: Message = message.addWitnessSignature(WitnessSignaturePair(PublicKey(Base64Data.encode("myKey")), Signature(Base64Data.encode("mySig"))))
     val channel: Channel = generateUniqueChannel
 
     var ask = dbActorRef ? DbActor.Write(channel, message)
@@ -260,8 +258,8 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
-    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key"))))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data.encode("key")))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data.encode("key"))))
     answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
   }
 
@@ -280,8 +278,8 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
-    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key"))))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data.encode("key")))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data.encode("key"))))
     answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
 
     val ask3 = dbActorRef ? DbActor.Write(channel, messageRollCall)
@@ -294,8 +292,8 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer4 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
-    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("keyAttendee"))))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data.encode("key")))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data.encode("keyAttendee"))))
     answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
   }
 
@@ -327,8 +325,8 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer4 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
-    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key"))))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data.encode("key")))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data.encode("key"))))
     answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
 
     val ask5 = dbActorRef ? DbActor.ReadLaoData(channel2)
@@ -336,8 +334,8 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer5 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key2")))
-    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key2"))))
+    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data.encode("key2")))
+    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data.encode("key2"))))
     answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
 
   }
