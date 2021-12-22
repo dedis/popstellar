@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security.privatekey;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.PrivateKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
@@ -31,5 +33,13 @@ public class PlainPrivateKey extends Base64URLData implements PrivateKey {
   @Override
   public Signature sign(Base64URLData data) throws GeneralSecurityException {
     return new Signature(signer.sign(data.getData()));
+  }
+
+  @NonNull
+  @Override
+  public String toString() {
+    // The actual private key should never be printed
+    // Prevent that by redefining the toString representation
+    return "PlainPrivateKey@" + Integer.toHexString(hashCode());
   }
 }

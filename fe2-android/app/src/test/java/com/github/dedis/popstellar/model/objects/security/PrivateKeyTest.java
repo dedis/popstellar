@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.objects.security;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -55,5 +56,12 @@ public class PrivateKeyTest {
     KeysetHandle keyset = mock(KeysetHandle.class);
     when(keyset.getPrimitive(PublicKeySign.class)).thenThrow(new GeneralSecurityException());
     assertThrows(IllegalArgumentException.class, () -> new ProtectedPrivateKey(keyset));
+  }
+
+  @Test
+  public void privateKeyHidesValueInStringRepresentation() {
+    PlainPrivateKey key = new PlainPrivateKey(VALID_PRIVATE_KEY);
+
+    assertFalse(key.toString().contains(key.getEncoded()));
   }
 }
