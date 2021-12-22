@@ -28,12 +28,11 @@ import (
 )
 
 const (
-	laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
-	sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	generalName = "/root/" + laoID + "/social/posts"
+	laoID            = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	sender           = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	generalName      = "/root/" + laoID + "/social/posts"
 	chirpChannelName = "/root/" + laoID + "/social/" + sender
 )
-
 
 func Test_Catchup(t *testing.T) {
 	// Create the hub
