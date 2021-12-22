@@ -1,6 +1,8 @@
 import React from 'react';
 import { useRoute } from '@react-navigation/core';
-import { act, fireEvent, render } from '@testing-library/react-native';
+import {
+  act, fireEvent, render, waitFor,
+} from '@testing-library/react-native';
 import {
   Hash, Lao, LaoState, PopToken, PrivateKey, PublicKey, Timestamp,
 } from 'model/objects';
@@ -65,7 +67,6 @@ jest.mock('model/objects/wallet/Token.ts', () => ({
 }));
 
 describe('RollCallOpened', () => {
-  const flushPromises = () => new Promise(setImmediate);
   const useSelectorMock = jest.spyOn(reactRedux, 'useSelector');
   useSelectorMock.mockReturnValue({ mockLao });
 
@@ -77,7 +78,9 @@ describe('RollCallOpened', () => {
     const { toJSON } = render(
       <RollCallOpened />,
     );
-    expect(toJSON()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(toJSON()).toMatchSnapshot();
+    });
   });
 
   it('can scan attendees', async () => {
@@ -92,7 +95,9 @@ describe('RollCallOpened', () => {
       fakeQrReaderScan('123');
       fakeQrReaderScan('456');
     });
-    expect(mockToastShow).toHaveBeenCalledTimes(2);
+    await waitFor(() => {
+      expect(mockToastShow).toHaveBeenCalledTimes(2);
+    });
   });
 
   it('close correctly with no attendee', async () => {
@@ -105,9 +110,11 @@ describe('RollCallOpened', () => {
     const button = render(
       <RollCallOpened />,
     ).getByText(STRINGS.roll_call_scan_close);
-    fireEvent.press(button);
-    await flushPromises();
-    expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [mockTokenPublicKey]);
+    await waitFor(() => {
+      fireEvent.press(button);
+      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(),
+        [mockTokenPublicKey]);
+    });
   });
 
   it('close correctly with two attendees', async () => {
@@ -120,13 +127,14 @@ describe('RollCallOpened', () => {
     const button = render(
       <RollCallOpened />,
     ).getByText(STRINGS.roll_call_scan_close);
-    act(() => {
-      fakeQrReaderScan('123');
-      fakeQrReaderScan('456');
+    await waitFor(() => {
+      act(() => {
+        fakeQrReaderScan('123');
+        fakeQrReaderScan('456');
+      });
+      fireEvent.press(button);
+      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(),
+        [new PublicKey('123'), new PublicKey('456'), mockTokenPublicKey]);
     });
-    fireEvent.press(button);
-    await flushPromises();
-    expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(),
-      [new PublicKey('123'), new PublicKey('456'), mockTokenPublicKey]);
   });
 });
