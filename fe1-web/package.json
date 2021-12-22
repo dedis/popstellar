@@ -1,6 +1,7 @@
 {
   "name": "popstellar",
   "main": "node_modules/expo/AppEntry.js",
+  "homepage": ".",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

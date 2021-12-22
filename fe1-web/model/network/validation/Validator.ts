@@ -37,9 +37,9 @@ export enum ActionType {
   RESULT = 'result',
   CLOSE = 'close',
   ADD = 'add',
-  ADD_BROADCAST = 'addBroadcast',
+  ADD_BROADCAST = 'add_broadcast',
   DELETE = 'delete',
-  NOTIFY_DELETE = 'deleteBroadcast',
+  NOTIFY_DELETE = 'delete_broadcast',
 }
 
 const ajv = new Ajv();

@@ -25,9 +25,14 @@ const chirp = new Chirp({
   id: new Hash('1234'),
   text: 'Don\'t panic.',
   sender: sender,
-  time: new Timestamp(1609455600),
+  time: new Timestamp(1609455600), // 31 December 2020
   likes: 42,
   isDeleted: false,
+});
+
+beforeAll(() => {
+  jest.useFakeTimers('modern');
+  jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
 });
 
 describe('ChirpCard', () => {
@@ -64,4 +69,8 @@ describe('ChirpCard', () => {
     fireEvent.press(button);
     expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
   });
+});
+
+afterAll(() => {
+  jest.useRealTimers();
 });
