@@ -28,9 +28,7 @@ import (
 const (
 	laoID                       = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
 	sender                      = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-	root                        = "/root/"
-	social                      = "/social/"
-	reactions                   = "reactions"
+	reactionChannelName         = "/root/" + laoID + "/social/reactions"
 	protocolRelativePath string = "../../../protocol"
 )
 
@@ -42,8 +40,6 @@ func TestReactionChannel_Subscribe(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-
-	reactionChannelName := root + laoID + social + reactions
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
@@ -75,8 +71,6 @@ func TestReactionChannel_Unsubscribe(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-
-	reactionChannelName := root + laoID + social + reactions
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
@@ -113,8 +107,6 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	reactionChannelName := root + laoID + social + reactions
-
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
@@ -140,8 +132,6 @@ func TestReactionChannel_Broadcast_mustFail(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-
-	reactionChannelName := root + laoID + social + reactions
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
@@ -169,14 +159,12 @@ func Test_Catchup(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	reactionChannelName := root + laoID + social + reactions
-
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
 
-	_, found := fakeHub.channelByID[root+laoID+social+reactions]
+	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
 	// Create the messages
@@ -216,13 +204,11 @@ func Test_SendReaction(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	reactionChannelName := root + laoID + social + reactions
-
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
-	_, found := fakeHub.channelByID[root+laoID+social+reactions]
+	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
 	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
@@ -258,7 +244,7 @@ func Test_SendReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	message.Params.Message = m
-	message.Params.Channel = root + laoID + social + reactions
+	message.Params.Channel = reactionChannelName
 
 	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
 }
@@ -272,13 +258,11 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	reactionChannelName := root + laoID + social + reactions
-
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
-	_, found := fakeHub.channelByID[root+laoID+social+reactions]
+	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
 	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
@@ -313,7 +297,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	require.NoError(t, err)
 
 	pub.Params.Message = m
-	pub.Params.Channel = root + laoID + social + reactions
+	pub.Params.Channel = reactionChannelName
 
 	// If the reaction to delete does not exit, it must fail
 	require.Error(t, cha.Publish(pub, socket.ClientSocket{}))
@@ -327,13 +311,11 @@ func Test_DeleteReaction(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	reactionChannelName := root + laoID + social + reactions
-
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
 	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
-	_, found := fakeHub.channelByID[root+laoID+social+reactions]
+	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
 	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
@@ -371,7 +353,7 @@ func Test_DeleteReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	pub.Params.Message = m
-	pub.Params.Channel = root + laoID + social + reactions
+	pub.Params.Channel = reactionChannelName
 
 	// We publish the reaction to be deleted
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
@@ -408,7 +390,7 @@ func Test_DeleteReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	pub.Params.Message = m
-	pub.Params.Channel = root + laoID + social + reactions
+	pub.Params.Channel = reactionChannelName
 
 	// If there is no error, the delete request has been properly received
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))

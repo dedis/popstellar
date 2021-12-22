@@ -52,7 +52,7 @@ type Channel struct {
 
 	inbox     *inbox.Inbox
 	general   channel.Broadcastable
-	reactions *reaction.Channel
+	reactions channel.LAOFunctionalities
 
 	// /root/<ID>
 	channelID string
