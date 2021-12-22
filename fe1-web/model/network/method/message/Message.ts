@@ -127,6 +127,7 @@ export class Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     let publicKey = KeyPairStore.getPublicKey();
     let privateKey = KeyPairStore.getPrivateKey();
+    let signature: Signature;
 
     if (isSignedWithToken(data)) {
       const token = await getCurrentPopTokenFromStore();
@@ -137,7 +138,7 @@ export class Message {
         console.error('Impossible to sign the message with a pop token: no token found for '
           + 'current user in this LAO');
       }
-      const signature: Signature = privateKey.sign(encodedDataJson);
+      signature = privateKey.sign(encodedDataJson);
 
       return new Message({
         data: encodedDataJson,
@@ -147,7 +148,7 @@ export class Message {
         witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
       });
     }
-    const signature: Signature = privateKey.sign(encodedDataJson);
+    signature = privateKey.sign(encodedDataJson);
 
     return new Message({
       data: encodedDataJson,
