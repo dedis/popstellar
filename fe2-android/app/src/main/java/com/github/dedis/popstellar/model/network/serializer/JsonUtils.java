@@ -4,12 +4,6 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Answer;
-import com.github.dedis.popstellar.model.network.method.Message;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.networknt.schema.JsonSchema;
