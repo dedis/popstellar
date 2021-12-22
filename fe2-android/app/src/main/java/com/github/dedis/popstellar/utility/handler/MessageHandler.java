@@ -2,9 +2,11 @@ package com.github.dedis.popstellar.utility.handler;
 
 import android.util.Log;
 
+import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
@@ -20,6 +22,9 @@ import com.github.dedis.popstellar.utility.error.UnknownDataObjectException;
 public final class MessageHandler {
 
   public static final String TAG = MessageHandler.class.getSimpleName();
+
+  // TODO remove this static field after refactor and use injection with Hilt
+  private static final DataRegistry registry = DataRegistryModule.provideDataRegistry();
 
   private MessageHandler() {
     throw new IllegalStateException("Utility class");
@@ -40,8 +45,6 @@ public final class MessageHandler {
     // Put the message in the state
     laoRepository.getMessageById().put(message.getMessageId(), message);
 
-    String senderPk = message.getSender();
-
     Data data = message.getData();
     Log.d(TAG, "data with class: " + data.getClass());
 
@@ -51,7 +54,8 @@ public final class MessageHandler {
     Action dataAction = Action.find(data.getAction());
     if (dataAction == null) throw new UnknownDataActionException(data);
 
-    Data.getDataHandler(dataObj, dataAction)
+    registry
+        .getDataHandler(dataObj, dataAction)
         .orElseThrow(() -> new UnhandledDataTypeException(data, dataObj + "#" + dataAction))
         .accept(new HandlerContext(laoRepository, channel, message), data);
 

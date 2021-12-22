@@ -72,21 +72,6 @@ public final class JsonUtils {
   }
 
   /**
-   * Create a Gson object with the needed serializer for the app usage
-   *
-   * @return the Gson object
-   */
-  @Deprecated
-  public static Gson createGson() {
-    return new GsonBuilder()
-        .registerTypeAdapter(GenericMessage.class, new JsonGenericMessageDeserializer())
-        .registerTypeAdapter(Message.class, new JsonMessageSerializer())
-        .registerTypeAdapter(Data.class, new JsonDataSerializer())
-        .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
-        .create();
-  }
-
-  /**
    * Verify the json against the given schema
    *
    * @param schemaPath the path of the schema resource

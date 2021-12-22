@@ -7,6 +7,7 @@ import static com.github.dedis.popstellar.utility.handler.RollCallHandler.openRo
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
@@ -57,7 +58,7 @@ public class RollCallHandlerTest {
   @Mock AndroidKeysetManager androidKeysetManager;
   @Mock PublicKeySign signer;
 
-  private static final Gson GSON = JsonModule.provideGson();
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;

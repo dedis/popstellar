@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.repository;
 
+import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Answer;
@@ -44,7 +45,7 @@ public class LAORepositoryTest extends TestCase {
   @Mock AndroidKeysetManager androidKeysetManager;
   @Mock PublicKeySign signer;
 
-  private static final Gson GSON = JsonModule.provideGson();
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;

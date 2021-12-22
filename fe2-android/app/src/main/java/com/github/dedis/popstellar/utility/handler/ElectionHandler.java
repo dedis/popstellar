@@ -95,6 +95,7 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param electionEnd the message that was received
    */
+  @SuppressWarnings("unused")
   public static void handleElectionEnd(HandlerContext context, ElectionEnd electionEnd) {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();

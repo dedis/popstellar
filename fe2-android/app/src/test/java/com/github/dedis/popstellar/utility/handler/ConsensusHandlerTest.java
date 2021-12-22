@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -80,7 +81,7 @@ public class ConsensusHandlerTest {
   private static final ConsensusElect elect =
       new ConsensusElect(CREATION_TIME, KEY_ID, TYPE, PROPERTY, VALUE);
 
-  private static final Gson GSON = JsonModule.provideGson();
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   private LAORepository laoRepository;
   private MessageGeneral electMsg;

@@ -78,6 +78,7 @@ public final class ConsensusHandler {
     laoRepository.updateNodes(lao.getChannel());
   }
 
+  @SuppressWarnings("unused")
   public static <T extends Data> void handleBackend(HandlerContext context, T data) {
     Log.w(TAG, "Received a consensus message only for backend with action=" + data.getAction());
   }
