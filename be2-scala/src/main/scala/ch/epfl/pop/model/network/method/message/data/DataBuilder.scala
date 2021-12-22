@@ -11,6 +11,9 @@ import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddB
 import spray.json._
 import scala.util.{Try,Success,Failure}
 
+import spray.json._
+import scala.util.{Try,Success,Failure}
+
 /*
  * Helps building MessageData instances
  */
@@ -85,6 +88,7 @@ object DataBuilder {
     case ActionType.ADD_BROADCAST => AddBroadcastChirp.buildFromJson(payload)
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Social Media Data")
   }
+  
   /**
     * Builds a message payload after passing a schema validation check
     *
