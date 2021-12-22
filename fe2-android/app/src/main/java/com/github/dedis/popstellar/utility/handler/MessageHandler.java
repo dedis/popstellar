@@ -51,9 +51,9 @@ public final class MessageHandler {
     Action dataAction = Action.find(data.getAction());
     if (dataAction == null) throw new UnknownDataActionException(data);
 
-    Data.getDataConsumer(dataObj, dataAction)
+    Data.getDataHandler(dataObj, dataAction)
         .orElseThrow(() -> new UnhandledDataTypeException(data, dataObj + "#" + dataAction))
-        .accept(laoRepository, channel, data, message.getMessageId(), senderPk);
+        .accept(new HandlerContext(laoRepository, channel, message), data);
 
     notifyLaoUpdate(laoRepository, data, channel);
   }

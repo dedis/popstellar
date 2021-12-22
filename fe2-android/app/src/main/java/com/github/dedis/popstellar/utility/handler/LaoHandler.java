@@ -31,18 +31,13 @@ public final class LaoHandler {
   /**
    * Process a CreateLao message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param createLao the message that was received
-   * @param messageId the ID of the received message
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleCreateLao(
-      LAORepository laoRepository,
-      String channel,
-      CreateLao createLao,
-      String messageId,
-      String senderPk) {
+  public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
@@ -63,19 +58,15 @@ public final class LaoHandler {
   /**
    * Process an UpdateLao message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param updateLao the message that was received
-   * @param messageId the ID of the received message
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleUpdateLao(
-      LAORepository laoRepository,
-      String channel,
-      UpdateLao updateLao,
-      String messageId,
-      String senderPk)
+  public static void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
@@ -108,19 +99,14 @@ public final class LaoHandler {
   /**
    * Process a StateLao message.
    *
-   * @param laoRepository the repository to access the messages and LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param stateLao the message that was received
-   * @param messageId the ID of the received message
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleStateLao(
-      LAORepository laoRepository,
-      String channel,
-      StateLao stateLao,
-      String messageId,
-      String senderPk)
+  public static void handleStateLao(HandlerContext context, StateLao stateLao)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
 
     Lao lao = laoRepository.getLaoByChannel(channel);

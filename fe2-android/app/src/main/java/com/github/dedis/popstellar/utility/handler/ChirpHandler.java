@@ -17,18 +17,15 @@ public final class ChirpHandler {
   /**
    * Process an AddChirp message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param addChirp the data of the message that was received
-   * @param messageId the ID of the message that was received
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleChirpAdd(
-      LAORepository laoRepository,
-      String channel,
-      AddChirp addChirp,
-      String messageId,
-      String senderPk) {
+  public static void handleChirpAdd(HandlerContext context, AddChirp addChirp) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+    String senderPk = context.getSenderPk();
+
     Lao lao = laoRepository.getLaoByChannel(channel);
 
     Chirp chirp = new Chirp(messageId);

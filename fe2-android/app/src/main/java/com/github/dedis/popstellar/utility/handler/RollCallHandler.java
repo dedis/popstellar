@@ -30,18 +30,14 @@ public final class RollCallHandler {
   /**
    * Process a CreateRollCall message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param createRollCall the message that was received
-   * @param messageId the ID of the received message
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleCreateRollCall(
-      LAORepository laoRepository,
-      String channel,
-      CreateRollCall createRollCall,
-      String messageId,
-      String senderPk) {
+  public static void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
 
@@ -64,19 +60,15 @@ public final class RollCallHandler {
   /**
    * Process an OpenRollCall message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param openRollCall the message that was received
-   * @param messageId the ID of the received message
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleOpenRollCall(
-      LAORepository laoRepository,
-      String channel,
-      OpenRollCall openRollCall,
-      String messageId,
-      String senderPk)
+  public static void handleOpenRollCall(HandlerContext context, OpenRollCall openRollCall)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
 
@@ -104,19 +96,15 @@ public final class RollCallHandler {
   /**
    * Process a CloseRollCall message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param closeRollCall the message that was received
-   * @param messageId the ID of the received message
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleCloseRollCall(
-      LAORepository laoRepository,
-      String channel,
-      CloseRollCall closeRollCall,
-      String messageId,
-      String senderPk)
+  public static void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCloseRollCall: " + channel);
 

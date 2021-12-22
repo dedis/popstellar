@@ -56,7 +56,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirpBroadcast;
 import com.github.dedis.popstellar.utility.handler.ChirpHandler;
 import com.github.dedis.popstellar.utility.handler.ConsensusHandler;
-import com.github.dedis.popstellar.utility.handler.DataConsumer;
+import com.github.dedis.popstellar.utility.handler.DataHandler;
 import com.github.dedis.popstellar.utility.handler.ElectionHandler;
 import com.github.dedis.popstellar.utility.handler.LaoHandler;
 import com.github.dedis.popstellar.utility.handler.RollCallHandler;
@@ -69,8 +69,8 @@ import java.util.Optional;
 /** An abstract high level message */
 public abstract class Data {
 
-  /** A mapping of (object, action) -> (class, consumer) */
-  private static final Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>>
+  /** A mapping of (object, action) -> (class, handler) */
+  private static final Map<EntryPair, Pair<Class<? extends Data>, DataHandler<? extends Data>>>
       messages = buildMessagesMap();
 
   /**
@@ -85,12 +85,12 @@ public abstract class Data {
   }
 
   private static <T extends Data> void add(
-      Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>> map,
+      Map<EntryPair, Pair<Class<? extends Data>, DataHandler<? extends Data>>> map,
       Objects obj,
       Action action,
       Class<T> dataClass,
-      DataConsumer<T> dataConsumer) {
-    map.put(pair(obj, action), Pair.create(dataClass, dataConsumer));
+      DataHandler<T> dataHandler) {
+    map.put(pair(obj, action), Pair.create(dataClass, dataHandler));
   }
 
   /**
@@ -98,9 +98,9 @@ public abstract class Data {
    *
    * @return the built map (Unmodifiable)
    */
-  private static Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>>
+  private static Map<EntryPair, Pair<Class<? extends Data>, DataHandler<? extends Data>>>
       buildMessagesMap() {
-    Map<EntryPair, Pair<Class<? extends Data>, DataConsumer<? extends Data>>> map = new HashMap<>();
+    Map<EntryPair, Pair<Class<? extends Data>, DataHandler<? extends Data>>> map = new HashMap<>();
 
     // Lao
     add(map, LAO, CREATE, CreateLao.class, LaoHandler::handleCreateLao);
@@ -160,13 +160,13 @@ public abstract class Data {
   }
 
   /**
-   * Return the data consumer assigned to the pair (obj, action)
+   * Return the data handler assigned to the pair (obj, action)
    *
    * @param obj of the entry
    * @param action of the entry
-   * @return the DataConsumer assigned to the pair or empty if none are defined
+   * @return the DataHandler assigned to the pair or empty if none are defined
    */
-  public static Optional<DataConsumer<? extends Data>> getDataConsumer(Objects obj, Action action) {
+  public static Optional<DataHandler<? extends Data>> getDataHandler(Objects obj, Action action) {
     return Optional.ofNullable(messages.get(pair(obj, action))).map(p -> p.second);
   }
 

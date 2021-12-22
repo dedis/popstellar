@@ -27,18 +27,15 @@ public final class ConsensusHandler {
   /**
    * Process an Elect message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param consensusElect the data of the message that was received
-   * @param messageId the ID of the message that was received
-   * @param senderPk the public key of the sender of this message
    */
-  public static void handleElect(
-      LAORepository laoRepository,
-      String channel,
-      ConsensusElect consensusElect,
-      String messageId,
-      String senderPk) {
+  public static void handleElect(HandlerContext context, ConsensusElect consensusElect) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+    String senderPk = context.getSenderPk();
+
     Lao lao = laoRepository.getLaoByChannel(channel);
     Set<String> nodes = new HashSet<>(lao.getWitnesses());
     nodes.add(lao.getOrganizer());
@@ -57,12 +54,13 @@ public final class ConsensusHandler {
   }
 
   public static void handleElectAccept(
-      LAORepository laoRepository,
-      String channel,
-      ConsensusElectAccept consensusElectAccept,
-      String messageId,
-      String senderPk)
+      HandlerContext context, ConsensusElectAccept consensusElectAccept)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+    String senderPk = context.getSenderPk();
+
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusElectAccept.getMessageId());
     if (!consensusOpt.isPresent()) {
@@ -80,18 +78,15 @@ public final class ConsensusHandler {
     laoRepository.updateNodes(lao.getChannel());
   }
 
-  public static <T extends Data> void handleBackend(
-      LAORepository laoRepository, String channel, T data, String messageId, String senderPk) {
+  public static <T extends Data> void handleBackend(HandlerContext context, T data) {
     Log.w(TAG, "Received a consensus message only for backend with action=" + data.getAction());
   }
 
-  public static void handleLearn(
-      LAORepository laoRepository,
-      String channel,
-      ConsensusLearn consensusLearn,
-      String messageId,
-      String senderPk)
+  public static void handleLearn(HandlerContext context, ConsensusLearn consensusLearn)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusLearn.getMessageId());
 
