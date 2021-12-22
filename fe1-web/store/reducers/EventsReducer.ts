@@ -289,7 +289,7 @@ export const makeLastRollCallAttendeesList = (laoId: Hash | string,
       if (!rollCall) {
         return [];
       }
-      return rollCall.attendees ? rollCall.attendees : [];
+      return rollCall.attendees || [];
     },
   );
 };

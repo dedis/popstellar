@@ -17,7 +17,7 @@ import WideButtonView from './WideButtonView';
  *
  * @remarks
  * For now, it is not possible to unfollow users, and you have to follow someone to access to
- * his profile.
+ * their profile. (2021-12-20, Xelowak)
  */
 const styles = StyleSheet.create({
   container: {
