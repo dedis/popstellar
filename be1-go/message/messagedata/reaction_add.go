@@ -22,7 +22,8 @@ func (message ReactionAdd) Verify() error {
 	}
 
 	// verify that the chirp id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.ChirpId); err != nil {
+	_, err := base64.URLEncoding.DecodeString(message.ChirpId)
+	if err != nil {
 		return xerrors.Errorf("chirp id is %s, should be base64URL encoded", message.ChirpId)
 	}
 

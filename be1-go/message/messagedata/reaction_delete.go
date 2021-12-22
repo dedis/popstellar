@@ -21,7 +21,8 @@ func (message ReactionDelete) Verify() error {
 	}
 
 	// verify that the reaction id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.ReactionId); err != nil {
+	_, err := base64.URLEncoding.DecodeString(message.ReactionId)
+	if err != nil {
 		return xerrors.Errorf("reaction id is %s, should be base64URL encoded", message.ReactionId)
 	}
 

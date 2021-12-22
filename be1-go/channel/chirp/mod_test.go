@@ -27,11 +27,13 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
-const sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-const root = "/root/"
-const social = "/social/"
-const posts = "posts"
+const (
+	laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	generalName = "/root/" + laoID + "/social/posts"
+	chirpChannelName = "/root/" + laoID + "/social/" + sender
+)
+
 
 func Test_Catchup(t *testing.T) {
 	// Create the hub
@@ -40,18 +42,16 @@ func Test_Catchup(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	generalName := root + laoID + social + posts
-	chirpChannelName := root + laoID + social + sender
+	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
 
-	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	_, found = fakeHub.channelByID[generalName]
 	require.True(t, found)
 
 	// Create the messages
@@ -89,17 +89,16 @@ func Test_SendChirp(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-	generalName := root + laoID + social + posts
-	chirpChannelName := root + laoID + social + sender
+
+	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
-	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	_, found = fakeHub.channelByID[generalName]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
@@ -135,7 +134,7 @@ func Test_SendChirp(t *testing.T) {
 	require.NoError(t, err)
 
 	message.Params.Message = m
-	message.Params.Channel = root + laoID + social + sender
+	message.Params.Channel = chirpChannelName
 
 	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
 
@@ -145,7 +144,7 @@ func Test_SendChirp(t *testing.T) {
 		Object:    "chirp",
 		Action:    "add_broadcast",
 		ChirpId:   messagedata.Hash(buf64, "h"),
-		Channel:   root + laoID + social + posts,
+		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
 
@@ -163,17 +162,16 @@ func Test_DeleteChirp(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-	generalName := root + laoID + social + posts
-	chirpChannelName := root + laoID + social + sender
+
+	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
-	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	_, found = fakeHub.channelByID[generalName]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
@@ -211,7 +209,7 @@ func Test_DeleteChirp(t *testing.T) {
 	require.NoError(t, err)
 
 	pub.Params.Message = m
-	pub.Params.Channel = root + laoID + social + sender
+	pub.Params.Channel = chirpChannelName
 
 	// publish add chirp message
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
@@ -242,7 +240,7 @@ func Test_DeleteChirp(t *testing.T) {
 	}
 
 	pub.Params.Message = m
-	pub.Params.Channel = root + laoID + social + sender
+	pub.Params.Channel = chirpChannelName
 
 	// publish delete chirp message
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
@@ -253,7 +251,7 @@ func Test_DeleteChirp(t *testing.T) {
 		Object:    "chirp",
 		Action:    "add_broadcast",
 		ChirpId:   messagedata.Hash(buf64add, "h"),
-		Channel:   root + laoID + social + posts,
+		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
 	checkDataBufAdd, err := json.Marshal(checkDataAdd)
@@ -264,7 +262,7 @@ func Test_DeleteChirp(t *testing.T) {
 		Object:    "chirp",
 		Action:    "delete_broadcast",
 		ChirpId:   messagedata.Hash(buf64delete, "h"),
-		Channel:   root + laoID + social + posts,
+		Channel:   generalName,
 		Timestamp: 1634760180,
 	}
 	checkDataBufDelete, err := json.Marshal(checkDataDelete)
