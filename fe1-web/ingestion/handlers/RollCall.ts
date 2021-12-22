@@ -125,7 +125,7 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
   dispatch(updateEvent(lao.id, rc.toState()));
 
   // ... and update the Lao state to point to the latest roll call, if we have a token in it.
-  dispatch((() => async (aDispatch: AsyncDispatch) => {
+  dispatch(async (aDispatch: AsyncDispatch) => {
     try {
       const token = await Wallet.generateToken(lao.id, rc.id);
       const hasToken = rc.containsToken(token);
@@ -133,11 +133,11 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
     } catch (err) {
       console.debug(err);
     }
-  }));
+  });
 
   // For now, everyone is automatically subscribed to the organizer's social channel at the end of
   // the roll call
-  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer.valueOf()))
+  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer))
     .catch((err) => {
       console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`,
         err);
