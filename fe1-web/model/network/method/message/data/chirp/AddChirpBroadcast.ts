@@ -8,7 +8,7 @@ import { checkTimestampStaleness } from '../Checker';
 export class AddChirpBroadcast implements MessageData {
   public readonly object: ObjectType = ObjectType.CHIRP;
 
-  public readonly action: ActionType = ActionType.ADD_BROADCAST;
+  public readonly action: ActionType = ActionType.NOTIFY_ADD;
 
   // The ID of the chirp
   public readonly chirp_id: Hash;
@@ -43,7 +43,7 @@ export class AddChirpBroadcast implements MessageData {
    * @param obj - The given JSON object
    */
   public static fromJson(obj: any): AddChirpBroadcast {
-    const { errors } = validateDataObject(ObjectType.CHIRP, ActionType.ADD_BROADCAST, obj);
+    const { errors } = validateDataObject(ObjectType.CHIRP, ActionType.NOTIFY_ADD, obj);
 
     if (errors !== null) {
       throw new ProtocolError(`Invalid receive chirp\n\n${errors}`);

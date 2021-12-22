@@ -13,7 +13,7 @@ const ID = new Hash(mockMessageId.toString());
 
 const sampleAddBroadcastChirp: Partial<AddChirpBroadcast> = {
   object: ObjectType.CHIRP,
-  action: ActionType.ADD_BROADCAST,
+  action: ActionType.NOTIFY_ADD,
   chirp_id: ID,
   channel: CHANNEL,
   timestamp: TIMESTAMP,
@@ -21,7 +21,7 @@ const sampleAddBroadcastChirp: Partial<AddChirpBroadcast> = {
 
 const dataAddChirpBroadcast = `{
     "object": "${ObjectType.CHIRP}",
-    "action":"${ActionType.ADD_BROADCAST}",
+    "action":"${ActionType.NOTIFY_ADD}",
     "chirp_id": "${ID}",
     "channel": "${CHANNEL}",
     "timestamp": ${TIMESTAMP}
@@ -32,7 +32,7 @@ describe('AddBroadcastChirp', () => {
     expect(new AddChirpBroadcast(sampleAddBroadcastChirp)).toBeJsonEqual(sampleAddBroadcastChirp);
     const temp = {
       object: ObjectType.CHIRP,
-      action: ActionType.ADD_BROADCAST,
+      action: ActionType.NOTIFY_ADD,
       chirp_id: ID,
       channel: CHANNEL,
       timestamp: TIMESTAMP,
@@ -61,7 +61,7 @@ describe('AddBroadcastChirp', () => {
     it('should throw an error if id is undefined', () => {
       const createWrongObj = () => new AddChirpBroadcast({
         object: ObjectType.CHIRP,
-        action: ActionType.ADD_BROADCAST,
+        action: ActionType.NOTIFY_ADD,
         channel: CHANNEL,
         timestamp: TIMESTAMP,
       });
@@ -71,7 +71,7 @@ describe('AddBroadcastChirp', () => {
     it('should throw an error if timestamp is undefined', () => {
       const createWrongObj = () => new AddChirpBroadcast({
         object: ObjectType.CHIRP,
-        action: ActionType.ADD_BROADCAST,
+        action: ActionType.NOTIFY_ADD,
         chirp_id: ID,
         channel: CHANNEL,
       });
@@ -81,7 +81,7 @@ describe('AddBroadcastChirp', () => {
     it('should throw an error if channel is undefined', () => {
       const createWrongObj = () => new AddChirpBroadcast({
         object: ObjectType.CHIRP,
-        action: ActionType.ADD_BROADCAST,
+        action: ActionType.NOTIFY_ADD,
         chirp_id: ID,
         timestamp: TIMESTAMP,
       });

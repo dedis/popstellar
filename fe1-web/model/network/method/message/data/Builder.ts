@@ -76,7 +76,7 @@ function buildChirpMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.ADD:
       return AddChirp.fromJson(msgData);
-    case ActionType.ADD_BROADCAST:
+    case ActionType.NOTIFY_ADD:
       return AddChirpBroadcast.fromJson(msgData);
     case ActionType.DELETE:
       return DeleteChirp.fromJson(msgData);

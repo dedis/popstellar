@@ -28,7 +28,7 @@ export enum ActionType {
   RESULT = 'result',
   CLOSE = 'close',
   ADD = 'add',
-  ADD_BROADCAST = 'add_broadcast',
+  NOTIFY_ADD = 'add_broadcast',
   DELETE = 'delete',
   NOTIFY_DELETE = 'delete_broadcast',
 }
