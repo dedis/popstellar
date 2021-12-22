@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
@@ -44,10 +44,13 @@ const RollCallOpened = () => {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
   }
 
-  // Add the token of the organizer as soon as we open the roll call
-  Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
-    updateAttendees((prev) => new Set<string>(prev.add(token.publicKey.valueOf())));
-  });
+  // This will run only when re-rendering
+  useEffect(() => {
+    // Add the token of the organizer as soon as we open the roll call
+    Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
+      updateAttendees((prev) => new Set<string>(prev.add(token.publicKey.valueOf())));
+    });
+  }, []);
 
   const handleError = (err: string) => {
     console.error(err);
