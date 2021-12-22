@@ -47,20 +47,19 @@ beforeAll(() => {
 });
 
 describe('Message', () => {
-  it('fromData signs the message correctly when adding a chirp', () => {
+  it('fromData signs the message correctly when adding a chirp', async () => {
     const messageData = new AddChirp({
       text: 'text',
       timestamp: new Timestamp(1607277600),
     });
     const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
     const signature = mockPopToken.privateKey.sign(encodedDataJson);
-    return Message.fromData(messageData).then((m) => {
-      expect(m.sender).toEqual(mockPopToken.publicKey);
-      expect(m.signature).toEqual(signature);
-    });
+    const m = await Message.fromData(messageData);
+    expect(m.sender).toEqual(mockPopToken.publicKey);
+    expect(m.signature).toEqual(signature);
   });
 
-  it('fromData signs the message correctly when ending an election', () => {
+  it('fromData signs the message correctly when ending an election', async () => {
     const messageData = new EndElection({
       lao: mockLao.id,
       election: Hash.fromStringArray(EventTags.ELECTION, laoState.id, '5678', '1607277600'),
@@ -71,10 +70,9 @@ describe('Message', () => {
     const privateKey = new PrivateKey(mockPrivateKey);
     const publicKey = new PublicKey(mockPublicKey);
     const signature = privateKey.sign(encodedDataJson);
-    return Message.fromData(messageData).then((m) => {
-      expect(m.sender).toEqual(publicKey);
-      expect(m.signature).toEqual(signature);
-    });
+    const m = await Message.fromData(messageData);
+    expect(m.sender).toEqual(publicKey);
+    expect(m.signature).toEqual(signature);
   });
 });
 
