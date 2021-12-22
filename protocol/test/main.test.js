@@ -160,6 +160,17 @@ test("message data: chirp", () => {
     chirp_add_broadcast = require("../examples/messageData/chirp_add_broadcast.json")
     expect(chirp_add_broadcast).toBeValid(messageDataSchema)
 
+    chirp_delete = require("../examples/messageData/chirp_delete_publish.json")
+    expect(chirp_delete).toBeValid(messageDataSchema)
+
+    chirp_delete_broadcast = require("../examples/messageData/chirp_delete_broadcast.json")
+    expect(chirp_delete_broadcast).toBeValid(messageDataSchema)
+
+    reaction_add = require("../examples/messageData/reaction_add.json")
+    expect(reaction_add).toBeValid(messageDataSchema)
+
+    reaction_delete = require("../examples/messageData/reaction_delete.json")
+    expect(reaction_delete).toBeValid(messageDataSchema)
 })
 
 test("message data: consensus", () => {
@@ -203,7 +214,7 @@ test("message data: consensus", () => {
     accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
     expect(accept).not.toBeValid(messageDataSchema)
 
-    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_created_at.json");
+    accept = require("../examples/messageData/consensus_accept/wrong_accept_negative_accepted_try.json");
     expect(accept).not.toBeValid(messageDataSchema)
 
     // Learn

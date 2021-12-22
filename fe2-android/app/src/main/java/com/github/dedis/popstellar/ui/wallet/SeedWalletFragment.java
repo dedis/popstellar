@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.ui.wallet;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -61,10 +65,26 @@ public class SeedWalletFragment extends Fragment {
   }
 
   @Override
-  public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-    super.onActivityCreated(savedInstanceState);
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
     setupDisplaySeed();
     setupConfirmSeedButton();
+
+    mWalletSeedFragBinding.seedWallet.setOnClickListener(
+        v -> {
+          ClipboardManager clipboardManager =
+              (ClipboardManager)
+                  requireContext()
+                      .getApplicationContext()
+                      .getSystemService(Context.CLIPBOARD_SERVICE);
+          clipboardManager.setPrimaryClip(
+              ClipData.newPlainText("Seed", mWalletSeedFragBinding.seedWallet.getText()));
+          Toast.makeText(
+                  requireContext().getApplicationContext(),
+                  R.string.copied_to_clipboard,
+                  Toast.LENGTH_LONG)
+              .show();
+        });
   }
 
   private void setupDisplaySeed() {
