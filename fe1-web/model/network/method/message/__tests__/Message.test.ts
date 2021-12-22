@@ -12,8 +12,8 @@ import {
   PublicKey,
   Timestamp,
 } from 'model/objects';
-import { KeyPairStore, OpenedLaoStore } from 'store';
-import { AddChirp, encodeMessageData, OpenRollCall } from '../data';
+import { KeyPairStore } from 'store';
+import { AddChirp, encodeMessageData, EndElection } from '../data';
 import { Message } from '../Message';
 
 const TIMESTAMP = 1603455600;
@@ -38,14 +38,12 @@ jest.mock('model/objects/wallet/Token.ts', () => ({
 }));
 
 const pastKeyPairStoreState = KeyPairStore.get();
-const pastOpenedLaoStoreState = OpenedLaoStore.get();
 
 beforeAll(() => {
   KeyPairStore.store(KeyPair.fromState({
     publicKey: mockPublicKey,
     privateKey: mockPrivateKey,
   }));
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('Message', () => {
@@ -56,23 +54,24 @@ describe('Message', () => {
     });
     const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
     const signature = mockPopToken.privateKey.sign(encodedDataJson);
-    Message.fromData(messageData).then((m) => {
+    return Message.fromData(messageData).then((m) => {
       expect(m.sender).toEqual(mockPopToken.publicKey);
       expect(m.signature).toEqual(signature);
     });
   });
 
-  it('fromData signs the message correctly when closing a roll call', () => {
-    const messageData = new OpenRollCall({
-      update_id: Hash.fromStringArray(EventTags.ROLL_CALL, laoState.id, '5678', '1607277600'),
-      opens: new Hash('5678'),
-      opened_at: new Timestamp(1607277600),
+  it('fromData signs the message correctly when ending an election', () => {
+    const messageData = new EndElection({
+      lao: mockLao.id,
+      election: Hash.fromStringArray(EventTags.ELECTION, laoState.id, '5678', '1607277600'),
+      created_at: new Timestamp(1607277600),
+      registered_votes: new Hash('1234'),
     });
     const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
     const privateKey = new PrivateKey(mockPrivateKey);
-    const publicKey = new PublicKey(mockPrivateKey);
+    const publicKey = new PublicKey(mockPublicKey);
     const signature = privateKey.sign(encodedDataJson);
-    Message.fromData(messageData).then((m) => {
+    return Message.fromData(messageData).then((m) => {
       expect(m.sender).toEqual(publicKey);
       expect(m.signature).toEqual(signature);
     });
@@ -81,5 +80,4 @@ describe('Message', () => {
 
 afterAll(() => {
   KeyPairStore.store(pastKeyPairStoreState);
-  OpenedLaoStore.store(pastOpenedLaoStoreState);
 });
