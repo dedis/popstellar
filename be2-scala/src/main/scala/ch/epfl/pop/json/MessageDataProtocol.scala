@@ -231,7 +231,54 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val endElectionFormat: JsonFormat[EndElection] = jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes")
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp")
+  implicit val addBroadcastChirpFormat: JsonFormat[AddBroadcastChirp] = jsonFormat[Hash, Channel, Timestamp, AddBroadcastChirp](AddBroadcastChirp.apply, "chirp_id", "channel", "timestamp")
 
-  implicit val channelDataFormat: JsonFormat[ChannelData] = jsonFormat[ObjectType.ObjectType, List[Hash], ChannelData](ChannelData.apply, "channelType", "messages")
-  implicit val laoDataFormat: JsonFormat[LaoData] = jsonFormat[PublicKey, List[PublicKey], List[PublicKey], LaoData](LaoData.apply, "owner", "attendees", "witnesses")
+  implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
+    final private val PARAM_CHANNELTYPE: String = "channelType"
+    final private val PARAM_MESSAGES: String = "messages"
+
+    override def read(json: JsValue): ChannelData = json.asJsObject().getFields(PARAM_CHANNELTYPE, PARAM_MESSAGES) match {
+      case Seq(channelType@JsString(_), JsArray(messages)) => ChannelData(
+        channelType.convertTo[ObjectType],
+        messages.map(_.convertTo[Hash]).toList
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a ChannelData object")
+    }
+
+    override def write(obj: ChannelData): JsValue = JsObject(
+      PARAM_CHANNELTYPE -> obj.channelType.toJson,
+      PARAM_MESSAGES -> obj.messages.toJson
+    )
+
+  }
+
+  implicit object LaoDataFormat extends JsonFormat[LaoData] {
+    final private val PARAM_OWNER: String = "owner"
+    final private val PARAM_ATTENDEES: String = "attendees"
+    final private val PARAM_PRIVATEKEY: String = "privateKey"
+    final private val PARAM_PUBLICKEY: String = "publicKey"
+    final private val PARAM_WITNESSES: String = "witnesses"
+
+    override def read(json: JsValue): LaoData = json.asJsObject().getFields(PARAM_OWNER, PARAM_ATTENDEES, PARAM_PRIVATEKEY, PARAM_PUBLICKEY, PARAM_WITNESSES) match {
+      case Seq(owner@JsString(_), JsArray(attendees), privateKey@JsString(_), publicKey@JsString(_), JsArray(witnesses)) => LaoData(
+        owner.convertTo[PublicKey],
+        attendees.map(_.convertTo[PublicKey]).toList,
+        privateKey.convertTo[PrivateKey],
+        publicKey.convertTo[PublicKey],
+        witnesses.map(_.convertTo[PublicKey]).toList
+      )
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a LaoData object")
+    }
+
+    override def write(obj: LaoData): JsValue = JsObject(
+      PARAM_OWNER -> obj.owner.toJson,
+      PARAM_ATTENDEES -> obj.attendees.toJson,
+      PARAM_PRIVATEKEY -> obj.privateKey.toJson,
+      PARAM_PUBLICKEY -> obj.publicKey.toJson,
+      PARAM_WITNESSES -> obj.witnesses.toJson
+    )
+
+  }
+
+
 }

@@ -591,7 +591,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
     Log.d(
         TAG,
-        "sending a new elect-accept for consensus with messageId : "
+        "sending a new elect_accept for consensus with messageId : "
             + consensus.getMessageId()
             + " with value "
             + accept);
@@ -623,18 +623,18 @@ public class LaoDetailViewModel extends AndroidViewModel
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "sent an elect-accept successfully");
+                      Log.d(TAG, "sent an elect_accept successfully");
                     } else {
                       Log.d(
                           TAG,
-                          "failed to send the elect-accept for consensus with messageId : "
+                          "failed to send the elect_accept for consensus with messageId : "
                               + consensus.getMessageId());
                     }
                   },
                   throwable ->
                       Log.d(
                           TAG,
-                          "timed out waiting for result on consensus/elect-accept",
+                          "timed out waiting for result on consensus/elect_accept",
                           throwable));
 
       disposables.add(disposable);

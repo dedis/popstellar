@@ -8,7 +8,7 @@
       "const": "chirp"
     },
     "action": {
-      "const": "addBroadcast"
+      "const": "add_broadcast"
     },
     "chirp_id": {
       "description": "message_id of the chirp message above",

@@ -3,7 +3,11 @@
     "action": "learn",
     "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
     "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
-    "acceptors": [
+    "created_at": 1635624000,
+    "value": {
+        "decision": true
+    },
+    "acceptor-signatures": [
         "@@@",
         "cSaSHaZzvVR_sfcD5xngSxafK1eCDxmrd0d1C7-VHXJ=",
         "OtP_nVgrshTofWYVAcQ-uRz44UD_2tFJUOLLvTbFmzO="

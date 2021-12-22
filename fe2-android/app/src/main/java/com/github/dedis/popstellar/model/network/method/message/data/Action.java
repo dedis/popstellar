@@ -18,10 +18,14 @@ public enum Action {
   CLOSE("close"),
   CAST_VOTE("cast_vote"),
   ELECT("elect"),
-  ELECT_ACCEPT("elect-accept"),
+  ELECT_ACCEPT("elect_accept"),
+  PREPARE("prepare"),
+  PROMISE("promise"),
+  PROPOSE("propose"),
+  ACCEPT("accept"),
   LEARN("learn"),
   ADD("add"),
-  ADD_BROADCAST("addBroadcast");
+  ADD_BROADCAST("add_broadcast");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;

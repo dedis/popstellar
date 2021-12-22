@@ -197,7 +197,7 @@ jobs:
       run: |
         # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
         # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-        ( set -o pipefail; ./gradlew build --info | grep -vE "^Transforming artifact(.*) with (Jetify|ExtractAar|Aar)Transform" )
+        ( set -o pipefail; ./gradlew build | grep -vE "^Transforming artifact(.*) with (Jetify|ExtractAar|Aar)Transform" )
 
     - name: Unit Tests
       run: |

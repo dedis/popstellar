@@ -66,7 +66,6 @@ public final class MessageHandler {
         break;
       case CONSENSUS:
         handleConsensusMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
-        laoRepository.updateNodes(channel.replace("/consensus", ""));
         break;
       case CHIRP:
         handleChirpMessage(laoRepository, channel, data, message.getMessageId(), senderPk);
