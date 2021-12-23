@@ -9,7 +9,7 @@ version := "0.1"
 
 scalaVersion := "2.13.5"
 
-
+parallelExecution in ThisBuild := false
 //Create task to copy the protocol folder to resources
 lazy val copyProtocolTask = taskKey[Unit]("Copy protocol to resources")
 copyProtocolTask := {

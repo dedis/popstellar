@@ -48,9 +48,19 @@ class JsonRpcRequest(
     case _ => None
   }
 
-  def setDecodedData(decodedData: MessageData): Unit = this.getParamsMessage match {
-    case Some(message) => message.decodedData = Some(decodedData)
-    case _ =>
+  /**
+    * @param decodedData decoded data to set to new JsonRpcRequest
+    * @return a new JsonRpcRequest with decoded message data
+    */
+  def getWithDecodedData(decodedData: MessageData): JsonRpcRequest = this.getParamsMessage match {
+    case Some(message) => {
+      //Get copy to of the message and sets its data to the decoded one
+      val decodedMessage = message.copy(decodedData = Some(decodedData))
+      //Similar to this but with new decoded message in its params
+      JsonRpcRequest(this.jsonrpc,this.method, new ParamsWithMessage(this.params.channel, decodedMessage) ,this.id)
+    }
+    //
+    case _ => this
   }
 
   def extractLaoId: Hash = this.getParamsChannel.extractChildChannel
