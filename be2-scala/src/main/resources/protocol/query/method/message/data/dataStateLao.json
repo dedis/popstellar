@@ -1,0 +1,91 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataStateLao.json",
+    "description": "Match a state broadcast LAO query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "lao"
+        },
+        "action": {
+            "const": "state"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen(organizer, creation, name)"
+        },
+        "name": {
+            "type": "string"
+        },
+        "creation": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "last_modified": {
+            "description": "[Timestamp] last modification's time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "organizer": {
+            "description": "[Base64String] public key of the organizer",
+            "type": "string",
+            "contentEncoding": "base64"
+        },
+        "witnesses": {
+            "description": "[Array[Base64String]] list of public keys of witnesses",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "contentEncoding": "base64"
+            }
+        },
+        "modification_id": {
+            "description": "[Base64String] id of the modification (either creation/update)",
+            "type": "string",
+            "contentEncoding": "base64"
+        },
+        "modification_signatures": {
+            "description": "[Array[Base64String]] signatures of the witnesses on the modification message (either creation/update)",
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "witness": {
+                        "description": "[Base64String] public key of the witness",
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Note: the string is encoded in Base64"
+                    },
+                    "signature": {
+                        "description": "[Base64String] witness' signature : Sign(message_id)",
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Note: the strings are encoded in Base64"
+                    }
+                },
+                "additionalProperties": false,
+                "required": ["witness", "signature"]
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "id",
+        "name",
+        "creation",
+        "last_modified",
+        "organizer",
+        "witnesses",
+        "modification_id",
+        "modification_signatures"
+    ],
+    "note": [
+        "When a LAO is created or modified, the organizer is expected to publish the lao/state message to the ",
+        "LAO’s main channel (LAO's id), once it got the required number of witness signatures"
+    ]
+}

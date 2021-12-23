@@ -1,0 +1,52 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataUpdateLao.json",
+    "description": "Match an update LAO query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "lao"
+        },
+        "action": {
+            "const": "update_properties"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen(organizer, creation, name)"
+        },
+        "name": {
+            "type": "string"
+        },
+        "last_modified": {
+            "description": "[Timestamp] last modification's time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "witnesses": {
+            "description": "[Array[Base64String]] list of public keys of witnesses",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "contentEncoding": "base64"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "id",
+        "name",
+        "last_modified",
+        "witnesses"
+    ],
+    "note": [
+        "By sending the lao/update_properties message to the LAO’s main channel (LAO's id), the LAO name, list of ",
+        "witnesses and last modified timestamp are updated. The server is expected to forward the message to the ",
+        "witnesses and clients. The server is expected to verify the data, including timestamp freshness. Upon successful ",
+        "modification, the organizer is expected to broadcast the LAO state to all witnesses and clients (see ",
+        "\"LAO state broadcast\")"
+    ]
+}

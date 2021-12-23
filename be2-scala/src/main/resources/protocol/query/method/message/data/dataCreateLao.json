@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCreateLao.json",
+    "description": "Match a create LAO query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "lao"
+        },
+        "action": {
+            "const": "create"
+        },
+        "id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen(organizer, creation, name)"
+        },
+        "name": {
+            "type": "string"
+        },
+        "creation": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "organizer": {
+            "description": "[Base64String] public key of the organizer",
+            "type": "string",
+            "contentEncoding": "base64"
+        },
+        "witnesses": {
+            "description": "[Array[Base64String]] list of public keys of witnesses",
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "contentEncoding": "base64"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "id",
+        "name",
+        "creation",
+        "organizer",
+        "witnesses"
+    ],
+    "note": [
+        "By sending the lao/create message to the organizer’s server’s default channel (\"/root\"), the main channel of ",
+        "the LAO will be created with the identifier id. At that point, any of the clients, including the organizer, can ",
+        "subscribe to the channel id and send messages over it. The server is expected to verify the data, such that the ",
+        "last modified timestamp is equal to the creation timestamp, that the timestamp is reasonably recent with respect ",
+        "to the server’s clock, that the attestation is valid, etc. Upon successful creation, the organizer is ",
+        "expected to broadcast the LAO state to all witnesses and clients (see \"LAO state broadcast\")"
+    ]
+}

@@ -23,4 +23,4 @@ database_test
 #Protocol folder
 src/main/resources/protocol/*
 !src/main/resources/protocol/query/query.json
-!src/main/resources/protocol/query/method/message/data/*
+!src/main/resources/protocol/query/method/message/data/
