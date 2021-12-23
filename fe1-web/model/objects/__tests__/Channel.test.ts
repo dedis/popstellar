@@ -17,9 +17,9 @@ describe('Channel object', () => {
   });
 
   it('getUserSocialChannel should return the correct channel', () => {
-    const userToken = 'userToken';
+    const userToken = new PublicKey('userToken');
     expect(getUserSocialChannel(FAKE_ID, userToken))
-      .toStrictEqual(`/root/${FAKE_ID}/social/${userToken}`);
+      .toStrictEqual(`/root/${FAKE_ID}/social/${userToken.valueOf()}`);
   });
 
   it('getGeneralChirpsChannel should return the correct channel', () => {

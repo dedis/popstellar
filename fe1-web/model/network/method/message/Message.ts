@@ -9,12 +9,8 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { getCurrentPopTokenFromStore } from 'model/objects/wallet';
 import {
-  buildMessageData,
-  encodeMessageData,
-  isSignedWithToken,
-  MessageData,
+  buildMessageData, encodeMessageData, MessageData,
 } from './data';
 
 /**
@@ -115,14 +111,14 @@ export class Message {
   }
 
   /**
-   * Creates a Message object from a given MessageData and signatures.
-   * We don't add the channel property here as we don't want to send that over the network.
-   * It signs the messages with the key pair of the user, or the pop token's key pair
-   * according to the type of message.
+   * Creates a Message object from a given MessageData and signatures
+   * We don't add the channel property here as we don't want to send that over the network
+   * It signs the messages with the most recent pop token if it exists. Otherwise it uses the
+   * public key
    *
-   * @param data - The MessageData to be signed and hashed
-   * @param witnessSignatures- The signatures of the witnesses
-   * @returns - The created message
+   * @param data The MessageData to be signed and hashed
+   * @param witnessSignatures The signatures of the witnesses
+   *
    */
   public static fromData(
     data: MessageData, witnessSignatures?: WitnessSignature[],
@@ -132,34 +128,35 @@ export class Message {
     let privateKey = KeyPairStore.getPrivateKey();
 
     if (isSignedWithToken(data)) {
-      return getCurrentPopTokenFromStore().then((token) => {
-        if (token) {
-          publicKey = token.publicKey;
-          privateKey = token.privateKey;
-        } else {
-          console.error('Impossible to sign the message with a pop token: no token found for '
-            + 'current user in this LAO');
-        }
-        const signature: Signature = privateKey.sign(encodedDataJson);
+      return getCurrentPopTokenFromStore()
+        .then((token) => {
+          if (token) {
+            publicKey = token.publicKey;
+            privateKey = token.privateKey;
+          } else {
+            console.error('Impossible to sign the message with a pop token: no token found for '
+              + 'current user in this LAO');
+          }
+          const signature: Signature = privateKey.sign(encodedDataJson);
 
-        return new Message({
-          data: encodedDataJson,
-          sender: publicKey,
-          signature,
-          message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-          witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+          return new Message({
+            data: encodedDataJson,
+            sender: publicKey,
+            signature,
+            message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+            witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+          });
         });
-      });
     }
-    const signature: Signature = privateKey.sign(encodedDataJson);
+    const signature: Signature = KeyPairStore.getPrivateKey().sign(encodedDataJson);
 
-    return Promise.resolve(new Message({
+    return new Message({
       data: encodedDataJson,
-      sender: publicKey,
+      sender: KeyPairStore.getPublicKey(),
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
-    }));
+    });
   }
 
   // This function disables the checks of signature and messageID for eleciton result messages
@@ -167,7 +164,7 @@ export class Message {
   // access to the private key
   // This method is only a temporary solution for the demo and should be removed once a better
   // solution is found
-  private isElectionResultMessage():boolean {
+  private isElectionResultMessage(): boolean {
     return this.data.decode().includes('"result":');
   }
 }

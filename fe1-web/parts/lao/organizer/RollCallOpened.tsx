@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
@@ -13,7 +13,9 @@ import { Badge } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/core';
 import { requestCloseRollCall } from 'network';
-import { EventTags, Hash, PublicKey, Wallet } from 'model/objects';
+import {
+  EventTags, Hash, PublicKey, Wallet,
+} from 'model/objects';
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -38,6 +40,18 @@ const RollCallOpened = () => {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
+  if (!lao) {
+    throw new Error('Impossible to open a Roll Call without being connected to an LAO');
+  }
+
+  // This will run only when re-rendering
+  useEffect(() => {
+    // Add the token of the organizer as soon as we open the roll call
+    Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
+      updateAttendees((prev) => new Set<string>(prev.add(token.publicKey.valueOf())));
+    });
+  }, []);
+
   const handleError = (err: string) => {
     console.error(err);
   };
@@ -60,17 +74,13 @@ const RollCallOpened = () => {
       EventTags.ROLL_CALL, OpenedLaoStore.get().id.toString(),
       rollCallID, time,
     );
+    const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
 
-    // Add the token of the organizer before closing the roll call
-    Wallet.generateToken(lao!!.id, new Hash(rollCallID)).then((token) => {
-      const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-      attendeesList.push(token.publicKey);
-      requestCloseRollCall(updateId, attendeesList).then(() => {
-        // @ts-ignore
-        navigation.navigate(STRINGS.organizer_navigation_tab_home);
-      }).catch((err) => {
-        console.error('Could not close roll call, error: ', err);
-      });
+    return requestCloseRollCall(updateId, attendeesList).then(() => {
+      // @ts-ignore
+      navigation.navigate(STRINGS.organizer_navigation_tab_home);
+    }).catch((err) => {
+      console.error('Could not close roll call, error: ', err);
     });
   };
 

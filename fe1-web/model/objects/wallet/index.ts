@@ -2,5 +2,5 @@ export * from './Wallet';
 export * from './Seed';
 export {
   generateToken,
-  getCurrentPopTokenFromStore,
+  getCurrentPopToken,
 } from './Token';

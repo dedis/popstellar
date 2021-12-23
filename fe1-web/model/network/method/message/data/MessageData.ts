@@ -35,18 +35,3 @@ export interface MessageData {
   readonly object: ObjectType;
   readonly action: ActionType;
 }
-
-/**
- * Returns if the message data is signed with token or not. If not, it has to be signed with
- * a public key.
- *
- * @remarks
- * This function has to be updated for each new kind of message that is going to be signed using
- * the pop token.
- *
- * @param data - The message data we want to know how to sign
- */
-export function isSignedWithToken(data: MessageData): Boolean {
-  return (data.object === ObjectType.ELECTION && data.action === ActionType.CAST_VOTE)
-    || (data.object === ObjectType.CHIRP && data.action === ActionType.ADD);
-}

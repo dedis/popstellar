@@ -136,7 +136,8 @@ public class ConsensusHandlerTest {
   }
 
   // handle an elect from node2
-  // This should add an attempt from node2 to start a consensus (in this case for starting an election)
+  // This should add an attempt from node2 to start a consensus (in this case for starting an
+  // election)
   private void handleConsensusElectTest() throws DataHandlingException {
     MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
 
