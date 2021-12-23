@@ -17,12 +17,17 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
   def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any) {
     // Raw encoded data data
     val message = Left(CreateLaoExamples.getJsonRequestFromMessage(createLaoData))
+    println(message.getClass)
     // Decode data
     val decoded = MessageDecoder.parseData(message)
+    println(decoded.getClass)
     decoded match {
       case Left(m: JsonRpcRequestCreateLao) =>
+        println(m.getClass)
         testCode(decoded)
-      case Left(m) => fail(f"Decoder decoded to bad type: <$m> expected type is JsonRpcRequestCreateLao")
+      case Left(m) =>
+        println(m.getClass)
+        fail(f"Decoder decoded to bad type: <$m> expected type is JsonRpcRequestCreateLao")
       case Right(_) =>
         fail("Message could not be decoded/parsed")
     }

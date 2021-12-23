@@ -104,8 +104,12 @@ object MessageDecoder {
    */
   def parseData(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getDecodedData match {
-      case Some(_) => graphMessage // do nothing if 'data' already decoded
-      case _ if !jsonRpcRequest.hasParamsMessage => graphMessage // do nothing if rpc-message doesn't contain any message
+      case Some(_) =>
+        println("branch 1")
+        graphMessage // do nothing if 'data' already decoded
+      case _ if !jsonRpcRequest.hasParamsMessage =>
+        println("branch 2")
+        graphMessage // do nothing if rpc-message doesn't contain any message
       case _ =>
         // json string representation of the 'data' field
         val jsonString: String = jsonRpcRequest.getEncodedData.get.decodeToString()
@@ -120,9 +124,14 @@ object MessageDecoder {
             Try {
               val messageData = parseMessageData(jsonString, objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
               jsonRpcRequest.setDecodedData(messageData)
+              println("typing")
               typedRequest = typeCastRequest(jsonRpcRequest)
+              println(typedRequest)
+              println(typedRequest.getClass)
             } match {
-              case Success(_) => Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
+              case Success(_) =>
+                println("success typed request")
+                Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
               case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception", jsonRpcRequest.id))
             }
 
