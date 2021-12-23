@@ -37,6 +37,10 @@ public class KeyPair {
     return publicKey.verify(signature, data);
   }
 
+  public PrivateKey getPrivateKey() {
+    return privateKey;
+  }
+
   public PublicKey getPublicKey() {
     return publicKey;
   }

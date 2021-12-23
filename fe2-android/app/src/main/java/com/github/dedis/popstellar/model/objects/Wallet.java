@@ -5,6 +5,8 @@ import android.util.Log;
 
 import androidx.core.util.Pair;
 
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.aead.AeadConfig;
@@ -93,11 +95,10 @@ public class Wallet {
    * Method that allow generate a different key for each path that you give.
    *
    * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
-   * @return a Pair<byte[], byte[]> representing the keys pair: first=private_key;
-   *     second=public_key.
-   * @throws GeneralSecurityException
+   * @return the generated PoP Token
+   * @throws GeneralSecurityException if an error occurs
    */
-  public Pair<byte[], byte[]> generateKeyFromPath(String path) throws GeneralSecurityException {
+  public PoPToken generateKeyFromPath(String path) throws GeneralSecurityException {
     if (path == null) {
       throw new IllegalArgumentException("Unable to find keys from a null path!");
     }
@@ -118,7 +119,7 @@ public class Wallet {
     Ed25519PublicKeyParameters puK = prK.generatePublicKey();
     byte[] publicKey = puK.getEncoded();
 
-    return new Pair<>(privateKey, publicKey);
+    return new PoPToken(privateKey, publicKey);
   }
 
   /**
@@ -126,11 +127,10 @@ public class Wallet {
    *
    * @param laoID a String.
    * @param rollCallID a String.
-   * @return a Pair<byte[], byte[]> representing the keys pair.
-   * @throws GeneralSecurityException
+   * @return the PoP Token
+   * @throws GeneralSecurityException if an error occurs
    */
-  public Pair<byte[], byte[]> findKeyPair(String laoID, String rollCallID)
-      throws GeneralSecurityException {
+  public PoPToken findKeyPair(String laoID, String rollCallID) throws GeneralSecurityException {
     if (laoID == null || rollCallID == null) {
       throw new IllegalArgumentException("Unable to find keys from a null param");
     }
@@ -181,47 +181,40 @@ public class Wallet {
   }
 
   /**
-   * Method that allows recover key pair, if the user has participated in that roll-call event.
+   * Method that allows recovering of PoP Token, if the user has participated in that roll-call
+   * event.
    *
    * @param laoID a String.
    * @param rollCallID a String.
-   * @param rollCallTokens a List<byte[]> representing the list of public keys present on
+   * @param rollCallTokens a {@link List} containing the public keys of all attendees present on
    *     roll-call’s results.
-   * @return the key pair Pair<byte[], byte[]> (PoP token) if the user as in that roll-call
-   *     participated else null.
-   * @throws GeneralSecurityException
+   * @return the PoP Token if the user participated in that roll-call or else null.
+   * @throws GeneralSecurityException if an error occurs
    */
-  public Pair<byte[], byte[]> recoverKey(
-      String laoID, String rollCallID, List<byte[]> rollCallTokens)
+  public PoPToken recoverKey(String laoID, String rollCallID, List<PublicKey> rollCallTokens)
       throws GeneralSecurityException {
 
     if (laoID == null || rollCallID == null) {
       throw new IllegalArgumentException("Unable to find keys from a null param");
     }
 
-    Pair<byte[], byte[]> keyPairFind = findKeyPair(laoID, rollCallID);
-    for (byte[] public_key : rollCallTokens) {
-      if (Arrays.equals(keyPairFind.second, public_key)) {
-        return keyPairFind;
-      }
-    }
-    return null;
+    PoPToken token = findKeyPair(laoID, rollCallID);
+    if (rollCallTokens.contains(token.getPublicKey())) return token;
+    else return null;
   }
 
   /**
-   * Method that allows recover recover all the key pairs when the master secret is imported
-   * initially, by iterating all the historical events of LAO.
+   * Method that allows to recover all the pop tokens when the master secret is imported initially,
+   * by iterating over all the historical LAO events.
    *
    * @param seed the master secret String
-   * @param knowsLaosRollCalls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID and
-   *     Roll_call_ID and values representing the list of public keys present on roll-call’s
-   *     results.
-   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs associated
-   *     to each Lao and roll-call IDs.
-   * @throws GeneralSecurityException
+   * @param knowsLaosRollCalls a mapping of the pairs (Lao_ID, Roll_call_ID) to all the attendees
+   *     public keys.
+   * @return a mapping of the pairs (Lao_ID, Roll_call_ID) to the recovered tokens.
+   * @throws GeneralSecurityException if an error occurs
    */
-  public Map<Pair<String, String>, Pair<byte[], byte[]>> recoverAllKeys(
-      String seed, Map<Pair<String, String>, List<byte[]>> knowsLaosRollCalls)
+  public Map<Pair<String, String>, PoPToken> recoverAllKeys(
+      String seed, Map<Pair<String, String>, List<PublicKey>> knowsLaosRollCalls)
       throws GeneralSecurityException {
     if (knowsLaosRollCalls == null) {
       throw new IllegalArgumentException("Unable to find recover keys from a null param");
@@ -229,15 +222,15 @@ public class Wallet {
 
     initialize(seed);
 
-    Map<Pair<String, String>, Pair<byte[], byte[]>> result = new HashMap<>();
-    for (Map.Entry<Pair<String, String>, List<byte[]>> entry : knowsLaosRollCalls.entrySet()) {
+    Map<Pair<String, String>, PoPToken> result = new HashMap<>();
+    for (Map.Entry<Pair<String, String>, List<PublicKey>> entry : knowsLaosRollCalls.entrySet()) {
       String laoID = entry.getKey().first;
       String rollCallID = entry.getKey().second;
-      Pair<byte[], byte[]> recoverKey = recoverKey(laoID, rollCallID, entry.getValue());
-      if (recoverKey != null) {
-        result.put(new Pair<>(laoID, rollCallID), recoverKey);
-      }
+      PoPToken recoverKey = recoverKey(laoID, rollCallID, entry.getValue());
+
+      if (recoverKey != null) result.put(new Pair<>(laoID, rollCallID), recoverKey);
     }
+
     return result;
   }
 
@@ -247,7 +240,7 @@ public class Wallet {
    *
    * @return an array of words: mnemonic sentence representing the seed for the wallet in case that
    *     the key set manager is not init return a empty array.
-   * @throws GeneralSecurityException
+   * @throws GeneralSecurityException if an error occurs
    */
   public String[] exportSeed() throws GeneralSecurityException {
     if (aead != null) {
@@ -279,14 +272,12 @@ public class Wallet {
    * Method that allow import mnemonic seed.
    *
    * @param words a String.
-   * @param knowsLaosRollCalls a Map<Pair<String, String>, List<byte[]>> of keys known Lao_ID and
-   *     Roll_call_ID and values representing the list of public keys present on roll-call’s
-   *     results.
-   * @return a Map<Pair<String, String>, Pair<byte[], byte[]>> of the recover key pairs associated
-   *     to each Lao and roll-call IDs or null in case of error.
+   * @param knowsLaosRollCalls a mapping of the pairs (Lao_ID, Roll_call_ID) to all the attendees
+   *     public keys.
+   * @return a mapping of the pairs (Lao_ID, Roll_call_ID) to the recovered tokens.
    */
-  public Map<Pair<String, String>, Pair<byte[], byte[]>> importSeed(
-      String words, Map<Pair<String, String>, List<byte[]>> knowsLaosRollCalls) {
+  public Map<Pair<String, String>, PoPToken> importSeed(
+      String words, Map<Pair<String, String>, List<PublicKey>> knowsLaosRollCalls) {
     if (words == null) {
       throw new IllegalArgumentException("Unable to find recover tokens from a null param");
     }

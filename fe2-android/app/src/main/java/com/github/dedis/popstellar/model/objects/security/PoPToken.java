@@ -8,4 +8,9 @@ public class PoPToken extends KeyPair {
   public PoPToken(byte[] privateKey, byte[] publicKey) {
     super(new PlainPrivateKey(privateKey), new PublicKey(publicKey));
   }
+
+  @Override
+  public PlainPrivateKey getPrivateKey() {
+    return (PlainPrivateKey) super.getPrivateKey();
+  }
 }
