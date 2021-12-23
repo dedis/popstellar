@@ -49,5 +49,6 @@ export interface MessageData {
  */
 export function isSignedWithToken(data: MessageData): boolean {
   return (data.object === ObjectType.ELECTION && data.action === ActionType.CAST_VOTE)
-    || (data.object === ObjectType.CHIRP && data.action === ActionType.ADD);
+    || (data.object === ObjectType.CHIRP && data.action === ActionType.ADD)
+    || (data.object === ObjectType.REACTION && data.action === ActionType.ADD);
 }
