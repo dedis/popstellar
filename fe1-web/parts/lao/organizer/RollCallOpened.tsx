@@ -44,7 +44,7 @@ const RollCallOpened = () => {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
   }
 
-  // This will run only when re-rendering
+  // This will run only when the state changes
   useEffect(() => {
     // Add the token of the organizer as soon as we open the roll call
     Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
