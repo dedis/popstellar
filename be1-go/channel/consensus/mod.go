@@ -520,6 +520,8 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 		if err != nil {
 			return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
 		}
+
+		return nil
 	}
 
 	electInstance.timeoutChan <- messagedata.ConsensusActionElectAccept
