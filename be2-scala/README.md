@@ -6,9 +6,29 @@ Proof-of-personhood, spring 2021: Scala language back-end
 ## Running the project
 
 There are two main possible ways of running the project :
-* import the project using IntelliJ
-* using **sbt**, execute `sbt compile` and `sbt run`
+* #### Option 1: Intellij
+> import the project using IntelliJ
 
+* #### Option 2: SBT
+> Using `sbt -Dscala.config="path/to/config/file" run`.
+>
+> There is a default configuration ready to use in <span style="color:yellow">_src/main/scala/ch/epfl/pop/config_</span> which contains an application.config where the configuration lives. This can be updated if needed.
+> ```apacheconf
+> #Snapshot of application.config
+> #POP Server config default
+>ch_epfl_pop_Server {
+>    http {
+>        interface = "127.0.0.1"
+>        port = "8000"
+>        path = ""
+>    }
+>}
+>```
+>Consequently, from **be2-scala/** folder run the following:
+>```bash
+> sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" run
+>```
+>
 ---
 
 

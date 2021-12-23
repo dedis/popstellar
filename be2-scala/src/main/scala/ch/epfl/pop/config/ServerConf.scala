@@ -3,7 +3,7 @@ package ch.epfl.pop.config
 import com.typesafe.config.Config
 
 /**
-    Simple server configuration interface 
+    Simple server configuration interface
     @see [[config/application.config]]
     @see [[RuntimeEnvironement]]
 
@@ -11,7 +11,7 @@ import com.typesafe.config.Config
 object ServerConf {
 
   def apply(appConf: Config) = {
-    val serverConf = appConf.getConfig("ch-epfl-pop-Server").getConfig("http")
+    val serverConf = appConf.getConfig("ch_epfl_pop_Server").getConfig("http")
     val serverInterface = serverConf.getString("interface")
     val serverPort = serverConf.getInt("port")
     val path = serverConf.getString("path")
