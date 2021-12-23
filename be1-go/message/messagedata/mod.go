@@ -13,7 +13,7 @@ const (
 	ConsensusObject            = "consensus"
 	ConsensusActionAccept      = "accept"
 	ConsensusActionElect       = "elect"
-	ConsensusActionElectAccept = "elect-accept"
+	ConsensusActionElectAccept = "elect_accept"
 	ConsensusActionLearn       = "learn"
 	ConsensusActionPrepare     = "prepare"
 	ConsensusActionPromise     = "promise"

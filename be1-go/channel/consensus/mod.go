@@ -327,7 +327,7 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 
 	data, ok := msgData.(*messagedata.ConsensusElectAccept)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a consensus#elect-accept message", msgData)
+		return xerrors.Errorf("message %v isn't a consensus#elect_accept message", msgData)
 	}
 
 	c.log.Info().Msg("received a consensus#elect_accept message")
