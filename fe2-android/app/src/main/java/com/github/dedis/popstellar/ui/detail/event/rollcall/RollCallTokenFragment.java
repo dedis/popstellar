@@ -72,12 +72,11 @@ public class RollCallTokenFragment extends Fragment {
             .getCurrentLaoValue()
             .getChannel()
             .substring(6); // use the laoId set at creation + need to remove /root/ prefix
-    String sk = "";
+
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {
       PoPToken token = wallet.findKeyPair(firstLaoId, rollCall.getPersistentId());
-      sk = token.getPrivateKey().getEncoded();
       pk = token.getPublicKey().getEncoded();
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to retrieve token from wallet", e);
@@ -85,7 +84,6 @@ public class RollCallTokenFragment extends Fragment {
     }
 
     mRollCallTokenFragmentBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
-    mRollCallTokenFragmentBinding.privateKey.setText("Private key:\n" + sk);
     mRollCallTokenFragmentBinding.publicKey.setText("Public key:\n" + pk);
 
     Bitmap myBitmap = QRCode.from(pk).bitmap();
