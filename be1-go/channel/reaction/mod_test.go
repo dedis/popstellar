@@ -392,6 +392,10 @@ func Test_DeleteReaction(t *testing.T) {
 	pub.Params.Message = m
 	pub.Params.Channel = reactionChannelName
 
+	// Wait before storing a new message to be able to have a unique
+	// timestamp for each message
+	time.Sleep(time.Millisecond)
+
 	// If there is no error, the delete request has been properly received
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
 
