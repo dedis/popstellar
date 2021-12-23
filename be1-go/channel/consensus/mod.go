@@ -201,6 +201,8 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 
 	msg := publish.Params.Message
 
+	c.inbox.StoreMessage(msg)
+
 	err = c.registry.Process(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
