@@ -23,6 +23,8 @@ import net.glxn.qrgen.android.QRCode;
 import java.security.GeneralSecurityException;
 import java.util.Optional;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -31,6 +33,7 @@ public class RollCallTokenFragment extends Fragment {
   public static final String TAG = RollCallTokenFragment.class.getSimpleName();
   public static final String EXTRA_ID = "rollcall_id";
 
+  @Inject Wallet wallet;
   private LaoDetailViewModel mLaoDetailViewModel;
   private RollCallTokenFragmentBinding mRollCallTokenFragmentBinding;
   private RollCall rollCall;
@@ -73,7 +76,7 @@ public class RollCallTokenFragment extends Fragment {
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {
-      PoPToken token = Wallet.getInstance().findKeyPair(firstLaoId, rollCall.getPersistentId());
+      PoPToken token = wallet.findKeyPair(firstLaoId, rollCall.getPersistentId());
       sk = token.getPrivateKey().getEncoded();
       pk = token.getPublicKey().getEncoded();
     } catch (GeneralSecurityException e) {

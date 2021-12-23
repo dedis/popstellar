@@ -95,6 +95,7 @@ public class HomeViewModel extends AndroidViewModel
   public HomeViewModel(
       @NonNull Application application,
       Gson gson,
+      Wallet wallet,
       LAORepository laoRepository,
       AndroidKeysetManager keysetManager) {
     super(application);
@@ -102,7 +103,7 @@ public class HomeViewModel extends AndroidViewModel
     mLAORepository = laoRepository;
     mGson = gson;
     mKeysetManager = keysetManager;
-    wallet = Wallet.getInstance();
+    this.wallet = wallet;
 
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
@@ -375,7 +376,7 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void logoutWallet() {
-    Wallet.getInstance().logout();
+    wallet.logout();
     setIsWalletSetUp(false);
     openWallet();
   }

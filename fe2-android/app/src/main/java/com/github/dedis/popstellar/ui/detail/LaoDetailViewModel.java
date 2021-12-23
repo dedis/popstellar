@@ -198,6 +198,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final AndroidKeysetManager mKeysetManager;
   private final CompositeDisposable disposables;
   private final Gson mGson;
+  private final Wallet wallet;
   private String mCurrentRollCallId = ""; // used to know which roll call to close
   private Set<String> attendees = new HashSet<>();
   private Set<String> witnesses =
@@ -209,11 +210,13 @@ public class LaoDetailViewModel extends AndroidViewModel
       @NonNull Application application,
       LAORepository laoRepository,
       Gson gson,
+      Wallet wallet, // FIXME Use KeyManager instead
       AndroidKeysetManager keysetManager) {
     super(application);
     mLAORepository = laoRepository;
     mKeysetManager = keysetManager;
     mGson = gson;
+    this.wallet = wallet;
     disposables = new CompositeDisposable();
   }
 
@@ -231,7 +234,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     String pk;
     try {
       pk =
-          Wallet.getInstance()
+          wallet
               .findKeyPair(firstLaoId, rollcall.getPersistentId())
               .getPublicKey()
               .getEncoded(); // FIXME Outdated type usage
@@ -1384,7 +1387,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void enterRollCall(String id) {
-    if (!Wallet.getInstance().isSetUp()) {
+    if (!wallet.isSetUp()) {
       mWalletMessageEvent.setValue(new SingleEvent<>(true));
       return;
     }
@@ -1395,10 +1398,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     String errorMessage = "failed to retrieve public key from wallet";
     try {
       String pk =
-          Wallet.getInstance()
-              .findKeyPair(firstLaoId, id)
-              .getPublicKey()
-              .getEncoded(); // FIXME Bad type usage
+          wallet.findKeyPair(firstLaoId, id).getPublicKey().getEncoded(); // FIXME Bad type usage
       mPkRollCallEvent.postValue(new SingleEvent<>(pk));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);
