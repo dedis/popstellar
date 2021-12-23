@@ -527,7 +527,15 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 	// For now the consensus always accept a true if it complete
 	consensusInstance.proposedValue = true
 
-	c.electAcceptFailure(consensusInstance, data.MessageID)
+	byteMsg, err := c.createPrepareMessage(consensusInstance, data.MessageID)
+	if err != nil {
+		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
+	}
 
 	return nil
 }
