@@ -20,10 +20,10 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
     // Decode data
     val decoded = MessageDecoder.parseData(message)
     decoded match {
-      case decoded @ Left(_: JsonRpcRequestCreateLao) =>
+      case Left(_: JsonRpcRequestCreateLao) =>
         testCode(decoded)
-      case decode @ Left(_) => fail("Decoder decoded to bad type: expeted type is JsonRpcRequestCreateLao")
-      case decoded @ Right(_) =>
+      case Left(_) => fail("Decoder decoded to bad type: expected type is JsonRpcRequestCreateLao")
+      case Right(_) =>
         fail("Message could not be decoded/parsed")
     }
   }
