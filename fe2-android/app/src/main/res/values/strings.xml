@@ -195,6 +195,7 @@
   <string name="logout_button">LOGOUT</string>
   <string name="logout_title">Log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
+  <string name="copied_to_clipboard">Copied to clipboard</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>

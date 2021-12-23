@@ -1,6 +1,7 @@
 package ch.epfl.pop.json
 
 import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import spray.json._
 
 object ObjectProtocol extends DefaultJsonProtocol {
@@ -41,6 +42,15 @@ object ObjectProtocol extends DefaultJsonProtocol {
     override def write(obj: PublicKey): JsValue = obj.base64Data.toJson
   }
 
+  implicit object PrivateKeyFormat extends JsonFormat[PrivateKey] {
+    override def read(json: JsValue): PrivateKey = json match {
+      case dataJs@JsString(_) => PrivateKey(dataJs.convertTo[Base64Data])
+      case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a PrivateKey object")
+    }
+
+    override def write(obj: PrivateKey): JsValue = obj.base64Data.toJson
+  }
+
   implicit object SignatureFormat extends JsonFormat[Signature] {
     override def read(json: JsValue): Signature = json match {
       case dataJs@JsString(_) => Signature(dataJs.convertTo[Base64Data])
@@ -73,7 +83,7 @@ object ObjectProtocol extends DefaultJsonProtocol {
 
     override def write(obj: WitnessSignaturePair): JsValue = JsObject(
       PARAM_WITNESS -> JsString(obj.witness.base64Data.data),
-      PARAM_SIGNATURE -> JsString(obj.signature.signature.data),
+      PARAM_SIGNATURE -> JsString(obj.signature.signature.data)
     )
   }
 

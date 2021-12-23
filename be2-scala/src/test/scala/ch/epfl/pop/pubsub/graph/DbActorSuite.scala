@@ -260,7 +260,9 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("key"))), List.empty)))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key"))))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
   }
 
   test("DbActor stores and reads LaoData at creation and at roll call closing"){
@@ -278,7 +280,9 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer2 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("key"))), List.empty)))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key"))))
+    answer2.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
 
     val ask3 = dbActorRef ? DbActor.Write(channel, messageRollCall)
     val answer3 = Await.result(ask3, duration)
@@ -290,7 +294,9 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer4 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("keyAttendee"))), List.empty)))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("keyAttendee"))))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
   }
 
   test("DbActor stores and reads two distinct LaoData objects, to simulate two LAOs in the same database"){
@@ -321,14 +327,18 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     answer4 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key")), List(PublicKey(Base64Data("key"))), List.empty)))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key")))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key"))))
+    answer4.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
 
     val ask5 = dbActorRef ? DbActor.ReadLaoData(channel2)
     val answer5 = Await.result(ask5, duration)
 
     answer5 shouldBe a [DbActor.DbActorReadLaoDataAck]
 
-    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData should equal(Some(LaoData(PublicKey(Base64Data("key2")), List(PublicKey(Base64Data("key2"))), List.empty)))
+    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.owner should equal (PublicKey(Base64Data("key2")))
+    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data("key2"))))
+    answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
 
   }
 }
