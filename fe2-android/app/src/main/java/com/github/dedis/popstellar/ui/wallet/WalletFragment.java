@@ -23,6 +23,8 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the wallet UI */
@@ -33,6 +35,7 @@ public class WalletFragment extends Fragment {
 
   private WalletFragmentBinding mWalletFragBinding;
   private HomeViewModel mHomeViewModel;
+  @Inject Wallet wallet;
 
   public static WalletFragment newInstance() {
     return new WalletFragment();
@@ -55,7 +58,7 @@ public class WalletFragment extends Fragment {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
     try {
-      Wallet.getInstance().initKeysManager(requireContext().getApplicationContext());
+      wallet.initKeysManager(requireContext().getApplicationContext());
     } catch (IOException | GeneralSecurityException e) {
       Toast.makeText(
               requireContext().getApplicationContext(),
