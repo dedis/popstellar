@@ -110,7 +110,8 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		return xerrors.Errorf("failed to decode the data: %v", err)
 	}
 
-	object, _, err := messagedata.GetObjectAndAction(jsonData)
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	action = action + "_broadcast"
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
@@ -122,7 +123,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 
 	newData := messagedata.ChirpBroadcast{
 		Object:    object,
-		Action:    "add_broadcast",
+		Action:    action,
 		ChirpId:   msg.MessageID,
 		Channel:   c.generalChannel.GetChannelPath(),
 		Timestamp: time,
@@ -305,6 +306,11 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
 	}
 
+	err = chirpMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid add chirp message: %v", err)
+	}
+
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
@@ -329,6 +335,11 @@ func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
 	err := msg.UnmarshalData(&chirpMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
+	}
+
+	err = chirpMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid delete chirp message: %v", err)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
