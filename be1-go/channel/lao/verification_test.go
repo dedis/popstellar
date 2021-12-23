@@ -166,6 +166,69 @@ func TestVerify_RollCallClose(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestVerify_ElectionSetup(t *testing.T) {
+	// create the channel
+	laoChannel, ok := newFakeChannel(t).(*Channel)
+	require.True(t, ok)
+
+	// read the valid example file
+	buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "election_setup", "election_setup.json"))
+	require.NoError(t, err)
+
+	// object and action
+	object, action := "election", "setup"
+
+	obj, act, err := messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, object, obj)
+	require.Equal(t, action, act)
+
+	var electionSetup messagedata.ElectionSetup
+
+	err = json.Unmarshal(buf, &electionSetup)
+	require.NoError(t, err)
+
+	// test valid example
+	err = laoChannel.verifyMessageElectionSetup(electionSetup)
+	require.NoError(t, err)
+
+	getTestBadExample := func(file string) func(*testing.T) {
+		return func(t *testing.T) {
+			// read the bad example file
+			buf, err = os.ReadFile(filepath.Join(relativeExamplePath, "election_setup", file))
+			require.NoError(t, err)
+
+			obj, act, err = messagedata.GetObjectAndAction(buf)
+			require.NoError(t, err)
+
+			require.Equal(t, object, obj)
+			require.Equal(t, action, act)
+
+			err = json.Unmarshal(buf, &electionSetup)
+			require.NoError(t, err)
+
+			err = laoChannel.verifyMessageElectionSetup(electionSetup)
+			require.Error(t, err)
+		}
+	}
+
+	t.Run("lao id not base64", getTestBadExample("bad_election_setup_lao_id_not_base64.json"))
+	t.Run("lao id invalid hash", getTestBadExample("bad_election_setup_lao_id_invalid_hash.json"))
+	t.Run("election id not base64", getTestBadExample("bad_election_setup_id_not_base64.json"))
+	t.Run("election id invalid hash", getTestBadExample("bad_election_setup_id_invalid_hash.json"))
+	t.Run("election name empty", getTestBadExample("bad_election_setup_name_empty.json"))
+	t.Run("created at negative", getTestBadExample("bad_election_setup_created_at_negative.json"))
+	t.Run("start time negative", getTestBadExample("bad_election_setup_start_time_negative.json"))
+	t.Run("end time negative", getTestBadExample("bad_election_setup_end_time_negative.json"))
+	t.Run("start time before created at", getTestBadExample("bad_election_setup_start_time_before_created_at.json"))
+	t.Run("end time before created at", getTestBadExample("bad_election_setup_end_time_before_created_at.json"))
+	t.Run("question id not base64", getTestBadExample("bad_election_setup_question_id_not_base64.json"))
+	t.Run("question id invalid hash", getTestBadExample("bad_election_setup_question_id_invalid_hash.json"))
+	t.Run("question empty", getTestBadExample("bad_election_setup_question_empty.json"))
+	t.Run("voting method invalid", getTestBadExample("bad_election_setup_question_voting_method_invalid.json"))
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 

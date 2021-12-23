@@ -23,7 +23,8 @@ type LaoCreate struct {
 // Verify verifies that the LaoCreate message is valid
 func (message LaoCreate) Verify() error {
 	// verify id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.ID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(message.ID)
+	if err != nil {
 		return xerrors.Errorf("lao id is %s, should be base64URL encoded", message.ID)
 	}
 
@@ -48,13 +49,15 @@ func (message LaoCreate) Verify() error {
 	}
 
 	// verify organizer is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.Organizer); err != nil {
+	_, err = base64.URLEncoding.DecodeString(message.Organizer)
+	if err != nil {
 		return xerrors.Errorf("lao organizer is %s, should be base64URL encoded", message.Organizer)
 	}
 
 	// verify all witnesses are base64URL encoded
 	for _, witness := range message.Witnesses {
-		if _, err := base64.URLEncoding.DecodeString(witness); err != nil {
+		_, err = base64.URLEncoding.DecodeString(witness)
+		if err != nil {
 			return xerrors.Errorf("lao witness is %s, should be base64URL encoded", witness)
 		}
 	}
