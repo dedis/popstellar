@@ -1,22 +1,17 @@
 package ch.epfl.pop.pubsub.graph.validator.lao
 
-import org.scalatest.FlatSpec
-import org.scalatest.Matchers
-import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.objects.Channel
-import util.examples.CreateLaoExamples
-import ch.epfl.pop.pubsub.graph.MessageDecoder
-import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
-import org.scalatest.GivenWhenThen
-import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestStateLao
+import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes,GraphMessage,MessageDecoder,PipelineError}
+
+import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers}
+
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
-import ch.epfl.pop.pubsub.graph.ErrorCodes
-import ch.epfl.pop.pubsub.graph.PipelineError
-import org.scalatest.Inside
+import util.examples.CreateLaoExamples
 
 class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
@@ -32,7 +27,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
         And("a createLao message")
         //createLaoMessage
 
-        alert("CreateLao message data content maybe invalid but should be correclty decoded")
+        alert("CreateLao message data content maybe invalid but should be correctly decoded")
         When("the request is parsed")
         val parsed = MessageDecoder.parseData(gm)
 
