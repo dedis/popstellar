@@ -69,7 +69,7 @@ func (a *attendees) Copy() *attendees {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, terminated bool, questions []messagedata.ElectionSetupQuestion,
+func NewChannel(channelPath string, start, end int64, started bool, terminated bool, questions []messagedata.ElectionSetupQuestion,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "election").Logger()
@@ -83,6 +83,7 @@ func NewChannel(channelPath string, start, end int64, terminated bool, questions
 
 		start:      start,
 		end:        end,
+		started:    started,
 		terminated: terminated,
 		questions:  getAllQuestionsForElectionChannel(questions),
 
@@ -109,6 +110,9 @@ type Channel struct {
 
 	// Ending time of the election
 	end int64
+
+	// True if the election is started and false otherwise
+	started bool
 
 	// True if the election is over and false otherwise
 	terminated bool
@@ -197,6 +201,11 @@ func (c *Channel) processElectionObject(action string, msg message.Message, sock
 		err := c.processCastVote(msg)
 		if err != nil {
 			return xerrors.Errorf("failed to cast vote: %v", err)
+		}
+	case messagedata.ElectionActionOpen:
+		err := c.processElectionOpen(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to open election: %v", err)
 		}
 	case messagedata.ElectionActionEnd:
 		err := c.processElectionEnd(msg)
@@ -345,9 +354,51 @@ func (c *Channel) processCastVote(msg message.Message) error {
 
 	err = updateVote(msg.MessageID, msg.Sender, castVote, c.questions)
 	if err != nil {
-		xerrors.Errorf("failed to update vote: %v", err)
+		return xerrors.Errorf("failed to update vote: %v", err)
 	}
 
+	c.inbox.StoreMessage(msg)
+	c.broadcastToAllClients(msg)
+
+	return nil
+}
+
+func (c *Channel) processElectionOpen(msg message.Message) error {
+
+	sender := msg.Sender
+	senderBuf, err := base64.URLEncoding.DecodeString(sender)
+	if err != nil {
+		c.log.Error().Msgf("problem decoding sender public key: %v", err)
+		return xerrors.Errorf("sender is %s, should be base64", sender)
+	}
+
+	// check sender is a valid public key
+	senderPoint := crypto.Suite.Point()
+	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		c.log.Error().Msgf("public key unmarshal problem: %v", err)
+		return answer.NewErrorf(-4, "sender is %s, should be a valid public key: %v", sender, err)
+	}
+
+	// check sender of the election open message is the organizer
+	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
+		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
+	}
+
+	var electionOpen messagedata.ElectionOpen
+
+	err = msg.UnmarshalData(&electionOpen)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal publish election open: %v", err)
+	}
+
+	// check that data is correct
+	err = c.verifyMessageElectionOpen(electionOpen)
+	if err != nil {
+		return xerrors.Errorf("invalid election#open message: %v", err)
+	}
+
+	c.started = true
 	c.inbox.StoreMessage(msg)
 	c.broadcastToAllClients(msg)
 
@@ -389,6 +440,8 @@ func (c *Channel) processElectionEnd(msg message.Message) error {
 		return xerrors.Errorf("invalid election#end message: %v", err)
 	}
 
+	c.started = false
+	c.terminated = true
 	c.inbox.StoreMessage(msg)
 	c.broadcastToAllClients(msg)
 
