@@ -37,6 +37,16 @@ public final class DataRegistry {
     return Optional.ofNullable(mapping.get(pair(obj, action))).map(Entry::getDataClass);
   }
 
+  /**
+   * Found the DataHandler corresponding to the given (obj, action) and execute it with the given
+   * data and context.
+   *
+   * @param context the HandlerContext of the message
+   * @param data the Data to be handle
+   * @param obj of the entry
+   * @param action of the entry
+   * @throws DataHandlingException if an error occurs or if there was no handler
+   */
   public void handle(HandlerContext context, Data data, Objects obj, Action action)
       throws DataHandlingException {
     Optional.ofNullable(mapping.get(pair(obj, action)))
@@ -51,12 +61,12 @@ public final class DataRegistry {
    * @param action of the pair
    * @return the pair
    */
-  public static EntryPair pair(Objects obj, Action action) {
+  private static EntryPair pair(Objects obj, Action action) {
     return new EntryPair(obj, action);
   }
 
   /** Entry of the messages map. A pair of (Objects, Action) */
-  public static final class EntryPair {
+  private static final class EntryPair {
 
     private final Objects object;
     private final Action action;
@@ -90,11 +100,16 @@ public final class DataRegistry {
     }
   }
 
-  public static final class Entry<T extends Data> {
+  /**
+   * Entry of the DataRegistry.
+   *
+   * @param <T> generic type of class that extends Data
+   */
+  private static final class Entry<T extends Data> {
 
-    private final EntryPair key;
-    private final Class<T> dataClass;
-    private final DataHandler<T> dataHandler;
+    @NonNull private final EntryPair key;
+    @NonNull private final Class<T> dataClass;
+    @Nullable private final DataHandler<T> dataHandler;
 
     private Entry(
         @NonNull EntryPair key, @NonNull Class<T> dataClass, @Nullable DataHandler<T> dataHandler) {
@@ -103,14 +118,23 @@ public final class DataRegistry {
       this.dataHandler = dataHandler;
     }
 
+    @NonNull
     public EntryPair getKey() {
       return key;
     }
 
+    @NonNull
     public Class<T> getDataClass() {
       return dataClass;
     }
 
+    /**
+     * Handle the given data using the given context
+     *
+     * @param context the HandlerContext of the message
+     * @param data the Data to be handle
+     * @throws DataHandlingException if an error occurs or if the dataHandler is null
+     */
     @SuppressWarnings("unchecked")
     public void handleData(HandlerContext context, Data data) throws DataHandlingException {
       if (dataHandler == null) {
@@ -120,6 +144,7 @@ public final class DataRegistry {
     }
   }
 
+  /** Builder of the DataRegistry */
   public static final class Builder {
 
     private final Map<EntryPair, Entry<? extends Data>> mapping;
@@ -128,6 +153,17 @@ public final class DataRegistry {
       this.mapping = new HashMap<>();
     }
 
+    /**
+     * Add an entry to the builder and check if it was already present.
+     *
+     * @param obj of the entry to add
+     * @param action of the entry to add
+     * @param dataClass of the entry to add
+     * @param dataHandler of the entry to add
+     * @param <T> generic type of class that extends Data
+     * @return the builder
+     * @throws IllegalArgumentException if the key of the entry is already present
+     */
     public <T extends Data> Builder add(
         @NonNull Objects obj,
         @NonNull Action action,
@@ -136,6 +172,14 @@ public final class DataRegistry {
       return add(new Entry<>(pair(obj, action), dataClass, dataHandler));
     }
 
+    /**
+     * Add an entry to the builder and check if it was already present.
+     *
+     * @param entry the new entry to add
+     * @param <T> generic type of class that extends Data
+     * @return the builder
+     * @throws IllegalArgumentException if the key of the entry is already present
+     */
     public <T extends Data> Builder add(@NonNull Entry<T> entry) {
       if (mapping.containsKey(entry.key)) {
         throw new IllegalArgumentException(String.format("They key %s already exists", entry.key));
