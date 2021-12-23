@@ -285,7 +285,8 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	consensusChannel.inbox.StoreMessage(electMessage)
 
 	// Add a new consensus instance to the channel
-	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID)
@@ -403,7 +404,8 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	consensusChannel.inbox.StoreMessage(electMessage)
 
 	// Add a new consensus instance to the channel
-	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID)
@@ -523,7 +525,8 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	consensusChannel.inbox.StoreMessage(electMessage)
 
 	// Add a new consensus instance to the channel
-	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
 	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
@@ -643,7 +646,8 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	consensusChannel.inbox.StoreMessage(electMessage)
 
 	// Add a new consensus instance to the channel
-	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID)
@@ -762,7 +766,8 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusChannel.inbox.StoreMessage(electMessage)
 
 	// Add a new consensus instance to the channel
-	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
 	consensusInstance.proposedTry = 4
 	consensusInstance.proposedValue = true
 	consensusInstance.lastSent = messagedata.ConsensusActionPropose
@@ -886,7 +891,8 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	consensusChannel.inbox.StoreMessage(electMessage)
 
 	// Add a new consensus instance to the channel
-	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
 	consensusInstance.createElectInstance(messageID)

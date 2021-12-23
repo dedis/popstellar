@@ -27,11 +27,9 @@ import (
 const (
 	msgID = "msg id"
 
-	messageNotReceived       = "message doesn't correspond to any previously received message"
-	messageStateInexistant   = "messageState with ID %s inexistant"
-	consensusInexistant      = "consensusInstance with ID %s inexistant"
-	consensusFinished        = "consensus with id %s already finished"
-	messageNotInCorrectPhase = "consensus corresponding to the message hasn't entered"
+	messageNotReceived  = "message doesn't correspond to any previously received message"
+	consensusInexistant = "consensusInstance with ID %s inexistant"
+	consensusFinished   = "consensus with id %s already finished"
 
 	proposerRole = "proposer"
 	acceptorRole = "acceptor"
@@ -92,6 +90,8 @@ type ElectInstance struct {
 	negativeElectAccept int
 }
 
+// createElectInstance creates the state of the consensus for a specific elect
+// message
 func (i *ConsensusInstance) createElectInstance(messageID string) {
 	i.electInstances[messageID] = ElectInstance{
 		timeoutChan: make(chan string),
@@ -363,19 +363,12 @@ func getSender(msg message.Message) (kyber.Point, error) {
 
 // createConsensusInstance adds a new consensus instance to the
 // consensusInstances array
-func (c *Channel) createConsensusInstance(instanceID string, sender kyber.Point) *ConsensusInstance {
-	var role string
-	if sender.Equal(c.hub.GetPubKeyOrg()) {
-		role = proposerRole
-	} else {
-		role = acceptorRole
-	}
-
+func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance {
 	consensusInstance := &ConsensusInstance{
 
 		id: instanceID,
 
-		role: role,
+		role: acceptorRole,
 
 		lastSent: "",
 
@@ -423,12 +416,16 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 	// Creates a consensus instance if it doesn't exist yet
 	consensusInstance, ok := c.consensusInstances[data.InstanceID]
 	if !ok {
-		consensusInstance = c.createConsensusInstance(data.InstanceID, sender)
+		consensusInstance = c.createConsensusInstance(data.InstanceID)
 	}
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
 	consensusInstance.createElectInstance(message.MessageID)
+
+	if sender.Equal(c.hub.GetPubKeyOrg()) {
+		consensusInstance.role = proposerRole
+	}
 
 	// Reset the decision and failure
 	consensusInstance.decided = false
@@ -475,7 +472,7 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 		return xerrors.Errorf(consensusFinished, data.InstanceID)
 	}
 
-	// Update the received elect-accept messages
+	// Update the elect state
 	if data.Accept {
 		electInstance.positiveElectAccept++
 	} else {
