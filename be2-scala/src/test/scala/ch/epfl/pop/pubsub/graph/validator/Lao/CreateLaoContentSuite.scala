@@ -1,21 +1,15 @@
 package ch.epfl.pop.pubsub.graph.validator.lao
 
-import org.scalatest.{FlatSpec, Matchers}
-import org.scalatest.Outcome
-import util.examples.CreateLaoExamples
-import ch.epfl.pop.pubsub.graph.Validator
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.pubsub.graph.MessageDecoder
-import ch.epfl.pop.pubsub.graph.GraphMessage
-import akka.stream.scaladsl.Flow
-import akka.stream.scaladsl.GraphDSL
 import akka.NotUsed
 import akka.stream.FlowShape
+import akka.stream.scaladsl.{Flow, GraphDSL}
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.network.method.message.Message
-import org.scalatest.GivenWhenThen
-import ch.epfl.pop.model.network.JsonRpcResponse
-import org.scalatest.Inside
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
+import ch.epfl.pop.pubsub.graph.{GraphMessage,MessageDecoder,Validator}
+import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers,Outcome}
+
+import util.examples.CreateLaoExamples
 
 class MessageDataContentValidatorSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
@@ -36,20 +30,19 @@ class MessageDataContentValidatorSuite extends FlatSpec with Matchers with Insid
 
   behavior.of("A validator when receiving ")
   "a CreateLao data with valid content" should "be accepted by validator" in withCreateLaoFixture(CreateLaoExamples.createLao){
-    Given("a valid decoded createLao request ")
-    (msg) => {
+    Given("a valid decoded createLao request")
+    (message) => {
       When("validated")
-      val validated = Validator.validateMessageDataContent(msg)
-      inside(validated){
-        case Left(msg) => {
+      val validationResult = Validator.validateMessageDataContent(message)
+      inside(validationResult){
+        case Left(msg) =>
           Then("the validation succeeds")
           msg shouldBe a [JsonRpcRequest]
-        }
-        case _ @ Right(_) => fail("fails to validate a valid CreateLao data content")
-        case _ => fail(s"validated message <$validated> is of unexcpected type")
+        case _ @ Right(_) => fail("fails to validate CreateLao data content")
+        case _ => fail(s"validated message <$validationResult> is of unexpected type")
       }
       And("the message has the same content after validation")
-      validated should equal(msg)
+      validationResult should equal(message)
     }
   }
   //TODO: add tests for bad create lao data content
