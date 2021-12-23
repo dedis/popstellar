@@ -47,9 +47,9 @@ object DataBuilder {
     case ActionType.CREATE =>
       buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.CREATE))(CreateLao.buildFromJson)("CreateLao data could not be parsed")
     case ActionType.STATE =>
-      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.STATE))(CreateLao.buildFromJson)("StateLao data could not be parsed")
+      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.STATE))(StateLao.buildFromJson)("StateLao data could not be parsed")
     case ActionType.UPDATE_PROPERTIES =>
-      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.UPDATE_PROPERTIES))(CreateLao.buildFromJson)("UpdateLao data could not be parsed")
+      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.UPDATE_PROPERTIES))(UpdateLao.buildFromJson)("UpdateLao data could not be parsed")
     case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Lao Data")
   }
 
