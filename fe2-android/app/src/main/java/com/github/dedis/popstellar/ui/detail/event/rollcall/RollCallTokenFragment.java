@@ -9,19 +9,18 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.RollCallTokenFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import net.glxn.qrgen.android.QRCode;
 
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -74,10 +73,9 @@ public class RollCallTokenFragment extends Fragment {
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {
-      Pair<byte[], byte[]> token =
-          Wallet.getInstance().findKeyPair(firstLaoId, rollCall.getPersistentId());
-      sk = Base64.getUrlEncoder().encodeToString(token.first);
-      pk = Base64.getUrlEncoder().encodeToString(token.second);
+      PoPToken token = Wallet.getInstance().findKeyPair(firstLaoId, rollCall.getPersistentId());
+      sk = token.getPrivateKey().getEncoded();
+      pk = token.getPublicKey().getEncoded();
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to retrieve token from wallet", e);
       mLaoDetailViewModel.openLaoWallet();
