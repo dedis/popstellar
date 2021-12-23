@@ -60,3 +60,18 @@ func (message ConsensusPropose) Verify() error {
 
 	return nil
 }
+
+// GetObject implements MessageData
+func (ConsensusPropose) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusPropose) GetAction() string {
+	return ConsensusActionPropose
+}
+
+// NewEmpty implements MessageData
+func (ConsensusPropose) NewEmpty() MessageData {
+	return &ConsensusPropose{}
+}

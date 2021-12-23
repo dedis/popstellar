@@ -49,3 +49,18 @@ func (message ConsensusAccept) Verify() error {
 	}
 	return nil
 }
+
+// GetObject implements MessageData
+func (ConsensusAccept) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusAccept) GetAction() string {
+	return ConsensusActionAccept
+}
+
+// NewEmpty implements MessageData
+func (ConsensusAccept) NewEmpty() MessageData {
+	return &ConsensusAccept{}
+}

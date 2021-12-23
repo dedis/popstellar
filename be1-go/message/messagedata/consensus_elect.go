@@ -18,12 +18,6 @@ type ConsensusElect struct {
 	Value string `json:"value"`
 }
 
-type Key struct {
-	Type     string `json:"type"`
-	ID       string `json:"id"`
-	Property string `json:"property"`
-}
-
 // Verify verifies that the ConsensusElect message is correct
 func (message ConsensusElect) Verify() error {
 	// verify that the instance id is base64URL encoded
@@ -50,4 +44,25 @@ func (message ConsensusElect) Verify() error {
 	}
 
 	return nil
+}
+
+// GetObject implements MessageData
+func (ConsensusElect) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusElect) GetAction() string {
+	return ConsensusActionElect
+}
+
+// NewEmpty implements MessageData
+func (ConsensusElect) NewEmpty() MessageData {
+	return &ConsensusElect{}
+}
+
+type Key struct {
+	Type     string `json:"type"`
+	ID       string `json:"id"`
+	Property string `json:"property"`
 }
