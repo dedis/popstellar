@@ -143,7 +143,18 @@ func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 	return registry
 }
 
-// waitAgain
+// timeoutFailure sends a failure message during a timeout
+func (c *Channel) timeoutFailure(instance *ConsensusInstance, messageID string) {
+	byteMsg, err := c.createFailureMessage(instance, messageID)
+	if err != nil {
+		c.log.Err(err).Msg(failedFailureCreation)
+		return
+	}
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		c.log.Err(err).Msg(failedFailureSending)
+	}
+}
 
 // startTimer starts the timeout logic for the consensus
 func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
@@ -172,16 +183,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 					}
 
 				case <-time.After(time.Minute):
-
-					byteMsg, err := c.createFailureMessage(instance, messageID)
-					if err != nil {
-						c.log.Err(err).Msg(failedFailureCreation)
-						return
-					}
-					err = c.publishNewMessage(byteMsg)
-					if err != nil {
-						c.log.Err(err).Msg(failedFailureSending)
-					}
+					c.timeoutFailure(instance, messageID)
 					return
 				}
 
@@ -199,15 +201,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 					}
 
 				case <-time.After(time.Second):
-					byteMsg, err := c.createFailureMessage(instance, messageID)
-					if err != nil {
-						c.log.Err(err).Msg(failedFailureCreation)
-						return
-					}
-					err = c.publishNewMessage(byteMsg)
-					if err != nil {
-						c.log.Err(err).Msg(failedFailureSending)
-					}
+					c.timeoutFailure(instance, messageID)
 					return
 				}
 
