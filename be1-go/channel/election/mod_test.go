@@ -15,6 +15,7 @@ import (
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/message/messagedata"
+	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
@@ -181,6 +182,8 @@ type fakeHub struct {
 	log zerolog.Logger
 
 	laoFac channel.LaoFactory
+
+	fakeSock fakeSocket
 }
 
 // NewHub returns a Organizer Hub.
@@ -207,6 +210,7 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		workers:         semaphore.NewWeighted(10),
 		log:             log,
 		laoFac:          laoFac,
+		fakeSock:        fakeSocket{id: "hubSock"},
 	}
 
 	return &hub, nil
@@ -246,6 +250,25 @@ func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 
 func (h *fakeHub) GetSchemaValidator() validation.SchemaValidator {
 	return *h.schemaValidator
+}
+
+func (h *fakeHub) GetServerNumber() int {
+	return 1
+}
+
+func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
+	byteMsg, err := json.Marshal(publishMsg)
+	if err != nil {
+		return err
+	}
+
+	h.fakeSock.msg = byteMsg
+
+	return nil
+}
+
+func (h *fakeHub) SetMessageID(publish *method.Publish) {
+	publish.ID = 0
 }
 
 // fakeSocket is a fake implementation of a socket
