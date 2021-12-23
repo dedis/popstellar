@@ -124,42 +124,42 @@ export class Message {
    * @param witnessSignatures- The signatures of the witnesses
    * @returns - The created message
    */
-  public static fromData(
+  public static async fromData(
     data: MessageData, witnessSignatures?: WitnessSignature[],
   ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     let publicKey = KeyPairStore.getPublicKey();
     let privateKey = KeyPairStore.getPrivateKey();
+    let signature: Signature;
 
     if (isSignedWithToken(data)) {
-      return getCurrentPopTokenFromStore().then((token) => {
-        if (token) {
-          publicKey = token.publicKey;
-          privateKey = token.privateKey;
-        } else {
-          console.error('Impossible to sign the message with a pop token: no token found for '
-            + 'current user in this LAO');
-        }
-        const signature: Signature = privateKey.sign(encodedDataJson);
+      const token = await getCurrentPopTokenFromStore();
+      if (token) {
+        publicKey = token.publicKey;
+        privateKey = token.privateKey;
+      } else {
+        console.error('Impossible to sign the message with a pop token: no token found for '
+          + 'current user in this LAO');
+      }
+      signature = privateKey.sign(encodedDataJson);
 
-        return new Message({
-          data: encodedDataJson,
-          sender: publicKey,
-          signature,
-          message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-          witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
-        });
+      return new Message({
+        data: encodedDataJson,
+        sender: publicKey,
+        signature,
+        message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
+        witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
       });
     }
-    const signature: Signature = privateKey.sign(encodedDataJson);
+    signature = privateKey.sign(encodedDataJson);
 
-    return Promise.resolve(new Message({
+    return new Message({
       data: encodedDataJson,
       sender: publicKey,
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
-    }));
+    });
   }
 
   // This function disables the checks of signature and messageID for eleciton result messages
@@ -167,7 +167,7 @@ export class Message {
   // access to the private key
   // This method is only a temporary solution for the demo and should be removed once a better
   // solution is found
-  private isElectionResultMessage():boolean {
+  private isElectionResultMessage(): boolean {
     return this.data.decode().includes('"result":');
   }
 }

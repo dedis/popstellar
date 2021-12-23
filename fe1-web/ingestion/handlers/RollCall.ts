@@ -135,18 +135,13 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
     }
   });
 
-  // For now, everyone is automatically subscribed to everyone else (organizer and attendees)
-  // at the end of a roll call
-  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer.valueOf()))
+  // For now, everyone is automatically subscribed to the organizer's social channel at the end of
+  // the roll call
+  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer))
     .catch((err) => {
       console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`,
         err);
     });
-  rcMsgData.attendees.forEach((token) => subscribeToChannel(getUserSocialChannel(lao.id,
-    token.valueOf())).catch((err) => {
-    console.error(`Could not subscribe to social channel of attendee ${token.valueOf()}, error:`,
-      err);
-  }));
 
   return true;
 }

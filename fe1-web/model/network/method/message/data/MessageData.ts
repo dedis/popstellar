@@ -48,7 +48,7 @@ export interface MessageData {
  *
  * @param data - The message data we want to know how to sign
  */
-export function isSignedWithToken(data: MessageData): Boolean {
+export function isSignedWithToken(data: MessageData): boolean {
   return (data.object === ObjectType.ELECTION && data.action === ActionType.CAST_VOTE)
     || (data.object === ObjectType.CHIRP && data.action === ActionType.ADD);
 }

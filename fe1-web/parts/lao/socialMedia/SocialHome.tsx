@@ -19,9 +19,7 @@ import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
 import { PublicKey, RollCall } from 'model/objects';
 import { generateToken } from 'model/objects/wallet/Token';
-import {
-  makeCurrentLao, makeEventGetter,
-} from 'store';
+import { makeCurrentLao, makeEventGetter } from 'store';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
 
 /**

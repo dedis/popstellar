@@ -6,7 +6,7 @@ import {
   CloseRollCall,
   CreateLao,
   CreateMeeting,
-  CreateRollCall,
+  CreateRollCall, DeleteChirp,
   EndElection,
   OpenRollCall,
   ReopenRollCall,
@@ -312,17 +312,15 @@ export function requestAddChirp(
   return publish(getUserSocialChannel(currentLao.id, publicKey.valueOf()), message);
 }
 
-// /** Sends a server query which delete a chirp */
-// export function requestDeleteChirp(
-//   chirpId: Hash,
-// ): Promise<void> {
-//   const timestamp = Timestamp.EpochNow();
-//   const currentLao: Lao = OpenedLaoStore.get();
-//
-//   const message = new DeleteChirp({
-//     chirp_id: chirpId,
-//     timestamp: timestamp,
-//   });
-//
-//   return publish(getCurrentUserSocialChannel(currentLao.id), message);
-// }
+/** Sends a server query which delete a chirp */
+export function requestDeleteChirp(chirpId: Hash): Promise<void> {
+  const timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+
+  const message = new DeleteChirp({
+    chirp_id: chirpId,
+    timestamp: timestamp,
+  });
+
+  return publish(getCurrentUserSocialChannel(currentLao.id), message);
+}
