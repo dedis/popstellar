@@ -231,9 +231,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     String pk;
     try {
       pk =
-          Base64.getUrlEncoder()
-              .encodeToString(
-                  Wallet.getInstance().findKeyPair(firstLaoId, rollcall.getPersistentId()).second);
+          Wallet.getInstance()
+              .findKeyPair(firstLaoId, rollcall.getPersistentId())
+              .getPublicKey()
+              .getEncoded(); // FIXME Outdated type usage
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
@@ -1394,8 +1395,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     String errorMessage = "failed to retrieve public key from wallet";
     try {
       String pk =
-          Base64.getUrlEncoder()
-              .encodeToString(Wallet.getInstance().findKeyPair(firstLaoId, id).second);
+          Wallet.getInstance()
+              .findKeyPair(firstLaoId, id)
+              .getPublicKey()
+              .getEncoded(); // FIXME Bad type usage
       mPkRollCallEvent.postValue(new SingleEvent<>(pk));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);
