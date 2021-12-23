@@ -42,6 +42,15 @@ export function getGeneralChirpsChannel(laoIdHash: Hash): Channel {
   return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/chirps`;
 }
 
+/**
+ * Returns the channel of all the reactions.
+ *
+ * @param laoIdHash - The hash containing the laoID of the currently opened LAO
+ */
+export function getReactionChannel(laoIdHash: Hash): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/reactions`;
+}
+
 /** Returns the last part of the channel which is usually an event id
  * Example:
  * Input: /root/laoID/electionID

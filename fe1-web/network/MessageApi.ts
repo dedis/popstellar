@@ -1,7 +1,9 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp,
+  EventTags, getReactionChannel, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
+  AddChirp,
+  AddReaction,
   CastVote,
   CloseRollCall,
   CreateLao,
@@ -22,7 +24,6 @@ import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
 import { Question, Vote } from 'model/objects/Election';
-import { AddChirp } from 'model/network/method/message/data/chirp/AddChirp';
 import { publish } from './JsonRpcApi';
 
 /**
@@ -302,4 +303,20 @@ export function requestAddChirp(
   });
 
   return publish(getCurrentUserSocialChannel(currentLao.id), message);
+}
+
+export function requestAddReaction(
+  reaction_codepoint: string,
+  chirp_id: Hash,
+): Promise<void> {
+  const timestamp = Timestamp.EpochNow();
+  const currentLao: Lao = OpenedLaoStore.get();
+
+  const message = new AddReaction({
+    reaction_codepoint: reaction_codepoint,
+    chirp_id: chirp_id,
+    timestamp: timestamp,
+  });
+
+  return publish(getReactionChannel(currentLao.id), message);
 }

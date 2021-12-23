@@ -4,6 +4,7 @@ import { validateDataObject } from 'model/network/validation';
 import { checkTimestampStaleness } from '../Checker';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 
+/** Data sent to add a reaction */
 export class AddReaction implements MessageData {
   public readonly object: ObjectType = ObjectType.REACTION;
 

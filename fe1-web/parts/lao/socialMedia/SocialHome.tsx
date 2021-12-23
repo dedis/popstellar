@@ -48,7 +48,7 @@ const SocialHome = () => {
   const publishChirp = () => {
     requestAddChirp(inputChirp)
       .catch((err) => {
-        console.error('Could not add chirp, error:', err);
+        console.error('Could not add chirp, error: ', err);
       });
     setInputChirp('');
   };

@@ -7,6 +7,7 @@ import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
+import { requestAddReaction } from '../network';
 
 /**
  * Component to display a chirp
@@ -64,6 +65,13 @@ const ChirpCard = (props: IPropTypes) => {
   // This is temporary for now
   const zero = '  0';
 
+  const addReaction = (emoji: string) => {
+    requestAddReaction(emoji, chirp.id)
+      .catch((err) => {
+        console.error('Could not add reaction, error: ', err);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
@@ -76,15 +84,30 @@ const ChirpCard = (props: IPropTypes) => {
         <Text style={styles.chirpText}>{chirp.text}</Text>
         <View style={styles.reactionsView}>
           <View style={styles.reactionView}>
-            <Ionicons name="thumbs-up" size={16} color="black" />
+            <Ionicons.Button
+              name="thumbs-up"
+              size={16}
+              color="black"
+              onPress={() => addReaction('👍')}
+            />
             <Text>{likesText}</Text>
           </View>
           <View style={styles.reactionView}>
-            <Ionicons name="thumbs-down" size={16} color="black" />
+            <Ionicons.Button
+              name="thumbs-down"
+              size={16}
+              color="black"
+              onPress={() => addReaction('👎')}
+            />
             <Text>{zero}</Text>
           </View>
           <View style={styles.reactionView}>
-            <Ionicons name="heart" size={16} color="black" />
+            <Ionicons.Button
+              name="heart"
+              size={16}
+              color="black"
+              onPress={() => addReaction('❤️')}
+            />
             <Text>{zero}</Text>
           </View>
           <View style={styles.reactionView}>
