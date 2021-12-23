@@ -29,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
@@ -39,6 +42,7 @@ import io.github.novacrypto.bip39.wordlists.English;
  * This class represent a wallet that will enable users to store their PoP tokens with reasonable,
  * realistic security and usability.
  */
+@Singleton
 public class Wallet {
 
   private static final String TAG = Wallet.class.getSimpleName();
@@ -48,13 +52,8 @@ public class Wallet {
   private Aead aead;
   private boolean isSetup = false;
 
-  private static final Wallet instance = new Wallet();
-
-  public static Wallet getInstance() {
-    return instance;
-  }
-
   /** Class constructor, initialize the wallet with a new random seed. */
+  @Inject
   public Wallet() {
     setRandomSeed();
   }
