@@ -246,7 +246,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 // Tests that the channel works correctly when it receives an elect-accept
 // message
 func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
-	consensusInstance := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
 
 	// Create the hub
@@ -284,11 +284,14 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add the state of the message to the channel
-	consensusChannel.createMessageInstance(messageID, keypair.public)
-
 	// Add a new consensus instance to the channel
-	consensusChannel.createConsensusInstance(consensusInstance)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
 
 	// Create a consensus elect_accept message
 	file = filepath.Join(protocolRelativePath,
@@ -353,7 +356,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 	require.Equal(t, "consensus", prepare.Object)
 	require.Equal(t, "prepare", prepare.Action)
-	require.Equal(t, consensusInstance, prepare.InstanceID)
+	require.Equal(t, consensusInstanceID, prepare.InstanceID)
 	require.Equal(t, messageID, prepare.MessageID)
 	require.GreaterOrEqual(t, prepare.CreatedAt, int64(0))
 	require.Equal(t, int64(1), prepare.Value.ProposedTry)
@@ -361,7 +364,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 
 // Tests that the channel works correctly when it receives a prepare message
 func Test_Consensus_Publish_Prepare(t *testing.T) {
-	consensusInstance := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
 
 	// Create the hub
@@ -399,11 +402,14 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add the state of the message to the channel
-	consensusChannel.createMessageInstance(messageID, keypair.public)
-
 	// Add a new consensus instance to the channel
-	consensusChannel.createConsensusInstance(consensusInstance)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
 
 	// Create a consensus prepare message
 	file = filepath.Join(protocolRelativePath,
@@ -468,7 +474,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 	require.Equal(t, "consensus", promise.Object)
 	require.Equal(t, "promise", promise.Action)
-	require.Equal(t, consensusInstance, promise.InstanceID)
+	require.Equal(t, consensusInstanceID, promise.InstanceID)
 	require.Equal(t, messageID, promise.MessageID)
 	require.GreaterOrEqual(t, promise.CreatedAt, int64(0))
 	require.Equal(t, int64(-1), promise.Value.AcceptedTry)
@@ -478,7 +484,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 
 // Tests that the channel works correctly when it receives a promise message
 func Test_Consensus_Publish_Promise(t *testing.T) {
-	consensusInstance := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
 
 	// Create the hub
@@ -516,11 +522,15 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add the state of the message to the channel
-	consensusChannel.createMessageInstance(messageID, keypair.public)
-
 	// Add a new consensus instance to the channel
-	consensusChannel.createConsensusInstance(consensusInstance)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
 
 	// Create a consensus promise message
 	file = filepath.Join(protocolRelativePath,
@@ -549,13 +559,6 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	require.NoError(t, err)
 
 	messagePublish.Params.Message = msg
-
-	// Error should be sent if not enough elect accept have been received
-	require.Error(t, channel.Publish(messagePublish, nil), "consensus corresponding to"+
-		"the message hasn't entered the promise phase")
-
-	// Update the state of the message
-	consensusChannel.messageStates[messageID].currentPhase = PromisePhase
 
 	// Create the broadcast message to check that it is sent
 	fileBroadcast := filepath.Join(protocolRelativePath,
@@ -592,7 +595,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 	require.Equal(t, "consensus", propose.Object)
 	require.Equal(t, "propose", propose.Action)
-	require.Equal(t, consensusInstance, propose.InstanceID)
+	require.Equal(t, consensusInstanceID, propose.InstanceID)
 	require.Equal(t, messageID, propose.MessageID)
 	require.GreaterOrEqual(t, propose.CreatedAt, int64(0))
 	require.Equal(t, int64(4), propose.Value.ProposedTry)
@@ -601,7 +604,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 
 // Tests that the channel works correctly when it receives a propose message
 func Test_Consensus_Publish_Propose(t *testing.T) {
-	consensusInstance := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
 
 	// Create the hub
@@ -639,11 +642,14 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add the state of the message to the channel
-	consensusChannel.createMessageInstance(messageID, keypair.public)
-
 	// Add a new consensus instance to the channel
-	consensusChannel.createConsensusInstance(consensusInstance)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
 
 	// Create a consensus propose message
 	file = filepath.Join(protocolRelativePath,
@@ -672,13 +678,6 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	require.NoError(t, err)
 
 	messagePublish.Params.Message = msg
-
-	// Error should be sent if not enough elect accept have been received
-	require.Error(t, channel.Publish(messagePublish, nil), "consensus corresponding to"+
-		"the message hasn't entered the promise phase")
-
-	// Update the state of the message
-	consensusChannel.messageStates[messageID].currentPhase = PromisePhase
 
 	// Create the broadcast message to check that it is sent
 	fileBroadcast := filepath.Join(protocolRelativePath,
@@ -715,7 +714,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 	require.Equal(t, "consensus", accept.Object)
 	require.Equal(t, "accept", accept.Action)
-	require.Equal(t, consensusInstance, accept.InstanceID)
+	require.Equal(t, consensusInstanceID, accept.InstanceID)
 	require.Equal(t, messageID, accept.MessageID)
 	require.GreaterOrEqual(t, accept.CreatedAt, int64(0))
 	require.Equal(t, int64(4), accept.Value.AcceptedTry)
@@ -724,7 +723,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 
 // Tests that the channel works correctly when it receives an accept message
 func Test_Consensus_Publish_Accept(t *testing.T) {
-	consensusInstance := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
 
 	// Create the hub
@@ -762,13 +761,17 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add the state of the message to the channel
-	consensusChannel.createMessageInstance(messageID, keypair.public)
-
 	// Add a new consensus instance to the channel
-	consensusChannel.createConsensusInstance(consensusInstance)
-	consensusChannel.consensusInstances[consensusInstance].proposedTry = 4
-	consensusChannel.consensusInstances[consensusInstance].proposedValue = true
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+	consensusInstance.proposedTry = 4
+	consensusInstance.proposedValue = true
+	consensusInstance.lastSent = messagedata.ConsensusActionPropose
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
 
 	// Create a consensus propose message
 	file = filepath.Join(protocolRelativePath,
@@ -798,15 +801,8 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	messagePublish.Params.Message = msg
 
-	// Error should be sent if not enough elect accept have been received
-	require.Error(t, channel.Publish(messagePublish, nil), "consensus corresponding to"+
-		"the message hasn't entered the accept phase")
-
-	// Update the state of the message
-	consensusChannel.messageStates[messageID].currentPhase = AcceptPhase
-
 	// Update the proposed value to true
-	consensusChannel.consensusInstances[consensusInstance].proposedValue = true
+	consensusChannel.consensusInstances[consensusInstanceID].proposedValue = true
 
 	// Create the broadcast message to check that it is sent
 	fileBroadcast := filepath.Join(protocolRelativePath,
@@ -843,7 +839,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 	require.Equal(t, "consensus", learn.Object)
 	require.Equal(t, "learn", learn.Action)
-	require.Equal(t, consensusInstance, learn.InstanceID)
+	require.Equal(t, consensusInstanceID, learn.InstanceID)
 	require.Equal(t, messageID, learn.MessageID)
 	require.GreaterOrEqual(t, learn.CreatedAt, int64(0))
 	require.True(t, learn.Value.Decision)
@@ -851,7 +847,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 
 // Tests that the channel works correctly when it receives a learn message
 func Test_Consensus_Publish_Learn(t *testing.T) {
-	consensusInstance := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
 	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
 
 	// Create the hub
@@ -883,17 +879,20 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 		Data:              bufbElect64,
 		Sender:            publicKey64,
 		Signature:         "h",
-		MessageID:         "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+		MessageID:         messageID,
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
 	consensusChannel.inbox.StoreMessage(electMessage)
 
-	// Add the state of the message to the channel
-	consensusChannel.createMessageInstance(messageID, keypair.public)
-
 	// Add a new consensus instance to the channel
-	consensusChannel.createConsensusInstance(consensusInstance)
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID, keypair.public)
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
 
 	// Create a consensus learn message
 	file = filepath.Join(protocolRelativePath,
@@ -966,7 +965,7 @@ func Test_Publish_New_Message(t *testing.T) {
 	require.NoError(t, err)
 
 	// Create and send the new message
-	err = consensusChannel.publishNewMessage("learn", buf)
+	err = consensusChannel.publishNewMessage(buf)
 	require.NoError(t, err)
 
 	// Create the expected sent message

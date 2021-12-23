@@ -136,33 +136,27 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messa
 
 	byteMsg, err := json.Marshal(newData)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+		return nil, xerrors.Errorf("failed to marshal new consensus#learn message: %v", err)
 	}
 
 	return byteMsg, nil
 }
 
-// createLearnMessage creates the data for a learn message
+// createLearnMessage creates the data for a failure message
 func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
 
-	newData := messagedata.ConsensusLearn{
+	newData := messagedata.ConsensusFailure{
 		Object:     "consensus",
-		Action:     "learn",
+		Action:     "failure",
 		InstanceID: consensusInstance.id,
 		MessageID:  messageID,
 
 		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValueLearn{
-			Decision: consensusInstance.decision,
-		},
-
-		AcceptorSignatures: make([]string, 0),
 	}
 
 	byteMsg, err := json.Marshal(newData)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
+		return nil, xerrors.Errorf("failed to marshal new consensus#failure message: %v", err)
 	}
 
 	return byteMsg, nil
