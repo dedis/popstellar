@@ -47,3 +47,18 @@ func (message ConsensusPrepare) Verify() error {
 
 	return nil
 }
+
+// GetObject implements MessageData
+func (ConsensusPrepare) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusPrepare) GetAction() string {
+	return ConsensusActionPrepare
+}
+
+// NewEmpty implements MessageData
+func (ConsensusPrepare) NewEmpty() MessageData {
+	return &ConsensusPrepare{}
+}

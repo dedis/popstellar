@@ -116,20 +116,13 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionElect,
-		c.processConsensusElect, messagedata.ConsensusElect{})
-	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionElectAccept,
-		c.processConsensusElectAccept, messagedata.ConsensusElectAccept{})
-	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionPrepare,
-		c.processConsensusPrepare, messagedata.ConsensusPrepare{})
-	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionPromise,
-		c.processConsensusPromise, messagedata.ConsensusPromise{})
-	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionPropose,
-		c.processConsensusPropose, messagedata.ConsensusPropose{})
-	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionAccept,
-		c.processConsensusAccept, messagedata.ConsensusAccept{})
-	registry.Register(messagedata.ConsensusObject+"#"+messagedata.ConsensusActionLearn,
-		c.processConsensusLearn, messagedata.ConsensusLearn{})
+	registry.Register(messagedata.ConsensusElect{}, c.processConsensusElect)
+	registry.Register(messagedata.ConsensusElectAccept{}, c.processConsensusElectAccept)
+	registry.Register(messagedata.ConsensusPrepare{}, c.processConsensusPrepare)
+	registry.Register(messagedata.ConsensusPromise{}, c.processConsensusPromise)
+	registry.Register(messagedata.ConsensusPropose{}, c.processConsensusPropose)
+	registry.Register(messagedata.ConsensusAccept{}, c.processConsensusAccept)
+	registry.Register(messagedata.ConsensusLearn{}, c.processConsensusLearn)
 
 	return registry
 }
@@ -208,21 +201,9 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 
 	msg := publish.Params.Message
 
-	data := msg.Data
-
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err = c.registry.Process(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
-	}
-
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get object or action: %v", err)
-	}
-
-	err = c.registry.Process(object+"#"+action, msg)
-	if err != nil {
-		return xerrors.Errorf("failed to process %q object: %w", object, err)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
 	err = c.broadcastToAllClients(msg)
@@ -370,7 +351,7 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 	messageState.Lock()
 	defer messageState.Unlock()
 	if data.Accept {
-		messageState.electAcceptNumber += 1
+		messageState.electAcceptNumber++
 	}
 
 	// Once all Elect_Accept have been received, proposer creates new prepare
@@ -391,7 +372,7 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 	defer consensusInstance.Unlock()
 
 	if consensusInstance.proposed_try >= consensusInstance.promised_try {
-		consensusInstance.proposed_try += 1
+		consensusInstance.proposed_try++
 	} else {
 		consensusInstance.proposed_try = consensusInstance.promised_try + 1
 	}
