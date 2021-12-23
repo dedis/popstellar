@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
@@ -6,8 +6,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Chirp } from 'model/objects/Chirp';
 import DeleteButton from 'components/DeleteButton';
 import styles from 'styles/stylesheets/chirpCard';
+import { useSelector } from 'react-redux';
 import { requestDeleteChirp } from '../network';
-import { KeyPairStore } from '../store';
+import { makeCurrentLao, makeEventGetter } from '../store';
+import { PublicKey, RollCall } from '../model/objects';
+import { generateToken } from '../model/objects/wallet';
 
 /**
  * Component to display a chirp
@@ -16,17 +19,43 @@ const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const likesText = `  ${chirp.likes}`;
 
+  const laoSelect = makeCurrentLao();
+  const lao = useSelector(laoSelect);
+  let userPublicKey: PublicKey | undefined;
+  const [isSender, setIsSender] = useState(false);
+
+  if (lao === undefined) {
+    throw new Error('LAO is currently undefined, impossible to display chirps');
+  }
+
   // This is temporary for now
   const zero = '  0';
 
-  const deleteChirp = () => {
-    requestDeleteChirp(chirp.id)
-      .catch((err) => {
-        console.error('Could not remove chirp, error:', err);
-      });
-  };
+  // Get the pop token of the user using the last tokenized roll call
+  const rollCallId = lao.last_tokenized_roll_call_id;
+  const eventSelect = makeEventGetter(lao.id, rollCallId);
+  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
 
-  const isSender = KeyPairStore.getPublicKey().valueOf() === chirp.sender.valueOf();
+  useEffect(() => {
+    generateToken(lao.id, rollCallId).then((token) => {
+      if (token && rollCall.containsToken(token)) {
+        userPublicKey = token.publicKey;
+        setIsSender(userPublicKey.valueOf() === chirp.sender.valueOf());
+      }
+    });
+  }, [lao.last_tokenized_roll_call_id]);
+
+  const deleteChirp = () => {
+    if (userPublicKey) {
+      requestDeleteChirp(userPublicKey, chirp.id)
+        .catch((err) => {
+          console.error('Could not remove chirp, error:', err);
+        });
+    } else {
+      console.error('No token found for current user. '
+        + 'Be sure to have participated in a Roll-Call.');
+    }
+  };
 
   return (
     <View style={styles.container}>

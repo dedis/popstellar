@@ -9,6 +9,7 @@ export enum ObjectType {
   ROLL_CALL = 'roll_call',
   ELECTION = 'election',
   CHIRP = 'chirp',
+  REACTION = 'reaction',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */
@@ -50,5 +51,6 @@ export interface MessageData {
  */
 export function isSignedWithToken(data: MessageData): boolean {
   return (data.object === ObjectType.ELECTION && data.action === ActionType.CAST_VOTE)
-    || (data.object === ObjectType.CHIRP && data.action === ActionType.ADD);
+    || (data.object === ObjectType.CHIRP && (data.action === ActionType.ADD
+      || data.action === ActionType.DELETE));
 }

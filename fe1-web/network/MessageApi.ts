@@ -309,11 +309,14 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(getUserSocialChannel(currentLao.id, publicKey.valueOf()), message);
+  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
 }
 
 /** Sends a server query which delete a chirp */
-export function requestDeleteChirp(chirpId: Hash): Promise<void> {
+export function requestDeleteChirp(
+  publicKey: PublicKey,
+  chirpId: Hash,
+): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
@@ -322,5 +325,5 @@ export function requestDeleteChirp(chirpId: Hash): Promise<void> {
     timestamp: timestamp,
   });
 
-  return publish(getCurrentUserSocialChannel(currentLao.id), message);
+  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
 }

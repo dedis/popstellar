@@ -168,6 +168,7 @@ export class Message {
   // This method is only a temporary solution for the demo and should be removed once a better
   // solution is found
   private isElectionResultMessage(): boolean {
-    return this.data.decode().includes('"result":');
+    return this.data.decode()
+      .includes('"result":');
   }
 }
