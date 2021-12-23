@@ -4,7 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
-	"popstellar/channel/register"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -15,7 +15,6 @@ import (
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
 	"popstellar/validation"
-	"reflect"
 	"strconv"
 	"sync"
 	"time"
@@ -53,7 +52,7 @@ type Channel struct {
 
 	log zerolog.Logger
 
-	register register.MessageRegistry
+	registry registry.MessageRegistry
 
 	consensusInstances map[string]*ConsensusInstance
 }
@@ -120,31 +119,23 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 		consensusInstances: make(map[string]*ConsensusInstance),
 	}
 
-	newChannel.register = newChannel.NewConsensusRegistry()
+	newChannel.registry = newChannel.NewConsensusRegistry()
 
 	return newChannel
 }
 
 // NewConsensusRegistry creates a new registry for the consensus channel
-func (c *Channel) NewConsensusRegistry() register.MessageRegistry {
-	registry := register.NewMessageRegistry()
+func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
 
-	registry.Register(messagedata.ConsensusActionElect, c.processConsensusElect,
-		messagedata.ConsensusElect{})
-	registry.Register(messagedata.ConsensusActionElectAccept, c.processConsensusElectAccept,
-		messagedata.ConsensusElectAccept{})
-	registry.Register(messagedata.ConsensusActionPrepare, c.processConsensusPrepare,
-		messagedata.ConsensusPrepare{})
-	registry.Register(messagedata.ConsensusActionPromise, c.processConsensusPromise,
-		messagedata.ConsensusPromise{})
-	registry.Register(messagedata.ConsensusActionPropose, c.processConsensusPropose,
-		messagedata.ConsensusPropose{})
-	registry.Register(messagedata.ConsensusActionAccept, c.processConsensusAccept,
-		messagedata.ConsensusAccept{})
-	registry.Register(messagedata.ConsensusActionLearn, c.processConsensusLearn,
-		messagedata.ConsensusLearn{})
-	registry.Register(messagedata.ConsensusActionFailure, c.processConsensusFailure,
-		messagedata.ConsensusFailure{})
+	registry.Register(messagedata.ConsensusElect{}, c.processConsensusElect)
+	registry.Register(messagedata.ConsensusElectAccept{}, c.processConsensusElectAccept)
+	registry.Register(messagedata.ConsensusPrepare{}, c.processConsensusPrepare)
+	registry.Register(messagedata.ConsensusPromise{}, c.processConsensusPromise)
+	registry.Register(messagedata.ConsensusPropose{}, c.processConsensusPropose)
+	registry.Register(messagedata.ConsensusAccept{}, c.processConsensusAccept)
+	registry.Register(messagedata.ConsensusLearn{}, c.processConsensusLearn)
+	registry.Register(messagedata.ConsensusFailure{}, c.processConsensusFailure)
 
 	return registry
 }
@@ -313,27 +304,9 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 
 	msg := publish.Params.Message
 
-	data := msg.Data
-
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err = c.registry.Process(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
-	}
-
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get object or action: %v", err)
-	}
-
-	switch object {
-	case messagedata.ConsensusObject:
-		err = c.processConsensusObject(action, msg)
-	default:
-		return answer.NewInvalidObjectError(object)
-	}
-
-	if err != nil {
-		return xerrors.Errorf("failed to process %q object: %w", object, err)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
 	err = c.broadcastToAllClients(msg)
@@ -366,29 +339,6 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
 		return answer.NewError(-3, "message already exists")
-	}
-
-	return nil
-}
-
-// processConsensusObject processes a Consensus Object.
-func (c *Channel) processConsensusObject(action string, msg message.Message) error {
-
-	data, found := c.register.Registry[action]
-	if !found {
-		return xerrors.Errorf("action '%s' not found", action)
-	}
-
-	concreteType := reflect.New(reflect.ValueOf(data.ConcreteType).Type()).Interface()
-
-	err := msg.UnmarshalData(&concreteType)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal data: %v", err)
-	}
-
-	err = data.Callback(msg, concreteType)
-	if err != nil {
-		return xerrors.Errorf("failed to process action '%s': %v", action, err)
 	}
 
 	return nil
@@ -496,14 +446,14 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 
 	data, ok := msgData.(*messagedata.ConsensusElectAccept)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a consensus#elect-accept message", msgData)
+		return xerrors.Errorf("message %v isn't a consensus#elect_accept message", msgData)
 	}
 
-	c.log.Info().Msg("received a consensus#elect-accept message")
+	c.log.Info().Msg("received a consensus#elect_accept message")
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("invalid consensus#elect-accept message: %v", err)
+		return xerrors.Errorf("invalid consensus#elect_accept message: %v", err)
 	}
 
 	// check whether a message with the correct ID was received previously
@@ -527,9 +477,9 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 
 	// Update the received elect-accept messages
 	if data.Accept {
-		electInstance.positiveElectAccept += 1
+		electInstance.positiveElectAccept++
 	} else {
-		electInstance.negativeElectAccept += 1
+		electInstance.negativeElectAccept++
 	}
 
 	if consensusInstance.role != proposerRole {
@@ -562,7 +512,7 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 	electInstance.timeoutChan <- messagedata.ConsensusActionElectAccept
 
 	if consensusInstance.proposedTry >= consensusInstance.promisedTry {
-		consensusInstance.proposedTry += 1
+		consensusInstance.proposedTry++
 	} else {
 		consensusInstance.proposedTry = consensusInstance.promisedTry + 1
 	}

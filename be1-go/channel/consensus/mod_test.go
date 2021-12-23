@@ -243,7 +243,7 @@ func Test_Consensus_Publish_Elect(t *testing.T) {
 	require.Equal(t, byteBroad, socket.msg)
 }
 
-// Tests that the channel works correctly when it receives an elect-accept
+// Tests that the channel works correctly when it receives an elect_accept
 // message
 func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="

@@ -192,8 +192,14 @@ object DbActor extends AskPatternConstants {
   // FIXME: find way to keep track of db size
   sealed case class DbActor(mediatorRef: ActorRef, db: DB, DATABASE_FOLDER: String) extends Actor with ActorLogging {
 
-    //helper function to determine if a writeCreateNewChannel may succeed despite the presence of an existing Channel (for now, SetupElection and CreateLao )
-    
+    //Map which serves as a cache of keys made from channels with generateLaoDataKey mapped to their LaoDatas (instead of going to the database)
+    private val laoDataCache: collection.mutable.Map[String, LaoData] = collection.mutable.Map[String, LaoData]()
+
+    //Generic helper function to check if a key-value pair is valid inside a map (cache in this context)
+    private def keyValuePairIsValid[K, V](key: K, cache: collection.mutable.Map[K, V]): Boolean = {
+      cache.keySet.contains(key) && cache.get(key) != None && cache.get(key).get != null
+    }
+
     //helper function to determine if a channel should be created during write operations
     private def writeCreateNewChannel(channel: Channel, message: Message): DbActorMessage = {
       
@@ -216,7 +222,7 @@ object DbActor extends AskPatternConstants {
       }
     }
 
-    private final val LAODATALOCATION: String = Channel.SEPARATOR + "data"
+    
 
     //helper functions for the database key generation, could make them public later if needed elsewhere
     private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
@@ -224,7 +230,7 @@ object DbActor extends AskPatternConstants {
     //may return null if the extractLaoId fails
     private def generateLaoDataKey(channel: Channel): String = {
       channel.decodeSubChannel match {
-        case Some(data) => new String(data, StandardCharsets.UTF_8) + LAODATALOCATION
+        case Some(data) => new String(data, StandardCharsets.UTF_8) + Channel.LAO_DATA_LOCATION
         case None =>
           log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
           null
@@ -253,9 +259,13 @@ object DbActor extends AskPatternConstants {
             //FIXME: use some sort of compare-and-swap to prevent concurrency issues with LaoData modification if needed
             if(bt != null){
               val laoJson = new String(bt, StandardCharsets.UTF_8)
-              batch.put(laoDataKey.getBytes, LaoData.buildFromJson(laoJson).updateWith(message).toJsonString.getBytes)
+              val laoDataNew: LaoData = LaoData.buildFromJson(laoJson).updateWith(message)
+              batch.put(laoDataKey.getBytes, laoDataNew.toJsonString.getBytes)
+              laoDataCache.put(laoDataKey, laoDataNew)
             } else if (bt == null) {
-              batch.put(laoDataKey.getBytes, LaoData.emptyLaoData.updateWith(message).toJsonString.getBytes)
+              val laoDataNew: LaoData = LaoData.emptyLaoData.updateWith(message)
+              batch.put(laoDataKey.getBytes, laoDataNew.toJsonString.getBytes)
+              laoDataCache.put(laoDataKey, laoDataNew)            
             }
             //allows writing all data atomically
             writeBatch(channel, messageId, batch)
@@ -329,12 +339,20 @@ object DbActor extends AskPatternConstants {
       dataKey match {
         case null => DbActorReadLaoDataAck(None)
         case _ => {
-          Try(db.get(dataKey.getBytes)) match {
-            case Success(bytes) if bytes != null =>
-              val json = new String(bytes, StandardCharsets.UTF_8)
-              DbActorReadLaoDataAck(Some(LaoData.buildFromJson(json)))
-            case _ =>
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Lao data not found for channel $channel")
+          if(keyValuePairIsValid[String, LaoData](dataKey, laoDataCache)){
+            //with our implementation, if a key is in the map, there is always a LaoData value attached to it
+            DbActorReadLaoDataAck(Some(laoDataCache.get(dataKey).get))
+          } else{
+            Try(db.get(dataKey.getBytes)) match {
+              case Success(bytes) if bytes != null =>
+                val json = new String(bytes, StandardCharsets.UTF_8)
+                val laoData: LaoData = LaoData.buildFromJson(json)
+                // we add the data to the cache if it's missing
+                laoDataCache.put(dataKey, laoData)
+                DbActorReadLaoDataAck(Some(laoData))
+              case _ =>
+                DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Lao data not found for channel $channel")
+            }
           }
         }
       }

@@ -106,3 +106,8 @@ type Broadcastable interface {
 	Broadcast(msg method.Broadcast) error
 	GetChannelPath() string
 }
+
+// LAOFunctionalities defines the functions needed by the LAO from another channel.
+type LAOFunctionalities interface {
+	AddAttendee(string)
+}

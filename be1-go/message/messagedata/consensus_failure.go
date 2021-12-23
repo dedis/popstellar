@@ -36,3 +36,18 @@ func (message ConsensusFailure) Verify() error {
 
 	return nil
 }
+
+// GetObject implements MessageData
+func (ConsensusFailure) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusFailure) GetAction() string {
+	return ConsensusActionFailure
+}
+
+// NewEmpty implements MessageData
+func (ConsensusFailure) NewEmpty() MessageData {
+	return &ConsensusFailure{}
+}
