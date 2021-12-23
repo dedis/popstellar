@@ -150,6 +150,7 @@ func (c *Channel) timeoutFailure(instance *ConsensusInstance, messageID string) 
 		c.log.Err(err).Msg(failedFailureCreation)
 		return
 	}
+
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
 		c.log.Err(err).Msg(failedFailureSending)
@@ -208,15 +209,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 			case messagedata.ConsensusActionPromise,
 				messagedata.ConsensusActionAccept:
 
-				byteMsg, err := c.createFailureMessage(instance, messageID)
-				if err != nil {
-					c.log.Err(err).Msg(failedFailureCreation)
-					return
-				}
-				err = c.publishNewMessage(byteMsg)
-				if err != nil {
-					c.log.Err(err).Msg(failedFailureSending)
-				}
+				c.timeoutFailure(instance, messageID)
 				return
 
 			case messagedata.ConsensusActionLearn,
@@ -457,6 +450,21 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 	return ""
 }
 
+// electAcceptFailure sends a failure message when refused consensus
+func (c *Channel) electAcceptFailure(instance *ConsensusInstance, messageID string) error {
+	byteMsg, err := c.createFailureMessage(instance, messageID)
+	if err != nil {
+		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
+	}
+
+	return nil
+}
+
 // processConsensusElectAccept processes an elect accept action.
 func (c *Channel) processConsensusElectAccept(message message.Message, msgData interface{}) error {
 
@@ -529,16 +537,7 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 	// For now the consensus always accept a true if it complete
 	consensusInstance.proposedValue = true
 
-	byteMsg, err := c.createPrepareMessage(consensusInstance, data.MessageID)
-	if err != nil {
-		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
-	}
-
-	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
-	err = c.publishNewMessage(byteMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
-	}
+	c.electAcceptFailure(consensusInstance, data.MessageID)
 
 	return nil
 }
