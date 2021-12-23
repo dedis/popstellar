@@ -28,12 +28,14 @@ type ValuePromise struct {
 // Verify verifies that the ConsensusPromis message is correct
 func (message ConsensusPromise) Verify() error {
 	// verify that the instance id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.InstanceID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
+	if err != nil {
 		return xerrors.Errorf("instance id is %s, should be base64URL encoded", message.InstanceID)
 	}
 
 	// verify that the message id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.MessageID); err != nil {
+	_, err = base64.URLEncoding.DecodeString(message.MessageID)
+	if err != nil {
 		return xerrors.Errorf("message id is %s, should be base64URL encoded", message.MessageID)
 	}
 

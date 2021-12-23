@@ -16,6 +16,7 @@ import (
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
+	"sync"
 	"testing"
 	"time"
 
@@ -709,10 +710,14 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	// > check the socket
+	sock.Lock()
 	require.Equal(t, publishBuf, sock.msg)
+	sock.Unlock()
 
 	// > check that the channel has been called with the publish message
+	c.Lock()
 	require.Equal(t, publish, c.publish)
+	c.Unlock()
 }
 
 // -----------------------------------------------------------------------------
@@ -761,6 +766,8 @@ func (c *fakeChannelFac) newChannel(channelID string, hub channel.HubFunctionali
 //
 // - implements channel.Channel
 type fakeChannel struct {
+	sync.Mutex
+
 	subscribe   method.Subscribe
 	unsubscribe method.Unsubscribe
 	publish     method.Publish
@@ -778,6 +785,9 @@ type fakeChannel struct {
 
 // Subscribe implements channel.Channel
 func (f *fakeChannel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+	f.Lock()
+	defer f.Unlock()
+
 	f.socket = socket
 	f.subscribe = msg
 	return nil
@@ -785,6 +795,9 @@ func (f *fakeChannel) Subscribe(socket socket.Socket, msg method.Subscribe) erro
 
 // Unsubscribe implements channel.Channel
 func (f *fakeChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+	f.Lock()
+	defer f.Unlock()
+
 	f.socketID = socketID
 	f.unsubscribe = msg
 	return nil
@@ -792,18 +805,27 @@ func (f *fakeChannel) Unsubscribe(socketID string, msg method.Unsubscribe) error
 
 // Publish implements channel.Channel
 func (f *fakeChannel) Publish(msg method.Publish, socket socket.Socket) error {
+	f.Lock()
+	defer f.Unlock()
+
 	f.publish = msg
 	return nil
 }
 
 // Catchup implements channel.Channel
 func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
+	f.Lock()
+	defer f.Unlock()
+
 	f.catchup = msg
 	return f.msgs
 }
 
 // Broadcast implements channel.Channel
 func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
+	f.Lock()
+	defer f.Unlock()
+
 	f.broadcast = msg
 	return nil
 }
@@ -812,6 +834,7 @@ func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
 //
 // - implements socket.Socket
 type fakeSocket struct {
+	sync.Mutex
 	socket.Socket
 
 	resultID int
@@ -826,21 +849,33 @@ type fakeSocket struct {
 
 // Send implements socket.Socket
 func (f *fakeSocket) Send(msg []byte) {
+	f.Lock()
+	defer f.Unlock()
+
 	f.msg = msg
 }
 
 // SendResult implements socket.Socket
 func (f *fakeSocket) SendResult(id int, res []message.Message) {
+	f.Lock()
+	defer f.Unlock()
+
 	f.resultID = id
 	f.res = res
 }
 
 // SendError implements socket.Socket
 func (f *fakeSocket) SendError(id *int, err error) {
+	f.Lock()
+	defer f.Unlock()
+
 	f.err = err
 }
 
 func (f *fakeSocket) ID() string {
+	f.Lock()
+	defer f.Unlock()
+
 	return f.id
 }
 

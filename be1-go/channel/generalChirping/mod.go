@@ -225,6 +225,11 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
 	}
 
+	err = chirpMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid chirp broadcast message: %v", err)
+	}
+
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return xerrors.Errorf("failed to decode sender key: %v", err)

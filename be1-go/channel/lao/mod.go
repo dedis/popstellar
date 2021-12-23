@@ -12,6 +12,7 @@ import (
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/generalChirping"
+	"popstellar/channel/reaction"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/inbox"
@@ -49,8 +50,9 @@ const (
 type Channel struct {
 	sockets channel.Sockets
 
-	inbox   *inbox.Inbox
-	general channel.Broadcastable
+	inbox     *inbox.Inbox
+	general   channel.Broadcastable
+	reactions channel.LAOFunctionalities
 
 	// /root/<ID>
 	channelID string
@@ -79,18 +81,22 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	box := inbox.NewInbox(channelID)
 	box.StoreMessage(msg)
 
-	general := createGeneralChirpingChannel(channelID, hub, socket)
+	generalCh := createGeneralChirpingChannel(channelID, hub, socket)
+
+	reactionPath := fmt.Sprintf("%s/social/reactions", channelID)
+	reactionCh := reaction.NewChannel(reactionPath, hub, log)
+	hub.NotifyNewChannel(reactionPath, &reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
-
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	c := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           box,
-		general:         general,
+		general:         generalCh,
+		reactions:       &reactionCh,
 		organizerPubKey: organizerPubKey,
 		hub:             hub,
 		rollCall:        rollCall{},
@@ -697,6 +703,8 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		c.attendees[attendee] = struct{}{}
 
 		c.createChirpingChannel(attendee, socket)
+
+		c.reactions.AddAttendee(attendee)
 
 		if db != nil {
 			c.log.Info().Msgf("inserting attendee %s into db", attendee)

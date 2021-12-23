@@ -330,11 +330,11 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 		return xerrors.Errorf("message %v isn't a consensus#elect-accept message", msgData)
 	}
 
-	c.log.Info().Msg("received a consensus#elect-accept message")
+	c.log.Info().Msg("received a consensus#elect_accept message")
 
 	err := data.Verify()
 	if err != nil {
-		return xerrors.Errorf("invalid consensus#elect-accept message: %v", err)
+		return xerrors.Errorf("invalid consensus#elect_accept message: %v", err)
 	}
 
 	// check whether a message with the correct ID was received previously

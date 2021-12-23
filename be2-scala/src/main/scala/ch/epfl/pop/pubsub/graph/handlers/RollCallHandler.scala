@@ -87,8 +87,7 @@ case object RollCallHandler extends MessageHandler {
             val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
             
             Await.result(askOldData, duration) match {
-              case DbActorReadLaoDataAck(Some(oldLaoData)) =>
-                val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees, List.empty)
+              case DbActorReadLaoDataAck(Some(_)) =>
                 val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
                   case DbActorWriteAck() => createAttendeeChannels(data.attendees, rpcMessage)
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -111,6 +110,5 @@ case object RollCallHandler extends MessageHandler {
     }
   }
 
-  private final val SOCIALCHANNELPREFIX: String = Channel.SEPARATOR + "social"
-  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + SOCIALCHANNELPREFIX + Channel.SEPARATOR + pk.toString
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + Channel.SOCIAL_CHANNEL_PREFIX + Channel.SEPARATOR + pk.toString
 }
