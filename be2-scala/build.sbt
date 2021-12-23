@@ -2,7 +2,6 @@ import scala.util.{Try, Success, Failure}
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
 import sbt.IO._
 
-
 name := "pop"
 
 version := "0.1"
