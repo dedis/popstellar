@@ -31,19 +31,7 @@ export enum ActionType {
   ADD_BROADCAST = 'add_broadcast',
 }
 
-class MessageDataSigned {
-  readonly #isSignedWithToken: boolean;
-
-  constructor(isTokenSigned: boolean) {
-    this.#isSignedWithToken = isTokenSigned;
-  }
-
-  public get isSignedWithToken() {
-    return this.#isSignedWithToken;
-  }
-}
-
-export interface MessageData extends MessageDataSigned {
+export interface MessageData {
   readonly object: ObjectType;
   readonly action: ActionType;
 }
