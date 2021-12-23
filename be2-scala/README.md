@@ -4,15 +4,23 @@ Proof-of-personhood, spring 2021: Scala language back-end
 [TOC]
 
 ## Running the project
+<span style="color:red;font-weight:bold">
+Make sure to open be2-scala project folder as the root of your IDE workspace.
+</span>
 
+---
 There are two main possible ways of running the project :
 * #### Option 1: Intellij
-> import the project using IntelliJ
+>1. Import the project using IntelliJ
+>2. Modify the default  Run configuration 'Server', to include the following __VM option__: <br>
+>__```-Dscala.config=src/main/scala/ch/epfl/pop/config```__
+
+![](docs/images/intellij-vm.png)
 
 * #### Option 2: SBT
 > Using `sbt -Dscala.config="path/to/config/file" run`.
 >
-> There is a default configuration ready to use in <span style="color:yellow">_src/main/scala/ch/epfl/pop/config_</span> which contains an application.config where the configuration lives. This can be updated if needed.
+> There is a default configuration ready to use in <span style="color:yellow">_src/main/scala/ch/epfl/pop/config_</span> which contains an __application.config__ where the configuration lives. This can be updated if needed.
 > ```apacheconf
 > #Snapshot of application.config
 > #POP Server config default
