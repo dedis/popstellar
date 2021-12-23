@@ -6,7 +6,7 @@ import { Channel } from 'model/objects';
 import {
   addMessages, dispatch, OpenedLaoStore,
 } from 'store';
-import { handleLaoMessage } from './handlers/Lao';
+import { handleLaoMessage } from './handlers';
 
 const isLaoCreate = (m: ExtendedMessage) => m.messageData.object === ObjectType.LAO
   && m.messageData.action === ActionType.CREATE;

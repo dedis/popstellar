@@ -1,6 +1,9 @@
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
-import { makeEventGetter, makeLao, WalletStore } from 'store';
-import { useSelector } from 'react-redux';
+import {
+  EventStore,
+  OpenedLaoStore,
+  WalletStore,
+} from 'store';
 import { Hash } from '../Hash';
 import { PopToken } from '../PopToken';
 import { Base64UrlData } from '../Base64Url';
@@ -24,45 +27,49 @@ export async function generateTokenFromPath(path: string): Promise<PopToken> {
 
   const { key } = derivePath(path, hexSeed);
   const pubKey = getPublicKey(key, false);
+  const privateKeyBuffer = Buffer.concat([key, pubKey]);
 
   return new PopToken({
     publicKey: new PublicKey(Base64UrlData.fromBuffer(pubKey).valueOf()),
-    privateKey: new PrivateKey(Base64UrlData.fromBuffer(key).valueOf()),
+    privateKey: new PrivateKey(Base64UrlData.fromBuffer(privateKeyBuffer).valueOf()),
   });
 }
 
 /**
- * Generates a token for a given LAOId and RollCallId
+ * Generates a token for a given LAOId and RollCallId if it exists
  * @param laoId the id of the LAO
  * @param rollCallId the id of the Roll Call
  * @returns a Promise resolving to a PopToken
  */
-export function generateToken(laoId: Hash, rollCallId: Hash): Promise<PopToken> {
+export function generateToken(laoId: Hash, rollCallId: Hash | undefined)
+  : Promise<PopToken | undefined> {
+  if (rollCallId === undefined) {
+    return Promise.resolve(undefined);
+  }
   const path = bip39path.fromLaoRollCall(laoId, rollCallId);
   return generateTokenFromPath(path);
 }
 
 /**
- * Retrieve the latest PoP token associated with the current LAO
- * @param laoId the ID of the LAO to retrieve the PoP token for
+ * Retrieve the latest PoP token associated with the current LAO from the store.
+ *
+ * @remarks
+ * Do not use it inside of a react component, this is meant to be used only where you cannot
+ * access to reducers.
+ *
  * @returns A Promise that resolves to a PoP token or to undefined if no token exists
  */
-export async function getCurrentPopToken(laoId: Hash): Promise<PopToken | undefined> {
-  const laoSelect = makeLao(laoId.toString());
-  const lao = useSelector(laoSelect);
-  if (lao === undefined) {
-    return undefined;
-  }
+export async function getCurrentPopTokenFromStore(): Promise<PopToken | undefined> {
+  const lao = OpenedLaoStore.get();
 
   const rollCallId = lao.last_tokenized_roll_call_id;
   if (rollCallId === undefined) {
     return undefined;
   }
 
-  const eventSelect = makeEventGetter(laoId, rollCallId);
-  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
+  const rollCall = EventStore.getEvent(rollCallId) as RollCall;
   const token = await generateToken(lao.id, rollCallId);
-  if (rollCall.containsToken(token)) {
+  if (token && rollCall.containsToken(token)) {
     return token;
   }
   return undefined;
