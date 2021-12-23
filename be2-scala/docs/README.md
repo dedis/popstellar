@@ -254,6 +254,8 @@ For the Social Media functionality, each user has their own channel with the ide
 
 
 
+## 4.	GitHub introduction
+
 ### Import the project
 
 `cd` where you want to have your project located and then clone the project using the following commands
