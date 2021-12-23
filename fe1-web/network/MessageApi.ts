@@ -243,7 +243,7 @@ export function requestCreateElection(
   const message = new SetupElection({
     lao: currentLao.id,
     id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.ELECTION, currentLao.id.toString(), time.toString(), name,
     ),
     name: name,
     version: version,
