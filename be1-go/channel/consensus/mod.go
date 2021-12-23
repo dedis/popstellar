@@ -77,7 +77,7 @@ type ConsensusInstance struct {
 	promises []messagedata.ConsensusPromise
 	accepts  []messagedata.ConsensusAccept
 
-	electInstances map[string]ElectInstance
+	electInstances map[string]*ElectInstance
 }
 
 // Store the state of a consensus dependant on the elect message
@@ -93,7 +93,7 @@ type ElectInstance struct {
 // createElectInstance creates the state of the consensus for a specific elect
 // message
 func (i *ConsensusInstance) createElectInstance(messageID string) {
-	i.electInstances[messageID] = ElectInstance{
+	i.electInstances[messageID] = &ElectInstance{
 		timeoutChan: make(chan string),
 
 		failed: false,
@@ -385,7 +385,7 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 		promises: make([]messagedata.ConsensusPromise, 0),
 		accepts:  make([]messagedata.ConsensusAccept, 0),
 
-		electInstances: make(map[string]ElectInstance),
+		electInstances: make(map[string]*ElectInstance),
 	}
 
 	c.consensusInstances[instanceID] = consensusInstance

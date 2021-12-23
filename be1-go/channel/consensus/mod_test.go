@@ -363,6 +363,125 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	require.Equal(t, int64(1), prepare.Value.ProposedTry)
 }
 
+// Tests that the channel works correctly when it receives an elect_accept
+// message refusing the proposition
+func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
+
+	// Create the hub
+	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
+	channel := NewChannel(chanName, fakeHub, nolog)
+	consensusChannel, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	// Create a client socket subscribed to the channel
+	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
+	consensusChannel.sockets.Upsert(cliSocket)
+
+	// Create a consensus elect message into the inbox of the channel
+	file := filepath.Join(protocolRelativePath,
+		"examples", "messageData", "consensus_elect", "elect.json")
+	bufElect, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
+
+	electMessage := message.Message{
+		Data:              bufbElect64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messageID,
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	consensusChannel.inbox.StoreMessage(electMessage)
+
+	// Add a new consensus instance to the channel
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
+
+	// Create a consensus elect_accept message
+	file = filepath.Join(protocolRelativePath,
+		"examples", "messageData", "consensus_elect_accept", "elect_accept_refused.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	bufb64 := base64.URLEncoding.EncodeToString(buf)
+
+	msg := message.Message{
+		Data:              bufb64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	filePublish := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish", "publish.json")
+	bufPub, err := os.ReadFile(filePublish)
+	require.NoError(t, err)
+
+	var messagePublish method.Publish
+
+	err = json.Unmarshal(bufPub, &messagePublish)
+	require.NoError(t, err)
+
+	messagePublish.Params.Message = msg
+
+	// Create the broadcast message to check that it is sent
+	fileBroadcast := filepath.Join(protocolRelativePath,
+		"examples", "query", "broadcast", "broadcast.json")
+	bufBroad, err := os.ReadFile(fileBroadcast)
+	require.NoError(t, err)
+
+	var messageBroadcast method.Broadcast
+
+	err = json.Unmarshal(bufBroad, &messageBroadcast)
+	require.NoError(t, err)
+
+	messageBroadcast.Params.Message = msg
+	messageBroadcast.Params.Channel = chanName
+	byteBroad, err := json.Marshal(&messageBroadcast)
+	require.NoError(t, err)
+
+	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.Equal(t, byteBroad, cliSocket.msg)
+
+	// Unmarshal the failure message sent to other servers to verify its values
+	var sentPublish method.Publish
+	err = json.Unmarshal(fakeHub.fakeSock.msg, &sentPublish)
+	require.NoError(t, err)
+
+	sentMsg := sentPublish.Params.Message
+
+	// Unmarshal the failure message data to check its values
+	jsonData, err := base64.RawStdEncoding.DecodeString(sentMsg.Data)
+	require.NoError(t, err)
+	var prepare messagedata.ConsensusFailure
+	err = json.Unmarshal(jsonData, &prepare)
+	require.NoError(t, err)
+
+	require.Equal(t, "consensus", prepare.Object)
+	require.Equal(t, "failure", prepare.Action)
+	require.Equal(t, consensusInstanceID, prepare.InstanceID)
+	require.Equal(t, messageID, prepare.MessageID)
+	require.GreaterOrEqual(t, prepare.CreatedAt, int64(0))
+}
+
 // Tests that the channel works correctly when it receives a prepare message
 func Test_Consensus_Publish_Prepare(t *testing.T) {
 	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
@@ -945,6 +1064,106 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	require.NoError(t, err)
 
 	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.True(t, consensusInstance.decided)
+	require.Equal(t, byteBroad, cliSocket.msg)
+}
+
+// Tests that the channel works correctly when it receives a failure message
+func Test_Consensus_Publish_Failure(t *testing.T) {
+	consensusInstanceID := "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs="
+	messageID := "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q="
+
+	// Create the hub
+	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channel
+	chanName := "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=/consensus"
+	channel := NewChannel(chanName, fakeHub, nolog)
+	consensusChannel, ok := channel.(*Channel)
+	require.True(t, ok)
+
+	// Create a client socket subscribed to the channel
+	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
+	consensusChannel.sockets.Upsert(cliSocket)
+
+	// Create a consensus elect message into the inbox of the channel
+	file := filepath.Join(protocolRelativePath,
+		"examples", "messageData", "consensus_failure", "failure.json")
+	bufElect, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	bufbElect64 := base64.URLEncoding.EncodeToString(bufElect)
+
+	electMessage := message.Message{
+		Data:              bufbElect64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messageID,
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	consensusChannel.inbox.StoreMessage(electMessage)
+
+	// Add a new consensus instance to the channel
+	consensusInstance := consensusChannel.createConsensusInstance(consensusInstanceID)
+	consensusInstance.role = proposerRole
+
+	// Add a new elect instance to the consensus instance
+	consensusInstance.createElectInstance(messageID)
+
+	// Start the timer
+	go consensusChannel.startTimer(consensusInstance, messageID)
+
+	// Create a consensus learn message
+	file = filepath.Join(protocolRelativePath,
+		"examples", "messageData", "consensus_failure", "failure.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	bufb64 := base64.URLEncoding.EncodeToString(buf)
+
+	message := message.Message{
+		Data:              bufb64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	filePublish := filepath.Join(protocolRelativePath,
+		"examples", "query", "publish", "publish.json")
+	bufPub, err := os.ReadFile(filePublish)
+	require.NoError(t, err)
+
+	var messagePublish method.Publish
+
+	err = json.Unmarshal(bufPub, &messagePublish)
+	require.NoError(t, err)
+
+	messagePublish.Params.Message = message
+
+	// Create the broadcast message to check that it is sent
+	fileBroadcast := filepath.Join(protocolRelativePath,
+		"examples", "query", "broadcast", "broadcast.json")
+	bufBroad, err := os.ReadFile(fileBroadcast)
+	require.NoError(t, err)
+
+	var messageBroadcast method.Broadcast
+
+	err = json.Unmarshal(bufBroad, &messageBroadcast)
+	require.NoError(t, err)
+
+	messageBroadcast.Params.Message = message
+	messageBroadcast.Params.Channel = chanName
+	byteBroad, err := json.Marshal(&messageBroadcast)
+	require.NoError(t, err)
+
+	require.NoError(t, channel.Publish(messagePublish, nil))
+	require.True(t, consensusInstance.electInstances[messageID].failed)
 	require.Equal(t, byteBroad, cliSocket.msg)
 }
 

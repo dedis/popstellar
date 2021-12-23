@@ -142,7 +142,7 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messa
 	return byteMsg, nil
 }
 
-// createLearnMessage creates the data for a failure message
+// createFailureMessage creates the data for a failure message
 func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
 
 	newData := messagedata.ConsensusFailure{
