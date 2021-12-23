@@ -143,6 +143,8 @@ func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 	return registry
 }
 
+// waitAgain
+
 // startTimer starts the timeout logic for the consensus
 func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 
@@ -163,10 +165,9 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 			case messagedata.ConsensusActionElectAccept:
 				select {
 				case action := <-timeoutChan:
-					switch action {
 					// Stop the timer when receiving one action finishing it
-					case messagedata.ConsensusActionLearn,
-						messagedata.ConsensusActionFailure:
+					if action == messagedata.ConsensusActionLearn ||
+						action == messagedata.ConsensusActionFailure {
 						return
 					}
 
@@ -191,10 +192,9 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 
 				select {
 				case action := <-timeoutChan:
-					switch action {
 					// Stop the timer when receiving one action finishing it
-					case messagedata.ConsensusActionLearn,
-						messagedata.ConsensusActionFailure:
+					if action == messagedata.ConsensusActionLearn ||
+						action == messagedata.ConsensusActionFailure {
 						return
 					}
 
