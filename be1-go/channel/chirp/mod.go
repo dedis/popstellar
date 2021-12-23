@@ -303,7 +303,7 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 
 	err := msg.UnmarshalData(&chirpMsg)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal: %v", err)
+		return xerrors.Errorf("faile to unmarshal: %v", err)
 	}
 
 	err = chirpMsg.Verify()

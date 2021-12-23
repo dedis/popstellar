@@ -385,7 +385,6 @@ func Test_DeleteReaction(t *testing.T) {
 	}
 
 	deleteReactionId := m.MessageID
-	_ = m
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
