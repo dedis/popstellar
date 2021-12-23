@@ -14,7 +14,6 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
 import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 import com.github.dedis.popstellar.utility.error.UnknownDataObjectException;
 
@@ -54,10 +53,7 @@ public final class MessageHandler {
     Action dataAction = Action.find(data.getAction());
     if (dataAction == null) throw new UnknownDataActionException(data);
 
-    registry
-        .getDataHandler(dataObj, dataAction)
-        .orElseThrow(() -> new UnhandledDataTypeException(data, dataObj + "#" + dataAction))
-        .accept(new HandlerContext(laoRepository, channel, message), data);
+    registry.handle(new HandlerContext(laoRepository, channel, message), data, dataObj, dataAction);
 
     notifyLaoUpdate(laoRepository, data, channel);
   }

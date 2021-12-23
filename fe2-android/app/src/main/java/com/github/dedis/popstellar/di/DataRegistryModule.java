@@ -28,12 +28,7 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Obje
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MESSAGE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ROLL_CALL;
 
-import androidx.core.util.Pair;
-
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
-import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
@@ -58,13 +53,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirpBroadcast;
 import com.github.dedis.popstellar.utility.handler.ChirpHandler;
 import com.github.dedis.popstellar.utility.handler.ConsensusHandler;
-import com.github.dedis.popstellar.utility.handler.DataHandler;
 import com.github.dedis.popstellar.utility.handler.ElectionHandler;
 import com.github.dedis.popstellar.utility.handler.LaoHandler;
 import com.github.dedis.popstellar.utility.handler.RollCallHandler;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Singleton;
 
@@ -82,60 +73,55 @@ public abstract class DataRegistryModule {
   @Provides
   @Singleton
   public static DataRegistry provideDataRegistry() {
-    Map<DataRegistry.EntryPair, Pair<Class<? extends Data>, DataHandler<? extends Data>>> map =
-        new HashMap<>();
+    DataRegistry.Builder builder = new DataRegistry.Builder();
 
     // Lao
-    add(map, LAO, CREATE, CreateLao.class, LaoHandler::handleCreateLao);
-    add(map, LAO, UPDATE, UpdateLao.class, LaoHandler::handleUpdateLao);
-    add(map, LAO, STATE, StateLao.class, LaoHandler::handleStateLao);
+    builder
+        .add(LAO, CREATE, CreateLao.class, LaoHandler::handleCreateLao)
+        .add(LAO, UPDATE, UpdateLao.class, LaoHandler::handleUpdateLao)
+        .add(LAO, STATE, StateLao.class, LaoHandler::handleStateLao);
 
     // Meeting
-    add(map, MEETING, CREATE, CreateMeeting.class, null);
-    add(map, MEETING, STATE, StateMeeting.class, null);
+    builder
+        .add(MEETING, CREATE, CreateMeeting.class, null)
+        .add(MEETING, STATE, StateMeeting.class, null);
 
     // Message
-    add(map, MESSAGE, WITNESS, WitnessMessageSignature.class, null);
+    builder.add(MESSAGE, WITNESS, WitnessMessageSignature.class, null);
 
     // Roll Call
-    add(map, ROLL_CALL, CREATE, CreateRollCall.class, RollCallHandler::handleCreateRollCall);
-    add(map, ROLL_CALL, OPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall);
-    add(map, ROLL_CALL, REOPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall);
-    add(map, ROLL_CALL, CLOSE, CloseRollCall.class, RollCallHandler::handleCloseRollCall);
+    builder
+        .add(ROLL_CALL, CREATE, CreateRollCall.class, RollCallHandler::handleCreateRollCall)
+        .add(ROLL_CALL, OPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall)
+        .add(ROLL_CALL, REOPEN, OpenRollCall.class, RollCallHandler::handleOpenRollCall)
+        .add(ROLL_CALL, CLOSE, CloseRollCall.class, RollCallHandler::handleCloseRollCall);
 
     // Election
-    add(map, ELECTION, SETUP, ElectionSetup.class, ElectionHandler::handleElectionSetup);
-    add(map, ELECTION, CAST_VOTE, CastVote.class, ElectionHandler::handleCastVote);
-    add(map, ELECTION, END, ElectionEnd.class, ElectionHandler::handleElectionEnd);
-    add(map, ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult);
+    builder
+        .add(ELECTION, SETUP, ElectionSetup.class, ElectionHandler::handleElectionSetup)
+        .add(ELECTION, CAST_VOTE, CastVote.class, ElectionHandler::handleCastVote)
+        .add(ELECTION, END, ElectionEnd.class, ElectionHandler::handleElectionEnd)
+        .add(ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult);
 
     // Consensus
-    add(map, CONSENSUS, ELECT, ConsensusElect.class, ConsensusHandler::handleElect);
-    add(
-        map,
-        CONSENSUS,
-        ELECT_ACCEPT,
-        ConsensusElectAccept.class,
-        ConsensusHandler::handleElectAccept);
-    add(map, CONSENSUS, PREPARE, ConsensusPrepare.class, ConsensusHandler::handleBackend);
-    add(map, CONSENSUS, PROMISE, ConsensusPromise.class, ConsensusHandler::handleBackend);
-    add(map, CONSENSUS, PROPOSE, ConsensusPropose.class, ConsensusHandler::handleBackend);
-    add(map, CONSENSUS, ACCEPT, ConsensusAccept.class, ConsensusHandler::handleBackend);
-    add(map, CONSENSUS, LEARN, ConsensusLearn.class, ConsensusHandler::handleLearn);
+    builder
+        .add(CONSENSUS, ELECT, ConsensusElect.class, ConsensusHandler::handleElect)
+        .add(
+            CONSENSUS,
+            ELECT_ACCEPT,
+            ConsensusElectAccept.class,
+            ConsensusHandler::handleElectAccept)
+        .add(CONSENSUS, PREPARE, ConsensusPrepare.class, ConsensusHandler::handleBackend)
+        .add(CONSENSUS, PROMISE, ConsensusPromise.class, ConsensusHandler::handleBackend)
+        .add(CONSENSUS, PROPOSE, ConsensusPropose.class, ConsensusHandler::handleBackend)
+        .add(CONSENSUS, ACCEPT, ConsensusAccept.class, ConsensusHandler::handleBackend)
+        .add(CONSENSUS, LEARN, ConsensusLearn.class, ConsensusHandler::handleLearn);
 
     // Social Media
-    add(map, CHIRP, ADD, AddChirp.class, ChirpHandler::handleChirpAdd);
-    add(map, CHIRP, ADD_BROADCAST, AddChirpBroadcast.class, null);
+    builder
+        .add(CHIRP, ADD, AddChirp.class, ChirpHandler::handleChirpAdd)
+        .add(CHIRP, ADD_BROADCAST, AddChirpBroadcast.class, null);
 
-    return new DataRegistry(map);
-  }
-
-  private static <T extends Data> void add(
-      Map<DataRegistry.EntryPair, Pair<Class<? extends Data>, DataHandler<? extends Data>>> map,
-      Objects obj,
-      Action action,
-      Class<T> dataClass,
-      DataHandler<T> dataHandler) {
-    map.put(DataRegistry.pair(obj, action), Pair.create(dataClass, dataHandler));
+    return builder.build();
   }
 }
