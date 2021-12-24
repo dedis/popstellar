@@ -1386,9 +1386,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             .substring(6); // use the laoId set at creation + need to remove /root/ prefix
     String errorMessage = "failed to retrieve public key from wallet";
     try {
-      String pk =
+      String publicKey =
           wallet.findKeyPair(firstLaoId, id).getPublicKey().getEncoded(); // FIXME Bad type usage
-      mPkRollCallEvent.postValue(new SingleEvent<>(pk));
+      mPkRollCallEvent.postValue(new SingleEvent<>(publicKey));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);
     }
