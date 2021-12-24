@@ -12,10 +12,10 @@ import spray.json._
 import scala.util.{Success, Try}
 
 class JsonRpcRequest(
-                      val jsonrpc: String,
-                      val method: MethodType.MethodType,
-                      val params: Params,
-                      val id: Option[Int]
+                      final val jsonrpc: String,
+                      final val method: MethodType.MethodType,
+                      final val params: Params,
+                      final val id: Option[Int]
                     ) extends JsonRpcMessage {
 
   // defensive methods in case protocol structure changes
@@ -52,15 +52,14 @@ class JsonRpcRequest(
     * @param decodedData decoded data to set to new JsonRpcRequest
     * @return a new JsonRpcRequest with decoded message data
     */
-  def getWithDecodedData(decodedData: MessageData): JsonRpcRequest = this.getParamsMessage match {
+  def getWithDecodedData(decodedData: MessageData): Option[JsonRpcRequest] = this.getParamsMessage match {
     case Some(message) => {
       //Get copy to of the message and sets its data to the decoded one
       val decodedMessage = message.copy(decodedData = Some(decodedData))
       //Similar to this but with new decoded message in its params
-      JsonRpcRequest(this.jsonrpc,this.method, new ParamsWithMessage(this.params.channel, decodedMessage) ,this.id)
+      Some(JsonRpcRequest(this.jsonrpc, this.method, new ParamsWithMessage(this.params.channel, decodedMessage), this.id))
     }
-    //
-    case _ => this
+    case None => None
   }
 
   def extractLaoId: Hash = this.getParamsChannel.extractChildChannel
