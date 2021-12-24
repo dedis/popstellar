@@ -218,5 +218,6 @@
   <string name="hint_chirp">Your chirp</string>
   <string name="laos_list">Laos list</string>
   <string name="toast_no_lao">You are not in a lao</string>
+  <string name="toast_error_sending_chirp">Error when sending chirp. Please try again</string>
 
 </resources>

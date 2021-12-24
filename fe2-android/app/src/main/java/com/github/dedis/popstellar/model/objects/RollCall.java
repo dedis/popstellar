@@ -5,11 +5,12 @@ import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RollCall extends Event {
+public class RollCall extends Event implements Serializable {
 
   private String id;
   private final String persistentId;

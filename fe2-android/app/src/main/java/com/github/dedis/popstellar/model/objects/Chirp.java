@@ -2,8 +2,10 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
+
 /** Class modeling a Chirp */
-public class Chirp {
+public class Chirp implements Serializable {
 
   private static final int MAX_CHIRP_CHARS = 300;
 

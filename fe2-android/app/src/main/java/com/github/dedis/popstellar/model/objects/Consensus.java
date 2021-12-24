@@ -5,12 +5,13 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public final class Consensus {
+public final class Consensus implements Serializable {
 
   private String messageId;
   private String channel;
