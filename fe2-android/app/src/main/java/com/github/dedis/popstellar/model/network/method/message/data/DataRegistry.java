@@ -7,8 +7,8 @@ import androidx.annotation.Nullable;
 
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
-import com.github.dedis.popstellar.utility.handler.DataHandler;
-import com.github.dedis.popstellar.utility.handler.HandlerContext;
+import com.github.dedis.popstellar.utility.handler.data.DataHandler;
+import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
 import java.util.Collections;
 import java.util.HashMap;

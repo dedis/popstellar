@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.utility.handler;
+package com.github.dedis.popstellar.utility.handler.data;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;

@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.utility.handler;
+package com.github.dedis.popstellar.utility.handler.data;
 
 import androidx.annotation.NonNull;
 

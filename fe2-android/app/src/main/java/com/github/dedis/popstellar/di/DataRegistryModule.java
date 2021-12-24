@@ -51,11 +51,11 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cr
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirpBroadcast;
-import com.github.dedis.popstellar.utility.handler.ChirpHandler;
-import com.github.dedis.popstellar.utility.handler.ConsensusHandler;
-import com.github.dedis.popstellar.utility.handler.ElectionHandler;
-import com.github.dedis.popstellar.utility.handler.LaoHandler;
-import com.github.dedis.popstellar.utility.handler.RollCallHandler;
+import com.github.dedis.popstellar.utility.handler.data.ChirpHandler;
+import com.github.dedis.popstellar.utility.handler.data.ConsensusHandler;
+import com.github.dedis.popstellar.utility.handler.data.ElectionHandler;
+import com.github.dedis.popstellar.utility.handler.data.LaoHandler;
+import com.github.dedis.popstellar.utility.handler.data.RollCallHandler;
 
 import javax.inject.Singleton;
 

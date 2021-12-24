@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.utility.handler;
+package com.github.dedis.popstellar.utility.handler.data;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
