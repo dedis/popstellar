@@ -15,11 +15,18 @@ case class JsonRpcResponse(
 object JsonRpcResponse extends Parsable {
   def apply(
              jsonrpc: String,
-             result: Option[ResultObject],
-             error: Option[ErrorObject],
+             result: ResultObject,
              id: Option[Int]
            ): JsonRpcResponse = {
-    new JsonRpcResponse(jsonrpc, result, error, id)
+    new JsonRpcResponse(jsonrpc, Some(result), None, id)
+  }
+
+  def apply(
+             jsonrpc: String,
+             error: ErrorObject,
+             id: Option[Int]
+           ): JsonRpcResponse = {
+      new JsonRpcResponse(jsonrpc, None, Some(error), id) 
   }
 
   override def buildFromJson(payload: String): JsonRpcResponse = payload.parseJson.asJsObject.convertTo[JsonRpcResponse]

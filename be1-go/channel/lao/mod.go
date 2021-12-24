@@ -12,6 +12,7 @@ import (
 	"popstellar/channel/consensus"
 	"popstellar/channel/election"
 	"popstellar/channel/generalChirping"
+	"popstellar/channel/reaction"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/inbox"
@@ -49,8 +50,9 @@ const (
 type Channel struct {
 	sockets channel.Sockets
 
-	inbox   *inbox.Inbox
-	general channel.Broadcastable
+	inbox     *inbox.Inbox
+	general   channel.Broadcastable
+	reactions channel.LAOFunctionalities
 
 	// /root/<ID>
 	channelID string
@@ -79,18 +81,22 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	box := inbox.NewInbox(channelID)
 	box.StoreMessage(msg)
 
-	general := createGeneralChirpingChannel(channelID, hub, socket)
+	generalCh := createGeneralChirpingChannel(channelID, hub, socket)
+
+	reactionPath := fmt.Sprintf("%s/social/reactions", channelID)
+	reactionCh := reaction.NewChannel(reactionPath, hub, log)
+	hub.NotifyNewChannel(reactionPath, &reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
-
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
 	c := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           box,
-		general:         general,
+		general:         generalCh,
+		reactions:       &reactionCh,
 		organizerPubKey: organizerPubKey,
 		hub:             hub,
 		rollCall:        rollCall{},
@@ -533,7 +539,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message,
 	expectedAction := messagedata.ElectionActionSetup
 
 	if action != expectedAction {
-		return answer.NewErrorf(-4, "invalid action: %s != %s)", action, expectedAction)
+		return answer.NewErrorf(-4, "invalid action %s, should be %s)", action, expectedAction)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -560,6 +566,11 @@ func (c *Channel) processElectionObject(action string, msg message.Message,
 		return xerrors.Errorf("failed to unmarshal election setup: %v", err)
 	}
 
+	err = c.verifyMessageElectionSetup(electionSetup)
+	if err != nil {
+		return xerrors.Errorf("invalid election#setup message: %v", err)
+	}
+
 	err = c.createElection(msg, electionSetup, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to create election: %w", err)
@@ -576,22 +587,16 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message (Lao: %s) is different from the channelID (channel: %s)", setupMsg.Lao, channelID)
+		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be equal to the channel ID %s",
+			setupMsg.Lao, channelID)
 	}
 
 	// Compute the new election channel id
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false, setupMsg.Questions, c.attendees, msg, c.hub, c.log)
-	// {
-	// 	createBaseChannel(organizerHub, channelPath),
-	// 	setupMsg.StartTime,
-	// 	setupMsg.EndTime,
-	// 	false,
-	// 	getAllQuestionsForElectionChannel(setupMsg.Questions),
-	// 	c.attendees,
-	// }
+	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false,
+		setupMsg.Questions, c.attendees, c.hub, c.log)
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)
@@ -697,6 +702,8 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		c.attendees[attendee] = struct{}{}
 
 		c.createChirpingChannel(attendee, socket)
+
+		c.reactions.AddAttendee(attendee)
 
 		if db != nil {
 			c.log.Info().Msgf("inserting attendee %s into db", attendee)

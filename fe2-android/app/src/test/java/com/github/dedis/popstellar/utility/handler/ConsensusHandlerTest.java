@@ -236,7 +236,7 @@ public class ConsensusHandlerTest {
 
   @Test
   public void handleConsensusWithInvalidMessageIdTest() {
-    // When an invalid instance id is used in handler for elect-accept and learn,
+    // When an invalid instance id is used in handler for elect_accept and learn,
     // it should throw an InvalidMessageIdException
 
     ConsensusElectAccept electAcceptInvalid =

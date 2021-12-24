@@ -5,11 +5,13 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
@@ -29,6 +31,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -41,10 +44,21 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 public class WalletFragmentTest {
 
   // TODO: update those tests: needs to be simplified and readable
+  public ActivityScenarioRule<HomeActivity> mActivityScenarioRule =
+      new ActivityScenarioRule<>(HomeActivity.class);
+
   @Rule
   public final RuleChain rule =
-      RuleChain.outerRule(new HiltAndroidRule(this))
-          .around(new ActivityScenarioRule<>(HomeActivity.class));
+      RuleChain.outerRule(new HiltAndroidRule(this)).around(mActivityScenarioRule);
+
+  private View decorView;
+
+  @Before
+  public void setUp() {
+    mActivityScenarioRule
+        .getScenario()
+        .onActivity(activity -> decorView = activity.getWindow().getDecorView());
+  }
 
   @Test
   public void HomeWalletUITest() {
@@ -202,6 +216,18 @@ public class WalletFragmentTest {
                 withParent(withParent(withId(R.id.fragment_seed_wallet))),
                 isDisplayed()));
     textView3.check(matches(isDisplayed()));
+
+    ViewInteraction textView4 =
+        onView(
+            allOf(
+                withId(R.id.seed_wallet),
+                withParent(withParent(withId(R.id.fragment_seed_wallet))),
+                isDisplayed()));
+    textView4.perform(click());
+
+    ViewInteraction toast =
+        onView(withText(R.string.copied_to_clipboard)).inRoot(withDecorView(not(decorView)));
+    toast.check(matches(isDisplayed()));
 
     ViewInteraction button2 =
         onView(
