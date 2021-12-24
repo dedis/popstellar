@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -63,6 +62,9 @@ public class ChirpHandlerTest {
   private static final AddChirp ADD_CHIRP = new AddChirp(TEXT, PARENT_ID, CREATION_TIME);
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final MessageHandler messageHandler =
+      new MessageHandler(DataRegistryModule.provideDataRegistry());
+
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
 
@@ -97,17 +99,22 @@ public class ChirpHandlerTest {
 
     laoRepository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
-    handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
   }
 
   @Test
   public void testHandleAddChirp() throws DataHandlingException {
     MessageGeneral message =
         new MessageGeneral(Base64.getUrlDecoder().decode(SENDER), ADD_CHIRP, signer, GSON);
-    handleMessage(laoRepository, CHIRP_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, CHIRP_CHANNEL, message);
 
     Optional<Chirp> chirpOpt = LAO.getChirp(message.getMessageId());
     assertTrue(chirpOpt.isPresent());

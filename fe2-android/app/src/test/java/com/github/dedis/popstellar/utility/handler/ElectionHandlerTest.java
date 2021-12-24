@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.utility.handler.ElectionHandler.electionSetupWitnessMessage;
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
+import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
@@ -62,6 +61,8 @@ public class ElectionHandlerTest extends TestCase {
   @Mock PublicKeySign signer;
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final MessageHandler messageHandler =
+      new MessageHandler(DataRegistryModule.provideDataRegistry());
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -99,7 +100,12 @@ public class ElectionHandlerTest extends TestCase {
 
     laoRepository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -157,7 +163,7 @@ public class ElectionHandlerTest extends TestCase {
             Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionSetup, signer, GSON);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the Election is present with state OPENED and the correct ID
     Optional<Election> electionOpt =
@@ -192,7 +198,7 @@ public class ElectionHandlerTest extends TestCase {
             Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionResult, signer, GSON);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
 
     // Check the Election is present with state RESULTS_READY and the results
     Optional<Election> electionOpt =
@@ -212,7 +218,7 @@ public class ElectionHandlerTest extends TestCase {
             Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), electionEnd, signer, GSON);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
 
     // Check the Election is present with state CLOSED and the results
     Optional<Election> electionOpt =

@@ -78,6 +78,7 @@ import io.reactivex.Observable;
 public class ElectionStartFragmentTest {
 
   @Inject AndroidKeysetManager keysetManager;
+  @Inject MessageHandler messageHandler;
   @Inject Gson gson;
 
   @BindValue LAORepository laoRepository;
@@ -108,6 +109,7 @@ public class ElectionStartFragmentTest {
                     remoteDataSource,
                     localDataSource,
                     keysetManager,
+                    messageHandler,
                     gson,
                     new ProdSchedulerProvider());
 
@@ -232,7 +234,7 @@ public class ElectionStartFragmentTest {
 
     // Nodes 3 try to start
     MessageGeneral elect3Msg = createMsg(node3Key, signer3, elect);
-    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect3Msg);
+    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect3Msg);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, true);
@@ -254,7 +256,7 @@ public class ElectionStartFragmentTest {
     assertTrue(minCreation <= elect.getCreation() && elect.getCreation() <= maxCreation);
 
     MessageGeneral elect1Msg = createMsg(publicKey, signer1, elect);
-    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect1Msg);
+    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect1Msg);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
@@ -275,7 +277,7 @@ public class ElectionStartFragmentTest {
     ConsensusElectAccept accept3 =
         new ConsensusElectAccept(INSTANCE_ID, elect3Msg.getMessageId(), true);
     MessageGeneral accept3Msg = createMsg(publicKey, signer1, accept3);
-    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, accept3Msg);
+    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, accept3Msg);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, false);
@@ -285,7 +287,7 @@ public class ElectionStartFragmentTest {
         new ConsensusLearn(
             INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME, true, Collections.emptyList());
     MessageGeneral learn3Msg = createMsg(node3Key, signer3, learn3);
-    MessageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learn3Msg);
+    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learn3Msg);
     laoRepository.updateNodes(LAO_CHANNEL);
 
     electionStatus().check(matches(withText(expectedStatusStarted))).check(matches(isDisplayed()));
