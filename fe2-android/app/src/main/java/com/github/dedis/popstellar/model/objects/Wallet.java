@@ -91,7 +91,7 @@ public class Wallet {
   }
 
   /**
-   * Method that allow generate a different key for each path that you give.
+   * Generate a PoPToken (i.e. a key pair) from a given path.
    *
    * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
    * @return the generated PoP Token
