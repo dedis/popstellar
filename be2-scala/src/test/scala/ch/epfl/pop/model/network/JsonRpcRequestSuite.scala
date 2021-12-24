@@ -87,20 +87,23 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
         rpcReq3.getDecodedDataHeader should equal (Some((ObjectType.LAO, ActionType.CREATE)))
     }
 
-    test("setDecodedData sets data as intended"){
+    test("getWithDecodedData sets data as intended"){
         val messageToModify: Message = Message(messageEx.data, messageEx.sender, messageEx.signature, messageEx.message_id, messageEx.witness_signatures)
         val paramsWithMessageToModify: ParamsWithMessage = new ParamsWithMessage(channelEx, messageToModify)
         val decodedData: MessageData = CreateLao(Hash(Base64Data("id")), "LAO", Timestamp(0), PublicKey(Base64Data("key")), List.empty)
 
-        var rpcReqSet: JsonRpcRequest = JsonRpcRequest(rpc, methodType, params, id)
-        rpcReqSet = rpcReqSet.getWithDecodedData(decodedData)
+        val rpcReqSet: JsonRpcRequest = JsonRpcRequest(rpc, methodType, params, id)
+        val rpcReqWithParams = rpcReqSet.getWithDecodedData(decodedData)
 
+        rpcReqWithParams should be (None)
         rpcReqSet.getDecodedData should equal (None)
 
-        var rpcReqSet2: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessageToModify, id)
-        rpcReqSet2 =  rpcReqSet2.getWithDecodedData(decodedData)
+        val rpcReqSet2: JsonRpcRequest = JsonRpcRequest(rpc, methodType, paramsWithMessageToModify, id)
+        val rpcReqWithParams2 = rpcReqSet2.getWithDecodedData(decodedData)
 
-        rpcReqSet2.getDecodedData should equal (Some(decodedData))
+        rpcReqWithParams2 should be (defined)
+        rpcReqSet2.getDecodedData should equal (None)
+        rpcReqWithParams2.get.getDecodedData should equal (Some(decodedData))
     }
 
     test("extractLaoId returns right id"){

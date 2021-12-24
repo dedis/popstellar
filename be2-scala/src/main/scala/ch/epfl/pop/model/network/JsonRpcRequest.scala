@@ -12,10 +12,10 @@ import spray.json._
 import scala.util.{Success, Try}
 
 class JsonRpcRequest(
-                      final val jsonrpc: String,
-                      final val method: MethodType.MethodType,
-                      final val params: Params,
-                      final val id: Option[Int]
+                      val jsonrpc: String,
+                      val method: MethodType.MethodType,
+                      val params: Params,
+                      val id: Option[Int]
                     ) extends JsonRpcMessage {
 
   // defensive methods in case protocol structure changes
