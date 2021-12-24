@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.google.crypto.tink.PublicKeySign;
@@ -46,6 +47,8 @@ public class LAORepositoryTest extends TestCase {
   @Mock PublicKeySign signer;
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final MessageHandler messageHandler =
+      new MessageHandler(DataRegistryModule.provideDataRegistry());
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -103,7 +106,12 @@ public class LAORepositoryTest extends TestCase {
 
     repository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Send a catchup request and subscribe to the answer
     Single<Answer> answerCatchup = repository.sendCatchup(CHANNEL);
@@ -134,7 +142,12 @@ public class LAORepositoryTest extends TestCase {
 
     repository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Publish a CreateLao message and subscribe to the answer
     Single<Answer> answerPublish = repository.sendPublish(CHANNEL, createLaoMessage);
@@ -168,7 +181,12 @@ public class LAORepositoryTest extends TestCase {
 
     repository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Send a subscribe request and subscribe to the answer
     Single<Answer> answerSubscribe = repository.sendSubscribe(CHANNEL);
@@ -199,7 +217,12 @@ public class LAORepositoryTest extends TestCase {
 
     repository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Send a subscribe request and subscribe to the answer
     Single<Answer> answerSubscribe = repository.sendSubscribe(LAO_CHANNEL);
@@ -233,7 +256,12 @@ public class LAORepositoryTest extends TestCase {
 
     repository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Send an unsubscribe request and subscribe to the answer
     Single<Answer> answerUnsubscribe = repository.sendUnsubscribe(CHANNEL);
@@ -266,7 +294,12 @@ public class LAORepositoryTest extends TestCase {
 
     repository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Subscribe to a LAO and wait for the request to finish
     repository.sendPublish(LAO_CHANNEL, createLaoMessage);
