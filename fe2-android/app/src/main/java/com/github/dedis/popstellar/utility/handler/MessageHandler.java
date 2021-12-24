@@ -19,8 +19,6 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
-import com.github.dedis.popstellar.utility.error.UnknownDataObjectException;
 import com.github.dedis.popstellar.utility.handler.data.HandlerContext;
 
 import java.util.Collections;
@@ -208,10 +206,7 @@ public final class MessageHandler {
     Log.d(TAG, "data with class: " + data.getClass());
 
     Objects dataObj = Objects.find(data.getObject());
-    if (dataObj == null) throw new UnknownDataObjectException(data);
-
     Action dataAction = Action.find(data.getAction());
-    if (dataAction == null) throw new UnknownDataActionException(data);
 
     registry.handle(new HandlerContext(laoRepository, channel, message), data, dataObj, dataAction);
 
