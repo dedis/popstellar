@@ -81,7 +81,7 @@ export class SetupElection implements MessageData {
     const lao: Lao = OpenedLaoStore.get();
 
     const expectedHash = Hash.fromStringArray(
-      EventTags.ELECTION, lao.id.toString(), lao.creation.toString(), msg.name,
+      EventTags.ELECTION, lao.id.toString(), msg.created_at.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'SetupElection':"
