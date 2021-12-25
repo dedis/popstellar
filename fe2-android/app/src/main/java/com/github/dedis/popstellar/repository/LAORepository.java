@@ -1,11 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleBroadcast;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleCatchup;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleCreateLao;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleError;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleSubscribe;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -26,6 +20,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateL
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
@@ -68,6 +63,7 @@ public class LAORepository {
 
   private final LAODataSource.Remote mRemoteDataSource;
   private final AndroidKeysetManager mKeysetManager;
+  private final MessageHandler mMessageHandler;
   private final SchedulerProvider schedulerProvider;
   private final Gson mGson;
 
@@ -112,11 +108,13 @@ public class LAORepository {
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
       @NonNull AndroidKeysetManager keysetManager,
+      @NonNull MessageHandler messageHandler,
       @NonNull Gson gson,
       @NonNull SchedulerProvider schedulerProvider) {
     mRemoteDataSource = remoteDataSource;
     mLocalDataSource = localDataSource;
     mKeysetManager = keysetManager;
+    mMessageHandler = messageHandler;
     mGson = gson;
 
     laoById = new HashMap<>();
@@ -161,7 +159,8 @@ public class LAORepository {
   private void handleGenericMessage(GenericMessage genericMessage) {
     Log.d(TAG, "handling generic msg");
     if (genericMessage instanceof Error) {
-      handleError(genericMessage, subscribeRequests, catchupRequests, createLaoRequests);
+      mMessageHandler.handleError(
+          genericMessage, subscribeRequests, catchupRequests, createLaoRequests);
       return;
     }
 
@@ -170,11 +169,11 @@ public class LAORepository {
       int id = result.getId();
       Log.d(TAG, "request id " + id);
       if (subscribeRequests.containsKey(id)) {
-        handleSubscribe(this, id, subscribeRequests);
+        mMessageHandler.handleSubscribe(this, id, subscribeRequests);
       } else if (catchupRequests.containsKey(id)) {
-        handleCatchup(this, id, result, catchupRequests, unprocessed);
+        mMessageHandler.handleCatchup(this, id, result, catchupRequests, unprocessed);
       } else if (createLaoRequests.containsKey(id)) {
-        handleCreateLao(this, id, createLaoRequests);
+        mMessageHandler.handleCreateLao(this, id, createLaoRequests);
       }
       return;
     }
@@ -182,7 +181,7 @@ public class LAORepository {
     Log.d(TAG, "handleGenericMessage: got a broadcast");
 
     // We've a Broadcast
-    handleBroadcast(this, genericMessage, unprocessed);
+    mMessageHandler.handleBroadcast(this, genericMessage, unprocessed);
   }
 
   /**

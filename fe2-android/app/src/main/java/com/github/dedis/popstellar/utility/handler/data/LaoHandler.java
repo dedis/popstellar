@@ -1,10 +1,8 @@
-package com.github.dedis.popstellar.utility.handler;
+package com.github.dedis.popstellar.utility.handler.data;
 
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
@@ -15,8 +13,6 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
-import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
-import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 import com.github.dedis.popstellar.utility.security.Signature;
 
 import java.util.ArrayList;
@@ -33,46 +29,15 @@ public final class LaoHandler {
   }
 
   /**
-   * Process a LAO message.
-   *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
-   * @param data the data of the message received
-   * @param messageId the ID of the message received
-   * @return true if the message cannot be processed and false otherwise
-   */
-  public static void handleLaoMessage(
-      LAORepository laoRepository, String channel, Data data, String messageId)
-      throws DataHandlingException {
-    Log.d(TAG, "handle LAO message");
-
-    Action action = Action.find(data.getAction());
-    if (action == null) throw new UnknownDataActionException(data);
-
-    switch (action) {
-      case CREATE:
-        handleCreateLao(laoRepository, channel, (CreateLao) data);
-        break;
-      case UPDATE:
-        handleUpdateLao(laoRepository, channel, messageId, (UpdateLao) data);
-        break;
-      case STATE:
-        handleStateLao(laoRepository, channel, (StateLao) data);
-        break;
-      default:
-        throw new UnhandledDataTypeException(data, action.getAction());
-    }
-  }
-
-  /**
    * Process a CreateLao message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param createLao the message that was received
    */
-  public static void handleCreateLao(
-      LAORepository laoRepository, String channel, CreateLao createLao) {
+  public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
@@ -87,19 +52,21 @@ public final class LaoHandler {
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
       laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
     }
+    laoRepository.updateNodes(channel);
   }
 
   /**
    * Process an UpdateLao message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
-   * @param messageId the ID of the received message
+   * @param context the HandlerContext of the message
    * @param updateLao the message that was received
    */
-  public static void handleUpdateLao(
-      LAORepository laoRepository, String channel, String messageId, UpdateLao updateLao)
+  public static void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
 
@@ -126,17 +93,20 @@ public final class LaoHandler {
       // UpdateLao
       lao.getPendingUpdates().add(new PendingUpdate(updateLao.getLastModified(), messageId));
     }
+    laoRepository.updateNodes(channel);
   }
 
   /**
    * Process a StateLao message.
    *
-   * @param laoRepository the repository to access the messages and LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param stateLao the message that was received
    */
-  public static void handleStateLao(LAORepository laoRepository, String channel, StateLao stateLao)
+  public static void handleStateLao(HandlerContext context, StateLao stateLao)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
 
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -175,6 +145,7 @@ public final class LaoHandler {
     long targetTime = stateLao.getLastModified();
     lao.getPendingUpdates()
         .removeIf(pendingUpdate -> pendingUpdate.getModificationTime() <= targetTime);
+    laoRepository.updateNodes(channel);
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(

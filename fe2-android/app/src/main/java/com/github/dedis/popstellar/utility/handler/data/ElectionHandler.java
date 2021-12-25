@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.utility.handler;
+package com.github.dedis.popstellar.utility.handler.data;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
@@ -7,9 +7,8 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.Action;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
@@ -18,8 +17,6 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.error.UnhandledDataTypeException;
-import com.github.dedis.popstellar.utility.error.UnknownDataActionException;
 
 import java.util.List;
 import java.util.Map;
@@ -35,50 +32,16 @@ public final class ElectionHandler {
   }
 
   /**
-   * Process an Election message.
-   *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
-   * @param data the data of the message that was received
-   * @param messageId the ID of the message that was received
-   */
-  public static void handleElectionMessage(
-      LAORepository laoRepository, String channel, Data data, String messageId, String senderPk)
-      throws DataHandlingException {
-    Log.d(TAG, "handle Election message");
-
-    Action action = Action.find(data.getAction());
-    if (action == null) throw new UnknownDataActionException(data);
-
-    switch (action) {
-      case SETUP:
-        handleElectionSetup(laoRepository, channel, (ElectionSetup) data, messageId);
-        break;
-      case RESULT:
-        handleElectionResult(laoRepository, channel, (ElectionResult) data);
-        break;
-      case END:
-        handleElectionEnd(laoRepository, channel);
-        break;
-      case CAST_VOTE:
-        handleCastVote(laoRepository, channel, (CastVote) data, senderPk, messageId);
-        break;
-      default:
-        Log.w(TAG, "Invalid action for a consensus object : " + data.getAction());
-        throw new UnhandledDataTypeException(data, action.getAction());
-    }
-  }
-
-  /**
    * Process an ElectionSetup message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param electionSetup the message that was received
-   * @param messageId the ID of message that was received
    */
-  public static void handleElectionSetup(
-      LAORepository laoRepository, String channel, ElectionSetup electionSetup, String messageId) {
+  public static void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+
     if (laoRepository.isLaoChannel(channel)) {
       Lao lao = laoRepository.getLaoByChannel(channel);
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
@@ -104,13 +67,14 @@ public final class ElectionHandler {
   /**
    * Process an ElectionResult message.
    *
-   * @param laoRepository the repository to access the election and LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param electionResult the message that was received
    */
-  public static void handleElectionResult(
-      LAORepository laoRepository, String channel, ElectionResult electionResult)
+  public static void handleElectionResult(HandlerContext context, ElectionResult electionResult)
       throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
     Log.d(TAG, "handling election result");
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
@@ -128,10 +92,14 @@ public final class ElectionHandler {
   /**
    * Process an ElectionEnd message.
    *
-   * @param laoRepository the repository to access the LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
+   * @param electionEnd the message that was received
    */
-  public static void handleElectionEnd(LAORepository laoRepository, String channel) {
+  @SuppressWarnings("unused")
+  public static void handleElectionEnd(HandlerContext context, ElectionEnd electionEnd) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
     Log.d(TAG, "handleElectionEnd: channel " + channel);
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
@@ -142,18 +110,15 @@ public final class ElectionHandler {
   /**
    * Process a CastVote message.
    *
-   * @param laoRepository the repository to access the messages, election and LAO of the channel
-   * @param channel the channel on which the message was received
+   * @param context the HandlerContext of the message
    * @param castVote the message that was received
-   * @param senderPk the public key of the sender
-   * @param messageId the ID of the message
    */
-  public static void handleCastVote(
-      LAORepository laoRepository,
-      String channel,
-      CastVote castVote,
-      String senderPk,
-      String messageId) {
+  public static void handleCastVote(HandlerContext context, CastVote castVote) {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+    String messageId = context.getMessageId();
+    String senderPk = context.getSenderPk();
+
     Log.d(TAG, "handleCastVote: channel " + channel);
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
