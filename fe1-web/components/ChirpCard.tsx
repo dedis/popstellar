@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
 
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
-  const likesText = `  ${chirp.likes}`;
 
   // This is temporary for now
   const zero = '  0';
@@ -90,7 +89,7 @@ const ChirpCard = (props: IPropTypes) => {
               color="black"
               onPress={() => addReaction('👍')}
             />
-            <Text>{likesText}</Text>
+            <Text>{zero}</Text>
           </View>
           <View style={styles.reactionView}>
             <Ionicons.Button

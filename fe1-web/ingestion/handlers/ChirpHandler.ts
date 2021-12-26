@@ -1,17 +1,15 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, AddChirp, ObjectType } from 'model/network/method/message/data';
 import {
-  addChirp,
-  dispatch,
-  getStore,
-  makeCurrentLao,
+  ActionType, AddChirp, ObjectType,
+} from 'model/network/method/message/data';
+import {
+  addChirp, dispatch, getStore, makeCurrentLao,
 } from 'store';
 import { Chirp } from 'model/objects/Chirp';
 
 /**
- * Handler for social media
+ * Handler for social media chirp
  */
-
 const getCurrentLao = makeCurrentLao();
 
 /**
@@ -52,14 +50,14 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles all social media messages by redirecting them to the correct function based on the
+ * Handles all social media chirp messages by redirecting them to the correct function based on the
  * action.
  *
  * @param msg - The received extended message
  */
-export function handleSocialMessage(msg: ExtendedMessage): boolean {
+export function handleChirpMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP) {
-    console.warn('handleSocialMessage was called to process an unsupported message', msg);
+    console.warn('handleChirpMessage was called to process an unsupported message', msg);
     return false;
   }
 
@@ -67,7 +65,7 @@ export function handleSocialMessage(msg: ExtendedMessage): boolean {
     case ActionType.ADD:
       return handleAddChirpMessage(msg);
     default:
-      console.warn('A Social Media message was received but its processing logic is not '
+      console.warn('A Social Media chirp message was received but its processing logic is not '
         + 'yet implemented:', msg);
       return false;
   }

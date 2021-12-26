@@ -11,7 +11,6 @@ export interface ChirpState {
   sender: string;
   text: string;
   time: number;
-  likes: number;
   parentId?: string;
 }
 
@@ -24,11 +23,8 @@ export class Chirp {
   // The text of the chirp
   public readonly text: string;
 
-  // The time where the chirp was posted
+  // The time when the chirp was posted
   public readonly time: Timestamp;
-
-  // The number of likes
-  public readonly likes: number;
 
   // The id of the parent chirp (if it is a reply)
   public readonly parentId?: Hash;
@@ -49,12 +45,7 @@ export class Chirp {
       throw new Error("Undefined 'text' when creating 'Chirp'");
     }
     if (obj.time === undefined) {
-      throw new Error("Undefined 'id' when creating 'Chirp'");
-    }
-    if (obj.likes === undefined) {
-      this.likes = 0;
-    } else {
-      this.likes = obj.likes;
+      throw new Error("Undefined 'time' when creating 'Chirp'");
     }
 
     this.id = obj.id;
@@ -75,7 +66,6 @@ export class Chirp {
       sender: new PublicKey(chirpState.sender),
       text: chirpState.text,
       time: new Timestamp(chirpState.time),
-      likes: chirpState.likes,
       parentId: chirpState.parentId ? new Hash(chirpState.parentId) : undefined,
     });
   }

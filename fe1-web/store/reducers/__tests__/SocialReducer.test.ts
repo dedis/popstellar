@@ -18,7 +18,6 @@ const chirp1 = new Chirp({
   sender: new PublicKey('Douglas Adams'),
   text: 'Don\'t panic.',
   time: new Timestamp(1605555500),
-  likes: 100,
 }).toState();
 
 const chirp2 = new Chirp({
@@ -26,7 +25,6 @@ const chirp2 = new Chirp({
   sender: new PublicKey('Gandalf'),
   text: 'You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass!',
   time: new Timestamp(1607777700),
-  likes: 0,
 }).toState();
 
 const chirp3 = new Chirp({
@@ -34,7 +32,6 @@ const chirp3 = new Chirp({
   sender: new PublicKey('Douglas Adams'),
   text: 'Time is an illusion',
   time: new Timestamp(1606666600),
-  likes: 98,
 }).toState();
 
 const chirp4 = new Chirp({
@@ -42,7 +39,6 @@ const chirp4 = new Chirp({
   sender: new PublicKey('Douglas Adams'),
   text: 'The answer is 42',
   time: new Timestamp(1608888800),
-  likes: 42,
 }).toState();
 
 const emptyState = {
