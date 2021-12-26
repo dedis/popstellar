@@ -31,34 +31,45 @@ export enum ActionType {
   ADD_BROADCAST = 'add_broadcast',
 }
 
-class MessageDataSigned {
-  readonly #isSignedWithToken: boolean;
-
-  constructor(isTokenSigned: boolean) {
-    this.#isSignedWithToken = isTokenSigned;
-  }
-
-  public get isSignedWithToken() {
-    return this.#isSignedWithToken;
-  }
-}
-
-export interface MessageData extends MessageDataSigned {
+export interface MessageData {
   readonly object: ObjectType;
   readonly action: ActionType;
 }
 
 /**
- * Returns if the message data is signed with token or not. If not, it has to be signed with
- * a public key.
+ * Map to know if the type of message we're going to send needs to be signed using a token, or
+ * the user's public key.
  *
  * @remarks
- * This function has to be updated for each new kind of message that is going to be signed using
- * the pop token.
- *
- * @param data - The message data we want to know how to sign
+ * This map has to be updated for each new kind of message.
  */
-export function isSignedWithToken(data: MessageData): boolean {
-  return (data.object === ObjectType.ELECTION && data.action === ActionType.CAST_VOTE)
-    || (data.object === ObjectType.CHIRP && data.action === ActionType.ADD);
-}
+export const isMessageSignedWithToken: Map<string, Map<string, boolean>> = new Map([
+  [ObjectType.CHIRP, new Map([
+    [ActionType.ADD, true],
+    [ActionType.ADD_BROADCAST, false],
+  ])],
+  [ObjectType.ELECTION, new Map([
+    [ActionType.CAST_VOTE, true],
+    [ActionType.RESULT, false],
+    [ActionType.END, false],
+    [ActionType.SETUP, false],
+  ])],
+  [ObjectType.LAO, new Map([
+    [ActionType.CREATE, false],
+    [ActionType.STATE, false],
+    [ActionType.UPDATE_PROPERTIES, false],
+  ])],
+  [ObjectType.MEETING, new Map([
+    [ActionType.CREATE, false],
+    [ActionType.STATE, false],
+  ])],
+  [ObjectType.ROLL_CALL, new Map([
+    [ActionType.CLOSE, false],
+    [ActionType.CREATE, false],
+    [ActionType.OPEN, false],
+    [ActionType.REOPEN, false],
+  ])],
+  [ObjectType.MESSAGE, new Map([
+    [ActionType.WITNESS, false],
+  ])],
+]);
