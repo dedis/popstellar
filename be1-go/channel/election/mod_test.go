@@ -135,7 +135,7 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 	// create election channel: election with one question
 	electChannel, _ := newFakeChannel(t)
 
-	relativePath := filepath.Join(relativeExamplePath, "query", "broadcast")
+	relativePath := filepath.Join(relativeQueryExamplePath, "broadcast")
 
 	file := filepath.Join(relativePath, "broadcast.json")
 	buf, err := os.ReadFile(file)
@@ -164,8 +164,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	require.Equal(t, 1, len(electChannel.questions))
 
 	// get cast vote message data
-	file := filepath.Join(relativeExamplePath, "messageData",
-		"vote_cast_vote", "vote_cast_vote.json")
+	file := filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote", "vote_cast_vote.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -185,8 +184,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	}
 
 	// wrap the message in a publish
-	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
-		"examples", "query", "publish")
+	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
 
 	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
@@ -218,8 +216,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	}
 
 	// get end election message data
-	file = filepath.Join(relativeExamplePath, "messageData",
-		"election_end", "election_end.json")
+	file = filepath.Join(relativeMsgDataExamplePath, "election_end", "election_end.json")
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -229,6 +226,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 
 	buf64 = base64.URLEncoding.EncodeToString(buf)
 
+	// wrap the end election in a message
 	m = message.Message{
 		Data:              buf64,
 		Sender:            pkOrganizer,
@@ -237,27 +235,29 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
+	// wrap the message in a publish
 	pub.Params.Message = m
 
+	// publish the end election on the election channel
 	require.NoError(t, electChannel.Publish(pub, socket.ClientSocket{}))
 
+	// check that the listening socket has received the election results
 	var broad method.Broadcast
 	err = json.Unmarshal(fakeSock.msg, &broad)
 	require.NoError(t, err)
 
-	var msg message.Message = broad.Params.Message
-	require.NoError(t, err)
-
-	bufff, err := base64.URLEncoding.DecodeString(msg.Data)
+	dataBuf, err := base64.URLEncoding.DecodeString(broad.Params.Message.Data)
 	require.NoError(t, err)
 
 	var result messagedata.ElectionResult
-	err = json.Unmarshal(bufff, &result)
+	err = json.Unmarshal(dataBuf, &result)
 	require.NoError(t, err)
 
-	require.Equal(t, result.Action, "result")
+	require.Equal(t, "result", result.Action)
+	require.Equal(t, "election", result.Object)
 }
 
+// Tests that the channel gathers correctly the results
 func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 
 	// create election channel: election with one question
@@ -267,7 +267,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, 1, len(electChannel.questions))
 
 	// get cast vote message data
-	file := filepath.Join(relativeExamplePath, "messageData", "vote_cast_vote", "vote_cast_vote.json")
+	file := filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote", "vote_cast_vote.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -291,7 +291,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 		question.validVotesMu.RLock()
 
 		// check the question has one valid vote
-		require.Equal(t, len(question.validVotes), 1)
+		require.Equal(t, 1, len(question.validVotes))
 
 		// check that the valid vote was done by the organizer
 		_, ok := question.validVotes[pkOrganizer]
@@ -301,7 +301,7 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	}
 
 	// get election result message data
-	file = filepath.Join(relativeExamplePath, "messageData", "election_result.json")
+	file = filepath.Join(relativeMsgDataExamplePath, "election_result.json")
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -319,10 +319,10 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	results, err := gatherResults(electChannel.questions, nolog)
 	require.NoError(t, err)
 
-	// check the result contains one question
+	// check that the result contains one question
 	require.Equal(t, 1, len(results.Questions))
 
-	// check the
+	// check that the size of the results is correct
 	expectedRes := electionResult.Questions[0].Result
 	res := results.Questions[0].Result
 	require.Equal(t, len(expectedRes), len(res))
@@ -345,7 +345,7 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	file := filepath.Join(relativeExamplePath, "messageData", "election_setup", "election_setup.json")
+	file := filepath.Join(relativeMsgDataExamplePath, "election_setup", "election_setup.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 

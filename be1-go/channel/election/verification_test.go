@@ -14,7 +14,8 @@ func TestVerify_CastVote(t *testing.T) {
 	electChannel, _ := newFakeChannel(t)
 
 	// read the valid example file
-	buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "messageData", "vote_cast_vote", "vote_cast_vote.json"))
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
+		"vote_cast_vote.json"))
 	require.NoError(t, err)
 
 	// object and action
@@ -38,7 +39,7 @@ func TestVerify_CastVote(t *testing.T) {
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err = os.ReadFile(filepath.Join(relativeExamplePath, "messageData",
+			buf, err = os.ReadFile(filepath.Join(relativeMsgDataExamplePath,
 				"vote_cast_vote", file))
 			require.NoError(t, err)
 
@@ -70,7 +71,8 @@ func TestVerify_ElectionEnd(t *testing.T) {
 	electChannel, _ := newFakeChannel(t)
 
 	// read the valid example file
-	buf, err := os.ReadFile(filepath.Join(relativeExamplePath, "messageData", "election_end", "election_end.json"))
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
+		"election_end.json"))
 	require.NoError(t, err)
 
 	// object and action
@@ -94,7 +96,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 	getTestBadExample := func(file string) func(*testing.T) {
 		return func(t *testing.T) {
 			// read the bad example file
-			buf, err = os.ReadFile(filepath.Join(relativeExamplePath, "messageData", "election_end", file))
+			buf, err = os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end", file))
 			require.NoError(t, err)
 
 			obj, act, err = messagedata.GetObjectAndAction(buf)
