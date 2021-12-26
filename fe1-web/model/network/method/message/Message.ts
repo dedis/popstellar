@@ -135,7 +135,7 @@ export class Message {
     }
 
     const isSignedWithToken = messageObjectMap.get(data.action);
-    if (!isSignedWithToken) {
+    if (isSignedWithToken === undefined) {
       throw new Error(`Message signature for action ${data.action} is unsupported for object ${data.object}.`);
     }
 
