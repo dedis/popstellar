@@ -15,8 +15,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 import scala.util.Success
+import akka.pattern.AskableActorRef
 
-case object RollCallHandler extends MessageHandler {
+/**
+ * RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
+ */
+object RollCallHandler extends MessageHandler {
+  override val handler = new RollCallHandler(super.dbActor).handler
+}
+
+/**
+  * Implementation of the RollCallHandler that provides a testable interface
+  * @param dbRef reference of the db actor
+  */
+sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
+
+  /**
+    * Overrides default DbActor with provided parameter
+    */
+  override final val dbActor: AskableActorRef = dbRef
 
   override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
@@ -62,7 +79,7 @@ case object RollCallHandler extends MessageHandler {
         def createAttendeeChannels(attendees: List[PublicKey], rpcMessage: JsonRpcRequest): GraphMessage = {
           attendees match {
             case Nil => Left(rpcMessage)
-            case head::tail => 
+            case head::tail =>
               //a closeRollCall is always sent in the lao's main channel so we are allowed to do this
               val socialChannel: String = generateSocialChannel(rpcMessage.getParamsChannel, head)
               val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel(socialChannel), ObjectType.CHIRP)).map {
@@ -85,7 +102,7 @@ case object RollCallHandler extends MessageHandler {
           ))
           case Some(_) =>
             val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
-            
+
             Await.result(askOldData, duration) match {
               case DbActorReadLaoDataAck(Some(_)) =>
                 val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
