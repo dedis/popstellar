@@ -25,8 +25,8 @@ import (
 	"time"
 )
 
-const(
-	relativeQueryExamplePath string = "../../../protocol/examples/query"
+const (
+	relativeQueryExamplePath   string = "../../../protocol/examples/query"
 	relativeMsgDataExamplePath string = "../../../protocol/examples/messageData"
 )
 
