@@ -25,8 +25,10 @@ import (
 	"time"
 )
 
-const relativeQueryExamplePath string = "../../../protocol/examples/query"
-const relativeMsgDataExamplePath string = "../../../protocol/examples/messageData"
+const(
+	relativeQueryExamplePath string = "../../../protocol/examples/query"
+	relativeMsgDataExamplePath string = "../../../protocol/examples/messageData"
+)
 
 // Tests that the channel works correctly when it receives a subscribe
 func Test_Election_Channel_Subscribe(t *testing.T) {
