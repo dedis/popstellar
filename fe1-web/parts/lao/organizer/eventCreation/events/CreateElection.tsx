@@ -73,6 +73,7 @@ const CreateElection = ({ route }: any) => {
     {
       ...item,
       id: Hash.fromStringArray(
+        // TODO here it should be the election id and not the lao id
         EventTags.QUESTION, currentLao.id.toString(), item.question,
       ).toString(),
       write_in: false,

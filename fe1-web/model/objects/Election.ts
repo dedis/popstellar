@@ -16,7 +16,7 @@ export interface ElectionState extends LaoEventState {
 }
 
 export interface Question {
-  id: string,
+  id: Hash,
   question: string,
   voting_method: string,
   ballot_options: string[],
