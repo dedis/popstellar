@@ -56,8 +56,8 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
             laoData.witnesses shouldNot be (null)
             alert(s"The witnesses list was ${laoData.witnesses}")
           }
-          case Right(_) => fail(s"The message data format should succeeds with a Left[JsonRpcRequestCreateLao] but was <$parsed>")
-          case _ => fail(s"The message data format format yield an unexpected result <$parsed>")
+          case Right(_) => fail(s"The message data format should succeed with a Left[JsonRpcRequestCreateLao] but was <$parsed>")
+          case _ => fail(s"The message data format format yielded an unexpected result <$parsed>")
         }
       }
 
@@ -76,7 +76,7 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
             e.code should equal(ErrorCodes.INVALID_DATA.id)
           }
           case Left(_) => fail(s"parsed message should fail with Right[PipelineError] but was a Left: <$parsed>")
-          case _ =>  fail(s"parsed message <$parsed> resulted in an unexpected type")
+          case _ =>  fail(s"parsed message <$parsed> resulted with an unexpected type")
         }
       }
 
@@ -95,7 +95,6 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
 
   "A valid rpc request but non-valid message data format createLao --additional param" should "fail" in
       withCreateLaoFixiture(CreateLaoExamples.laoCreateAdditionalParam)(testBadFormat)
-
 
   "A valid rpc request but non-valid message data format createLao --organizer pk not base64" should "fail" in
     withCreateLaoFixiture(CreateLaoExamples.laoCreateOrgNot64)(testBadFormat)
