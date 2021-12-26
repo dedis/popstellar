@@ -33,7 +33,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     TestKit.shutdownActorSystem(system)
   }
 
-  def mockDb: AskableActorRef = {
+  def mockDbWIthNack: AskableActorRef = {
     val mockedDB = Props(new Actor(){
           override def receive = {
               // You can modify the following match case to include more args, names...
@@ -45,11 +45,26 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           }
        }
       )
-    system.actorOf(mockedDB, "MockedDB")
+    system.actorOf(mockedDB, "MockedDB-NACK")
   }
 
-  test("Simple test"){
-    val mockedDB = mockDb
+  def mockDbWIthAck: AskableActorRef = {
+    val mockedDB = Props(new Actor(){
+          override def receive = {
+              // You can modify the following match case to include more args, names...
+              case m : DbActor.WriteAndPropagate =>
+                system.log.info("Received {}", m)
+                system.log.info("Responding with a Ack")
+
+                sender ! DbActor.DbActorWriteAck()
+          }
+       }
+      )
+    system.actorOf(mockedDB, "MockedDB-ACK")
+  }
+
+  test("Simple Nack test"){
+    val mockedDB = mockDbWIthNack
     val rc = new RollCallHandler(mockedDB)
     val message = null // Should contain a decoded message
     val params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message)
@@ -61,5 +76,17 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     system.stop(mockedDB.actorRef)
   }
 
+  test("Simple Ack test"){
+    val mockedDB = mockDbWIthAck
+    val rc = new RollCallHandler(mockedDB)
+    val message = null // Should contain a decoded message
+    val params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message)
+    //Request should be parsed from JsonRpcRequest to correct request type
+    val request = new JsonRpcRequestCreateRollCall(RpcValidator.JSON_RPC_VERSION, MethodType.PUBLISH, params, Some(1))
+
+    rc.handleOpenRollCall(request) should equal (Left(request))
+
+    system.stop(mockedDB.actorRef)
+  }
 
 }
