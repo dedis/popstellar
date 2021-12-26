@@ -1,4 +1,4 @@
-package chirp
+package reaction
 
 import (
 	"encoding/base64"
@@ -17,48 +17,48 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+	"sync"
 )
 
 const msgID = "msg id"
 
-// NewChannel returns a new initialized individual chirping channel
-func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-	generalChannel channel.Broadcastable, log zerolog.Logger) Channel {
-
-	log = log.With().Str("channel", "chirp").Logger()
+// NewChannel returns a new initialized reaction channel
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+	log = log.With().Str("channel", "reaction").Logger()
 
 	return Channel{
-		sockets:        channel.NewSockets(),
-		inbox:          inbox.NewInbox(channelPath),
-		channelID:      channelPath,
-		generalChannel: generalChannel,
-		owner:          ownerKey,
-		hub:            hub,
-		log:            log,
+		sockets:   channel.NewSockets(),
+		inbox:     inbox.NewInbox(channelPath),
+		channelID: channelPath,
+		attendees: newAttendees(),
+		hub:       hub,
+		log:       log,
 	}
 }
 
-// Channel is used to handle chirp messages.
+// Channel is used to handle reaction messages.
 type Channel struct {
-	sockets        channel.Sockets
-	inbox          *inbox.Inbox
-	generalChannel channel.Broadcastable
+	sockets   channel.Sockets
+	inbox     *inbox.Inbox
+	attendees *attendees
+
 	// channel path
 	channelID string
-	owner     string
-	hub       channel.HubFunctionalities
-	log       zerolog.Logger
+
+	hub channel.HubFunctionalities
+	log zerolog.Logger
 }
 
-// Publish is used to handle publish messages in the chirp channel.
+// Publish is used to handle publish messages in the reaction channel.
 func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err := c.verifyPublishMessage(publish)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on a "+
-			"chirping channel: %w", err)
+			"reaction channel: %w", err)
 	}
 
 	msg := publish.Params.Message
+
 	data := msg.Data
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
@@ -71,20 +71,20 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 		return xerrors.Errorf("failed to get object and action from message data: %v", err)
 	}
 
-	if object != messagedata.ChirpObject {
-		return xerrors.Errorf("object should be 'chirp' but is %s", object)
+	if object != messagedata.ReactionObject {
+		return xerrors.Errorf("object should be 'reaction' but is %s", object)
 	}
 
 	switch action {
-	case messagedata.ChirpActionAdd:
-		err := c.publishAddChirp(msg)
+	case messagedata.ReactionActionAdd:
+		err := c.publishAddReaction(msg)
 		if err != nil {
-			return xerrors.Errorf("failed to publish chirp: %v", err)
+			return xerrors.Errorf("failed to publish reaction: %v", err)
 		}
-	case messagedata.ChirpActionDelete:
-		err := c.publishDeleteChirp(msg)
+	case messagedata.ReactionActionDelete:
+		err := c.publishDeleteReaction(msg)
 		if err != nil {
-			return xerrors.Errorf("failed to delete chirp: %v", err)
+			return xerrors.Errorf("failed to delete reaction: %v", err)
 		}
 	default:
 		return answer.NewInvalidActionError(action)
@@ -93,88 +93,6 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to broadcast to all clients: %v", err)
-	}
-
-	err = c.broadcastViaGeneral(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to broadcast the chirp message via general : %v", err)
-	}
-
-	return nil
-}
-
-func (c *Channel) broadcastViaGeneral(msg message.Message) error {
-
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		return xerrors.Errorf("failed to decode the data: %v", err)
-	}
-
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	action = action + "_broadcast"
-	if err != nil {
-		return xerrors.Errorf("failed to read the message data: %v", err)
-	}
-
-	time, err := messagedata.GetTime(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to read the message data: %v", err)
-	}
-
-	newData := messagedata.ChirpBroadcast{
-		Object:    object,
-		Action:    action,
-		ChirpId:   msg.MessageID,
-		Channel:   c.generalChannel.GetChannelPath(),
-		Timestamp: time,
-	}
-
-	dataBuf, err := json.Marshal(newData)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal the data: %v", err)
-	}
-
-	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
-
-	pk := c.hub.GetPubKeyServ()
-	pkBuf, err := pk.MarshalBinary()
-	if err != nil {
-		return xerrors.Errorf("failed to marshal the public key: %v", err)
-	}
-
-	// Sign the data
-	signatureBuf, err := c.hub.Sign(dataBuf)
-	if err != nil {
-		return xerrors.Errorf("failed to sign the data: %v", err)
-	}
-
-	signature := base64.URLEncoding.EncodeToString(signatureBuf)
-
-	rpcMessage := method.Broadcast{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-			Method: "broadcast",
-		},
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			c.channelID,
-			message.Message{
-				Data:              newData64,
-				Sender:            base64.URLEncoding.EncodeToString(pkBuf),
-				Signature:         signature,
-				MessageID:         msg.MessageID,
-				WitnessSignatures: msg.WitnessSignatures,
-			},
-		},
-	}
-
-	err = c.generalChannel.Broadcast(rpcMessage)
-	if err != nil {
-		return xerrors.Errorf("the general channel failed to broadcast the chirp message: %v", err)
 	}
 
 	return nil
@@ -218,8 +136,8 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 func (c *Channel) Broadcast(msg method.Broadcast) error {
 	c.log.Error().
 		Str(msgID, msg.Params.Message.MessageID).
-		Msg("chirp channel should not need to broadcast")
-	return xerrors.Errorf("chirp channel should not need to broadcast")
+		Msg("reaction channel should not need to broadcast")
+	return xerrors.Errorf("reaction channel should not need to broadcast")
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -251,7 +169,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	return nil
 }
 
-// VerifyPublishMessage checks if a Publish message is valid
+// verifyPublishMessage checks if a Publish message is valid
 func (c *Channel) verifyPublishMessage(publish method.Publish) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
@@ -280,35 +198,39 @@ func (c *Channel) verifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
-func (c *Channel) publishAddChirp(msg message.Message) error {
-	err := c.verifyAddChirpMessage(msg)
+func (c *Channel) publishAddReaction(msg message.Message) error {
+	err := c.verifyAddReactionMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to verify add chirp message: %v", err)
+		return xerrors.Errorf("failed to verify add reaction message: %v", err)
 	}
+
 	c.inbox.StoreMessage(msg)
+
 	return nil
 }
 
-func (c *Channel) publishDeleteChirp(msg message.Message) error {
-	err := c.verifyDeleteChirpMessage(msg)
+func (c *Channel) publishDeleteReaction(msg message.Message) error {
+	err := c.verifyDeleteReactionMessage(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to verify delete chirp message: %v", err)
+		return xerrors.Errorf("failed to verify delete reaction message: %v", err)
 	}
+
 	c.inbox.StoreMessage(msg)
+
 	return nil
 }
 
-func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
-	var chirpMsg messagedata.ChirpAdd
+func (c *Channel) verifyAddReactionMessage(msg message.Message) error {
+	var reactMsg messagedata.ReactionAdd
 
-	err := msg.UnmarshalData(&chirpMsg)
+	err := msg.UnmarshalData(&reactMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
 	}
 
-	err = chirpMsg.Verify()
+	err = reactMsg.Verify()
 	if err != nil {
-		return xerrors.Errorf("invalid add chirp message: %v", err)
+		return xerrors.Errorf("invalid add reaction message: %v", err)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -322,24 +244,24 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
-	if msg.Sender != c.owner {
-		return answer.NewError(-4, "only the owner of the channel can post chirps")
+	if !c.attendees.isPresent(msg.Sender) {
+		return answer.NewError(-4, "the sender's PoP token was not verified in a roll-call")
 	}
 
 	return nil
 }
 
-func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
-	var chirpMsg messagedata.ChirpDelete
+func (c *Channel) verifyDeleteReactionMessage(msg message.Message) error {
+	var delReactMsg messagedata.ReactionDelete
 
-	err := msg.UnmarshalData(&chirpMsg)
+	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
 	}
 
-	err = chirpMsg.Verify()
+	err = delReactMsg.Verify()
 	if err != nil {
-		return xerrors.Errorf("invalid delete chirp message: %v", err)
+		return xerrors.Errorf("invalid delete reaction message: %v", err)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -347,7 +269,7 @@ func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
 	}
 
-	_, b := c.inbox.GetMessage(chirpMsg.ChirpId)
+	react, b := c.inbox.GetMessage(delReactMsg.ReactionId)
 	if !b {
 		return xerrors.Errorf("the message to be deleted was not found")
 	}
@@ -358,9 +280,45 @@ func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
-	if msg.Sender != c.owner {
-		return answer.NewError(-4, "only the owner of the channel can delete chirps")
+	if msg.Sender != react.Sender {
+		return answer.NewError(-4, "only the owner of the reaction can delete it")
 	}
 
 	return nil
+}
+
+// AddAttendee adds an attendee to the reaction channel.
+func (c *Channel) AddAttendee(key string) {
+	c.attendees.add(key)
+}
+
+// attendees represents the attendees to a roll-call.
+type attendees struct {
+	sync.Mutex
+	store map[string]struct{}
+}
+
+// newAttendees returns a new instance of attendees.
+func newAttendees() *attendees {
+	return &attendees{
+		store: make(map[string]struct{}),
+	}
+}
+
+// isPresent checks if a key representing a user is present in
+// the list of attendees.
+func (a *attendees) isPresent(key string) bool {
+	a.Lock()
+	defer a.Unlock()
+
+	_, ok := a.store[key]
+	return ok
+}
+
+// add adds an attendee to the list of attendees.
+func (a *attendees) add(key string) {
+	a.Lock()
+	defer a.Unlock()
+
+	a.store[key] = struct{}{}
 }

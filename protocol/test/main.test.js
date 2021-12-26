@@ -154,22 +154,22 @@ test("message data: message", () => {
 })
 
 test("message data: chirp", () => {
-    chirp_add = require("../examples/messageData/chirp_add_publish.json")
+    chirp_add = require("../examples/messageData/chirp_add_publish/chirp_add_publish.json")
     expect(chirp_add).toBeValid(messageDataSchema)
 
-    chirp_add_broadcast = require("../examples/messageData/chirp_add_broadcast.json")
+    chirp_add_broadcast = require("../examples/messageData/chirp_add_broadcast/chirp_add_broadcast.json")
     expect(chirp_add_broadcast).toBeValid(messageDataSchema)
 
-    chirp_delete = require("../examples/messageData/chirp_delete_publish.json")
+    chirp_delete = require("../examples/messageData/chirp_delete_publish/chirp_delete_publish.json")
     expect(chirp_delete).toBeValid(messageDataSchema)
 
-    chirp_delete_broadcast = require("../examples/messageData/chirp_delete_broadcast.json")
+    chirp_delete_broadcast = require("../examples/messageData/chirp_delete_broadcast/chirp_delete_broadcast.json")
     expect(chirp_delete_broadcast).toBeValid(messageDataSchema)
 
-    reaction_add = require("../examples/messageData/reaction_add.json")
+    reaction_add = require("../examples/messageData/reaction_add/reaction_add.json")
     expect(reaction_add).toBeValid(messageDataSchema)
 
-    reaction_delete = require("../examples/messageData/reaction_delete.json")
+    reaction_delete = require("../examples/messageData/reaction_delete/reaction_delete.json")
     expect(reaction_delete).toBeValid(messageDataSchema)
 })
 

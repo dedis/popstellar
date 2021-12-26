@@ -27,11 +27,12 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
-const sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-const root = "/root/"
-const social = "/social/"
-const posts = "posts"
+const (
+	laoID            = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	sender           = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	generalName      = "/root/" + laoID + "/social/posts"
+	chirpChannelName = "/root/" + laoID + "/social/" + sender
+)
 
 func Test_Catchup(t *testing.T) {
 	// Create the hub
@@ -40,18 +41,16 @@ func Test_Catchup(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	generalName := root + laoID + social + posts
-	chirpChannelName := root + laoID + social + sender
+	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
 
-	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	_, found = fakeHub.channelByID[generalName]
 	require.True(t, found)
 
 	// Create the messages
@@ -89,17 +88,16 @@ func Test_SendChirp(t *testing.T) {
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-	generalName := root + laoID + social + posts
-	chirpChannelName := root + laoID + social + sender
+
+	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
-	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	_, found = fakeHub.channelByID[generalName]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
@@ -108,7 +106,7 @@ func Test_SendChirp(t *testing.T) {
 	relativePath := filepath.Join("..", "..", "..", "protocol",
 		"examples", "messageData")
 
-	file := filepath.Join(relativePath, "chirp_add_publish.json")
+	file := filepath.Join(relativePath, "chirp_add_publish", "chirp_add_publish.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -135,7 +133,7 @@ func Test_SendChirp(t *testing.T) {
 	require.NoError(t, err)
 
 	message.Params.Message = m
-	message.Params.Channel = root + laoID + social + sender
+	message.Params.Channel = chirpChannelName
 
 	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
 
@@ -145,8 +143,8 @@ func Test_SendChirp(t *testing.T) {
 		Object:    "chirp",
 		Action:    "add_broadcast",
 		ChirpId:   messagedata.Hash(buf64, "h"),
-		Channel:   root + laoID + social + posts,
-		Timestamp: 123,
+		Channel:   generalName,
+		Timestamp: 1634760180,
 	}
 
 	checkDataBuf, err := json.Marshal(checkData)
@@ -155,6 +153,124 @@ func Test_SendChirp(t *testing.T) {
 
 	// check if the data on the general is the same as the one we sent
 	require.Equal(t, checkData64, msg[0].Data)
+}
+
+func Test_DeleteChirp(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channels
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
+
+	fakeHub.RegisterNewChannel(generalName, &generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
+	_, found := fakeHub.channelByID[chirpChannelName]
+	require.True(t, found)
+	_, found = fakeHub.channelByID[generalName]
+	require.True(t, found)
+
+	time.Sleep(time.Millisecond)
+
+	// Create the add chirp message
+	relativePath := filepath.Join("..", "..", "..", "protocol",
+		"examples", "messageData")
+
+	file := filepath.Join(relativePath, "chirp_add_publish", "chirp_add_publish.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64add := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64add,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64add, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	addChirpId := m.MessageID
+
+	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
+		"examples", "query", "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = chirpChannelName
+
+	// publish add chirp message
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	// create delete chirp message
+	file = filepath.Join(relativePath, "chirp_delete_publish", "chirp_delete_publish.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var chirpDel messagedata.ChirpDelete
+
+	err = json.Unmarshal(buf, &chirpDel)
+	require.NoError(t, err)
+
+	chirpDel.ChirpId = addChirpId
+
+	buf, err = json.Marshal(chirpDel)
+	require.NoError(t, err)
+
+	buf64delete := base64.URLEncoding.EncodeToString(buf)
+
+	m = message.Message{
+		Data:              buf64delete,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64delete, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	pub.Params.Message = m
+	pub.Params.Channel = chirpChannelName
+
+	// publish delete chirp message
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	msg := generalCha.Catchup(method.Catchup{ID: 0})
+
+	checkDataAdd := messagedata.ChirpBroadcast{
+		Object:    "chirp",
+		Action:    "add_broadcast",
+		ChirpId:   messagedata.Hash(buf64add, "h"),
+		Channel:   generalName,
+		Timestamp: 1634760180,
+	}
+	checkDataBufAdd, err := json.Marshal(checkDataAdd)
+	require.Nil(t, err)
+	checkData64Add := base64.URLEncoding.EncodeToString(checkDataBufAdd)
+
+	checkDataDelete := messagedata.ChirpBroadcast{
+		Object:    "chirp",
+		Action:    "delete_broadcast",
+		ChirpId:   messagedata.Hash(buf64delete, "h"),
+		Channel:   generalName,
+		Timestamp: 1634760180,
+	}
+	checkDataBufDelete, err := json.Marshal(checkDataDelete)
+	require.Nil(t, err)
+	checkData64Delete := base64.URLEncoding.EncodeToString(checkDataBufDelete)
+
+	// check if the data on the general is the same as the one we sent
+	require.Equal(t, checkData64Add, msg[0].Data)
+	require.Equal(t, checkData64Delete, msg[1].Data)
 }
 
 // -----------------------------------------------------------------------------
