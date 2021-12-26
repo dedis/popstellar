@@ -54,7 +54,7 @@ class JsonRpcRequest(
     */
   def getWithDecodedData(decodedData: MessageData): Option[JsonRpcRequest] = this.getParamsMessage match {
     case Some(message) => {
-      //Get copy to of the message and sets its data to the decoded one
+      //Get copy of the message and sets its data to the decoded one
       val decodedMessage = message.copy(decodedData = Some(decodedData))
       //Similar to this but with new decoded message in its params
       Some(JsonRpcRequest(this.jsonrpc, this.method, new ParamsWithMessage(this.params.channel, decodedMessage), this.id))
