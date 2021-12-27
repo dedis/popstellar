@@ -309,5 +309,5 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(getUserSocialChannel(currentLao.id, publicKey.valueOf()), message);
+  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
 }
