@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -57,7 +59,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
-  private final MutableLiveData<List<Lao>> mLAOs = new MutableLiveData<>();
+  private final LiveData<List<Lao>> mLAOs;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
@@ -80,6 +82,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
     mGson = gson;
     mKeysetManager = keysetManager;
     disposables = new CompositeDisposable();
+
+    mLAOs =
+        LiveDataReactiveStreams.fromPublisher(
+            mLaoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -162,10 +168,6 @@ public class SocialMediaViewModel extends AndroidViewModel {
     mNumberCharsLeft.setValue(numberChars);
   }
 
-  public void setLAOs(List<Lao> laos) {
-    mLAOs.setValue(laos);
-  }
-
   public void setLaoId(String laoId) {
     mLaoId.setValue(laoId);
   }
@@ -230,6 +232,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
+      Toast.makeText(
+              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
+          .show();
     }
   }
 
@@ -283,6 +288,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
       disposables.add(disposable);
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
+      Toast.makeText(
+              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
+          .show();
     }
   }
 }

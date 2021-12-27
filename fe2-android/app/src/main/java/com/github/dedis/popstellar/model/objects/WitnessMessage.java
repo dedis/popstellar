@@ -1,11 +1,10 @@
 package com.github.dedis.popstellar.model.objects;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
 /** Class to model a message that needs to be signed by witnesses */
-public class WitnessMessage implements Serializable {
+public class WitnessMessage {
 
   private final String messageId;
   /** Base 64 URL encoded ID of the message that we want to sign */

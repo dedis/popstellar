@@ -1,6 +1,5 @@
 package com.github.dedis.popstellar.model.objects;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public final class ConsensusNode implements Serializable {
+public final class ConsensusNode {
 
   public enum State {
     FAILED,

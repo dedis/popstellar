@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.model.objects;
 
 import com.github.dedis.popstellar.utility.security.Hash;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
-public final class Lao implements Serializable {
+public final class Lao {
 
   private String channel;
   private String id;

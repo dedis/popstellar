@@ -1,8 +1,6 @@
 package com.github.dedis.popstellar.model.objects;
 
-import java.io.Serializable;
-
-public class PendingUpdate implements Comparable<PendingUpdate>, Serializable {
+public class PendingUpdate implements Comparable<PendingUpdate> {
 
   private final long modificationTime;
   private final String messageId;

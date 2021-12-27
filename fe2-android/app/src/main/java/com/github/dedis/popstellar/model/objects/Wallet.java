@@ -17,7 +17,6 @@ import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -38,7 +37,7 @@ import io.github.novacrypto.bip39.wordlists.English;
  * This class represent a wallet that will enable users to store their PoP tokens with reasonable,
  * realistic security and usability.
  */
-public class Wallet implements Serializable {
+public class Wallet {
 
   private static final String TAG = Wallet.class.getSimpleName();
   private static final int PURPOSE = 888;
