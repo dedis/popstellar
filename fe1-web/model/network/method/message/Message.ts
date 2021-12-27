@@ -11,8 +11,9 @@ import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
 import {
-  buildMessageData, encodeMessageData, isSignedWithToken, MessageData,
+  buildMessageData, encodeMessageData, MessageData,
 } from './data';
+import { messagePropertiesMap } from './data/MessageProperties';
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -129,7 +130,12 @@ export class Message {
     let privateKey = KeyPairStore.getPrivateKey();
     let signature: Signature;
 
-    if (isSignedWithToken(data)) {
+    const messagesProperties = messagePropertiesMap.get(data.object)?.get(data.action);
+    if (messagesProperties === undefined) {
+      throw new Error(`Message signature for object ${data.object} and action ${data.action} is unsupported.`);
+    }
+
+    if (messagesProperties.isPopTokenSigned) {
       const token = await getCurrentPopTokenFromStore();
       if (token) {
         publicKey = token.publicKey;
