@@ -7,12 +7,12 @@ import ch.epfl.pop.model.objects._
 import spray.json._
 
 case class Message(
-                    data: Base64Data,
-                    sender: PublicKey,
-                    signature: Signature,
-                    message_id: Hash,
-                    witness_signatures: List[WitnessSignaturePair],
-                    var decodedData: Option[MessageData]
+                    final val data: Base64Data,
+                    final val sender: PublicKey,
+                    final val signature: Signature,
+                    final val message_id: Hash,
+                    final val witness_signatures: List[WitnessSignaturePair],
+                    final val decodedData: Option[MessageData]
                   ) {
   def addWitnessSignature(ws: WitnessSignaturePair): Message =
     Message(data, sender, signature, message_id, ws :: witness_signatures, decodedData)
