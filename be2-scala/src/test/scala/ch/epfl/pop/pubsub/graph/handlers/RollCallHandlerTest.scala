@@ -21,6 +21,7 @@ import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.objects.Channel
+import util.examples.RollCallMessages
 
 
 class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll{
@@ -63,26 +64,20 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     system.actorOf(mockedDB, "MockedDB-ACK")
   }
 
-  test("Simple Nack test"){
+  test("Simple CreateRoolCall test 1"){
     val mockedDB = mockDbWIthNack
     val rc = new RollCallHandler(mockedDB)
-    val message = null // Should contain a decoded message
-    val params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message)
-    //Request should be parsed from JsonRpcRequest to correct request type
-    val request = new JsonRpcRequestCreateRollCall(RpcValidator.JSON_RPC_VERSION, MethodType.PUBLISH, params, Some(1))
+    val request = RollCallMessages.createRollCall
 
     rc.handleOpenRollCall(request) shouldBe an [Right[PipelineError,_]]
 
     system.stop(mockedDB.actorRef)
   }
 
-  test("Simple Ack test"){
+  test("Simple CreateRollCall test 2"){
     val mockedDB = mockDbWIthAck
     val rc = new RollCallHandler(mockedDB)
-    val message = null // Should contain a decoded message
-    val params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message)
-    //Request should be parsed from JsonRpcRequest to correct request type
-    val request = new JsonRpcRequestCreateRollCall(RpcValidator.JSON_RPC_VERSION, MethodType.PUBLISH, params, Some(1))
+    val request = RollCallMessages.createRollCall
 
     rc.handleOpenRollCall(request) should equal (Left(request))
 
