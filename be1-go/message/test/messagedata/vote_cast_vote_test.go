@@ -11,7 +11,7 @@ import (
 )
 
 func Test_Vote_Cast_Vote(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "vote_cast_vote.json")
+	file := filepath.Join(relativeExamplePath, "vote_cast_vote", "vote_cast_vote.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)

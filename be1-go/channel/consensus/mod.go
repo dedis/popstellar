@@ -299,6 +299,8 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
+	c.inbox.StoreMessage(msg)
+
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to broadcast message: %v", err)
