@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+
 func TestConnectToSocket(t *testing.T) {
 	log := zerolog.New(io.Discard)
 
@@ -47,7 +48,7 @@ func TestConnectToSocket(t *testing.T) {
 
 	// leave a little time so the that read pump has the time to start listening before we close
 	// wDone
-	time.Sleep(1 * time.Second)
+	//time.Sleep(8 * time.Second)
 
 	close(wDone)
 	wg.Wait()

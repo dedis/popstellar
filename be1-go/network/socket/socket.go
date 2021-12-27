@@ -83,6 +83,7 @@ func (s *baseSocket) ReadPump() {
 
 	for {
 		_, message, err := s.conn.ReadMessage()
+		s.log.Err(err).Msg("lalalal")
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				s.log.Err(err).
@@ -145,6 +146,7 @@ func (s *baseSocket) WritePump() {
 				s.log.Err(err).Msg("failed to close writer")
 				return
 			}
+			s.log.Info().Msg("the writer has been closed")
 		case <-ticker.C:
 			s.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := s.conn.WriteMessage(websocket.PingMessage, nil); err != nil {
