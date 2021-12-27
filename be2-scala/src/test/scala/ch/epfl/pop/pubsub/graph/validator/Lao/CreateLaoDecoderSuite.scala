@@ -1,6 +1,6 @@
 package ch.epfl.pop.pubsub.graph.validator.lao
 
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, Base64Data, Hash}
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
@@ -13,7 +13,8 @@ import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers}
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import util.examples.CreateLaoExamples
 
-class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
+
+class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   def withCreateLaoFixiture(msg: Message)(testCode: (GraphMessage, Message) => Any){
     val jsonReq = CreateLaoExamples.getJsonRequestFromMessage(msg)
@@ -22,22 +23,16 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
 
   def testGoodFormat =
       (gm: GraphMessage, createLaoMessage: Message) => {
-        Given("a correct graph message of JsonRpcRequest")
-        //gm
-        And("a createLao message")
-        //createLaoMessage
-
         alert("CreateLao message data content maybe invalid but should be correctly decoded")
+        Given("a correct graph message of JsonRpcRequest")
+        And("a createLao message")
         When("the request is parsed")
         val parsed = MessageDecoder.parseData(gm)
-
         Then("it should be of type JsonRpcRequestCreateLao")
         inside(parsed){
           case Left(createJsonRpc: JsonRpcRequestCreateLao) => {
             And("the message params of the JsonRpcRequestCreateLao should not be empty")
             createJsonRpc.getParamsMessage should be (defined)
-            And("the parsed message corresponds to the sent one")
-            createJsonRpc.getParamsMessage.get should equal (createLaoMessage)
             And("the decoded message data is non empty ")
             val optDecodedData =  createJsonRpc.getDecodedData
             optDecodedData should be (defined)
@@ -55,6 +50,9 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
             And("the witnesses points to a non null list")
             laoData.witnesses shouldNot be (null)
             alert(s"The witnesses list was ${laoData.witnesses}")
+            And("the id is not null")
+            laoData.id shouldNot be (null)
+            noException shouldBe thrownBy (laoData.id.base64Data.decodeToString())
           }
           case Right(_) => fail(s"The message data format should succeed with a Left[JsonRpcRequestCreateLao] but was <$parsed>")
           case _ => fail(s"The message data format format yielded an unexpected result <$parsed>")
@@ -80,7 +78,7 @@ class MessageDecoderSuite extends FlatSpec with Matchers with Inside with GivenW
         }
       }
 
-  behavior of ("Message decoder when processing/decoding...")
+  behavior of ("CreateLao decoder when processing/decoding...")
   "A valid rpc request with valid message data for a create lao" should "succeed" in
       withCreateLaoFixiture(CreateLaoExamples.createLao)(testGoodFormat)
 

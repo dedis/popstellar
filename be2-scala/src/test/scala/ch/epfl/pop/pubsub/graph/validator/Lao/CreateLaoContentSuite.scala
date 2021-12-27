@@ -11,7 +11,7 @@ import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers,Outcome}
 
 import util.examples.CreateLaoExamples
 
-class MessageDataContentValidatorSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
+class CreateLaoContentSuiteSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   /**Decodes data before passing it to the test**/
   def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any) {

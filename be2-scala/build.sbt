@@ -6,7 +6,7 @@ import sbt.IO._
 name := "pop"
 
 version := "0.1"
-
+parallelExecution in ThisBuild := false
 scalaVersion := "2.13.5"
 
 
