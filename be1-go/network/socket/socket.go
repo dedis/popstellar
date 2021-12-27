@@ -106,7 +106,7 @@ func (s *baseSocket) ReadPump() {
 		// return if we're done
 		select {
 		case <-s.done:
-			s.log.Info().Msg("here we never go")
+			s.log.Info().Msg("here wenever go")
 			return
 		default:
 		}
