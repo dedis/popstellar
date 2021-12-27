@@ -9,6 +9,7 @@ version := "0.1"
 scalaVersion := "2.13.7"
 
 parallelExecution in ThisBuild := false
+
 //Create task to copy the protocol folder to resources
 lazy val copyProtocolTask = taskKey[Unit]("Copy protocol to resources")
 copyProtocolTask := {
@@ -29,8 +30,13 @@ copyProtocolTask := {
         }
     }
 }
-//Add the copyProtocolTask to compile time
+//Set class loader to scala_library
+(Test / classLoaderLayeringStrategy):= ClassLoaderLayeringStrategy.ScalaLibrary
+//Add the copyProtocolTask to compile and test scopes
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
+(Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value
+
+//Setup resource directory for jar assembly
 resourceDirectory in (Compile, packageBin) := file(".") / "./src/main/resources"
 //Make resourceDirectory setting global to remove sbt warning
 (Global / excludeLintKeys) += resourceDirectory
@@ -44,8 +50,6 @@ lazy val scoverageSettings = Seq(
   coverageEnabled in Test := true,
   coverageEnabled in packageBin := false,
 )
-
-
 
 scapegoatVersion in ThisBuild := "1.4.11"
 scapegoatReports := Seq("xml")
