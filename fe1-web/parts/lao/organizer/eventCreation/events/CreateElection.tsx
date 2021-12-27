@@ -43,6 +43,7 @@ const CreateElection = ({ route }: any) => {
   const [questions, setQuestions] = useState([emptyQuestion]);
   const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
+  const time = Timestamp.EpochNow();
 
   const buildDatePickerWeb = () => {
     const startDate = startTime.timestampToDate();
@@ -69,12 +70,14 @@ const CreateElection = ({ route }: any) => {
     );
   };
 
+  const electionId = Hash.fromStringArray(
+    EventTags.ELECTION, currentLao.id.toString(), time.toString(), electionName,
+  );
   const getQuestionObjects = (): Question[] => questions.map((item) => (
     {
       ...item,
       id: Hash.fromStringArray(
-        // TODO here it should be the election id and not the lao id
-        EventTags.QUESTION, currentLao.id.toString(), item.question,
+        EventTags.QUESTION, electionId.toString(), item.question,
       ).toString(),
       write_in: false,
     }));
@@ -94,6 +97,7 @@ const CreateElection = ({ route }: any) => {
       startTime,
       endTime,
       getQuestionObjects(),
+      time,
     )
       .then(() => {
         // @ts-ignore
