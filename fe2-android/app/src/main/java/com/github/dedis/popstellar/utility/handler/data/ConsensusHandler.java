@@ -5,6 +5,7 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -99,6 +100,26 @@ public final class ConsensusHandler {
     Consensus consensus = consensusOpt.get();
 
     consensus.setAccepted(consensusLearn.getLearnValue().isDecision());
+    lao.updateConsensus(consensus);
+    laoRepository.updateNodes(lao.getChannel());
+  }
+
+  public static void handleConsensusFailure(HandlerContext context, ConsensusFailure failure)
+      throws InvalidMessageIdException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
+    Lao lao = laoRepository.getLaoByChannel(channel);
+    Optional<Consensus> consensusOpt = lao.getConsensus(failure.getMessageId());
+
+    if (!consensusOpt.isPresent()) {
+      Log.w(TAG, "Failure for invalid messageId : " + failure.getMessageId());
+      throw new InvalidMessageIdException(failure, failure.getMessageId());
+    }
+
+    Consensus consensus = consensusOpt.get();
+
+    consensus.setFailed(true);
     lao.updateConsensus(consensus);
     laoRepository.updateNodes(lao.getChannel());
   }
