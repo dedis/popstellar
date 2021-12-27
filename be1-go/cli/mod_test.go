@@ -44,6 +44,11 @@ func TestConnectToSocket(t *testing.T) {
 
 	oh.Stop()
 	wh.Stop()
+
+	// leave a little time so the that read pump has the time to start listening before we close
+	// wDone
+	time.Sleep(1 * time.Second)
+
 	close(wDone)
 	wg.Wait()
 }
