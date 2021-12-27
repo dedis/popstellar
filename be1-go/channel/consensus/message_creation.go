@@ -145,6 +145,11 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messa
 // createFailureMessage creates the data for a failure message
 func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
 
+	if consensusInstance.electInstances[messageID].failed {
+		return nil, xerrors.Errorf("consensus already failed")
+	}
+	consensusInstance.electInstances[messageID].failed = true
+
 	newData := messagedata.ConsensusFailure{
 		Object:     "consensus",
 		Action:     "failure",

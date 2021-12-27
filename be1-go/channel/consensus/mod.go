@@ -534,6 +534,8 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
 	}
 
+	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
+
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to send new consensus#prepare message: %v", err)
@@ -665,6 +667,7 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 	}
 
 	consensusInstance.lastSent = messagedata.ConsensusActionPropose
+
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
 		return err
