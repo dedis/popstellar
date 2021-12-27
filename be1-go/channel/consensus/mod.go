@@ -19,6 +19,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/benbjohnson/clock"
+
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
@@ -40,6 +42,8 @@ const (
 
 // Channel defines a consensus channel
 type Channel struct {
+	clock clock.Clock
+
 	sockets channel.Sockets
 
 	inbox *inbox.Inbox
@@ -113,6 +117,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 	log = log.With().Str("channel", "consensus").Logger()
 
 	newChannel := &Channel{
+		clock:              clock.New(),
 		sockets:            channel.NewSockets(),
 		inbox:              inbox,
 		channelID:          channelID,
@@ -172,7 +177,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 				return
 			}
 
-		case <-time.After(time.Second):
+		case <-c.clock.After(time.Second):
 			switch instance.lastSent {
 			case messagedata.ConsensusActionElectAccept:
 				select {
@@ -183,7 +188,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 						return
 					}
 
-				case <-time.After(time.Minute):
+				case <-c.clock.After(time.Minute):
 					c.timeoutFailure(instance, messageID)
 					return
 				}
@@ -201,7 +206,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 						return
 					}
 
-				case <-time.After(time.Second):
+				case <-c.clock.After(time.Second):
 					c.timeoutFailure(instance, messageID)
 					return
 				}

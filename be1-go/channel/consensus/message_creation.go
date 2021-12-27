@@ -3,7 +3,6 @@ package consensus
 import (
 	"encoding/json"
 	"popstellar/message/messagedata"
-	"time"
 
 	"golang.org/x/xerrors"
 )
@@ -17,7 +16,7 @@ func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance, mes
 		InstanceID: consensusInstance.id,
 		MessageID:  messageID,
 
-		CreatedAt: time.Now().Unix(),
+		CreatedAt: c.clock.Now().Unix(),
 
 		Value: messagedata.ValuePrepare{
 			ProposedTry: consensusInstance.proposedTry,
@@ -41,7 +40,7 @@ func (c *Channel) createPromiseMessage(consensusInstance *ConsensusInstance, mes
 		InstanceID: consensusInstance.id,
 		MessageID:  messageID,
 
-		CreatedAt: time.Now().Unix(),
+		CreatedAt: c.clock.Now().Unix(),
 
 		Value: messagedata.ValuePromise{
 			AcceptedTry:   consensusInstance.acceptedTry,
@@ -68,7 +67,7 @@ func (c *Channel) createProposeMessage(consensusInstance *ConsensusInstance, mes
 		InstanceID: consensusInstance.id,
 		MessageID:  messageID,
 
-		CreatedAt: time.Now().Unix(),
+		CreatedAt: c.clock.Now().Unix(),
 
 		Value: messagedata.ValuePropose{
 			ProposedValue: highestValue,
@@ -100,7 +99,7 @@ func (c *Channel) createAcceptMessage(consensusInstance *ConsensusInstance, mess
 		InstanceID: consensusInstance.id,
 		MessageID:  messageID,
 
-		CreatedAt: time.Now().Unix(),
+		CreatedAt: c.clock.Now().Unix(),
 
 		Value: messagedata.ValueAccept{
 			AcceptedTry:   consensusInstance.acceptedTry,
@@ -125,7 +124,7 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messa
 		InstanceID: consensusInstance.id,
 		MessageID:  messageID,
 
-		CreatedAt: time.Now().Unix(),
+		CreatedAt: c.clock.Now().Unix(),
 
 		Value: messagedata.ValueLearn{
 			Decision: consensusInstance.decision,
@@ -156,7 +155,7 @@ func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance, mes
 		InstanceID: consensusInstance.id,
 		MessageID:  messageID,
 
-		CreatedAt: time.Now().Unix(),
+		CreatedAt: c.clock.Now().Unix(),
 	}
 
 	byteMsg, err := json.Marshal(newData)
