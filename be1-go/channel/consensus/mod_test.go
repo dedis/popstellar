@@ -263,6 +263,10 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
+	clock := clock.NewMock()
+	consensusChannel.clock = clock
+	clock.Set(time.Unix(1634760000, 0))
+
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
 	consensusChannel.sockets.Upsert(cliSocket)
@@ -360,7 +364,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	require.Equal(t, "prepare", prepare.Action)
 	require.Equal(t, consensusInstanceID, prepare.InstanceID)
 	require.Equal(t, messageID, prepare.MessageID)
-	require.GreaterOrEqual(t, prepare.CreatedAt, int64(0))
+	require.Equal(t, int64(1634760000), prepare.CreatedAt)
 	require.Equal(t, int64(1), prepare.Value.ProposedTry)
 }
 
@@ -382,6 +386,10 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	channel := NewChannel(chanName, fakeHub, nolog)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
+
+	clock := clock.NewMock()
+	consensusChannel.clock = clock
+	clock.Set(time.Unix(1634760000, 0))
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
@@ -480,7 +488,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	require.Equal(t, "failure", prepare.Action)
 	require.Equal(t, consensusInstanceID, prepare.InstanceID)
 	require.Equal(t, messageID, prepare.MessageID)
-	require.GreaterOrEqual(t, prepare.CreatedAt, int64(0))
+	require.Equal(t, int64(1634760000), prepare.CreatedAt)
 }
 
 // Tests that the channel works correctly when it receives a prepare message
@@ -500,6 +508,10 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	channel := NewChannel(chanName, fakeHub, nolog)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
+
+	clock := clock.NewMock()
+	consensusChannel.clock = clock
+	clock.Set(time.Unix(1634760000, 0))
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
@@ -598,7 +610,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	require.Equal(t, "promise", promise.Action)
 	require.Equal(t, consensusInstanceID, promise.InstanceID)
 	require.Equal(t, messageID, promise.MessageID)
-	require.GreaterOrEqual(t, promise.CreatedAt, int64(0))
+	require.Equal(t, int64(1634760000), promise.CreatedAt)
 	require.Equal(t, int64(-1), promise.Value.AcceptedTry)
 	require.False(t, promise.Value.AcceptedValue)
 	require.Equal(t, int64(4), promise.Value.PromisedTry)
@@ -621,6 +633,10 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	channel := NewChannel(chanName, fakeHub, nolog)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
+
+	clock := clock.NewMock()
+	consensusChannel.clock = clock
+	clock.Set(time.Unix(1634760000, 0))
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
@@ -720,7 +736,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	require.Equal(t, "propose", propose.Action)
 	require.Equal(t, consensusInstanceID, propose.InstanceID)
 	require.Equal(t, messageID, propose.MessageID)
-	require.GreaterOrEqual(t, propose.CreatedAt, int64(0))
+	require.Equal(t, int64(1634760000), propose.CreatedAt)
 	require.Equal(t, int64(4), propose.Value.ProposedTry)
 	require.True(t, propose.Value.ProposedValue)
 }
@@ -742,6 +758,10 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	channel := NewChannel(chanName, fakeHub, nolog)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
+
+	clock := clock.NewMock()
+	consensusChannel.clock = clock
+	clock.Set(time.Unix(1634760000, 0))
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
@@ -840,7 +860,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	require.Equal(t, "accept", accept.Action)
 	require.Equal(t, consensusInstanceID, accept.InstanceID)
 	require.Equal(t, messageID, accept.MessageID)
-	require.GreaterOrEqual(t, accept.CreatedAt, int64(0))
+	require.GreaterOrEqual(t, int64(1634760000), accept.CreatedAt)
 	require.Equal(t, int64(4), accept.Value.AcceptedTry)
 	require.True(t, accept.Value.AcceptedValue)
 }
@@ -862,6 +882,10 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	channel := NewChannel(chanName, fakeHub, nolog)
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
+
+	clock := clock.NewMock()
+	consensusChannel.clock = clock
+	clock.Set(time.Unix(1634760000, 0))
 
 	// Create a client socket subscribed to the channel
 	cliSocket := &fakeSocket{id: "cliSocket", sockType: socket.ClientSocketType}
@@ -966,7 +990,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	require.Equal(t, "learn", learn.Action)
 	require.Equal(t, consensusInstanceID, learn.InstanceID)
 	require.Equal(t, messageID, learn.MessageID)
-	require.GreaterOrEqual(t, learn.CreatedAt, int64(0))
+	require.Equal(t, int64(1634760000), learn.CreatedAt)
 	require.True(t, learn.Value.Decision)
 }
 
