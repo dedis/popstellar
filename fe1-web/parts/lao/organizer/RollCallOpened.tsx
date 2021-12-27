@@ -80,7 +80,11 @@ const RollCallOpened = () => {
       // @ts-ignore
       navigation.navigate(STRINGS.organizer_navigation_tab_home);
     }).catch((err) => {
-      console.error('Could not close roll call, error: ', err);
+      toast.show(`Could not close roll call, error: ${err}`, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
     });
   };
 
