@@ -82,9 +82,7 @@ func (s *baseSocket) ReadPump() {
 	})
 
 	for {
-		s.log.Info().Msg("before the read message")
 		_, message, err := s.conn.ReadMessage()
-		s.log.Info().Msg("after the read message")
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
 				s.log.Err(err).
@@ -106,8 +104,7 @@ func (s *baseSocket) ReadPump() {
 		// return if we're done
 		select {
 		case <-s.done:
-			s.log.Info().Msg("test")
-			break
+			return
 		default:
 		}
 	}
