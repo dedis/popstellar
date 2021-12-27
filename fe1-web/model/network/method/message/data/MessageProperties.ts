@@ -1,23 +1,13 @@
-// eslint-disable-next-line max-classes-per-file
 import { ActionType, ObjectType } from './MessageData';
 
 /**
  * Interface to describe the properties of a certain type of message.
  *
  * @remarks
- * For now, there are only 2 classes of messages: the ones that are signed using a token, and the
- * one that use the public key as a signature. (2021-12-27, Xelowak)
+ * This has to be updated each time we want to add a new property of the messages.
  */
 export interface MessageProperties {
   readonly isPopTokenSigned: boolean;
-}
-
-class PopTokenSignedMessage implements MessageProperties {
-  readonly isPopTokenSigned = true;
-}
-
-class PublicKeySignedMessage implements MessageProperties {
-  readonly isPopTokenSigned = false;
 }
 
 /**
@@ -30,31 +20,31 @@ class PublicKeySignedMessage implements MessageProperties {
  */
 export const messagePropertiesMap: Map<ObjectType, Map<ActionType, MessageProperties>> = new Map([
   [ObjectType.CHIRP, new Map<ActionType, MessageProperties>([
-    [ActionType.ADD, new PopTokenSignedMessage()],
-    [ActionType.ADD_BROADCAST, new PublicKeySignedMessage()],
+    [ActionType.ADD, { isPopTokenSigned: true }],
+    [ActionType.ADD_BROADCAST, { isPopTokenSigned: false }],
   ])],
   [ObjectType.ELECTION, new Map<ActionType, MessageProperties>([
-    [ActionType.CAST_VOTE, new PopTokenSignedMessage()],
-    [ActionType.RESULT, new PublicKeySignedMessage()],
-    [ActionType.END, new PublicKeySignedMessage()],
-    [ActionType.SETUP, new PublicKeySignedMessage()],
+    [ActionType.CAST_VOTE, { isPopTokenSigned: true }],
+    [ActionType.RESULT, { isPopTokenSigned: false }],
+    [ActionType.END, { isPopTokenSigned: false }],
+    [ActionType.SETUP, { isPopTokenSigned: false }],
   ])],
   [ObjectType.LAO, new Map<ActionType, MessageProperties>([
-    [ActionType.CREATE, new PublicKeySignedMessage()],
-    [ActionType.STATE, new PublicKeySignedMessage()],
-    [ActionType.UPDATE_PROPERTIES, new PublicKeySignedMessage()],
+    [ActionType.CREATE, { isPopTokenSigned: false }],
+    [ActionType.STATE, { isPopTokenSigned: false }],
+    [ActionType.UPDATE_PROPERTIES, { isPopTokenSigned: false }],
   ])],
   [ObjectType.MEETING, new Map<ActionType, MessageProperties>([
-    [ActionType.CREATE, new PublicKeySignedMessage()],
-    [ActionType.STATE, new PublicKeySignedMessage()],
+    [ActionType.CREATE, { isPopTokenSigned: false }],
+    [ActionType.STATE, { isPopTokenSigned: false }],
   ])],
   [ObjectType.ROLL_CALL, new Map<ActionType, MessageProperties>([
-    [ActionType.CLOSE, new PublicKeySignedMessage()],
-    [ActionType.CREATE, new PublicKeySignedMessage()],
-    [ActionType.OPEN, new PublicKeySignedMessage()],
-    [ActionType.REOPEN, new PublicKeySignedMessage()],
+    [ActionType.CLOSE, { isPopTokenSigned: false }],
+    [ActionType.CREATE, { isPopTokenSigned: false }],
+    [ActionType.OPEN, { isPopTokenSigned: false }],
+    [ActionType.REOPEN, { isPopTokenSigned: false }],
   ])],
   [ObjectType.MESSAGE, new Map<ActionType, MessageProperties>([
-    [ActionType.WITNESS, new PublicKeySignedMessage()],
+    [ActionType.WITNESS, { isPopTokenSigned: false }],
   ])],
 ]);
