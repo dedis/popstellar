@@ -1302,6 +1302,8 @@ func Test_Timeout_Elect(t *testing.T) {
 	err = channel.Publish(messagePublish, nil)
 	require.NoError(t, err)
 
+	time.Sleep(500 * time.Millisecond)
+
 	// No message should be sent to the socket yet
 	require.Nil(t, fakeHub.fakeSock.msg)
 
