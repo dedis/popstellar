@@ -457,7 +457,7 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 	return ""
 }
 
-// electAcceptFailure sends a failure message when refused consensus
+// electAcceptFailure sends a failure message when consensus is refused
 func (c *Channel) electAcceptFailure(instance *ConsensusInstance, messageID string) error {
 	byteMsg, err := c.createFailureMessage(instance, messageID)
 	if err != nil {

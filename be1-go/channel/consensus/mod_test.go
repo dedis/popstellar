@@ -1305,7 +1305,7 @@ func Test_Timeout_Elect(t *testing.T) {
 	// No message should be sent to the socket yet
 	require.Nil(t, fakeHub.fakeSock.msg)
 
-	clock.Add(2 * time.Minute)
+	clock.Add(3 * time.Minute)
 	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
