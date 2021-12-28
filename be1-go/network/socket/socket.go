@@ -69,7 +69,10 @@ func (s *baseSocket) ReadPump() {
 		// s.wg.Done() If the hub is still open then it will be processed and
 		// the client will be unsubscribed. Otherwise, since the hub is being
 		// shut down, this won't block because the process will exit.
-		s.closedSockets <- s.ID()
+		select {
+		case s.closedSockets <- s.ID():
+		default:
+		}
 	}()
 
 	s.log.Info().Msgf("listening for messages from %s", s.socketType)
