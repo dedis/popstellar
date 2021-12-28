@@ -17,6 +17,9 @@ import (
 )
 
 func TestConnectToSocket(t *testing.T) {
+	// This test is currently skipped as it is not always successful when run by the CI.
+	// For more information, have a look at issue #709 (https://github.com/dedis/student_21_pop/issues/709)
+
 	t.Skip()
 	log := zerolog.New(io.Discard)
 
