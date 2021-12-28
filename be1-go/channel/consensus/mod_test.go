@@ -1306,8 +1306,11 @@ func Test_Timeout_Elect(t *testing.T) {
 	require.Nil(t, fakeHub.fakeSock.msg)
 
 	clock.Add(2 * time.Minute)
+	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
+	fakeHub.fakeSock.Lock()
+	defer fakeHub.fakeSock.Unlock()
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
@@ -1434,8 +1437,11 @@ func Test_Timeout_Prepare(t *testing.T) {
 	fakeHub.fakeSock.msg = nil
 
 	clock.Add(4 * time.Second)
+	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
+	fakeHub.fakeSock.Lock()
+	defer fakeHub.fakeSock.Unlock()
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
@@ -1562,8 +1568,11 @@ func Test_Timeout_Promise(t *testing.T) {
 	fakeHub.fakeSock.msg = nil
 
 	clock.Add(2 * time.Second)
+	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
+	fakeHub.fakeSock.Lock()
+	defer fakeHub.fakeSock.Unlock()
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
@@ -1692,8 +1701,11 @@ func Test_Timeout_Propose(t *testing.T) {
 	fakeHub.fakeSock.msg = nil
 
 	clock.Add(4 * time.Second)
+	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
+	fakeHub.fakeSock.Lock()
+	defer fakeHub.fakeSock.Unlock()
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
@@ -1820,8 +1832,11 @@ func Test_Timeout_Accept(t *testing.T) {
 	fakeHub.fakeSock.msg = nil
 
 	clock.Add(2 * time.Second)
+	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
+	fakeHub.fakeSock.Lock()
+	defer fakeHub.fakeSock.Unlock()
 	require.NotNil(t, fakeHub.fakeSock.msg)
 
 	// Unmarshal the failure message sent to other servers to verify its values
@@ -1967,6 +1982,8 @@ func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
 		return err
 	}
 
+	h.fakeSock.Lock()
+	defer h.fakeSock.Unlock()
 	h.fakeSock.msg = byteMsg
 
 	return nil
@@ -1984,6 +2001,7 @@ func (h *fakeHub) SetMessageID(publish *method.Publish) {
 type fakeSocket struct {
 	socket.Socket
 
+	sync.RWMutex
 	sockType socket.SocketType
 
 	resultID int
