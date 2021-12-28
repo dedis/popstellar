@@ -55,7 +55,7 @@ public final class ElectionHandler {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
-      election.setEventState(OPENED);
+      election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
       laoRepository.sendSubscribe(election.getChannel());

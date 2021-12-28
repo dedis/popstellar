@@ -157,6 +157,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 
 	// create election channel: election with one question
 	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel.started = true
 
 	// create a fakeSocket that is listening to the channel
 	fakeSock := &fakeSocket{id: "socket"}
@@ -368,7 +369,7 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime, false,
+	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime, false, false,
 		electionSetup.Questions, attendees, fakeHub, nolog)
 
 	fakeHub.NotifyNewChannel(channel.channelID, &channel, &fakeSocket{id: "socket"})
