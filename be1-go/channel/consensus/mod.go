@@ -188,7 +188,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 						return
 					}
 
-				case <-c.clock.After(time.Minute):
+				case <-c.clock.After(5 * time.Minute):
 					c.timeoutFailure(instance, messageID)
 					return
 				}
