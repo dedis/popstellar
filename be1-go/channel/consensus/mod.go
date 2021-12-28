@@ -849,12 +849,14 @@ func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}) 
 	defer consensusInstance.Unlock()
 
 	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return nil
+	}
 	electInstance.timeoutChan <- messagedata.ConsensusActionLearn
 
-	if !consensusInstance.decided {
-		consensusInstance.decided = true
-		consensusInstance.decision = data.Value.Decision
-	}
+	consensusInstance.decided = true
+	consensusInstance.decision = data.Value.Decision
 
 	return nil
 }
@@ -889,6 +891,11 @@ func (c *Channel) processConsensusFailure(_ message.Message, msgData interface{}
 	defer consensusInstance.Unlock()
 
 	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if electInstance.failed || consensusInstance.decided {
+		return nil
+	}
+
 	electInstance.timeoutChan <- messagedata.ConsensusActionFailure
 
 	electInstance.failed = true
