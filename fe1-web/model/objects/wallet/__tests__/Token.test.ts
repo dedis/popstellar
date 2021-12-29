@@ -7,6 +7,7 @@ import * as Wallet from '../index';
 
 jest.mock('platform/Storage');
 jest.mock('platform/crypto/browser');
+const mockId = 'T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=';
 
 const mnemonic: string = 'garbage effort river orphan negative kind outside quit hat camera approve first';
 
@@ -21,25 +22,25 @@ test('LAO/RollCall produce known token - test vector 0', async () => {
 
   await Seed.importMnemonic(mnemonic);
 
-  const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-  const rollCallId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  const laoId: Hash = new Hash(mockId);
+  const rollCallId: Hash = new Hash(mockId);
   const token = await Token.generateToken(laoId, rollCallId);
 
-  expect(token.publicKey.valueOf()).toEqual(expected.valueOf());
+  expect(token!!.publicKey.valueOf()).toEqual(expected.valueOf());
 });
 
 test('LAO/RollCall produces correct signature', async () => {
   await Seed.importMnemonic(mnemonic);
 
-  const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-  const rollCallId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  const laoId: Hash = new Hash(mockId);
+  const rollCallId: Hash = new Hash(mockId);
   const token = await Token.generateToken(laoId, rollCallId);
 
   // sign some data with token
   const data = Base64UrlData.encode('this is my super secure data');
-  const signature = token.privateKey.sign(data);
+  const signature = token!!.privateKey.sign(data);
   // verify signature with token public key
-  expect(signature.verify(token.publicKey, data)).toBeTrue();
+  expect(signature.verify(token!!.publicKey, data)).toBeTrue();
 });
 
 test('Path produces known token - test vector 0', async () => {
@@ -61,4 +62,11 @@ test('Path produces known token - test vector 0', async () => {
 
   const token = await Token.generateTokenFromPath(path);
   expect(token.publicKey.valueOf()).toEqual(expected.valueOf());
+});
+
+test('generateToken returns undefined with an undefined Roll call id', async () => {
+  const laoId = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  const token = await Token.generateToken(laoId, undefined);
+
+  expect(token).toEqual(undefined);
 });
