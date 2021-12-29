@@ -24,6 +24,7 @@ public enum Action {
   PROPOSE("propose"),
   ACCEPT("accept"),
   LEARN("learn"),
+  FAILURE("failure"),
   ADD("add"),
   ADD_BROADCAST("add_broadcast");
 
