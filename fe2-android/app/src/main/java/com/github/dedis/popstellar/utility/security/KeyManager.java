@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.privatekey.ProtectedPrivateKey;
 import com.google.crypto.tink.CleartextKeysetHandle;
 import com.google.crypto.tink.JsonKeysetWriter;
+import com.google.crypto.tink.KeysetHandle;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -17,6 +18,8 @@ import com.google.gson.JsonParser;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.Base64;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -34,21 +37,10 @@ public class KeyManager {
   }
 
   public PublicKey getMainPublicKey() throws IOException, GeneralSecurityException {
-    ByteArrayOutputStream publicKeysetStream = new ByteArrayOutputStream();
-    CleartextKeysetHandle.write(
-        keysetManager.getKeysetHandle().getPublicKeysetHandle(),
-        JsonKeysetWriter.withOutputStream(publicKeysetStream));
-
-    JsonElement publicKeyJson = JsonParser.parseString(publicKeysetStream.toString());
-    JsonObject root = publicKeyJson.getAsJsonObject();
-    JsonArray keyArray = root.get("key").getAsJsonArray();
-    JsonObject keyObject = keyArray.get(0).getAsJsonObject();
-    JsonObject keyData = keyObject.get("keyData").getAsJsonObject();
-
-    return new PublicKey(keyData.get("value").getAsString());
+    return getPublicKey(keysetManager.getKeysetHandle());
   }
 
-  public KeyPair getMainKey() throws IOException, GeneralSecurityException {
+  public KeyPair getMainKeyPair() throws IOException, GeneralSecurityException {
     PrivateKey privateKey = new ProtectedPrivateKey(keysetManager.getKeysetHandle());
     PublicKey publicKey = getMainPublicKey();
 
@@ -57,5 +49,33 @@ public class KeyManager {
 
   public PoPToken getPoPToken(String laoID, String rollCallID) throws GeneralSecurityException {
     return wallet.findKeyPair(laoID, rollCallID);
+  }
+
+  public KeyPair getKeyPair(KeysetHandle keysetHandle)
+      throws GeneralSecurityException, IOException {
+    PrivateKey privateKey = new ProtectedPrivateKey(keysetHandle);
+    PublicKey publicKey = getPublicKey(keysetHandle);
+
+    return new KeyPair(privateKey, publicKey);
+  }
+
+  private PublicKey getPublicKey(KeysetHandle keysetHandle)
+      throws GeneralSecurityException, IOException {
+    ByteArrayOutputStream publicKeysetStream = new ByteArrayOutputStream();
+    CleartextKeysetHandle.write(
+        keysetHandle.getPublicKeysetHandle(),
+        JsonKeysetWriter.withOutputStream(publicKeysetStream));
+
+    JsonElement publicKeyJson = JsonParser.parseString(publicKeysetStream.toString());
+    JsonObject root = publicKeyJson.getAsJsonObject();
+    JsonArray keyArray = root.get("key").getAsJsonArray();
+    JsonObject keyObject = keyArray.get(0).getAsJsonObject();
+    JsonObject keyData = keyObject.get("keyData").getAsJsonObject();
+
+    byte[] buffer = Base64.getDecoder().decode(keyData.get("value").getAsString());
+
+    // Remove the first two bytes of the buffer as they are not part of the key
+    byte[] publicKey = Arrays.copyOfRange(buffer, 2, buffer.length);
+    return new PublicKey(publicKey);
   }
 }
