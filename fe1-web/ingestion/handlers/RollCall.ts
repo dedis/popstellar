@@ -6,9 +6,7 @@ import {
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
-import {
-  RollCall, RollCallStatus, Wallet, getUserSocialChannel,
-} from 'model/objects';
+import { RollCall, RollCallStatus, Wallet } from 'model/objects';
 import {
   addEvent,
   AsyncDispatch,
@@ -18,7 +16,6 @@ import {
   setLaoLastRollCall,
   updateEvent,
 } from 'store';
-import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
@@ -134,14 +131,6 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
       console.debug(err);
     }
   });
-
-  // For now, everyone is automatically subscribed to the organizer's social channel at the end of
-  // the roll call
-  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer))
-    .catch((err) => {
-      console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`,
-        err);
-    });
 
   return true;
 }
