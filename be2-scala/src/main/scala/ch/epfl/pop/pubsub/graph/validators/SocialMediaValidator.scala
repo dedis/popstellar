@@ -36,15 +36,17 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
         }
     }
 
-    
+    //no need for validation for now, as the server is not supposed to receive the broadcasts
     def validateAddBroadcastChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         Left(rpcMessage)
     }
 
+    //TODO: add validation
     def validateDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         Left(rpcMessage)
     }
 
+    //no need for validation for now, as the server is not supposed to receive the broadcasts
     def validateDeleteBroadcastChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         Left(rpcMessage)
     }

@@ -12,7 +12,7 @@ import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcR
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
-import ch.epfl.pop.model.network.requests.socialMedia.{JsonRpcRequestAddChirp, JsonRpcRequestDeleteChirp}
+import ch.epfl.pop.model.network.requests.socialMedia.{JsonRpcRequestAddChirp, JsonRpcRequestAddBroadcastChirp, JsonRpcRequestDeleteChirp, JsonRpcRequestDeleteBroadcastChirp}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import spray.json._
 
@@ -89,7 +89,9 @@ object MessageDecoder {
       case (ObjectType.ELECTION, ActionType.END) => request.toTypedRequest(JsonRpcRequestEndElection)
       case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
       case (ObjectType.CHIRP, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddChirp)
+      case (ObjectType.CHIRP, ActionType.ADD_BROADCAST) => request.toTypedRequest(JsonRpcRequestAddBroadcastChirp)
       case (ObjectType.CHIRP, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteChirp)
+      case (ObjectType.CHIRP, ActionType.DELETE_BROADCAST) => request.toTypedRequest(JsonRpcRequestDeleteBroadcastChirp)
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
     }
     case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")

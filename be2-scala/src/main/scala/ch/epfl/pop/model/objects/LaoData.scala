@@ -39,10 +39,10 @@ case class LaoData(
         this
       } else message.decodedData.get match {
         case call: CloseRollCall =>
-          LaoData(owner, call.attendees, privateKey, publicKey, List.empty)
+          LaoData(owner, call.attendees, privateKey, publicKey, witnesses)
         case lao: CreateLao =>
           val ownerPk: PublicKey = lao.organizer
-          LaoData(ownerPk, List(ownerPk), privateKey, publicKey, List.empty)
+          LaoData(ownerPk, List(ownerPk), privateKey, publicKey, lao.witnesses)
         case _ =>
           this
       }

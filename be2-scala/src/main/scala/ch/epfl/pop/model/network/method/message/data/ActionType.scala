@@ -22,9 +22,9 @@ object ActionType extends Enumeration {
   val CAST_VOTE: Value = MatchingValue("cast_vote")
   // social media actions:
   val ADD: Value = MatchingValue("add")
-  val ADD_BROADCAST: Value = MatchingValue("addBroadcast")
+  val ADD_BROADCAST: Value = MatchingValue("add_broadcast")
   val DELETE: Value = MatchingValue("delete")
-  val DELETE_BROADCAST: Value = MatchingValue("deleteBroadcast")
+  val DELETE_BROADCAST: Value = MatchingValue("delete_broadcast")
 
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
 
