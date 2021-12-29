@@ -7,7 +7,7 @@ import akka.testkit.{ImplicitSender,TestKit,TestProbe}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.{JsonRpcRequest,JsonRpcResponse,ResultObject}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.pubsub.graph.validator.SchemaValidatorSuite._
+import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.{BeforeAndAfterAll,FunSuiteLike,Matchers}
 import util.examples.MessageExample

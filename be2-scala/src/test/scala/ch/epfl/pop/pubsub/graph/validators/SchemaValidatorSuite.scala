@@ -1,4 +1,4 @@
-package ch.epfl.pop.pubsub.graph.validator
+package ch.epfl.pop.pubsub.graph.validators
 
 import org.scalatest.{Matchers, FunSuite}
 import scala.io.Source
