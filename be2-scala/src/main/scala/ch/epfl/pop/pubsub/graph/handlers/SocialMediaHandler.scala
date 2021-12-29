@@ -45,6 +45,7 @@ case object SocialMediaHandler extends MessageHandler {
       case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
         val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
         val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
+        //FIXME: once consensus is implemented, fix the WitnessSignaturePair list handling
         val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
         val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
           case DbActor.DbActorWriteAck() => Left(rpcMessage)
