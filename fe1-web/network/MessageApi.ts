@@ -231,8 +231,8 @@ export function requestCreateElection(
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
+  time: Timestamp,
 ): Promise<void> {
-  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new SetupElection({
