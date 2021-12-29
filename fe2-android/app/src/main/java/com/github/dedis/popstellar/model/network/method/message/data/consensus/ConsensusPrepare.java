@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 public final class ConsensusPrepare extends Data {
@@ -11,7 +12,7 @@ public final class ConsensusPrepare extends Data {
   private final String instanceId;
 
   @SerializedName("message_id")
-  private final String messageId;
+  private final MessageID messageId;
 
   @SerializedName("created_at")
   private final long creation;
@@ -27,7 +28,7 @@ public final class ConsensusPrepare extends Data {
    * @param creation UNIX timestamp in UTC
    * @param proposedTry proposed try number
    */
-  public ConsensusPrepare(String instanceId, String messageId, long creation, int proposedTry) {
+  public ConsensusPrepare(String instanceId, MessageID messageId, long creation, int proposedTry) {
     this.instanceId = instanceId;
     this.messageId = messageId;
     this.creation = creation;
@@ -48,7 +49,7 @@ public final class ConsensusPrepare extends Data {
     return instanceId;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
@@ -85,6 +86,6 @@ public final class ConsensusPrepare extends Data {
   public String toString() {
     return String.format(
         "ConsensusPrepare{instance_id='%s', message_id='%s', created_at=%s, value=%s}",
-        instanceId, messageId, creation, prepareValue);
+        instanceId, messageId.getEncoded(), creation, prepareValue);
   }
 }

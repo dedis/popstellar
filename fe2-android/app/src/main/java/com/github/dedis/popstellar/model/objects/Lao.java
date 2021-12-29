@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -31,7 +33,7 @@ public final class Lao {
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
   private Map<String, Chirp> chirps;
-  private final Map<String, Consensus> messageIdToConsensus;
+  private final Map<MessageID, Consensus> messageIdToConsensus;
   private final List<ConsensusNode> nodes;
 
   public Lao(String id) {
@@ -94,7 +96,7 @@ public final class Lao {
     }
     messageIdToConsensus.put(consensus.getMessageId(), consensus);
 
-    Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
+    Map<PublicKey, MessageID> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
     // add to each node the messageId of the consensus if they accept it
     nodes.stream()
         .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
@@ -142,7 +144,7 @@ public final class Lao {
     return Optional.ofNullable(elections.get(id));
   }
 
-  public Optional<Consensus> getConsensus(String messageId) {
+  public Optional<Consensus> getConsensus(MessageID messageId) {
     return Optional.ofNullable(messageIdToConsensus.get(messageId));
   }
 
@@ -174,7 +176,7 @@ public final class Lao {
     return (rollCalls.remove(id) != null);
   }
 
-  public boolean removeConsensus(String messageId) {
+  public boolean removeConsensus(MessageID messageId) {
     return (messageIdToConsensus.remove(messageId) != null);
   }
 
@@ -293,7 +295,7 @@ public final class Lao {
     return rollCalls;
   }
 
-  public Map<String, Consensus> getMessageIdToConsensus() {
+  public Map<MessageID, Consensus> getMessageIdToConsensus() {
     return messageIdToConsensus;
   }
 
