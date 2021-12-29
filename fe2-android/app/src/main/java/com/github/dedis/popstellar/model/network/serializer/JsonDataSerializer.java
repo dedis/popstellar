@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.model.network.serializer;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -20,6 +21,12 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
   private static final String OBJECT = "object";
   private static final String ACTION = "action";
 
+  private final DataRegistry dataRegistry;
+
+  public JsonDataSerializer(DataRegistry dataRegistry) {
+    this.dataRegistry = dataRegistry;
+  }
+
   @Override
   public Data deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
@@ -35,7 +42,7 @@ public class JsonDataSerializer implements JsonSerializer<Data>, JsonDeserialize
       throw new JsonParseException("Unknown action type : " + obj.get(ACTION).getAsString());
     }
 
-    Optional<Class<? extends Data>> clazz = Data.getType(object, action);
+    Optional<Class<? extends Data>> clazz = dataRegistry.getType(object, action);
     if (!clazz.isPresent()) {
       throw new JsonParseException(
           "The pair ("

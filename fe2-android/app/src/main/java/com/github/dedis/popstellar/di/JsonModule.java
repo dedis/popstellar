@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.answer.ResultMessages;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.serializer.JsonAnswerSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonDataSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonGenericMessageDeserializer;
@@ -31,11 +32,11 @@ public class JsonModule {
 
   @Provides
   @Singleton
-  public static Gson provideGson() {
+  public static Gson provideGson(DataRegistry dataRegistry) {
     return new GsonBuilder()
         .registerTypeAdapter(GenericMessage.class, new JsonGenericMessageDeserializer())
         .registerTypeAdapter(Message.class, new JsonMessageSerializer())
-        .registerTypeAdapter(Data.class, new JsonDataSerializer())
+        .registerTypeAdapter(Data.class, new JsonDataSerializer(dataRegistry))
         .registerTypeAdapter(Result.class, new JsonResultSerializer())
         .registerTypeAdapter(ResultMessages.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())

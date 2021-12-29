@@ -216,6 +216,7 @@
   <string name="send">SEND</string>
   <string name="send_button_desc">button to write a chirp</string>
   <string name="hint_chirp">Your chirp</string>
-  <string name="subscription_general_channel">Subscription</string>
+  <string name="laos_list">Laos list</string>
+  <string name="toast_no_lao">You are not in a lao</string>
 
 </resources>
