@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 public final class ConsensusAccept extends Data {
@@ -11,7 +12,7 @@ public final class ConsensusAccept extends Data {
   private final String instanceId;
 
   @SerializedName("message_id")
-  private final String messageId;
+  private final MessageID messageId;
 
   @SerializedName("created_at")
   private final long creation;
@@ -29,7 +30,11 @@ public final class ConsensusAccept extends Data {
    * @param acceptedValue the value accepted
    */
   public ConsensusAccept(
-      String instanceId, String messageId, long creation, int acceptedTry, boolean acceptedValue) {
+      String instanceId,
+      MessageID messageId,
+      long creation,
+      int acceptedTry,
+      boolean acceptedValue) {
     this.instanceId = instanceId;
     this.messageId = messageId;
     this.creation = creation;
@@ -50,7 +55,7 @@ public final class ConsensusAccept extends Data {
     return instanceId;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
@@ -87,6 +92,6 @@ public final class ConsensusAccept extends Data {
   public String toString() {
     return String.format(
         "ConsensusAccept{instance_id='%s', message_id='%s', created_at=%s, value=%s}",
-        instanceId, messageId, creation, acceptValue);
+        instanceId, messageId.getEncoded(), creation, acceptValue);
   }
 }

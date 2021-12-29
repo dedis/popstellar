@@ -1,5 +1,8 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,23 +20,23 @@ public final class ConsensusNode {
     ACCEPTED
   }
 
-  private final String publicKey;
+  private final PublicKey publicKey;
   // contains messageId of consensus that this node has accepted
-  private final Set<String> acceptedMessageIds;
+  private final Set<MessageID> acceptedMessageIds;
   // list of all consensus that this node has created
   private final List<Consensus> consensuses;
 
-  public ConsensusNode(String publicKey) {
+  public ConsensusNode(PublicKey publicKey) {
     this.publicKey = publicKey;
     this.consensuses = new ArrayList<>();
     this.acceptedMessageIds = new HashSet<>();
   }
 
-  public String getPublicKey() {
+  public PublicKey getPublicKey() {
     return publicKey;
   }
 
-  public Set<String> getAcceptedMessageIds() {
+  public Set<MessageID> getAcceptedMessageIds() {
     return Collections.unmodifiableSet(acceptedMessageIds);
   }
 
@@ -66,7 +69,7 @@ public final class ConsensusNode {
    * @param consensus the consensus to add
    */
   public void addConsensus(Consensus consensus) {
-    String messageId = consensus.getMessageId();
+    MessageID messageId = consensus.getMessageId();
     if (consensuses.stream().map(Consensus::getMessageId).noneMatch(messageId::equals)) {
       consensuses.add(consensus);
     }
@@ -77,7 +80,7 @@ public final class ConsensusNode {
    *
    * @param consensusMessageId the messageId of the consensus to add
    */
-  public void addMessageIdOfAnAcceptedConsensus(String consensusMessageId) {
+  public void addMessageIdOfAnAcceptedConsensus(MessageID consensusMessageId) {
     this.acceptedMessageIds.add(consensusMessageId);
   }
 
