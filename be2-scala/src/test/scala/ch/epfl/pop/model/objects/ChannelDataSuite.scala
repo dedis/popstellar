@@ -11,9 +11,9 @@ class ChannelDataSuite extends FunSuite with Matchers {
         channelData.messages should equal (List.empty)
         channelData.channelType should equal(ObjectType.LAO)
 
-        val channelData2: ChannelData = ChannelData(ObjectType.LAO, List(Hash(Base64Data("a"))))
+        val channelData2: ChannelData = ChannelData(ObjectType.LAO, List(Hash(Base64Data("base64=="))))
 
-        channelData2.messages should equal (List(Hash(Base64Data("a"))))
+        channelData2.messages should equal (List(Hash(Base64Data("base64=="))))
         channelData2.channelType should equal(ObjectType.LAO)
     }
 
@@ -23,7 +23,7 @@ class ChannelDataSuite extends FunSuite with Matchers {
         channelData.messages should equal (List.empty)
         channelData.channelType should equal(ObjectType.LAO)
 
-        val channelData2 = channelData.addMessage(Hash(Base64Data("a")))
+        val channelData2 = channelData.addMessage(Hash(Base64Data("base64==")))
 
         channelData2.messages.size should equal (1)
     }

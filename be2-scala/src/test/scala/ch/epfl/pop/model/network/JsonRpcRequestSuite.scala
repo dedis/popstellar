@@ -75,7 +75,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
 
         rpcReq2.getDecodedData should equal (None)
 
-        rpcReq3.getDecodedData should equal (Some(CreateLao(Hash(Base64Data("id")), "LAO", Timestamp(0), PublicKey(Base64Data("key")), List.empty)))
+        rpcReq3.getDecodedData should equal (Some(CreateLao(Hash(Base64Data("aWQ=")), "LAO", Timestamp(0), PublicKey(Base64Data("a2V5")), List.empty)))
     }
 
     test("getDecodedDataHeader returns right value"){
@@ -90,7 +90,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
     test("getWithDecodedData sets data as intended"){
         val messageToModify: Message = Message(messageEx.data, messageEx.sender, messageEx.signature, messageEx.message_id, messageEx.witness_signatures)
         val paramsWithMessageToModify: ParamsWithMessage = new ParamsWithMessage(channelEx, messageToModify)
-        val decodedData: MessageData = CreateLao(Hash(Base64Data("id")), "LAO", Timestamp(0), PublicKey(Base64Data("key")), List.empty)
+        val decodedData: MessageData = CreateLao(Hash(Base64Data("aWQ=")), "LAO", Timestamp(0), PublicKey(Base64Data("a2V5")), List.empty)
 
         val rpcReqSet: JsonRpcRequest = JsonRpcRequest(rpc, methodType, params, id)
         val rpcReqWithParams = rpcReqSet.getWithDecodedData(decodedData)

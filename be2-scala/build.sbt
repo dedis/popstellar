@@ -2,12 +2,11 @@ import scala.util.{Try, Success, Failure}
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
 import sbt.IO._
 
-
 name := "pop"
 
 version := "0.1"
 
-scalaVersion := "2.13.5"
+scalaVersion := "2.13.7"
 
 parallelExecution in ThisBuild := false
 //Create task to copy the protocol folder to resources
@@ -30,9 +29,11 @@ copyProtocolTask := {
         }
     }
 }
-//Add task to compile time
+//Add the copyProtocolTask to compile time
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
 resourceDirectory in (Compile, packageBin) := file(".") / "./src/main/resources"
+//Make resourceDirectory setting global to remove sbt warning
+(Global / excludeLintKeys) += resourceDirectory
 
 //Setup main calass task context/confiuration
 mainClass in (Compile, run) := Some("ch.epfl.pop.Server")
@@ -46,7 +47,7 @@ lazy val scoverageSettings = Seq(
 
 
 
-scapegoatVersion in ThisBuild := "1.4.8"
+scapegoatVersion in ThisBuild := "1.4.11"
 scapegoatReports := Seq("xml")
 
 // temporarily report scapegoat errors as warnings, to avoid broken builds
@@ -61,7 +62,7 @@ sonarProperties := Map(
   "sonar.tests" -> "src/test/scala",
 
   "sonar.sourceEncoding" -> "UTF-8",
-  "sonar.scala.version" -> "2.13.5",
+  "sonar.scala.version" -> "2.13.7",
   // Paths to the test and coverage reports
   "sonar.scala.coverage.reportPaths" -> "./target/scala-2.13/scoverage-report/scoverage.xml",
   "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"

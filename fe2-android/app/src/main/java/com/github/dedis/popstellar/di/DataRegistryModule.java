@@ -9,6 +9,7 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PREPARE;
@@ -32,6 +33,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.DataRegistr
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPrepare;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
@@ -115,7 +117,8 @@ public abstract class DataRegistryModule {
         .add(CONSENSUS, PROMISE, ConsensusPromise.class, ConsensusHandler::handleBackend)
         .add(CONSENSUS, PROPOSE, ConsensusPropose.class, ConsensusHandler::handleBackend)
         .add(CONSENSUS, ACCEPT, ConsensusAccept.class, ConsensusHandler::handleBackend)
-        .add(CONSENSUS, LEARN, ConsensusLearn.class, ConsensusHandler::handleLearn);
+        .add(CONSENSUS, LEARN, ConsensusLearn.class, ConsensusHandler::handleLearn)
+        .add(CONSENSUS, FAILURE, ConsensusFailure.class, ConsensusHandler::handleConsensusFailure);
 
     // Social Media
     builder

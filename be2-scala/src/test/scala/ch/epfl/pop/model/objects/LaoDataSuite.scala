@@ -14,25 +14,25 @@ class LaoDataSuite extends FunSuite with Matchers {
     final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data.encode(KEYPAIR.getPrivateKey))
 
     test("Apply works with empty/full list for LaoData"){
-        val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)
+        val laoData: LaoData = LaoData(PublicKey(Base64Data("cGs=")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)
 
-        laoData.owner should equal (PublicKey(Base64Data("a")))
+        laoData.owner should equal (PublicKey(Base64Data("cGs=")))
         laoData.attendees should equal(List.empty)
         laoData.privateKey should equal (PRIVATEKEY)
         laoData.publicKey should equal (PUBLICKEY)
         laoData.witnesses should equal(List.empty)
 
-        val laoData2: LaoData = LaoData(PublicKey(Base64Data("a")), List(PublicKey(Base64Data("b"))), PRIVATEKEY, PUBLICKEY, List.empty)
+        val laoData2: LaoData = LaoData(PublicKey(Base64Data("cGstYQ==")), List(PublicKey(Base64Data("cGstYg=="))), PRIVATEKEY, PUBLICKEY, List.empty)
 
-        laoData2.owner should equal (PublicKey(Base64Data("a")))
-        laoData2.attendees should equal(List(PublicKey(Base64Data("b"))))
+        laoData2.owner should equal (PublicKey(Base64Data("cGstYQ==")))
+        laoData2.attendees should equal(List(PublicKey(Base64Data("cGstYg=="))))
         laoData2.privateKey should equal (PRIVATEKEY)
         laoData2.publicKey should equal (PUBLICKEY)
         laoData2.witnesses should equal(List.empty)
     }
 
     test("Json conversions work for LaoData") {
-        val laoData: LaoData = LaoData(PublicKey(Base64Data("a")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)
+        val laoData: LaoData = LaoData(PublicKey(Base64Data("cGs=")), List.empty, PRIVATEKEY, PUBLICKEY, List.empty)
 
         val laoData2: LaoData = LaoData.buildFromJson(laoData.toJsonString)
 
@@ -91,14 +91,14 @@ class LaoDataSuite extends FunSuite with Matchers {
 
         val createData: LaoData = withoutMessageDataData.updateWith(messageCreateLao)
 
-        createData.owner should equal (PublicKey(Base64Data("key")))
-        createData.attendees should equal(List(PublicKey(Base64Data("key"))))
+        createData.owner should equal (PublicKey(Base64Data("a2V5")))
+        createData.attendees should equal(List(PublicKey(Base64Data("a2V5"))))
         createData.witnesses should equal(List.empty)
 
         val rollCallData: LaoData = createData.updateWith(messageCloseRollCall)
 
-        rollCallData.owner should equal (PublicKey(Base64Data("key")))
-        rollCallData.attendees should equal(List(PublicKey(Base64Data("keyAttendee"))))
+        rollCallData.owner should equal (PublicKey(Base64Data("a2V5")))
+        rollCallData.attendees should equal(List(PublicKey(Base64Data("a2V5QXR0ZW5kZWU="))))
         rollCallData.witnesses should equal(List.empty)
 
     }
