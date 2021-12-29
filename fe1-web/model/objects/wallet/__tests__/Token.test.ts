@@ -43,6 +43,20 @@ test('LAO/RollCall produces correct signature', async () => {
   expect(signature.verify(token!!.publicKey, data)).toBeTrue();
 });
 
+test('LAO/RollCall produces correct signature', async () => {
+  await Seed.importMnemonic(mnemonic);
+
+  const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  const rollCallId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  const token = await Token.generateToken(laoId, rollCallId);
+
+  // sign some data with token
+  const data = Base64UrlData.encode('this is my super secure data');
+  const signature = token.privateKey.sign(data);
+  // verify signature with token public key
+  expect(signature.verify(token.publicKey, data)).toBeTrue();
+});
+
 test('Path produces known token - test vector 0', async () => {
   const expected = Base64UrlData.fromBuffer(Buffer.from(
     '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex',
