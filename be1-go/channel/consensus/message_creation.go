@@ -31,7 +31,7 @@ func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance, mes
 	return byteMsg, nil
 }
 
-// createPromiseMessage creates the data for a new prepare message
+// createPromiseMessage creates the data for a new promise message
 func (c *Channel) createPromiseMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
 
 	newData := messagedata.ConsensusPromise{

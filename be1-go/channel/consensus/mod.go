@@ -445,12 +445,12 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 	}
 
 	// If enough rejection, failure of the consensus
-	if electInstance.negativeElectAccept >= c.hub.GetServerNumber()/2+1 {
+	if electInstance.negativeElectAccept >= (c.hub.GetServerNumber()/2 + 1) {
 		return messagedata.ConsensusActionFailure
 	}
 
 	// If enough acception, go to next step of the consensus
-	if electInstance.positiveElectAccept >= c.hub.GetServerNumber()/2+1 {
+	if electInstance.positiveElectAccept >= (c.hub.GetServerNumber()/2 + 1) {
 		return messagedata.ConsensusActionPrepare
 	}
 
