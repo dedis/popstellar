@@ -27,7 +27,7 @@ var upgrader = websocket.Upgrader{
 // Server represents a Websocket Server for an organizer or a witness and it may
 // listen to requests from organizer, witness or an attendee.
 type Server struct {
-	hub   hub.Hub
+	hub hub.Hub
 	st  socket.SocketType
 	srv *http.Server
 
@@ -49,7 +49,7 @@ func NewServer(hub hub.Hub, port int, st socket.SocketType, log zerolog.Logger) 
 	log = log.With().Str("role", "server").Logger()
 
 	server := &Server{
-		hub:       hub,
+		hub:     hub,
 		st:      st,
 		Started: make(chan struct{}, 1),
 		Stopped: make(chan struct{}, 1),
