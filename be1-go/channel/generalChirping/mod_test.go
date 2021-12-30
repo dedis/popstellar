@@ -250,8 +250,8 @@ func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Unlock()
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *fakeHub) GetPubKeyOrg() kyber.Point {
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOrg
 }
 

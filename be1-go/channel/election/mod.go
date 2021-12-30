@@ -297,7 +297,7 @@ func (c *Channel) processCastVote(msg message.Message) error {
 	}
 
 	// verify sender is an attendee or the organizer
-	ok := c.attendees.isPresent(msg.Sender) || c.hub.GetPubKeyOrg().Equal(senderPoint)
+	ok := c.attendees.isPresent(msg.Sender) || c.hub.GetPubKeyOwner().Equal(senderPoint)
 	if !ok {
 		return answer.NewError(-4, "only attendees can cast a vote in an election")
 	}
@@ -343,7 +343,7 @@ func (c *Channel) processElectionEnd(msg message.Message) error {
 	}
 
 	// check sender of the election end message is the organizer
-	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
+	if !c.hub.GetPubKeyOwner().Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 

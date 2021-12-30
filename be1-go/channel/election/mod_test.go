@@ -464,8 +464,8 @@ func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, soc
 	h.Unlock()
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *fakeHub) GetPubKeyOrg() kyber.Point {
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOrg
 }
 

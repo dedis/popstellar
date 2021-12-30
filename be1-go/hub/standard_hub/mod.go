@@ -62,7 +62,7 @@ type Hub struct {
 
 	closedSockets chan string
 
-	pubKeyOrg kyber.Point
+	pubKeyOwner kyber.Point
 
 	pubKeyServ kyber.Point
 	secKeyServ kyber.Scalar
@@ -151,7 +151,7 @@ func (q *queries) getNextID() int {
 }
 
 // NewHub returns a new Hub.
-func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
+func NewHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
 	hubType hub.HubType) (*Hub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
@@ -168,7 +168,7 @@ func NewHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOrg:       publicOrg,
+		pubKeyOwner:     pubKeyOwner,
 		pubKeyServ:      pubServ,
 		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
@@ -537,14 +537,14 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 	return nil
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *Hub) GetPubKeyOrg() kyber.Point {
-	return h.pubKeyOrg
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *Hub) GetPubKeyOwner() kyber.Point {
+	return h.pubKeyOwner
 }
 
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *Hub) GetPubKeyServ() kyber.Point {
-	return h.pubKeyOrg
+	return h.pubKeyServ
 }
 
 // Sign implements channel.HubFunctionalities

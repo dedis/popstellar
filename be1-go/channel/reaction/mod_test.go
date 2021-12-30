@@ -492,8 +492,8 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *fakeHub) GetPubKeyOrg() kyber.Point {
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOwner() kyber.Point {
 	return h.pubKeyOrg
 }
 
