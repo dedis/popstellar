@@ -177,7 +177,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 				return
 			}
 
-		case <-c.clock.After(time.Second):
+		case <-c.clock.After(3 * time.Second):
 			switch instance.lastSent {
 			case messagedata.ConsensusActionElectAccept:
 				select {
@@ -206,7 +206,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 						return
 					}
 
-				case <-c.clock.After(time.Second):
+				case <-c.clock.After(3 * time.Second):
 					c.timeoutFailure(instance, messageID)
 					return
 				}

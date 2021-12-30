@@ -149,6 +149,8 @@ func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance, mes
 	}
 	consensusInstance.electInstances[messageID].failed = true
 
+	c.log.Warn().Msgf("failure of the consensus")
+
 	newData := messagedata.ConsensusFailure{
 		Object:     "consensus",
 		Action:     "failure",
