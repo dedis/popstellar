@@ -130,6 +130,15 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
       const token = await Wallet.generateToken(lao.id, rc.id);
       const hasToken = rc.containsToken(token);
       aDispatch(setLaoLastRollCall(lao.id, rc.id, hasToken));
+
+      // If we had a token in this roll call, we subscribe to our own social media channel
+      if (token && hasToken) {
+        subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey))
+          .catch((err) => {
+            console.error(`Could not subscribe to our own social channel ${token.publicKey}, error:`,
+              err);
+          });
+      }
     } catch (err) {
       console.debug(err);
     }
