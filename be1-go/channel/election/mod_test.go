@@ -368,7 +368,7 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime, false,
+	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
 		electionSetup.Questions, attendees, fakeHub, nolog)
 
 	fakeHub.NotifyNewChannel(channel.channelID, &channel, &fakeSocket{id: "socket"})

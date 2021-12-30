@@ -40,7 +40,7 @@ func (a *attendees) isPresent(key string) bool {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, terminated bool, questions []messagedata.ElectionSetupQuestion,
+func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "election").Logger()
@@ -54,7 +54,7 @@ func NewChannel(channelPath string, start, end int64, terminated bool, questions
 
 		start:      start,
 		end:        end,
-		terminated: terminated,
+		terminated: false,
 		questions:  getAllQuestionsForElectionChannel(questions),
 
 		attendees: &attendees{
