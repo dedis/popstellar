@@ -27,7 +27,7 @@ var upgrader = websocket.Upgrader{
 // Server represents a Websocket Server for an organizer or a witness and it may
 // listen to requests from organizer, witness or an attendee.
 type Server struct {
-	h   hub.Hub
+	hub   hub.Hub
 	st  socket.SocketType
 	srv *http.Server
 
@@ -45,11 +45,11 @@ type Server struct {
 // NewServer creates a new Server which is used to handle requests for
 // /<hubType>/<socketType> endpoint. Please use the Start() method to start
 // listening for connections.
-func NewServer(h hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *Server {
+func NewServer(hub hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *Server {
 	log = log.With().Str("role", "server").Logger()
 
 	server := &Server{
-		h:       h,
+		hub:       hub,
 		st:      st,
 		Started: make(chan struct{}, 1),
 		Stopped: make(chan struct{}, 1),
@@ -59,7 +59,7 @@ func NewServer(h hub.Hub, port int, st socket.SocketType, log zerolog.Logger) *S
 		log:     log,
 	}
 
-	path := fmt.Sprintf("/%s/%s", h.Type(), st)
+	path := fmt.Sprintf("/%s/%s", hub.Type(), st)
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, server.ServeHTTP)
 
@@ -110,21 +110,21 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	switch s.st {
 	case socket.ClientSocketType:
-		client := socket.NewClientSocket(s.h.Receiver(), s.h.OnSocketClose(),
+		client := socket.NewClientSocket(s.hub.Receiver(), s.hub.OnSocketClose(),
 			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go client.ReadPump()
 		go client.WritePump()
 	case socket.WitnessSocketType:
-		witness := socket.NewWitnessSocket(s.h.Receiver(), s.h.OnSocketClose(),
+		witness := socket.NewWitnessSocket(s.hub.Receiver(), s.hub.OnSocketClose(),
 			conn, s.wg, s.done, s.log)
 		s.wg.Add(2)
 
 		go witness.ReadPump()
 		go witness.WritePump()
 
-		err = s.h.NotifyNewServer(witness)
+		err = s.hub.NotifyNewServer(witness)
 		if err != nil {
 			s.log.Err(err).Msg("error while trying to catchup to server")
 

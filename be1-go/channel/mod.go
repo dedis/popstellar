@@ -37,7 +37,7 @@ type Channel interface {
 	Broadcast(msg method.Broadcast) error
 }
 
-// NewSockets returns a new initialized sockets
+// NewSockets returns a new initialized Sockets
 func NewSockets() Sockets {
 	return Sockets{
 		store: make(map[string]socket.Socket),
