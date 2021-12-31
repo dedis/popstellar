@@ -9,8 +9,8 @@ import * as bip39path from './Bip32Path';
 import { RollCall } from '../RollCall';
 
 /**
- * Generates a token for an arbitrary derivation path
- * @param path the key derivation path
+ * Generates a token for an arbitrary derivation path.
+ * @param path - The key derivation path
  * @returns a Promise resolving to a PopToken
  * @private
  *
@@ -32,12 +32,16 @@ export async function generateTokenFromPath(path: string): Promise<PopToken> {
 }
 
 /**
- * Generates a token for a given LAOId and RollCallId
- * @param laoId the id of the LAO
- * @param rollCallId the id of the Roll Call
- * @returns a Promise resolving to a PopToken
+ * Generates a token for a given LAOId and RollCallId if the RollCallId exists.
+ * @param laoId - The id of the LAO
+ * @param rollCallId - The id of the Roll Call
+ * @returns a Promise resolving to a PopToken or to undefined
  */
-export function generateToken(laoId: Hash, rollCallId: Hash): Promise<PopToken> {
+export function generateToken(laoId: Hash, rollCallId: Hash | undefined)
+  : Promise<PopToken | undefined> {
+  if (rollCallId === undefined) {
+    return Promise.resolve(undefined);
+  }
   const path = bip39path.fromLaoRollCall(laoId, rollCallId);
   return generateTokenFromPath(path);
 }
@@ -61,7 +65,7 @@ export async function getCurrentPopTokenFromStore(): Promise<PopToken | undefine
 
   const rollCall = EventStore.getEvent(rollCallId) as RollCall;
   const token = await generateToken(lao.id, rollCallId);
-  if (rollCall.containsToken(token)) {
+  if (token && rollCall.containsToken(token)) {
     return token;
   }
   return undefined;
