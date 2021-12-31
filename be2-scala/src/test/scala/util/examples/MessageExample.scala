@@ -8,13 +8,10 @@ import ch.epfl.pop.model.objects.{Base64Data, Hash, PrivateKey, PublicKey, Signa
 import ch.epfl.pop.json.MessageDataProtocol._
 import spray.json._
 
-import com.google.crypto.tink.subtle.Ed25519Sign
-
 object MessageExample {
 
-  private final val KEYPAIR: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-  private final val PUBLICKEY: PublicKey = PublicKey(Base64Data.encode(KEYPAIR.getPublicKey))
-  private final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data.encode(KEYPAIR.getPrivateKey))
+  private final val PUBLICKEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
+  private final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
 
   final val MESSAGE: Message = Message(
     Base64Data("eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ=="),
