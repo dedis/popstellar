@@ -133,7 +133,7 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
 
       // If we had a token in this roll call, we subscribe to our own social media channel
       if (token && hasToken) {
-        subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey))
+        await subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey))
           .catch((err) => {
             console.error(`Could not subscribe to our own social channel ${token.publicKey}, error:`,
               err);
