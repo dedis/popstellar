@@ -91,22 +91,26 @@ type ConsensusInstance struct {
 type ElectInstance struct {
 	timeoutChan chan string
 
+	acceptorNumber int
+
 	failed bool
 
-	positiveElectAccept int
-	negativeElectAccept int
+	positiveAcceptors map[string]int
+	negativeAcceptors map[string]int
 }
 
 // createElectInstance creates the state of the consensus for a specific elect
 // message
-func (i *ConsensusInstance) createElectInstance(messageID string) {
+func (i *ConsensusInstance) createElectInstance(messageID string, acceptorNumber int) {
 	i.electInstances[messageID] = &ElectInstance{
 		timeoutChan: make(chan string),
 
 		failed: false,
 
-		positiveElectAccept: 0,
-		negativeElectAccept: 0,
+		positiveAcceptors: make(map[string]int),
+		negativeAcceptors: make(map[string]int),
+
+		acceptorNumber: acceptorNumber,
 	}
 }
 
@@ -418,7 +422,7 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	consensusInstance.createElectInstance(message.MessageID)
+	consensusInstance.createElectInstance(message.MessageID, c.hub.GetServerNumber())
 
 	if sender.Equal(c.hub.GetPubKeyOrg()) {
 		consensusInstance.role = proposerRole
@@ -445,12 +449,12 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 	}
 
 	// If enough rejection, failure of the consensus
-	if electInstance.negativeElectAccept >= (c.hub.GetServerNumber()/2 + 1) {
+	if len(electInstance.negativeAcceptors) >= (i.electInstances[messageID].acceptorNumber/2 + 1) {
 		return messagedata.ConsensusActionFailure
 	}
 
 	// If enough acception, go to next step of the consensus
-	if electInstance.positiveElectAccept >= (c.hub.GetServerNumber()/2 + 1) {
+	if len(electInstance.positiveAcceptors) >= (i.electInstances[messageID].acceptorNumber/2 + 1) {
 		return messagedata.ConsensusActionPrepare
 	}
 
@@ -506,11 +510,21 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 		return xerrors.Errorf(consensusFinished, data.InstanceID)
 	}
 
+	_, ok = electInstance.positiveAcceptors[message.Sender]
+	if ok {
+		return xerrors.Errorf("Acceptor %s already accepted this value", message.Sender)
+	}
+
+	_, ok = electInstance.negativeAcceptors[message.Sender]
+	if ok {
+		return xerrors.Errorf("Acceptor %s already refused this value", message.Sender)
+	}
+
 	// Update the elect state
 	if data.Accept {
-		electInstance.positiveElectAccept++
+		electInstance.positiveAcceptors[message.Sender] = 0
 	} else {
-		electInstance.negativeElectAccept++
+		electInstance.negativeAcceptors[message.Sender] = 0
 	}
 
 	nextMessage := c.nextMessage(consensusInstance, data.MessageID)
@@ -519,8 +533,7 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 	}
 
 	if nextMessage == messagedata.ConsensusActionFailure {
-		c.electAcceptFailure(consensusInstance, data.MessageID)
-		return nil
+		return c.electAcceptFailure(consensusInstance, data.MessageID)
 	}
 
 	electInstance.timeoutChan <- messagedata.ConsensusActionElectAccept
@@ -642,7 +655,7 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 	consensusInstance.promises = append(consensusInstance.promises, *data)
 
 	// if enough Promise messages are received, the proposer send a Propose message
-	if len(consensusInstance.promises) < c.hub.GetServerNumber()/2+1 {
+	if len(consensusInstance.promises) < electInstance.acceptorNumber/2+1 {
 		return nil
 	}
 
@@ -784,7 +797,7 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 		consensusInstance.accepts = append(consensusInstance.accepts, *data)
 	}
 
-	if len(consensusInstance.accepts) < c.hub.GetServerNumber()/2+1 {
+	if len(consensusInstance.accepts) < electInstance.acceptorNumber/2+1 {
 		return nil
 	}
 

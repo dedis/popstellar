@@ -294,7 +294,7 @@ func Test_Consensus_Publish_Elect_Accept(t *testing.T) {
 	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -418,7 +418,7 @@ func Test_Consensus_Publish_Elect_Accept_Failure(t *testing.T) {
 	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -540,7 +540,7 @@ func Test_Consensus_Publish_Prepare(t *testing.T) {
 	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -666,7 +666,7 @@ func Test_Consensus_Publish_Promise(t *testing.T) {
 	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -790,7 +790,7 @@ func Test_Consensus_Publish_Propose(t *testing.T) {
 	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -917,7 +917,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	consensusInstance.lastSent = messagedata.ConsensusActionPropose
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -1039,7 +1039,7 @@ func Test_Consensus_Publish_Learn(t *testing.T) {
 	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -1138,7 +1138,7 @@ func Test_Consensus_Publish_Failure(t *testing.T) {
 	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -1382,7 +1382,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 	consensusInstance.role = proposerRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -1513,7 +1513,7 @@ func Test_Timeout_Promise(t *testing.T) {
 	consensusInstance.role = acceptorRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -1645,7 +1645,7 @@ func Test_Timeout_Propose(t *testing.T) {
 	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
@@ -1777,7 +1777,7 @@ func Test_Timeout_Accept(t *testing.T) {
 	consensusInstance.role = acceptorRole
 
 	// Add a new elect instance to the consensus instance
-	consensusInstance.createElectInstance(messageID)
+	consensusInstance.createElectInstance(messageID, 1)
 
 	// Start the timer
 	go consensusChannel.startTimer(consensusInstance, messageID)
