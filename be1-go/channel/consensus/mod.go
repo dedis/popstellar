@@ -462,22 +462,22 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 }
 
 // updateAcceptors updates the acceptors of an electInstance
-func (c *Channel) updateAcceptors(electInstance *ElectInstance, sender string, accept bool) error {
-	_, ok := electInstance.positiveAcceptors[sender]
+func (e *ElectInstance) updateAcceptors(sender string, accept bool) error {
+	_, ok := e.positiveAcceptors[sender]
 	if ok {
 		return xerrors.Errorf("Acceptor %s already accepted this value", sender)
 	}
 
-	_, ok = electInstance.negativeAcceptors[sender]
+	_, ok = e.negativeAcceptors[sender]
 	if ok {
 		return xerrors.Errorf("Acceptor %s already refused this value", sender)
 	}
 
 	// Update the elect state
 	if accept {
-		electInstance.positiveAcceptors[sender] = 0
+		e.positiveAcceptors[sender] = 0
 	} else {
-		electInstance.negativeAcceptors[sender] = 0
+		e.negativeAcceptors[sender] = 0
 	}
 
 	return nil
@@ -532,7 +532,10 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 		return xerrors.Errorf(consensusFinished, data.InstanceID)
 	}
 
-	c.updateAcceptors(electInstance, message.Sender, data.Accept)
+	err = electInstance.updateAcceptors(message.Sender, data.Accept)
+	if err != nil {
+		return xerrors.Errorf("failed to update acceptors: %v", err)
+	}
 
 	nextMessage := c.nextMessage(consensusInstance, data.MessageID)
 	if nextMessage == "" {
