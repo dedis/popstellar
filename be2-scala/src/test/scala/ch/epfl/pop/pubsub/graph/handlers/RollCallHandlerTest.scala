@@ -1,33 +1,27 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.actor.Actor
-import akka.actor.ActorSystem
-import akka.actor.Props
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
-import akka.testkit.ImplicitSender
-import akka.testkit.TestKit
-import akka.testkit.TestProbe
+import akka.testkit.{ImplicitSender, TestKit, TestProbe}
 import akka.util.Timeout
-import ch.epfl.pop.pubsub.graph.DbActor
-import ch.epfl.pop.pubsub.graph.PipelineError
-import org.scalatest.BeforeAndAfterAll
-import org.scalatest.FunSuiteLike
-import org.scalatest.Matchers
 
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import scala.concurrent.duration.FiniteDuration
-import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCreateRollCall
+
+import ch.epfl.pop.pubsub.graph.{DbActor, PipelineError}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCreateRollCall
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.objects.Channel
+
 import util.examples.RollCallMessages
 
-
-class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll{
+class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicites for system actors
   implicit val duration = FiniteDuration(5 ,"seconds")
-  implicit val timeout = Timeout(duration)
+  implicit val timeout  = Timeout(duration)
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -44,7 +38,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
 
                 sender ! DbActor.DbActorNAck(1, "error")
           }
-       }
+        }
       )
     system.actorOf(mockedDB, "MockedDB-NACK")
   }
@@ -59,27 +53,27 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
 
                 sender ! DbActor.DbActorWriteAck()
           }
-       }
+        }
       )
     system.actorOf(mockedDB, "MockedDB-ACK")
   }
 
-  test("Simple CreateRoolCall test 1"){
+  test("CreateRollCall fails if the database fails storing the message"){
     val mockedDB = mockDbWIthNack
     val rc = new RollCallHandler(mockedDB)
     val request = RollCallMessages.createRollCall
 
-    rc.handleOpenRollCall(request) shouldBe an [Right[PipelineError,_]]
+    rc.handleCreateRollCall(request) shouldBe an [Right[PipelineError,_]]
 
     system.stop(mockedDB.actorRef)
   }
 
-  test("Simple CreateRollCall test 2"){
+  test("CreateRollCall succeeds if the database succeeds storing the message"){
     val mockedDB = mockDbWIthAck
     val rc = new RollCallHandler(mockedDB)
     val request = RollCallMessages.createRollCall
 
-    rc.handleOpenRollCall(request) should equal (Left(request))
+    rc.handleCreateRollCall(request) should equal (Left(request))
 
     system.stop(mockedDB.actorRef)
   }

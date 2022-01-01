@@ -1,25 +1,13 @@
 package util.examples
 
-import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.model.network.method.message.data.MessageData
-import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.model.network.method.message.data.rollCall.OpenRollCall
-import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
-import ch.epfl.pop.model.network.method.message.data.ActionType
-import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCreateRollCall
-import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestOpenRollCall
+import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
+import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
+import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Signature, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCloseRollCall
-import ch.epfl.pop.model.objects.Base64Data
-import ch.epfl.pop.model.objects.PublicKey
-import ch.epfl.pop.model.objects.Signature
-import ch.epfl.pop.model.objects.Hash
-import ch.epfl.pop.model.objects.WitnessSignaturePair
 
 /**
   * Helper object to generate test data
@@ -33,7 +21,7 @@ object HighLevelMessageGenerator {
     *
     */
   sealed class MessageBuilder {
-     /***Builder params***/
+     /*** Builder params ***/
     private var data: Base64Data = EMPTY_BASE_64
     private var sender: PublicKey = PublicKey(EMPTY_BASE_64)
     private var signature: Signature = Signature(EMPTY_BASE_64)
@@ -43,44 +31,44 @@ object HighLevelMessageGenerator {
 
     def toMessage = new Message(data, sender, signature, message_id, witness_signatures, decodedData)
 
-    def withSender(sender: PublicKey) = {
+    def withSender(sender: PublicKey): MessageBuilder = {
       this.sender = sender
       this
     }
 
-    def withSignature(signature: Signature) = {
+    def withSignature(signature: Signature): MessageBuilder = {
       this.signature = signature
       this
     }
 
-    def withMessageId(message_id: Hash) = {
+    def withMessageId(message_id: Hash): MessageBuilder = {
       this.message_id = message_id
       this
     }
 
-    def withDecodedData(decodedData: MessageData) = {
+    def withDecodedData(decodedData: MessageData): MessageBuilder = {
       this.decodedData = Some(decodedData)
       this
     }
 
-    def withWitnessSig(ws: WitnessSignaturePair) = {
+    def withWitnessSig(ws: WitnessSignaturePair): MessageBuilder = {
       this.witness_signatures = ws :: witness_signatures
       this
     }
   }
 
   /**
-    * Helper class used to build High Level Messages with data
+    * Helper class used to build High Level Messages with decoded and parsed data
     *
-    * @param message mid-level message bulder
+    * @param message mid-level message builder
     */
   sealed class HLMessageBuilder(var message: MessageBuilder){
-    /***Builder params***/
+    /*** Builder params ***/
     private var id = Some(1)
     private var payload: String = ""
-    private var methodeType:  MethodType.MethodType = null
+    private var methodType:  MethodType.MethodType = null
     private var paramsChannel: Channel = Channel.ROOT_CHANNEL
-    /******/
+    /**********************/
     private var messageData : MessageData = null
     private var params : ParamsWithMessage = null
 
@@ -93,10 +81,12 @@ object HighLevelMessageGenerator {
       this.payload = payload
       this
     }
+
     def withMethodType(methodeType: MethodType.MethodType): HLMessageBuilder = {
-      this.methodeType = methodeType
+      this.methodType = methodeType
       this
     }
+
     def withChannel(channel: Channel): HLMessageBuilder = {
       this.paramsChannel = channel
       this
@@ -111,25 +101,25 @@ object HighLevelMessageGenerator {
     //TODO : implement other object types and actions
     def generateJsonRpcRequestWith(objType: ObjectType.ObjectType)(actionType: ActionType.ActionType): JsonRpcRequest = {
 
-      assume(!payload.isBlank() &&  methodeType != null)
+      assume(!payload.isBlank() &&  methodType != null)
 
       (objType, actionType) match {
         case (ObjectType.ROLL_CALL, ActionType.CREATE) =>
           messageData = CreateRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestCreateRollCall(RpcValidator.JSON_RPC_VERSION, methodeType, params, id)
+          JsonRpcRequestCreateRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         case (ObjectType.ROLL_CALL, ActionType.OPEN)   =>
           messageData = OpenRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestOpenRollCall(RpcValidator.JSON_RPC_VERSION, methodeType, params,id)
+          JsonRpcRequestOpenRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
 
         case (ObjectType.ROLL_CALL, ActionType.CLOSE)  =>
           messageData = CloseRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestCloseRollCall(RpcValidator.JSON_RPC_VERSION, methodeType, params,id)
+          JsonRpcRequestCloseRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
 
-        case(obj,act) => throw new IllegalStateException(s"HLMessageBuilder failded: ($obj, $act) not implemented yet !!")
+        case(obj,act) => throw new IllegalStateException(s"HLMessageBuilder failed: ($obj, $act) not implemented yet !!")
       }
     }
   }
