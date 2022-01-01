@@ -403,7 +403,7 @@ type fakeHub struct {
 
 	closedSockets chan string
 
-	pubKeyOrg kyber.Point
+	pubKeyOwner kyber.Point
 
 	pubKeyServ kyber.Point
 	secKeyServ kyber.Scalar
@@ -435,7 +435,7 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOrg:       publicOrg,
+		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
 		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
@@ -463,12 +463,12 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 
 // GetPubKeyOwner implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyOwner() kyber.Point {
-	return h.pubKeyOrg
+	return h.pubKeyOwner
 }
 
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
-	return h.pubKeyOrg
+	return h.pubKeyServ
 }
 
 // Sign implements channel.HubFunctionalities
