@@ -1438,7 +1438,7 @@ func Test_Timeout_Prepare(t *testing.T) {
 
 	fakeHub.fakeSock.msg = nil
 
-	clock.Add(4 * time.Second)
+	clock.Add(12 * time.Second)
 	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
@@ -1569,7 +1569,7 @@ func Test_Timeout_Promise(t *testing.T) {
 
 	fakeHub.fakeSock.msg = nil
 
-	clock.Add(2 * time.Second)
+	clock.Add(6 * time.Second)
 	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
@@ -1702,7 +1702,7 @@ func Test_Timeout_Propose(t *testing.T) {
 
 	fakeHub.fakeSock.msg = nil
 
-	clock.Add(4 * time.Second)
+	clock.Add(12 * time.Second)
 	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
@@ -1833,7 +1833,7 @@ func Test_Timeout_Accept(t *testing.T) {
 
 	fakeHub.fakeSock.msg = nil
 
-	clock.Add(2 * time.Second)
+	clock.Add(6 * time.Second)
 	time.Sleep(500 * time.Millisecond)
 
 	// A failure message should be sent to the socket
