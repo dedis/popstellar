@@ -5,7 +5,7 @@ import { PublicKey } from './PublicKey';
 export interface ReactionState {
   id: string;
   sender: string;
-  reaction_codepoint: string;
+  codepoint: string;
   chirp_id: string;
   time: number;
 }
@@ -17,7 +17,7 @@ export class Reaction {
   public readonly sender: PublicKey;
 
   // The codepoint of the reaction
-  public readonly reaction_codepoint: string;
+  public readonly codepoint: string;
 
   // The chirp_id of the reaction added on
   public readonly chirp_id: Hash;
@@ -37,7 +37,7 @@ export class Reaction {
     if (obj.sender === undefined) {
       throw new Error("Undefined 'sender' when creating 'Reaction'");
     }
-    if (obj.reaction_codepoint === undefined) {
+    if (obj.codepoint === undefined) {
       throw new Error("Undefined 'reaction_codepoint' when creating 'Reaction'");
     }
     if (obj.chirp_id === undefined) {
@@ -49,7 +49,7 @@ export class Reaction {
 
     this.id = obj.id;
     this.sender = obj.sender;
-    this.reaction_codepoint = obj.reaction_codepoint;
+    this.codepoint = obj.codepoint;
     this.chirp_id = obj.chirp_id;
     this.time = obj.time;
   }
@@ -63,7 +63,7 @@ export class Reaction {
     return new Reaction({
       id: new Hash(reactionState.id),
       sender: new PublicKey(reactionState.sender),
-      reaction_codepoint: reactionState.reaction_codepoint,
+      codepoint: reactionState.codepoint,
       chirp_id: new Hash(reactionState.chirp_id),
       time: new Timestamp(reactionState.time),
     });

@@ -1,5 +1,7 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import { getStore, makeCurrentLao } from 'store';
+import {
+  addReaction, dispatch, getStore, makeCurrentLao,
+} from 'store';
 import { ActionType, AddReaction, ObjectType } from 'model/network/method/message/data';
 import { Reaction } from 'model/objects/Reaction';
 
@@ -36,12 +38,12 @@ function handleAddReactionMessage(msg: ExtendedMessage): boolean {
   const reaction = new Reaction({
     id: messageId,
     sender: sender,
-    reaction_codepoint: reactionMessage.reaction_codepoint,
+    codepoint: reactionMessage.reaction_codepoint,
     chirp_id: reactionMessage.chirp_id,
     time: reactionMessage.timestamp,
   });
 
-  // TODO: dispatch()
+  dispatch(addReaction(lao.id, reaction.toState()));
   return true;
 }
 

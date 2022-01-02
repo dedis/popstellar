@@ -7,7 +7,7 @@ import {
   OpenRollCall,
 } from 'model/network/method/message/data';
 import {
-  RollCall, RollCallStatus, Wallet, getUserSocialChannel,
+  RollCall, RollCallStatus, Wallet, getUserSocialChannel, getReactionChannel,
 } from 'model/objects';
 import {
   addEvent,
@@ -141,6 +141,12 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
     .catch((err) => {
       console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`,
         err);
+    });
+
+  // everyone is automatically subscribed to the reaction channel after the roll call
+  subscribeToChannel(getReactionChannel(lao.id))
+    .catch((err) => {
+      console.error('Could not subscribe to reaction channel, error:', err);
     });
 
   return true;
