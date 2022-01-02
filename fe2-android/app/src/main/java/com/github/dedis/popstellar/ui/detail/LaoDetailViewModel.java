@@ -41,24 +41,22 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-import com.github.dedis.popstellar.utility.security.Keys;
-import com.github.dedis.popstellar.utility.security.Signature;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -91,7 +89,8 @@ public class LaoDetailViewModel extends AndroidViewModel
    * LiveData objects for capturing events like button clicks
    */
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenIdentityEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<PublicKey>> mOpenIdentityEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessMessageEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mShowPropertiesEvent =
@@ -133,7 +132,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   private final MutableLiveData<SingleEvent<Boolean>> mCreatedRollCallEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mPkRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<PublicKey>> mPkRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mWalletMessageEvent = new MutableLiveData<>();
 
   private final MutableLiveData<SingleEvent<String>> mAttendeeScanConfirmEvent =
@@ -158,7 +157,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>("");
   private final MutableLiveData<List<List<Integer>>> mCurrentElectionVotes =
       new MutableLiveData<>();
-  private final LiveData<List<String>> mWitnesses =
+  private final LiveData<List<PublicKey>> mWitnesses =
       Transformations.map(
           mCurrentLao,
           lao -> lao == null ? new ArrayList<>() : new ArrayList<>(lao.getWitnesses()));
@@ -195,13 +194,13 @@ public class LaoDetailViewModel extends AndroidViewModel
    * Dependencies for this class
    */
   private final LAORepository mLAORepository;
-  private final AndroidKeysetManager mKeysetManager;
+  private final KeyManager mKeyManager;
   private final CompositeDisposable disposables;
   private final Gson mGson;
   private final Wallet wallet;
   private String mCurrentRollCallId = ""; // used to know which roll call to close
-  private Set<String> attendees = new HashSet<>();
-  private Set<String> witnesses =
+  private Set<PublicKey> attendees = new HashSet<>();
+  private Set<PublicKey> witnesses =
       new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
   private ScanningAction scanningAction;
 
@@ -209,12 +208,12 @@ public class LaoDetailViewModel extends AndroidViewModel
   public LaoDetailViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      KeyManager keyManager,
       Gson gson,
-      Wallet wallet, // FIXME Use KeyManager instead
-      AndroidKeysetManager keysetManager) {
+      Wallet wallet) {
     super(application);
     mLAORepository = laoRepository;
-    mKeysetManager = keysetManager;
+    mKeyManager = keyManager;
     mGson = gson;
     this.wallet = wallet;
     disposables = new CompositeDisposable();
@@ -231,18 +230,13 @@ public class LaoDetailViewModel extends AndroidViewModel
   private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
     // find out if user has attended the rollcall
     String firstLaoId = lao.getChannel().substring(6);
-    String pk;
     try {
-      pk =
-          wallet
-              .findKeyPair(firstLaoId, rollcall.getPersistentId())
-              .getPublicKey()
-              .getEncoded(); // FIXME Outdated type usage
+      PublicKey pk = wallet.findKeyPair(firstLaoId, rollcall.getPersistentId()).getPublicKey();
+      return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
-    return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
   }
 
   /**
@@ -250,10 +244,9 @@ public class LaoDetailViewModel extends AndroidViewModel
    *
    * @return the public key
    */
-  public String getPublicKey() {
+  public PublicKey getPublicKey() {
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      return Keys.getEncodedKey(publicKeysetHandle);
+      return mKeyManager.getMainPublicKey();
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
       return null;
@@ -280,12 +273,7 @@ public class LaoDetailViewModel extends AndroidViewModel
         new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
 
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, electionEnd, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionEnd, mGson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
@@ -344,12 +332,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     String electionChannel = election.getChannel();
 
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, castVote, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), castVote, mGson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
@@ -423,11 +406,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       // Retrieve identity of who is creating the election
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, electionSetup, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionSetup, mGson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
@@ -495,13 +474,8 @@ public class LaoDetailViewModel extends AndroidViewModel
             title, creation, proposedStart, proposedEnd, "Lausanne", description, laoId);
 
     try {
-
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(sender, createRollCall, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), createRollCall, mGson);
       Disposable disposable =
           mLAORepository
               .sendPublish(channel, msg)
@@ -557,12 +531,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(sender, consensusElect, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElect, mGson);
 
       Disposable disposable =
           mLAORepository
@@ -612,12 +582,8 @@ public class LaoDetailViewModel extends AndroidViewModel
         new ConsensusElectAccept(consensus.getId(), consensus.getMessageId(), accept);
 
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, consensusElectAccept, signer, mGson);
+      MessageGeneral msg =
+          new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElectAccept, mGson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
@@ -677,12 +643,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     attendees = new HashSet<>(rollCall.getAttendees());
 
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      attendees.add(publicKey);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), openRollCall, mGson);
       Disposable disposable =
           mLAORepository
               .sendPublish(channel, msg)
@@ -726,11 +687,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     CloseRollCall closeRollCall =
         new CloseRollCall(laoId, mCurrentRollCallId, end, new ArrayList<>(attendees));
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, closeRollCall, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), closeRollCall, mGson);
       Disposable disposable =
           mLAORepository
               .sendPublish(channel, msg)
@@ -757,34 +714,24 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void signMessage(WitnessMessage witnessMessage) {
-    String messageId = witnessMessage.getMessageId();
-    byte[] messageIdBuf = Base64.getUrlDecoder().decode(messageId);
-    /** Base 64 URL decoded message ID */
-    String signature;
-    /** Base 64 URL encoded signature of the message that we want to sign */
-    WitnessMessageSignature signatureMessage;
-    /** Message of type WitnessMessage that will be handled by LAORepository */
     Log.d(TAG, "signing message with ID " + witnessMessage.getMessageId());
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
+
     String channel = lao.getChannel();
 
     try {
-
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-
+      KeyPair mainKey = mKeyManager.getMainKeyPair();
       // generate the signature of the message
-      signature = Signature.generateSignature(signer, messageIdBuf);
+      Signature signature = mainKey.sign(witnessMessage.getMessageId());
 
       Log.d(TAG, PUBLISH_MESSAGE);
-      signatureMessage = new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
-      MessageGeneral msg = new MessageGeneral(sender, signatureMessage, signer, mGson);
+      WitnessMessageSignature signatureMessage =
+          new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
+      MessageGeneral msg = new MessageGeneral(mainKey, signatureMessage, mGson);
       disposables.add(
           mLAORepository
               .sendPublish(channel, msg)
@@ -794,7 +741,10 @@ public class LaoDetailViewModel extends AndroidViewModel
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "Verifying the signature of  message  with id: " + messageId);
+                      Log.d(
+                          TAG,
+                          "Verifying the signature of  message  with id: "
+                              + witnessMessage.getMessageId());
 
                     } else {
                       Log.d(TAG, "failed to sign message ");
@@ -871,7 +821,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenHomeEvent;
   }
 
-  public LiveData<SingleEvent<String>> getOpenIdentityEvent() {
+  public LiveData<SingleEvent<PublicKey>> getOpenIdentityEvent() {
     return mOpenIdentityEvent;
   }
 
@@ -933,9 +883,8 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public LiveData<Boolean> isWitness() {
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       boolean isWitness =
-          getCurrentLaoValue().getWitnesses().contains(Keys.getEncodedKey(publicKeysetHandle));
+          getCurrentLaoValue().getWitnesses().contains(mKeyManager.getMainPublicKey());
       Log.d(TAG, "isWitness: " + isWitness);
       mIsWitness.setValue(isWitness);
       return mIsWitness;
@@ -949,14 +898,12 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mIsWitness;
   }
 
-  public LiveData<Boolean> isSignedByCurrentWitness(Set<String> witnesses) {
+  public LiveData<Boolean> isSignedByCurrentWitness(Set<PublicKey> witnesses) {
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      boolean isSignedByCurrentWitness = witnesses.contains(Keys.getEncodedKey(publicKeysetHandle));
+      boolean isSignedByCurrentWitness = witnesses.contains(mKeyManager.getMainPublicKey());
       Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
       mIsSignedByCurrentWitness.setValue(isSignedByCurrentWitness);
       return mIsSignedByCurrentWitness;
-
     } catch (GeneralSecurityException e) {
       Log.d(TAG, KEYSET_HANDLE_FAILURE_MESSAGE, e);
     } catch (IOException e) {
@@ -970,7 +917,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     return showProperties;
   }
 
-  public LiveData<List<String>> getWitnesses() {
+  public LiveData<List<PublicKey>> getWitnesses() {
     return mWitnesses;
   }
 
@@ -1037,7 +984,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mScanWarningEvent;
   }
 
-  public LiveData<SingleEvent<String>> getPkRollCallEvent() {
+  public LiveData<SingleEvent<PublicKey>> getPkRollCallEvent() {
     return mPkRollCallEvent;
   }
 
@@ -1097,10 +1044,9 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openIdentity() {
     if (mCurrentRollCallId.equals("")) {
-      String publicKey = null;
+      PublicKey publicKey = null;
       try {
-        KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-        publicKey = Keys.getEncodedKey(publicKeysetHandle);
+        publicKey = mKeyManager.getMainPublicKey();
       } catch (GeneralSecurityException | IOException e) {
         Log.d(TAG, PK_FAILURE_MESSAGE, e);
       }
@@ -1213,15 +1159,16 @@ public class LaoDetailViewModel extends AndroidViewModel
     Lao lao = getCurrentLaoValue();
     String channel = lao.getChannel();
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-
+      KeyPair mainKey = mKeyManager.getMainKeyPair();
       long now = Instant.now().getEpochSecond();
       UpdateLao updateLao =
-          new UpdateLao(publicKey, lao.getCreation(), mLaoName.getValue(), now, lao.getWitnesses());
-      MessageGeneral msg = new MessageGeneral(sender, updateLao, signer, mGson);
+          new UpdateLao(
+              mainKey.getPublicKey(),
+              lao.getCreation(),
+              mLaoName.getValue(),
+              now,
+              lao.getWitnesses());
+      MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
       Disposable disposable =
           mLAORepository
               .sendPublish(channel, msg)
@@ -1232,8 +1179,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                   answer -> {
                     if (answer instanceof Result) {
                       Log.d(TAG, "updated lao name");
-                      sendStateLao(
-                          "lao name", updateLao, lao, sender, signer, channel, publicKey, msg);
+                      dipatchLaoUpdate("lao name", updateLao, lao, channel, msg);
                     } else {
                       Log.d(TAG, "failed to update lao name");
                     }
@@ -1261,15 +1207,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
     String channel = lao.getChannel();
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-
+      KeyPair mainKey = mKeyManager.getMainKeyPair();
       long now = Instant.now().getEpochSecond();
       UpdateLao updateLao =
-          new UpdateLao(publicKey, lao.getCreation(), lao.getName(), now, witnesses);
-      MessageGeneral msg = new MessageGeneral(sender, updateLao, signer, mGson);
+          new UpdateLao(mainKey.getPublicKey(), lao.getCreation(), lao.getName(), now, witnesses);
+      MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
       Disposable disposable =
           mLAORepository
               .sendPublish(channel, msg)
@@ -1280,15 +1222,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                   answer -> {
                     if (answer instanceof Result) {
                       Log.d(TAG, "updated lao witnesses");
-                      sendStateLao(
-                          "lao state with new witnesses",
-                          updateLao,
-                          lao,
-                          sender,
-                          signer,
-                          channel,
-                          publicKey,
-                          msg);
+                      dipatchLaoUpdate(
+                          "lao state with new witnesses", updateLao, lao, channel, msg);
                     } else {
                       Log.d(TAG, "failed to update lao witnesses");
                     }
@@ -1303,41 +1238,39 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
-  private void sendStateLao(
-      String s,
-      UpdateLao updateLao,
-      Lao lao,
-      byte[] sender,
-      PublicKeySign signer,
-      String channel,
-      String publicKey,
-      MessageGeneral msg) {
+  private void dipatchLaoUpdate(
+      String desc, UpdateLao updateLao, Lao lao, String channel, MessageGeneral msg) {
     StateLao stateLao =
         new StateLao(
             updateLao.getId(),
             updateLao.getName(),
             lao.getCreation(),
             updateLao.getLastModified(),
-            publicKey,
+            lao.getOrganizer(),
             msg.getMessageId(),
             updateLao.getWitnesses(),
             new ArrayList<>());
-    MessageGeneral stateMsg = new MessageGeneral(sender, stateLao, signer, mGson);
-    disposables.add(
-        mLAORepository
-            .sendPublish(channel, stateMsg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
-            .subscribe(
-                answer2 -> {
-                  if (answer2 instanceof Result) {
-                    Log.d(TAG, "updated " + s);
-                  } else {
-                    Log.d(TAG, "failed to update " + s);
-                  }
-                },
-                throwable -> Log.d(TAG, "timed out waiting for result on update " + s, throwable)));
+    try {
+      MessageGeneral stateMsg = new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
+      disposables.add(
+          mLAORepository
+              .sendPublish(channel, stateMsg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer2 -> {
+                    if (answer2 instanceof Result) {
+                      Log.d(TAG, "updated " + desc);
+                    } else {
+                      Log.d(TAG, "failed to update " + desc);
+                    }
+                  },
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on update " + desc, throwable)));
+    } catch (IOException | GeneralSecurityException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    }
   }
 
   public void cancelEdit() {
@@ -1356,10 +1289,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "got an update for lao: " + lao.getName());
                   mCurrentLao.postValue(lao);
                   try {
-                    KeysetHandle publicKeysetHandle =
-                        mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-                    boolean isOrganizer =
-                        lao.getOrganizer().equals(Keys.getEncodedKey(publicKeysetHandle));
+                    boolean isOrganizer = lao.getOrganizer().equals(mKeyManager.getMainPublicKey());
                     Log.d(TAG, "isOrganizer: " + isOrganizer);
                     mIsOrganizer.setValue(isOrganizer);
                     return;
@@ -1397,8 +1327,7 @@ public class LaoDetailViewModel extends AndroidViewModel
             .substring(6); // use the laoId set at creation + need to remove /root/ prefix
     String errorMessage = "failed to retrieve public key from wallet";
     try {
-      String publicKey =
-          wallet.findKeyPair(firstLaoId, id).getPublicKey().getEncoded(); // FIXME Bad type usage
+      PublicKey publicKey = wallet.findKeyPair(firstLaoId, id).getPublicKey();
       mPkRollCallEvent.postValue(new SingleEvent<>(publicKey));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);
@@ -1414,7 +1343,6 @@ public class LaoDetailViewModel extends AndroidViewModel
       } else if (scanningAction == ScanningAction.ADD_WITNESS) {
         openAddWitness();
       }
-
     } else {
       openCameraPermission();
     }
@@ -1453,25 +1381,26 @@ public class LaoDetailViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
+    PublicKey attendee;
     try {
-      Base64.getUrlDecoder().decode(barcode.rawValue);
+      attendee = new PublicKey(barcode.rawValue);
     } catch (IllegalArgumentException e) {
       mScanWarningEvent.postValue(new SingleEvent<>("Invalid QR code. Please try again."));
       return;
     }
 
-    if (attendees.contains(barcode.rawValue)
-        || Objects.requireNonNull(mWitnesses.getValue()).contains(barcode.rawValue)) {
+    if (attendees.contains(attendee)
+        || Objects.requireNonNull(mWitnesses.getValue()).contains(attendee)) {
       mScanWarningEvent.postValue(
           new SingleEvent<>("This QR code has already been scanned. Please try again."));
       return;
     }
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
-      attendees.add(barcode.rawValue);
+      attendees.add(attendee);
       mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
       mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
     } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
-      witnesses.add(barcode.rawValue);
+      witnesses.add(attendee);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));
       updateLaoWitnesses();
     }

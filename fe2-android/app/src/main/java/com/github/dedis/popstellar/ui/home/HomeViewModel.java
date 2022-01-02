@@ -24,16 +24,12 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
-import com.github.dedis.popstellar.utility.security.Keys;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
-import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -86,7 +82,7 @@ public class HomeViewModel extends AndroidViewModel
    */
   private final Gson mGson;
   private final LAORepository mLAORepository;
-  private final AndroidKeysetManager mKeysetManager;
+  private final KeyManager mKeyManager;
   private final Wallet wallet;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
@@ -97,12 +93,12 @@ public class HomeViewModel extends AndroidViewModel
       Gson gson,
       Wallet wallet,
       LAORepository laoRepository,
-      AndroidKeysetManager keysetManager) {
+      KeyManager keyManager) {
     super(application);
 
     mLAORepository = laoRepository;
     mGson = gson;
-    mKeysetManager = keysetManager;
+    mKeyManager = keyManager;
     this.wallet = wallet;
 
     mLAOs =
@@ -171,15 +167,9 @@ public class HomeViewModel extends AndroidViewModel
     String laoName = mLaoName.getValue();
 
     try {
-      KeysetHandle myKey = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String organizer = Keys.getEncodedKey(myKey);
-      byte[] organizerBuf = Base64.getUrlDecoder().decode(organizer);
-
       Log.d(TAG, "creating lao with name " + laoName);
-      CreateLao createLao = new CreateLao(laoName, organizer);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-
-      MessageGeneral msg = new MessageGeneral(organizerBuf, createLao, signer, mGson);
+      CreateLao createLao = new CreateLao(laoName, mKeyManager.getMainPublicKey());
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), createLao, mGson);
 
       disposables.add(
           mLAORepository
