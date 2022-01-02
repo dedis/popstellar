@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class CreateLao extends Data {
   private final String id;
   private final String name;
   private final long creation;
-  private final String organizer;
+  private final PublicKey organizer;
   private final List<String> witnesses;
 
   /**
@@ -30,7 +31,7 @@ public class CreateLao extends Data {
    * @throws IllegalArgumentException if the id is not valid
    */
   public CreateLao(
-      String id, String name, long creation, String organizer, List<String> witnesses) {
+      String id, String name, long creation, PublicKey organizer, List<String> witnesses) {
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
     }
@@ -41,7 +42,7 @@ public class CreateLao extends Data {
     this.witnesses = witnesses;
   }
 
-  public CreateLao(String name, String organizer) {
+  public CreateLao(String name, PublicKey organizer) {
     this.name = name;
     this.organizer = organizer;
     this.creation = Instant.now().getEpochSecond();
@@ -71,7 +72,7 @@ public class CreateLao extends Data {
     return creation;
   }
 
-  public String getOrganizer() {
+  public PublicKey getOrganizer() {
     return organizer;
   }
 

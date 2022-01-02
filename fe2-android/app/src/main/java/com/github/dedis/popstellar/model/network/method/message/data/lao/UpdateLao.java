@@ -4,6 +4,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
@@ -31,7 +32,7 @@ public class UpdateLao extends Data {
    * @param witnesses list of witnesses of the LAO
    */
   public UpdateLao(
-      String organizer, long creation, String name, long lastModified, Set<String> witnesses) {
+      PublicKey organizer, long creation, String name, long lastModified, Set<String> witnesses) {
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;

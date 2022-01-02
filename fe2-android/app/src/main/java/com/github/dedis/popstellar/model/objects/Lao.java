@@ -18,7 +18,7 @@ public final class Lao {
   private String name;
   private Long lastModified;
   private Long creation;
-  private String organizer;
+  private PublicKey organizer;
   private MessageID modificationId;
   private Set<String> witnesses;
   private final Map<String, WitnessMessage> witnessMessages;
@@ -52,7 +52,7 @@ public final class Lao {
     this.pendingUpdates = new HashSet<>();
   }
 
-  public Lao(String name, String organizer, long creation) {
+  public Lao(String name, PublicKey organizer, long creation) {
     this(generateLaoId(organizer, creation, name));
     if (name == null) {
       throw new IllegalArgumentException("The name of the Lao is null");
@@ -190,7 +190,7 @@ public final class Lao {
     return pendingUpdates;
   }
 
-  public String getOrganizer() {
+  public PublicKey getOrganizer() {
     return organizer;
   }
 
@@ -243,7 +243,7 @@ public final class Lao {
     this.creation = creation;
   }
 
-  public void setOrganizer(String organizer) {
+  public void setOrganizer(PublicKey organizer) {
     this.organizer = organizer;
     if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(organizer))) {
       nodes.add(new ConsensusNode(organizer));
@@ -323,8 +323,8 @@ public final class Lao {
    * @param name original or updated name of the LAO
    * @return the ID of CreateLao or UpdateLao computed as Hash(organizer||creation||name)
    */
-  public static String generateLaoId(String organizer, long creation, String name) {
-    return Hash.hash(organizer, Long.toString(creation), name);
+  public static String generateLaoId(PublicKey organizer, long creation, String name) {
+    return Hash.hash(organizer.getEncoded(), Long.toString(creation), name);
   }
 
   @Override
