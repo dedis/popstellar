@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -18,7 +20,7 @@ public class CreateLao extends Data {
   private final String name;
   private final long creation;
   private final PublicKey organizer;
-  private final List<String> witnesses;
+  private final List<PublicKey> witnesses;
 
   /**
    * Constructor for a data Create LAO
@@ -31,7 +33,7 @@ public class CreateLao extends Data {
    * @throws IllegalArgumentException if the id is not valid
    */
   public CreateLao(
-      String id, String name, long creation, PublicKey organizer, List<String> witnesses) {
+      String id, String name, long creation, PublicKey organizer, List<PublicKey> witnesses) {
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("CreateLao id must be Hash(organizer||creation||name)");
     }
@@ -76,7 +78,7 @@ public class CreateLao extends Data {
     return organizer;
   }
 
-  public List<String> getWitnesses() {
+  public List<PublicKey> getWitnesses() {
     return new ArrayList<>(witnesses);
   }
 
@@ -102,6 +104,7 @@ public class CreateLao extends Data {
         getId(), getName(), getCreation(), getOrganizer(), getWitnesses());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "CreateLao{"

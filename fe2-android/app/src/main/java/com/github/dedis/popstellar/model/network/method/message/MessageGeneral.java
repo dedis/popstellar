@@ -103,8 +103,8 @@ public final class MessageGeneral {
     if (data instanceof WitnessMessageSignature) {
       WitnessMessageSignature witness = (WitnessMessageSignature) data;
 
-      Signature signature = new Signature(witness.getSignature());
-      MessageID messageID = new MessageID(witness.getMessageId());
+      Signature signature = witness.getSignature();
+      MessageID messageID = witness.getMessageId();
 
       return sender.verify(signature, messageID);
     } else {

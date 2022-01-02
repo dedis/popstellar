@@ -2,6 +2,8 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 /** Class modeling a Chirp */
 public class Chirp {
 
@@ -10,7 +12,7 @@ public class Chirp {
   private String id;
   private String channel;
 
-  private String sender;
+  private PublicKey sender;
   private String text;
   private long timestamp;
   private int likes;
@@ -46,11 +48,11 @@ public class Chirp {
     this.channel = channel;
   }
 
-  public String getSender() {
+  public PublicKey getSender() {
     return sender;
   }
 
-  public void setSender(String sender) {
+  public void setSender(PublicKey sender) {
     this.sender = sender;
   }
 

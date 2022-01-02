@@ -20,8 +20,8 @@ public final class Lao {
   private Long creation;
   private PublicKey organizer;
   private MessageID modificationId;
-  private Set<String> witnesses;
-  private final Map<String, WitnessMessage> witnessMessages;
+  private Set<PublicKey> witnesses;
+  private final Map<MessageID, WitnessMessage> witnessMessages;
   /**
    * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
    * witnesses
@@ -114,7 +114,7 @@ public final class Lao {
    * @param prevId the previous id of a message that needs to be signed
    * @param witnessMessage the object representing the message needing to be signed
    */
-  public void updateWitnessMessage(String prevId, WitnessMessage witnessMessage) {
+  public void updateWitnessMessage(MessageID prevId, WitnessMessage witnessMessage) {
     witnessMessages.remove(prevId);
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
   }
@@ -146,7 +146,7 @@ public final class Lao {
     return Optional.ofNullable(messageIdToConsensus.get(messageId));
   }
 
-  public Optional<WitnessMessage> getWitnessMessage(String id) {
+  public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
     return Optional.ofNullable(witnessMessages.get(id));
   }
 
@@ -182,7 +182,7 @@ public final class Lao {
     return lastModified;
   }
 
-  public Set<String> getWitnesses() {
+  public Set<PublicKey> getWitnesses() {
     return witnesses;
   }
 
@@ -245,7 +245,7 @@ public final class Lao {
 
   public void setOrganizer(PublicKey organizer) {
     this.organizer = organizer;
-    if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(organizer))) {
+    if (nodes.stream().map(ConsensusNode::getPublicKey).noneMatch(organizer::equals)) {
       nodes.add(new ConsensusNode(organizer));
     }
   }
@@ -258,12 +258,12 @@ public final class Lao {
     this.modificationId = modificationId;
   }
 
-  public void setWitnesses(Set<String> witnesses) {
+  public void setWitnesses(Set<PublicKey> witnesses) {
 
     if (witnesses == null) {
       throw new IllegalArgumentException("The witnesses set is null");
     }
-    for (String witness : witnesses) {
+    for (PublicKey witness : witnesses) {
       if (witness == null) {
         throw new IllegalArgumentException("One of the witnesses in the set is null");
       }
@@ -297,7 +297,7 @@ public final class Lao {
     return messageIdToConsensus;
   }
 
-  public Map<String, WitnessMessage> getWitnessMessages() {
+  public Map<MessageID, WitnessMessage> getWitnessMessages() {
     return witnessMessages;
   }
 

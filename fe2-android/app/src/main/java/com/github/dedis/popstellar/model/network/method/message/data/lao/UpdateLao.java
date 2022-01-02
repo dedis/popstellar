@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -20,7 +22,7 @@ public class UpdateLao extends Data {
   @SerializedName("last_modified")
   private final long lastModified;
 
-  private final Set<String> witnesses;
+  private final Set<PublicKey> witnesses;
 
   /**
    * Constructor for a data Update LAO
@@ -32,7 +34,11 @@ public class UpdateLao extends Data {
    * @param witnesses list of witnesses of the LAO
    */
   public UpdateLao(
-      PublicKey organizer, long creation, String name, long lastModified, Set<String> witnesses) {
+      PublicKey organizer,
+      long creation,
+      String name,
+      long lastModified,
+      Set<PublicKey> witnesses) {
     this.id = Lao.generateLaoId(organizer, creation, name);
     this.name = name;
     this.lastModified = lastModified;
@@ -61,7 +67,7 @@ public class UpdateLao extends Data {
     return lastModified;
   }
 
-  public Set<String> getWitnesses() {
+  public Set<PublicKey> getWitnesses() {
     return new HashSet<>(witnesses);
   }
 
@@ -85,6 +91,7 @@ public class UpdateLao extends Data {
     return java.util.Objects.hash(getName(), getLastModified(), getWitnesses());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "UpdateLao{"
