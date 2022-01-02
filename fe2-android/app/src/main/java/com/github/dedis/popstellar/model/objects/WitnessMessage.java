@@ -1,26 +1,31 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import java.util.HashSet;
 import java.util.Set;
 
 /** Class to model a message that needs to be signed by witnesses */
 public class WitnessMessage {
 
-  private final String messageId;
   /** Base 64 URL encoded ID of the message that we want to sign */
-  private final Set<String> witnesses;
+  private final MessageID messageId;
   /** Set of witnesses that have signed the message */
-  private String title = "";
+  private final Set<PublicKey> witnesses;
   /** Title that will be displayed for the message */
-  private String description = "";
+  private String title = "";
   /** Description that will be displayed for the message */
+  private String description = "";
 
   /**
    * Constructor for a Witness Message
    *
    * @param messageId ID of the message to sign
    */
-  public WitnessMessage(String messageId) {
+  public WitnessMessage(MessageID messageId) {
     witnesses = new HashSet<>();
     this.messageId = messageId;
   }
@@ -30,15 +35,15 @@ public class WitnessMessage {
    *
    * @param pk public key of the witness that have signed the message
    */
-  public void addWitness(String pk) {
+  public void addWitness(PublicKey pk) {
     witnesses.add(pk);
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
-  public Set<String> getWitnesses() {
+  public Set<PublicKey> getWitnesses() {
     return witnesses;
   }
 
@@ -58,6 +63,7 @@ public class WitnessMessage {
     this.description = description;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "WitnessMessage{"

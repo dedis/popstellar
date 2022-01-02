@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
@@ -29,7 +31,7 @@ public class StateLao extends Data {
   @SerializedName("modification_id")
   private final MessageID modificationId;
 
-  private final Set<String> witnesses;
+  private final Set<PublicKey> witnesses;
 
   @SerializedName("modification_signatures")
   private final List<PublicKeySignaturePair> modificationSignatures;
@@ -52,7 +54,7 @@ public class StateLao extends Data {
       long lastModified,
       PublicKey organizer,
       MessageID modificationId,
-      Set<String> witnesses,
+      Set<PublicKey> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
@@ -97,7 +99,7 @@ public class StateLao extends Data {
     return organizer;
   }
 
-  public Set<String> getWitnesses() {
+  public Set<PublicKey> getWitnesses() {
     return new HashSet<>(witnesses);
   }
 
@@ -124,6 +126,7 @@ public class StateLao extends Data {
         getId(), getName(), getCreation(), getLastModified(), getOrganizer(), getWitnesses());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "StateLao{"
