@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.utility.security;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
@@ -27,6 +29,8 @@ import javax.inject.Singleton;
 @Singleton
 public class KeyManager {
 
+  private static final String TAG = KeyManager.class.getSimpleName();
+
   private final AndroidKeysetManager keysetManager;
   private final Wallet wallet;
 
@@ -34,6 +38,12 @@ public class KeyManager {
   public KeyManager(AndroidKeysetManager keysetManager, Wallet wallet) {
     this.keysetManager = keysetManager;
     this.wallet = wallet;
+
+    try {
+      Log.d(TAG, "Public Key = " + getMainPublicKey().getEncoded());
+    } catch (IOException | GeneralSecurityException e) {
+      Log.e(TAG, "Failed to retrieve public key", e);
+    }
   }
 
   public PublicKey getMainPublicKey() throws IOException, GeneralSecurityException {
