@@ -32,7 +32,7 @@ public final class Lao {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
-  private Map<String, Chirp> chirps;
+  private Map<MessageID, Chirp> chirps;
   private final Map<MessageID, Consensus> messageIdToConsensus;
   private final List<ConsensusNode> nodes;
 
@@ -128,7 +128,7 @@ public final class Lao {
    * @param prevId the previous id of a chirp
    * @param chirp the chirp
    */
-  public void updateChirp(String prevId, Chirp chirp) {
+  public void updateChirp(MessageID prevId, Chirp chirp) {
     if (chirp == null) {
       throw new IllegalArgumentException("The chirp is null");
     }
@@ -152,7 +152,7 @@ public final class Lao {
     return Optional.ofNullable(witnessMessages.get(id));
   }
 
-  public Optional<Chirp> getChirp(String id) {
+  public Optional<Chirp> getChirp(MessageID id) {
     return Optional.ofNullable(chirps.get(id));
   }
 
@@ -303,7 +303,7 @@ public final class Lao {
     return witnessMessages;
   }
 
-  public Map<String, Chirp> getChirps() {
+  public Map<MessageID, Chirp> getChirps() {
     return chirps;
   }
 
