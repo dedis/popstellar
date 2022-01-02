@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ConsensusNode.State;
 import com.github.dedis.popstellar.model.objects.Election;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
@@ -138,7 +139,7 @@ public class ElectionStartFragment extends Fragment {
     return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
-  private ConsensusNode getOwnNode(String ownPublicKey, List<ConsensusNode> nodes) {
+  private ConsensusNode getOwnNode(PublicKey ownPublicKey, List<ConsensusNode> nodes) {
     Optional<ConsensusNode> ownNodeOpt =
         nodes.stream().filter(node -> node.getPublicKey().equals(ownPublicKey)).findAny();
     if (ownNodeOpt.isPresent()) {
