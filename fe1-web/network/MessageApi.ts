@@ -2,6 +2,7 @@ import {
   EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
+  AddChirp,
   CastVote,
   CloseRollCall,
   CreateLao,
@@ -22,7 +23,6 @@ import {
   OpenedLaoStore, KeyPairStore,
 } from 'store';
 import { Question, Vote } from 'model/objects/Election';
-import { AddChirp } from 'model/network/method/message/data/chirp/AddChirp';
 import { publish } from './JsonRpcApi';
 
 /**
@@ -231,14 +231,14 @@ export function requestCreateElection(
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
+  time: Timestamp,
 ): Promise<void> {
-  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new SetupElection({
     lao: currentLao.id,
     id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.ELECTION, currentLao.id.toString(), time.toString(), name,
     ),
     name: name,
     version: version,

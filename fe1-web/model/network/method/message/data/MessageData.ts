@@ -9,7 +9,6 @@ export enum ObjectType {
   ROLL_CALL = 'roll_call',
   ELECTION = 'election',
   CHIRP = 'chirp',
-  REACTION = 'reaction',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */

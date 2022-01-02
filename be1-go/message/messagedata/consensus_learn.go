@@ -54,3 +54,18 @@ func (message ConsensusLearn) Verify() error {
 
 	return nil
 }
+
+// GetObject implements MessageData
+func (ConsensusLearn) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusLearn) GetAction() string {
+	return ConsensusActionLearn
+}
+
+// NewEmpty implements MessageData
+func (ConsensusLearn) NewEmpty() MessageData {
+	return &ConsensusLearn{}
+}

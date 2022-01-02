@@ -9,13 +9,11 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { getCurrentPopTokenFromStore } from 'model/objects/wallet';
+import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
 import {
-  buildMessageData,
-  encodeMessageData,
-  isSignedWithToken,
-  MessageData,
+  buildMessageData, encodeMessageData, MessageData,
 } from './data';
+import { messagePropertiesMap } from './data/MessageProperties';
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -132,7 +130,14 @@ export class Message {
     let privateKey = KeyPairStore.getPrivateKey();
     let signature: Signature;
 
-    if (isSignedWithToken(data)) {
+    // Get the properties of the type of message we want to sign
+    const messagesProperties = messagePropertiesMap.get(data.object)?.get(data.action);
+    if (messagesProperties === undefined) {
+      throw new Error(`Message signature for object ${data.object} and action ${data.action} is unsupported.`);
+    }
+
+    // If the message is signed with the pop token, get it from the store and sign the message
+    if (messagesProperties.isPopTokenSigned) {
       const token = await getCurrentPopTokenFromStore();
       if (token) {
         publicKey = token.publicKey;
@@ -153,6 +158,7 @@ export class Message {
     }
     signature = privateKey.sign(encodedDataJson);
 
+    // Otherwise, simply sign with the public key
     return new Message({
       data: encodedDataJson,
       sender: publicKey,
@@ -168,7 +174,6 @@ export class Message {
   // This method is only a temporary solution for the demo and should be removed once a better
   // solution is found
   private isElectionResultMessage(): boolean {
-    return this.data.decode()
-      .includes('"result":');
+    return this.data.decode().includes('"result":');
   }
 }

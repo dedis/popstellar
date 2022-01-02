@@ -56,3 +56,18 @@ func (message ConsensusPromise) Verify() error {
 
 	return nil
 }
+
+// GetObject implements MessageData
+func (ConsensusPromise) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusPromise) GetAction() string {
+	return ConsensusActionPromise
+}
+
+// NewEmpty implements MessageData
+func (ConsensusPromise) NewEmpty() MessageData {
+	return &ConsensusPromise{}
+}

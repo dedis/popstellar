@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { Chirp } from '../../model/objects/Chirp';
-import { Hash, PublicKey, Timestamp } from '../../model/objects';
+import { Chirp } from 'model/objects/Chirp';
+import { Hash, PublicKey, Timestamp } from 'model/objects';
 import DeletedChirpCard from '../DeletedChirpCard';
 
 const chirp = new Chirp({

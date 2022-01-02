@@ -108,7 +108,7 @@ test("message data: lao", () => {
 })
 
 test("message data: vote", () => {
-    vote_cast_vote = require("../examples/messageData/vote_cast_vote.json")
+    vote_cast_vote = require("../examples/messageData/vote_cast_vote/vote_cast_vote.json")
     expect(vote_cast_vote).toBeValid(messageDataSchema)
 
     vote_cast_write_in = require("../examples/messageData/vote_cast_write_in.json")
@@ -138,13 +138,13 @@ test("message data: meeting", () => {
 })
 
 test("message data: election", () => {
-    election_end = require("../examples/messageData/election_end.json")
+    election_end = require("../examples/messageData/election_end/election_end.json")
     expect(election_end).toBeValid(messageDataSchema)
 
     election_result = require("../examples/messageData/election_result.json")
     expect(election_result).toBeValid(messageDataSchema)
 
-    election_setup = require("../examples/messageData/election_setup.json")
+    election_setup = require("../examples/messageData/election_setup/election_setup.json")
     expect(election_setup).toBeValid(messageDataSchema)
 })
 
@@ -220,6 +220,13 @@ test("message data: consensus", () => {
     // Learn
     learn = require("../examples/messageData/consensus_learn/learn.json");
     expect(learn).toBeValid(messageDataSchema)
+
+    // Failure
+    failure = require("../examples/messageData/consensus_failure/failure.json");
+    expect(failure).toBeValid(messageDataSchema)
+
+    failure = require("../examples/messageData/consensus_failure/wrong_failure_negative_created_at.json");
+    expect(failure).not.toBeValid(messageDataSchema)
 })
 
 function printError(errors) {

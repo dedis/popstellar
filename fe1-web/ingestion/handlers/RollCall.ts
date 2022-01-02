@@ -7,7 +7,7 @@ import {
   OpenRollCall,
 } from 'model/network/method/message/data';
 import {
-  RollCall, RollCallStatus, Wallet, getUserSocialChannel,
+  getUserSocialChannel, RollCall, RollCallStatus, Wallet,
 } from 'model/objects';
 import {
   addEvent,
@@ -130,18 +130,19 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
       const token = await Wallet.generateToken(lao.id, rc.id);
       const hasToken = rc.containsToken(token);
       aDispatch(setLaoLastRollCall(lao.id, rc.id, hasToken));
+
+      // If we had a token in this roll call, we subscribe to our own social media channel
+      if (token && hasToken) {
+        await subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey))
+          .catch((err) => {
+            console.error(`Could not subscribe to our own social channel ${token.publicKey}, error:`,
+              err);
+          });
+      }
     } catch (err) {
       console.debug(err);
     }
   });
-
-  // For now, everyone is automatically subscribed to the organizer's social channel at the end of
-  // the roll call
-  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer))
-    .catch((err) => {
-      console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`,
-        err);
-    });
 
   return true;
 }

@@ -129,7 +129,7 @@ export class RollCall implements LaoEvent {
     };
   }
 
-  public containsToken(token: PopToken): boolean {
+  public containsToken(token: PopToken | undefined): boolean {
     if (this.attendees === undefined || token === undefined) {
       return false;
     }

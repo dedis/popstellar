@@ -9,8 +9,8 @@ import * as bip39path from './Bip32Path';
 import { RollCall } from '../RollCall';
 
 /**
- * Generates a token for an arbitrary derivation path
- * @param path the key derivation path
+ * Generates a token for an arbitrary derivation path.
+ * @param path - The key derivation path
  * @returns a Promise resolving to a PopToken
  * @private
  *
@@ -32,10 +32,10 @@ export async function generateTokenFromPath(path: string): Promise<PopToken> {
 }
 
 /**
- * Generates a token for a given LAOId and RollCallId if it exists
- * @param laoId the id of the LAO
- * @param rollCallId the id of the Roll Call
- * @returns a Promise resolving to a PopToken
+ * Generates a token for a given LAOId and RollCallId if the RollCallId exists.
+ * @param laoId - The id of the LAO
+ * @param rollCallId - The id of the Roll Call
+ * @returns a Promise resolving to a PopToken or to undefined
  */
 export function generateToken(laoId: Hash, rollCallId: Hash | undefined)
   : Promise<PopToken | undefined> {

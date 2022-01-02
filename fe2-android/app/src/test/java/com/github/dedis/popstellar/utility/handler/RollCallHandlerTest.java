@@ -1,12 +1,12 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
-import static com.github.dedis.popstellar.utility.handler.RollCallHandler.closeRollCallWitnessMessage;
-import static com.github.dedis.popstellar.utility.handler.RollCallHandler.createRollCallWitnessMessage;
-import static com.github.dedis.popstellar.utility.handler.RollCallHandler.openRollCallWitnessMessage;
+import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.closeRollCallWitnessMessage;
+import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.createRollCallWitnessMessage;
+import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.openRollCallWitnessMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
@@ -57,7 +57,9 @@ public class RollCallHandlerTest {
   @Mock AndroidKeysetManager androidKeysetManager;
   @Mock PublicKeySign signer;
 
-  private static final Gson GSON = JsonModule.provideGson();
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final MessageHandler messageHandler =
+      new MessageHandler(DataRegistryModule.provideDataRegistry());
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -93,7 +95,12 @@ public class RollCallHandlerTest {
 
     laoRepository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -134,7 +141,7 @@ public class RollCallHandlerTest {
             Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), createRollCall, signer, GSON);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the new Roll Call is present with state CREATED and the correct ID
     Optional<RollCall> rollCallOpt =
@@ -166,7 +173,7 @@ public class RollCallHandlerTest {
             Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), openRollCall, signer, GSON);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state OPENED and the correct ID
     Optional<RollCall> rollCallOpt =
@@ -198,7 +205,7 @@ public class RollCallHandlerTest {
             Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), closeRollCall, signer, GSON);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the Roll Call is present with state CLOSED and the correct ID
     Optional<RollCall> rollCallOpt =

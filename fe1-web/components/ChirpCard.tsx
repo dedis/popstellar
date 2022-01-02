@@ -21,7 +21,7 @@ const ChirpCard = (props: IPropTypes) => {
 
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
-  let userPublicKey: PublicKey | undefined;
+  const [userPublicKey, setUserPublicKey] = useState(new PublicKey(''));
   const [isSender, setIsSender] = useState(false);
 
   if (lao === undefined) {
@@ -39,8 +39,10 @@ const ChirpCard = (props: IPropTypes) => {
   useEffect(() => {
     generateToken(lao.id, rollCallId).then((token) => {
       if (token && rollCall.containsToken(token)) {
-        userPublicKey = token.publicKey;
-        setIsSender(userPublicKey.valueOf() === chirp.sender.valueOf());
+        setUserPublicKey(token.publicKey);
+        if (userPublicKey) {
+          setIsSender(userPublicKey.valueOf() === chirp.sender.valueOf());
+        }
       }
     });
   }, [lao.last_tokenized_roll_call_id]);
@@ -100,8 +102,6 @@ const propTypes = {
 
 ChirpCard.prototype = propTypes;
 
-type IPropTypes = {
-  chirp: Chirp,
-};
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ChirpCard;
