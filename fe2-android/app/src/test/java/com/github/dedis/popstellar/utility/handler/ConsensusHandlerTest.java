@@ -1,8 +1,16 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
@@ -21,6 +29,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
@@ -29,38 +40,39 @@ import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
-import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
-import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
-import com.google.crypto.tink.signature.PublicKeySignWrapper;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
 
-  private static final String ORGANIZER = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
-  private static final String NODE_2_KEY = "Vf9kiBGdOPIutk9z055oQxpG9askyx5C_wnSznpOrHk=";
-  private static final String NODE_3_KEY = "SYeTNtpM0XCbdrPTYSSMFJHtuHBiIEQyrq_auP4Hggw=";
+  private static final KeyPair ORGANIZER_KEY = generateKeyPair();
+  private static final KeyPair NODE_2_KEY = generateKeyPair();
+  private static final KeyPair NODE_3_KEY = generateKeyPair();
+
+  private static final PublicKey ORGANIZER = ORGANIZER_KEY.getPublicKey();
+  private static final PublicKey NODE_2 = NODE_2_KEY.getPublicKey();
+  private static final PublicKey NODE_3 = NODE_3_KEY.getPublicKey();
+
   private static final long CREATION_TIME = 946684800;
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION_TIME, LAO_NAME);
@@ -73,11 +85,10 @@ public class ConsensusHandlerTest {
   private static final String VALUE = "started";
   private static final ConsensusKey KEY = new ConsensusKey(TYPE, KEY_ID, PROPERTY);
   private static final String INSTANCE_ID = Consensus.generateConsensusId(TYPE, KEY_ID, PROPERTY);
-  private static final String INVALID_MSG_ID = "Invalid messageId";
+  private static final MessageID INVALID_MSG_ID = new MessageID("SU5BVkxJRF9NU0c=");
 
   private static final CreateLao CREATE_LAO =
-      new CreateLao(
-          LAO_ID, LAO_NAME, CREATION_TIME, ORGANIZER, Arrays.asList(NODE_2_KEY, NODE_3_KEY));
+      new CreateLao(LAO_ID, LAO_NAME, CREATION_TIME, ORGANIZER, Arrays.asList(NODE_2, NODE_3));
   private static final ConsensusElect elect =
       new ConsensusElect(CREATION_TIME, KEY_ID, TYPE, PROPERTY, VALUE);
 
@@ -87,39 +98,35 @@ public class ConsensusHandlerTest {
 
   private LAORepository laoRepository;
   private MessageGeneral electMsg;
-  private PublicKeySign signer;
-  private String messageId;
+  private MessageID messageId;
   private Lao lao;
 
   @Mock LAORemoteDataSource remoteDataSource;
   @Mock LAOLocalDataSource localDataSource;
-  @Mock AndroidKeysetManager androidKeysetManager;
+  @Mock KeyManager keyManager;
 
   @Before
-  public void setup() throws GeneralSecurityException, DataHandlingException {
+  public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
     SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
 
-    Mockito.when(remoteDataSource.observeMessage()).thenReturn(Observable.empty());
-    Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+    when(remoteDataSource.observeMessage()).thenReturn(Observable.empty());
+    when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
 
-    Ed25519PrivateKeyManager.registerPair(true);
-    PublicKeySignWrapper.register();
-    KeysetHandle keysetHandle =
-        KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
-    signer = keysetHandle.getPrimitive(PublicKeySign.class);
+    lenient().when(keyManager.getMainKeyPair()).thenReturn(ORGANIZER_KEY);
+    lenient().when(keyManager.getMainPublicKey()).thenReturn(ORGANIZER);
 
     laoRepository =
         new LAORepository(
             remoteDataSource,
             localDataSource,
-            androidKeysetManager,
+            keyManager,
             messageHandler,
             GSON,
             testSchedulerProvider);
 
     lao = new Lao(LAO_CHANNEL);
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
-    MessageGeneral createLaoMessage = getMsg(ORGANIZER, CREATE_LAO);
+    MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
     messageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
 
     electMsg = getMsg(NODE_2_KEY, elect);
@@ -133,8 +140,8 @@ public class ConsensusHandlerTest {
    * @param data the data to encapsulated
    * @return a MessageGeneral
    */
-  private MessageGeneral getMsg(String key, Data data) {
-    return new MessageGeneral(Base64.getUrlDecoder().decode(key), data, signer, GSON);
+  private MessageGeneral getMsg(KeyPair key, Data data) {
+    return new MessageGeneral(key, data, GSON);
   }
 
   @Test
@@ -151,7 +158,7 @@ public class ConsensusHandlerTest {
     // the state of the node2 for this instanceId should be FAILED
 
     ConsensusFailure failure = new ConsensusFailure(INSTANCE_ID, messageId, CREATION_TIME);
-    MessageGeneral failureMsg = getMsg(ORGANIZER, failure);
+    MessageGeneral failureMsg = getMsg(ORGANIZER_KEY, failure);
 
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failureMsg);
@@ -162,7 +169,7 @@ public class ConsensusHandlerTest {
 
     assertTrue(consensus.isFailed());
     Optional<ConsensusNode> node2Opt =
-        lao.getNodes().stream().filter(n -> n.getPublicKey().equals(NODE_2_KEY)).findAny();
+        lao.getNodes().stream().filter(n -> n.getPublicKey().equals(NODE_2)).findAny();
     assertTrue(node2Opt.isPresent());
     assertEquals(ConsensusNode.State.FAILED, node2Opt.get().getState(INSTANCE_ID));
   }
@@ -178,24 +185,38 @@ public class ConsensusHandlerTest {
     Consensus consensus = consensusOpt.get();
 
     assertEquals(electMsg.getMessageId(), consensus.getMessageId());
-    assertEquals(NODE_2_KEY, consensus.getProposer());
+    assertEquals(NODE_2, consensus.getProposer());
     assertEquals(CONSENSUS_CHANNEL, consensus.getChannel());
     assertEquals(CREATION_TIME, consensus.getCreation());
     assertEquals(VALUE, consensus.getValue());
     assertEquals(KEY, consensus.getKey());
 
     assertTrue(consensus.getAcceptorsToMessageId().isEmpty());
-    assertEquals(Sets.newSet(ORGANIZER, NODE_2_KEY, NODE_3_KEY), consensus.getNodes());
+    assertEquals(Sets.newSet(ORGANIZER, NODE_2, NODE_3), consensus.getNodes());
 
-    Map<String, Consensus> messageIdToConsensus = lao.getMessageIdToConsensus();
+    Map<MessageID, Consensus> messageIdToConsensus = lao.getMessageIdToConsensus();
     assertEquals(1, messageIdToConsensus.size());
     assertEquals(consensus, messageIdToConsensus.get(consensus.getMessageId()));
 
-    List<ConsensusNode> nodes = lao.getNodes();
-    assertEquals(3, nodes.size());
-    assertEquals(Optional.empty(), nodes.get(0).getLastConsensus(INSTANCE_ID));
-    assertEquals(Optional.empty(), nodes.get(2).getLastConsensus(INSTANCE_ID));
-    assertEquals(consensus, nodes.get(1).getLastConsensus(INSTANCE_ID).get());
+    // Create a map from id to consensus
+    Map<PublicKey, Optional<Consensus>> consensuses =
+        lao.getNodes().stream()
+            .collect(
+                Collectors.toMap(
+                    ConsensusNode::getPublicKey, n -> n.getLastConsensus(INSTANCE_ID)));
+    assertEquals(3, consensuses.size());
+
+    Optional<Consensus> organizerConsensus = consensuses.get(ORGANIZER);
+    Optional<Consensus> node2Consensus = consensuses.get(NODE_2);
+    Optional<Consensus> node3Consensus = consensuses.get(NODE_3);
+
+    assertNotNull(organizerConsensus);
+    assertNotNull(node2Consensus);
+    assertNotNull(node3Consensus);
+
+    assertEquals(Optional.empty(), organizerConsensus);
+    assertEquals(consensus, node2Consensus.orElse(null));
+    assertEquals(Optional.empty(), node3Consensus);
   }
 
   // handle an electAccept from node3 for the elect of node2
@@ -209,23 +230,30 @@ public class ConsensusHandlerTest {
     assertTrue(consensusOpt.isPresent());
     Consensus consensus = consensusOpt.get();
 
-    Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
+    Map<PublicKey, MessageID> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
     assertEquals(1, acceptorsToMessageId.size());
-    assertEquals(electAcceptMsg.getMessageId(), acceptorsToMessageId.get(NODE_3_KEY));
+    assertEquals(electAcceptMsg.getMessageId(), acceptorsToMessageId.get(NODE_3));
 
     // only the node3 has accepted the elect of node2
-    List<ConsensusNode> nodes = lao.getNodes();
-    ConsensusNode organizerNode =
-        nodes.stream().filter(n -> n.getPublicKey().equals(ORGANIZER)).findAny().get();
-    assertTrue(organizerNode.getAcceptedMessageIds().isEmpty());
+    Map<PublicKey, Set<MessageID>> consensuses =
+        lao.getNodes().stream()
+            .collect(
+                Collectors.toMap(
+                    ConsensusNode::getPublicKey, ConsensusNode::getAcceptedMessageIds));
 
-    ConsensusNode node2 =
-        nodes.stream().filter(n -> n.getPublicKey().equals(NODE_2_KEY)).findAny().get();
-    assertTrue(node2.getAcceptedMessageIds().isEmpty());
+    assertEquals(3, consensuses.size());
 
-    ConsensusNode node3 =
-        nodes.stream().filter(n -> n.getPublicKey().equals(NODE_3_KEY)).findAny().get();
-    assertEquals(Sets.newSet(electMsg.getMessageId()), node3.getAcceptedMessageIds());
+    Set<MessageID> organizerAcceptedMsg = consensuses.get(ORGANIZER);
+    Set<MessageID> node2AcceptedMsg = consensuses.get(NODE_2);
+    Set<MessageID> node3AcceptedMsg = consensuses.get(NODE_3);
+
+    assertNotNull(organizerAcceptedMsg);
+    assertNotNull(node2AcceptedMsg);
+    assertNotNull(node3AcceptedMsg);
+
+    assertTrue(organizerAcceptedMsg.isEmpty());
+    assertTrue(node2AcceptedMsg.isEmpty());
+    assertEquals(Sets.newSet(electMsg.getMessageId()), node3AcceptedMsg);
   }
 
   // handle a learn from node3 for the elect of node2
@@ -254,9 +282,9 @@ public class ConsensusHandlerTest {
             INSTANCE_ID, INVALID_MSG_ID, CREATION_TIME, true, Collections.emptyList());
     ConsensusFailure failureInvalid =
         new ConsensusFailure(INSTANCE_ID, INVALID_MSG_ID, CREATION_TIME);
-    MessageGeneral electAcceptInvalidMsg = getMsg(ORGANIZER, electAcceptInvalid);
-    MessageGeneral learnInvalidMsg = getMsg(ORGANIZER, learnInvalid);
-    MessageGeneral failureMsg = getMsg(ORGANIZER, failureInvalid);
+    MessageGeneral electAcceptInvalidMsg = getMsg(ORGANIZER_KEY, electAcceptInvalid);
+    MessageGeneral learnInvalidMsg = getMsg(ORGANIZER_KEY, learnInvalid);
+    MessageGeneral failureMsg = getMsg(ORGANIZER_KEY, failureInvalid);
 
     assertThrows(
         InvalidMessageIdException.class,
@@ -272,9 +300,9 @@ public class ConsensusHandlerTest {
 
   @Test
   public void handleConsensusDoNothingOnBackendMessageTest() throws DataHandlingException {
-    LAORepository mockLAORepository = Mockito.mock(LAORepository.class);
-    Map<String, MessageGeneral> messageById = new HashMap<>();
-    Mockito.when(mockLAORepository.getMessageById()).thenReturn(messageById);
+    LAORepository mockLAORepository = mock(LAORepository.class);
+    Map<MessageID, MessageGeneral> messageById = new HashMap<>();
+    when(mockLAORepository.getMessageById()).thenReturn(messageById);
 
     ConsensusPrepare prepare = new ConsensusPrepare(INSTANCE_ID, messageId, CREATION_TIME, 3);
     ConsensusPromise promise =
@@ -284,15 +312,18 @@ public class ConsensusHandlerTest {
             INSTANCE_ID, messageId, CREATION_TIME, 3, true, Collections.emptyList());
     ConsensusAccept accept = new ConsensusAccept(INSTANCE_ID, messageId, CREATION_TIME, 3, true);
 
-    messageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, prepare));
-    messageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, promise));
-    messageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, propose));
-    messageHandler.handleMessage(mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER, accept));
+    messageHandler.handleMessage(
+        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, prepare));
+    messageHandler.handleMessage(
+        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, promise));
+    messageHandler.handleMessage(
+        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, propose));
+    messageHandler.handleMessage(
+        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, accept));
 
     // The handlers for prepare/promise/propose/accept should do nothing (call or update nothing)
     // because theses messages should only be handle in the backend server.
-
-    Mockito.verify(mockLAORepository, Mockito.never()).getLaoByChannel(Mockito.anyString());
-    Mockito.verify(mockLAORepository, Mockito.never()).updateNodes(Mockito.anyString());
+    verify(mockLAORepository, never()).getLaoByChannel(anyString());
+    verify(mockLAORepository, never()).updateNodes(anyString());
   }
 }
