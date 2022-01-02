@@ -5,6 +5,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public class StateLao extends Data {
   private final String organizer;
 
   @SerializedName("modification_id")
-  private final String modificationId;
+  private final MessageID modificationId;
 
   private final Set<String> witnesses;
 
@@ -49,7 +50,7 @@ public class StateLao extends Data {
       long creation,
       long lastModified,
       String organizer,
-      String modificationId,
+      MessageID modificationId,
       Set<String> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
@@ -148,7 +149,7 @@ public class StateLao extends Data {
         + '}';
   }
 
-  public String getModificationId() {
+  public MessageID getModificationId() {
     return modificationId;
   }
 
