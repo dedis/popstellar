@@ -1,12 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
@@ -14,7 +17,7 @@ import org.junit.Test;
 public class ConsensusPrepareTest {
 
   private static final String instanceId = "aaa";
-  private static final String messageId = "bbb";
+  private static final MessageID messageId = new MessageID("TVNHX0lE");
   private static final long timeInSeconds = 1635277619;
   private static final int proposedTry = 4;
 
@@ -70,7 +73,7 @@ public class ConsensusPrepareTest {
     String random = "random";
     assertNotEquals(prepare, null);
     assertNotEquals(prepare, new ConsensusPrepare(random, messageId, timeInSeconds, proposedTry));
-    assertNotEquals(prepare, new ConsensusPrepare(instanceId, random, timeInSeconds, proposedTry));
+    assertNotEquals(prepare, new ConsensusPrepare(instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), timeInSeconds, proposedTry));
     assertNotEquals(
         prepare, new ConsensusPrepare(instanceId, messageId, timeInSeconds + 1, proposedTry));
     assertNotEquals(
@@ -80,7 +83,7 @@ public class ConsensusPrepareTest {
   @Test
   public void toStringTest() {
     assertEquals(
-        "ConsensusPrepare{instance_id='aaa', message_id='bbb', created_at=1635277619, value=PrepareValue{proposed_try=4}}",
+        "ConsensusPrepare{instance_id='aaa', message_id='TVNHX0lE', created_at=1635277619, value=PrepareValue{proposed_try=4}}",
         prepare.toString());
   }
 

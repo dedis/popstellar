@@ -30,7 +30,7 @@ public class MessageGeneralTest {
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
-  private static final String ORGANIZER = "Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=";
+  private static final PublicKey ORGANIZER = new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
   private static final long LAO_CREATION = 1623825071;
   private static final String LAO_NAME = "LAO";
 

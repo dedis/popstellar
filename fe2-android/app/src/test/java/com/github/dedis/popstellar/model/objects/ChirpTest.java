@@ -1,12 +1,17 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
+
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import org.junit.Test;
 
 public class ChirpTest {
-  private static final String ID = "messageId";
+  private static final MessageID ID = generateMessageID();
 
   private static final Chirp CHIRP = new Chirp(ID);
 
@@ -17,17 +22,17 @@ public class ChirpTest {
 
   @Test
   public void createChirpWithEmptyId() {
-    assertThrows(IllegalArgumentException.class, () -> new Chirp(""));
+    assertThrows(IllegalArgumentException.class, () -> new Chirp(new MessageID("")));
   }
 
   @Test
   public void setAndGetIdTest() {
-    String newId = "newMessageId";
+    MessageID newId = generateMessageID();
     CHIRP.setId(newId);
     assertEquals(newId, CHIRP.getId());
 
     assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(null));
-    assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(""));
+    assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(new MessageID("")));
   }
 
   @Test
@@ -39,7 +44,7 @@ public class ChirpTest {
 
   @Test
   public void setAndGetSenderTest() {
-    String sender = "senderPublicKey";
+    PublicKey sender = generatePublicKey();
     CHIRP.setSender(sender);
     assertEquals(sender, CHIRP.getSender());
   }
@@ -75,7 +80,7 @@ public class ChirpTest {
 
   @Test
   public void setAndGetParentId() {
-    String parentId = "theParentId";
+    MessageID parentId = generateMessageID();
     CHIRP.setParentId(parentId);
     assertEquals(parentId, CHIRP.getParentId());
   }

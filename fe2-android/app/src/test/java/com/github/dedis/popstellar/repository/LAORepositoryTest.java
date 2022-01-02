@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.repository;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,9 +16,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
-import com.github.dedis.popstellar.model.objects.security.PrivateKey;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
@@ -57,10 +55,10 @@ public class LAORepositoryTest extends TestCase {
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
-  private static final PublicKey ORGANIZER =
-      new PublicKey("Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
+  private static final KeyPair ORGANIZER_KEY = generateKeyPair();
+  private static final PublicKey ORGANIZER = ORGANIZER_KEY.getPublicKey();
   private static final String LAO_NAME = "Lao";
-  private static final CreateLao CREATE_LAO = new CreateLao(LAO_NAME, ORGANIZER.getEncoded());
+  private static final CreateLao CREATE_LAO = new CreateLao(LAO_NAME, ORGANIZER);
   private static final String CHANNEL = "/root";
   private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
 
@@ -77,13 +75,8 @@ public class LAORepositoryTest extends TestCase {
     testSchedulerProvider = new TestSchedulerProvider();
     testScheduler = (TestScheduler) testSchedulerProvider.io();
 
-    PrivateKey mockPrivateKey = mock(PrivateKey.class);
-    when(mockPrivateKey.sign(any()))
-        .thenReturn(new Signature("rCboUpaU872NTY8w4MP-DTVKkxd-rTIgrbk6t-rzH2Q"));
-    KeyPair keyPair = new KeyPair(mockPrivateKey, ORGANIZER);
-
     // Create the message containing a CreateLao data
-    createLaoMessage = new MessageGeneral(keyPair, CREATE_LAO, GSON);
+    createLaoMessage = new MessageGeneral(ORGANIZER_KEY, CREATE_LAO, GSON);
 
     // Mock the remote data source to always return the same request id
     when(remoteDataSource.incrementAndGetRequestId()).thenReturn(REQUEST_ID);

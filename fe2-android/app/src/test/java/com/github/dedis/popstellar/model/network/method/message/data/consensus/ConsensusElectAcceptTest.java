@@ -1,19 +1,22 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 
 import org.junit.Test;
 
 public class ConsensusElectAcceptTest {
 
-  private static final String messageId = "aaa";
+  private static final MessageID messageId = generateMessageID();
   private static final String instanceId = "bbb";
   private static final ConsensusElectAccept consensusElectAcceptAccept =
       new ConsensusElectAccept(instanceId, messageId, true);
@@ -52,7 +55,7 @@ public class ConsensusElectAcceptTest {
     assertEquals(consensusElectAcceptReject, new ConsensusElectAccept(instanceId, messageId, false));
 
     assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept("random", messageId, true));
-    assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, "random", true));
+    assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), true));
     assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, messageId, false));
     assertNotEquals(consensusElectAcceptReject, new ConsensusElectAccept(instanceId, messageId, true));
   }
