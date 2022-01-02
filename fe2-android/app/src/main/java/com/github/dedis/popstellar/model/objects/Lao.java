@@ -19,7 +19,7 @@ public final class Lao {
   private Long lastModified;
   private Long creation;
   private String organizer;
-  private String modificationId;
+  private MessageID modificationId;
   private Set<String> witnesses;
   private final Map<String, WitnessMessage> witnessMessages;
   /**
@@ -250,11 +250,11 @@ public final class Lao {
     }
   }
 
-  public String getModificationId() {
+  public MessageID getModificationId() {
     return modificationId;
   }
 
-  public void setModificationId(String modificationId) {
+  public void setModificationId(MessageID modificationId) {
     this.modificationId = modificationId;
   }
 
