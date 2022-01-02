@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
@@ -23,7 +24,7 @@ public class StateLao extends Data {
   @SerializedName("last_modified")
   private final long lastModified;
 
-  private final String organizer;
+  private final PublicKey organizer;
 
   @SerializedName("modification_id")
   private final MessageID modificationId;
@@ -49,7 +50,7 @@ public class StateLao extends Data {
       String name,
       long creation,
       long lastModified,
-      String organizer,
+      PublicKey organizer,
       MessageID modificationId,
       Set<String> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
@@ -92,7 +93,7 @@ public class StateLao extends Data {
     return lastModified;
   }
 
-  public String getOrganizer() {
+  public PublicKey getOrganizer() {
     return organizer;
   }
 
