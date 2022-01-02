@@ -3,6 +3,8 @@ package com.github.dedis.popstellar.utility.handler.data;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 
 public final class HandlerContext {
@@ -32,11 +34,11 @@ public final class HandlerContext {
     return message;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return message.getMessageId();
   }
 
-  public String getSenderPk() {
+  public PublicKey getSenderPk() {
     return message.getSender();
   }
 }
