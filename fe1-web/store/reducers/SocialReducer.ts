@@ -132,8 +132,8 @@ const socialSlice = createSlice({
         } else {
           console.warn('You already reacted to this reaction');
         }
-      }
-    }
+      },
+    },
   },
 });
 
@@ -172,7 +172,8 @@ export const makeChirpsList = () => createSelector(
 export const makeReactionsList = () => createSelector(
   (state) => getSocialState(state),
   (state) => getLaosState(state).currentId,
-  (list: SocialLaoReducerState, laoId: string | undefined): Record<string, Record<string, number>> => {
+  (list: SocialLaoReducerState, laoId: string | undefined):
+  Record<string, Record<string, number>> => {
     if (!laoId) {
       return {};
     }
@@ -180,17 +181,18 @@ export const makeReactionsList = () => createSelector(
       const reactions: Record<string, Record<string, number>> = {};
       list.byLaoId[laoId].allIdsInOrder.forEach(
         (id) => {
-          const codepoint_user = list.byLaoId[laoId].reactionsByChirp[id];
-          if(codepoint_user) {
-            reactions[id] = {['👍']: codepoint_user['👍'] ? codepoint_user['👍'].length : 0,
-                             ['👎']: codepoint_user['👎'] ? codepoint_user['👎'].length : 0,
-                             ['❤️']: codepoint_user['❤️'] ? codepoint_user['❤️'].length : 0}
+          const reactionByUser = list.byLaoId[laoId].reactionsByChirp[id];
+          if (reactionByUser) {
+            reactions[id] = {
+              '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
+              '👎': reactionByUser['👎'] ? reactionByUser['👎'].length : 0,
+              '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
+            };
           }
-        }
+        },
       );
       return reactions;
     }
     return {};
   },
 );
-
