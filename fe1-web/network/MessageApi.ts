@@ -16,7 +16,7 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromIds, ROOT_CHANNEL, getCurrentUserSocialChannel,
+  Channel, channelFromIds, ROOT_CHANNEL, getUserSocialChannel,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
@@ -231,14 +231,14 @@ export function requestCreateElection(
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
+  time: Timestamp,
 ): Promise<void> {
-  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new SetupElection({
     lao: currentLao.id,
     id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.ELECTION, currentLao.id.toString(), time.toString(), name,
     ),
     name: name,
     version: version,
@@ -288,7 +288,15 @@ export function terminateElection(
   return publish(elecCh, message);
 }
 
+/**
+ * Sends a query to the server to add a new chirp.
+ *
+ * @param publicKey - The public key of the sender
+ * @param text - The text contained in the chirp
+ * @param parentId - The id of the parent chirp (if it is a reply)
+ */
 export function requestAddChirp(
+  publicKey: PublicKey,
   text: string,
   parentId?: Hash,
 ): Promise<void> {
@@ -301,5 +309,5 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(getCurrentUserSocialChannel(currentLao.id), message);
+  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
 }

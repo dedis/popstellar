@@ -3,7 +3,7 @@ package ch.epfl.pop.model.objects
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-case class Base64Data(data: String) {
+sealed case class Base64Data(data: String) {
   val DECODER: Base64.Decoder = Base64.getUrlDecoder
 
   def decodeToString(): String = new String(this.decode(), StandardCharsets.UTF_8)
@@ -15,6 +15,12 @@ case class Base64Data(data: String) {
   def equals(that: Base64Data): Boolean = data == that.data
 
   override def toString: String = data.toString
+
+  try {
+    DECODER.decode(data);
+  } catch {
+    case _: IllegalArgumentException => throw new IllegalArgumentException(s"String $data is not Base64")
+  }
 }
 
 object Base64Data {

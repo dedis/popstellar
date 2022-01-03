@@ -26,12 +26,14 @@ type ValuePrepare struct {
 // Verify that the ConsensusPrepare message is correct
 func (message ConsensusPrepare) Verify() error {
 	// verify that the instance id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.InstanceID); err != nil {
+	_, err := base64.URLEncoding.DecodeString(message.InstanceID)
+	if err != nil {
 		return xerrors.Errorf("instance id is %s, should be base64URL encoded", message.InstanceID)
 	}
 
 	// verify that the message id is base64URL encoded
-	if _, err := base64.URLEncoding.DecodeString(message.MessageID); err != nil {
+	_, err = base64.URLEncoding.DecodeString(message.MessageID)
+	if err != nil {
 		return xerrors.Errorf("message id is %s, should be base64URL encoded", message.MessageID)
 	}
 
@@ -46,4 +48,19 @@ func (message ConsensusPrepare) Verify() error {
 	}
 
 	return nil
+}
+
+// GetObject implements MessageData
+func (ConsensusPrepare) GetObject() string {
+	return ConsensusObject
+}
+
+// GetAction implements MessageData
+func (ConsensusPrepare) GetAction() string {
+	return ConsensusActionPrepare
+}
+
+// NewEmpty implements MessageData
+func (ConsensusPrepare) NewEmpty() MessageData {
+	return &ConsensusPrepare{}
 }

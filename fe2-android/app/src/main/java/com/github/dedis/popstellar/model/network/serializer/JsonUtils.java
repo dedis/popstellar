@@ -4,12 +4,6 @@ import android.util.Log;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Answer;
-import com.github.dedis.popstellar.model.network.method.Message;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.networknt.schema.JsonSchema;
@@ -69,21 +63,6 @@ public final class JsonUtils {
     if (!version.equals(JSON_RPC_VERSION)) {
       throw new JsonParseException("Unable to parse jsonrpc version : " + version);
     }
-  }
-
-  /**
-   * Create a Gson object with the needed serializer for the app usage
-   *
-   * @return the Gson object
-   */
-  @Deprecated
-  public static Gson createGson() {
-    return new GsonBuilder()
-        .registerTypeAdapter(GenericMessage.class, new JsonGenericMessageDeserializer())
-        .registerTypeAdapter(Message.class, new JsonMessageSerializer())
-        .registerTypeAdapter(Data.class, new JsonDataSerializer())
-        .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
-        .create();
   }
 
   /**

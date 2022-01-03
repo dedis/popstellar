@@ -1,0 +1,81 @@
+import 'jest-extended';
+import testKeyPair from 'test_data/keypair.json';
+import {
+  Base64UrlData,
+  EventTags,
+  Hash,
+  KeyPair,
+  Lao,
+  LaoState,
+  PopToken,
+  PrivateKey,
+  PublicKey,
+  Timestamp,
+} from 'model/objects';
+import { KeyPairStore } from 'store';
+import { AddChirp, encodeMessageData, EndElection } from '../data';
+import { Message } from '../Message';
+
+const TIMESTAMP = 1603455600;
+const laoState: LaoState = {
+  id: 'LaoID',
+  name: 'MyLao',
+  creation: TIMESTAMP,
+  last_modified: TIMESTAMP,
+  organizer: 'organizerPublicKey',
+  witnesses: [],
+};
+const mockLao = Lao.fromState(laoState);
+
+const mockPublicKey = testKeyPair.publicKey;
+const mockPrivateKey = testKeyPair.privateKey;
+const mockPopToken = PopToken.fromState({
+  publicKey: testKeyPair.publicKey2,
+  privateKey: testKeyPair.privateKey2,
+});
+jest.mock('model/objects/wallet/Token.ts', () => ({
+  getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
+}));
+
+const pastKeyPairStoreState = KeyPairStore.get();
+
+beforeAll(() => {
+  KeyPairStore.store(KeyPair.fromState({
+    publicKey: mockPublicKey,
+    privateKey: mockPrivateKey,
+  }));
+});
+
+describe('Message', () => {
+  it('fromData signs the message correctly when adding a chirp', async () => {
+    const messageData = new AddChirp({
+      text: 'text',
+      timestamp: new Timestamp(1607277600),
+    });
+    const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
+    const signature = mockPopToken.privateKey.sign(encodedDataJson);
+    const m = await Message.fromData(messageData);
+    expect(m.sender).toEqual(mockPopToken.publicKey);
+    expect(m.signature).toEqual(signature);
+  });
+
+  it('fromData signs the message correctly when ending an election', async () => {
+    const messageData = new EndElection({
+      lao: mockLao.id,
+      election: Hash.fromStringArray(EventTags.ELECTION, laoState.id, '5678', '1607277600'),
+      created_at: new Timestamp(1607277600),
+      registered_votes: new Hash('1234'),
+    });
+    const encodedDataJson: Base64UrlData = encodeMessageData(messageData);
+    const privateKey = new PrivateKey(mockPrivateKey);
+    const publicKey = new PublicKey(mockPublicKey);
+    const signature = privateKey.sign(encodedDataJson);
+    const m = await Message.fromData(messageData);
+    expect(m.sender).toEqual(publicKey);
+    expect(m.signature).toEqual(signature);
+  });
+});
+
+afterAll(() => {
+  KeyPairStore.store(pastKeyPairStoreState);
+});

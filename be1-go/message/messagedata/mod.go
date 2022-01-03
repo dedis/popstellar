@@ -14,7 +14,7 @@ const (
 	ConsensusActionAccept      = "accept"
 	ConsensusActionElect       = "elect"
 	ConsensusActionElectAccept = "elect_accept"
-	ConsensuisActionLearn      = "learn"
+	ConsensusActionLearn       = "learn"
 	ConsensusActionPrepare     = "prepare"
 	ConsensusActionPromise     = "promise"
 	ConsensusActionPropose     = "propose"
@@ -51,10 +51,22 @@ const (
 	ChirpActionAddBroadcast    = "add_broadcast"
 	ChirpActionDeleteBroadcast = "delete_broadcast"
 
+	ReactionObject       = "reaction"
+	ReactionActionAdd    = "add"
+	ReactionActionDelete = "delete"
+
 	// RootPrefix denotes the prefix for the root channel, used to verify the
 	// channel of origin of some message
 	RootPrefix = "/root/"
 )
+
+// MessageData defines a common interface for message data to be used with a
+// registry.
+type MessageData interface {
+	GetObject() string
+	GetAction() string
+	NewEmpty() MessageData
+}
 
 // GetObjectAndAction returns the object and action of a JSON RPC message.
 func GetObjectAndAction(buf []byte) (string, string, error) {

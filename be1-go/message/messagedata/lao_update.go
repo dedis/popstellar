@@ -1,5 +1,10 @@
 package messagedata
 
+import (
+	"encoding/base64"
+	"golang.org/x/xerrors"
+)
+
 // LaoUpdate defines a message data
 type LaoUpdate struct {
 	Object string `json:"object"`
@@ -13,10 +18,31 @@ type LaoUpdate struct {
 	Witnesses []string `json:"witnesses"`
 }
 
-// Verifiy that the LaoUpdate message is valid
-func (message LaoUpdate) Verifiy() error {
+// Verify that the LaoUpdate message is valid
+func (message LaoUpdate) Verify() error {
+	// verify id is base64URL encoded
+	_, err := base64.URLEncoding.DecodeString(message.ID)
+	if err != nil {
+		return xerrors.Errorf("lao id is %s, should be base64URL encoded", message.ID)
+	}
 
-	// TODO verify LaoUpdate message once consensus is done
+	// verify lao name non-empty
+	if len(message.Name) == 0 {
+		return xerrors.Errorf("lao name is %s, should not be empty", message.Name)
+	}
+
+	// verify LastModified is positive
+	if message.LastModified < 0 {
+		return xerrors.Errorf("lao creation is %d, should be minimum 0", message.LastModified)
+	}
+
+	// verify all witnesses are base64URL encoded
+	for _, witness := range message.Witnesses {
+		_, err = base64.URLEncoding.DecodeString(witness)
+		if err != nil {
+			return xerrors.Errorf("lao witness is %s, should be base64URL encoded", witness)
+		}
+	}
 
 	return nil
 }
