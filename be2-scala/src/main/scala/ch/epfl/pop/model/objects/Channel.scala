@@ -31,7 +31,7 @@ final case class Channel(channel: String) {
       //c cannot be empty
       val c = channel.split(Channel.SEPARATOR)
       assert(!c.isEmpty)
-      Hash(Base64Data( c.last))
+      Hash(Base64Data(c.last))
   }
 
   def isRootChannel: Boolean = channel == Channel.ROOT_CHANNEL.channel

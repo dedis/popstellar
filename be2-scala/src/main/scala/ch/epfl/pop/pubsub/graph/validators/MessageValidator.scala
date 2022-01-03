@@ -4,6 +4,7 @@ import akka.pattern.AskableActorRef
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
@@ -74,6 +75,20 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
       case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.owner == sender
       case DbActor.DbActorReadLaoDataAck(None) => false
       case DbActor.DbActorNAck(code, description) => false
+    }
+  }
+
+/**
+   * checks whether the channel of the JsonRpcRequest is of the given type
+   * @param channelObjectType  the ObjectType the channel should be
+   * @param channel            the channel we want to check
+   * @param dbActor            the DbActor we use (by default the main one, obtained through getInstance)
+   */
+  def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
+    val ask = dbActor ? DbActor.ReadChannelData(channel)
+    Await.result(ask, duration) match {
+      case DbActor.DbActorReadChannelDataAck(Some(channelData)) => channelData.channelType == channelObjectType
+      case _ => false
     }
   }
 }

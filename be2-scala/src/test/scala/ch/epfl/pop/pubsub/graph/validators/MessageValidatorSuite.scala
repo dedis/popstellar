@@ -6,7 +6,8 @@ import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender,TestKit,TestProbe}
 import akka.util.Timeout
 
-import ch.epfl.pop.model.objects.{Base64Data, Channel, LaoData, PrivateKey, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, ChannelData, LaoData, PrivateKey, PublicKey}
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 //import util.examples.MessageExample._
@@ -34,6 +35,8 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
     private final val CHANNEL: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "channel")
     private final val laoData: LaoData = LaoData(PKOWNER, List(PKATTENDEE), PRIVATEKEY, PUBLICKEY, List.empty)
 
+    private final val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
+
     
 
 
@@ -41,6 +44,8 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
         val mockedDB = Props(new Actor(){
             override def receive = {
                 case DbActor.ReadLaoData(channel) =>
+                    sender ! DbActor.DbActorNAck(0, "error")
+                case DbActor.ReadChannelData(channel) =>
                     sender ! DbActor.DbActorNAck(0, "error")
             }
         }
@@ -64,6 +69,17 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
             override def receive = {
                 case DbActor.ReadLaoData(channel) =>
                     sender ! DbActor.DbActorReadLaoDataAck(Some(data))
+            }
+        }
+        )
+        system.actorOf(mockedDB)
+    }
+
+    private def mockDbAckWithChannelData(data: ChannelData): AskableActorRef = {
+        val mockedDB = Props(new Actor(){
+            override def receive = {
+                case DbActor.ReadChannelData(channel) =>
+                    sender ! DbActor.DbActorReadChannelDataAck(Some(data))
             }
         }
         )
@@ -105,6 +121,19 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
         lazy val dbActorRef = mockDbAckWithLaoData(laoData)
         MessageValidator.validateAttendee(PKATTENDEE, CHANNEL, dbActorRef) should equal(true)
         MessageValidator.validateAttendee(PKFALSE, CHANNEL, dbActorRef) should equal(false)
+        system.stop(dbActorRef.actorRef)
+    }
+
+    test("validateChannelType handles NAck with 'false' output"){
+        lazy val dbActorRef = mockDbNack
+        MessageValidator.validateChannelType(ObjectType.LAO, CHANNEL, dbActorRef) should equal(false)
+        system.stop(dbActorRef.actorRef)
+    }
+
+    test("validateAttendee handles ReadChannelDataAck containing ChannelData with corresponding output"){
+        lazy val dbActorRef = mockDbAckWithChannelData(channelData)
+        MessageValidator.validateChannelType(ObjectType.LAO, CHANNEL, dbActorRef) should equal(true)
+        MessageValidator.validateChannelType(ObjectType.CHIRP, CHANNEL, dbActorRef) should equal(false)
         system.stop(dbActorRef.actorRef)
     }
 

@@ -2,14 +2,17 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
 import ch.epfl.pop.model.network.method.message.data.rollCall.IOpenRollCall
 import ch.epfl.pop.model.network.method.message.data.rollCall.OpenRollCall
 import ch.epfl.pop.model.network.method.message.data.rollCall.ReopenRollCall
-import ch.epfl.pop.model.objects.Hash
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.graph.PipelineError
+
+import MessageValidator._
 
 
 case object RollCallValidator extends MessageDataContentValidator with EventValidator {
@@ -25,6 +28,9 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedRollCallId: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
+        val sender: PublicKey = message.sender
+        val channel: Channel = rpcMessage.getParamsChannel
+
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
         } else if (!validateTimestampOrder(data.creation, data.proposed_start)) {
@@ -32,7 +38,11 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
         } else if (!validateTimestampOrder(data.proposed_start, data.proposed_end)) {
           Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
         } else if (expectedRollCallId != data.id) {
-          Right(validationError("unexpected id"))
+          Right(validationError(s"unexpected id"))
+        } else if (!validateOwner(sender, channel)){
+          Right(validationError(s"invalid sender $sender"))
+        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+          Right(validationError(s"trying to send an OpenRollCall message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
@@ -57,10 +67,17 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           EVENT_HASH_PREFIX, laoId.toString, data.opens.toString, data.opened_at.toString
         )
 
+        val sender: PublicKey = message.sender
+        val channel: Channel = rpcMessage.getParamsChannel
+
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
+        } else if (!validateOwner(sender, channel)){
+          Right(validationError(s"invalid sender $sender"))
+        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+          Right(validationError(s"trying to send a $validatorName message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
@@ -91,12 +108,19 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           EVENT_HASH_PREFIX, laoId.toString, data.closes.toString, data.closed_at.toString
         )
 
+        val sender: PublicKey = message.sender
+        val channel: Channel = rpcMessage.getParamsChannel
+
         if (!validateTimestampStaleness(data.closed_at)) {
           Right(validationError(s"stale 'closed_at' timestamp (${data.closed_at})"))
         } else if (data.attendees.size != data.attendees.toSet.size) {
           Right(validationError("duplicate attendees keys"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
+        } else if (!validateOwner(sender, channel)){
+          Right(validationError(s"invalid sender $sender"))
+        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+          Right(validationError(s"trying to send a CloseRollCall message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }

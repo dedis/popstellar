@@ -2,9 +2,12 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.Hash
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+
+import MessageValidator._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
@@ -19,6 +22,8 @@ case object LaoValidator extends MessageDataContentValidator {
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
         val expectedHash: Hash = Hash.fromStrings(data.organizer.base64Data.toString, data.creation.toString, data.name)
 
+        val channel: Channel = rpcMessage.getParamsChannel
+
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
         } else if (!validateWitnesses(data.witnesses)) {
@@ -27,6 +32,8 @@ case object LaoValidator extends MessageDataContentValidator {
           Right(validationError("unexpected id"))
         } else if (data.organizer != message.sender) {
           Right(validationError("unexpected organizer public key"))
+        } else if (channel != Channel.ROOT_CHANNEL) {
+          Right(validationError(s"trying to send a CreateLao message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
@@ -68,6 +75,8 @@ case object LaoValidator extends MessageDataContentValidator {
       case Some(message: Message) =>
         val data: UpdateLao = message.decodedData.get.asInstanceOf[UpdateLao]
 
+        val channel: Channel = rpcMessage.getParamsChannel
+
         // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
         val ask: Future[GraphMessage] = (dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)).map {
           case DbActor.DbActorReadAck(Some(retrievedMessage)) =>
@@ -83,6 +92,8 @@ case object LaoValidator extends MessageDataContentValidator {
               Right(validationError("duplicate witnesses keys"))
             } else if (expectedHash != data.id) {
               Right(validationError("unexpected id"))
+            } else if (!validateChannelType(ObjectType.LAO, channel)) {
+              Right(validationError(s"trying to write an UpdateLao message on wrong type of channel $channel"))
             } else {
               Left(rpcMessage)
             }

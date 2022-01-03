@@ -240,7 +240,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
   test("DbActor stores and reads LaoData at creation"){
     val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_1)
-    val message: Message = MessageExample.MESSAGE_CREATELAO
+    val message: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
     message.decodedData.get.isInstanceOf[CreateLao] should equal(true)
 
     val ask1 = dbActorRef ? DbActor.Write(channel, message)
@@ -267,7 +267,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
   test("DbActor stores and reads LaoData at creation and at roll call closing"){
     val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_2)
-    val messageLao: Message = MessageExample.MESSAGE_CREATELAO
+    val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
     val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
 
     val ask1 = dbActorRef ? DbActor.Write(channel, messageLao)
@@ -302,7 +302,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   test("DbActor stores and reads two distinct LaoData objects, to simulate two LAOs in the same database"){
     val channel: Channel = Channel(TEST_CHANNEL_WRITELAO_4)
     val channel2: Channel = Channel(TEST_CHANNEL_WRITELAO_3)
-    val message: Message = MessageExample.MESSAGE_CREATELAO
+    val message: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
     val message2: Message = MessageExample.MESSAGE_CREATELAO2
 
     val ask1 = dbActorRef ? DbActor.Write(channel, message)
