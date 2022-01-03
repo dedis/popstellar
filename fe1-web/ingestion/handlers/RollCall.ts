@@ -6,7 +6,9 @@ import {
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
-import { RollCall, RollCallStatus, Wallet } from 'model/objects';
+import {
+  getUserSocialChannel, RollCall, RollCallStatus, Wallet,
+} from 'model/objects';
 import {
   addEvent,
   AsyncDispatch,
@@ -17,6 +19,7 @@ import {
   updateEvent,
 } from 'store';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
+import { subscribeToChannel } from '../../network/CommunicationApi';
 
 const getCurrentLao = makeCurrentLao();
 
