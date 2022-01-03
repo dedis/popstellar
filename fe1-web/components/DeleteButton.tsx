@@ -15,6 +15,7 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     // cursor: 'pointer',
+    // we comment it to pass the test because this property does not exist for ImageStyle
   } as ImageStyle,
 });
 
