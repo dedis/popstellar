@@ -48,6 +48,7 @@ describe('Chirp object', () => {
         time: TIMESTAMP,
         likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -59,6 +60,7 @@ describe('Chirp object', () => {
         time: TIMESTAMP,
         likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -70,6 +72,7 @@ describe('Chirp object', () => {
         time: TIMESTAMP,
         likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -81,6 +84,7 @@ describe('Chirp object', () => {
         text: TEXT,
         likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -94,6 +98,17 @@ describe('Chirp object', () => {
         parentId: HASH_PARENT,
       });
       expect(newChirp.likes).toStrictEqual(0);
+    });
+
+    it('initializes isDeleted to false if it is undefined', () => {
+      const newChirp = new Chirp({
+        id: HASH_ID,
+        sender: PK,
+        text: TEXT,
+        time: TIMESTAMP,
+        parentId: HASH_PARENT,
+      });
+      expect(newChirp.isDeleted).toStrictEqual(false);
     });
   });
 });
