@@ -70,6 +70,7 @@ public final class ConsensusNode {
    */
   public void addConsensus(Consensus consensus) {
     MessageID messageId = consensus.getMessageId();
+    // If the consensuses does not contain one linked this message id, add it
     if (consensuses.stream().map(Consensus::getMessageId).noneMatch(messageId::equals)) {
       consensuses.add(consensus);
     }
@@ -88,6 +89,6 @@ public final class ConsensusNode {
   public String toString() {
     return String.format(
         "ConsensusNode{publicKey='%s', acceptedMessageIds='%s', consensuses='%s'}",
-        publicKey, acceptedMessageIds, consensuses);
+        publicKey.getEncoded(), acceptedMessageIds, consensuses);
   }
 }
