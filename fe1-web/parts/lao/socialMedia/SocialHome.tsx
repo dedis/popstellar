@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 
 import ChirpCard from 'components/ChirpCard';
-import DeletedChirpCard from 'components/DeletedChirpCard';
 import TextInputChirp from 'components/TextInputChirp';
 import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
@@ -81,17 +80,12 @@ const SocialHome = () => {
   const chirps = makeChirpsList();
   const chirpList = useSelector(chirps);
 
-  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => {
-    if (item.isDeleted) {
-      return <DeletedChirpCard chirp={Chirp.fromState(item)} />;
-    }
-    return (
-      <ChirpCard
-        chirp={Chirp.fromState(item)}
-        userPublicKey={userPublicKey}
-      />
-    );
-  };
+  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
+    <ChirpCard
+      chirp={Chirp.fromState(item)}
+      userPublicKey={userPublicKey}
+    />
+  );
 
   return (
     <View style={styles.viewCenter}>

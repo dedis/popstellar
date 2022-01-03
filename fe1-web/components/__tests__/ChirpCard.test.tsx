@@ -27,6 +27,14 @@ const chirp = new Chirp({
   isDeleted: false,
 });
 
+const deletedChirp = new Chirp({
+  id: new Hash('1234'),
+  text: 'Don\'t panic.',
+  sender: sender,
+  time: new Timestamp(1609455600), // 31 December 2020
+  isDeleted: true,
+});
+
 jest.mock('network/MessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -65,6 +73,15 @@ describe('ChirpCard', () => {
     ).getByLabelText('delete');
     fireEvent.press(button);
     expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
+  });
+
+  it('render correct for a deleted chirp', () => {
+    const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
+    getMockLao.mockImplementation(() => Lao.fromState(laoState));
+    const obj = render(
+      <ChirpCard chirp={deletedChirp} userPublicKey={new PublicKey('Douglas Adams')} />,
+    );
+    expect(obj.toJSON()).toMatchSnapshot();
   });
 });
 
