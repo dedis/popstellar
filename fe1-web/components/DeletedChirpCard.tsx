@@ -8,6 +8,7 @@ import { Chirp } from '../model/objects/Chirp';
 import ChirpCard from './ChirpCard';
 import STRINGS from '../res/strings';
 
+// component to display a deleted chirp card
 const DeletedChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const zero = '  0';
