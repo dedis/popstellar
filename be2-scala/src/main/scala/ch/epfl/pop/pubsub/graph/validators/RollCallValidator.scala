@@ -18,6 +18,8 @@ import MessageValidator._
 case object RollCallValidator extends MessageDataContentValidator with EventValidator {
   override def EVENT_HASH_PREFIX: String = "R"
 
+  //remark: in all the validation functions, the channel type is ObjectType.LAO, which is the default ObjectType for all other messages apart from social media and elections
+
   def validateCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateRollCall", rpcMessage.id)
 
@@ -42,7 +44,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
         } else if (!validateOwner(sender, channel)){
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
-          Right(validationError(s"trying to send an OpenRollCall message on a wrong type of channel $channel"))
+          Right(validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }

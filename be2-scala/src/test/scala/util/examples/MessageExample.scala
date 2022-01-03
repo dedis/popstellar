@@ -85,7 +85,7 @@ object MessageExample {
   private final val createLaoWrongTimestamp: CreateLao = CreateLao(idWorking, name, creationInvalid, organizer, workingWitnessList)
   final val MESSAGE_CREATELAO_WRONG_TIMESTAMP: Message = new Message(
     Base64Data.encode(createLaoWrongTimestamp.toJson.toString),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    organizer,
     Signature(Base64Data("")),
     Hash(Base64Data("")),
     workingWSPairList,
@@ -95,7 +95,7 @@ object MessageExample {
   private final val createLaoWrongWitnesses: CreateLao = CreateLao(idWorking, name, creationWorking, organizer, invalidWitnessList)
   final val MESSAGE_CREATELAO_WRONG_WITNESSES: Message = new Message(
     Base64Data.encode(createLaoWrongWitnesses.toJson.toString),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    organizer,
     Signature(Base64Data("")),
     Hash(Base64Data("")),
     workingWSPairList,
@@ -105,7 +105,16 @@ object MessageExample {
   private final val createLaoWrongId: CreateLao = CreateLao(idInvalid, name, creationWorking, organizer, workingWitnessList)
   final val MESSAGE_CREATELAO_WRONG_ID: Message = new Message(
     Base64Data.encode(createLaoWrongWitnesses.toJson.toString),
-    PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=")),
+    organizer,
+    Signature(Base64Data("")),
+    Hash(Base64Data("")),
+    workingWSPairList,
+    Some(createLaoWrongId)
+  )
+
+  final val MESSAGE_CREATELAO_WRONG_SENDER: Message = new Message(
+    Base64Data.encode(createLaoWrongWitnesses.toJson.toString),
+    PublicKey(Base64Data.encode("wrong")),
     Signature(Base64Data("")),
     Hash(Base64Data("")),
     workingWSPairList,

@@ -33,9 +33,9 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
                 } else if (!validateChannelType(ObjectType.CHIRP, channel)){
                     Right(validationError(s"trying to add a Chirp on a wrong type of channel $channel"))
                 } else if (!validateAttendee(sender, channel)){
-                    Right(validationError(s"invalid PoP token $sender"))
+                    Right(validationError(s"Sender $sender has an invalid PoP token."))
                 } else if (channel.extractChildChannel.base64Data != sender.base64Data) {
-                    Right(validationError(s"invalid PoP token $sender"))
+                    Right(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
                 }
                 // FIXME: validate parent ID: check with ChannelData object
                 else{

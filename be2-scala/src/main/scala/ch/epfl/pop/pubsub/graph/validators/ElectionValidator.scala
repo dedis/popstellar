@@ -37,7 +37,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
           Right(validationError(s"invalid sender $sender"))
         } //note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
         else if (!validateChannelType(ObjectType.LAO, channel)) {
-          Right(validationError(s"trying to send a CloseRollCall message on a wrong type of channel $channel"))
+          Right(validationError(s"trying to send a SetupElection message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
@@ -73,7 +73,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         // FIXME: check the actual votes
         // FIXME: for the VoteElection list, we need to check question ids but what do they mean? No info in documentation
         else if (!validateAttendee(sender, channel)){
-          Right(validationError(s"invalid PoP token"))
+          Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
         } else {
@@ -97,7 +97,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         if (!validateOwner(sender, channel)){
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
-          Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
+          Right(validationError(s"trying to send a ResultElection message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
@@ -124,7 +124,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         } else if (!validateOwner(sender, channel)){
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
-          Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
+          Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
