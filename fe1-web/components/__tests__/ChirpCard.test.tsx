@@ -1,12 +1,12 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import {
   Hash, LaoState, PublicKey, Timestamp, Lao,
 } from 'model/objects';
 import { Chirp } from 'model/objects/Chirp';
 import { OpenedLaoStore } from 'store';
+import { requestDeleteChirp as mockRequestDeleteChirp } from 'network/MessageApi';
 import ChirpCard from '../ChirpCard';
-// import { requestDeleteChirp as mockRequestDeleteChirp } from 'network/MessageApi';
 
 const TIMESTAMP = 1609455600;
 const laoState: LaoState = {
@@ -24,7 +24,6 @@ const chirp = new Chirp({
   text: 'Don\'t panic.',
   sender: sender,
   time: new Timestamp(1609455600), // 31 December 2020
-  likes: 42,
   isDeleted: false,
 });
 
@@ -41,37 +40,31 @@ beforeAll(() => {
 
 describe('ChirpCard', () => {
   it('renders correctly for sender', () => {
-    // TODO: mock the sender
-    /* const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
+    const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
     getMockLao.mockImplementation(() => Lao.fromState(laoState));
-    const getMockSender = jest.spyOn(KeyPairStore, 'getPublicKey');
-    getMockSender.mockImplementation(() => sender);
     const obj = render(
-      <ChirpCard chirp={chirp} />,
+      <ChirpCard chirp={chirp} userPublicKey={new PublicKey('Douglas Adams')} />,
     );
-    expect(obj.toJSON()).toMatchSnapshot(); */
+    expect(obj.toJSON()).toMatchSnapshot();
   });
 
   it('renders correctly for non-sender', () => {
     const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
     getMockLao.mockImplementation(() => Lao.fromState(laoState));
     const obj = render(
-      <ChirpCard chirp={chirp} />,
+      <ChirpCard chirp={chirp} userPublicKey={new PublicKey('IAmNotTheSender')} />,
     );
     expect(obj.toJSON()).toMatchSnapshot();
   });
 
   it('calls delete correctly', () => {
-    // TODO: mock the sender
-    /* const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
+    const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
     getMockLao.mockImplementation(() => Lao.fromState(laoState));
-    const getMockSender = jest.spyOn(KeyPairStore, 'getPublicKey');
-    getMockSender.mockImplementation(() => sender);
     const button = render(
-      <ChirpCard chirp={chirp} />,
+      <ChirpCard chirp={chirp} userPublicKey={new PublicKey('Douglas Adams')} />,
     ).getByLabelText('delete');
     fireEvent.press(button);
-    expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1); */
+    expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
   });
 });
 

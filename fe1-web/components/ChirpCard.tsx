@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { View, Text } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
@@ -6,46 +6,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { Chirp } from 'model/objects/Chirp';
 import DeleteButton from 'components/DeleteButton';
 import styles from 'styles/stylesheets/chirpCard';
-import { useSelector } from 'react-redux';
 import { requestDeleteChirp } from '../network';
-import { makeCurrentLao, makeEventGetter } from '../store';
-import { PublicKey, RollCall } from '../model/objects';
-import { generateToken } from '../model/objects/wallet';
+import { PublicKey } from '../model/objects';
 
 /**
  * Component to display a chirp
  */
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
-  const likesText = `  ${chirp.likes}`;
-
-  const laoSelect = makeCurrentLao();
-  const lao = useSelector(laoSelect);
-  const [userPublicKey, setUserPublicKey] = useState(new PublicKey(''));
-  const [isSender, setIsSender] = useState(false);
-
-  if (lao === undefined) {
-    throw new Error('LAO is currently undefined, impossible to display chirps');
-  }
+  const { userPublicKey } = props;
 
   // This is temporary for now
   const zero = '  0';
 
-  // Get the pop token of the user using the last tokenized roll call
-  const rollCallId = lao.last_tokenized_roll_call_id;
-  const eventSelect = makeEventGetter(lao.id, rollCallId);
-  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
-
-  useEffect(() => {
-    generateToken(lao.id, rollCallId).then((token) => {
-      if (token && rollCall.containsToken(token)) {
-        setUserPublicKey(token.publicKey);
-        if (userPublicKey) {
-          setIsSender(userPublicKey.valueOf() === chirp.sender.valueOf());
-        }
-      }
-    });
-  }, [lao.last_tokenized_roll_call_id]);
+  const isSender = userPublicKey.valueOf() === chirp.sender.valueOf();
 
   const deleteChirp = () => {
     if (userPublicKey) {
@@ -72,7 +46,7 @@ const ChirpCard = (props: IPropTypes) => {
         <View style={styles.reactionsView}>
           <View style={styles.reactionView}>
             <Ionicons name="thumbs-up" size={16} color="black" />
-            <Text>{likesText}</Text>
+            <Text>{zero}</Text>
           </View>
           <View style={styles.reactionView}>
             <Ionicons name="thumbs-down" size={16} color="black" />
@@ -98,6 +72,7 @@ const ChirpCard = (props: IPropTypes) => {
 
 const propTypes = {
   chirp: PropTypes.instanceOf(Chirp).isRequired,
+  userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 ChirpCard.prototype = propTypes;

@@ -85,7 +85,12 @@ const SocialHome = () => {
     if (item.isDeleted) {
       return <DeletedChirpCard chirp={Chirp.fromState(item)} />;
     }
-    return <ChirpCard chirp={Chirp.fromState(item)} />;
+    return (
+      <ChirpCard
+        chirp={Chirp.fromState(item)}
+        userPublicKey={userPublicKey}
+      />
+    );
   };
 
   return (
