@@ -14,7 +14,7 @@ const (
 	ConsensusActionAccept      = "accept"
 	ConsensusActionElect       = "elect"
 	ConsensusActionElectAccept = "elect_accept"
-	ConsensuisActionLearn      = "learn"
+	ConsensusActionLearn       = "learn"
 	ConsensusActionPrepare     = "prepare"
 	ConsensusActionPromise     = "promise"
 	ConsensusActionPropose     = "propose"
@@ -59,6 +59,14 @@ const (
 	// channel of origin of some message
 	RootPrefix = "/root/"
 )
+
+// MessageData defines a common interface for message data to be used with a
+// registry.
+type MessageData interface {
+	GetObject() string
+	GetAction() string
+	NewEmpty() MessageData
+}
 
 // GetObjectAndAction returns the object and action of a JSON RPC message.
 func GetObjectAndAction(buf []byte) (string, string, error) {

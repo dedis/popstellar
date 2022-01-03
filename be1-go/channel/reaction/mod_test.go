@@ -217,7 +217,7 @@ func Test_SendReaction(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	file := filepath.Join(relativePath, "reaction_add.json")
+	file := filepath.Join(relativePath, "reaction_add", "reaction_add.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -270,7 +270,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	// Create delete reaction message
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
-	file := filepath.Join(relativePath, "reaction_delete.json")
+	file := filepath.Join(relativePath, "reaction_delete", "reaction_delete.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -324,7 +324,7 @@ func Test_DeleteReaction(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	file := filepath.Join(relativePath, "reaction_add.json")
+	file := filepath.Join(relativePath, "reaction_add", "reaction_add.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -359,7 +359,7 @@ func Test_DeleteReaction(t *testing.T) {
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
 
 	// Create delete reaction message
-	file = filepath.Join(relativePath, "reaction_delete.json")
+	file = filepath.Join(relativePath, "reaction_delete", "reaction_delete.json")
 	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -391,6 +391,10 @@ func Test_DeleteReaction(t *testing.T) {
 
 	pub.Params.Message = m
 	pub.Params.Channel = reactionChannelName
+
+	// Wait before storing a new message to be able to have a unique
+	// timestamp for each message
+	time.Sleep(time.Millisecond)
 
 	// If there is no error, the delete request has been properly received
 	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))

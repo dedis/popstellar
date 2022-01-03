@@ -7,6 +7,7 @@ import {
   getLastPartOfChannel,
   getUserSocialChannel,
 } from '../Channel';
+import { PublicKey } from '../PublicKey';
 
 const FAKE_ID = Hash.fromStringArray('id');
 

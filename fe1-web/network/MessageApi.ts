@@ -232,14 +232,14 @@ export function requestCreateElection(
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
+  time: Timestamp,
 ): Promise<void> {
-  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new SetupElection({
     lao: currentLao.id,
     id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.ELECTION, currentLao.id.toString(), time.toString(), name,
     ),
     name: name,
     version: version,
@@ -310,7 +310,7 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(getUserSocialChannel(currentLao.id, publicKey.valueOf()), message);
+  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
 }
 
 export function requestAddReaction(

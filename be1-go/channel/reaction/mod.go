@@ -228,6 +228,11 @@ func (c *Channel) verifyAddReactionMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
 	}
 
+	err = reactMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid add reaction message: %v", err)
+	}
+
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
@@ -252,6 +257,11 @@ func (c *Channel) verifyDeleteReactionMessage(msg message.Message) error {
 	err := msg.UnmarshalData(&delReactMsg)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal: %v", err)
+	}
+
+	err = delReactMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid delete reaction message: %v", err)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)

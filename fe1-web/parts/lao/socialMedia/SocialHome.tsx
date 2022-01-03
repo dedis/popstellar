@@ -47,10 +47,10 @@ const styles = StyleSheet.create({
 
 const SocialHome = () => {
   const [inputChirp, setInputChirp] = useState('');
+  const [userPublicKey, setUserPublicKey] = useState(new PublicKey(''));
 
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
-  let userPublicKey: PublicKey | undefined;
 
   if (lao === undefined) {
     throw new Error('LAO is currently undefined, impossible to access to Social Media');
@@ -65,21 +65,16 @@ const SocialHome = () => {
   useEffect(() => {
     generateToken(lao.id, rollCallId).then((token) => {
       if (token && rollCall.containsToken(token)) {
-        userPublicKey = token.publicKey;
+        setUserPublicKey(token.publicKey);
       }
     });
   }, [lao.last_tokenized_roll_call_id]);
 
   const publishChirp = () => {
-    if (userPublicKey) {
-      requestAddChirp(userPublicKey, inputChirp)
-        .catch((err) => {
-          console.error('Failed to post chirp, error:', err);
-        });
-    } else {
-      console.error('No token found for current user. '
-        + 'Be sure to have participated in a Roll-Call.');
-    }
+    requestAddChirp(userPublicKey, inputChirp)
+      .catch((err) => {
+        console.error('Failed to post chirp, error:', err);
+      });
   };
 
   const chirps = makeChirpsList();
@@ -100,6 +95,8 @@ const SocialHome = () => {
         <TextInputChirp
           onChangeText={setInputChirp}
           onPress={publishChirp}
+          // The publish button is disabled when the user public key is not defined
+          publishIsDisabledCond={userPublicKey.valueOf() === ''}
         />
         <FlatList
           data={chirpList}

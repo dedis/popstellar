@@ -136,7 +136,7 @@ object DbActor extends AskPatternConstants {
     *   requested lao data
     */
   final case class DbActorReadLaoDataAck(laoData: Option[LaoData])
-      extends DbActorMessage  
+      extends DbActorMessage
 
   /** Response for a [[Catchup]] db request Receiving [[DbActorCatchupAck]]
     * works as an acknowledgement that the catchup request was successful
@@ -173,10 +173,10 @@ object DbActor extends AskPatternConstants {
 
     /* Create a logger for this DB actor"*/
     val logger = LoggerFactory.getLogger("DBLogger")
-    
+
     val options: Options = new Options()
     options.createIfMissing(true)
-    
+
     val db: DB =
       try { factory.open(new File(DATABASE_FOLDER), options) }
       catch {
@@ -192,6 +192,11 @@ object DbActor extends AskPatternConstants {
   // FIXME: find way to keep track of db size
   sealed case class DbActor(mediatorRef: ActorRef, db: DB, DATABASE_FOLDER: String) extends Actor with ActorLogging {
 
+    //Close the db and release the resources right before stopping the actor
+    override def postStop() = {
+      db.close();
+    }
+
     //Map which serves as a cache of keys made from channels with generateLaoDataKey mapped to their LaoDatas (instead of going to the database)
     private val laoDataCache: collection.mutable.Map[String, LaoData] = collection.mutable.Map[String, LaoData]()
 
@@ -202,7 +207,7 @@ object DbActor extends AskPatternConstants {
 
     //helper function to determine if a channel should be created during write operations
     private def writeCreateNewChannel(channel: Channel, message: Message): DbActorMessage = {
-      
+
       Try(db.get(channel.toString.getBytes)) match {
         case Success(bytes) if bytes != null =>
           log.info(s"Channel '$channel' already exists.")
@@ -222,7 +227,7 @@ object DbActor extends AskPatternConstants {
       }
     }
 
-    
+
 
     //helper functions for the database key generation, could make them public later if needed elsewhere
     private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
@@ -265,14 +270,14 @@ object DbActor extends AskPatternConstants {
             } else if (bt == null) {
               val laoDataNew: LaoData = LaoData.emptyLaoData.updateWith(message)
               batch.put(laoDataKey.getBytes, laoDataNew.toJsonString.getBytes)
-              laoDataCache.put(laoDataKey, laoDataNew)            
+              laoDataCache.put(laoDataKey, laoDataNew)
             }
             //allows writing all data atomically
             writeBatch(channel, messageId, batch)
           case Failure(exception) =>
             log.error(s"Actor $self (db) encountered a problem with the data of the LAO in the database.")
             DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
-        }  
+        }
       } else{
         writeBatch(channel, messageId, batch)
       }
@@ -421,11 +426,11 @@ object DbActor extends AskPatternConstants {
       case Read(channel, messageId) =>
         log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
         sender ! read(channel, messageId)
-      
+
       case ReadChannelData(channel) =>
         log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
         sender ! readChannelData(channel)
-      
+
       case ReadLaoData(channel) =>
         log.info(s"Actor $self (db) received a ReadLaoData request")
         sender ! readLaoData(channel)

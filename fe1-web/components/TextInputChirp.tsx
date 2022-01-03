@@ -54,10 +54,11 @@ const TextInputChirp = (props: IPropTypes) => {
   const { numberOfLines } = props;
   const { onPress } = props;
   const { onChangeText } = props;
+  const { publishIsDisabledCond } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
   const textIsRed = charsLeft < 0;
-  const publishIsDisabled = textIsRed || charsLeft === MAX_CHIRP_CHARS;
+  const publishIsDisabled = textIsRed || charsLeft === MAX_CHIRP_CHARS || publishIsDisabledCond;
 
   return (
     <View style={styles.container}>
@@ -94,6 +95,7 @@ const propTypes = {
   numberOfLines: PropTypes.number,
   onPress: PropTypes.func.isRequired,
   onChangeText: PropTypes.func.isRequired,
+  publishIsDisabledCond: PropTypes.bool,
 };
 
 TextInputChirp.propTypes = propTypes;
@@ -101,6 +103,7 @@ TextInputChirp.propTypes = propTypes;
 TextInputChirp.defaultProps = {
   placeholder: STRINGS.your_chirp,
   numberOfLines: 5,
+  publishIsDisabledCond: false,
 };
 
 type IPropTypes = {
@@ -108,6 +111,7 @@ type IPropTypes = {
   numberOfLines: number,
   onPress: Function,
   onChangeText: Function,
+  publishIsDisabledCond: boolean,
 };
 
 export default TextInputChirp;

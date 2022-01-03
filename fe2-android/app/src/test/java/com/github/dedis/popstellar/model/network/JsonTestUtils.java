@@ -2,8 +2,10 @@ package com.github.dedis.popstellar.model.network;
 
 import static org.junit.Assert.assertEquals;
 
+import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -15,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class JsonTestUtils {
 
-  private static final Gson GSON = JsonModule.provideGson();
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   public static String loadFile(String path) {
     InputStream is = JsonTestUtils.class.getClassLoader().getResourceAsStream(path);
