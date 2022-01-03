@@ -1,8 +1,8 @@
 import { ChirpState } from 'model/objects/Chirp';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash } from 'model/objects';
-import { getLaosState } from './LaoReducer';
 import { ReactionState } from 'model/objects/Reaction';
+import { getLaosState } from './LaoReducer';
 
 /**
  * Stores all the Social Media related content
@@ -18,7 +18,7 @@ interface SocialReducerState {
   // maps a sender to the list of ChirpIds he sent
   byUser: Record<string, string[]>,
   // maps a chirpId to the pair of the reaction_codepoint and the list of userPublicKeys
-  reactionsByChirp: Record<string, Record<string, Set<string>>>,
+  reactionsByChirp: Record<string, Record<string, string[]>>,
 }
 
 // Root state for the Social Reducer
@@ -121,14 +121,16 @@ const socialSlice = createSlice({
         }
 
         const store = state.byLaoId[laoId];
+
         if (!store.reactionsByChirp[reaction.chirp_id]) {
-          store.reactionsByChirp[reaction.chirp_id] =
-            {[reaction.codepoint]: new Set<string>([reaction.sender])};
+          store.reactionsByChirp[reaction.chirp_id] = { [reaction.codepoint]: [reaction.sender] };
         } else if (!store.reactionsByChirp[reaction.chirp_id][reaction.codepoint]) {
-          store.reactionsByChirp[reaction.chirp_id][reaction.codepoint] =
-            new Set<string>([reaction.sender]);
+          store.reactionsByChirp[reaction.chirp_id][reaction.codepoint] = [reaction.sender];
+        } else if (!store.reactionsByChirp[reaction.chirp_id][reaction.codepoint]
+          .includes(reaction.sender)) {
+          store.reactionsByChirp[reaction.chirp_id][reaction.codepoint].push(reaction.sender);
         } else {
-          store.reactionsByChirp[reaction.chirp_id][reaction.codepoint].add(reaction.sender);
+          console.warn('You already reacted to this reaction');
         }
       }
     }
@@ -166,3 +168,29 @@ export const makeChirpsList = () => createSelector(
     return [];
   },
 );
+
+export const makeReactionsList = () => createSelector(
+  (state) => getSocialState(state),
+  (state) => getLaosState(state).currentId,
+  (list: SocialLaoReducerState, laoId: string | undefined): Record<string, Record<string, number>> => {
+    if (!laoId) {
+      return {};
+    }
+    if (list.byLaoId[laoId]) {
+      const reactions: Record<string, Record<string, number>> = {};
+      list.byLaoId[laoId].allIdsInOrder.forEach(
+        (id) => {
+          const codepoint_user = list.byLaoId[laoId].reactionsByChirp[id];
+          if(codepoint_user) {
+            reactions[id] = {['👍']: codepoint_user['👍'] ? codepoint_user['👍'].length : 0,
+                             ['👎']: codepoint_user['👎'] ? codepoint_user['👎'].length : 0,
+                             ['❤️']: codepoint_user['❤️'] ? codepoint_user['❤️'].length : 0}
+          }
+        }
+      );
+      return reactions;
+    }
+    return {};
+  },
+);
+

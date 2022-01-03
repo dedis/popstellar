@@ -7,7 +7,9 @@ import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
+import { useSelector } from 'react-redux';
 import { requestAddReaction } from '../network';
+import { makeReactionsList } from '../store';
 
 /**
  * Component to display a chirp
@@ -60,12 +62,16 @@ const styles = StyleSheet.create({
 
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
+  const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
 
   // This is temporary for now
   const zero = '  0';
+  const thumbsUp = reactions ? reactions['👍'] : 0;
+  const thumbsDown = reactions ? reactions['👎'] : 0;
+  const heart = reactions ? reactions['❤️'] : 0;
 
-  const addReaction = (emoji: string) => {
-    requestAddReaction(emoji, chirp.id)
+  const addReaction = (reaction_codepoint: string) => {
+    requestAddReaction(reaction_codepoint, chirp.id)
       .catch((err) => {
         console.error('Could not add reaction, error: ', err);
       });
@@ -89,7 +95,7 @@ const ChirpCard = (props: IPropTypes) => {
               color="black"
               onPress={() => addReaction('👍')}
             />
-            <Text>{zero}</Text>
+            <Text>{`  ${thumbsUp}`}</Text>
           </View>
           <View style={styles.reactionView}>
             <Ionicons.Button
@@ -98,7 +104,7 @@ const ChirpCard = (props: IPropTypes) => {
               color="black"
               onPress={() => addReaction('👎')}
             />
-            <Text>{zero}</Text>
+            <Text>{`  ${thumbsDown}`}</Text>
           </View>
           <View style={styles.reactionView}>
             <Ionicons.Button
@@ -107,7 +113,7 @@ const ChirpCard = (props: IPropTypes) => {
               color="black"
               onPress={() => addReaction('❤️')}
             />
-            <Text>{zero}</Text>
+            <Text>{`  ${heart}`}</Text>
           </View>
           <View style={styles.reactionView}>
             <Ionicons name="chatbubbles" size={16} color="black" />
