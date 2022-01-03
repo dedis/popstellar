@@ -47,6 +47,7 @@ const emptyState = {
       allIdsInOrder: [],
       byId: {},
       byUser: {},
+      reactionsByChirp: {},
     },
   },
 };
@@ -57,11 +58,13 @@ const filledState1 = {
       allIdsInOrder: [],
       byId: {},
       byUser: {},
+      reactionsByChirp: {},
     },
     [mockLaoId]: {
       allIdsInOrder: [chirp1.id],
       byId: { [chirp1.id]: chirp1 },
       byUser: { [chirp1.sender]: [chirp1.id] },
+      reactionsByChirp: {},
     },
   },
 };
@@ -72,11 +75,13 @@ const filledState2 = {
       allIdsInOrder: [],
       byId: {},
       byUser: {},
+      reactionsByChirp: {},
     },
     [mockLaoId]: {
       allIdsInOrder: [chirp2.id, chirp1.id],
       byId: { [chirp1.id]: chirp1, [chirp2.id]: chirp2 },
       byUser: { [chirp1.sender]: [chirp1.id], [chirp2.sender]: [chirp2.id] },
+      reactionsByChirp: {},
     },
   },
 };
@@ -87,11 +92,13 @@ const filledState3 = {
       allIdsInOrder: [],
       byId: {},
       byUser: {},
+      reactionsByChirp: {},
     },
     [mockLaoId]: {
       allIdsInOrder: [chirp2.id, chirp3.id, chirp1.id],
       byId: { [chirp1.id]: chirp1, [chirp2.id]: chirp2, [chirp3.id]: chirp3 },
       byUser: { [chirp1.sender]: [chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
+      reactionsByChirp: {},
     },
   },
 };
@@ -102,6 +109,7 @@ const filledState4 = {
       allIdsInOrder: [],
       byId: {},
       byUser: {},
+      reactionsByChirp: {},
     },
     [mockLaoId]: {
       allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
@@ -112,6 +120,7 @@ const filledState4 = {
         [chirp4.id]: chirp4,
       },
       byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
+      reactionsByChirp: {},
     },
   },
 };

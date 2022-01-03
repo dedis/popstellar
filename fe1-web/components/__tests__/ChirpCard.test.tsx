@@ -9,7 +9,6 @@ const chirp = new Chirp({
   text: 'Don\'t panic.',
   sender: new PublicKey('Douglas Adams'),
   time: new Timestamp(1609455600), // 31 December 2020
-  likes: 42,
 });
 
 beforeAll(() => {

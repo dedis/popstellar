@@ -78,21 +78,48 @@ exports[`ChirpCard renders correctly 1`] = `
           }
         }
       >
-        <Text />
-        <Text>
-            42
-        </Text>
-      </View>
-      <View
-        style={
-          Object {
-            "flex": 1,
-            "flexDirection": "row",
-            "marginRight": 10,
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Array [
+              Object {
+                "overflow": "hidden",
+              },
+              Object {
+                "backgroundColor": "#007AFF",
+                "borderRadius": 5,
+              },
+            ]
           }
-        }
-      >
-        <Text />
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "padding": 8,
+                },
+                Object {
+                  "backgroundColor": "#007AFF",
+                  "borderRadius": 5,
+                },
+                undefined,
+              ]
+            }
+          >
+            <Text />
+          </View>
+        </View>
         <Text>
             0
         </Text>
@@ -106,7 +133,103 @@ exports[`ChirpCard renders correctly 1`] = `
           }
         }
       >
-        <Text />
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Array [
+              Object {
+                "overflow": "hidden",
+              },
+              Object {
+                "backgroundColor": "#007AFF",
+                "borderRadius": 5,
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "padding": 8,
+                },
+                Object {
+                  "backgroundColor": "#007AFF",
+                  "borderRadius": 5,
+                },
+                undefined,
+              ]
+            }
+          >
+            <Text />
+          </View>
+        </View>
+        <Text>
+            0
+        </Text>
+      </View>
+      <View
+        style={
+          Object {
+            "flex": 1,
+            "flexDirection": "row",
+            "marginRight": 10,
+          }
+        }
+      >
+        <View
+          accessible={true}
+          focusable={true}
+          onClick={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
+          style={
+            Array [
+              Object {
+                "overflow": "hidden",
+              },
+              Object {
+                "backgroundColor": "#007AFF",
+                "borderRadius": 5,
+              },
+            ]
+          }
+        >
+          <View
+            style={
+              Array [
+                Object {
+                  "alignItems": "center",
+                  "flexDirection": "row",
+                  "justifyContent": "flex-start",
+                  "padding": 8,
+                },
+                Object {
+                  "backgroundColor": "#007AFF",
+                  "borderRadius": 5,
+                },
+                undefined,
+              ]
+            }
+          >
+            <Text />
+          </View>
+        </View>
         <Text>
             0
         </Text>
