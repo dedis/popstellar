@@ -60,7 +60,7 @@ type Channel struct {
 	organizerPubKey kyber.Point
 
 	witnessMu sync.Mutex
-	witnesses []string
+	witnesses map[string]struct{}
 
 	rollCall rollCall
 
@@ -91,25 +91,19 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
-	c := &Channel{
+	return &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           box,
 		general:         generalCh,
 		reactions:       &reactionCh,
 		organizerPubKey: organizerPubKey,
+		witnesses:       make(map[string]struct{}),
 		hub:             hub,
 		rollCall:        rollCall{},
 		attendees:       make(map[string]struct{}),
 		log:             log,
 	}
-	// temporary while the front-end find a solution to
-	// get the PoP token... TODO
-	pkBuf, _ := organizerPubKey.MarshalBinary()
-	pk64 := base64.URLEncoding.EncodeToString(pkBuf)
-	c.createChirpingChannel(pk64, socket)
-
-	return c
 }
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -326,22 +320,17 @@ func (c *Channel) processLaoState(data messagedata.LaoState) error {
 		return answer.NewErrorf(-4, "cannot find lao/update_properties with ID: %s", data.ModificationID)
 	}
 
-	// Check if the signatures are from witnesses we need. We maintain
-	// the current state of witnesses for a LAO in the channel instance
-	// TODO: threshold signature verification
-
+	// Check if the signatures are from witnesses we need.
 	c.witnessMu.Lock()
 	match := 0
 	expected := len(c.witnesses)
-	// TODO: O(N^2), O(N) possible
-	for i := 0; i < expected; i++ {
-		for j := 0; j < len(data.ModificationSignatures); j++ {
-			if c.witnesses[i] == data.ModificationSignatures[j].Witness {
-				match++
-				break
-			}
+	for j := 0; j < len(data.ModificationSignatures); j++ {
+		_, ok := c.witnesses[data.ModificationSignatures[j].Witness]
+		if ok {
+			match++
 		}
 	}
+
 	c.witnessMu.Unlock()
 
 	if match != expected {
@@ -366,7 +355,7 @@ func (c *Channel) processLaoState(data messagedata.LaoState) error {
 		}
 	}
 
-	err = updateMsgData.Verifiy()
+	err = updateMsgData.Verify()
 	if err != nil {
 		return &answer.Error{
 			Code:        -4,
@@ -595,7 +584,7 @@ func (c *Channel) createElection(msg message.Message,
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false,
+	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime,
 		setupMsg.Questions, c.attendees, c.hub, c.log)
 
 	// Saving the election channel creation message on the lao channel
@@ -752,6 +741,7 @@ func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunction
 		sockets:   channel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
 		hub:       hub,
+		witnesses: make(map[string]struct{}),
 		rollCall:  rollCall{},
 		attendees: make(map[string]struct{}),
 		log:       log,
@@ -771,7 +761,9 @@ func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunction
 		return nil, xerrors.Errorf("failed to get witnesses: %v", err)
 	}
 
-	channel.witnesses = witnesses
+	for _, witness := range witnesses {
+		channel.witnesses[witness] = struct{}{}
+	}
 
 	inbox, err := inbox.CreateInboxFromDB(db, channelPath)
 	if err != nil {

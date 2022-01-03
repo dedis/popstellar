@@ -362,7 +362,7 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 		return nil
 	}
 	if messageState.currentPhase != ElectAcceptPhase ||
-		!messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+		!messageState.proposer.Equal(c.hub.GetPubKeyOwner()) {
 		return nil
 	}
 
@@ -552,7 +552,7 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 	}
 
 	if messageState.currentPhase != PromisePhase ||
-		!messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+		!messageState.proposer.Equal(c.hub.GetPubKeyOwner()) {
 		return nil
 	}
 
@@ -755,7 +755,7 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 	if len(consensusInstance.accepts) < c.hub.GetServerNumber()/2+1 {
 		return nil
 	}
-	if !messageState.proposer.Equal(c.hub.GetPubKeyOrg()) {
+	if !messageState.proposer.Equal(c.hub.GetPubKeyOwner()) {
 		return nil
 	}
 
