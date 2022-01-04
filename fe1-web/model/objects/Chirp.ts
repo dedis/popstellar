@@ -34,6 +34,7 @@ export class Chirp {
   // The id of the parent chirp (if it is a reply)
   public readonly parentId?: Hash;
 
+  // The flag indicates if the chirp is deleted or not
   public readonly isDeleted: boolean;
 
   constructor(obj: Partial<Chirp>) {
