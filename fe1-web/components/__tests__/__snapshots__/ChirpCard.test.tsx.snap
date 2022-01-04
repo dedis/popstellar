@@ -60,17 +60,27 @@ exports[`ChirpCard render correct for a deleted chirp 1`] = `
       <Text
         style={
           Object {
-            "color": "gray",
             "fontSize": 18,
-            "paddingBottom": 20,
-            "paddingTop": 10,
-            "width": 520,
+            "fontWeight": "600",
           }
         }
       >
-        This chirp was deleted
+        Douglas Adams
       </Text>
     </View>
+    <Text
+      style={
+        Object {
+          "color": "gray",
+          "fontSize": 18,
+          "paddingBottom": 20,
+          "paddingTop": 10,
+          "width": 520,
+        }
+      }
+    >
+      This chirp was deleted
+    </Text>
     <View
       style={
         Object {
