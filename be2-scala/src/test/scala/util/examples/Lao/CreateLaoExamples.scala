@@ -1,4 +1,4 @@
-package util.examples
+package util.examples.lao
 
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
 import ch.epfl.pop.model.network.JsonRpcRequest

@@ -11,7 +11,7 @@ import ch.epfl.pop.pubsub.graph.{ErrorCodes,GraphMessage,MessageDecoder,Pipeline
 import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers}
 
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
-import util.examples.CreateLaoExamples
+import util.examples.lao.CreateLaoExamples
 
 
 class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {

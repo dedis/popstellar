@@ -30,8 +30,6 @@ copyProtocolTask := {
         }
     }
 }
-//Set class loader to scala_library
-(Test / classLoaderLayeringStrategy):= ClassLoaderLayeringStrategy.ScalaLibrary
 //Add the copyProtocolTask to compile and test scopes
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
 (Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value

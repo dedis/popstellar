@@ -9,7 +9,7 @@ import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
 import ch.epfl.pop.pubsub.graph.{GraphMessage,MessageDecoder,Validator}
 import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers,Outcome}
 
-import util.examples.CreateLaoExamples
+import util.examples.lao.CreateLaoExamples
 
 class CreateLaoContentSuiteSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
