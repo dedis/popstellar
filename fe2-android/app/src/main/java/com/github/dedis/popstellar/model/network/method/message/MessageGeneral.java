@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.Gson;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,8 +53,9 @@ public final class MessageGeneral {
   public MessageGeneral(KeyPair keyPair, Data data, Gson gson) {
     this.sender = keyPair.getPublicKey();
     this.data = data;
-    Log.d(TAG, gson.toJson(data, Data.class));
-    this.dataBuf = new Base64URLData(gson.toJson(data, Data.class).getBytes());
+    String dataJson = gson.toJson(data, Data.class);
+    Log.d(TAG, dataJson);
+    this.dataBuf = new Base64URLData(dataJson.getBytes(StandardCharsets.UTF_8));
 
     generateSignature(keyPair.getPrivateKey());
     this.messageId = new MessageID(this.dataBuf, this.signature);
