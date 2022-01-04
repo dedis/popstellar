@@ -78,15 +78,10 @@ const ChirpCard = (props: IPropTypes) => {
   const isSender = userPublicKey.valueOf() === chirp.sender.valueOf();
 
   const deleteChirp = () => {
-    if (userPublicKey) {
-      requestDeleteChirp(userPublicKey, chirp.id)
-        .catch((err) => {
-          console.error('Could not remove chirp, error:', err);
-        });
-    } else {
-      console.error('No token found for current user. '
-        + 'Be sure to have participated in a Roll-Call.');
-    }
+    requestDeleteChirp(userPublicKey, chirp.id)
+      .catch((err) => {
+        console.error('Could not remove chirp, error:', err);
+      });
   };
 
   return (
