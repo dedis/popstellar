@@ -77,5 +77,6 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
 
     system.stop(mockedDB.actorRef)
   }
+  //TODO Add more RollCall handlers test
 
 }
