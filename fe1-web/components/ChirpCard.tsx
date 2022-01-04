@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { gray } from 'styles/colors';
+import { gray, blue } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
 import { useSelector } from 'react-redux';
 import { requestAddReaction } from '../network';
@@ -93,6 +93,7 @@ const ChirpCard = (props: IPropTypes) => {
               name="thumbs-up"
               size={16}
               color="black"
+              backgroundColor={blue}
               onPress={() => addReaction('👍')}
             />
             <Text>{`  ${thumbsUp}`}</Text>
@@ -102,6 +103,7 @@ const ChirpCard = (props: IPropTypes) => {
               name="thumbs-down"
               size={16}
               color="black"
+              backgroundColor={blue}
               onPress={() => addReaction('👎')}
             />
             <Text>{`  ${thumbsDown}`}</Text>
@@ -111,6 +113,7 @@ const ChirpCard = (props: IPropTypes) => {
               name="heart"
               size={16}
               color="black"
+              backgroundColor={blue}
               onPress={() => addReaction('❤️')}
             />
             <Text>{`  ${heart}`}</Text>
