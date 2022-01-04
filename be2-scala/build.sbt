@@ -8,12 +8,16 @@ version := "0.1"
 
 scalaVersion := "2.13.7"
 
+//Reload changes automatically
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Global / cancelable := true
+
+//Fork run task in compile scope
 Compile/ run / fork := true
 Compile/ run / connectInput := true
 Compile/ run / javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
 
+//Make test execution synchronized
 Test/ test/ parallelExecution := false
 
 //Create task to copy the protocol folder to resources
