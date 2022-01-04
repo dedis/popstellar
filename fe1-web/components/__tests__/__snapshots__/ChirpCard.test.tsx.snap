@@ -138,31 +138,6 @@ exports[`ChirpCard render correct for a deleted chirp 1`] = `
         4 months ago
       </time>
     </View>
-    <View
-      accessible={true}
-      collapsable={false}
-      focusable={true}
-      onBlur={[Function]}
-      onClick={[Function]}
-      onFocus={[Function]}
-      onResponderGrant={[Function]}
-      onResponderMove={[Function]}
-      onResponderRelease={[Function]}
-      onResponderTerminate={[Function]}
-      onResponderTerminationRequest={[Function]}
-      onStartShouldSetResponder={[Function]}
-    >
-      <Image
-        accessibilityLabel="delete"
-        source={1}
-        style={
-          Object {
-            "height": 26,
-            "width": 26,
-          }
-        }
-      />
-    </View>
   </View>
 </View>
 `;
