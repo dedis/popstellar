@@ -359,7 +359,7 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	checkDataDelete := messagedata.ChirpBroadcast{
 		Object:    "chirp",
-		Action:    "delete_broadcast",
+		Action:    "delete_notify",
 		ChirpId:   messagedata.Hash(buf64delete, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,

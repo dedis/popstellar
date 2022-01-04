@@ -49,7 +49,7 @@ const (
 	ChirpActionAdd             = "add"
 	ChirpActionDelete          = "delete"
 	ChirpActionAddBroadcast    = "add_notify"
-	ChirpActionDeleteBroadcast = "delete_broadcast"
+	ChirpActionDeleteBroadcast = "delete_notify"
 
 	ReactionObject       = "reaction"
 	ReactionActionAdd    = "add"
