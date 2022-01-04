@@ -76,6 +76,6 @@ public final class ConsensusFailure extends Data {
   public String toString() {
     return String.format(
         "ConsensusFailure{instance_id='%s', message_id='%s', created_at=%s}",
-        instanceId, messageId, creation);
+        instanceId, messageId.getEncoded(), creation);
   }
 }
