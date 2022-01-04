@@ -45,9 +45,9 @@ const (
 	VoteActionCastVote = "cast_vote"
 	VoteActionWriteIn  = "write_in"
 
-	ChirpObject                = "chirp"
-	ChirpActionAdd             = "add"
-	ChirpActionDelete          = "delete"
+	ChirpObject             = "chirp"
+	ChirpActionAdd          = "add"
+	ChirpActionDelete       = "delete"
 	ChirpActionAddNotify    = "add_notify"
 	ChirpActionDeleteNotify = "delete_notify"
 
