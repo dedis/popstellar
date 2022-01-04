@@ -95,7 +95,7 @@ const ChirpCard = (props: IPropTypes) => {
             ? <Text style={styles.deletedChirpText}>{STRINGS.deleted_chirp}</Text>
             : <Text style={styles.senderText}>{chirp.sender.valueOf()}</Text> }
         </View>
-        <Text style={styles.chirpText}>{chirp.text}</Text>
+        {!chirp.isDeleted && <Text style={styles.chirpText}>{chirp.text}</Text> }
         <View style={styles.reactionsView}>
           {!chirp.isDeleted && (
           <>

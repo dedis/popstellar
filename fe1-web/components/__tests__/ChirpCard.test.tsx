@@ -29,7 +29,7 @@ const chirp = new Chirp({
 
 const deletedChirp = new Chirp({
   id: new Hash('1234'),
-  text: 'Don\'t panic.',
+  text: '',
   sender: sender,
   time: new Timestamp(1609455600), // 31 December 2020
   isDeleted: true,
