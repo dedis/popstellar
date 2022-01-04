@@ -111,7 +111,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	action = action + "_broadcast"
+	action = action + "_notify"
 	if err != nil {
 		return xerrors.Errorf("failed to read the message data: %v", err)
 	}
