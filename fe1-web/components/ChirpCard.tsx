@@ -121,7 +121,7 @@ const ChirpCard = (props: IPropTypes) => {
         <View style={styles.timeView}>
           <TimeAgo date={chirp.time.valueOf() * 1000} />
         </View>
-        { isSender && <DeleteButton action={() => { deleteChirp(); }} />}
+        { isSender && !chirp.isDeleted && <DeleteButton action={() => { deleteChirp(); }} />}
       </View>
     </View>
   );
