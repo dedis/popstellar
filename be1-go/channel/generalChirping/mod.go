@@ -78,12 +78,12 @@ func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 	if object == messagedata.ChirpObject {
 
 		switch action {
-		case messagedata.ChirpActionAddBroadcast:
+		case messagedata.ChirpActionAddNotify:
 			err := c.addChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to add a chirp to general: %v", err)
 			}
-		case messagedata.ChirpActionDeleteBroadcast:
+		case messagedata.ChirpActionDeleteNotify:
 			err := c.deleteChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to delete the chirp from general: %v", err)
