@@ -16,7 +16,8 @@ import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.objects.Channel
 
-import util.examples.RollCallMessages
+import util.examples.data.CreateRollCallMessages
+
 
 class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicites for system actors
@@ -61,7 +62,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
   test("CreateRollCall fails if the database fails storing the message"){
     val mockedDB = mockDbWIthNack
     val rc = new RollCallHandler(mockedDB)
-    val request = RollCallMessages.createRollCall
+    val request = CreateRollCallMessages.createRollCall
 
     rc.handleCreateRollCall(request) shouldBe an [Right[PipelineError,_]]
 
@@ -71,7 +72,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
   test("CreateRollCall succeeds if the database succeeds storing the message"){
     val mockedDB = mockDbWIthAck
     val rc = new RollCallHandler(mockedDB)
-    val request = RollCallMessages.createRollCall
+    val request = CreateRollCallMessages.createRollCall
 
     rc.handleCreateRollCall(request) should equal (Left(request))
 

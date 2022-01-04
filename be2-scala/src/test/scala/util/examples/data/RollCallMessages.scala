@@ -1,4 +1,4 @@
-package util.examples
+package util.examples.data
 
 import ch.epfl.pop.model.network.method.message.data.{ObjectType, ActionType}
 import ch.epfl.pop.model.network.JsonRpcRequest
