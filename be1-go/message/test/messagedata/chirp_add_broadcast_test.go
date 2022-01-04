@@ -9,8 +9,8 @@ import (
 	"testing"
 )
 
-func Test_Chirp_Add_Broadcast(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "chirp_add_broadcast", "chirp_add_broadcast.json")
+func Test_Chirp_Add_Notify(t *testing.T) {
+	file := filepath.Join(relativeExamplePath, "chirp_add_notify", "chirp_add_notify.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -19,7 +19,7 @@ func Test_Chirp_Add_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", object)
-	require.Equal(t, "add_broadcast", action)
+	require.Equal(t, "add_notify", action)
 
 	var msg messagedata.ChirpBroadcast
 
@@ -27,7 +27,7 @@ func Test_Chirp_Add_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", msg.Object)
-	require.Equal(t, "add_broadcast", msg.Action)
+	require.Equal(t, "add_notify", msg.Action)
 	require.Equal(t, "/root/<lao_id>/social/<sender>", msg.Channel)
 	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpId)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
@@ -36,8 +36,8 @@ func Test_Chirp_Add_Broadcast(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func Test_Chirp_Add_Broadcast_Negative_Timestamp(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "chirp_add_broadcast", "wrong_chirp_add_broadcast_negative_time.json")
+func Test_Chirp_Add_Notify_Negative_Timestamp(t *testing.T) {
+	file := filepath.Join(relativeExamplePath, "chirp_add_notify", "wrong_chirp_add_notify_negative_time.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -46,7 +46,7 @@ func Test_Chirp_Add_Broadcast_Negative_Timestamp(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", object)
-	require.Equal(t, "add_broadcast", action)
+	require.Equal(t, "add_notify", action)
 
 	var msg messagedata.ChirpBroadcast
 
@@ -54,7 +54,7 @@ func Test_Chirp_Add_Broadcast_Negative_Timestamp(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", msg.Object)
-	require.Equal(t, "add_broadcast", msg.Action)
+	require.Equal(t, "add_notify", msg.Action)
 	require.Equal(t, "/root/<lao_id>/social/<sender>", msg.Channel)
 	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ChirpId)
 	require.Equal(t, int64(-1), msg.Timestamp)
@@ -63,8 +63,8 @@ func Test_Chirp_Add_Broadcast_Negative_Timestamp(t *testing.T) {
 	require.Error(t, err)
 }
 
-func Test_Chirp_Add_Broadcast_Not_Base64_Message(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "chirp_add_broadcast", "wrong_chirp_add_broadcast_not_base_64_chirp_id.json")
+func Test_Chirp_Add_Notify_Not_Base64_Message(t *testing.T) {
+	file := filepath.Join(relativeExamplePath, "chirp_add_notify", "wrong_chirp_add_notify_not_base_64_chirp_id.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -73,7 +73,7 @@ func Test_Chirp_Add_Broadcast_Not_Base64_Message(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", object)
-	require.Equal(t, "add_broadcast", action)
+	require.Equal(t, "add_notify", action)
 
 	var msg messagedata.ChirpBroadcast
 
@@ -81,7 +81,7 @@ func Test_Chirp_Add_Broadcast_Not_Base64_Message(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, "chirp", msg.Object)
-	require.Equal(t, "add_broadcast", msg.Action)
+	require.Equal(t, "add_notify", msg.Action)
 	require.Equal(t, "/root/<lao_id>/social/<sender>", msg.Channel)
 	require.Equal(t, "@@@", msg.ChirpId)
 	require.Equal(t, int64(1634760180), msg.Timestamp)

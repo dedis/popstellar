@@ -242,7 +242,7 @@ func Test_Send_Chirp(t *testing.T) {
 
 	checkData := messagedata.ChirpBroadcast{
 		Object:    "chirp",
-		Action:    "add_broadcast",
+		Action:    "add_notify",
 		ChirpId:   messagedata.Hash(buf64, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,
@@ -348,7 +348,7 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	checkDataAdd := messagedata.ChirpBroadcast{
 		Object:    "chirp",
-		Action:    "add_broadcast",
+		Action:    "add_notify",
 		ChirpId:   messagedata.Hash(buf64add, "h"),
 		Channel:   generalName,
 		Timestamp: 1634760180,

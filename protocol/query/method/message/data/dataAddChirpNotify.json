@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddChirpBroadcast.json",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddChirpNotify.json",
   "description": "Match a add chirp broadcast query",
   "type": "object",
   "properties": {
@@ -8,7 +8,7 @@
       "const": "chirp"
     },
     "action": {
-      "const": "add_broadcast"
+      "const": "add_notify"
     },
     "chirp_id": {
       "description": "message_id of the chirp message above",
