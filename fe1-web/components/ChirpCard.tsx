@@ -11,6 +11,7 @@ import { requestDeleteChirp } from '../network';
 import { PublicKey } from '../model/objects';
 import STRINGS from '../res/strings';
 import { gray } from '../styles/colors';
+import ProfileIcon from './ProfileIcon';
 
 /**
  * Component to display a chirp
@@ -87,7 +88,7 @@ const ChirpCard = (props: IPropTypes) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
-        <Ionicons name="person" size={40} color="black" />
+        <ProfileIcon publicKey={chirp.sender} />
       </View>
       <View style={styles.rightView}>
         <View style={styles.senderView}>

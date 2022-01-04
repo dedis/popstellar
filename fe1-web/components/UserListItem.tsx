@@ -5,10 +5,10 @@ import {
 } from 'react-native';
 import { getUserSocialChannel, Hash, PublicKey } from 'model/objects';
 import { gray } from 'styles/colors';
-import { Ionicons } from '@expo/vector-icons';
 import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import WideButtonView from './WideButtonView';
+import ProfileIcon from './ProfileIcon';
 
 /**
  * Component that shows a user's profile picture, his public key and two buttons:
@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
   rightView: {
     flexDirection: 'column',
+    width: 540,
   } as ViewStyle,
   buttonsView: {
     flexDirection: 'row',
@@ -66,7 +67,7 @@ const UserListItem = (props: IPropTypes) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
-        <Ionicons name="person" size={40} color="black" />
+        <ProfileIcon publicKey={publicKey} />
       </View>
       <View style={styles.rightView}>
         <Text style={styles.publicKeyText}>{publicKey.valueOf()}</Text>

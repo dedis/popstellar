@@ -98,6 +98,7 @@ const SocialHome = () => {
           onPress={publishChirp}
           // The publish button is disabled when the user public key is not defined
           publishIsDisabledCond={userPublicKey.valueOf() === ''}
+          currentUserPublicKey={userPublicKey}
         />
         <FlatList
           data={chirpList}
