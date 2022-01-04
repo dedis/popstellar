@@ -29,7 +29,7 @@ object DataSchemaValidator {
   /* Validation Schemas */
   //TODO: Add schemas for other features: Meetings, RollCalls...
   private final lazy val createLaoSchema: JsonSchema = Validator.setupSchemaValidation(dataCreateLaoPath, objectMapper)
-  private final lazy val stateLaoSchema: JsonSchema = Validator.setupSchemaValidation(dataStateLaoPath, objectMapper)
+  private final lazy val stateLaoSchema : JsonSchema = Validator.setupSchemaValidation(dataStateLaoPath, objectMapper)
   private final lazy val updateLaoSchema: JsonSchema = Validator.setupSchemaValidation(dataUpdateLao, objectMapper)
 
   //TODO: Add validaton schemas for other features: Meetings, RollCalls...

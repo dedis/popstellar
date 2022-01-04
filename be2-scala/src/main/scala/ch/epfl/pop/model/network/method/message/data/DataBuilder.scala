@@ -43,14 +43,20 @@ object DataBuilder {
     * @return parsed MessageData if the validation and build succedds, throws ProtocolException otherwise
     */
   @throws(classOf[ProtocolException])
-  private def buildLaoData(action: ActionType, payload: String): MessageData = action match {
-    case ActionType.CREATE =>
-      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.CREATE))(CreateLao.buildFromJson)("CreateLao data could not be parsed")
-    case ActionType.STATE =>
-      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.STATE))(StateLao.buildFromJson)("StateLao data could not be parsed")
-    case ActionType.UPDATE_PROPERTIES =>
-      buildOrReject(payload)(DataSchemaValidator.validateSchema(ObjectType.LAO)(ActionType.UPDATE_PROPERTIES))(UpdateLao.buildFromJson)("UpdateLao data could not be parsed")
-    case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Lao Data")
+  private def buildLaoData(action: ActionType, payload: String): MessageData = {
+    val laoMetadataMap: Map[ActionType, MetaData] = DataRegistryModule.REGISTRY.getFromObject(ObjectType.LAO)
+    action match {
+      case ActionType.CREATE =>
+        val createLaoMetadata = laoMetadataMap.get(ActionType.CREATE).get
+        buildOrReject(payload)(createLaoMetadata.schemaValidator)(createLaoMetadata.buildFromJson)("CreateLao data could not be parsed")
+      case ActionType.STATE =>
+        val stateLaoMetadata = laoMetadataMap.get(ActionType.STATE).get
+        buildOrReject(payload)(stateLaoMetadata.schemaValidator)(stateLaoMetadata.buildFromJson)("StateLao data could not be parsed")
+      case ActionType.UPDATE_PROPERTIES =>
+        val updateLaoMetadata = laoMetadataMap.get(ActionType.UPDATE_PROPERTIES).get
+        buildOrReject(payload)(updateLaoMetadata.schemaValidator)(updateLaoMetadata.buildFromJson)("UpdateLao data could not be parsed")
+      case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Lao Data")
+    }
   }
 
   private def buildMeetingData(action: ActionType, payload: String): MessageData = action match {
