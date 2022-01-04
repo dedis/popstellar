@@ -80,11 +80,11 @@ public final class MessageGeneral {
   }
 
   public PublicKey getSender() {
-    return sender;
+    return this.sender;
   }
 
   public Signature getSignature() {
-    return signature;
+    return this.signature;
   }
 
   public List<PublicKeySignaturePair> getWitnessSignatures() {
@@ -92,23 +92,23 @@ public final class MessageGeneral {
   }
 
   public Data getData() {
-    return data;
+    return this.data;
   }
 
   public Base64URLData getDataEncoded() {
-    return dataBuf;
+    return this.dataBuf;
   }
 
   public boolean verify() {
-    if (!this.sender.verify(signature, dataBuf)) return false;
+    if (!this.sender.verify(this.signature, this.dataBuf)) return false;
 
-    if (data instanceof WitnessMessageSignature) {
-      WitnessMessageSignature witness = (WitnessMessageSignature) data;
+    if (this.data instanceof WitnessMessageSignature) {
+      WitnessMessageSignature witness = (WitnessMessageSignature) this.data;
 
       Signature signature = witness.getSignature();
       MessageID messageID = witness.getMessageId();
 
-      return sender.verify(signature, messageID);
+      return this.sender.verify(signature, messageID);
     } else {
       return true;
     }
