@@ -40,9 +40,13 @@ copyProtocolTask := {
         }
     }
 }
-//Add the copyProtocolTask to compile time
+//Add the copyProtocolTask to compile and test scopes
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
+(Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value
+
+//Setup resource directory for jar assembly
 (Compile /packageBin / resourceDirectory) := file(".") / "./src/main/resources"
+
 //Make resourceDirectory setting global to remove sbt warning
 (Global / excludeLintKeys) += resourceDirectory
 
@@ -56,9 +60,8 @@ lazy val scoverageSettings = Seq(
   packageBin/ coverageEnabled  := false,
 )
 
-
-
 ThisBuild/ scapegoatVersion := "1.4.11"
+
 scapegoatReports := Seq("xml")
 
 // temporarily report scapegoat errors as warnings, to avoid broken builds
@@ -117,14 +120,12 @@ libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
 libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 
 // Scala unit tests
-libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.8" % Test
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.9" % Test
 
 // Jackson Databind (for Json Schema Validation)
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
 
 // Json Schema Validator
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
-
-
 
 conflictManager := ConflictManager.latestCompatible
