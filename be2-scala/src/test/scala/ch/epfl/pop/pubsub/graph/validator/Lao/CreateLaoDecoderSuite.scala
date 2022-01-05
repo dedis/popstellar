@@ -24,32 +24,42 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
   def testGoodFormat =
       (gm: GraphMessage, createLaoMessage: Message) => {
         alert("CreateLao message data content maybe invalid but should be correctly decoded")
+        
         Given("a correct graph message of JsonRpcRequest")
         And("a createLao message")
         When("the request is parsed")
         val parsed = MessageDecoder.parseData(gm)
+
         Then("it should be of type JsonRpcRequestCreateLao")
         inside(parsed){
           case Left(createJsonRpc: JsonRpcRequestCreateLao) => {
+
             And("the message params of the JsonRpcRequestCreateLao should not be empty")
             createJsonRpc.getParamsMessage should be (defined)
+
             And("the decoded message data is non empty ")
             val optDecodedData =  createJsonRpc.getDecodedData
             optDecodedData should be (defined)
+
             And("is of correct type: CreateLao")
             val message = optDecodedData.get
             message shouldBe a [CreateLao]
             val laoData = message.asInstanceOf[CreateLao]
+
             And("lao has a valid name")
             laoData.name shouldNot be (null)
+
             And("the timestamp exists")
             laoData.creation shouldNot be (null)
             laoData.creation.time should be > (0L)
+
             And("the organizer public key is base64")
             noException shouldBe thrownBy (laoData.organizer.base64Data.decodeToString())
+
             And("the witnesses points to a non null list")
             laoData.witnesses shouldNot be (null)
             alert(s"The witnesses list was ${laoData.witnesses}")
+
             And("the id is not null")
             laoData.id shouldNot be (null)
             noException shouldBe thrownBy (laoData.id.base64Data.decodeToString())

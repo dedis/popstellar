@@ -11,14 +11,15 @@ import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
   * @param obj first member of the pair
   * @param action second member of the pair
   */
-sealed case class EntryPair(val obj: ObjectType, val action: ActionType)
+sealed case class EntryPair(final val obj: ObjectType, final val action: ActionType)
 
 /**
   * Class representing Metadata of a specific action and object type
-  * @param schemaValidator
-  * @param buildFromJson
+  * @param schemaValidator schema validation function
+  * @param buildFromJson parser from payload to MessageData
+  * @param errMessage errMessage to send back in case of schema validation failure
   */
-sealed case class MetaData(val schemaValidator: String => Try[Unit], val buildFromJson: String => MessageData)
+sealed case class MetaData(final val schemaValidator: String => Try[Unit], final val buildFromJson: String => MessageData, final val errMessage: String)
 
 /**
   * Class encapsulating a mapping, offers methods utility methods to extract sub-mappings from main one
@@ -31,7 +32,7 @@ sealed case class DataRegistry(private val mapping : Map[EntryPair, MetaData]){
   * @param action actionType
   * @return Metadata corresponding to the (obj, action) key
   */
-  def getMetadata(obj: ObjectType, action: ActionType): MetaData = mapping.get(EntryPair(obj, action)) match {
+  def getMetaData(obj: ObjectType, action: ActionType): MetaData = mapping.get(EntryPair(obj, action)) match {
     case Some(metadata) => metadata
     case None => throw new IllegalStateException(s"Metadata for ($obj, $action) unsupported or not added yet in DataRegisteryModule")
   }
@@ -64,8 +65,8 @@ case object DataRegistry {
       * @param buildFromJson specific payload parser for object & action
       * @return
       */
-    def add(obj: ObjectType, action: ActionType, schemaValidator: String => Try[Unit], buildFromJson:  String => MessageData): Builder = {
-      builderMapping += (EntryPair(obj, action) ->  MetaData(schemaValidator, buildFromJson))
+    def add(obj: ObjectType, action: ActionType, schemaValidator: String => Try[Unit], buildFromJson:  String => MessageData)(errMesg: String): Builder = {
+      builderMapping += (EntryPair(obj, action) ->  MetaData(schemaValidator, buildFromJson, errMesg))
       this
     }
     /**
@@ -75,5 +76,3 @@ case object DataRegistry {
 
   }
 }
-
-

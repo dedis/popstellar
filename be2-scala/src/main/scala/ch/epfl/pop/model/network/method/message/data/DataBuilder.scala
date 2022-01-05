@@ -11,10 +11,17 @@ import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddB
 import spray.json._
 import scala.util.{Try,Success,Failure}
 
-/*
- * Helps building MessageData instances
- */
+/**Companion object of DataBuilder that helps building MessageData instances**/
 object DataBuilder {
+    val dataBuilder = DataBuilder(DataRegistryModule.REGISTRY)
+    def buildData(_object: ObjectType, action: ActionType, payload: String): MessageData = dataBuilder.buildData(_object, action, payload)
+}
+
+/**
+  * Builds and parses message data or rejects if it's json schema is incorrect
+  * @param REGISTRY: registry that contains metadata about MessageData builders/parsers
+  */
+sealed case class DataBuilder(final val REGISTRY: DataRegistry) {
   /**
    * Builds a MessageData from its headers ('object' and 'action' fields) and its json representation
    *
@@ -25,72 +32,11 @@ object DataBuilder {
    * @return
    */
   @throws(classOf[ProtocolException])
-  def buildData(_object: ObjectType, action: ActionType, payload: String): MessageData = _object match {
-    case ObjectType.LAO => buildLaoData(action, payload)
-    case ObjectType.MEETING => buildMeetingData(action, payload)
-    case ObjectType.ROLL_CALL => buildRollCallData(action, payload)
-    case ObjectType.ELECTION => buildElectionData(action, payload)
-    case ObjectType.MESSAGE => buildWitnessData(action, payload)
-    case ObjectType.CHIRP => buildSocialMediaData(action, payload)
-    case _ => throw new ProtocolException(s"Unknown object '${_object}' encountered while creating a Data")
+  def buildData(_object: ObjectType, action: ActionType, payload: String): MessageData = {
+    val metadata = REGISTRY.getMetaData(_object, action)
+    buildOrReject(payload)(metadata.schemaValidator)(metadata.buildFromJson)(metadata.errMessage)
   }
 
-  /**
-    * builds MessageData from payload conformly to the protocol
-    * after validating its schema
-    * @param action action type
-    * @param payload message data in json string format
-    * @return parsed MessageData if the validation and build succedds, throws ProtocolException otherwise
-    */
-  @throws(classOf[ProtocolException])
-  private def buildLaoData(action: ActionType, payload: String): MessageData = {
-    val laoMetadataMap: Map[ActionType, MetaData] = DataRegistryModule.REGISTRY.getFromObject(ObjectType.LAO)
-    action match {
-      case ActionType.CREATE =>
-        val createLaoMetadata = laoMetadataMap.get(ActionType.CREATE).get
-        buildOrReject(payload)(createLaoMetadata.schemaValidator)(createLaoMetadata.buildFromJson)("CreateLao data could not be parsed")
-      case ActionType.STATE =>
-        val stateLaoMetadata = laoMetadataMap.get(ActionType.STATE).get
-        buildOrReject(payload)(stateLaoMetadata.schemaValidator)(stateLaoMetadata.buildFromJson)("StateLao data could not be parsed")
-      case ActionType.UPDATE_PROPERTIES =>
-        val updateLaoMetadata = laoMetadataMap.get(ActionType.UPDATE_PROPERTIES).get
-        buildOrReject(payload)(updateLaoMetadata.schemaValidator)(updateLaoMetadata.buildFromJson)("UpdateLao data could not be parsed")
-      case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Lao Data")
-    }
-  }
-
-  private def buildMeetingData(action: ActionType, payload: String): MessageData = action match {
-    case ActionType.CREATE => CreateMeeting.buildFromJson(payload)
-    case ActionType.STATE => StateMeeting.buildFromJson(payload)
-    case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Meeting Data")
-  }
-
-  private def buildRollCallData(action: ActionType, payload: String): MessageData = action match {
-    case ActionType.CREATE => CreateRollCall.buildFromJson(payload)
-    case ActionType.OPEN => OpenRollCall.buildFromJson(payload)
-    case ActionType.REOPEN => ReopenRollCall.buildFromJson(payload)
-    case ActionType.CLOSE => CloseRollCall.buildFromJson(payload)
-    case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a RollCall Data")
-  }
-
-  private def buildElectionData(action: ActionType, payload: String): MessageData = action match {
-    case ActionType.SETUP => SetupElection.buildFromJson(payload)
-    case ActionType.RESULT => ResultElection.buildFromJson(payload)
-    case ActionType.END => EndElection.buildFromJson(payload)
-    case ActionType.CAST_VOTE => CastVoteElection.buildFromJson(payload)
-    case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Election Data")
-  }
-
-  private def buildWitnessData(action: ActionType, payload: String): MessageData = action match {
-    case ActionType.WITNESS => WitnessMessage.buildFromJson(payload)
-    case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Witness Data")
-  }
-
-  private def buildSocialMediaData(action: ActionType, payload: String): MessageData = action match {
-    case ActionType.ADD => AddChirp.buildFromJson(payload)
-    case ActionType.ADD_BROADCAST => AddBroadcastChirp.buildFromJson(payload)
-    case _ => throw new ProtocolException(s"Unknown action '$action' encountered while creating a Social Media Data")
-  }
   /**
     * Builds a message payload after passing a schema validation check
     *
