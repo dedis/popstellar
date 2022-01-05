@@ -31,6 +31,8 @@ const message_data_chirp_add_schema = require("../query/method/message/data/data
 const message_data_chirp_add_broadcast_schema = require("../query/method/message/data/dataAddChirpBroadcast.json")
 const message_data_chirp_delete_schema = require("../query/method/message/data/dataDeleteChirp.json")
 const message_data_chirp_delete_broadcast_schema = require("../query/method/message/data/dataDeleteChirpBroadcast.json")
+const message_data_reaction_add_schema = require("../query/method/message/data/dataAddReaction.json")
+const message_data_reaction_delete_schema = require("../query/method/message/data/dataDeleteReaction.json")
 
 const message_data_elect_schema = require("../query/method/message/data/dataElect.json")
 const message_data_elect_accept_schema = require("../query/method/message/data/dataElectAccept.json")
@@ -39,6 +41,7 @@ const message_data_promise_schema = require("../query/method/message/data/dataPr
 const message_data_propose_schema = require("../query/method/message/data/dataPropose.json")
 const message_data_accept_schema = require("../query/method/message/data/dataAccept.json")
 const message_data_learn_schema = require("../query/method/message/data/dataLearn.json")
+const message_data_failure_schema = require("../query/method/message/data/dataFailure.json")
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 
@@ -78,6 +81,8 @@ ajv.addSchema([
     message_data_chirp_add_schema,
     message_data_chirp_delete_schema,
     message_data_chirp_delete_broadcast_schema,
+    message_data_reaction_add_schema,
+    message_data_reaction_delete_schema,
 
     message_data_elect_schema,
     message_data_elect_accept_schema,
@@ -85,7 +90,8 @@ ajv.addSchema([
     message_data_promise_schema,
     message_data_propose_schema,
     message_data_accept_schema,
-    message_data_learn_schema
+    message_data_learn_schema,
+    message_data_failure_schema
 ]);
 
 module.exports = ajv;

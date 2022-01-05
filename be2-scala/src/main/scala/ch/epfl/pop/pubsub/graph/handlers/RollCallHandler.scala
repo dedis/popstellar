@@ -66,7 +66,7 @@ case object RollCallHandler extends MessageHandler {
               //a closeRollCall is always sent in the lao's main channel so we are allowed to do this
               val socialChannel: String = generateSocialChannel(rpcMessage.getParamsChannel, head)
               val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel(socialChannel), ObjectType.CHIRP)).map {
-                case DbActorWriteAck() => createAttendeeChannels(tail, rpcMessage)
+                case DbActorAck() => createAttendeeChannels(tail, rpcMessage)
                 //the distinction between the NAck cases this is to prevent errors for now within a LAO for successive Roll Calls with the same participants since the public key should not change, as the channel already exists
                 case DbActorNAck(code, description) if code == ErrorCodes.INVALID_RESOURCE.id => createAttendeeChannels(tail, rpcMessage)
                 case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -87,8 +87,7 @@ case object RollCallHandler extends MessageHandler {
             val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
             
             Await.result(askOldData, duration) match {
-              case DbActorReadLaoDataAck(Some(oldLaoData)) =>
-                val laoData: LaoData = LaoData(oldLaoData.owner, data.attendees, List.empty)
+              case DbActorReadLaoDataAck(Some(_)) =>
                 val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
                   case DbActorWriteAck() => createAttendeeChannels(data.attendees, rpcMessage)
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -111,6 +110,5 @@ case object RollCallHandler extends MessageHandler {
     }
   }
 
-  private final val SOCIALCHANNELPREFIX: String = Channel.SEPARATOR + "social"
-  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + SOCIALCHANNELPREFIX + Channel.SEPARATOR + pk.toString
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + Channel.SOCIAL_CHANNEL_PREFIX + Channel.SEPARATOR + pk.toString
 }

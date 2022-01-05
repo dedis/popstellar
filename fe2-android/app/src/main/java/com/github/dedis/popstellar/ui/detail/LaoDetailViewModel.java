@@ -98,6 +98,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEditPropertiesEvent =
       new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<EventType>> mChooseNewLaoEventTypeEvent =
       new MutableLiveData<>();
@@ -591,7 +593,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
     Log.d(
         TAG,
-        "sending a new elect-accept for consensus with messageId : "
+        "sending a new elect_accept for consensus with messageId : "
             + consensus.getMessageId()
             + " with value "
             + accept);
@@ -623,18 +625,18 @@ public class LaoDetailViewModel extends AndroidViewModel
               .subscribe(
                   answer -> {
                     if (answer instanceof Result) {
-                      Log.d(TAG, "sent an elect-accept successfully");
+                      Log.d(TAG, "sent an elect_accept successfully");
                     } else {
                       Log.d(
                           TAG,
-                          "failed to send the elect-accept for consensus with messageId : "
+                          "failed to send the elect_accept for consensus with messageId : "
                               + consensus.getMessageId());
                     }
                   },
                   throwable ->
                       Log.d(
                           TAG,
-                          "timed out waiting for result on consensus/elect-accept",
+                          "timed out waiting for result on consensus/elect_accept",
                           throwable));
 
       disposables.add(disposable);
@@ -673,6 +675,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      attendees.add(publicKey);
       byte[] sender = Base64.getUrlDecoder().decode(publicKey);
       PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
       MessageGeneral msg = new MessageGeneral(sender, openRollCall, signer, mGson);
@@ -878,6 +881,10 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public LiveData<SingleEvent<Boolean>> getEditPropertiesEvent() {
     return mEditPropertiesEvent;
+  }
+
+  public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
+    return mOpenSocialMediaEvent;
   }
 
   public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
@@ -1098,6 +1105,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     } else {
       mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_identity));
     }
+  }
+
+  public void openSocialMedia() {
+    mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
 
   public void endElectionEvent() {

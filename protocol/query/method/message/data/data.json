@@ -50,6 +50,18 @@
             "$ref": "dataAddChirpBroadcast.json"
         },
         {
+            "$ref": "dataDeleteChirp.json"
+        },
+        {
+            "$ref": "dataDeleteChirpBroadcast.json"
+        },
+        {
+            "$ref": "dataAddReaction.json"
+        },
+        {
+            "$ref": "dataDeleteReaction.json"
+        },
+        {
             "$ref": "dataElect.json"
         },
         {
@@ -69,6 +81,9 @@
         },
         {
             "$ref": "dataLearn.json"
+        },
+        {
+            "$ref": "dataFailure.json"
         }
     ]
 }

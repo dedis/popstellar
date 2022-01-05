@@ -447,7 +447,7 @@ func TestLAOChannel_Election_Creation(t *testing.T) {
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "messageData")
 
-	file := filepath.Join(relativePath, "election_setup.json")
+	file := filepath.Join(relativePath, "election_setup", "election_setup.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -508,7 +508,7 @@ type fakeHub struct {
 
 	closedSockets chan string
 
-	pubKeyOrg kyber.Point
+	pubKeyOwner kyber.Point
 
 	pubKeyServ kyber.Point
 	secKeyServ kyber.Scalar
@@ -540,7 +540,7 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOrg:       publicOrg,
+		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
 		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
@@ -566,17 +566,17 @@ func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, soc
 	h.Unlock()
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *fakeHub) GetPubKeyOrg() kyber.Point {
-	return h.pubKeyOrg
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOwner() kyber.Point {
+	return h.pubKeyOwner
 }
 
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
-	return h.pubKeyOrg
+	return h.pubKeyServ
 }
 
-// GetSecKeyServ implements channel.HubFunctionalities
+// Sign implements channel.HubFunctionalities
 func (h *fakeHub) Sign(data []byte) ([]byte, error) {
 	return nil, nil
 }

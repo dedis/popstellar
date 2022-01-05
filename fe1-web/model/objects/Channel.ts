@@ -1,5 +1,5 @@
-import { KeyPairStore } from 'store';
 import { Hash } from './Hash';
+import { PublicKey } from './PublicKey';
 
 export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
@@ -13,23 +13,13 @@ export function channelFromIds(...args: Hash[]) : Channel {
 }
 
 /**
- * Returns the social channel of the current user.
- *
- * @param laoIdHash - The hash containing the laoID of the currently opened LAO
- */
-export function getCurrentUserSocialChannel(laoIdHash: Hash): Channel {
-  const userPublicKey = KeyPairStore.getPublicKey().valueOf();
-  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
-}
-
-/**
  * Returns the social channel of the given user.
  *
  * @param laoIdHash - The hash containing the laoID of the currently opened LAO
- * @param userToken - The pop token of the user
+ * @param userPublicKey - The public key of the user
  */
-export function getUserSocialChannel(laoIdHash: Hash, userToken: string): Channel {
-  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userToken}`;
+export function getUserSocialChannel(laoIdHash: Hash, userPublicKey: PublicKey): Channel {
+  return `${ROOT_CHANNEL}/${laoIdHash.valueOf()}/social/${userPublicKey}`;
 }
 
 /**

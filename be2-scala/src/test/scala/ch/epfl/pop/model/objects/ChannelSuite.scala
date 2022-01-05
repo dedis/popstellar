@@ -5,7 +5,7 @@ import ch.epfl.pop.model.objects.Channel
 
 class ChannelSuite extends FunSuite with Matchers {
   test("Root/Sub channel test (1)") {
-    val channel = Channel.rootChannel
+    val channel = Channel.ROOT_CHANNEL
     channel.isRootChannel should be(true)
     channel.isSubChannel should be(false)
   }
@@ -15,7 +15,7 @@ class ChannelSuite extends FunSuite with Matchers {
   }
 
   test("Root/Sub channel test (3)") {
-    def channel = Channel(Channel.rootChannelPrefix)
+    def channel = Channel(Channel.ROOT_CHANNEL_PREFIX)
     an [IllegalArgumentException] shouldBe thrownBy(channel)
 
   }
@@ -36,13 +36,13 @@ class ChannelSuite extends FunSuite with Matchers {
   }
 
   test("Slash single child channel test") {
-    def channel = Channel(Channel.rootChannelPrefix + "channelID")
-    val expected = Hash(Base64Data("channelID"))
+    def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + "base64==")
+    val expected = Hash(Base64Data("base64=="))
     noException shouldBe thrownBy(channel)
     channel.extractChildChannel should equal(expected)
   }
   test("Root empty child channel test") {
-    def channel = Channel.rootChannel
+    def channel = Channel.ROOT_CHANNEL
     val expected = Hash(Base64Data("root"))
     channel.extractChildChannel should equal(expected)
   }
@@ -60,15 +60,15 @@ class ChannelSuite extends FunSuite with Matchers {
   }
   test("LaoId extraction channel test") {
     val laoId = "base64_lao_id";
-    def channel = Channel(Channel.rootChannelPrefix + Base64Data.encode(laoId))
+    def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(laoId))
     val expected = laoId.getBytes()
     noException shouldBe thrownBy(channel)
     channel.decodeSubChannel.get should equal(expected)
   }
-  
+
   test("Real LaoId extraction channel test") {
     val laoId = "mEKXWFCMwb";
-    def channel = Channel(Channel.rootChannelPrefix + Base64Data.encode(laoId))
+    def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(laoId))
     val expected = laoId.getBytes()
 
     noException shouldBe thrownBy(channel)
@@ -83,7 +83,7 @@ class ChannelSuite extends FunSuite with Matchers {
 
   test("Bad LaoId: not encoded in base64 extraction channel test (2)") {
     val laoId = "base64_lao_id"; // Not encoded in BASE64
-    def channel = Channel(Channel.rootChannelPrefix + laoId)
+    def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId)
     val expected = None
     noException shouldBe thrownBy(channel)
     channel.decodeSubChannel should equal (expected)

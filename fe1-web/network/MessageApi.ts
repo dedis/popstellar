@@ -1,5 +1,5 @@
 import {
-  EventTags, Hash, Lao, PublicKey, Timestamp, Wallet,
+  EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
   CastVote,
@@ -16,7 +16,7 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromIds, ROOT_CHANNEL, getCurrentUserSocialChannel,
+  Channel, channelFromIds, ROOT_CHANNEL, getUserSocialChannel,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
@@ -210,21 +210,16 @@ export function requestCloseRollCall(
   const lao: Lao = OpenedLaoStore.get();
   const time = (close === undefined) ? Timestamp.EpochNow() : close;
 
-  // The organizer adds his own token to the list of attendees before closing the roll call
-  return Wallet.generateToken(lao.id, rollCallId).then((token) => {
-    attendees.push(token.publicKey);
-
-    const message = new CloseRollCall({
-      update_id: Hash.fromStringArray(
-        EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
-      ),
-      closes: rollCallId,
-      closed_at: time,
-      attendees: attendees,
-    });
-
-    return publish(channelFromIds(lao.id), message);
+  const message = new CloseRollCall({
+    update_id: Hash.fromStringArray(
+      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+    ),
+    closes: rollCallId,
+    closed_at: time,
+    attendees: attendees,
   });
+
+  return publish(channelFromIds(lao.id), message);
 }
 
 /** Sends a server query asking for creation of an Election with a given name (String),
@@ -236,14 +231,14 @@ export function requestCreateElection(
   start: Timestamp,
   end: Timestamp,
   questions: Question[],
+  time: Timestamp,
 ): Promise<void> {
-  const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new SetupElection({
     lao: currentLao.id,
     id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.ELECTION, currentLao.id.toString(), time.toString(), name,
     ),
     name: name,
     version: version,
@@ -293,7 +288,15 @@ export function terminateElection(
   return publish(elecCh, message);
 }
 
+/**
+ * Sends a query to the server to add a new chirp.
+ *
+ * @param publicKey - The public key of the sender
+ * @param text - The text contained in the chirp
+ * @param parentId - The id of the parent chirp (if it is a reply)
+ */
 export function requestAddChirp(
+  publicKey: PublicKey,
   text: string,
   parentId?: Hash,
 ): Promise<void> {
@@ -306,5 +309,5 @@ export function requestAddChirp(
     timestamp: timestamp,
   });
 
-  return publish(getCurrentUserSocialChannel(currentLao.id), message);
+  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
 }
