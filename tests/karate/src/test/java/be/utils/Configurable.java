@@ -20,8 +20,4 @@ public interface Configurable {
    */
   String getLogPath();
 
-  /**
-   * Deletes database of the server
-   */
-  void deleteDatabaseDir();
 }

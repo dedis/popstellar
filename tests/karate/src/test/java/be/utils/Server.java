@@ -79,4 +79,8 @@ public abstract class Server implements Runnable {
       return false;
     }
   }
+   /**
+   * Deletes database of the server
+   */
+  abstract void deleteDatabaseDir();
 }

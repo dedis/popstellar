@@ -40,7 +40,7 @@ public class ScalaServer extends Server implements Configurable {
 
   @Override
   public void deleteDatabaseDir() {
-    System.out.println("Deleting...");
+    System.out.println("Deleting database...");
     Path path = Paths.get("..", "..", "be2-scala", "database");
     try (Stream<Path> walk = Files.walk(path)) {
       walk.sorted(Comparator.reverseOrder())
@@ -52,20 +52,19 @@ public class ScalaServer extends Server implements Configurable {
     assertFalse(Files.exists(path));
   }
 
-  private static void deleteHandled(File file){
+  private static void deleteHandled(File file) {
     int i = 0;
-    while(i < Configurable.MAX_DB_DELETE_ATTEMPTS && !file.delete()){
-      try{
-        //Wait for the server to realease the resource(database)
-        //and try again
+    while (i < Configurable.MAX_DB_DELETE_ATTEMPTS && !file.delete()) {
+      try {
+        // Wait for the server to realease the resource(database)
+        // and try again
         Thread.sleep(1500);
         i++;
-      }
-      catch(InterruptedException e){
+      } catch (InterruptedException e) {
         System.err.println("Delete thread of file " + file.toPath() + " was interrupted");
       }
     }
-    if(i >= Configurable.MAX_DB_DELETE_ATTEMPTS){
+    if (i >= Configurable.MAX_DB_DELETE_ATTEMPTS) {
       System.err.println("Could not delete database folder" + file.toPath());
     }
   }

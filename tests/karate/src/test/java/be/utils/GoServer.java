@@ -31,7 +31,8 @@ public class GoServer extends Server implements Configurable {
 
   @Override
   public void deleteDatabaseDir() {
-    // TODO Auto-generated method stub
+    //TODO: delete GO backend database if necessary
+    System.out.println("No database to delete for GO backend");
 
   }
 
