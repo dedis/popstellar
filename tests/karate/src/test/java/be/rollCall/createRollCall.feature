@@ -4,7 +4,7 @@ Feature: Create a RollCall
     * call read('classpath:be/utils/server.feature')
     * def createLAO = read('classpath:be/createLAO/create.feature@name=createLAO')
     * def badMessageDataTest = read('classpath:be/common/badMessageDataRequest.feature')
-    * def valideRollCall = {} 
+    * def valideRollCall = {}
     * def success = {jsonrpc: "2.0", id: #(valideRollCall.id), result: 0}
     * def socket = karate.webSocket(wsURL,handle)
 
