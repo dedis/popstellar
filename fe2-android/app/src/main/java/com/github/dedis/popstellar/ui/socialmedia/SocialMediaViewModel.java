@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
@@ -32,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -81,7 +83,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
     mKeysetManager = keysetManager;
     disposables = new CompositeDisposable();
 
-    mLAOs = mLaoRepository.getAllLaos();
+    mLAOs =
+        LiveDataReactiveStreams.fromPublisher(
+            mLaoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override

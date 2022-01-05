@@ -114,15 +114,18 @@ public class SocialMediaActivity extends AppCompatActivity {
     laosList.clear();
 
     // Adding all currently opened lao name to the submenu
-    for (int i = 0; i < Objects.requireNonNull(mViewModel.getLAOs().getValue()).size(); ++i) {
-      // Creating a unique id using laos_list and laos ids such that it doesn't override
-      // them in onOptionsItemSelected
-      laosList.add(
-          Menu.NONE,
-          R.id.laos_list + R.id.laos + i,
-          i,
-          mViewModel.getLAOs().getValue().get(i).getName());
+    if (mViewModel.getLAOs().getValue() != null) {
+      for (int i = 0; i < mViewModel.getLAOs().getValue().size(); ++i) {
+        // Creating a unique id using laos_list and laos ids such that it doesn't override
+        // them in onOptionsItemSelected
+        laosList.add(
+            Menu.NONE,
+            R.id.laos_list + R.id.laos + i,
+            i,
+            mViewModel.getLAOs().getValue().get(i).getName());
+      }
     }
+
     return true;
   }
 
@@ -131,11 +134,13 @@ public class SocialMediaActivity extends AppCompatActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     // Retrieve the index of the lao within the list
     int i = item.getItemId() - R.id.laos_list - R.id.laos;
-    if (i >= 0) {
-      Lao lao = Objects.requireNonNull(mViewModel.getLAOs().getValue()).get(i);
-      mViewModel.setLaoId(lao.getId());
-      mViewModel.setLaoName(lao.getName());
-      return true;
+    if (mViewModel.getLAOs().getValue() != null) {
+      if (i >= 0) {
+        Lao lao = mViewModel.getLAOs().getValue().get(i);
+        mViewModel.setLaoId(lao.getId());
+        mViewModel.setLaoName(lao.getName());
+        return true;
+      }
     }
     return super.onOptionsItemSelected(item);
   }
