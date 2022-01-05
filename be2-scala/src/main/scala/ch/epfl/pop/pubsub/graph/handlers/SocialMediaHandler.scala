@@ -22,8 +22,8 @@ case object SocialMediaHandler extends MessageHandler {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
       case message@(_: JsonRpcRequestAddChirp) => handleAddChirp(message)
       case message@(_: JsonRpcRequestDeleteChirp) => handleDeleteChirp(message)
-      case message@(_: JsonRpcRequestAddBroadcastChirp) => handleAddChirp(message)
-      case message@(_: JsonRpcRequestDeleteBroadcastChirp) => handleDeleteChirp(message)
+      case message@(_: JsonRpcRequestNotifyAddChirp) => handleAddChirp(message)
+      case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleDeleteChirp(message)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         "Internal server fault: SocialMediaHandler was given a message it could not recognize",
@@ -72,8 +72,8 @@ case object SocialMediaHandler extends MessageHandler {
                 // we can't get the message_id as a Base64Data, it is a Hash
                 val chirp_id: Hash = params.message_id
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
-                val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirp_id, channelChirp, timestamp)
-                val broadcastData: Base64Data = Base64Data.encode(addBroadcastChirp.toJson.toString)
+                val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
+                val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
                 
                 broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
               }
@@ -103,8 +103,8 @@ case object SocialMediaHandler extends MessageHandler {
                 // we can't get the message_id as a Base64Data, it is a Hash
                 val chirp_id: Hash = params.message_id
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
-                val deleteBroadcastChirp: DeleteBroadcastChirp = DeleteBroadcastChirp(chirp_id, channelChirp, timestamp)
-                val broadcastData: Base64Data = Base64Data.encode(deleteBroadcastChirp.toJson.toString)
+                val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
+                val broadcastData: Base64Data = Base64Data.encode(notifyDeleteChirp.toJson.toString)
                 
                 broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
               }
@@ -121,13 +121,13 @@ case object SocialMediaHandler extends MessageHandler {
     }
   }
 
-  // no need for a case handleAddBroadcastChirp for now, since the server never receives one in theory
-  def handleAddBroadcastChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle AddBroadcastChirp messages", rpcMessage.id))
+  // no need for a case handleNotifyAddChirp for now, since the server never receives one in theory
+  def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyAddChirp messages", rpcMessage.id))
   }
 
-  def handleDeleteBroadcastChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle DeleteBroadcastChirp messages", rpcMessage.id))
+  def handleNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyDeleteChirp messages", rpcMessage.id))
   }
 
 }

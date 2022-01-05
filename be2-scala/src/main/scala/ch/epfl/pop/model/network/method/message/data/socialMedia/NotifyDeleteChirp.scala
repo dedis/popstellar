@@ -8,21 +8,21 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Channel, Hash, Timestamp}
 import spray.json._
 
-case class DeleteBroadcastChirp(
+case class NotifyDeleteChirp(
                           chirp_id: Hash,
                           channel: Channel,
                           timestamp: Timestamp
                         ) extends MessageData {
   override val _object: ObjectType = ObjectType.CHIRP
-  override val action: ActionType = ActionType.DELETE_BROADCAST
+  override val action: ActionType = ActionType.NOTIFY_DELETE
 }
 
-object DeleteBroadcastChirp extends Parsable {
+object NotifyDeleteChirp extends Parsable {
   def apply(
             chirp_id: Hash,
             channel: Channel,
             timestamp: Timestamp
-      ): DeleteBroadcastChirp = new DeleteBroadcastChirp(chirp_id, channel, timestamp)
+      ): NotifyDeleteChirp = new NotifyDeleteChirp(chirp_id, channel, timestamp)
 
-  override def buildFromJson(payload: String): DeleteBroadcastChirp = payload.parseJson.asJsObject.convertTo[DeleteBroadcastChirp]
+  override def buildFromJson(payload: String): NotifyDeleteChirp = payload.parseJson.asJsObject.convertTo[NotifyDeleteChirp]
 }
