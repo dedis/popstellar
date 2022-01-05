@@ -12,6 +12,7 @@ import {
   Hash,
   KeyPair,
   Lao,
+  PublicKey,
   Timestamp,
 } from 'model/objects';
 import { KeyPairStore, OpenedLaoStore } from 'store';
@@ -75,7 +76,7 @@ describe('MessageApi', () => {
     const text = 'text';
     const parentId = new Hash('id');
 
-    await msApi.requestAddChirp(text, parentId);
+    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), text, parentId);
 
     expect(publishMock.mock.calls.length).toBe(1);
     const [channel, msgData] = publishMock.mock.calls[0];
@@ -87,7 +88,7 @@ describe('MessageApi', () => {
   it('should create the correct request for requestAddChirp without parentId', async () => {
     const text = 'text';
 
-    await msApi.requestAddChirp(text);
+    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), text);
 
     expect(publishMock.mock.calls.length).toBe(1);
     const [channel, msgData] = publishMock.mock.calls[0];

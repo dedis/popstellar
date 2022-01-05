@@ -29,16 +29,9 @@ type attendees struct {
 	store map[string]struct{}
 }
 
-// newAttendees returns a new instance of Attendees.
-func newAttendees() *attendees {
-	return &attendees{
-		store: make(map[string]struct{}),
-	}
-}
-
-// IsPresent checks if a key representing a user is present in
+// isPresent checks if a key representing a user is present in
 // the list of attendees.
-func (a *attendees) IsPresent(key string) bool {
+func (a *attendees) isPresent(key string) bool {
 	a.Lock()
 	defer a.Unlock()
 
@@ -46,30 +39,8 @@ func (a *attendees) IsPresent(key string) bool {
 	return ok
 }
 
-// Add adds an attendee to the election.
-func (a *attendees) Add(key string) {
-	a.Lock()
-	defer a.Unlock()
-
-	a.store[key] = struct{}{}
-}
-
-// Copy deep copies the Attendees struct.
-func (a *attendees) Copy() *attendees {
-	a.Lock()
-	defer a.Unlock()
-
-	clone := newAttendees()
-
-	for key := range a.store {
-		clone.store[key] = struct{}{}
-	}
-
-	return clone
-}
-
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, terminated bool, questions []messagedata.ElectionSetupQuestion,
+func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "election").Logger()
@@ -83,7 +54,7 @@ func NewChannel(channelPath string, start, end int64, terminated bool, questions
 
 		start:      start,
 		end:        end,
-		terminated: terminated,
+		terminated: false,
 		questions:  getAllQuestionsForElectionChannel(questions),
 
 		attendees: &attendees{
@@ -326,7 +297,7 @@ func (c *Channel) processCastVote(msg message.Message) error {
 	}
 
 	// verify sender is an attendee or the organizer
-	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubKeyOrg().Equal(senderPoint)
+	ok := c.attendees.isPresent(msg.Sender) || c.hub.GetPubKeyOwner().Equal(senderPoint)
 	if !ok {
 		return answer.NewError(-4, "only attendees can cast a vote in an election")
 	}
@@ -372,7 +343,7 @@ func (c *Channel) processElectionEnd(msg message.Message) error {
 	}
 
 	// check sender of the election end message is the organizer
-	if !c.hub.GetPubKeyOrg().Equal(senderPoint) {
+	if !c.hub.GetPubKeyOwner().Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 

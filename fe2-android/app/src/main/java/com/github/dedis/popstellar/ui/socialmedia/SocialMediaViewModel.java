@@ -2,26 +2,38 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.LiveDataReactiveStreams;
 import androidx.lifecycle.MutableLiveData;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.security.Keys;
 import com.google.crypto.tink.KeysetHandle;
+import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
@@ -30,7 +42,10 @@ import io.reactivex.schedulers.Schedulers;
 @HiltViewModel
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
+  private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
+  private static final String PUBLISH_MESSAGE = "sending publish message";
+  private static final String ROOT = "/root/";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
   /*
@@ -44,12 +59,15 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
+  private final LiveData<List<Lao>> mLAOs;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
+  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
   /*
    * Dependencies for this class
    */
   private final LAORepository mLaoRepository;
+  private final Gson mGson;
   private final AndroidKeysetManager mKeysetManager;
   private final CompositeDisposable disposables;
 
@@ -57,11 +75,17 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      Gson gson,
       AndroidKeysetManager keysetManager) {
     super(application);
     mLaoRepository = laoRepository;
+    mGson = gson;
     mKeysetManager = keysetManager;
     disposables = new CompositeDisposable();
+
+    mLAOs =
+        LiveDataReactiveStreams.fromPublisher(
+            mLaoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -101,8 +125,16 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mNumberCharsLeft;
   }
 
+  public LiveData<List<Lao>> getLAOs() {
+    return mLAOs;
+  }
+
   public LiveData<String> getLaoId() {
     return mLaoId;
+  }
+
+  public LiveData<String> getLaoName() {
+    return mLaoName;
   }
 
   /*
@@ -140,11 +172,15 @@ public class SocialMediaViewModel extends AndroidViewModel {
     mLaoId.setValue(laoId);
   }
 
+  public void setLaoName(String laoName) {
+    mLaoName.setValue(laoName);
+  }
+
   /** Subscribe to the channel: /root/<lao_id>/social/chirps */
   public void subscribeToGeneralChannel(String laoId) {
-    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/chirps");
+    Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/chirps");
 
-    String channel = "/root/" + laoId + "/social/chirps";
+    String channel = ROOT + laoId + "/social/chirps";
 
     Disposable disposable =
         mLaoRepository
@@ -168,12 +204,12 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   /** Subscribe to a channel: /root/<lao_id>/social/<sender> */
   public void subscribeToChannel(String laoId) {
-    Log.d(TAG, "subscribing to channel: /root/" + laoId + "/social/<sender>");
+    Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/<sender>");
 
     try {
       KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
       String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      String channel = "/root/" + laoId + "/social/" + publicKey;
+      String channel = ROOT + laoId + "/social/" + publicKey;
 
       Disposable disposable =
           mLaoRepository
@@ -196,6 +232,65 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     } catch (GeneralSecurityException | IOException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
+      Toast.makeText(
+              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
+          .show();
+    }
+  }
+
+  /**
+   * Send a chirp to your own channel.
+   *
+   * <p>Publish a MessageGeneral containing AddChirp data.
+   *
+   * @param text the text written in the chirp
+   * @param parentId the id of the chirp to which you replied
+   * @param timestamp the time at which you sent the chirp
+   */
+  public void sendChirp(String text, @Nullable String parentId, long timestamp) {
+    Log.d(TAG, "Sending a chirp");
+    String laoChannel = ROOT + getLaoId().getValue();
+    Lao lao = mLaoRepository.getLaoByChannel(laoChannel);
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+    }
+    AddChirp addChirp = new AddChirp(text, parentId, timestamp);
+
+    try {
+      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
+      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
+      String channel = laoChannel + "/social/" + publicKey;
+      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
+      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      Log.d(TAG, PUBLISH_MESSAGE);
+      MessageGeneral msg = new MessageGeneral(sender, addChirp, signer, mGson);
+
+      Disposable disposable =
+          mLaoRepository
+              .sendPublish(channel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId());
+                    } else {
+                      Log.d(TAG, "failed to send chirp");
+                      Toast.makeText(
+                              getApplication().getApplicationContext(),
+                              R.string.toast_error_sending_chirp,
+                              Toast.LENGTH_LONG)
+                          .show();
+                    }
+                  },
+                  throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
+      disposables.add(disposable);
+    } catch (GeneralSecurityException | IOException e) {
+      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+      Toast.makeText(
+              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
+          .show();
     }
   }
 }

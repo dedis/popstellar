@@ -2,7 +2,7 @@ package util.examples.lao
 
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.pubsub.graph.validator.SchemaValidatorSuite
+import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite
 import ch.epfl.pop.model.network.JsonRpcMessage
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Base64Data
