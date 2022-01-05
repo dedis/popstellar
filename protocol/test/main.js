@@ -28,9 +28,9 @@ const message_data_meeting_state_schema = require("../query/method/message/data/
 const message_data_message_witness_schema = require("../query/method/message/data/dataWitnessMessage.json")
 
 const message_data_chirp_add_schema = require("../query/method/message/data/dataAddChirp.json")
-const message_data_chirp_add_notify_schema = require("../query/method/message/data/dataAddChirpNotify.json")
+const message_data_chirp_notify_add_schema = require("../query/method/message/data/dataNotifyAddChirp.json")
 const message_data_chirp_delete_schema = require("../query/method/message/data/dataDeleteChirp.json")
-const message_data_chirp_delete_notify_schema = require("../query/method/message/data/dataDeleteChirpNotify.json")
+const message_data_chirp_notify_delete_schema = require("../query/method/message/data/dataNotifyDeleteChirp.json")
 const message_data_reaction_add_schema = require("../query/method/message/data/dataAddReaction.json")
 const message_data_reaction_delete_schema = require("../query/method/message/data/dataDeleteReaction.json")
 
@@ -77,10 +77,10 @@ ajv.addSchema([
     message_data_meeting_state_schema,
     message_data_message_witness_schema,
 
-    message_data_chirp_add_notify_schema,
+    message_data_chirp_notify_add_schema,
     message_data_chirp_add_schema,
     message_data_chirp_delete_schema,
-    message_data_chirp_delete_notify_schema,
+    message_data_chirp_notify_delete_schema,
     message_data_reaction_add_schema,
     message_data_reaction_delete_schema,
 

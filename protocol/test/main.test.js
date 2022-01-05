@@ -157,14 +157,14 @@ test("message data: chirp", () => {
     chirp_add = require("../examples/messageData/chirp_add_publish/chirp_add_publish.json")
     expect(chirp_add).toBeValid(messageDataSchema)
 
-    chirp_add_notify = require("../examples/messageData/chirp_add_notify/chirp_add_notify.json")
-    expect(chirp_add_notify).toBeValid(messageDataSchema)
+    chirp_notify_add = require("../examples/messageData/chirp_notify_add/chirp_notify_add.json")
+    expect(chirp_notify_add).toBeValid(messageDataSchema)
 
     chirp_delete = require("../examples/messageData/chirp_delete_publish/chirp_delete_publish.json")
     expect(chirp_delete).toBeValid(messageDataSchema)
 
-    chirp_delete_notify = require("../examples/messageData/chirp_delete_notify/chirp_delete_notify.json")
-    expect(chirp_delete_notify).toBeValid(messageDataSchema)
+    chirp_notify_delete = require("../examples/messageData/chirp_notify_delete/chirp_notify_delete.json")
+    expect(chirp_notify_delete).toBeValid(messageDataSchema)
 
     reaction_add = require("../examples/messageData/reaction_add/reaction_add.json")
     expect(reaction_add).toBeValid(messageDataSchema)
