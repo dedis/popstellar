@@ -43,6 +43,7 @@ public class KeyManager {
       Log.d(TAG, "Public Key = " + getMainPublicKey().getEncoded());
     } catch (IOException | GeneralSecurityException e) {
       Log.e(TAG, "Failed to retrieve public key", e);
+      throw new IllegalStateException("Failed to retrieve public key", e);
     }
   }
 
