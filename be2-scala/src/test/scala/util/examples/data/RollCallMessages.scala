@@ -10,7 +10,7 @@ import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCreateRollCall
 
 import ch.epfl.pop.model.objects.{Channel, Signature, Base64Data, PublicKey, Hash, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import util.examples.dataTraits.RollCallMessagesTrait
+import util.examples.data.traits.RollCallMessagesTrait
 
 import java.nio.file.{Files, Path}
 
