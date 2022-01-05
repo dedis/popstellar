@@ -105,10 +105,10 @@ public final class MessageGeneral {
     if (this.data instanceof WitnessMessageSignature) {
       WitnessMessageSignature witness = (WitnessMessageSignature) this.data;
 
-      Signature signature = witness.getSignature();
+      Signature witnessSignature = witness.getSignature();
       MessageID messageID = witness.getMessageId();
 
-      return this.sender.verify(signature, messageID);
+      return this.sender.verify(witnessSignature, messageID);
     } else {
       return true;
     }
