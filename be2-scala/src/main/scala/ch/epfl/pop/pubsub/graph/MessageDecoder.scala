@@ -129,7 +129,7 @@ object MessageDecoder {
               }
             } match {
               case Success(_) => Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
-              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: $exception", jsonRpcRequest.id))
+              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage()}", jsonRpcRequest.id))
             }
 
           case Success(_) => Right(PipelineError(

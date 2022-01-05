@@ -9,6 +9,7 @@ import com.networknt.schema.JsonSchema
 import org.slf4j.LoggerFactory
 
 import scala.util.{Try, Success, Failure}
+import scala.jdk.CollectionConverters.SetHasAsScala
 
 
 /** DataSchemaValidator Object, provides a validateSchema method that verifies a certain payload of a certain actionType
@@ -51,7 +52,7 @@ object DataSchemaValidator {
       case (ObjectType.LAO, ActionType.UPDATE_PROPERTIES) => validateWithSchema(updateLaoSchema)(payload)
 
       //RollCall
-      case (ObjectType.ROLL_CALL, ActionType.CREATE)      => validateWithSchema(createLaoSchema)(payload)
+      case (ObjectType.ROLL_CALL, ActionType.CREATE)      => validateWithSchema(createRcSchema)(payload)
       case (ObjectType.ROLL_CALL, ActionType.OPEN)        => validateWithSchema(openRcSchema)(payload)
       case (ObjectType.ROLL_CALL, ActionType.REOPEN)      => validateWithSchema(reopenRcSchema)(payload)
       case (ObjectType.ROLL_CALL, ActionType.CLOSE)       => validateWithSchema(closeRcSchema)(payload)
@@ -59,7 +60,7 @@ object DataSchemaValidator {
       //Social Media
       case (ObjectType.CHIRP, ActionType.ADD)             => validateWithSchema(addChirpSchema)(payload)
       case (ObjectType.CHIRP, ActionType.ADD_BROADCAST)   => validateWithSchema(brodcastChirpSchema)(payload)
-      
+
       //TODO:Add other cases
       case _ =>
         logger.error("Schema for data message could not be verified or data of unknown type")
@@ -73,7 +74,7 @@ object DataSchemaValidator {
     */
   private def validateWithSchema(schema: JsonSchema)(payload: String): Try[Unit] = {
     val jsonNode: JsonNode = objectMapper.readTree(payload)
-    val errors = Set(schema.validate(jsonNode))
+    val errors = schema.validate(jsonNode).asScala
     errors match {
       case _ if errors.isEmpty => Success()
       case _                   => Failure(new Exception(errors.mkString("; ")))

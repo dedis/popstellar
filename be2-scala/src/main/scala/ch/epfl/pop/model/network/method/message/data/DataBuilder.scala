@@ -13,7 +13,7 @@ import scala.util.{Try,Success,Failure}
 
 /**Companion object of DataBuilder that helps building MessageData instances**/
 object DataBuilder {
-    val dataBuilder = DataBuilder(DataRegistryModule.REGISTRY)
+    private final val dataBuilder = DataBuilder(DataRegistryModule.REGISTRY)
     def buildData(_object: ObjectType, action: ActionType, payload: String): MessageData = dataBuilder.buildData(_object, action, payload)
 }
 
