@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  StyleSheet, ViewStyle, View, TextStyle, Text,
+  StyleSheet, ViewStyle, View, TextStyle, Text, Pressable,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { gray, blue } from 'styles/colors';
+import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
 import { useSelector } from 'react-redux';
 import { requestAddReaction } from '../network';
@@ -89,33 +89,21 @@ const ChirpCard = (props: IPropTypes) => {
         <Text style={styles.chirpText}>{chirp.text}</Text>
         <View style={styles.reactionsView}>
           <View style={styles.reactionView}>
-            <Ionicons.Button
-              name="thumbs-up"
-              size={16}
-              color="black"
-              backgroundColor={blue}
-              onPress={() => addReaction('👍')}
-            />
+            <Pressable onPress={() => addReaction('👍')}>
+              <Ionicons name="thumbs-up" size={16} color="black" />
+            </Pressable>
             <Text>{`  ${thumbsUp}`}</Text>
           </View>
           <View style={styles.reactionView}>
-            <Ionicons.Button
-              name="thumbs-down"
-              size={16}
-              color="black"
-              backgroundColor={blue}
-              onPress={() => addReaction('👎')}
-            />
+            <Pressable onPress={() => addReaction('👎')}>
+              <Ionicons name="thumbs-down" size={16} color="black" />
+            </Pressable>
             <Text>{`  ${thumbsDown}`}</Text>
           </View>
           <View style={styles.reactionView}>
-            <Ionicons.Button
-              name="heart"
-              size={16}
-              color="black"
-              backgroundColor={blue}
-              onPress={() => addReaction('❤️')}
-            />
+            <Pressable onPress={() => addReaction('❤️')}>
+              <Ionicons name="heart" size={16} color="black" />
+            </Pressable>
             <Text>{`  ${heart}`}</Text>
           </View>
           <View style={styles.reactionView}>
