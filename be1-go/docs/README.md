@@ -36,28 +36,29 @@ The project is organized into different modules as follows
 
 ```
 .
-├── channel            # contains the abstract definition of a channel
-│   ├── election       # channel implementation for an election channel. It is 
-│   │                  # used as a sub-channel in a lao channel
-│   ├── inbox          # helper to store messages used by channels
-│   └── lao            # channel implementation for a LAO channel
-├── cli
-│   ├── organizer      # cli for the organizer
-│   └── witness        # cli for the witness
-├── db                 # persistance module
-│   ├── sqlite         # sqlite implementation of persistance 
+├── channel             # contains the abstract definition of a channel
+│   ├── chirp
+│   ├── consensus       # channel implementation for a consensus channel
+│   ├── election        # channel implementation for an election channel
+│   ├── generalChirping # channel implementation for a universal post channel
+│   ├── lao             # channel implementation for a LAO channel
+│   ├── reaction        # channel implementation for a reaction channel
+│   └── registry        # helper for registry
+├── cli                 # command line interface
+├── crypto              # defines the cryptographic suite 
+├── db                  # persistance module
+│   ├── sqlite          # sqlite implementation of persistance 
 ├── docs
-├── hub                # contains the abstract definition of a hub
-│   ├── organizer      # hub implementation for the organizer
-│   └── witness        # hub implementation for a witness
-├── message            # message types and marshaling/unmarshaling logic
-├── network            # module to set up Websocket connections
-│   └── socket         # module to send/receive data over the wire
-└── validation         # module to validate incoming/outgoing messages
+├── hub                 # contains the abstract definition of a hub
+│   ├── standard_hub    # hub implementation 
+├── inbox               # helper to store messages used by channels
+├── message             # message types and marshaling/unmarshaling logic
+├── network             # module to set up Websocket connections
+│   └── socket          # module to send/receive data over the wire
+└── validation          # module to validate incoming/outgoing messages
 ```
 
-Depending on which component you're working on, the entry point would either be
-cli/organizer or cli/witness, with bulk of the implementation logic in the hub
+The entry point is the cli with bulk of the implementation logic in the hub
 module.
 
 The following diagram represents the relations between the packages in the
@@ -127,9 +128,6 @@ The incoming messages received by the `ReadPump` are propagated up the stack to
 the `Hub` which is responsible for processing it and sending a `Result`, `Error`
 or a `Broadcast`.
 
-The `Hub` interface has two concrete implementations - one for the organizer and
-another for the witness (`hub/organizer` and `hub/witness` respectively).
-
 A hub, on receiving a message, processes it by invoking the
 `handleIncomingMessage` method where its handled depending on which `Socket` the
 message originates from.
@@ -179,8 +177,8 @@ specifications and bundle it up during compilation.
 * Be generous with the use of log statements while developing a new feature.
 It's useful to get feedback about which steps executed and how far the message
 reached in the processing pipeline rather than getting an opaque error. Use the
-new `zerolog.Logger` for that, instead of the legacy, to be removed, vanilla
-`log`.
+new `zerolog.Logger` for that.
+
 * Ensure your error messages are descriptive and ALWAYS wrap errors with a small
   description, for example `xerrors.Errorf("failed to parse message: %v", err)`
 * If you're stuck, using a debugger can be of great help. GoLand has good

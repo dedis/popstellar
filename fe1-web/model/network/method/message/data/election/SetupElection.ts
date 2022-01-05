@@ -75,13 +75,13 @@ export class SetupElection implements MessageData {
     if (!msg.questions) {
       throw new ProtocolError('Undefined \'questions\' parameter encountered during \'SetupElection\'');
     }
-    SetupElection.validateQuestions(msg.questions);
+    SetupElection.validateQuestions(msg.questions, msg.id.toString());
     this.questions = msg.questions;
 
     const lao: Lao = OpenedLaoStore.get();
 
     const expectedHash = Hash.fromStringArray(
-      EventTags.ELECTION, lao.id.toString(), lao.creation.toString(), msg.name,
+      EventTags.ELECTION, lao.id.toString(), msg.created_at.toString(), msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'SetupElection':"
@@ -90,8 +90,16 @@ export class SetupElection implements MessageData {
     this.id = msg.id;
   }
 
-  public static validateQuestions(questions: Question[]) {
+  public static validateQuestions(questions: Question[], electID: string) {
     questions.forEach((question) => {
+      const expectedHash = Hash.fromStringArray(
+        EventTags.QUESTION, electID, question.question,
+      );
+
+      if (expectedHash.valueOf() !== question.id) {
+        throw new ProtocolError("Invalid 'questions.id' parameter encountered during 'SetupElection':"
+          + ' re-computing the value yields a different result');
+      }
       if (!question.id) {
         throw new ProtocolError('Undefined \'question id\' parameter encountered during \'SetupElection\'');
       }

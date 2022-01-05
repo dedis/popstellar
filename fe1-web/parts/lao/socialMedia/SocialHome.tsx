@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -16,10 +16,13 @@ import STRINGS from 'res/strings';
 import { requestAddChirp } from 'network/MessageApi';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
+import { PublicKey, RollCall } from 'model/objects';
+import { generateToken } from 'model/objects/wallet/Token';
+import { makeCurrentLao, makeEventGetter } from 'store';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
 
 /**
- * UI for the Social Media component
+ * UI for the Social Media home screen component
  */
 const styles = StyleSheet.create({
   viewCenter: {
@@ -44,13 +47,34 @@ const styles = StyleSheet.create({
 
 const SocialHome = () => {
   const [inputChirp, setInputChirp] = useState('');
+  const [userPublicKey, setUserPublicKey] = useState(new PublicKey(''));
+
+  const laoSelect = makeCurrentLao();
+  const lao = useSelector(laoSelect);
+
+  if (lao === undefined) {
+    throw new Error('LAO is currently undefined, impossible to access to Social Media');
+  }
+
+  // Get the pop token of the user using the last tokenized roll call
+  const rollCallId = lao.last_tokenized_roll_call_id;
+  const eventSelect = makeEventGetter(lao.id, rollCallId);
+  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
+
+  // This will be run again each time the lao.last_tokenized_roll_call_id changes
+  useEffect(() => {
+    generateToken(lao.id, rollCallId).then((token) => {
+      if (token && rollCall.containsToken(token)) {
+        setUserPublicKey(token.publicKey);
+      }
+    });
+  }, [lao.last_tokenized_roll_call_id]);
 
   const publishChirp = () => {
-    requestAddChirp(inputChirp)
+    requestAddChirp(userPublicKey, inputChirp)
       .catch((err) => {
-        console.error('Could not add chirp, error:', err);
+        console.error('Failed to post chirp, error:', err);
       });
-    setInputChirp('');
   };
 
   const chirps = makeChirpsList();
@@ -71,6 +95,8 @@ const SocialHome = () => {
         <TextInputChirp
           onChangeText={setInputChirp}
           onPress={publishChirp}
+          // The publish button is disabled when the user public key is not defined
+          publishIsDisabledCond={userPublicKey.valueOf() === ''}
         />
         <FlatList
           data={chirpList}

@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.utility.handler.LaoHandler.updateLaoNameWitnessMessage;
-import static com.github.dedis.popstellar.utility.handler.MessageHandler.handleMessage;
+import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
@@ -54,7 +54,9 @@ public class LaoHandlerTest {
   @Mock AndroidKeysetManager androidKeysetManager;
   @Mock PublicKeySign signer;
 
-  private static final Gson GSON = JsonModule.provideGson();
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+  private static final MessageHandler messageHandler =
+      new MessageHandler(DataRegistryModule.provideDataRegistry());
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
@@ -94,7 +96,12 @@ public class LaoHandlerTest {
 
     laoRepository =
         new LAORepository(
-            remoteDataSource, localDataSource, androidKeysetManager, GSON, testSchedulerProvider);
+            remoteDataSource,
+            localDataSource,
+            androidKeysetManager,
+            messageHandler,
+            GSON,
+            testSchedulerProvider);
 
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -125,7 +132,7 @@ public class LaoHandlerTest {
         updateLaoNameWitnessMessage(message.getMessageId(), updateLao, lao);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
@@ -153,7 +160,7 @@ public class LaoHandlerTest {
             Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), stateLao, signer, GSON);
 
     // Call the message handler
-    handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
 
     // Check the LAO last modification time and ID was updated
     assertEquals(

@@ -2,13 +2,23 @@ import scala.util.{Try, Success, Failure}
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
 import sbt.IO._
 
-
 name := "pop"
 
 version := "0.1"
 
-scalaVersion := "2.13.5"
+scalaVersion := "2.13.7"
 
+//Reload changes automatically
+Global / onChangedBuildSource := ReloadOnSourceChanges
+Global / cancelable := true
+
+//Fork run task in compile scope
+Compile/ run / fork := true
+Compile/ run / connectInput := true
+Compile/ run / javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
+
+//Make test execution synchronized
+Test/ test/ parallelExecution := false
 
 //Create task to copy the protocol folder to resources
 lazy val copyProtocolTask = taskKey[Unit]("Copy protocol to resources")
@@ -30,27 +40,29 @@ copyProtocolTask := {
         }
     }
 }
-//Add task to compile time
+//Add the copyProtocolTask to compile time
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
-resourceDirectory in (Compile, packageBin) := file(".") / "./src/main/resources"
+(Compile /packageBin / resourceDirectory) := file(".") / "./src/main/resources"
+//Make resourceDirectory setting global to remove sbt warning
+(Global / excludeLintKeys) += resourceDirectory
 
 //Setup main calass task context/confiuration
-mainClass in (Compile, run) := Some("ch.epfl.pop.Server")
-mainClass in (Compile, packageBin) := Some("ch.epfl.pop.Server")
+Compile/ run/ mainClass := Some("ch.epfl.pop.Server")
+Compile/ packageBin/ mainClass := Some("ch.epfl.pop.Server")
 
 lazy val scoverageSettings = Seq(
-  coverageEnabled in Compile := true,
-  coverageEnabled in Test := true,
-  coverageEnabled in packageBin := false,
+  Compile/ coverageEnabled  := true,
+  Test/ coverageEnabled  := true,
+  packageBin/ coverageEnabled  := false,
 )
 
 
 
-scapegoatVersion in ThisBuild := "1.4.8"
+ThisBuild/ scapegoatVersion := "1.4.11"
 scapegoatReports := Seq("xml")
 
 // temporarily report scapegoat errors as warnings, to avoid broken builds
-scalacOptions in Scapegoat += "-P:scapegoat:overrideLevels:all=Warning"
+Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
 
 // Configure Sonar
 sonarProperties := Map(
@@ -61,13 +73,13 @@ sonarProperties := Map(
   "sonar.tests" -> "src/test/scala",
 
   "sonar.sourceEncoding" -> "UTF-8",
-  "sonar.scala.version" -> "2.13.5",
+  "sonar.scala.version" -> "2.13.7",
   // Paths to the test and coverage reports
   "sonar.scala.coverage.reportPaths" -> "./target/scala-2.13/scoverage-report/scoverage.xml",
   "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
 )
 
-assemblyMergeStrategy in assembly := {
+assembly/ assemblyMergeStrategy  := {
     case PathList("module-info.class") => MergeStrategy.discard
     case PathList("reference.conf") => MergeStrategy.concat
     case PathList("META-INF","MANIFEST.MF") => MergeStrategy.discard
