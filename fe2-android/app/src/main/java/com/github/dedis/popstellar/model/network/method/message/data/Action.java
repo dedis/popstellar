@@ -26,7 +26,7 @@ public enum Action {
   LEARN("learn"),
   FAILURE("failure"),
   ADD("add"),
-  ADD_BROADCAST("add_broadcast");
+  NOTIFY_ADD("notify_add");
 
   private static final List<Action> ALL = Collections.unmodifiableList(Arrays.asList(values()));
   private final String action;
