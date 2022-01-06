@@ -21,7 +21,7 @@ const sampleAddBroadcastChirp: Partial<AddChirpBroadcast> = {
 
 const dataAddChirpBroadcast = `{
     "object": "${ObjectType.CHIRP}",
-    "action":"${ActionType.ADD_BROADCAST}",
+    "action": "${ActionType.ADD_BROADCAST}",
     "chirp_id": "${ID}",
     "channel": "${CHANNEL}",
     "timestamp": ${TIMESTAMP}
