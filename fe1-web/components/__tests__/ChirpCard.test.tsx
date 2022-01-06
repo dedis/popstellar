@@ -1,4 +1,5 @@
 import React from 'react';
+import * as redux from 'react-redux';
 import { render } from '@testing-library/react-native';
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { Chirp } from 'model/objects/Chirp';
@@ -18,6 +19,8 @@ beforeAll(() => {
 
 describe('ChirpCard', () => {
   it('renders correctly', () => {
+    const mockReactions = jest.spyOn(redux, 'useSelector');
+    mockReactions.mockReturnValue({ '👍': 0, '👎': 0, '❤️': 0 });
     const obj = render(
       <ChirpCard
         chirp={chirp}

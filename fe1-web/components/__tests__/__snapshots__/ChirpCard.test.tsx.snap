@@ -80,45 +80,19 @@ exports[`ChirpCard renders correctly 1`] = `
       >
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
+          onBlur={[Function]}
           onClick={[Function]}
+          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={
-            Array [
-              Object {
-                "overflow": "hidden",
-              },
-              Object {
-                "backgroundColor": "#007AFF",
-                "borderRadius": 5,
-              },
-            ]
-          }
         >
-          <View
-            style={
-              Array [
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                  "justifyContent": "flex-start",
-                  "padding": 8,
-                },
-                Object {
-                  "backgroundColor": "#007AFF",
-                  "borderRadius": 5,
-                },
-                undefined,
-              ]
-            }
-          >
-            <Text />
-          </View>
+          <Text />
         </View>
         <Text>
             0
@@ -135,45 +109,19 @@ exports[`ChirpCard renders correctly 1`] = `
       >
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
+          onBlur={[Function]}
           onClick={[Function]}
+          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={
-            Array [
-              Object {
-                "overflow": "hidden",
-              },
-              Object {
-                "backgroundColor": "#007AFF",
-                "borderRadius": 5,
-              },
-            ]
-          }
         >
-          <View
-            style={
-              Array [
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                  "justifyContent": "flex-start",
-                  "padding": 8,
-                },
-                Object {
-                  "backgroundColor": "#007AFF",
-                  "borderRadius": 5,
-                },
-                undefined,
-              ]
-            }
-          >
-            <Text />
-          </View>
+          <Text />
         </View>
         <Text>
             0
@@ -190,45 +138,19 @@ exports[`ChirpCard renders correctly 1`] = `
       >
         <View
           accessible={true}
+          collapsable={false}
           focusable={true}
+          onBlur={[Function]}
           onClick={[Function]}
+          onFocus={[Function]}
           onResponderGrant={[Function]}
           onResponderMove={[Function]}
           onResponderRelease={[Function]}
           onResponderTerminate={[Function]}
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
-          style={
-            Array [
-              Object {
-                "overflow": "hidden",
-              },
-              Object {
-                "backgroundColor": "#007AFF",
-                "borderRadius": 5,
-              },
-            ]
-          }
         >
-          <View
-            style={
-              Array [
-                Object {
-                  "alignItems": "center",
-                  "flexDirection": "row",
-                  "justifyContent": "flex-start",
-                  "padding": 8,
-                },
-                Object {
-                  "backgroundColor": "#007AFF",
-                  "borderRadius": 5,
-                },
-                undefined,
-              ]
-            }
-          >
-            <Text />
-          </View>
+          <Text />
         </View>
         <Text>
             0
