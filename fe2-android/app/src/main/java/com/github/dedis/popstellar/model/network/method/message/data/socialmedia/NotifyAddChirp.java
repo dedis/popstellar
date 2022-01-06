@@ -68,7 +68,7 @@ public class NotifyAddChirp extends Data {
 
   @Override
   public String toString() {
-    return "AddChirpBroadcast{"
+    return "NotifyAddChirp{"
         + "postId='"
         + postId
         + '\''
