@@ -11,7 +11,7 @@ const CHANNEL = '/root/laoID/social/senderPublicKey';
 const mockMessageId = Base64UrlData.encode('message_id');
 const ID = new Hash(mockMessageId.toString());
 
-const sampleAddBroadcastChirp: Partial<NotifyAdd> = {
+const sampleNotifyAddChirp: Partial<NotifyAdd> = {
   object: ObjectType.CHIRP,
   action: ActionType.NOTIFY_ADD,
   chirp_id: ID,
@@ -19,7 +19,7 @@ const sampleAddBroadcastChirp: Partial<NotifyAdd> = {
   timestamp: TIMESTAMP,
 };
 
-const dataAddChirpBroadcast = `{
+const dataNotifyAdd = `{
     "object": "${ObjectType.CHIRP}",
     "action":"${ActionType.NOTIFY_ADD}",
     "chirp_id": "${ID}",
@@ -29,7 +29,7 @@ const dataAddChirpBroadcast = `{
 
 describe('AddBroadcastChirp', () => {
   it('should be created correctly from JSON', () => {
-    expect(new NotifyAdd(sampleAddBroadcastChirp)).toBeJsonEqual(sampleAddBroadcastChirp);
+    expect(new NotifyAdd(sampleNotifyAddChirp)).toBeJsonEqual(sampleNotifyAddChirp);
     const temp = {
       object: ObjectType.CHIRP,
       action: ActionType.NOTIFY_ADD,
@@ -41,8 +41,8 @@ describe('AddBroadcastChirp', () => {
   });
 
   it('should be parsed correctly from JSON', () => {
-    const obj = JSON.parse(dataAddChirpBroadcast);
-    expect(NotifyAdd.fromJson(obj)).toBeJsonEqual(sampleAddBroadcastChirp);
+    const obj = JSON.parse(dataNotifyAdd);
+    expect(NotifyAdd.fromJson(obj)).toBeJsonEqual(sampleNotifyAddChirp);
   });
 
   it('fromJson should throw an error if the Json has incorrect action', () => {
