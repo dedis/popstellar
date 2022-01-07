@@ -169,6 +169,12 @@ export const makeChirpsList = () => createSelector(
   },
 );
 
+const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
+  '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
+  '👎': reactionByUser['👎'] ? reactionByUser['👎'].length : 0,
+  '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
+});
+
 export const makeReactionsList = () => createSelector(
   (state) => getSocialState(state),
   (state) => getLaosState(state).currentId,
@@ -183,11 +189,7 @@ export const makeReactionsList = () => createSelector(
         (id) => {
           const reactionByUser = list.byLaoId[laoId].reactionsByChirp[id];
           if (reactionByUser) {
-            reactions[id] = {
-              '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
-              '👎': reactionByUser['👎'] ? reactionByUser['👎'].length : 0,
-              '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
-            };
+            reactions[id] = createReactionsEntry(reactionByUser);
           }
         },
       );
