@@ -117,7 +117,12 @@ const socialSlice = createSlice({
         const { laoId, reaction } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
-          return;
+          state.byLaoId[laoId] = {
+            allIdsInOrder: [],
+            byId: {},
+            byUser: {},
+            reactionsByChirp: {},
+          };
         }
 
         const store = state.byLaoId[laoId];
@@ -159,9 +164,10 @@ export const makeChirpsList = () => createSelector(
       return [];
     }
     if (chirpList.byLaoId[laoId]) {
+      const store = chirpList.byLaoId[laoId];
       const allChirps: ChirpState[] = [];
-      chirpList.byLaoId[laoId].allIdsInOrder.forEach(
-        (id) => allChirps.push(chirpList.byLaoId[laoId].byId[id]),
+      store.allIdsInOrder.forEach(
+        (id) => allChirps.push(store.byId[id]),
       );
       return allChirps;
     }
@@ -184,10 +190,11 @@ export const makeReactionsList = () => createSelector(
       return {};
     }
     if (list.byLaoId[laoId]) {
+      const store = list.byLaoId[laoId];
       const reactions: Record<string, Record<string, number>> = {};
-      list.byLaoId[laoId].allIdsInOrder.forEach(
+      store.allIdsInOrder.forEach(
         (id) => {
-          const reactionByUser = list.byLaoId[laoId].reactionsByChirp[id];
+          const reactionByUser = store.reactionsByChirp[id];
           if (reactionByUser) {
             reactions[id] = createReactionsEntry(reactionByUser);
           }
