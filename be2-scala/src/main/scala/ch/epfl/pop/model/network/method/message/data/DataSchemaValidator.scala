@@ -29,7 +29,7 @@ object DataSchemaValidator {
   private final val dataReopenRC = dataOpenRC
   private final val dataCloseRC = baseDir + "dataCloseRollCall.json"
   private final val dataAddChirp = baseDir + "dataAddChirp.json"
-  private final val dataBroadcastChirp = baseDir + "dataAddChirpBroadcast.json"
+  private final val dataNotifyAddChirp = baseDir + "dataNotifyAddChirp.json"
 
   /* Validation Schemas */
   //TODO: Add schemas for other features: Meetings, RollCalls...
@@ -41,7 +41,7 @@ object DataSchemaValidator {
   private final lazy val reopenRcSchema  = openRcSchema
   private final lazy val closeRcSchema: JsonSchema   = Validator.setupSchemaValidation(dataCloseRC, objectMapper)
   private final lazy val addChirpSchema: JsonSchema  = Validator.setupSchemaValidation(dataAddChirp, objectMapper)
-  private final lazy val brodcastChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataBroadcastChirp, objectMapper)
+  private final lazy val notifyAddChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataNotifyAddChirp, objectMapper)
 
   //TODO: Add validaton schemas for other features: Meetings, Elections...
   def validateSchema(objType: ObjectType)(actionType: ActionType)(payload: String): Try[Unit] =
@@ -59,7 +59,7 @@ object DataSchemaValidator {
 
       //Social Media
       case (ObjectType.CHIRP, ActionType.ADD)             => validateWithSchema(addChirpSchema)(payload)
-      case (ObjectType.CHIRP, ActionType.ADD_BROADCAST)   => validateWithSchema(brodcastChirpSchema)(payload)
+      case (ObjectType.CHIRP, ActionType.NOTIFY_ADD)      => validateWithSchema(notifyAddChirpSchema)(payload)
 
       //TODO:Add other cases
       case _ =>

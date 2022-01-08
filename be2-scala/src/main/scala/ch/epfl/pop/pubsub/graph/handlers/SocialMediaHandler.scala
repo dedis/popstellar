@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddBroadcastChirp}
+import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, NotifyAddChirp}
 import ch.epfl.pop.model.network.requests.socialMedia.{JsonRpcRequestAddChirp}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash, Base64Data, Signature, Timestamp, PublicKey}
@@ -47,8 +47,8 @@ case object SocialMediaHandler extends MessageHandler {
                 // we can't get the message_id as a Base64Data, it is a Hash
                 val chirp_id: Hash = params.message_id
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
-                val addBroadcastChirp: AddBroadcastChirp = AddBroadcastChirp(chirp_id, channelChirp, timestamp)
-                val broadcastData: Base64Data = Base64Data.encode(addBroadcastChirp.toJson.toString)
+                val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
+                val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
                 
                 val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
                 Await.result(askLaoData, duration) match {
@@ -81,7 +81,7 @@ case object SocialMediaHandler extends MessageHandler {
     
   }
 
-  // no need for a case handleAddBroadcastChirp, since the server never receives one in theory
+  // no need for a case handleNotifyAddChirp, since the server never receives one in theory
 
 
 }

@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, U
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
-import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, AddBroadcastChirp}
+import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, NotifyAddChirp}
 import spray.json._
 import scala.util.{Try,Success,Failure}
 
