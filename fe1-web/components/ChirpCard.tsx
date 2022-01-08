@@ -64,7 +64,6 @@ const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
 
-  // This is temporary for now
   const zero = '  0';
   const thumbsUp = reactions ? reactions['👍'] : 0;
   const thumbsDown = reactions ? reactions['👎'] : 0;
@@ -89,19 +88,19 @@ const ChirpCard = (props: IPropTypes) => {
         <Text style={styles.chirpText}>{chirp.text}</Text>
         <View style={styles.reactionsView}>
           <View style={styles.reactionView}>
-            <Pressable onPress={() => addReaction('👍')}>
+            <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
               <Ionicons name="thumbs-up" size={16} color="black" />
             </Pressable>
             <Text>{`  ${thumbsUp}`}</Text>
           </View>
           <View style={styles.reactionView}>
-            <Pressable onPress={() => addReaction('👎')}>
+            <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
               <Ionicons name="thumbs-down" size={16} color="black" />
             </Pressable>
             <Text>{`  ${thumbsDown}`}</Text>
           </View>
           <View style={styles.reactionView}>
-            <Pressable onPress={() => addReaction('❤️')}>
+            <Pressable onPress={() => addReaction('❤️')} testID="heart">
               <Ionicons name="heart" size={16} color="black" />
             </Pressable>
             <Text>{`  ${heart}`}</Text>
