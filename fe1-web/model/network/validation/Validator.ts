@@ -80,7 +80,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   },
   [ObjectType.CHIRP]: {
     [ActionType.ADD]: 'dataAddChirp',
-    [ActionType.NOTIFY_ADD]: 'dataNotifyAdd',
+    [ActionType.NOTIFY_ADD]: 'dataNotifyAddChirp',
   },
 };
 
