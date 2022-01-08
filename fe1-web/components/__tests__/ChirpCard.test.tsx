@@ -13,6 +13,13 @@ const chirp = new Chirp({
   time: new Timestamp(1609455600), // 31 December 2020
 });
 
+const chirp1 = new Chirp({
+  id: new Hash('5678'),
+  text: 'Ignore me',
+  sender: new PublicKey('Anonymous'),
+  time: new Timestamp(1609455600), // 31 December 2020
+});
+
 jest.mock('network/MessageApi');
 jest.mock('react-redux', () => ({
   useSelector: () => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } }),
@@ -23,8 +30,13 @@ beforeAll(() => {
 });
 
 describe('ChirpCard', () => {
-  it('renders correctly', () => {
+  it('renders correctly with reaction', () => {
     const obj = render(<ChirpCard chirp={chirp} />);
+    expect(obj.toJSON()).toMatchSnapshot();
+  });
+
+  it('renders correctly without reaction', () => {
+    const obj = render(<ChirpCard chirp={chirp1} />);
     expect(obj.toJSON()).toMatchSnapshot();
   });
 
