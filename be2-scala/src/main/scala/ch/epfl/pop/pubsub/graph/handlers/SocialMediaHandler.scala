@@ -39,6 +39,12 @@ case object SocialMediaHandler extends MessageHandler {
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 
+  /**
+   * Helper function for both Social Media broadcasts
+   * @param rpcMessage : message for which we want to generate the broadcast
+   * @param broadcastData : the message data we broadcast converted to Base64Data
+   * @param broadcastChannel : the Channel in which we broadcast 
+   */
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
     val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
     Await.result(askLaoData, duration) match {
@@ -121,7 +127,7 @@ case object SocialMediaHandler extends MessageHandler {
     }
   }
 
-  // no need for a case handleNotifyAddChirp for now, since the server never receives one in theory
+  // no need for a case handleNotifyAddChirp or handleNotifyDeleteChirp for now, since the server never receives any in theory, but could be needed later
   def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: SocialMediaHandler should not handle NotifyAddChirp messages", rpcMessage.id))
   }
