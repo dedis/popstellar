@@ -43,7 +43,7 @@ case object SocialMediaHandler extends MessageHandler {
    * Helper function for both Social Media broadcasts
    * @param rpcMessage : message for which we want to generate the broadcast
    * @param broadcastData : the message data we broadcast converted to Base64Data
-   * @param broadcastChannel : the Channel in which we broadcast 
+   * @param broadcastChannel : the Channel in which we broadcast
    */
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
     val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
@@ -64,7 +64,7 @@ case object SocialMediaHandler extends MessageHandler {
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
     }
   }
-  
+
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration) match {
@@ -80,7 +80,7 @@ case object SocialMediaHandler extends MessageHandler {
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
                 val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
-                
+
                 broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
               }
               case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
@@ -89,11 +89,9 @@ case object SocialMediaHandler extends MessageHandler {
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
         }
       }
-      case error@Right(_) =>
-        error
-      case _ =>
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
-    }  
+      case error@Right(_) => error
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+    }
   }
 
   def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
@@ -111,7 +109,7 @@ case object SocialMediaHandler extends MessageHandler {
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
                 val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyDeleteChirp.toJson.toString)
-                
+
                 broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
               }
               case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
@@ -120,10 +118,8 @@ case object SocialMediaHandler extends MessageHandler {
           case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract LAO id for the broadcast", rpcMessage.id))
         }
       }
-      case error@Right(_) =>
-        error
-      case _ =>
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+      case error@Right(_) => error
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
     }
   }
 
