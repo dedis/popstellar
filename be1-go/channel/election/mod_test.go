@@ -368,7 +368,7 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime, false,
+	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
 		electionSetup.Questions, attendees, fakeHub, nolog)
 
 	fakeHub.NotifyNewChannel(channel.channelID, &channel, &fakeSocket{id: "socket"})
@@ -403,7 +403,7 @@ type fakeHub struct {
 
 	closedSockets chan string
 
-	pubKeyOrg kyber.Point
+	pubKeyOwner kyber.Point
 
 	pubKeyServ kyber.Point
 	secKeyServ kyber.Scalar
@@ -437,7 +437,7 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOrg:       publicOrg,
+		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
 		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
@@ -464,14 +464,14 @@ func (h *fakeHub) NotifyNewChannel(channeID string, channel channel.Channel, soc
 	h.Unlock()
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *fakeHub) GetPubKeyOrg() kyber.Point {
-	return h.pubKeyOrg
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOwner() kyber.Point {
+	return h.pubKeyOwner
 }
 
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
-	return h.pubKeyOrg
+	return h.pubKeyServ
 }
 
 // Sign implements channel.HubFunctionalities
