@@ -19,6 +19,7 @@ import {
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+import ConfirmModal from '../../../components/ConfirmModal';
 
 const styles = StyleSheet.create({
   viewCenter: {
@@ -36,6 +37,7 @@ const RollCallOpened = () => {
   const { rollCallID, time } = route.params;
   const navigation = useNavigation();
   const [attendees, updateAttendees] = useState(new Set<string>());
+  const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
@@ -61,6 +63,19 @@ const RollCallOpened = () => {
       if (!attendees.has(data)) {
         updateAttendees((prev) => new Set<string>(prev.add(data)));
         toast.show(STRINGS.roll_call_scan_participant, {
+          type: 'success',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      }
+    }
+  };
+
+  const handleEnterManually = (input: string) => {
+    if (input) {
+      if (!attendees.has(input)) {
+        updateAttendees((prev) => new Set<string>(prev.add(input)));
+        toast.show(STRINGS.roll_call_participant_added, {
           type: 'success',
           placement: 'top',
           duration: FOUR_SECONDS,
@@ -103,7 +118,20 @@ const RollCallOpened = () => {
           title={STRINGS.roll_call_scan_close}
           onPress={() => onCloseRollCall()}
         />
+        <WideButtonView
+          title={STRINGS.roll_call_add_attendee_manually}
+          onPress={() => setInputModalIsVisible(true)}
+        />
       </View>
+      <ConfirmModal
+        visibility={inputModalIsVisible}
+        setVisibility={setInputModalIsVisible}
+        title={STRINGS.roll_call_modal_add_attendee}
+        description={STRINGS.roll_call_modal_enter_token}
+        onConfirmPress={handleEnterManually}
+        buttonConfirmText={STRINGS.general_add}
+        hasTextInput
+      />
     </View>
   );
 };
