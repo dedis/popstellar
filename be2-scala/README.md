@@ -4,10 +4,38 @@ Proof-of-personhood, spring 2021: Scala language back-end
 [TOC]
 
 ## Running the project
+<span style="color:red;font-weight:bold">
+Make sure to open be2-scala project folder as the root of your IDE workspace.
+</span>
 
+---
 There are two main possible ways of running the project :
-* import the project using IntelliJ
-* using **sbt**, execute `sbt compile` and `sbt run`
+* #### Option 1: Intellij
+1. Import the project using IntelliJ
+2. Modify the default  Run configuration 'Server', to include the following __VM option__: <br>
+__```-Dscala.config=src/main/scala/ch/epfl/pop/config```__
+
+![](docs/images/intellij-vm.png)
+
+* #### Option 2: SBT
+ Using `sbt -Dscala.config="path/to/config/file" run`.
+
+ There is a default configuration ready to use in <span style="color:yellow">_src/main/scala/ch/epfl/pop/config_</span> which contains an __application.config__ where the configuration lives. This can be updated if needed.
+ ```apacheconf
+ #Snapshot of application.config
+ #POP Server config default
+ch_epfl_pop_Server {
+    http {
+        interface = "127.0.0.1"
+        port = "8000"
+       path = ""
+   }
+}
+```
+Consequently, from **be2-scala/** folder run the following:
+```bash
+ sbt -Dscala.config="src/main/scala/ch/epfl/pop/config" run
+```
 
 ---
 
@@ -22,6 +50,7 @@ The project relies on several sbt dependencies (external libraries) :
 - Json parser : [**spray-json**](https://github.com/spray/spray-json) for Json encoding/decoding
 - encryption : [**tink**](https://github.com/google/tink/blob/master/docs/JAVA-HOWTO.md) to verify signatures
 - testing : [**scalatest**](https://www.scalatest.org/) for unit tests
+- Json schema validator : [**networknt**](https://github.com/networknt/json-schema-validator) for Json schema validation
 
 ---
 

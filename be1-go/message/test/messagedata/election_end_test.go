@@ -11,7 +11,7 @@ import (
 )
 
 func Test_Election_End(t *testing.T) {
-	file := filepath.Join(relativeExamplePath, "election_end.json")
+	file := filepath.Join(relativeExamplePath, "election_end", "election_end.json")
 
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)

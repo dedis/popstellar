@@ -37,7 +37,7 @@ export enum ActionType {
   RESULT = 'result',
   CLOSE = 'close',
   ADD = 'add',
-  ADD_BROADCAST = 'addBroadcast',
+  NOTIFY_ADD = 'notify_add',
 }
 
 const ajv = new Ajv();
@@ -80,7 +80,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   },
   [ObjectType.CHIRP]: {
     [ActionType.ADD]: 'dataAddChirp',
-    [ActionType.ADD_BROADCAST]: 'dataAddChirpBroadcast',
+    [ActionType.NOTIFY_ADD]: 'dataNotifyAddChirp',
   },
 };
 

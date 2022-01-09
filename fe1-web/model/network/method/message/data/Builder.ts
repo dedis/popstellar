@@ -15,7 +15,7 @@ import {
   EndElection,
   SetupElection,
 } from './election';
-import { AddChirp, AddChirpBroadcast } from './chirp';
+import { AddChirp, NotifyAddChirp } from './chirp';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -80,8 +80,8 @@ function buildChirpMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.ADD:
       return AddChirp.fromJson(msgData);
-    case ActionType.ADD_BROADCAST:
-      return AddChirpBroadcast.fromJson(msgData);
+    case ActionType.NOTIFY_ADD:
+      return NotifyAddChirp.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while adding a chirp MessageData`);
   }

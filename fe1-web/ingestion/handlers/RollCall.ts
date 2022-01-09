@@ -6,9 +6,7 @@ import {
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
-import {
-  RollCall, RollCallStatus, Wallet, getUserSocialChannel,
-} from 'model/objects';
+import { RollCall, RollCallStatus, Wallet } from 'model/objects';
 import {
   addEvent,
   AsyncDispatch,
@@ -18,7 +16,6 @@ import {
   setLaoLastRollCall,
   updateEvent,
 } from 'store';
-import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
@@ -125,23 +122,24 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
   dispatch(updateEvent(lao.id, rc.toState()));
 
   // ... and update the Lao state to point to the latest roll call, if we have a token in it.
-  dispatch((() => async (aDispatch: AsyncDispatch) => {
+  dispatch(async (aDispatch: AsyncDispatch) => {
     try {
       const token = await Wallet.generateToken(lao.id, rc.id);
       const hasToken = rc.containsToken(token);
       aDispatch(setLaoLastRollCall(lao.id, rc.id, hasToken));
+
+      // If we had a token in this roll call, we subscribe to our own social media channel
+      if (token && hasToken) {
+        await subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey))
+          .catch((err) => {
+            console.error(`Could not subscribe to our own social channel ${token.publicKey}, error:`,
+              err);
+          });
+      }
     } catch (err) {
       console.debug(err);
     }
-  }));
-
-  // For now, everyone is automatically subscribed to the organizer's social channel at the end of
-  // the roll call
-  subscribeToChannel(getUserSocialChannel(lao.id, lao.organizer.valueOf()))
-    .catch((err) => {
-      console.error(`Could not subscribe to social channel of organizer ${lao.organizer}, error:`,
-        err);
-    });
+  });
 
   return true;
 }
