@@ -28,9 +28,9 @@ export enum ActionType {
   RESULT = 'result',
   CLOSE = 'close',
   ADD = 'add',
-  NOTIFY_ADD = 'add_broadcast',
+  NOTIFY_ADD = 'notify_add',
   DELETE = 'delete',
-  NOTIFY_DELETE = 'delete_broadcast',
+  NOTIFY_DELETE = 'notify_delete',
 }
 
 export interface MessageData {

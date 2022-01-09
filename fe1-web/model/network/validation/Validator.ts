@@ -37,9 +37,9 @@ export enum ActionType {
   RESULT = 'result',
   CLOSE = 'close',
   ADD = 'add',
-  NOTIFY_ADD = 'add_broadcast',
+  NOTIFY_ADD = 'notify_add',
   DELETE = 'delete',
-  NOTIFY_DELETE = 'delete_broadcast',
+  NOTIFY_DELETE = 'notify_delete',
 }
 
 const ajv = new Ajv();
@@ -82,9 +82,9 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   },
   [ObjectType.CHIRP]: {
     [ActionType.ADD]: 'dataAddChirp',
-    [ActionType.NOTIFY_ADD]: 'dataAddChirpBroadcast',
+    [ActionType.NOTIFY_ADD]: 'dataNotifyAddChirp',
     [ActionType.DELETE]: 'dataDeleteChirp',
-    [ActionType.NOTIFY_DELETE]: 'dataDeleteChirpBroadcast',
+    [ActionType.NOTIFY_DELETE]: 'dataNotifyDeleteChirp',
   },
 };
 

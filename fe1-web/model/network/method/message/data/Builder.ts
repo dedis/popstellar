@@ -7,10 +7,13 @@ import {
 } from './rollCall';
 import { WitnessMessage } from './witness';
 import {
-  CastVote, ElectionResult, EndElection, SetupElection,
+  CastVote,
+  ElectionResult,
+  EndElection,
+  SetupElection,
 } from './election';
 import {
-  AddChirp, AddChirpBroadcast, DeleteChirp, NotifyDeleteChirp,
+  AddChirp, NotifyAddChirp, DeleteChirp, NotifyDeleteChirp,
 } from './chirp';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
@@ -77,7 +80,7 @@ function buildChirpMessage(msgData: MessageData): MessageData {
     case ActionType.ADD:
       return AddChirp.fromJson(msgData);
     case ActionType.NOTIFY_ADD:
-      return AddChirpBroadcast.fromJson(msgData);
+      return NotifyAddChirp.fromJson(msgData);
     case ActionType.DELETE:
       return DeleteChirp.fromJson(msgData);
     case ActionType.NOTIFY_DELETE:
