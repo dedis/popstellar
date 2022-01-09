@@ -2,12 +2,9 @@ package ch.epfl.pop.model.network.method.message.data
 
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
-import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
-import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
-import ch.epfl.pop.model.network.method.message.data.witness.WitnessMessage
-import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, NotifyAddChirp, DeleteChirp, NotifyDeleteChirp}
+
+import spray.json._
+import scala.util.{Try,Success,Failure}
 
 /*
  * Helps building MessageData instances
