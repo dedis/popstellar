@@ -159,12 +159,13 @@ const STRINGS = {
   roll_call_scan_participant: 'participant scanned',
   roll_call_scan_close: 'Close Roll-Call',
   roll_call_scan_close_confirmation: 'Do you confirm to close the roll-call ?',
-  roll_call_add_attendee_manually: 'Add an attendee manually',
 
-  /* --- Roll-call manually add attendee modal Strings --- */
+  /* --- Roll-call manually add attendee manually Strings --- */
+  roll_call_add_attendee_manually: 'Add an attendee manually',
   roll_call_modal_add_attendee: 'Add an attendee',
   roll_call_modal_enter_token: 'Enter token:',
   roll_call_participant_added: 'participant added manually',
+  roll_call_invalid_token: 'invalid participant token',
 
   /* --- Poll creation Strings --- */
   poll_create_question: 'Question*',

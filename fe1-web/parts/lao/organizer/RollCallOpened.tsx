@@ -9,6 +9,7 @@ import QrReader from 'react-qr-reader';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
+import ConfirmModal from 'components/ConfirmModal';
 import { Badge } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import { useRoute } from '@react-navigation/core';
@@ -19,7 +20,11 @@ import {
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-import ConfirmModal from '../../../components/ConfirmModal';
+
+/**
+ * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
+ * manually. At the end, he can close it by pressing on the close button.
+ */
 
 const styles = StyleSheet.create({
   viewCenter: {
@@ -31,6 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const FOUR_SECONDS = 4000;
+const base64Matcher = new RegExp('^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})([=]{1,2})?$');
 
 const RollCallOpened = () => {
   const route = useRoute();
@@ -72,7 +78,7 @@ const RollCallOpened = () => {
   };
 
   const handleEnterManually = (input: string) => {
-    if (input) {
+    if (base64Matcher.test(input)) {
       if (!attendees.has(input)) {
         updateAttendees((prev) => new Set<string>(prev.add(input)));
         toast.show(STRINGS.roll_call_participant_added, {
@@ -81,6 +87,12 @@ const RollCallOpened = () => {
           duration: FOUR_SECONDS,
         });
       }
+    } else {
+      toast.show(STRINGS.roll_call_invalid_token, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
     }
   };
 
