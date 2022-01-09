@@ -7,10 +7,10 @@ import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { Chirp } from 'model/objects/Chirp';
 import DeleteButton from 'components/DeleteButton';
-import { requestDeleteChirp } from '../network';
-import { PublicKey } from '../model/objects';
-import STRINGS from '../res/strings';
-import { gray } from '../styles/colors';
+import { requestDeleteChirp } from 'network';
+import { PublicKey } from 'model/objects';
+import STRINGS from 'res/strings';
+import { gray } from 'styles/colors';
 
 /**
  * Component to display a chirp

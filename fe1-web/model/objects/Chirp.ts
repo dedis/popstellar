@@ -60,11 +60,7 @@ export class Chirp {
     } else {
       this.likes = obj.likes;
     }
-    if (obj.isDeleted === undefined) {
-      this.isDeleted = false;
-    } else {
-      this.isDeleted = obj.isDeleted;
-    }
+    this.isDeleted = !!obj.isDeleted;
 
     this.id = obj.id;
     this.sender = obj.sender;

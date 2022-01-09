@@ -35,7 +35,7 @@ describe('DeleteChirp', () => {
     expect(new DeleteChirp(temp)).toBeJsonEqual(temp);
   });
 
-  it('should be pared correctly from JSON', () => {
+  it('should be parsed correctly from JSON', () => {
     const obj = JSON.parse(deleteChirp);
     expect(DeleteChirp.fromJson(obj)).toBeJsonEqual(sampleDeleteChirp);
   });
