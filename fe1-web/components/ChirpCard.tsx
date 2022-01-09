@@ -11,6 +11,7 @@ import { requestDeleteChirp } from 'network';
 import { PublicKey } from 'model/objects';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
+import { useToast } from 'react-native-toast-notifications';
 
 /**
  * Component to display a chirp
@@ -68,9 +69,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+const FOUR_SECONDS = 4000;
+
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const { userPublicKey } = props;
+  const toast = useToast();
 
   // This is temporary for now
   const zero = '  0';
@@ -80,7 +84,11 @@ const ChirpCard = (props: IPropTypes) => {
   const deleteChirp = () => {
     requestDeleteChirp(userPublicKey, chirp.id)
       .catch((err) => {
-        console.error('Could not remove chirp, error:', err);
+        toast.show(`Could not remove chirp, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
   };
 
