@@ -31,6 +31,9 @@ object DataSchemaValidator {
   private final val dataAddChirp = baseDir + "dataAddChirp.json"
   private final val dataNotifyAddChirp = baseDir + "dataNotifyAddChirp.json"
 
+  private final val dataAddReaction = baseDir + "dataAddReaction.json"
+  private final val dataDeleteReaction = baseDir + "dataDeleteReaction.json"
+
   /* Validation Schemas */
   //TODO: Add schemas for other features: Meetings, RollCalls...
   private final lazy val createLaoSchema: JsonSchema = Validator.setupSchemaValidation(dataCreateLaoPath, objectMapper)
@@ -42,6 +45,8 @@ object DataSchemaValidator {
   private final lazy val closeRcSchema: JsonSchema   = Validator.setupSchemaValidation(dataCloseRC, objectMapper)
   private final lazy val addChirpSchema: JsonSchema  = Validator.setupSchemaValidation(dataAddChirp, objectMapper)
   private final lazy val notifyAddChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataNotifyAddChirp, objectMapper)
+  private final lazy val addReactionSchema: JsonSchema  = Validator.setupSchemaValidation(dataAddReaction, objectMapper)
+  private final lazy val deleteReactionSchema: JsonSchema  = Validator.setupSchemaValidation(dataDeleteReaction, objectMapper)
 
   //TODO: Add validaton schemas for other features: Meetings, Elections...
   def validateSchema(objType: ObjectType)(actionType: ActionType)(payload: String): Try[Unit] =
@@ -60,6 +65,9 @@ object DataSchemaValidator {
       //Social Media
       case (ObjectType.CHIRP, ActionType.ADD)             => validateWithSchema(addChirpSchema)(payload)
       case (ObjectType.CHIRP, ActionType.NOTIFY_ADD)      => validateWithSchema(notifyAddChirpSchema)(payload)
+
+      case (ObjectType.REACTION, ActionType.ADD)          => validateWithSchema(addReactionSchema)(payload)
+      case (ObjectType.REACTION, ActionType.DELETE)       => validateWithSchema(deleteReactionSchema)(payload)
 
       //TODO:Add other cases
       case _ =>

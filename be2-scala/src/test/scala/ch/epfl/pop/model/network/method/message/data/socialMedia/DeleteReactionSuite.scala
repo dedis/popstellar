@@ -6,23 +6,22 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import spray.json._
 
-class AddChirpSuite extends FunSuite with Matchers {
-    private final val text: String = "text"
-    private final val parent_id: Option[String] = None
+class DeleteReactionSuite extends FunSuite with Matchers {
+
+    private final val reaction_id: String = "reactionid"
     private final val timestamp = Timestamp(0)
 
-    private final val msg: AddChirp = AddChirp(text, parent_id, timestamp)
+    private final val msg: DeleteReaction = DeleteReaction(reaction_id, timestamp)
 
     test("Constructor/apply works as intended"){
-        msg.text should equal(text)
-        msg.parent_id should equal(parent_id)
+        msg.reaction_id should equal(reaction_id)
         msg.timestamp should equal(timestamp)
-        msg._object should equal(ObjectType.CHIRP)
-        msg.action should equal(ActionType.ADD)
+        msg._object should equal(ObjectType.REACTION)
+        msg.action should equal(ActionType.DELETE)
     }
 
     test("json conversions work back and forth"){
-        val msg2: AddChirp = AddChirp.buildFromJson(msg.toJson.toString)
+        val msg2: DeleteReaction = DeleteReaction.buildFromJson(msg.toJson.toString)
 
         msg2 should equal(msg)
     }

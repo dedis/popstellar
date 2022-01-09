@@ -54,7 +54,8 @@ object Channel {
   final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
 
   final val SOCIAL_MEDIA_POSTS_PREFIX: String = s"${SEPARATOR}posts"
-  final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social"
+  final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social${SEPARATOR}"
+  final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions${SEPARATOR}"
 
   def apply(channel: String): Channel = {
     if(channel.isBlank() || !channel.matches(channelRegex)){

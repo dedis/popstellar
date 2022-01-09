@@ -12,7 +12,7 @@ import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcR
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
-import ch.epfl.pop.model.network.requests.socialMedia.{JsonRpcRequestAddChirp, JsonRpcRequestNotifyAddChirp}
+import ch.epfl.pop.model.network.requests.socialMedia._
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import spray.json._
 
@@ -90,6 +90,8 @@ object MessageDecoder {
       case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
       case (ObjectType.CHIRP, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddChirp)
       case (ObjectType.CHIRP, ActionType.NOTIFY_ADD) => request.toTypedRequest(JsonRpcRequestNotifyAddChirp)
+      case (ObjectType.REACTION, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddReaction)
+      case (ObjectType.REACTION, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteReaction)
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
     }
     case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")

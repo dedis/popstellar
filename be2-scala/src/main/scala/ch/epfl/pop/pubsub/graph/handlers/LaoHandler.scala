@@ -35,6 +35,8 @@ case object LaoHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
+  private val unknownAnswerDB: String = "Database actor returned an unknown answer"
+
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -50,14 +52,22 @@ case object LaoHandler extends MessageHandler {
               case DbActorWriteAck() => {
                 val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
                 val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
-                  case DbActorAck() => Left(rpcMessage)
+                  case DbActorAck() => {
+                    val reactionChannel: Channel = Channel(channel + Channel.REACTIONS_CHANNEL_PREFIX)
+                    val askReaction: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(reactionChannel, ObjectType.REACTION)).map {
+                      case DbActorAck() => Left(rpcMessage)
+                      case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+                      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
+                    }
+                    Await.result(askReaction, duration)
+                  }
                   case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-                  case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+                  case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
                 }
                 Await.result(askSocial, duration)
               }
               case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
             }
 
             Await.result(ask, duration)

@@ -83,6 +83,15 @@ case object SocialMediaHandler extends MessageHandler {
 
   // no need for a case handleNotifyAddChirp, since the server never receives one in theory
 
+  def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
+
+  def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
 
 }
 

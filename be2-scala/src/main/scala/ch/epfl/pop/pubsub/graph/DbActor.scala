@@ -214,8 +214,8 @@ object DbActor extends AskPatternConstants {
           DbActorAck()
         case _ =>
           val objectType = message.decodedData match {
-            case Some(data) if (data._object == ObjectType.ELECTION || data._object == ObjectType.CHIRP) => data._object
-            case _ => ObjectType.LAO
+            case Some(data) if (data._object == ObjectType.ELECTION || data._object == ObjectType.CHIRP || data._object == ObjectType.REACTION) => data._object
+            case _ => ObjectType.LAO //this is the "general" channel type
           }
           // for now, we don't have meetup or roll call channels, so we just create Lao channels instead, easy to change if needed
           createChannel(channel, objectType) match {
