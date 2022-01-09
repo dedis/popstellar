@@ -79,6 +79,8 @@ const ChirpCard = (props: IPropTypes) => {
   // This is temporary for now
   const zero = '  0';
 
+  // TODO: once we can store the token of a post roll call,
+  // we should be able to delete a chirp posted with a PoP token from a previous roll call.
   const isSender = userPublicKey.valueOf() === chirp.sender.valueOf();
 
   const deleteChirp = () => {
