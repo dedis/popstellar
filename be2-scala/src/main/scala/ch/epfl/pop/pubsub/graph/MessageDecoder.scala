@@ -89,7 +89,7 @@ object MessageDecoder {
       case (ObjectType.ELECTION, ActionType.END) => request.toTypedRequest(JsonRpcRequestEndElection)
       case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
       case (ObjectType.CHIRP, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddChirp)
-      case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE) => request.toTypedRequest(JsonRpcRequestNotifyAddChirp)
+      case (ObjectType.CHIRP, ActionType.NOTIFY_ADD) => request.toTypedRequest(JsonRpcRequestNotifyAddChirp)
       case (ObjectType.CHIRP, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteChirp)
       case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE) => request.toTypedRequest(JsonRpcRequestNotifyDeleteChirp)
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
