@@ -9,19 +9,19 @@ import com.google.gson.annotations.SerializedName;
 /** Data sent to broadcast AddChirp to the general channel */
 public class NotifyAddChirp extends Data {
 
-  @SerializedName("post_id")
-  private final MessageID postId;
+  @SerializedName("chirp_id")
+  private final MessageID chirpId;
 
   private final String channel;
   private final long timestamp;
 
   /**
-   * @param postId message ID of the post
+   * @param chirpId message ID of the chirp
    * @param channel channel where the post is located
    * @param timestamp UNIX timestamp in UTC
    */
-  public NotifyAddChirp(MessageID postId, String channel, long timestamp) {
-    this.postId = postId;
+  public NotifyAddChirp(MessageID chirpId, String channel, long timestamp) {
+    this.chirpId = chirpId;
     this.channel = channel;
     this.timestamp = timestamp;
   }
@@ -36,8 +36,8 @@ public class NotifyAddChirp extends Data {
     return Action.NOTIFY_ADD.getAction();
   }
 
-  public MessageID getPostId() {
-    return postId;
+  public MessageID getChirpId() {
+    return chirpId;
   }
 
   public String getChannel() {
@@ -57,21 +57,21 @@ public class NotifyAddChirp extends Data {
       return false;
     }
     NotifyAddChirp that = (NotifyAddChirp) o;
-    return java.util.Objects.equals(getPostId(), that.getPostId())
+    return java.util.Objects.equals(getChirpId(), that.getChirpId())
         && java.util.Objects.equals(getChannel(), that.getChannel())
         && java.util.Objects.equals(getTimestamp(), that.getTimestamp());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getPostId(), getChannel(), getTimestamp());
+    return java.util.Objects.hash(getChirpId(), getChannel(), getTimestamp());
   }
 
   @Override
   public String toString() {
     return "NotifyAddChirp{"
-        + "postId='"
-        + postId
+        + "chirpId='"
+        + chirpId
         + '\''
         + ", channel='"
         + channel

@@ -6,9 +6,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.google.gson.JsonParseException;
 
 import org.junit.Test;
 
@@ -63,7 +65,17 @@ public class AddChirpTest {
 
     String random = "random";
     assertNotEquals(ADD_CHIRP, new AddChirp(random, PARENT_ID, TIMESTAMP));
-    assertNotEquals(ADD_CHIRP, new AddChirp(TEXT, generateMessageIDOtherThan(PARENT_ID), TIMESTAMP));
+    assertNotEquals(
+        ADD_CHIRP, new AddChirp(TEXT, generateMessageIDOtherThan(PARENT_ID), TIMESTAMP));
     assertNotEquals(ADD_CHIRP, new AddChirp(TEXT, PARENT_ID, TIMESTAMP + 1));
+  }
+
+  @Test
+  public void jsonValidationTest() {
+    JsonTestUtils.testData(ADD_CHIRP);
+
+    String pathDir =
+        "protocol/examples/messageData/chirp_add_publish/wrong_chirp_add_publish_negative_time.json";
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(pathDir));
   }
 }

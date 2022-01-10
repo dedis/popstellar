@@ -73,10 +73,10 @@ public class ChirpTest {
   }
 
   @Test
-  public void setAndGetLikesTest() {
-    int likes = 2021;
-    CHIRP.setLikes(likes);
-    assertEquals(likes, CHIRP.getLikes());
+  public void setAndGetIsDeletedTest() {
+    boolean isDeleted = true;
+    CHIRP.setIsDeleted(isDeleted);
+    assertEquals(isDeleted, CHIRP.getIsDeleted());
   }
 
   @Test
