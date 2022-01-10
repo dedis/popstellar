@@ -41,6 +41,8 @@ jest.mock('react-redux', () => ({
   useSelector: jest.fn().mockImplementation(() => laoState),
 }));
 
+jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
+
 beforeAll(() => {
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
