@@ -9,14 +9,14 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidDataException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
-import com.github.dedis.popstellar.utility.security.Signature;
 
-import java.util.Base64;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,23 +35,20 @@ public final class WitnessMessageHandler {
    *
    * @param laoRepository the repository to access the LAO of the channel
    * @param channel the channel on which the message was received
-   * @param senderPk the public key of the sender
+   * @param sender the public key of the sender
    * @param data the message that was received
    */
   public static void handleWitnessMessage(
-      LAORepository laoRepository, String channel, String senderPk, Data data)
+      LAORepository laoRepository, String channel, PublicKey sender, Data data)
       throws DataHandlingException {
     WitnessMessageSignature message = (WitnessMessageSignature) data;
 
     Log.d(TAG, "Received Witness Message Signature Broadcast with id : " + message.getMessageId());
-    String messageId = message.getMessageId();
-    String signature = message.getSignature();
-
-    byte[] senderPkBuf = Base64.getUrlDecoder().decode(senderPk);
-    byte[] signatureBuf = Base64.getUrlDecoder().decode(signature);
+    MessageID messageId = message.getMessageId();
+    com.github.dedis.popstellar.model.objects.security.Signature signature = message.getSignature();
 
     // Verify signature
-    if (!Signature.verifySignature(messageId, senderPkBuf, signatureBuf)) {
+    if (!sender.verify(signature, messageId)) {
       Log.w(
           TAG,
           "Failed to verify signature of Witness Message Signature id="
@@ -65,7 +62,7 @@ public final class WitnessMessageHandler {
     if (msg == null) throw new InvalidMessageIdException(message, messageId);
 
     // Update the message
-    msg.getWitnessSignatures().add(new PublicKeySignaturePair(senderPkBuf, signatureBuf));
+    msg.getWitnessSignatures().add(new PublicKeySignaturePair(sender, signature));
     Log.d(TAG, "Message General updated with the new Witness Signature");
 
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -74,7 +71,7 @@ public final class WitnessMessageHandler {
       throw new InvalidDataException(data, "lao's channel", channel);
     }
     // Update WitnessMessage of the corresponding lao
-    updateWitnessMessage(lao, message, senderPk);
+    updateWitnessMessage(lao, message, sender);
     Log.d(TAG, "WitnessMessage successfully updated");
 
     Set<PendingUpdate> pendingUpdates = lao.getPendingUpdates();
@@ -83,9 +80,9 @@ public final class WitnessMessageHandler {
       Log.d(TAG, "There is a pending update for this message");
 
       // Let's check if we have enough signatures
-      Set<String> signaturesCollectedSoFar =
+      Set<PublicKey> signaturesCollectedSoFar =
           msg.getWitnessSignatures().stream()
-              .map(ob -> Base64.getUrlEncoder().encodeToString(ob.getWitness()))
+              .map(PublicKeySignaturePair::getWitness)
               .collect(Collectors.toSet());
       if (lao.getWitnesses().equals(signaturesCollectedSoFar)) {
         Log.d(TAG, "We have enough signatures for the UpdateLao so we can send a StateLao");
@@ -104,8 +101,8 @@ public final class WitnessMessageHandler {
    * @throws DataHandlingException if an error occurs during the update
    */
   private static void updateWitnessMessage(
-      Lao lao, WitnessMessageSignature message, String senderPk) throws DataHandlingException {
-    String messageId = message.getMessageId();
+      Lao lao, WitnessMessageSignature message, PublicKey senderPk) throws DataHandlingException {
+    MessageID messageId = message.getMessageId();
     Optional<WitnessMessage> optionalWitnessMessage = lao.getWitnessMessage(messageId);
 
     // We update the corresponding  witness message of the lao with a new witness that signed it.

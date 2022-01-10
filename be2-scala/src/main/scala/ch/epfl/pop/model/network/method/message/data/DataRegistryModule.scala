@@ -3,8 +3,8 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType._
 import ch.epfl.pop.model.network.method.message.data.ActionType._
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CreateRollCall, OpenRollCall, ReopenRollCall, CloseRollCall}
-import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
-import ch.epfl.pop.model.network.method.message.data.socialMedia.AddBroadcastChirp
+import ch.epfl.pop.model.network.method.message.data.socialMedia.{AddChirp, NotifyAddChirp}
+
 object DataRegistryModule {
 
   final val REGISTRY: DataRegistry = {
@@ -23,7 +23,7 @@ object DataRegistryModule {
 
     //Social Media
     builder.add(CHIRP, ADD,  DataSchemaValidator.validateSchema(CHIRP)(ADD), AddChirp.buildFromJson)("AddChirp could not be parsed")
-    builder.add(CHIRP, ADD_BROADCAST, DataSchemaValidator.validateSchema(CHIRP)(ADD_BROADCAST), AddBroadcastChirp.buildFromJson)("AddBrodcastChirp could not be parsed")
+    builder.add(CHIRP, NOTIFY_ADD, DataSchemaValidator.validateSchema(CHIRP)(NOTIFY_ADD), NotifyAddChirp.buildFromJson)("NotifyAddChirp could not be parsed")
 
     //TODO: add other object/action entries
     builder.build

@@ -29,7 +29,7 @@ export enum ActionType {
   RESULT = 'result',
   CLOSE = 'close',
   ADD = 'add',
-  ADD_BROADCAST = 'add_broadcast',
+  NOTIFY_ADD = 'notify_add',
 }
 
 export interface MessageData {

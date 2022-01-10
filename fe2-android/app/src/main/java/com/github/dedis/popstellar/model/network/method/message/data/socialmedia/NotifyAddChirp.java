@@ -3,13 +3,14 @@ package com.github.dedis.popstellar.model.network.method.message.data.socialmedi
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 /** Data sent to broadcast AddChirp to the general channel */
-public class AddChirpBroadcast extends Data {
+public class NotifyAddChirp extends Data {
 
   @SerializedName("post_id")
-  private final String postId;
+  private final MessageID postId;
 
   private final String channel;
   private final long timestamp;
@@ -19,7 +20,7 @@ public class AddChirpBroadcast extends Data {
    * @param channel channel where the post is located
    * @param timestamp UNIX timestamp in UTC
    */
-  public AddChirpBroadcast(String postId, String channel, long timestamp) {
+  public NotifyAddChirp(MessageID postId, String channel, long timestamp) {
     this.postId = postId;
     this.channel = channel;
     this.timestamp = timestamp;
@@ -32,10 +33,10 @@ public class AddChirpBroadcast extends Data {
 
   @Override
   public String getAction() {
-    return Action.ADD_BROADCAST.getAction();
+    return Action.NOTIFY_ADD.getAction();
   }
 
-  public String getPostId() {
+  public MessageID getPostId() {
     return postId;
   }
 
@@ -55,7 +56,7 @@ public class AddChirpBroadcast extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AddChirpBroadcast that = (AddChirpBroadcast) o;
+    NotifyAddChirp that = (NotifyAddChirp) o;
     return java.util.Objects.equals(getPostId(), that.getPostId())
         && java.util.Objects.equals(getChannel(), that.getChannel())
         && java.util.Objects.equals(getTimestamp(), that.getTimestamp());
@@ -68,7 +69,7 @@ public class AddChirpBroadcast extends Data {
 
   @Override
   public String toString() {
-    return "AddChirpBroadcast{"
+    return "NotifyAddChirp{"
         + "postId='"
         + postId
         + '\''

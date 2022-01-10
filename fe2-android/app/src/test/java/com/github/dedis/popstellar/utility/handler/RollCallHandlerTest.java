@@ -1,17 +1,19 @@
 package com.github.dedis.popstellar.utility.handler;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.closeRollCallWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.createRollCallWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.openRollCallWitnessMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
@@ -20,6 +22,8 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
@@ -27,21 +31,19 @@ import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -54,8 +56,7 @@ public class RollCallHandlerTest {
 
   @Mock LAORemoteDataSource remoteDataSource;
   @Mock LAOLocalDataSource localDataSource;
-  @Mock AndroidKeysetManager androidKeysetManager;
-  @Mock PublicKeySign signer;
+  @Mock KeyManager keyManager;
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
   private static final MessageHandler messageHandler =
@@ -63,8 +64,11 @@ public class RollCallHandlerTest {
 
   private static final int REQUEST_ID = 42;
   private static final int RESPONSE_DELAY = 1000;
-  private static final CreateLao CREATE_LAO =
-      new CreateLao("lao", "Z3DYtBxooGs6KxOAqCWD3ihR8M6ZPBjAmWp_w5VBaws=");
+
+  private static final KeyPair SENDER_KEY = generateKeyPair();
+  private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+
+  private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
   private static final String CHANNEL = "/root";
   private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
 
@@ -74,30 +78,26 @@ public class RollCallHandlerTest {
   private MessageGeneral createLaoMessage;
 
   @Before
-  public void setup() throws GeneralSecurityException {
+  public void setup() throws GeneralSecurityException, IOException {
     SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
     TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
-
-    // Mock the signing of of any data for the MessageGeneral constructor
-    byte[] dataBuf = GSON.toJson(CREATE_LAO, Data.class).getBytes();
-    Mockito.when(signer.sign(Mockito.any())).thenReturn(dataBuf);
-    createLaoMessage =
-        new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), CREATE_LAO, signer, GSON);
 
     // Simulate a network response from the server after the response delay
     Observable<GenericMessage> upstream =
         Observable.fromArray((GenericMessage) new Result(REQUEST_ID))
             .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
 
-    Mockito.when(remoteDataSource.observeMessage()).thenReturn(upstream);
-    Mockito.when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+    when(remoteDataSource.observeMessage()).thenReturn(upstream);
+    when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+
+    lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
+    lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
     laoRepository =
         new LAORepository(
             remoteDataSource,
             localDataSource,
-            androidKeysetManager,
+            keyManager,
             messageHandler,
             GSON,
             testSchedulerProvider);
@@ -121,6 +121,7 @@ public class RollCallHandlerTest {
     laoRepository.setAllLaoSubject();
 
     // Add the CreateLao message to the LAORepository
+    createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
     laoRepository.getMessageById().put(createLaoMessage.getMessageId(), createLaoMessage);
   }
 
@@ -136,9 +137,7 @@ public class RollCallHandlerTest {
             rollCall.getLocation(),
             rollCall.getDescription(),
             CREATE_LAO.getId());
-    MessageGeneral message =
-        new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), createRollCall, signer, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, createRollCall, GSON);
 
     // Call the message handler
     messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
@@ -168,9 +167,7 @@ public class RollCallHandlerTest {
     OpenRollCall openRollCall =
         new OpenRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getStart(), EventState.CREATED);
-    MessageGeneral message =
-        new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), openRollCall, signer, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, openRollCall, GSON);
 
     // Call the message handler
     messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
@@ -200,9 +197,7 @@ public class RollCallHandlerTest {
     CloseRollCall closeRollCall =
         new CloseRollCall(
             CREATE_LAO.getId(), rollCall.getId(), rollCall.getEnd(), new ArrayList<>());
-    MessageGeneral message =
-        new MessageGeneral(
-            Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), closeRollCall, signer, GSON);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, closeRollCall, GSON);
 
     // Call the message handler
     messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);

@@ -21,7 +21,7 @@ export interface MessageProperties {
 export const messagePropertiesMap: Map<ObjectType, Map<ActionType, MessageProperties>> = new Map([
   [ObjectType.CHIRP, new Map<ActionType, MessageProperties>([
     [ActionType.ADD, { isPopTokenSigned: true }],
-    [ActionType.ADD_BROADCAST, { isPopTokenSigned: false }],
+    [ActionType.NOTIFY_ADD, { isPopTokenSigned: false }],
   ])],
   [ObjectType.REACTION, new Map<ActionType, MessageProperties>([
     [ActionType.ADD, { isPopTokenSigned: true }],

@@ -1,12 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
@@ -14,7 +17,7 @@ import org.junit.Test;
 public class ConsensusAcceptTest {
 
   private static final String instanceId = "aaa";
-  private static final String messageId = "bbb";
+  private static final MessageID messageId = new MessageID("TVNHX0lE");
   private static final long timeInSeconds = 1635277619;
   private static final int acceptedTry = 4;
   private static final boolean acceptedValue = true;
@@ -75,7 +78,9 @@ public class ConsensusAcceptTest {
     assertNotEquals(
         accept, new ConsensusAccept(random, messageId, timeInSeconds, acceptedTry, acceptedValue));
     assertNotEquals(
-        accept, new ConsensusAccept(instanceId, random, timeInSeconds, acceptedTry, acceptedValue));
+        accept,
+        new ConsensusAccept(
+            instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), timeInSeconds, acceptedTry, acceptedValue));
     assertNotEquals(
         accept,
         new ConsensusAccept(instanceId, messageId, timeInSeconds + 1, acceptedTry, acceptedValue));
@@ -90,7 +95,7 @@ public class ConsensusAcceptTest {
   @Test
   public void toStringTest() {
     assertEquals(
-        "ConsensusAccept{instance_id='aaa', message_id='bbb', created_at=1635277619, value=AcceptValue{accepted_try=4, accepted_value=true}}",
+        "ConsensusAccept{instance_id='aaa', message_id='TVNHX0lE', created_at=1635277619, value=AcceptValue{accepted_try=4, accepted_value=true}}",
         accept.toString());
   }
 

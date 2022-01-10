@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 public final class ConsensusFailure extends Data {
@@ -11,7 +12,7 @@ public final class ConsensusFailure extends Data {
   private final String instanceId;
 
   @SerializedName("message_id")
-  private final String messageId;
+  private final MessageID messageId;
 
   @SerializedName("created_at")
   private final long creation;
@@ -23,7 +24,7 @@ public final class ConsensusFailure extends Data {
    * @param messageId message id of the Elect message
    * @param creation UNIX timestamp in UTC
    */
-  public ConsensusFailure(String instanceId, String messageId, long creation) {
+  public ConsensusFailure(String instanceId, MessageID messageId, long creation) {
     this.instanceId = instanceId;
     this.messageId = messageId;
     this.creation = creation;
@@ -43,7 +44,7 @@ public final class ConsensusFailure extends Data {
     return instanceId;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
@@ -75,6 +76,6 @@ public final class ConsensusFailure extends Data {
   public String toString() {
     return String.format(
         "ConsensusFailure{instance_id='%s', message_id='%s', created_at=%s}",
-        instanceId, messageId, creation);
+        instanceId, messageId.getEncoded(), creation);
   }
 }
