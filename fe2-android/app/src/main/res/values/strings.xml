@@ -105,6 +105,7 @@
   <string name="qrcode_scanning_connect_lao">Scan a QR code to connect to a LAO</string>
   <string name="event_description">Event Description</string>
   <string name="qrcode_scanning_add_attendee">Please scan each participant’s Roll-call QR code exactly once.</string>
+  <string name="add_attendee_manually">Add attendee</string>
   <string name="close_roll_call">Close Roll-Call</string>
   <string name="scan_all_attendees_question">Are you sure you have scanned all attendees ?</string>
   <string name="roll_call_title_required">Roll-Call Title required</string>

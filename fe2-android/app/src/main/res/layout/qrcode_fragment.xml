@@ -86,6 +86,15 @@
       app:layout_constraintBottom_toBottomOf="parent"
       app:layout_constraintRight_toRightOf="parent" />
 
+    <Button
+      android:id="@+id/add_attendee_manually"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/add_attendee_manually"
+      android:visibility="gone"
+      app:layout_constraintBottom_toBottomOf="parent"
+      app:layout_constraintEnd_toStartOf="@+id/add_attendee_confirm" />
+
     <LinearLayout
       android:id="@+id/add_attendee_number"
       android:layout_width="wrap_content"

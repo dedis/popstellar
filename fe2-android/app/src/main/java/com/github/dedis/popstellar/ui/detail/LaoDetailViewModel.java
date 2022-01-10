@@ -1360,6 +1360,18 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenAttendeesListEvent.postValue(new SingleEvent<>(rollCallId));
   }
 
+  public void addAttendee(PublicKey attendee) {
+    if (attendees.contains(attendee)) {
+      mScanWarningEvent.postValue(
+          new SingleEvent<>("This QR code has already been scanned. Please try again."));
+      return;
+    }
+
+    attendees.add(attendee);
+    mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
+    mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
+  }
+
   @Override
   public void onPermissionGranted() {
     if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
@@ -1396,9 +1408,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
-      attendees.add(attendee);
-      mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
-      mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
+      addAttendee(attendee);
     } else if (scanningAction == (ScanningAction.ADD_WITNESS)) {
       witnesses.add(attendee);
       mWitnessScanConfirmEvent.postValue(new SingleEvent<>(true));

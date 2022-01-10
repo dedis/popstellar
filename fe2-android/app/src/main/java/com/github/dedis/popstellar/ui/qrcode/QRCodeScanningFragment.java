@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +19,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.QrcodeFragmentBinding;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
@@ -86,6 +88,7 @@ public final class QRCodeScanningFragment extends Fragment {
       mQrCodeFragBinding.setScanningAction(ScanningAction.ADD_ROLL_CALL_ATTENDEE);
       mQrCodeFragBinding.addAttendeeTotalText.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeNumberText.setVisibility(View.VISIBLE);
+      mQrCodeFragBinding.addAttendeeManually.setVisibility(View.VISIBLE);
       mQrCodeFragBinding.addAttendeeConfirm.setVisibility(View.VISIBLE);
 
       // Subscribe to " Nb of attendees"  event
@@ -93,6 +96,9 @@ public final class QRCodeScanningFragment extends Fragment {
 
       // Subscribe to " Attendees scan confirm " event
       observeAttendeeScanConfirmEvent();
+
+      // set up the listener for the button for adding an attendee manually
+      setupAddAttendeeManually();
 
       // set up the listener for the button that closes the roll call
       setupCloseRollCallButton();
@@ -165,6 +171,34 @@ public final class QRCodeScanningFragment extends Fragment {
         camera.release();
       }
     }
+  }
+
+  private void setupAddAttendeeManually() {
+    mQrCodeFragBinding.addAttendeeManually.setOnClickListener(
+        clicked -> {
+          // create the Alert Dialog to add manually an attendee token
+          AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+          builder.setTitle("Add an attendee");
+          builder.setMessage("Enter token:");
+          // Set up the input
+          final EditText attendeeTokenText = new EditText(getContext());
+
+          attendeeTokenText.setHint("Attendee Token");
+          builder.setView(attendeeTokenText);
+
+          // Set up the buttons
+          builder.setPositiveButton(
+              "ADD",
+              (dialog, which) -> {
+                String attendeeTokenString = attendeeTokenText.getText().toString();
+                if (!attendeeTokenString.isEmpty()) {
+                  PublicKey attendeeToken = new PublicKey(attendeeTokenString);
+                  ((LaoDetailViewModel) mQRCodeScanningViewModel).addAttendee(attendeeToken);
+                }
+              });
+          builder.setNegativeButton("CANCEL", (dialog, which) -> dialog.cancel());
+          builder.show();
+        });
   }
 
   private void setupCloseRollCallButton() {
