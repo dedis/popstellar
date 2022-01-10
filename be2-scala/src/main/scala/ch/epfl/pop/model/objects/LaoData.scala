@@ -20,7 +20,7 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 * @param attendees: list of the last roll call attendees
 * @param privateKey: the LAO's own private key, used to sign messages
 * @param publicKey: the LAO's own public key, used to sign messages
-* @param witnesses: the LAO'slist of witnesses 
+* @param witnesses: the LAO's list of witnesses 
 */
 case class LaoData(
     owner: PublicKey,

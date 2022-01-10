@@ -60,7 +60,7 @@ case object SocialMediaHandler extends MessageHandler {
         }
         Await.result(ask, duration)
       }
-      case DbActor.DbActorReadLaoDataAck(None) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Can't fetch LaoData", rpcMessage.id))
+      case DbActor.DbActorReadLaoDataAck(None) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Can't fetch LaoData for channel ${rpcMessage.getParamsChannel}.", rpcMessage.id))
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
     }
   }
@@ -104,7 +104,6 @@ case object SocialMediaHandler extends MessageHandler {
             val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
-                // we can't get the message_id as a Base64Data, it is a Hash
                 val chirp_id: Hash = params.message_id
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
                 val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
