@@ -20,7 +20,7 @@ exports[`ChirpCard renders correctly with reaction 1`] = `
       }
     }
   >
-    <Text />
+    ProfileIcon
   </View>
   <View
     style={
@@ -213,26 +213,7 @@ exports[`ChirpCard renders correctly without reaction 1`] = `
       }
     }
   >
-    <Text
-      allowFontScaling={false}
-      style={
-        Array [
-          Object {
-            "color": "black",
-            "fontSize": 40,
-          },
-          undefined,
-          Object {
-            "fontFamily": "ionicons",
-            "fontStyle": "normal",
-            "fontWeight": "normal",
-          },
-          Object {},
-        ]
-      }
-    >
-      
-    </Text>
+    ProfileIcon
   </View>
   <View
     style={

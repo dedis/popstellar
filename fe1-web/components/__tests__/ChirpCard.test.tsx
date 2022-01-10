@@ -24,6 +24,8 @@ jest.mock('network/MessageApi');
 jest.mock('react-redux', () => ({
   useSelector: () => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } }),
 }));
+jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
+
 beforeAll(() => {
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021

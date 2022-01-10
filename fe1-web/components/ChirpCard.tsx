@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import { requestAddReaction } from 'network';
 import { makeReactionsList } from 'store';
 import { useToast } from 'react-native-toast-notifications';
+import ProfileIcon from './ProfileIcon';
 
 /**
  * Component to display a chirp
@@ -86,7 +87,7 @@ const ChirpCard = (props: IPropTypes) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
-        <Ionicons name="person" size={40} color="black" />
+        <ProfileIcon publicKey={chirp.sender} />
       </View>
       <View style={styles.rightView}>
         <View style={styles.senderView}>
