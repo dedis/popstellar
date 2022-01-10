@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -18,10 +20,10 @@ public final class Lao {
   private String name;
   private Long lastModified;
   private Long creation;
-  private String organizer;
-  private String modificationId;
-  private Set<String> witnesses;
-  private final Map<String, WitnessMessage> witnessMessages;
+  private PublicKey organizer;
+  private MessageID modificationId;
+  private Set<PublicKey> witnesses;
+  private final Map<MessageID, WitnessMessage> witnessMessages;
   /**
    * map between a messages ID and the corresponding object WitnessMessage that has to be signed by
    * witnesses
@@ -30,8 +32,8 @@ public final class Lao {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
-  private Map<String, Chirp> chirps;
-  private final Map<String, Consensus> messageIdToConsensus;
+  private Map<MessageID, Chirp> chirps;
+  private final Map<MessageID, Consensus> messageIdToConsensus;
   private final List<ConsensusNode> nodes;
 
   public Lao(String id) {
@@ -52,7 +54,7 @@ public final class Lao {
     this.pendingUpdates = new HashSet<>();
   }
 
-  public Lao(String name, String organizer, long creation) {
+  public Lao(String name, PublicKey organizer, long creation) {
     this(generateLaoId(organizer, creation, name));
     if (name == null) {
       throw new IllegalArgumentException("The name of the Lao is null");
@@ -94,7 +96,7 @@ public final class Lao {
     }
     messageIdToConsensus.put(consensus.getMessageId(), consensus);
 
-    Map<String, String> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
+    Map<PublicKey, MessageID> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
     // add to each node the messageId of the consensus if they accept it
     nodes.stream()
         .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
@@ -114,7 +116,7 @@ public final class Lao {
    * @param prevId the previous id of a message that needs to be signed
    * @param witnessMessage the object representing the message needing to be signed
    */
-  public void updateWitnessMessage(String prevId, WitnessMessage witnessMessage) {
+  public void updateWitnessMessage(MessageID prevId, WitnessMessage witnessMessage) {
     witnessMessages.remove(prevId);
     witnessMessages.put(witnessMessage.getMessageId(), witnessMessage);
   }
@@ -126,7 +128,7 @@ public final class Lao {
    * @param prevId the previous id of a chirp
    * @param chirp the chirp
    */
-  public void updateChirp(String prevId, Chirp chirp) {
+  public void updateChirp(MessageID prevId, Chirp chirp) {
     if (chirp == null) {
       throw new IllegalArgumentException("The chirp is null");
     }
@@ -142,15 +144,15 @@ public final class Lao {
     return Optional.ofNullable(elections.get(id));
   }
 
-  public Optional<Consensus> getConsensus(String messageId) {
+  public Optional<Consensus> getConsensus(MessageID messageId) {
     return Optional.ofNullable(messageIdToConsensus.get(messageId));
   }
 
-  public Optional<WitnessMessage> getWitnessMessage(String id) {
+  public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
     return Optional.ofNullable(witnessMessages.get(id));
   }
 
-  public Optional<Chirp> getChirp(String id) {
+  public Optional<Chirp> getChirp(MessageID id) {
     return Optional.ofNullable(chirps.get(id));
   }
 
@@ -174,7 +176,7 @@ public final class Lao {
     return (rollCalls.remove(id) != null);
   }
 
-  public boolean removeConsensus(String messageId) {
+  public boolean removeConsensus(MessageID messageId) {
     return (messageIdToConsensus.remove(messageId) != null);
   }
 
@@ -182,7 +184,7 @@ public final class Lao {
     return lastModified;
   }
 
-  public Set<String> getWitnesses() {
+  public Set<PublicKey> getWitnesses() {
     return witnesses;
   }
 
@@ -190,7 +192,7 @@ public final class Lao {
     return pendingUpdates;
   }
 
-  public String getOrganizer() {
+  public PublicKey getOrganizer() {
     return organizer;
   }
 
@@ -243,27 +245,27 @@ public final class Lao {
     this.creation = creation;
   }
 
-  public void setOrganizer(String organizer) {
+  public void setOrganizer(PublicKey organizer) {
     this.organizer = organizer;
-    if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(organizer))) {
+    if (nodes.stream().map(ConsensusNode::getPublicKey).noneMatch(organizer::equals)) {
       nodes.add(new ConsensusNode(organizer));
     }
   }
 
-  public String getModificationId() {
+  public MessageID getModificationId() {
     return modificationId;
   }
 
-  public void setModificationId(String modificationId) {
+  public void setModificationId(MessageID modificationId) {
     this.modificationId = modificationId;
   }
 
-  public void setWitnesses(Set<String> witnesses) {
+  public void setWitnesses(Set<PublicKey> witnesses) {
 
     if (witnesses == null) {
       throw new IllegalArgumentException("The witnesses set is null");
     }
-    for (String witness : witnesses) {
+    for (PublicKey witness : witnesses) {
       if (witness == null) {
         throw new IllegalArgumentException("One of the witnesses in the set is null");
       }
@@ -293,15 +295,15 @@ public final class Lao {
     return rollCalls;
   }
 
-  public Map<String, Consensus> getMessageIdToConsensus() {
+  public Map<MessageID, Consensus> getMessageIdToConsensus() {
     return messageIdToConsensus;
   }
 
-  public Map<String, WitnessMessage> getWitnessMessages() {
+  public Map<MessageID, WitnessMessage> getWitnessMessages() {
     return witnessMessages;
   }
 
-  public Map<String, Chirp> getChirps() {
+  public Map<MessageID, Chirp> getChirps() {
     return chirps;
   }
 
@@ -323,8 +325,8 @@ public final class Lao {
    * @param name original or updated name of the LAO
    * @return the ID of CreateLao or UpdateLao computed as Hash(organizer||creation||name)
    */
-  public static String generateLaoId(String organizer, long creation, String name) {
-    return Hash.hash(organizer, Long.toString(creation), name);
+  public static String generateLaoId(PublicKey organizer, long creation, String name) {
+    return Hash.hash(organizer.getEncoded(), Long.toString(creation), name);
   }
 
   @Override

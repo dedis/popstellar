@@ -47,7 +47,8 @@ object DataSchemaValidator {
   private final lazy val deleteChirpSchema: JsonSchema  = Validator.setupSchemaValidation(dataDeleteChirp, objectMapper)
   private final lazy val notifyDeleteChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataNotifyDeleteChirp, objectMapper)
 
-  //TODO: Add validation schemas for other features: Meetings, Elections...
+  //TODO: Add validaton schemas for other features: Meetings, Elections...
+
   def validateSchema(objType: ObjectType)(actionType: ActionType)(payload: String): Try[Unit] =
     (objType, actionType) match {
       //LAO

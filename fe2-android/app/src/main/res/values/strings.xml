@@ -194,6 +194,7 @@
   <string name="logout_button">LOGOUT</string>
   <string name="logout_title">Log out</string>
   <string name="logout_message">This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.</string>
+  <string name="copied_to_clipboard">Copied to clipboard</string>
 
   <!-- Witness -->
   <string name="sign_message">SIGN MESSAGE</string>
@@ -215,6 +216,8 @@
   <string name="send">SEND</string>
   <string name="send_button_desc">button to write a chirp</string>
   <string name="hint_chirp">Your chirp</string>
-  <string name="subscription_general_channel">Subscription</string>
+  <string name="laos_list">Laos list</string>
+  <string name="toast_no_lao">You are not in a lao</string>
+  <string name="toast_error_sending_chirp">Error when sending chirp. Please try again</string>
 
 </resources>

@@ -47,11 +47,11 @@
 
         <Button
           android:id="@+id/button_confirm_seed"
+          style="@style/Theme.AppCompat"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:gravity="center"
-          android:text="@string/confirm_button"
-          style="@style/Theme.AppCompat" />
+          android:text="@string/confirm_button" />
       </LinearLayout>
     </LinearLayout>
 

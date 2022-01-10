@@ -95,7 +95,7 @@ Please note that the JSON-RPC definitions in the root of the repository are to b
 a source of truth since the validation library checks the messages against it.
 
 :information_source: When you need to create a new object, please refer to existing message types and in particular
-their `buildFromJson` method to get an idea about how to implement a new type. In order to tell the encoder/decoder how to encode/decode the new message (e.g. `buildFromJson`), its "recipe" must be added directly in the `json/MessageDataProtocol.scala` file.
+their `buildFromJson` method to get an idea about how to implement a new type. In order to tell the encoder/decoder how to encode/decode the new message (e.g. `buildFromJson`), its "recipe" must be added directly in the `json/MessageDataProtocol.scala` file. If you need to add a new ObjectType (in `model/.../data/ObjectType.scala`), you need to add a new element to the builder in `model/.../data/DataRegistryModule.scala`, a new case and a new schema path in `model/.../data/DataSchemaValidator.scala`, potentially new ActionTypes in `model/.../data/ActionType.scala`, new cases in `pubsub/graph/MessageDecoder.scala`, a new port for handling the new ObjectType in `pubsub/.../handlers/ParamsWithMessageHandler.scala`, a handler in `pubsub/.../handlers`, a validator in `pubsub/.../validators` and of course the new MessageDatas in a new corresponding folder in `model/.../data/newFolder` and JsonRpcRequests in a corresponding folder in `model/.../requests/newFolder`.
 
 
 ### Spray-json Conversion
@@ -160,26 +160,16 @@ Each additional message constraint (e.g. in this particular case, "start_time" s
 
 ### Storage
 
-We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to store messages "inside" channels. A channel is represented with a standard directory. In the following example, we have 3 distinct channels (e.g. `root/u9nHxKYQkx7PXawcqs0DHUGEuc9Xv_P6blf7HxcDUTk=`).
+We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to store messages "inside" channels. A channel is represented with a "path name" style prefix of structure `root/lao_id/...`.
 
-```
-.
-├── database
-│   └── root
-│       └── u9nHxKYQkx7PXawcqs0DHUGEuc9Xv_P6blf7HxcDUTk=
-│           ├── /* ... db stuff ... */
-│       └── wfbY_ni1IbF7ziacoGlh7J9aAP1ukG2BPccRe4Z8EUc=
-│           ├── /* ... db stuff ... */
-│       └── zoaPYwfl9YRKEgdngCC6StufvhXWuvy-09g7l-KjG5g=
-│           ├── /* ... db stuff ... */
-```
-
-Multiple messages may then be stored inside each channel. Since leveldb is a key-value database, we are using `message_id` as key and the corresponding `message` (in its json representation) as value
+Multiple messages may then be stored "inside" each channel (all within one single database file). Since leveldb is a key-value database, we are using `channel/message_id` as key and the corresponding `message` (in its json representation) as value.
 
 ```scala
+private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
+
 val messageId: Hash = message.message_id
 
-Try(channelDb.put(messageId.getBytes, message.toJsonString.getBytes)) match {
+Try(channelDb.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)) match {
 	case Success(_) =>
 		log.info(s"Actor $self (db) wrote message_id '$messageId' on channel '$channel'")
 		sender ! DbActorWriteAck
@@ -189,6 +179,22 @@ Try(channelDb.put(messageId.getBytes, message.toJsonString.getBytes)) match {
 }
 ```
 
+However, this is only a simplified example, because in our actual structure, we also write the message_id to the ChannelData stored at `channel` and some messages also modify the LaoData stored at `root/lao_id` and for that purpose, we use a WriteBatch (also from [leveldb](https://github.com/codeborui/leveldb-scala)) to be able to store all that information atomically and prevent incoherences inside the database due to write errors.
+
+```scala
+val batch: WriteBatch = db.createWriteBatch()
+batch.put(channel.toString.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
+batch.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)
+Try(db.write(batch)) match {
+        case Success(_) =>
+          log.info(s"Actor $self (db) wrote batch and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
+          DbActorWriteAck()
+        case Failure(exception) =>
+          log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and batch on channel '$channel' because of the batch write")
+          DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+      }
+```
+This example has also been simplified a bit to showcase the basic idea, the actual implementation can be found in `pubsub/graph/DbActor.scala`.
 
 
 You may store/fetch data on/from the database using a special unique database actor (`DbActor`) using standard [akka ask pattern](https://doc.akka.io/docs/akka/current/typed/interaction-patterns.html#request-response). Akka messages `DbActor` understands are defined in `DbActor.scala:Event`, they include:
@@ -207,7 +213,7 @@ final case class Read(channel: Channel, id: Hash) extends Event
 // DbActor Events correspond to messages the actor may emit
 sealed trait DbActorMessage
 
-final case object DbActorWriteAck extends DbActorMessage
+final case class DbActorWriteAck() extends DbActorMessage
 final case class DbActorReadAck(message: Option[Message]) extends DbActorMessage
 final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
 final case class DbActorNAck(code: Int, description: String) extends DbActorMessage
@@ -228,11 +234,27 @@ val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map 
 Await.result(ask, duration)
 ```
 
+There are also methods to read ChannelData for a given channel and LaoData for the Lao to which a channel belongs.
+
+```scala
+final case class ReadLaoData(channel: Channel) extends Event
+final case class ReadChannelData(channel: Channel) extends Event
+
+final case class DbActorReadChannelDataAck(channelData: Option[ChannelData]) extends DbActorMessage
+final case class DbActorReadLaoDataAck(laoData: Option[LaoData]) extends DbActorMessage
+```
+
+:warning: for now, the LaoData also stores the private key used by the Lao to sign broadcast messages, however, there is a security issue, as anyone able to use `ReadLaoData()` can therefore access the private key.
+
+For the Social Media functionality, each user has their own channel with the identifier `root/lao_id/pop_token` and each broadcast containing the message_id of a post will be written to `root/lao_id/posts`.
 
 
-:information_source: the database may easily be reset/purged by either deleting a folder corresponding to a channel or by deleting the `database` folder entirely
+
+:information_source: the database may easily be reset/purged by deleting the `database` folder entirely
 
 
+
+## 4.	GitHub introduction
 
 ### Import the project
 
@@ -336,7 +358,7 @@ The best way to "intercept" a `GraphMessage` being processed in the graph is to 
 :information_source: [Hoppscotch](https://hoppscotch.io/realtime/) (Realtime => WebSocket => `ws://localhost:8000/`) is a useful tool to achieve this result
 
 
-## 5.	Coding Styles
+## 6.	Coding Styles
 
 A simple way to have a coherent style across the codebase is to use the IDE features of "code cleanup". For example, in IntelliJ, click on the `src/main/scala` folder and then on `Code -> Reformat Code`. You can then check "include subdirectories", "optimize imports", and "cleanup code" checkbox options. Be careful to not apply these changes to `src/test` folder as it transforms the scalatest syntax into a mess difficult to understand.
 

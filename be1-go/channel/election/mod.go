@@ -29,16 +29,9 @@ type attendees struct {
 	store map[string]struct{}
 }
 
-// newAttendees returns a new instance of Attendees.
-func newAttendees() *attendees {
-	return &attendees{
-		store: make(map[string]struct{}),
-	}
-}
-
-// IsPresent checks if a key representing a user is present in
+// isPresent checks if a key representing a user is present in
 // the list of attendees.
-func (a *attendees) IsPresent(key string) bool {
+func (a *attendees) isPresent(key string) bool {
 	a.Lock()
 	defer a.Unlock()
 
@@ -46,31 +39,9 @@ func (a *attendees) IsPresent(key string) bool {
 	return ok
 }
 
-// Add adds an attendee to the election.
-func (a *attendees) Add(key string) {
-	a.Lock()
-	defer a.Unlock()
-
-	a.store[key] = struct{}{}
-}
-
-// Copy deep copies the Attendees struct.
-func (a *attendees) Copy() *attendees {
-	a.Lock()
-	defer a.Unlock()
-
-	clone := newAttendees()
-
-	for key := range a.store {
-		clone.store[key] = struct{}{}
-	}
-
-	return clone
-}
-
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, terminated bool, questions []messagedata.ElectionSetupQuestion,
-	attendeesMap map[string]struct{}, msg message.Message, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
+	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "election").Logger()
 
@@ -83,7 +54,7 @@ func NewChannel(channelPath string, start, end int64, terminated bool, questions
 
 		start:      start,
 		end:        end,
-		terminated: terminated,
+		terminated: false,
 		questions:  getAllQuestionsForElectionChannel(questions),
 
 		attendees: &attendees{
@@ -146,7 +117,13 @@ type question struct {
 }
 
 type validVote struct {
-	// voteTime represents the time of the creation of the vote.
+	// msgID represents the ID of the message containing the cast vote
+	msgID string
+
+	// ID represents the ID of the valid cast vote
+	ID string
+
+	// voteTime represents the time of the creation of the vote
 	voteTime int64
 
 	// indexes represents the indexes of the ballot options
@@ -171,35 +148,37 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action: %v", err)
+	}
 
 	if object == messagedata.ElectionObject {
-
-		switch action {
-		case messagedata.VoteActionCastVote:
-			err := c.publishCastVote(msg)
-			if err != nil {
-				return xerrors.Errorf("failed to cast vote: %v", err)
-			}
-		case messagedata.ElectionActionEnd:
-			err := c.publishEndElection(msg)
-			if err != nil {
-				return xerrors.Errorf("failed to end election: %v", err)
-			}
-		case messagedata.ElectionActionResult:
-			err = c.publishResultElection(msg)
-			if err != nil {
-				return xerrors.Errorf("failed to end election: %v", err)
-			}
-		default:
-			return answer.NewInvalidActionError(action)
+		err = c.processElectionObject(action, msg, socket)
+		if err != nil {
+			return xerrors.Errorf("failed to process %q action: %w", action, err)
 		}
 	}
 
-	if err != nil {
-		return xerrors.Errorf("failed to process %q action: %w", action, err)
-	}
+	return nil
+}
 
-	c.broadcastToAllClients(msg)
+func (c *Channel) processElectionObject(action string, msg message.Message, socket socket.Socket) error {
+	switch action {
+	case messagedata.VoteActionCastVote:
+		err := c.processCastVote(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to cast vote: %v", err)
+		}
+	case messagedata.ElectionActionEnd:
+		err := c.processElectionEnd(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to end election: %v", err)
+		}
+	case messagedata.ElectionActionResult:
+		// nothing to do
+	default:
+		return answer.NewInvalidActionError(action)
+	}
 
 	return nil
 }
@@ -304,141 +283,149 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	return nil
 }
 
-func (c *Channel) publishCastVote(msg message.Message) error {
-	voteMsg, err := c.getAndVerifyCastVoteMessage(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to get and verify vote message: %v", err)
-	}
-
-	//This should update any previously set vote if the message ids are the same
-	c.inbox.StoreMessage(msg)
-	for _, q := range voteMsg.Votes {
-
-		qs, ok := c.questions[q.Question]
-
-		if !ok {
-			return answer.NewErrorf(-4, "no Question with question ID %s exists", q.Question)
-		}
-
-		// this is to handle the case when the organizer must handle multiple
-		// votes being cast at the same time
-		qs.validVotesMu.Lock()
-		earlierVote, ok := qs.validVotes[msg.Sender]
-
-		// if the sender didn't previously cast a vote or if the vote is no
-		// longer valid update it
-		if err := checkMethodProperties(qs.method, len(q.Vote)); err != nil {
-			return xerrors.Errorf("failed to validate voting method props: %w", err)
-		}
-
-		if !ok {
-			qs.validVotes[msg.Sender] = validVote{
-				voteMsg.CreatedAt,
-				q.Vote,
-			}
-		} else {
-			changeVote(qs, earlierVote, msg.Sender, voteMsg.CreatedAt, q.Vote)
-		}
-
-		// other votes can now change the list of valid votes
-		qs.validVotesMu.Unlock()
-	}
-
-	return nil
-}
-
-func (c *Channel) getAndVerifyCastVoteMessage(msg message.Message) (messagedata.VoteCastVote, error) {
-	var voteMsg messagedata.VoteCastVote
-
-	err := msg.UnmarshalData(&voteMsg)
-	if err != nil {
-		return voteMsg, xerrors.Errorf("failed to unmarshal cast vote: %v", err)
-	}
-
-	// note that CreatedAt is provided by the client and can't be fully trusted.
-	// We leave this check as is until we have a better solution.
-	if voteMsg.CreatedAt > c.end {
-		return voteMsg, answer.NewErrorf(-4, "vote cast too late, vote casted at %v "+
-			"and election ended at %v", voteMsg.CreatedAt, c.end)
-	}
+func (c *Channel) processCastVote(msg message.Message) error {
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
-		return voteMsg, xerrors.Errorf("failed to decode sender key: %v", err)
+		return xerrors.Errorf("failed to decode sender key: %v", err)
 	}
 
 	senderPoint := crypto.Suite.Point()
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return voteMsg, answer.NewError(-4, "invalid sender public key")
+		return answer.NewError(-4, "invalid sender public key")
 	}
 
-	ok := c.attendees.IsPresent(msg.Sender) || c.hub.GetPubKeyOrg().Equal(senderPoint)
+	// verify sender is an attendee or the organizer
+	ok := c.attendees.isPresent(msg.Sender) || c.hub.GetPubKeyOwner().Equal(senderPoint)
 	if !ok {
-		return voteMsg, answer.NewError(-4, "only attendees can cast a vote in an election")
+		return answer.NewError(-4, "only attendees can cast a vote in an election")
 	}
 
-	return voteMsg, nil
-}
+	var castVote messagedata.VoteCastVote
 
-func (c *Channel) publishEndElection(msg message.Message) error {
-
-	var endElection messagedata.ElectionEnd
-
-	err := msg.UnmarshalData(&endElection)
+	err = msg.UnmarshalData(&castVote)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal publish end election: %v", err)
+		return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
 	}
 
-	if endElection.CreatedAt < c.end {
-		return xerrors.Errorf("can't end the election before its "+
-			"end: %d < %d", endElection.CreatedAt, c.end)
+	err = c.verifyMessageCastVote(castVote)
+	if err != nil {
+		return xerrors.Errorf("invalid election#cast_vote message: %v", err)
 	}
 
-	// TODO:
-	// if len(endElection.RegisteredVotes) == 0 {
-	// 	// we allow empty vote
-	// } else {
-	// 	// TODO: finish the hashing check
-
-	// 	// since we eliminated (in cast vote) the duplicate votes we are sure
-	// 	// that the voter casted one vote for one question
-
-	// 	//for _, question := range c.questions {
-	// 	//  _, err := sortHashVotes(question.validVotes)
-	// 	//  if err != nil {
-	// 	//      return &message.Error{
-	// 	//          Code:        -4,
-	// 	//          Description: "Error while hashing",
-	// 	//      }
-	// 	//  }
-	// 	//  if endElectionData.RegisteredVotes != hashed {
-	// 	//      return &message.Error{
-	// 	//          Code:        -4,
-	// 	//          Description: "Received registered votes is not correct",
-	// 	//      }
-	// 	//  }
-	// 	//}
-	// }
-
-	c.broadcastToAllClients(msg)
+	err = updateVote(msg.MessageID, msg.Sender, castVote, c.questions)
+	if err != nil {
+		xerrors.Errorf("failed to update vote: %v", err)
+	}
 
 	c.inbox.StoreMessage(msg)
+	c.broadcastToAllClients(msg)
 
 	return nil
 }
 
-func (c *Channel) publishResultElection(msg message.Message) error {
+func (c *Channel) processElectionEnd(msg message.Message) error {
+
+	sender := msg.Sender
+	senderBuf, err := base64.URLEncoding.DecodeString(sender)
+	if err != nil {
+		c.log.Error().Msgf("problem decoding sender public key: %v", err)
+		return xerrors.Errorf("sender is %s, should be base64", sender)
+	}
+
+	// check sender is a valid public key
+	senderPoint := crypto.Suite.Point()
+	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		c.log.Error().Msgf("public key unmarshal problem: %v", err)
+		return answer.NewErrorf(-4, "sender is %s, should be a valid public key: %v", sender, err)
+	}
+
+	// check sender of the election end message is the organizer
+	if !c.hub.GetPubKeyOwner().Equal(senderPoint) {
+		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
+	}
+
+	var electionEnd messagedata.ElectionEnd
+
+	err = msg.UnmarshalData(&electionEnd)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal publish election end: %v", err)
+	}
+
+	// check that data is correct
+	err = c.verifyMessageElectionEnd(electionEnd)
+	if err != nil {
+		return xerrors.Errorf("invalid election#end message: %v", err)
+	}
+
+	c.inbox.StoreMessage(msg)
+	c.broadcastToAllClients(msg)
+
+	// broadcast election result message
+	err = c.broadcastElectionResult()
+	if err != nil {
+		return xerrors.Errorf("problem sending election#result message: %v", err)
+	}
+
+	return nil
+}
+
+func (c *Channel) broadcastElectionResult() error {
+
+	resultElection, err := gatherResults(c.questions, c.log)
+	if err != nil {
+		return xerrors.Errorf("failed to gather results: %v", err)
+	}
+
+	dataBuf, err := json.Marshal(&resultElection)
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the data: %v", err)
+	}
+
+	newData64 := base64.URLEncoding.EncodeToString(dataBuf)
+
+	pk := c.hub.GetPubKeyServ()
+	pkBuf, err := pk.MarshalBinary()
+	if err != nil {
+		return xerrors.Errorf("failed to marshal the public key: %v", err)
+	}
+
+	// Sign the data
+	signatureBuf, err := c.hub.Sign(dataBuf)
+	if err != nil {
+		return xerrors.Errorf("failed to sign the data: %v", err)
+	}
+
+	signature := base64.URLEncoding.EncodeToString(signatureBuf)
+
+	electionResultMsg := message.Message{
+		Data:              newData64,
+		Sender:            base64.URLEncoding.EncodeToString(pkBuf),
+		Signature:         signature,
+		MessageID:         messagedata.Hash(newData64, signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	c.broadcastToAllClients(electionResultMsg)
+
+	return nil
+}
+
+func gatherResults(questions map[string]*question, log zerolog.Logger) (messagedata.ElectionResult, error) {
+	log.Info().Msgf("gathering results for the election")
+
 	resultElection := messagedata.ElectionResult{
 		Object:    messagedata.ElectionObject,
 		Action:    messagedata.ElectionActionResult,
 		Questions: []messagedata.ElectionResultQuestion{},
 	}
 
-	for id := range c.questions {
-		question, ok := c.questions[id]
+	for id := range questions {
+		question, ok := questions[id]
 		if !ok {
-			return xerrors.Errorf("No question with this questionId '%s' was recorded", id)
+			return resultElection, xerrors.Errorf("no question with this questionId '%s' was recorded", id)
 		}
 
 		votes := question.validVotes
@@ -459,24 +446,13 @@ func (c *Channel) publishResultElection(msg message.Message) error {
 
 			resultElection.Questions = append(resultElection.Questions, electResult)
 
-			c.log.Info().
+			log.Info().
 				Str("question id", id).
 				Msg("appending a question with the count and result")
 		}
 	}
 
-	jsonbuf, err := json.Marshal(&resultElection)
-	if err != nil {
-		return xerrors.Errorf("failed to marshal result election: %v", err)
-	}
-
-	msg.Data = base64.URLEncoding.EncodeToString(jsonbuf)
-
-	c.broadcastToAllClients(msg)
-
-	c.inbox.StoreMessage(msg)
-
-	return nil
+	return resultElection, nil
 }
 
 func gatherOptionCounts(count []int, options []string) []messagedata.ElectionResultQuestionResult {
@@ -500,13 +476,40 @@ func checkMethodProperties(method string, length int) error {
 	return nil
 }
 
-func changeVote(qs *question, earlierVote validVote, sender string, created int64, indexes []int) {
-	if earlierVote.voteTime > created {
-		qs.validVotes[sender] = validVote{
-			voteTime: created,
-			indexes:  indexes,
+func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, questions map[string]*question) error {
+	// this should update any previously set vote if the message ids are the same
+	for _, vote := range castVote.Votes {
+
+		qs, ok := questions[vote.Question]
+		if !ok {
+			return answer.NewErrorf(-4, "no Question with question ID %s exists", vote.Question)
 		}
+
+		// this is to handle the case when the organizer must handle multiple
+		// votes being cast at the same time
+		qs.validVotesMu.Lock()
+		earlierVote, ok := qs.validVotes[sender]
+
+		// if the sender didn't previously cast a vote or if the vote is no
+		// longer valid update it
+		err := checkMethodProperties(qs.method, len(vote.Vote))
+		if err != nil {
+			return xerrors.Errorf("failed to validate voting method props: %w", err)
+		}
+
+		if !ok || earlierVote.voteTime > castVote.CreatedAt {
+			qs.validVotes[sender] = validVote{
+				msgID,
+				vote.ID,
+				castVote.CreatedAt,
+				vote.Vote,
+			}
+		}
+
+		// other votes can now change the list of valid votes
+		qs.validVotesMu.Unlock()
 	}
+	return nil
 }
 
 func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) map[string]*question {

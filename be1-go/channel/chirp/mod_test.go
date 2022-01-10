@@ -27,31 +27,110 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const laoID = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
-const sender = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
-const root = "/root/"
-const social = "/social/"
-const posts = "posts"
+const (
+	laoID                             = "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo="
+	sender                            = "M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU="
+	generalName                       = "/root/" + laoID + "/social/posts"
+	chirpChannelName                  = "/root/" + laoID + "/social/" + sender
+	relativeMsgDataExamplePath string = "../../../protocol/examples/messageData"
+	relativeQueryExamplePath   string = "../../../protocol/examples/query"
+)
 
-func Test_Catchup(t *testing.T) {
+// Tests that the channel works correctly when it receives a subscribe from a
+// client
+func Test_Chirp_Channel_Subscribe(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
+
+	file := filepath.Join(relativeQueryExamplePath, "subscribe", "subscribe.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var msg method.Subscribe
+	err = json.Unmarshal(buf, &msg)
+	require.NoError(t, err)
+
+	fakeSock := &fakeSocket{id: "socket", sockType: socket.ClientSocketType}
+
+	err = cha.Subscribe(fakeSock, msg)
+	require.NoError(t, err)
+
+	// Delete returns false if the socket is not present in the store
+	require.True(t, cha.sockets.Delete("socket"))
+}
+
+// Tests that the channel works correctly when it receives an unsubscribe from a
+// client
+func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
+
+	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var msg method.Unsubscribe
+	err = json.Unmarshal(buf, &msg)
+	require.NoError(t, err)
+
+	fakeSock := &fakeSocket{id: "socket", sockType: socket.ClientSocketType}
+	cha.sockets.Upsert(fakeSock)
+
+	err = cha.Unsubscribe("socket", msg)
+	require.NoError(t, err)
+
+	// Delete returns false if the socket is not present in the store
+	require.False(t, cha.sockets.Delete("socket"))
+}
+
+// Test that the channel throws an error when it receives an unsubscribe from a
+// non-subscribed source
+func Test_Chirp_Channel_Wrong_Unsubscribe(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
+
+	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var msg method.Unsubscribe
+	err = json.Unmarshal(buf, &msg)
+	require.NoError(t, err)
+
+	// Delete returns false if the socket is not present in the store
+	require.Error(t, cha.Unsubscribe("socket", msg))
+}
+
+// Tests that the channel works correctly when it receives a catchup
+func Test_Chirp_Channel_Catchup(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	generalName := root + laoID + social + posts
-	chirpChannelName := root + laoID + social + sender
+	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	// Create the channel
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
 
-	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	_, found = fakeHub.channelByID[generalName]
 	require.True(t, found)
 
 	// Create the messages
@@ -61,11 +140,11 @@ func Test_Catchup(t *testing.T) {
 
 	for i := 0; i < numMessages; i++ {
 		// Create a new message containing only an id
-		message := message.Message{MessageID: fmt.Sprintf("%d", i)}
-		messages[i] = message
+		msg := message.Message{MessageID: fmt.Sprintf("%d", i)}
+		messages[i] = msg
 
 		// Store the message in the inbox
-		cha.inbox.StoreMessage(message)
+		cha.inbox.StoreMessage(msg)
 
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
@@ -83,32 +162,53 @@ func Test_Catchup(t *testing.T) {
 	}
 }
 
-func Test_SendChirp(t *testing.T) {
+// Tests that the channel throws an error when it receives a broadcast message
+func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
-	generalName := root + laoID + social + posts
-	chirpChannelName := root + laoID + social + sender
-	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
+
 	// Create the channel
+	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
+
+	file := filepath.Join(relativeQueryExamplePath, "broadcast", "broadcast.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var msg method.Broadcast
+	err = json.Unmarshal(buf, &msg)
+	require.NoError(t, err)
+
+	// a chirp channel isn't supposed to broadcast a message - must fail
+	require.Error(t, cha.Broadcast(msg))
+}
+
+// Tests that the channel works correctly when receiving an add chirp message
+func Test_Send_Chirp(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channels
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
 	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
 	fakeHub.RegisterNewChannel(generalName, &generalCha)
 	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
-	_, found := fakeHub.channelByID[root+laoID+social+sender]
+	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
-	_, found = fakeHub.channelByID[root+laoID+social+posts]
+	_, found = fakeHub.channelByID[generalName]
 	require.True(t, found)
 
 	time.Sleep(time.Millisecond)
 
 	// Create the message
-	relativePath := filepath.Join("..", "..", "..", "protocol",
-		"examples", "messageData")
-
-	file := filepath.Join(relativePath, "chirp_add_publish.json")
+	file := filepath.Join(relativeMsgDataExamplePath, "chirp_add_publish",
+		"chirp_add_publish.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
@@ -122,31 +222,30 @@ func Test_SendChirp(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	relativePathCreatePub := filepath.Join("..", "..", "..", "protocol",
-		"examples", "query", "publish")
+	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
 
 	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
 	bufCreatePub, err := os.ReadFile(fileCreatePub)
 	require.NoError(t, err)
 
-	var message method.Publish
+	var msg method.Publish
 
-	err = json.Unmarshal(bufCreatePub, &message)
+	err = json.Unmarshal(bufCreatePub, &msg)
 	require.NoError(t, err)
 
-	message.Params.Message = m
-	message.Params.Channel = root + laoID + social + sender
+	msg.Params.Message = m
+	msg.Params.Channel = chirpChannelName
 
-	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
+	require.NoError(t, cha.Publish(msg, socket.ClientSocket{}))
 
-	msg := generalCha.Catchup(method.Catchup{ID: 0})
+	msg2 := generalCha.Catchup(method.Catchup{ID: 0})
 
 	checkData := messagedata.ChirpBroadcast{
 		Object:    "chirp",
-		Action:    "addBroadcast",
+		Action:    "notify_add",
 		ChirpId:   messagedata.Hash(buf64, "h"),
-		Channel:   root + laoID + social + posts,
-		Timestamp: 123,
+		Channel:   generalName,
+		Timestamp: 1634760180,
 	}
 
 	checkDataBuf, err := json.Marshal(checkData)
@@ -154,7 +253,124 @@ func Test_SendChirp(t *testing.T) {
 	checkData64 := base64.URLEncoding.EncodeToString(checkDataBuf)
 
 	// check if the data on the general is the same as the one we sent
-	require.Equal(t, checkData64, msg[0].Data)
+	require.Equal(t, checkData64, msg2[0].Data)
+}
+
+// Tests that the channel works correctly when receiving a delete chirp message
+func Test_Delete_Chirp(t *testing.T) {
+	// Create the hub
+	keypair := generateKeyPair(t)
+
+	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
+	require.NoError(t, err)
+
+	// Create the channels
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
+
+	fakeHub.RegisterNewChannel(generalName, &generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
+	_, found := fakeHub.channelByID[chirpChannelName]
+	require.True(t, found)
+	_, found = fakeHub.channelByID[generalName]
+	require.True(t, found)
+
+	time.Sleep(time.Millisecond)
+
+	// Create the add chirp message
+	file := filepath.Join(relativeMsgDataExamplePath, "chirp_add_publish",
+		"chirp_add_publish.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64add := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64add,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64add, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	addChirpId := m.MessageID
+
+	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = chirpChannelName
+
+	// publish add chirp message
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	// create delete chirp message
+	file = filepath.Join(relativeMsgDataExamplePath, "chirp_delete_publish",
+		"chirp_delete_publish.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var chirpDel messagedata.ChirpDelete
+
+	err = json.Unmarshal(buf, &chirpDel)
+	require.NoError(t, err)
+
+	chirpDel.ChirpId = addChirpId
+
+	buf, err = json.Marshal(chirpDel)
+	require.NoError(t, err)
+
+	buf64delete := base64.URLEncoding.EncodeToString(buf)
+
+	m = message.Message{
+		Data:              buf64delete,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64delete, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	pub.Params.Message = m
+	pub.Params.Channel = chirpChannelName
+
+	// publish delete chirp message
+	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+
+	msg := generalCha.Catchup(method.Catchup{ID: 0})
+
+	checkDataAdd := messagedata.ChirpBroadcast{
+		Object:    "chirp",
+		Action:    "notify_add",
+		ChirpId:   messagedata.Hash(buf64add, "h"),
+		Channel:   generalName,
+		Timestamp: 1634760180,
+	}
+	checkDataBufAdd, err := json.Marshal(checkDataAdd)
+	require.Nil(t, err)
+	checkData64Add := base64.URLEncoding.EncodeToString(checkDataBufAdd)
+
+	checkDataDelete := messagedata.ChirpBroadcast{
+		Object:    "chirp",
+		Action:    "notify_delete",
+		ChirpId:   messagedata.Hash(buf64delete, "h"),
+		Channel:   generalName,
+		Timestamp: 1634760180,
+	}
+	checkDataBufDelete, err := json.Marshal(checkDataDelete)
+	require.Nil(t, err)
+	checkData64Delete := base64.URLEncoding.EncodeToString(checkDataBufDelete)
+
+	// check if the data on the general is the same as the one we sent
+	require.Equal(t, checkData64Add, msg[0].Data)
+	require.Equal(t, checkData64Delete, msg[1].Data)
 }
 
 // -----------------------------------------------------------------------------
@@ -187,7 +403,7 @@ type fakeHub struct {
 
 	closedSockets chan string
 
-	pubKeyOrg kyber.Point
+	pubKeyOwner kyber.Point
 
 	pubKeyServ kyber.Point
 	secKeyServ kyber.Scalar
@@ -219,7 +435,7 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOrg:       publicOrg,
+		pubKeyOwner:     publicOrg,
 		pubKeyServ:      pubServ,
 		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
@@ -245,14 +461,14 @@ func generateKeys() (kyber.Point, kyber.Scalar) {
 	return point, secret
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *fakeHub) GetPubKeyOrg() kyber.Point {
-	return h.pubKeyOrg
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOwner() kyber.Point {
+	return h.pubKeyOwner
 }
 
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
-	return h.pubKeyOrg
+	return h.pubKeyServ
 }
 
 // Sign implements channel.HubFunctionalities
@@ -279,3 +495,51 @@ func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
 }
 
 func (h *fakeHub) SetMessageID(publish *method.Publish) {}
+
+// fakeSocket is a fake implementation of a socket
+//
+// - implements socket.Socket
+type fakeSocket struct {
+	socket.Socket
+
+	sockType socket.SocketType
+
+	resultID int
+	res      []message.Message
+	msg      []byte
+
+	err error
+
+	// the socket ID
+	id string
+}
+
+// Get the type of the fake socket
+func (f *fakeSocket) Type() socket.SocketType {
+	return f.sockType
+}
+
+// Send implements socket.Socket
+func (f *fakeSocket) Send(msg []byte) {
+	f.msg = msg
+}
+
+// SendResult implements socket.Socket
+func (f *fakeSocket) SendResult(id int, res []message.Message) {
+	f.resultID = id
+	f.res = res
+}
+
+// SendError implements socket.Socket
+func (f *fakeSocket) SendError(id *int, err error) {
+	if id != nil {
+		f.resultID = *id
+	} else {
+		f.resultID = -1
+	}
+	f.err = err
+}
+
+func (f *fakeSocket) ID() string {
+	return f.id
+}

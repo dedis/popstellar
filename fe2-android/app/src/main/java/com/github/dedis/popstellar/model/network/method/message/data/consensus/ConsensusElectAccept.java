@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 public final class ConsensusElectAccept extends Data {
@@ -11,18 +12,18 @@ public final class ConsensusElectAccept extends Data {
   private final String instanceId;
 
   @SerializedName("message_id")
-  private final String messageId;
+  private final MessageID messageId;
 
   private final boolean accept;
 
   /**
-   * Constructor for a data Elect-Accept
+   * Constructor for a data Elect_Accept
    *
    * @param instanceId unique id of the consensus instance
    * @param messageId message id of the Elect message
    * @param accept true if the node agrees with the proposal
    */
-  public ConsensusElectAccept(String instanceId, String messageId, boolean accept) {
+  public ConsensusElectAccept(String instanceId, MessageID messageId, boolean accept) {
     this.instanceId = instanceId;
     this.messageId = messageId;
     this.accept = accept;
@@ -32,7 +33,7 @@ public final class ConsensusElectAccept extends Data {
     return instanceId;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
@@ -74,6 +75,6 @@ public final class ConsensusElectAccept extends Data {
   public String toString() {
     return String.format(
         "ConsensusElectAccept{instance_id='%s', message_id='%s', accept=%b}",
-        instanceId, messageId, accept);
+        instanceId, messageId.getEncoded(), accept);
   }
 }

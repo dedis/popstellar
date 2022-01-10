@@ -80,7 +80,6 @@ case object SocialMediaHandler extends MessageHandler {
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[AddChirp].timestamp
                 val notifyAddChirp: NotifyAddChirp = NotifyAddChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyAddChirp.toJson.toString)
-
                 broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
               }
               case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))
@@ -108,7 +107,6 @@ case object SocialMediaHandler extends MessageHandler {
                 val timestamp: Timestamp = params.decodedData.get.asInstanceOf[DeleteChirp].timestamp
                 val notifyDeleteChirp: NotifyDeleteChirp = NotifyDeleteChirp(chirp_id, channelChirp, timestamp)
                 val broadcastData: Base64Data = Base64Data.encode(notifyDeleteChirp.toJson.toString)
-
                 broadcastHelper(rpcMessage, broadcastData, broadcastChannel)
               }
               case None => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Server failed to extract chirp id for the broadcast", rpcMessage.id))

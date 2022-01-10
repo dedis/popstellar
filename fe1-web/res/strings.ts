@@ -7,6 +7,7 @@ const STRINGS = {
   general_button_ok: 'Ok',
   general_yes: 'Yes',
   general_no: 'No',
+  general_add: 'Add',
 
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
@@ -60,6 +61,9 @@ const STRINGS = {
   /* --- Social Media Strings --- */
   button_publish: 'Publish',
   your_chirp: 'Your chirp',
+  attendees_of_last_roll_call: 'Attendees of last roll call',
+  follow_button: 'Follow',
+  profile_button: 'Profile',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',
@@ -152,9 +156,17 @@ const STRINGS = {
 
   /* --- Roll-call scanning Strings --- */
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',
-  roll_call_scan_participant: 'participants scanned',
+  roll_call_scan_participant: 'participant scanned',
   roll_call_scan_close: 'Close Roll-Call',
   roll_call_scan_close_confirmation: 'Do you confirm to close the roll-call ?',
+
+  /* --- Roll-call manually add attendee manually Strings --- */
+  roll_call_add_attendee_manually: 'Add an attendee manually',
+  roll_call_modal_add_attendee: 'Add an attendee',
+  roll_call_modal_enter_token: 'Enter token:',
+  roll_call_participant_added: 'participant added',
+  roll_call_invalid_token: 'invalid participant token',
+  roll_call_attendee_token_placeholder: 'Attendee token',
 
   /* --- Poll creation Strings --- */
   poll_create_question: 'Question*',

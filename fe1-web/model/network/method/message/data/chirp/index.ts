@@ -1,2 +1,2 @@
 export * from './AddChirp';
-export * from './AddChirpBroadcast';
+export * from './NotifyAddChirp';

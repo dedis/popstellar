@@ -78,12 +78,12 @@ func (c *Channel) Broadcast(broadcast method.Broadcast) error {
 	if object == messagedata.ChirpObject {
 
 		switch action {
-		case messagedata.ChirpActionAddBroadcast:
+		case messagedata.ChirpActionNotifyAdd:
 			err := c.addChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to add a chirp to general: %v", err)
 			}
-		case messagedata.ChirpActionDeleteBroadcast:
+		case messagedata.ChirpActionNotifyDelete:
 			err := c.deleteChirp(msg)
 			if err != nil {
 				return xerrors.Errorf("failed to delete the chirp from general: %v", err)
@@ -225,6 +225,11 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
 	}
 
+	err = chirpMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid chirp broadcast message: %v", err)
+	}
+
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
@@ -236,12 +241,10 @@ func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
 		return answer.NewError(-4, "invalid sender public key")
 	}
 
-	// TODO after finding a solution for the signature of the broadcast
-
-	//ok := c.hub.GetPubkey().Equal(senderPoint) && c.hub.Type() == hub.OrganizerHubType
-	//if !ok {
-	//return answer.NewError(-4, "only organizer can broadcast the chirp messages")
-	//}
+	ok := c.hub.GetPubKeyServ().Equal(senderPoint)
+	if !ok {
+		return answer.NewError(-4, "only the server can broadcast the chirp messages")
+	}
 
 	return nil
 }

@@ -24,17 +24,17 @@ export interface Question {
 }
 
 export interface Vote {
-  id: Hash,
-  question: Hash,
+  id: string,
+  question: string,
   vote?: number[],
   write_in?: string,
 }
 
 export interface RegisteredVote {
-  createdAt: Timestamp;
-  sender: Hash,
+  createdAt: number;
+  sender: string,
   votes: Vote[],
-  messageId: Hash,
+  messageId: string,
 }
 
 export interface MajorityResult {
@@ -43,7 +43,7 @@ export interface MajorityResult {
 }
 
 export interface QuestionResult {
-  id: Hash,
+  id: string,
   result: MajorityResult[]
 }
 

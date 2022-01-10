@@ -6,6 +6,64 @@
 
 > Welcome to the go-side of popstellar.
 
+# Want to submit a PR ? Here are 3 points that will make sure things run smoothly
+
+1. Make sure your code fits nicely with the code base and follows the SAME
+   philosophy/ADN (format, pattern, organization, etc..). Notably: how errors
+   are handled, how the code is spaced (use of newlines!), how the code is
+   commented (80 chars!), structured, etc.. One shouldn't be able to
+   differentiate between your code and the existing one. If you have any doubt
+   about something just have a look around the existing code to find an example.
+
+2. You just opened a PR ? Good. Make a review of your PR before requesting for a
+   review. We all forget small details like a typo in comment, a commented line
+   that should be removed, a debug print, etc.. If you missed them in your code
+   editor there is a chance you can catch them from the Github review interface.
+   It then spares time for everyone.
+
+3. Got comments on your PR ? Great. To help the reviewer please do NOT resolve
+   conversations, as it helps the reviewer check if his/her comments have been
+   addressed (or not). You can use the 👍 reaction on the comment if you need to keep
+   track of your progress, or comment them if discussion is needed.
+   Additionally, when you address comments, make a single commit with a title
+   "addresses X's comments".
+
+# Configure your environment
+
+## Linter
+
+Please make sure that `golint` is configured properly on your IDE. `golint` will
+tell you how to avoid the most common pitfall when writing go code. It should be
+configured to automatically lint your code in your IDE. For example in VS code:
+
+![linter](docs/images/vscode-lint.png)
+
+## Go format
+
+Please make sure your code is automatically formatted with `gofmt`. Go is
+opinionated about formatting and you must let him format your code. It should be
+done automatically "on save" in your IDE. For example in VS code:
+
+![linter](docs/images/vscode-format.png)
+
+## Global format
+
+Please make sure comments are formatted at 80 chars long. In VS code the
+[rewrap](https://marketplace.visualstudio.com/items?itemName=stkb.rewrap) plugin can be of a great help. Also you can add ruler to your editor,
+for example at 80 and 100 char in VS code with the following configuration:
+
+```
+"editor.rulers": [80,100],
+```
+
+(go to settings, search for `ruler` and click `edit in Settings.json`)
+
+## New to Git ?
+
+If you are new to git and don't want to go the hard way we recommend using
+[Github desktop](https://desktop.github.com/). It allows you to easily perform
+the most common git operations without the hassle of using the CLI.
+
 ## Overview
 
 ### Requirements
@@ -26,28 +84,11 @@ sudo apt-get install build-essential # Ubuntu/Debian
 You may build the `pop` CLI to interact with the server by executing `make
 build` on Linux/OSX or `make.bat build` in Windows.
 
+You can see the CLI usage with the `-h` flag.
+
 ```bash
-./pop organizer -h
-NAME:
-   pop organizer - manage the organizer
-   pop witness - manage the witness
-
-USAGE:
-   pop organizer command [command options] [arguments...]
-   pop witness command [command options] [arguments...]
-
-COMMANDS:
-   serve    start the organizer or witness server
-   help, h  Shows a list of commands or help for one command
-
-OPTIONS:
-   --public-key value, --pk value          base64url encoded organizer's public key
-   --organizer-address value, --org value  organizer's address and port for witness to connect to organizer (default value "localhost:9002")
-   --client-port value, --cp value         port on which to open websocket for clients (default value 9000 for organizer, 9002 for witness)
-   --witness-port value, --wp value        port on which to open websocket for witnesses (default value 9002)
-   --other-witness value, --ow value       address and port on which to connect to another witness, can be used as many times as necessary
-   --help, -h                              show help (default: false)
-
+cd cli
+go run . -h
 ```
 
 You may start the organizer server at ports `9000` for clients and `9001` for

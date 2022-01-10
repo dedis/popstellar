@@ -1,10 +1,11 @@
+@env=go,scala
 Feature: Create a pop LAO
 
   Background:
         ## This is feature will be called  to
         # This call makes this feature and server.feature share the same scope
         # Meaning they share def variables, configurations ...
-        # Espicially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
+        # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
         # * call wait <timeout>
         # * karate.set(varName, newValue)
     * call read('classpath:be/utils/server.feature')
@@ -43,6 +44,6 @@ Feature: Create a pop LAO
     And   def socket = karate.webSocket(wsURL,handle)
     * karate.log('Create Request = ' + createLaoReq)
     When  eval socket.send(createLaoReq)
-    And   string answer = socket.listen(timeout)
+    And   json answer = socket.listen(timeout)
     * karate.log('Received answer = ' + answer)
     Then match answer == createLaoRes

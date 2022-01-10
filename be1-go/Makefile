@@ -8,16 +8,16 @@ lint:
 	@go mod tidy
 	staticcheck ./...
 
-check-cov: protocol lint vet
-	go test -v ./...
-	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
-
-check: protocol lint vet
-	go test -v ./...
+test: protocol
 	go test -v -race ./...
+
+test-cov: protocol
+	go test -v -coverpkg=./... -coverprofile=coverage.out ./... -json > report.json
 
 vet: protocol
 	go vet ./...
+
+check: test test-cov lint vet
 
 protocol:
 	cp -r ../protocol ./validation 

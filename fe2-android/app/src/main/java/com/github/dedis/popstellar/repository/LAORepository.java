@@ -1,11 +1,5 @@
 package com.github.dedis.popstellar.repository;
 
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleBroadcast;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleCatchup;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleCreateLao;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleError;
-import static com.github.dedis.popstellar.utility.handler.GenericHandler.handleSubscribe;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -26,17 +20,16 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateL
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
-import com.github.dedis.popstellar.utility.security.Keys;
-import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,7 +60,8 @@ public class LAORepository {
   private final LAODataSource.Local mLocalDataSource;
 
   private final LAODataSource.Remote mRemoteDataSource;
-  private final AndroidKeysetManager mKeysetManager;
+  private final KeyManager mKeyManager;
+  private final MessageHandler mMessageHandler;
   private final SchedulerProvider schedulerProvider;
   private final Gson mGson;
 
@@ -78,7 +72,7 @@ public class LAORepository {
   private final Map<String, LAOState> laoById;
 
   // State for Messages
-  private final Map<String, MessageGeneral> messageById;
+  private final Map<MessageID, MessageGeneral> messageById;
 
   // Outstanding subscribes
   private final Map<Integer, String> subscribeRequests;
@@ -111,12 +105,14 @@ public class LAORepository {
   public LAORepository(
       @NonNull LAODataSource.Remote remoteDataSource,
       @NonNull LAODataSource.Local localDataSource,
-      @NonNull AndroidKeysetManager keysetManager,
+      @NonNull KeyManager keyManager,
+      @NonNull MessageHandler messageHandler,
       @NonNull Gson gson,
       @NonNull SchedulerProvider schedulerProvider) {
     mRemoteDataSource = remoteDataSource;
     mLocalDataSource = localDataSource;
-    mKeysetManager = keysetManager;
+    mKeyManager = keyManager;
+    mMessageHandler = messageHandler;
     mGson = gson;
 
     laoById = new HashMap<>();
@@ -161,7 +157,8 @@ public class LAORepository {
   private void handleGenericMessage(GenericMessage genericMessage) {
     Log.d(TAG, "handling generic msg");
     if (genericMessage instanceof Error) {
-      handleError(genericMessage, subscribeRequests, catchupRequests, createLaoRequests);
+      mMessageHandler.handleError(
+          genericMessage, subscribeRequests, catchupRequests, createLaoRequests);
       return;
     }
 
@@ -170,11 +167,11 @@ public class LAORepository {
       int id = result.getId();
       Log.d(TAG, "request id " + id);
       if (subscribeRequests.containsKey(id)) {
-        handleSubscribe(this, id, subscribeRequests);
+        mMessageHandler.handleSubscribe(this, id, subscribeRequests);
       } else if (catchupRequests.containsKey(id)) {
-        handleCatchup(this, id, result, catchupRequests, unprocessed);
+        mMessageHandler.handleCatchup(this, id, result, catchupRequests, unprocessed);
       } else if (createLaoRequests.containsKey(id)) {
-        handleCreateLao(this, id, createLaoRequests);
+        mMessageHandler.handleCreateLao(this, id, createLaoRequests);
       }
       return;
     }
@@ -182,7 +179,7 @@ public class LAORepository {
     Log.d(TAG, "handleGenericMessage: got a broadcast");
 
     // We've a Broadcast
-    handleBroadcast(this, genericMessage, unprocessed);
+    mMessageHandler.handleBroadcast(this, genericMessage, unprocessed);
   }
 
   /**
@@ -193,11 +190,9 @@ public class LAORepository {
    * @param messageId Base 64 URL encoded Id of the message to sign
    * @param channel Represents the channel on which to send the stateLao message
    */
-  public void sendStateLao(Lao lao, MessageGeneral msg, String messageId, String channel) {
+  public void sendStateLao(Lao lao, MessageGeneral msg, MessageID messageId, String channel) {
     try {
-      KeysetHandle handle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String ourKey = Keys.getEncodedKey(handle);
-      if (ourKey.equals(lao.getOrganizer())) {
+      if (mKeyManager.getMainPublicKey().equals(lao.getOrganizer())) {
         UpdateLao updateLao = (UpdateLao) msg.getData();
         StateLao stateLao =
             new StateLao(
@@ -210,9 +205,8 @@ public class LAORepository {
                 updateLao.getWitnesses(),
                 msg.getWitnessSignatures());
 
-        byte[] ourPkBuf = Base64.getUrlDecoder().decode(ourKey);
-        PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-        MessageGeneral stateLaoMsg = new MessageGeneral(ourPkBuf, stateLao, signer, mGson);
+        MessageGeneral stateLaoMsg =
+            new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
 
         sendPublish(channel, stateLaoMsg);
       }
@@ -307,13 +301,7 @@ public class LAORepository {
    */
   public Single<Answer> sendMessageGeneral(String channel, Data data) {
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
-      MessageGeneral msg = new MessageGeneral(sender, data, signer, mGson);
-
+      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), data, mGson);
       return sendPublish(channel, msg);
     } catch (GeneralSecurityException | IOException e) {
       Log.e(TAG, "failed to retrieve public key");
@@ -326,10 +314,9 @@ public class LAORepository {
    *
    * @return the public key
    */
-  public String getPublicKey() {
+  public PublicKey getPublicKey() {
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      return Keys.getEncodedKey(publicKeysetHandle);
+      return mKeyManager.getMainPublicKey();
     } catch (Exception e) {
       Log.e(TAG, "failed to retrieve public key", e);
       return null;
@@ -421,7 +408,7 @@ public class LAORepository {
     channelToNodesSubject.get(channel).onNext(nodes);
   }
 
-  public Map<String, MessageGeneral> getMessageById() {
+  public Map<MessageID, MessageGeneral> getMessageById() {
     return messageById;
   }
 
