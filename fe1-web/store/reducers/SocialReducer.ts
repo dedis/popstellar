@@ -1,6 +1,6 @@
 import { ChirpState } from 'model/objects/Chirp';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Hash } from 'model/objects';
+import { Hash, PublicKey } from 'model/objects';
 import { getLaosState } from './LaoReducer';
 
 /**
@@ -126,10 +126,37 @@ export const makeChirpsList = () => createSelector(
     if (chirpList.byLaoId[laoId]) {
       const allChirps: ChirpState[] = [];
       chirpList.byLaoId[laoId].allIdsInOrder.forEach(
-        (id) => allChirps.push(chirpList.byLaoId[laoId].byId[id]),
+        (id: string) => allChirps.push(chirpList.byLaoId[laoId].byId[id]),
       );
       return allChirps;
     }
     return [];
   },
 );
+
+export const makeChirpsListOfUser = (user: PublicKey | string) => {
+  const userPublicKey = user.valueOf();
+  return createSelector(
+    // First input: Get all chirps across all LAOs
+    (state) => getSocialState(state),
+    // Second input: Get the current LAO id,
+    (state) => getLaosState(state).currentId,
+    (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
+      if (!laoId || !userPublicKey) {
+        return [];
+      }
+      const laoChirps = chirpList.byLaoId[laoId];
+      if (laoChirps) {
+        const allUserChirps: ChirpState[] = [];
+        const userChirps = laoChirps.byUser[userPublicKey];
+        if (userChirps) {
+          userChirps.forEach(
+            (id: string) => allUserChirps.push(chirpList.byLaoId[laoId].byId[id]),
+          );
+          return allUserChirps;
+        }
+      }
+      return [];
+    },
+  )
+}
