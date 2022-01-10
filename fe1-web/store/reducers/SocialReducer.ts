@@ -113,7 +113,9 @@ const socialSlice = createSlice({
         const store = state.byLaoId[laoId];
 
         if (store.byId[chirp.id]) {
-          store.byId[chirp.id] = chirp;
+          if (!store.byId[chirp.id].isDeleted) {
+            store.byId[chirp.id] = chirp;
+          }
         }
       },
     },

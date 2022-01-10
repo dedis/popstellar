@@ -194,6 +194,11 @@ test('delete a non-stored chirp should do nothing', () => {
     .toEqual(filledState4);
 });
 
+test('reducer should not re-add a chirp if it has already been deleted', () => {
+  expect(socialReduce(filledState5, addChirp(mockLaoId, chirp1Deleted)))
+    .toEqual(filledState5);
+})
+
 test('selector should return an empty list of chirpState when no lao is opened', () => {
   expect(makeChirpsList().resultFunc(emptyState, undefined))
     .toEqual([]);
