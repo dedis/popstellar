@@ -124,7 +124,7 @@ describe('RollCallOpened', () => {
     });
   });
 
-  it('shows toast when trying to add an incorrect token', async () => {
+  it('shows toast when trying to add an incorrect token manually', async () => {
     (useRoute as jest.Mock).mockReturnValue({
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },

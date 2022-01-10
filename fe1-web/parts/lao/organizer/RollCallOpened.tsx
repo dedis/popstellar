@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
 });
 
 const FOUR_SECONDS = 4000;
-const base64Matcher = new RegExp('^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})([=]{1,2})?$');
+const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 const RollCallOpened = () => {
   const route = useRoute();
@@ -76,7 +76,7 @@ const RollCallOpened = () => {
   };
 
   const handleEnterManually = (input: string) => {
-    if (base64Matcher.test(input)) {
+    if (tokenMatcher.test(input)) {
       addAttendeeAndShowToast(input, STRINGS.roll_call_participant_added);
     } else {
       toast.show(STRINGS.roll_call_invalid_token, {
