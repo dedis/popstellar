@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.RollCallFragmentBinding;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
@@ -27,10 +28,10 @@ public class RollCallDetailFragment extends Fragment {
   private RollCallFragmentBinding mRollCallFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
 
-  public static RollCallDetailFragment newInstance(String pk) {
+  public static RollCallDetailFragment newInstance(PublicKey pk) {
     RollCallDetailFragment rollCallDetailFragment = new RollCallDetailFragment();
     Bundle bundle = new Bundle(1);
-    bundle.putString(EXTRA_PK, pk);
+    bundle.putString(EXTRA_PK, pk.getEncoded());
     rollCallDetailFragment.setArguments(bundle);
     return rollCallDetailFragment;
   }

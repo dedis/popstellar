@@ -24,6 +24,8 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 
 import java.util.StringJoiner;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the new seed UI */
@@ -33,7 +35,7 @@ public class SeedWalletFragment extends Fragment {
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
   private WalletSeedFragmentBinding mWalletSeedFragBinding;
   private HomeViewModel mHomeViewModel;
-  private Wallet wallet;
+  @Inject Wallet wallet;
 
   public static SeedWalletFragment newInstance() {
     return new SeedWalletFragment();
@@ -47,8 +49,6 @@ public class SeedWalletFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    wallet = Wallet.getInstance();
-
     mWalletSeedFragBinding = WalletSeedFragmentBinding.inflate(inflater, container, false);
 
     FragmentActivity activity = getActivity();

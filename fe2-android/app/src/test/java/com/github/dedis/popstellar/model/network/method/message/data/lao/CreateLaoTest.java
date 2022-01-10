@@ -1,15 +1,18 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 
@@ -23,8 +26,8 @@ public class CreateLaoTest {
 
   private final String name = " Lao name";
   private final long creation = 0xC972;
-  private final String organizer = " Organizer Id ";
-  private final List<String> witnesses = Arrays.asList("0x3434", "0x4747");
+  private final PublicKey organizer = generatePublicKey();
+  private final List<PublicKey> witnesses = Arrays.asList(generatePublicKey(), generatePublicKey());
   private final String id = Lao.generateLaoId(organizer, creation, name);
   private final CreateLao createLao = new CreateLao(id, name, creation, organizer, witnesses);
 
@@ -41,7 +44,7 @@ public class CreateLaoTest {
     // Hash(organizer||creation||name)
     String expectedId =
         Hash.hash(
-            createLao.getOrganizer(), Long.toString(createLao.getCreation()), createLao.getName());
+            createLao.getOrganizer().getEncoded(), Long.toString(createLao.getCreation()), createLao.getName());
     assertThat(createLao.getId(), is(expectedId));
   }
 
@@ -85,7 +88,7 @@ public class CreateLaoTest {
     assertEquals(createLao, new CreateLao(id, name, creation, organizer, witnesses));
     assertEquals(new CreateLao(name, organizer), new CreateLao(name, organizer));
     assertNotEquals(createLao1, new CreateLao("random", organizer));
-    assertNotEquals(createLao1, new CreateLao(name, "random"));
+    assertNotEquals(createLao1, new CreateLao(name, Base64DataUtils.generatePublicKeyOtherThan(organizer)));
   }
 
   @Test
