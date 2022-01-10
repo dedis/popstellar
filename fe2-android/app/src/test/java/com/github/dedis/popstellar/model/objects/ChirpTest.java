@@ -14,6 +14,7 @@ public class ChirpTest {
   private static final MessageID ID = generateMessageID();
 
   private static final Chirp CHIRP = new Chirp(ID);
+  private static final MessageID EMPTY_MESSAGE_ID = new MessageID("");
 
   @Test
   public void createChirpWithNullId() {
@@ -22,7 +23,7 @@ public class ChirpTest {
 
   @Test
   public void createChirpWithEmptyId() {
-    assertThrows(IllegalArgumentException.class, () -> new Chirp(new MessageID("")));
+    assertThrows(IllegalArgumentException.class, () -> new Chirp(EMPTY_MESSAGE_ID));
   }
 
   @Test
@@ -32,7 +33,7 @@ public class ChirpTest {
     assertEquals(newId, CHIRP.getId());
 
     assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(null));
-    assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(new MessageID("")));
+    assertThrows(IllegalArgumentException.class, () -> CHIRP.setId(EMPTY_MESSAGE_ID));
   }
 
   @Test
