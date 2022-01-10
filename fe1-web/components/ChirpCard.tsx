@@ -8,8 +8,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
 import { useSelector } from 'react-redux';
-import { requestAddReaction } from '../network';
-import { makeReactionsList } from '../store';
+import { requestAddReaction } from 'network';
+import { makeReactionsList } from 'store';
+import { useToast } from 'react-native-toast-notifications';
 
 /**
  * Component to display a chirp
@@ -60,8 +61,10 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+const FOUR_SECONDS = 4000;
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
+  const toast = useToast();
   const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
 
   const zero = '  0';
@@ -72,7 +75,11 @@ const ChirpCard = (props: IPropTypes) => {
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id)
       .catch((err) => {
-        console.error('Could not add reaction, error: ', err);
+        toast.show(`Could not add reaction, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
   };
 

@@ -135,7 +135,7 @@ const socialSlice = createSlice({
           .includes(reaction.sender)) {
           store.reactionsByChirp[reaction.chirp_id][reaction.codepoint].push(reaction.sender);
         } else {
-          console.warn('You already reacted to this reaction');
+          console.debug('The sender already reacted to this reaction');
         }
       },
     },

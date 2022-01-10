@@ -4,7 +4,8 @@ import { Hash } from '../Hash';
 import {
   channelFromIds,
   getGeneralChirpsChannel,
-  getLastPartOfChannel, getReactionChannel,
+  getLastPartOfChannel,
+  getReactionChannel,
   getUserSocialChannel,
 } from '../Channel';
 import { PublicKey } from '../PublicKey';

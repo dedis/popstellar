@@ -11,7 +11,7 @@ export class AddReaction implements MessageData {
   public readonly action: ActionType = ActionType.ADD;
 
   // Emoji indicating the added reaction
-  public readonly reaction_codepoint: string; // not sure about the type
+  public readonly reaction_codepoint: string;
 
   // id of the chirp message
   public readonly chirp_id: Hash;

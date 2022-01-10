@@ -40,21 +40,21 @@ describe('ChirpCard', () => {
     expect(obj.toJSON()).toMatchSnapshot();
   });
 
-  it('add thumbs up correctly', () => {
+  it('adds thumbs up correctly', () => {
     const { getByTestId } = render(<ChirpCard chirp={chirp} />);
     const thumbsUpButton = getByTestId('thumbs-up');
     fireEvent.press(thumbsUpButton);
     expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID);
   });
 
-  it('add thumbs down correctly', () => {
+  it('adds thumbs down correctly', () => {
     const { getByTestId } = render(<ChirpCard chirp={chirp} />);
     const thumbsDownButton = getByTestId('thumbs-down');
     fireEvent.press(thumbsDownButton);
     expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID);
   });
 
-  it('add heart correctly', () => {
+  it('adds heart correctly', () => {
     const { getByTestId } = render(<ChirpCard chirp={chirp} />);
     const heartButton = getByTestId('heart');
     fireEvent.press(heartButton);
