@@ -7,6 +7,8 @@ import STRINGS from 'res/strings';
 import { gray, red } from 'styles/colors';
 import { Ionicons } from '@expo/vector-icons';
 import TextBlock from './TextBlock';
+import { PublicKey } from '../model/objects';
+import ProfileIcon from './ProfileIcon';
 
 const MAX_CHIRP_CHARS = 300;
 
@@ -55,6 +57,7 @@ const TextInputChirp = (props: IPropTypes) => {
   const { onPress } = props;
   const { onChangeText } = props;
   const { publishIsDisabledCond } = props;
+  const { currentUserPublicKey } = props;
 
   const [charsLeft, setCharsLeft] = useState(MAX_CHIRP_CHARS);
   const textIsRed = charsLeft < 0;
@@ -63,7 +66,11 @@ const TextInputChirp = (props: IPropTypes) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
-        <Ionicons name="person" size={40} color="black" />
+        { // If the current user public key is defined, show the profile picture accordingly
+          currentUserPublicKey.valueOf() === ''
+            ? <Ionicons name="person" size={40} color="black" />
+            : <ProfileIcon publicKey={currentUserPublicKey} />
+        }
       </View>
       <View style={styles.rightView}>
         <TextInput
@@ -96,6 +103,7 @@ const propTypes = {
   onPress: PropTypes.func.isRequired,
   onChangeText: PropTypes.func.isRequired,
   publishIsDisabledCond: PropTypes.bool,
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 TextInputChirp.propTypes = propTypes;
@@ -112,6 +120,7 @@ type IPropTypes = {
   onPress: Function,
   onChangeText: Function,
   publishIsDisabledCond: boolean,
+  currentUserPublicKey: PublicKey,
 };
 
 export default TextInputChirp;
