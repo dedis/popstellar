@@ -12,7 +12,7 @@ import dataCastVote from 'protocol/query/method/message/data/dataCastVote.json';
 import dataEndElection from 'protocol/query/method/message/data/dataEndElection.json';
 import dataResultElection from 'protocol/query/method/message/data/dataResultElection.json';
 import dataAddChirp from 'protocol/query/method/message/data/dataAddChirp.json';
-import dataNotifyAdd from 'protocol/query/method/message/data/dataNotifyAddChirp.json';
+import dataNotifyAddChirp from 'protocol/query/method/message/data/dataNotifyAddChirp.json';
 import dataDeleteChirp from 'protocol/query/method/message/data/dataDeleteChirp.json';
 import dataDeleteChirpBroadcast from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
 
@@ -36,7 +36,7 @@ const dataSchemas = [
   dataWitnessMessage,
 
   dataAddChirp,
-  dataNotifyAdd,
+  dataNotifyAddChirp,
   dataDeleteChirp,
   dataDeleteChirpBroadcast,
 ];
