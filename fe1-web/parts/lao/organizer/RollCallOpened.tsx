@@ -64,29 +64,20 @@ const RollCallOpened = () => {
     console.error(err);
   };
 
-  const handleScan = (data: string | null) => {
-    if (data) {
-      if (!attendees.has(data)) {
-        updateAttendees((prev) => new Set<string>(prev.add(data)));
-        toast.show(STRINGS.roll_call_scan_participant, {
-          type: 'success',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      }
+  const addAttendeeAndShowToast = (attendee: string, toastMessage: string) => {
+    if (!attendees.has(attendee)) {
+      updateAttendees((prev) => new Set<string>(prev.add(attendee)));
+      toast.show(toastMessage, {
+        type: 'success',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
     }
   };
 
   const handleEnterManually = (input: string) => {
     if (base64Matcher.test(input)) {
-      if (!attendees.has(input)) {
-        updateAttendees((prev) => new Set<string>(prev.add(input)));
-        toast.show(STRINGS.roll_call_participant_added, {
-          type: 'success',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      }
+      addAttendeeAndShowToast(input, STRINGS.roll_call_participant_added);
     } else {
       toast.show(STRINGS.roll_call_invalid_token, {
         type: 'danger',
@@ -121,7 +112,11 @@ const RollCallOpened = () => {
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader
           delay={300}
-          onScan={(data) => handleScan(data)}
+          onScan={(data) => {
+            if (data) {
+              addAttendeeAndShowToast(data, STRINGS.roll_call_scan_participant);
+            }
+          }}
           onError={handleError}
           style={{ width: '30%' }}
         />
@@ -143,6 +138,7 @@ const RollCallOpened = () => {
         onConfirmPress={handleEnterManually}
         buttonConfirmText={STRINGS.general_add}
         hasTextInput
+        textInputPlaceholder={STRINGS.roll_call_attendee_token_placeholder}
       />
     </View>
   );

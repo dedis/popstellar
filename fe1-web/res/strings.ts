@@ -164,8 +164,9 @@ const STRINGS = {
   roll_call_add_attendee_manually: 'Add an attendee manually',
   roll_call_modal_add_attendee: 'Add an attendee',
   roll_call_modal_enter_token: 'Enter token:',
-  roll_call_participant_added: 'participant added manually',
+  roll_call_participant_added: 'participant added',
   roll_call_invalid_token: 'invalid participant token',
+  roll_call_attendee_token_placeholder: 'Attendee token',
 
   /* --- Poll creation Strings --- */
   poll_create_question: 'Question*',

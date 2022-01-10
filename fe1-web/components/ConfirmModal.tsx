@@ -22,6 +22,7 @@ const ConfirmModal = (props: IPropTypes) => {
   const { buttonCancelText } = props;
   const { onConfirmPress } = props;
   const { hasTextInput } = props;
+  const { textInputPlaceholder } = props;
   const [textInput, setTextInput] = useState('');
 
   return (
@@ -34,7 +35,13 @@ const ConfirmModal = (props: IPropTypes) => {
           <Text style={styles.modalTitle}>{title}</Text>
         </View>
         <Text style={styles.modalDescription}>{description}</Text>
-        { hasTextInput ? <TextInputLine onChangeText={(input) => setTextInput(input)} /> : null }
+        { hasTextInput
+          ? (
+            <TextInputLine
+              onChangeText={(input) => setTextInput(input)}
+              placeholder={textInputPlaceholder}
+            />
+          ) : null }
         <View style={styles.buttonView}>
           <WideButtonView
             title={buttonConfirmText}
@@ -62,6 +69,7 @@ const propTypes = {
   buttonConfirmText: PropTypes.string,
   onConfirmPress: PropTypes.func.isRequired,
   hasTextInput: PropTypes.bool,
+  textInputPlaceholder: PropTypes.string,
 };
 
 ConfirmModal.propTypes = propTypes;
@@ -70,6 +78,7 @@ ConfirmModal.defaultProps = {
   buttonCancelText: STRINGS.general_button_cancel,
   buttonConfirmText: STRINGS.general_button_confirm,
   hasTextInput: false,
+  textInputPlaceholder: '',
 };
 
 type IPropTypes = {
@@ -81,6 +90,7 @@ type IPropTypes = {
   buttonConfirmText: string,
   onConfirmPress: Function,
   hasTextInput: boolean,
+  textInputPlaceholder: string,
 };
 
 export default ConfirmModal;

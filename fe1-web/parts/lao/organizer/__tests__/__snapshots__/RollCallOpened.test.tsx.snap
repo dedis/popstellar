@@ -234,7 +234,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
       <TextInput
         defaultValue=""
         onChangeText={[Function]}
-        placeholder=""
+        placeholder="Attendee token"
         selectTextOnFocus={true}
         style={
           Object {
