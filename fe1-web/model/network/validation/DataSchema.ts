@@ -14,7 +14,7 @@ import dataResultElection from 'protocol/query/method/message/data/dataResultEle
 import dataAddChirp from 'protocol/query/method/message/data/dataAddChirp.json';
 import dataNotifyAddChirp from 'protocol/query/method/message/data/dataNotifyAddChirp.json';
 import dataDeleteChirp from 'protocol/query/method/message/data/dataDeleteChirp.json';
-import dataDeleteChirpBroadcast from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
+import dataNotifyDeleteChirp from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
 
 const dataSchemas = [
   dataCreateLao,
@@ -38,7 +38,7 @@ const dataSchemas = [
   dataAddChirp,
   dataNotifyAddChirp,
   dataDeleteChirp,
-  dataDeleteChirpBroadcast,
+  dataNotifyDeleteChirp,
 ];
 
 export default dataSchemas;
