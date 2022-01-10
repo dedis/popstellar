@@ -7,6 +7,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Qu
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
@@ -28,9 +30,9 @@ public class Election extends Event {
   private List<ElectionQuestion> electionQuestions;
 
   // Map that associates each sender pk to their votes
-  private final Map<String, List<ElectionVote>> voteMap;
+  private final Map<PublicKey, List<ElectionVote>> voteMap;
   // Map that associates each messageId to its sender
-  private final Map<String, String> messageMap;
+  private final Map<MessageID, PublicKey> messageMap;
 
   private EventState state;
 
@@ -44,7 +46,7 @@ public class Election extends Event {
     this.results = new HashMap<>();
     this.electionQuestions = new ArrayList<>();
     this.voteMap = new HashMap<>();
-    this.messageMap = new TreeMap<>();
+    this.messageMap = new TreeMap<>(Comparator.comparing(MessageID::getEncoded));
   }
 
   public String getId() {
@@ -114,11 +116,11 @@ public class Election extends Event {
     this.end = end;
   }
 
-  public Map<String, String> getMessageMap() {
+  public Map<MessageID, PublicKey> getMessageMap() {
     return messageMap;
   }
 
-  public void putVotesBySender(String senderPk, List<ElectionVote> votes) {
+  public void putVotesBySender(PublicKey senderPk, List<ElectionVote> votes) {
     if (senderPk == null) {
       throw new IllegalArgumentException("Sender public key cannot be null.");
     }
@@ -131,7 +133,7 @@ public class Election extends Event {
     voteMap.put(senderPk, votesCopy);
   }
 
-  public void putSenderByMessageId(String senderPk, String messageId) {
+  public void putSenderByMessageId(PublicKey senderPk, MessageID messageId) {
     if (senderPk == null || messageId == null) {
       throw new IllegalArgumentException("Sender public key or message id cannot be null.");
     }
@@ -169,7 +171,7 @@ public class Election extends Event {
     List<String> listOfVoteIds = new ArrayList<>();
     // Since messageMap is a TreeMap, votes will already be sorted in the alphabetical order of
     // messageIds
-    for (String senderPk : messageMap.values()) {
+    for (PublicKey senderPk : messageMap.values()) {
       for (ElectionVote vote : voteMap.get(senderPk)) {
         listOfVoteIds.add(vote.getId());
       }

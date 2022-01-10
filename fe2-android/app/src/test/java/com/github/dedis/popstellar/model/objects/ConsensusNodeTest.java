@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
 import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.ACCEPTED;
 import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.FAILED;
 import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.STARTING;
@@ -8,6 +10,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,10 +26,10 @@ public class ConsensusNodeTest {
   private static final Consensus consensus2 = new Consensus(2000, key, "value_2");
   private static final Consensus consensus3 = new Consensus(3000, key, "value_3");
   private static final String instanceId = consensus1.getId();
-  private static final String publicKey = "publicKey";
-  private static final String messageId1 = "m1";
-  private static final String messageId2 = "m2";
-  private static final String messageId3 = "m3";
+  private static final PublicKey publicKey = generatePublicKey();
+  private static final MessageID messageId1 = generateMessageID();
+  private static final MessageID messageId2 = generateMessageID();
+  private static final MessageID messageId3 = generateMessageID();
   private static final String random = "random";
 
   @Before
@@ -90,7 +94,7 @@ public class ConsensusNodeTest {
     node.addMessageIdOfAnAcceptedConsensus(messageId1);
     node.addMessageIdOfAnAcceptedConsensus(messageId2);
 
-    Set<String> messageIds = node.getAcceptedMessageIds();
+    Set<MessageID> messageIds = node.getAcceptedMessageIds();
     assertEquals(2, messageIds.size());
     assertTrue(messageIds.contains(messageId1));
     assertTrue(messageIds.contains(messageId2));

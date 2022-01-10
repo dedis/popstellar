@@ -1,41 +1,36 @@
 package com.github.dedis.popstellar.model.network.method.message;
 
-import java.util.Base64;
+import androidx.annotation.NonNull;
+
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 
 public class PublicKeySignaturePair {
 
-  private final String witness;
+  private final PublicKey witness;
+  private final Signature signature;
 
-  private final String signature;
-
-  public PublicKeySignaturePair(byte[] witness, byte[] signature) {
-    this.witness = Base64.getUrlEncoder().encodeToString(witness);
-    this.signature = Base64.getUrlEncoder().encodeToString(signature);
+  public PublicKeySignaturePair(PublicKey witness, Signature signature) {
+    this.witness = witness;
+    this.signature = signature;
   }
 
-  public byte[] getWitness() {
-    return Base64.getUrlDecoder().decode(witness);
-  }
-
-  public byte[] getSignature() {
-    return Base64.getUrlDecoder().decode(signature);
-  }
-
-  public String getWitnessEncoded() {
+  public PublicKey getWitness() {
     return witness;
   }
 
-  public String getSignatureEncoded() {
+  public Signature getSignature() {
     return signature;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "PublicKeySignaturePair{"
         + "witness="
-        + getWitnessEncoded()
+        + witness.getEncoded()
         + ", signature="
-        + getSignatureEncoded()
+        + signature.getEncoded()
         + '}';
   }
 }

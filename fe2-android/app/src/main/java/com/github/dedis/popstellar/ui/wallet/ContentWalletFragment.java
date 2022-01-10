@@ -21,6 +21,8 @@ import com.github.dedis.popstellar.ui.home.LAOListAdapter;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the content wallet UI */
@@ -33,6 +35,7 @@ public class ContentWalletFragment extends Fragment {
     return new ContentWalletFragment();
   }
 
+  @Inject Wallet wallet;
   private WalletContentFragmentBinding mWalletContentBinding;
   private HomeViewModel mHomeViewModel;
   private LAOListAdapter mListAdapter;
@@ -61,7 +64,7 @@ public class ContentWalletFragment extends Fragment {
     setupListAdapter();
     setupListUpdates();
 
-    if (Wallet.getInstance().isSetUp()) {
+    if (wallet.isSetUp()) {
       mWalletContentBinding.logoutButton.setVisibility(View.VISIBLE);
       mWalletContentBinding.logoutButton.setOnClickListener(
           clicked -> {
