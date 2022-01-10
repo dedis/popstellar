@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -38,11 +39,10 @@ public class IdentityFragment extends Fragment {
   private EditText identityPhoneEditText;
   private ImageView qrCode;
 
-  public static IdentityFragment newInstance(String publicKey) {
-
+  public static IdentityFragment newInstance(PublicKey publicKey) {
     IdentityFragment identityFragment = new IdentityFragment();
     Bundle bundle = new Bundle(1);
-    bundle.putString(PUBLIC_KEY, publicKey);
+    bundle.putString(PUBLIC_KEY, publicKey.getEncoded());
     identityFragment.setArguments(bundle);
     return identityFragment;
   }

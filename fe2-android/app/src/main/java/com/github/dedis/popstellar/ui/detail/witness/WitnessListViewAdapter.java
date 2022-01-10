@@ -12,6 +12,7 @@ import androidx.lifecycle.LifecycleOwner;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WitnessesListViewLayoutBinding;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.util.List;
@@ -21,22 +22,22 @@ public class WitnessListViewAdapter extends BaseAdapter {
 
   private final LaoDetailViewModel viewModel;
 
-  private List<String> witnesses;
+  private List<PublicKey> witnesses;
 
   private final LifecycleOwner lifecycleOwner;
 
   public WitnessListViewAdapter(
-      List<String> witness, LaoDetailViewModel viewModel, LifecycleOwner activity) {
+      List<PublicKey> witness, LaoDetailViewModel viewModel, LifecycleOwner activity) {
     this.viewModel = viewModel;
     setList(witness);
     lifecycleOwner = activity;
   }
 
-  public void replaceList(List<String> witnesses) {
+  public void replaceList(List<PublicKey> witnesses) {
     setList(witnesses);
   }
 
-  private void setList(List<String> witnesses) {
+  private void setList(List<PublicKey> witnesses) {
     this.witnesses = witnesses;
     notifyDataSetChanged();
   }
@@ -105,7 +106,7 @@ public class WitnessListViewAdapter extends BaseAdapter {
     binding.setLifecycleOwner(lifecycleOwner);
     binding.setViewModel(viewModel);
     binding.setPosition(position + 1);
-    binding.setWitness(witnesses.get(position));
+    binding.setWitness(witnesses.get(position).getEncoded());
     Context context = parent.getContext();
     WitnessDeleteListener deleteButtonListener =
         witness -> {

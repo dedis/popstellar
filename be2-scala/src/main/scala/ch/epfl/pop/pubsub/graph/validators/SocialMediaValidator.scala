@@ -37,7 +37,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
     }
 
     
-    def validateAddBroadcastChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validateNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         Left(rpcMessage)
     }
 }

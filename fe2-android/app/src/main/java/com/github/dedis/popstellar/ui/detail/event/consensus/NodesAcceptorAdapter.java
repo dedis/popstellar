@@ -94,7 +94,7 @@ public class NodesAcceptorAdapter extends BaseAdapter {
       case ACCEPTED:
         text = "Started by\n";
     }
-    text += node.getPublicKey();
+    text += node.getPublicKey().getEncoded();
 
     binding.nodeButton.setText(text);
     binding.nodeButton.setEnabled(state == State.STARTING && !alreadyAccepted);

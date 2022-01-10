@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidDataException;
@@ -36,7 +37,7 @@ public final class RollCallHandler {
   public static void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall) {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
+    MessageID messageId = context.getMessageId();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCreateRollCall: " + channel + " name " + createRollCall.getName());
@@ -67,7 +68,7 @@ public final class RollCallHandler {
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
+    MessageID messageId = context.getMessageId();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleOpenRollCall: " + channel + " msg=" + openRollCall);
@@ -103,7 +104,7 @@ public final class RollCallHandler {
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
+    MessageID messageId = context.getMessageId();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
     Log.d(TAG, "handleCloseRollCall: " + channel);
@@ -128,7 +129,8 @@ public final class RollCallHandler {
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
   }
 
-  public static WitnessMessage createRollCallWitnessMessage(String messageId, RollCall rollCall) {
+  public static WitnessMessage createRollCallWitnessMessage(
+      MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("New Roll Call was created");
     message.setDescription(
@@ -147,7 +149,7 @@ public final class RollCallHandler {
     return message;
   }
 
-  public static WitnessMessage openRollCallWitnessMessage(String messageId, RollCall rollCall) {
+  public static WitnessMessage openRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("A Roll Call was opened");
     message.setDescription(
@@ -163,7 +165,7 @@ public final class RollCallHandler {
     return message;
   }
 
-  public static WitnessMessage closeRollCallWitnessMessage(String messageId, RollCall rollCall) {
+  public static WitnessMessage closeRollCallWitnessMessage(MessageID messageId, RollCall rollCall) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("A Roll Call was closed");
     message.setDescription(

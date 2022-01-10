@@ -1,18 +1,21 @@
 package com.github.dedis.popstellar.model.network.method.message.data.socialmedia;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageIDOtherThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 
 import org.junit.Test;
 
 public class AddChirpTest {
 
   private static final String TEXT = "Hello guys";
-  private static final String PARENT_ID = "parentId";
+  private static final MessageID PARENT_ID = generateMessageID();
   private static final long TIMESTAMP = 1631280815;
 
   private static final AddChirp ADD_CHIRP = new AddChirp(TEXT, PARENT_ID, TIMESTAMP);
@@ -60,7 +63,7 @@ public class AddChirpTest {
 
     String random = "random";
     assertNotEquals(ADD_CHIRP, new AddChirp(random, PARENT_ID, TIMESTAMP));
-    assertNotEquals(ADD_CHIRP, new AddChirp(TEXT, random, TIMESTAMP));
+    assertNotEquals(ADD_CHIRP, new AddChirp(TEXT, generateMessageIDOtherThan(PARENT_ID), TIMESTAMP));
     assertNotEquals(ADD_CHIRP, new AddChirp(TEXT, PARENT_ID, TIMESTAMP + 1));
   }
 }

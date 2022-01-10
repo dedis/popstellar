@@ -33,6 +33,7 @@ import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAODataSource;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
@@ -42,10 +43,8 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
-import com.github.dedis.popstellar.utility.security.Keys;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
 import com.google.gson.Gson;
@@ -64,7 +63,6 @@ import org.mockito.junit.MockitoJUnit;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Base64;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
@@ -78,7 +76,7 @@ import io.reactivex.Observable;
 @HiltAndroidTest
 public class ElectionStartFragmentTest {
 
-  @Inject AndroidKeysetManager keysetManager;
+  @Inject KeyManager keyManager;
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
 
@@ -104,38 +102,39 @@ public class ElectionStartFragmentTest {
           // Mock the remote data source to receive a response
           when(remoteDataSource.observeMessage()).thenReturn(upstream);
 
+          KeyPair node2KeyPair;
           try {
             laoRepository =
                 new LAORepository(
                     remoteDataSource,
                     localDataSource,
-                    keysetManager,
+                    keyManager,
                     messageHandler,
                     gson,
                     new ProdSchedulerProvider());
 
             Ed25519PrivateKeyManager.registerPair(true);
             PublicKeySignWrapper.register();
-            KeysetHandle keysetHandle1 = keysetManager.getKeysetHandle();
             KeysetHandle keysetHandle2 =
                 KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
             KeysetHandle keysetHandle3 =
                 KeysetHandle.generateNew(Ed25519PrivateKeyManager.rawEd25519Template());
 
-            signer1 = keysetHandle1.getPrimitive(PublicKeySign.class);
-            signer3 = keysetHandle2.getPrimitive(PublicKeySign.class);
+            mainKeyPair = keyManager.getMainKeyPair();
+            node2KeyPair = keyManager.getKeyPair(keysetHandle2);
+            node3KeyPair = keyManager.getKeyPair(keysetHandle3);
 
-            publicKey = Keys.getEncodedKey(keysetHandle1.getPublicKeysetHandle());
-            node2Key = Keys.getEncodedKey(keysetHandle2.getPublicKeysetHandle());
-            node3Key = Keys.getEncodedKey(keysetHandle3.getPublicKeysetHandle());
+            publicKey = mainKeyPair.getPublicKey().getEncoded();
+            node2 = node2KeyPair.getPublicKey().getEncoded();
+            node3 = node3KeyPair.getPublicKey().getEncoded();
 
           } catch (Exception e) {
             throw new RuntimeException(e);
           }
 
           LAO.setChannel(LAO_CHANNEL);
-          LAO.setOrganizer(publicKey);
-          LAO.setWitnesses(Sets.newSet(node2Key, node3Key));
+          LAO.setOrganizer(mainKeyPair.getPublicKey());
+          LAO.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
           laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
           laoRepository.updateNodes(LAO_CHANNEL);
@@ -185,11 +184,12 @@ public class ElectionStartFragmentTest {
   private static final String START_START = "Start Election";
   private static final String START_STARTED = "Election started successfully at\n" + DATE_PAST;
 
+  private KeyPair mainKeyPair;
+  private KeyPair node3KeyPair;
+
   private String publicKey;
-  private String node2Key;
-  private String node3Key;
-  private PublicKeySign signer1;
-  private PublicKeySign signer3;
+  private String node2;
+  private String node3;
 
   @Test
   public void displayWithUpdatesIsCorrect() throws DataHandlingException {
@@ -202,16 +202,16 @@ public class ElectionStartFragmentTest {
     // node3(2)
     DataInteraction grid = nodesGrid();
     nodeAssertions(grid, 0, "Waiting\n" + publicKey, false);
-    nodeAssertions(grid, 1, "Waiting\n" + node2Key, false);
-    nodeAssertions(grid, 2, "Waiting\n" + node3Key, false);
+    nodeAssertions(grid, 1, "Waiting\n" + node2, false);
+    nodeAssertions(grid, 2, "Waiting\n" + node3, false);
 
     // Nodes 3 try to start
-    MessageGeneral elect3Msg = createMsg(node3Key, signer3, elect);
+    MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect3Msg);
-    nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, true);
+    nodeAssertions(grid, 2, "Approve Start by\n" + node3, true);
 
     // We try to start (it should disable the start button)
-    MessageGeneral elect1Msg = createMsg(publicKey, signer1, elect);
+    MessageGeneral elect1Msg = createMsg(mainKeyPair, elect);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect1Msg);
     displayAssertions(STATUS_READY, START_START, false);
     nodeAssertions(grid, 0, "Approve Start by\n" + publicKey, true);
@@ -219,18 +219,18 @@ public class ElectionStartFragmentTest {
     // We accepted node 3 (it should disable button for node3)
     ConsensusElectAccept electAccept3 =
         new ConsensusElectAccept(INSTANCE_ID, elect3Msg.getMessageId(), true);
-    MessageGeneral accept3Msg = createMsg(publicKey, signer1, electAccept3);
+    MessageGeneral accept3Msg = createMsg(mainKeyPair, electAccept3);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, accept3Msg);
-    nodeAssertions(grid, 2, "Approve Start by\n" + node3Key, false);
+    nodeAssertions(grid, 2, "Approve Start by\n" + node3, false);
 
     // Receive a learn message => node3 was accepted and has started the election
     ConsensusLearn learn3 =
         new ConsensusLearn(
             INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME, true, Collections.emptyList());
-    MessageGeneral learn3Msg = createMsg(node3Key, signer3, learn3);
+    MessageGeneral learn3Msg = createMsg(node3KeyPair, learn3);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learn3Msg);
     displayAssertions(STATUS_STARTED, START_STARTED, false);
-    nodeAssertions(grid, 2, "Started by\n" + node3Key, false);
+    nodeAssertions(grid, 2, "Started by\n" + node3, false);
   }
 
   @Test
@@ -270,7 +270,7 @@ public class ElectionStartFragmentTest {
     MessageGeneral msgGeneral = publish.getMessage();
     long maxCreation = Instant.now().getEpochSecond();
     assertEquals(CONSENSUS_CHANNEL, publish.getChannel());
-    assertEquals(publicKey, msgGeneral.getSender());
+    assertEquals(mainKeyPair.getPublicKey(), msgGeneral.getSender());
 
     ConsensusElect elect = (ConsensusElect) msgGeneral.getData();
     assertEquals(KEY, elect.getKey());
@@ -280,11 +280,12 @@ public class ElectionStartFragmentTest {
   }
 
   @Test
-  public void acceptButtonSendElectAcceptMessageTest() throws DataHandlingException {
+  public void acceptButtonSendElectAcceptMessageTest()
+      throws DataHandlingException {
     setupViewModel(PAST_TIME);
 
     // Nodes 3 try to start
-    MessageGeneral elect3Msg = createMsg(node3Key, signer3, elect);
+    MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect3Msg);
 
     // We try to accept node3
@@ -294,7 +295,7 @@ public class ElectionStartFragmentTest {
     MessageGeneral msgGeneral = publish.getMessage();
 
     assertEquals(CONSENSUS_CHANNEL, publish.getChannel());
-    assertEquals(publicKey, msgGeneral.getSender());
+    assertEquals(mainKeyPair.getPublicKey(), msgGeneral.getSender());
     ConsensusElectAccept electAccept = (ConsensusElectAccept) msgGeneral.getData();
     ConsensusElectAccept expectedElectAccept =
         new ConsensusElectAccept(INSTANCE_ID, elect3Msg.getMessageId(), true);
@@ -306,21 +307,21 @@ public class ElectionStartFragmentTest {
     setupViewModel(PAST_TIME);
 
     // Nodes 3 try to start and failed
-    MessageGeneral elect3Msg = createMsg(node3Key, signer3, elect);
+    MessageGeneral elect3Msg = createMsg(node3KeyPair, elect);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect3Msg);
     ConsensusFailure failure3 =
         new ConsensusFailure(INSTANCE_ID, elect3Msg.getMessageId(), PAST_TIME);
-    MessageGeneral failure3Msg = createMsg(node3Key, signer3, failure3);
+    MessageGeneral failure3Msg = createMsg(node3KeyPair, failure3);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failure3Msg);
 
-    nodeAssertions(nodesGrid(), 2, "Start Failed\n" + node3Key, false);
+    nodeAssertions(nodesGrid(), 2, "Start Failed\n" + node3, false);
 
     // We try to start and failed
-    MessageGeneral elect1Msg = createMsg(publicKey, signer1, elect);
+    MessageGeneral elect1Msg = createMsg(mainKeyPair, elect);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, elect1Msg);
     ConsensusFailure failure1 =
         new ConsensusFailure(INSTANCE_ID, elect1Msg.getMessageId(), PAST_TIME);
-    MessageGeneral failure1Msg = createMsg(publicKey, signer1, failure1);
+    MessageGeneral failure1Msg = createMsg(mainKeyPair, failure1);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failure1Msg);
 
     displayAssertions(STATUS_READY, START_START, true);
@@ -364,7 +365,7 @@ public class ElectionStartFragmentTest {
     fragmentRule.getScenario().recreate();
   }
 
-  private MessageGeneral createMsg(String nodeKey, PublicKeySign nodeSigner, Data data) {
-    return new MessageGeneral(Base64.getUrlDecoder().decode(nodeKey), data, nodeSigner, gson);
+  private MessageGeneral createMsg(KeyPair nodeKey, Data data) {
+    return new MessageGeneral(nodeKey, data, gson);
   }
 }

@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.detail.event.consensus.ElectionStartFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.CastVoteFragment;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionResultFragment;
@@ -120,7 +121,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         .observe(
             this,
             stringEvent -> {
-              String pk = stringEvent.getContentIfNotHandled();
+              PublicKey pk = stringEvent.getContentIfNotHandled();
               if (pk != null) {
                 setupRollCallDetailFragment(pk);
               }
@@ -246,7 +247,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         .observe(
             this,
             stringEvent -> {
-              String publicKey = stringEvent.getContentIfNotHandled();
+              PublicKey publicKey = stringEvent.getContentIfNotHandled();
               if (publicKey != null) {
                 setCurrentFragment(
                     R.id.fragment_identity, () -> IdentityFragment.newInstance(publicKey));
@@ -337,7 +338,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
   }
 
-  private void setupRollCallDetailFragment(String pk) {
+  private void setupRollCallDetailFragment(PublicKey pk) {
     setCurrentFragment(
         R.id.fragment_roll_call_detail, () -> RollCallDetailFragment.newInstance(pk));
   }
