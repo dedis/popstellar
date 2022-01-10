@@ -64,8 +64,8 @@ public class NotifyAddChirpTest {
   public void jsonValidationTest() {
     JsonTestUtils.testData(NOTIFY_ADD_CHIRP);
 
-    String pathDir =
+    String path =
         "protocol/examples/messageData/chirp_notify_add/wrong_chirp_notify_add_negative_time.json";
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(pathDir));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(path));
   }
 }

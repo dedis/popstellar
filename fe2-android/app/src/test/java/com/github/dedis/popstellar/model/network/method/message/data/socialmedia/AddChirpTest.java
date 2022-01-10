@@ -74,8 +74,8 @@ public class AddChirpTest {
   public void jsonValidationTest() {
     JsonTestUtils.testData(ADD_CHIRP);
 
-    String pathDir =
+    String path =
         "protocol/examples/messageData/chirp_add_publish/wrong_chirp_add_publish_negative_time.json";
-    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(pathDir));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(path));
   }
 }

@@ -71,7 +71,7 @@ public class NotifyAddChirp extends Data {
   public String toString() {
     return "NotifyAddChirp{"
         + "chirpId='"
-        + chirpId
+        + chirpId.getEncoded()
         + '\''
         + ", channel='"
         + channel
