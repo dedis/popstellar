@@ -178,17 +178,17 @@ public final class QRCodeScanningFragment extends Fragment {
         clicked -> {
           // create the Alert Dialog to add manually an attendee token
           AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-          builder.setTitle("Add an attendee");
-          builder.setMessage("Enter token:");
+          builder.setTitle(R.string.add_attendee_title);
+          builder.setMessage(R.string.add_attendee_ask_input);
           // Set up the input
           final EditText attendeeTokenText = new EditText(getContext());
 
-          attendeeTokenText.setHint("Attendee Token");
+          attendeeTokenText.setHint(R.string.add_attendee_hint);
           builder.setView(attendeeTokenText);
 
           // Set up the buttons
           builder.setPositiveButton(
-              "ADD",
+              R.string.confirm,
               (dialog, which) -> {
                 String attendeeTokenString = attendeeTokenText.getText().toString();
                 if (!attendeeTokenString.isEmpty()) {
@@ -197,11 +197,11 @@ public final class QRCodeScanningFragment extends Fragment {
                     ((LaoDetailViewModel) mQRCodeScanningViewModel).addAttendee(attendeeToken);
                   } catch (Exception e) {
                     Log.e(TAG, "Invalid token : " + attendeeTokenString, e);
-                    setupWarningPopup("Invalid token");
+                    setupWarningPopup(getString(R.string.invalid_token));
                   }
                 }
               });
-          builder.setNegativeButton("CANCEL", (dialog, which) -> dialog.cancel());
+          builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
           builder.show();
         });
   }

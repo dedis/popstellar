@@ -1363,12 +1363,13 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void addAttendee(PublicKey attendee) {
     if (attendees.contains(attendee)) {
       mScanWarningEvent.postValue(
-          new SingleEvent<>("This QR code has already been scanned. Please try again."));
+          new SingleEvent<>(getApplication().getString(R.string.qrcode_already_scanned)));
       return;
     }
 
     attendees.add(attendee);
-    mAttendeeScanConfirmEvent.postValue(new SingleEvent<>("Attendee has been added."));
+    mAttendeeScanConfirmEvent.postValue(
+        new SingleEvent<>(getApplication().getString(R.string.attendee_added)));
     mNbAttendeesEvent.postValue(new SingleEvent<>(attendees.size()));
   }
 
@@ -1397,14 +1398,15 @@ public class LaoDetailViewModel extends AndroidViewModel
     try {
       attendee = new PublicKey(barcode.rawValue);
     } catch (IllegalArgumentException e) {
-      mScanWarningEvent.postValue(new SingleEvent<>("Invalid QR code. Please try again."));
+      mScanWarningEvent.postValue(
+          new SingleEvent<>(getApplication().getString(R.string.invalid_qrcode)));
       return;
     }
 
     if (attendees.contains(attendee)
         || Objects.requireNonNull(mWitnesses.getValue()).contains(attendee)) {
       mScanWarningEvent.postValue(
-          new SingleEvent<>("This QR code has already been scanned. Please try again."));
+          new SingleEvent<>(getApplication().getString(R.string.qrcode_already_scanned)));
       return;
     }
     if (scanningAction == (ScanningAction.ADD_ROLL_CALL_ATTENDEE)) {
