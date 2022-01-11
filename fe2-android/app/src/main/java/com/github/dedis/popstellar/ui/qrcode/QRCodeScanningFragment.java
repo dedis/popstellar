@@ -166,7 +166,7 @@ public final class QRCodeScanningFragment extends Fragment {
     if (camera != null) {
       try {
         mPreview.start(camera);
-      } catch (IOException e) {
+      } catch (Exception e) {
         Log.e(TAG, "Unable to start camera source.", e);
         camera.release();
       }
