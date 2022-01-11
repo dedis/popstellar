@@ -18,9 +18,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.when;
 
+import android.Manifest.permission;
 import android.os.Bundle;
 
 import androidx.test.filters.LargeTest;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.GenericMessage;
@@ -187,11 +189,14 @@ public class QRCodeScanningFragmentTest {
         }
       };
 
+  @Rule public GrantPermissionRule permissionRule = GrantPermissionRule.grant(permission.CAMERA);
+
   @Rule
   public final RuleChain chain =
       RuleChain.outerRule(MockitoJUnit.testRule(this))
           .around(hiltRule)
           .around(setupRule)
+          .around(permissionRule)
           .around(activityFragmentScenarioRule);
 
   private void setupScanningFragment() {
