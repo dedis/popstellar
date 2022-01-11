@@ -16,7 +16,7 @@ import SocialHome from './SocialHome';
 const Tab = createMaterialTopTabNavigator();
 
 const SocialMediaNavigation = () => {
-  const [userPublicKey, setUserPublicKey] = useState(new PublicKey(''));
+  const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
 
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
@@ -34,7 +34,7 @@ const SocialMediaNavigation = () => {
   useEffect(() => {
     generateToken(lao.id, rollCallId).then((token) => {
       if (token && rollCall.containsToken(token)) {
-        setUserPublicKey(token.publicKey);
+        setCurrentUserPublicKey(token.publicKey);
       }
     });
   }, [lao.last_tokenized_roll_call_id]);
@@ -70,12 +70,11 @@ const SocialMediaNavigation = () => {
       })}
     >
       <Tab.Screen name={STRINGS.social_media_navigation_tab_home}>
-        {() => <SocialHome userPublicKey={userPublicKey} />}
+        {() => <SocialHome currentUserPublicKey={currentUserPublicKey} />}
       </Tab.Screen>
-      <Tab.Screen
-        name={STRINGS.social_media_navigation_tab_search}
-        component={SocialSearch}
-      />
+      <Tab.Screen name={STRINGS.social_media_navigation_tab_search}>
+        {() => <SocialSearch currentUserPublicKey={currentUserPublicKey} />}
+      </Tab.Screen>
       <Tab.Screen
         name={STRINGS.social_media_navigation_tab_follows}
         component={SocialFollows}
