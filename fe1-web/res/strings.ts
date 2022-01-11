@@ -51,6 +51,7 @@ const STRINGS = {
   social_media_navigation_tab_search: 'Search',
   social_media_navigation_tab_follows: 'My Follows',
   social_media_navigation_tab_profile: 'My Profile',
+  social_media_navigation_tab_user_profile: 'User profile',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
