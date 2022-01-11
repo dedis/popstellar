@@ -18,8 +18,8 @@ import {
   setLaoLastRollCall,
   updateEvent,
 } from 'store';
+import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
-import { subscribeToChannel } from '../../network/CommunicationApi';
 
 const getCurrentLao = makeCurrentLao();
 
