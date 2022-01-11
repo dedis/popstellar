@@ -45,12 +45,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: 20,
   } as ViewStyle,
-  textInput: {
-    padding: 10,
-    borderWidth: 1,
-    width: 500,
-    alignContent: 'flex-end',
-  } as TextStyle,
 });
 
 const SocialUserProfile = (props: IPropTypes) => {

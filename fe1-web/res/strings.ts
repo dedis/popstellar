@@ -65,6 +65,7 @@ const STRINGS = {
   attendees_of_last_roll_call: 'Attendees of last roll call',
   follow_button: 'Follow',
   profile_button: 'Profile',
+  social_media_your_profile_unavailable: 'You do not have a social media profile yet, be sure to have participated in a roll call.',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',
