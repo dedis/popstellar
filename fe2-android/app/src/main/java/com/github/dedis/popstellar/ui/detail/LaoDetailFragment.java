@@ -16,9 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.LaoDetailFragmentBinding;
-import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
-import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.ui.detail.event.EventExpandableListViewAdapter;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessListViewAdapter;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -193,9 +191,7 @@ public class LaoDetailFragment extends Fragment {
             events -> {
               Log.d(TAG, "Got an event list update");
               for (Event event : events) {
-                if (event.getType() == EventType.ROLL_CALL) {
-                  Log.d(TAG, ((RollCall) event).getDescription());
-                }
+                Log.d(TAG, "event : " + event.toString());
               }
               mEventListViewEventAdapter.replaceList(events);
             });
