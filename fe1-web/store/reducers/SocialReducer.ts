@@ -158,5 +158,5 @@ export const makeChirpsListOfUser = (user: PublicKey | string) => {
       }
       return [];
     },
-  )
-}
+  );
+};
