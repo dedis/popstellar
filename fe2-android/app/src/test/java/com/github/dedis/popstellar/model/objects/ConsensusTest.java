@@ -1,10 +1,14 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
@@ -27,7 +31,7 @@ public class ConsensusTest {
 
   @Test
   public void setAndGetMessageIdTest() {
-    String messageId = "aaa";
+    MessageID messageId = generateMessageID();
     consensus.setMessageId(messageId);
     assertEquals(messageId, consensus.getMessageId());
   }
@@ -69,25 +73,25 @@ public class ConsensusTest {
 
   @Test
   public void setAndGetProposerTest() {
-    String proposer = "aaa";
+    PublicKey proposer = generatePublicKey();
     consensus.setProposer(proposer);
     assertEquals(proposer, consensus.getProposer());
   }
 
   @Test
   public void setAndGetNodesTest() {
-    Set<String> nodes = new HashSet<>();
+    Set<PublicKey> nodes = new HashSet<>();
     consensus.setNodes(nodes);
     assertEquals(nodes, consensus.getNodes());
   }
 
   @Test
   public void acceptorsResponsesTest() {
-    String acceptor1 = "aaa1";
-    String messageId1 = "mmm1";
+    PublicKey acceptor1 = generatePublicKey();
+    MessageID messageId1 = generateMessageID();
     consensus.putPositiveAcceptorResponse(acceptor1, messageId1);
 
-    Map<String, String> messageIds = consensus.getAcceptorsToMessageId();
+    Map<PublicKey, MessageID> messageIds = consensus.getAcceptorsToMessageId();
     assertEquals(1, messageIds.size());
     assertEquals(messageId1, messageIds.get(acceptor1));
   }

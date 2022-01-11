@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   View, Modal, Text,
@@ -6,9 +6,11 @@ import {
 import STRINGS from 'res/strings';
 import styles from 'styles/stylesheets/modal';
 import WideButtonView from './WideButtonView';
+import TextInputLine from './TextInputLine';
 
 /**
  * A modal used to ask for the confirmation or cancellation of the user.
+ * It can also ask for a user input.
  */
 
 const ConfirmModal = (props: IPropTypes) => {
@@ -19,6 +21,9 @@ const ConfirmModal = (props: IPropTypes) => {
   const { buttonConfirmText } = props;
   const { buttonCancelText } = props;
   const { onConfirmPress } = props;
+  const { hasTextInput } = props;
+  const { textInputPlaceholder } = props;
+  const [textInput, setTextInput] = useState('');
 
   return (
     <Modal
@@ -30,14 +35,24 @@ const ConfirmModal = (props: IPropTypes) => {
           <Text style={styles.modalTitle}>{title}</Text>
         </View>
         <Text style={styles.modalDescription}>{description}</Text>
+        { hasTextInput
+          ? (
+            <TextInputLine
+              onChangeText={(input) => setTextInput(input)}
+              placeholder={textInputPlaceholder}
+            />
+          ) : null }
         <View style={styles.buttonView}>
           <WideButtonView
             title={buttonConfirmText}
-            onPress={() => onConfirmPress()}
+            onPress={() => onConfirmPress(textInput)}
           />
           <WideButtonView
             title={buttonCancelText}
-            onPress={() => setVisibility(!visibility)}
+            onPress={() => {
+              setVisibility(!visibility);
+              setTextInput('');
+            }}
           />
         </View>
       </View>
@@ -53,6 +68,8 @@ const propTypes = {
   buttonCancelText: PropTypes.string,
   buttonConfirmText: PropTypes.string,
   onConfirmPress: PropTypes.func.isRequired,
+  hasTextInput: PropTypes.bool,
+  textInputPlaceholder: PropTypes.string,
 };
 
 ConfirmModal.propTypes = propTypes;
@@ -60,6 +77,8 @@ ConfirmModal.propTypes = propTypes;
 ConfirmModal.defaultProps = {
   buttonCancelText: STRINGS.general_button_cancel,
   buttonConfirmText: STRINGS.general_button_confirm,
+  hasTextInput: false,
+  textInputPlaceholder: '',
 };
 
 type IPropTypes = {
@@ -70,6 +89,8 @@ type IPropTypes = {
   buttonCancelText: string,
   buttonConfirmText: string,
   onConfirmPress: Function,
+  hasTextInput: boolean,
+  textInputPlaceholder: string,
 };
 
 export default ConfirmModal;

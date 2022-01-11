@@ -15,6 +15,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
@@ -40,7 +42,7 @@ public final class ElectionHandler {
   public static void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup) {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
+    MessageID messageId = context.getMessageId();
 
     if (laoRepository.isLaoChannel(channel)) {
       Lao lao = laoRepository.getLaoByChannel(channel);
@@ -116,8 +118,8 @@ public final class ElectionHandler {
   public static void handleCastVote(HandlerContext context, CastVote castVote) {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
-    String senderPk = context.getSenderPk();
+    MessageID messageId = context.getMessageId();
+    PublicKey senderPk = context.getSenderPk();
 
     Log.d(TAG, "handleCastVote: channel " + channel);
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -126,7 +128,7 @@ public final class ElectionHandler {
     // Verify the vote was created before the end of the election or the election is not closed yet
     if (election.getEndTimestamp() >= castVote.getCreation() || election.getState() != CLOSED) {
       // Retrieve previous cast vote message stored for the given sender
-      Optional<String> previousMessageIdOption =
+      Optional<MessageID> previousMessageIdOption =
           election.getMessageMap().entrySet().stream()
               .filter(entry -> senderPk.equals(entry.getValue()))
               .map(Map.Entry::getKey)
@@ -150,7 +152,7 @@ public final class ElectionHandler {
     }
   }
 
-  public static WitnessMessage electionSetupWitnessMessage(String messageId, Election election) {
+  public static WitnessMessage electionSetupWitnessMessage(MessageID messageId, Election election) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("New Election Setup");
     message.setDescription(

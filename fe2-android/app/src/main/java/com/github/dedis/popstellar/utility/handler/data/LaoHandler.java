@@ -9,11 +9,12 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateL
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 import com.github.dedis.popstellar.utility.error.InvalidSignatureException;
-import com.github.dedis.popstellar.utility.security.Signature;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,7 +49,7 @@ public final class LaoHandler {
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
 
-    String publicKey = laoRepository.getPublicKey();
+    PublicKey publicKey = laoRepository.getPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
       laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
     }
@@ -65,7 +66,7 @@ public final class LaoHandler {
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
+    MessageID messageId = context.getMessageId();
 
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -119,13 +120,12 @@ public final class LaoHandler {
     }
 
     Log.d(TAG, "Verifying signatures");
-    // Verify signatures
     for (PublicKeySignaturePair pair : stateLao.getModificationSignatures()) {
-      if (!Signature.verifySignature(
-          stateLao.getModificationId(), pair.getWitness(), pair.getSignature())) {
-        throw new InvalidSignatureException(stateLao, pair.getSignatureEncoded());
+      if (!pair.getWitness().verify(pair.getSignature(), stateLao.getModificationId())) {
+        throw new InvalidSignatureException(stateLao, pair.getSignature());
       }
     }
+
     Log.d(TAG, "Success to verify state lao signatures");
 
     // TODO: verify if lao/state_lao is consistent with the lao/update message
@@ -136,7 +136,7 @@ public final class LaoHandler {
     lao.setLastModified(stateLao.getLastModified());
     lao.setModificationId(stateLao.getModificationId());
 
-    String publicKey = laoRepository.getPublicKey();
+    PublicKey publicKey = laoRepository.getPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
       laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
     }
@@ -149,7 +149,7 @@ public final class LaoHandler {
   }
 
   public static WitnessMessage updateLaoNameWitnessMessage(
-      String messageId, UpdateLao updateLao, Lao lao) {
+      MessageID messageId, UpdateLao updateLao, Lao lao) {
     WitnessMessage message = new WitnessMessage(messageId);
     message.setTitle("Update Lao Name ");
     message.setDescription(
@@ -165,9 +165,9 @@ public final class LaoHandler {
   }
 
   public static WitnessMessage updateLaoWitnessesWitnessMessage(
-      String messageId, UpdateLao updateLao, Lao lao) {
+      MessageID messageId, UpdateLao updateLao, Lao lao) {
     WitnessMessage message = new WitnessMessage(messageId);
-    List<String> tempList = new ArrayList<>(updateLao.getWitnesses());
+    List<PublicKey> tempList = new ArrayList<>(updateLao.getWitnesses());
     message.setTitle("Update Lao Witnesses");
     message.setDescription(
         "Lao Name : "

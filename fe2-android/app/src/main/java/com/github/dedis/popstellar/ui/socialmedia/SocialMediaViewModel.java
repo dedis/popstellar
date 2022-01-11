@@ -17,16 +17,14 @@ import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.utility.security.Keys;
-import com.google.crypto.tink.KeysetHandle;
-import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.integration.android.AndroidKeysetManager;
+import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -68,7 +66,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   private final LAORepository mLaoRepository;
   private final Gson mGson;
-  private final AndroidKeysetManager mKeysetManager;
+  private final KeyManager mKeyManager;
   private final CompositeDisposable disposables;
 
   @Inject
@@ -76,11 +74,11 @@ public class SocialMediaViewModel extends AndroidViewModel {
       @NonNull Application application,
       LAORepository laoRepository,
       Gson gson,
-      AndroidKeysetManager keysetManager) {
+      KeyManager keyManager) {
     super(application);
     mLaoRepository = laoRepository;
     mGson = gson;
-    mKeysetManager = keysetManager;
+    mKeyManager = keyManager;
     disposables = new CompositeDisposable();
 
     mLAOs =
@@ -207,9 +205,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
     Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/<sender>");
 
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      String channel = ROOT + laoId + "/social/" + publicKey;
+      String channel = ROOT + laoId + "/social/" + mKeyManager.getMainPublicKey().getEncoded();
 
       Disposable disposable =
           mLaoRepository
@@ -247,7 +243,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
    * @param parentId the id of the chirp to which you replied
    * @param timestamp the time at which you sent the chirp
    */
-  public void sendChirp(String text, @Nullable String parentId, long timestamp) {
+  public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
     String laoChannel = ROOT + getLaoId().getValue();
     Lao lao = mLaoRepository.getLaoByChannel(laoChannel);
@@ -257,13 +253,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
     try {
-      KeysetHandle publicKeysetHandle = mKeysetManager.getKeysetHandle().getPublicKeysetHandle();
-      String publicKey = Keys.getEncodedKey(publicKeysetHandle);
-      String channel = laoChannel + "/social/" + publicKey;
-      byte[] sender = Base64.getUrlDecoder().decode(publicKey);
-      PublicKeySign signer = mKeysetManager.getKeysetHandle().getPrimitive(PublicKeySign.class);
+      KeyPair mainKey = mKeyManager.getMainKeyPair();
+      String channel = laoChannel + "/social/" + mainKey.getPublicKey().getEncoded();
       Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(sender, addChirp, signer, mGson);
+      MessageGeneral msg = new MessageGeneral(mainKey, addChirp, mGson);
 
       Disposable disposable =
           mLaoRepository
