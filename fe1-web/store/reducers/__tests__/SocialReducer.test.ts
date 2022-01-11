@@ -4,7 +4,7 @@ import keyPair from 'test_data/keypair.json';
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { Chirp } from 'model/objects/Chirp';
 import {
-  socialReduce, addChirp, makeChirpsList, makeChirpsListOfUser
+  socialReduce, addChirp, makeChirpsList, makeChirpsListOfUser,
 } from '../SocialReducer';
 
 const mockPublicKey = new PublicKey(keyPair.publicKey);
