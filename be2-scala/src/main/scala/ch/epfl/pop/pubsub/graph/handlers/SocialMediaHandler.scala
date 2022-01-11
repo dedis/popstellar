@@ -137,6 +137,7 @@ case object SocialMediaHandler extends MessageHandler {
   def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
+  }
 
 }
 

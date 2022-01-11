@@ -4,10 +4,6 @@ import ch.epfl.pop.model.network.method.message.data.ActionType._
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CreateRollCall, OpenRollCall, ReopenRollCall, CloseRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
-<<<<<<< HEAD
-=======
-
->>>>>>> 7a442f6a1ca6640e1b66448cda7d5967480bf267
 
 object DataRegistryModule {
 

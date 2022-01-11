@@ -89,4 +89,5 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
             }
             case _ => Right(validationErrorNoMessage(rpcMessage.id))
         }
+    }
 }

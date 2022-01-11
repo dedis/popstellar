@@ -24,7 +24,6 @@ object ActionType extends Enumeration {
   val ADD: Value = MatchingValue("add")
   val DELETE: Value = MatchingValue("delete")
   val NOTIFY_ADD: Value = MatchingValue("notify_add")
-  val DELETE: Value = MatchingValue("delete")
   val NOTIFY_DELETE: Value = MatchingValue("notify_delete")
 
   def MatchingValue(v: String): Value with Matching = new Val(nextId, v) with Matching
