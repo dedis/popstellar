@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:layout_margin="@dimen/rounded_edit_text"
+  android:orientation="horizontal">
+
+  <ImageView
+    android:layout_width="@dimen/bottom_navigation_view_height"
+    android:layout_height="@dimen/bottom_navigation_view_height"
+    android:contentDescription="@string/profile"
+    android:src="@drawable/ic_social_media_profile_foreground" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/margin_top"
+    android:layout_marginEnd="@dimen/margin_top"
+    android:orientation="vertical">
+
+    <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
+
+      <TextView
+        android:id="@+id/social_media_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:text="@string/username"
+        android:textStyle="bold" />
+
+      <TextView
+        android:id="@+id/social_media_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:text="@string/time_ago"
+        android:textColor="@color/gray" />
+    </FrameLayout>
+
+    <TextView
+      android:id="@+id/social_media_text"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/text" />
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
+
+      <ImageButton
+        android:layout_width="@dimen/social_media_delete"
+        android:layout_height="@dimen/social_media_delete"
+        android:src="@drawable/ic_social_media_delete_foreground"
+        android:contentDescription="@string/delete_button"
+        android:visibility="gone" />
+    </LinearLayout>
+
+  </LinearLayout>
+
+</LinearLayout>

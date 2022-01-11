@@ -219,5 +219,9 @@
   <string name="laos_list">Laos list</string>
   <string name="toast_no_lao">You are not in a lao</string>
   <string name="toast_error_sending_chirp">Error when sending chirp. Please try again</string>
+  <string name="username">username</string>
+  <string name="time_ago">time ago</string>
+  <string name="text">text</string>
+  <string name="delete_button">delete button</string>
 
 </resources>
