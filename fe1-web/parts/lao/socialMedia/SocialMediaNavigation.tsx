@@ -67,6 +67,7 @@ const SocialMediaNavigation = () => {
         },
         tabBarActiveTintColor: red,
         tabBarInactiveTintColor: gray,
+        swipeEnabled: false,
       })}
     >
       <Tab.Screen name={STRINGS.social_media_navigation_tab_home}>
