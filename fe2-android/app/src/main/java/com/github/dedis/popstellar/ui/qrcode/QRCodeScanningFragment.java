@@ -191,14 +191,12 @@ public final class QRCodeScanningFragment extends Fragment {
               R.string.confirm,
               (dialog, which) -> {
                 String attendeeTokenString = attendeeTokenText.getText().toString();
-                if (!attendeeTokenString.isEmpty()) {
-                  try {
-                    PublicKey attendeeToken = new PublicKey(attendeeTokenText.getText().toString());
-                    ((LaoDetailViewModel) mQRCodeScanningViewModel).addAttendee(attendeeToken);
-                  } catch (Exception e) {
-                    Log.e(TAG, "Invalid token : " + attendeeTokenString, e);
-                    setupWarningPopup(getString(R.string.invalid_token));
-                  }
+                try {
+                  PublicKey attendeeToken = new PublicKey(attendeeTokenString);
+                  ((LaoDetailViewModel) mQRCodeScanningViewModel).addAttendee(attendeeToken);
+                } catch (Exception e) {
+                  Log.e(TAG, "Invalid token : " + attendeeTokenString, e);
+                  setupWarningPopup(getString(R.string.invalid_token));
                 }
               });
           builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
@@ -253,7 +251,7 @@ public final class QRCodeScanningFragment extends Fragment {
     builder.setMessage(msg);
     builder.setOnDismissListener(dialog -> startCamera());
     builder.setPositiveButton(
-        "Ok",
+        R.string.ok,
         (dialog, which) -> {
           if (dialog != null) {
             dialog.dismiss();

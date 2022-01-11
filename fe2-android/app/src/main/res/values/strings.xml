@@ -36,6 +36,7 @@
   <string name="location_optional">Location</string>
   <string name="confirm">Confirm</string>
   <string name="cancel">Cancel</string>
+  <string name="ok">Ok</string>
   <string name="past_date_not_allowed">Event has to start/end today or in the future</string>
   <string name="end_date_after_start_date_not_allowed">End date has to be after or the same day as the start date
     </string>
