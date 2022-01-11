@@ -1,12 +1,14 @@
 import React from 'react';
 import {
-  StyleSheet, ViewStyle, View, TextStyle, Text,
+  StyleSheet, ViewStyle, View, TextStyle, Text, Pressable,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
+import { useNavigation } from '@react-navigation/native';
+import STRINGS from 'res/strings';
 import ProfileIcon from './ProfileIcon';
 
 /**
@@ -61,6 +63,7 @@ const styles = StyleSheet.create({
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const likesText = `  ${chirp.likes}`;
+  const navigation = useNavigation();
 
   // This is temporary for now
   const zero = '  0';
@@ -68,7 +71,12 @@ const ChirpCard = (props: IPropTypes) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
-        <ProfileIcon publicKey={chirp.sender} />
+        <Pressable
+          onPress={() => navigation.navigate(STRINGS.social_media_navigation_tab_user_profile,
+            { userPublicKey: chirp.sender.valueOf() })}
+        >
+          <ProfileIcon publicKey={chirp.sender} />
+        </Pressable>
       </View>
       <View style={styles.rightView}>
         <View style={styles.senderView}>
