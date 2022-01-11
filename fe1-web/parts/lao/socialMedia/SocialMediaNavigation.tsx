@@ -79,10 +79,9 @@ const SocialMediaNavigation = () => {
         name={STRINGS.social_media_navigation_tab_follows}
         component={SocialFollows}
       />
-      <Tab.Screen
-        name={STRINGS.social_media_navigation_tab_profile}
-        component={SocialProfile}
-      />
+      <Tab.Screen name={STRINGS.social_media_navigation_tab_profile}>
+        {() => <SocialProfile currentUserPublicKey={currentUserPublicKey} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 };

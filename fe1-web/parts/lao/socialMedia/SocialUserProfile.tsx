@@ -3,36 +3,45 @@ import {
   FlatList,
   ListRenderItemInfo,
   StyleSheet,
+  Text,
   TextStyle,
   View,
   ViewStyle,
 } from 'react-native';
-import STRINGS from 'res/strings';
 import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
-import TextBlock from 'components/TextBlock';
 import ChirpCard from 'components/ChirpCard';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
 import ProfileIcon from 'components/ProfileIcon';
 import { PublicKey } from 'model/objects';
+import PropTypes from 'prop-types';
+import { gray } from 'styles/colors';
 
 /**
  * UI for the profile of a user.
  */
-
 const styles = StyleSheet.create({
   viewCenter: {
     alignSelf: 'center',
     width: 600,
   } as ViewStyle,
   topView: {
-    flexDirection: 'row',
-  } as ViewStyle,
-  homeTextView: {
-    alignSelf: 'flex-start',
     marginTop: 20,
+    flexDirection: 'column',
+    alignSelf: 'flex-start',
   } as ViewStyle,
+  textView: {
+    alignSelf: 'flex-start',
+    marginTop: 15,
+  } as ViewStyle,
+  profileText: {
+    marginBottom: 5,
+    fontSize: 22,
+    fontWeight: 'bold',
+  } as TextStyle,
   userFeed: {
+    borderColor: gray,
+    borderTopWidth: 1,
     flexDirection: 'column',
     marginTop: 20,
   } as ViewStyle,
@@ -44,8 +53,8 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const SocialUserProfile = ({ route }: any) => {
-  const userPublicKey = route.params;
+const SocialUserProfile = (props: IPropTypes) => {
+  const { userPublicKey } = props;
   const userChirps = makeChirpsListOfUser(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
@@ -59,12 +68,13 @@ const SocialUserProfile = ({ route }: any) => {
     <View style={styles.viewCenter}>
       <View style={styles.topView}>
         <ProfileIcon
-          publicKey={new PublicKey(userPublicKey)}
+          publicKey={userPublicKey}
           size={8}
           scale={10}
         />
-        <View style={styles.homeTextView}>
-          <TextBlock text={STRINGS.social_media_navigation_tab_profile} />
+        <View style={styles.textView}>
+          <Text style={styles.profileText}>{userPublicKey.valueOf()}</Text>
+          <Text>{`${userChirpList.length} chirps`}</Text>
         </View>
       </View>
       <View style={styles.userFeed}>
@@ -78,8 +88,14 @@ const SocialUserProfile = ({ route }: any) => {
   );
 };
 
-export default SocialUserProfile;
-
-export type SocialUserParams = {
-  SocialUserProfile: { userPublicKey: string }
+const propTypes = {
+  userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
+
+SocialUserProfile.prototype = propTypes;
+
+type IPropTypes = {
+  userPublicKey: PublicKey,
+};
+
+export default SocialUserProfile;
