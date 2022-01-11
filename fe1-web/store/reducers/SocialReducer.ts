@@ -194,9 +194,9 @@ export const makeReactionsList = () => createSelector(
       const reactions: Record<string, Record<string, number>> = {};
       store.allIdsInOrder.forEach(
         (id) => {
-          const reactionByUser = store.reactionsByChirp[id];
-          if (reactionByUser) {
-            reactions[id] = createReactionsEntry(reactionByUser);
+          const chirpReactions = store.reactionsByChirp[id];
+          if (chirpReactions) {
+            reactions[id] = createReactionsEntry(chirpReactions);
           }
         },
       );

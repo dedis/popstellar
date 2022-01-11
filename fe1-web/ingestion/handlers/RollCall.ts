@@ -139,16 +139,15 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
               err);
           });
       }
+      // everyone is automatically subscribed to the reaction channel after the roll call
+      await subscribeToChannel(getReactionChannel(lao.id))
+        .catch((err) => {
+          console.error('Could not subscribe to reaction channel, error:', err);
+        });
     } catch (err) {
       console.debug(err);
     }
   });
-
-  // everyone is automatically subscribed to the reaction channel after the roll call
-  subscribeToChannel(getReactionChannel(lao.id))
-    .catch((err) => {
-      console.error('Could not subscribe to reaction channel, error:', err);
-    });
 
   return true;
 }

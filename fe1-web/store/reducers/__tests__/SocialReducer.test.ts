@@ -393,31 +393,26 @@ describe('chirp selector', () => {
   });
 
   test('selector should return an empty list', () => {
-    socialReduce(undefined, {} as AnyAction);
     expect(makeChirpsList().resultFunc(emptyState, mockLaoId))
       .toEqual([]);
   });
 
   test('selector should return the first chirp state', () => {
-    socialReduce(emptyState, addChirp(mockLaoId, chirp1));
     expect(makeChirpsList().resultFunc(chirpFilledState1, mockLaoId))
       .toEqual([chirp1]);
   });
 
   test('selector should return the newer chirp before the first chirp', () => {
-    socialReduce(chirpFilledState1, addChirp(mockLaoId, chirp2));
     expect(makeChirpsList().resultFunc(chirpFilledState2, mockLaoId))
       .toEqual([chirp2, chirp1]);
   });
 
   test('selector should add the newer chirp after the second chirp', () => {
-    socialReduce(chirpFilledState2, addChirp(mockLaoId, chirp3));
     expect(makeChirpsList().resultFunc(chirpFilledState3, mockLaoId))
       .toEqual([chirp2, chirp3, chirp1]);
   });
 
   test('selector should return the newest chirp on top', () => {
-    socialReduce(chirpFilledState3, addChirp(mockLaoId, chirp4));
     expect(makeChirpsList().resultFunc(chirpFilledState4, mockLaoId))
       .toEqual([chirp4, chirp2, chirp3, chirp1]);
   });
@@ -430,43 +425,36 @@ describe('reaction selector', () => {
   });
 
   test('selector should return an empty record', () => {
-    socialReduce(undefined, {} as AnyAction);
     expect(makeReactionsList().resultFunc(emptyState, mockLaoId))
       .toEqual({});
   });
 
   test('selector should return an empty record for non-stored chirp', () => {
-    socialReduce(emptyState, addReaction(mockLaoId, reaction1));
     expect(makeReactionsList().resultFunc(reactionFilledState1, mockLaoId))
       .toEqual({});
   });
 
   test('selector should return the first reaction state', () => {
-    socialReduce(emptyState, addReaction(mockLaoId, reaction1));
     expect(makeReactionsList().resultFunc(reactionFilledState11, mockLaoId))
       .toEqual({ [mockChirpId1.toString()]: { '👍': 1, '👎': 0, '❤️': 0 } });
   });
 
   test('selector should add reaction count correctly', () => {
-    socialReduce(reactionFilledState1, addReaction(mockLaoId, reaction2));
     expect(makeReactionsList().resultFunc(reactionFilledState22, mockLaoId))
       .toEqual({ [mockChirpId1.toString()]: { '👍': 1, '👎': 0, '❤️': 1 } });
   });
 
   test('selector should increment counter for new sender', () => {
-    socialReduce(reactionFilledState2, addReaction(mockLaoId, reaction3));
     expect(makeReactionsList().resultFunc(reactionFilledState33, mockLaoId))
       .toEqual({ [mockChirpId1.toString()]: { '👍': 2, '👎': 0, '❤️': 1 } });
   });
 
   test('selector should not count a sender twice for a reaction', () => {
-    socialReduce(reactionFilledState3, addReaction(mockLaoId, reaction1));
     expect(makeReactionsList().resultFunc(reactionFilledState33, mockLaoId))
       .toEqual({ [mockChirpId1.toString()]: { '👍': 2, '👎': 0, '❤️': 1 } });
   });
 
   test('selector should return state of two reaction', () => {
-    socialReduce(emptyState, addReaction(mockLaoId, reaction4));
     expect(makeReactionsList().resultFunc(reactionFilledState44, mockLaoId))
       .toEqual({
         [mockChirpId1.toString()]: { '👍': 1, '👎': 0, '❤️': 0 },
