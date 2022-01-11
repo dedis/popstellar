@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Optional;
@@ -17,7 +18,7 @@ public class AddChirp extends Data {
 
   @SerializedName("parent_id")
   @Nullable
-  private final String parentId;
+  private final MessageID parentId;
 
   private final long timestamp;
 
@@ -28,7 +29,7 @@ public class AddChirp extends Data {
    * @param parentId message ID of parent chirp, can be null
    * @param timestamp UNIX timestamp in UTC
    */
-  public AddChirp(String text, @Nullable String parentId, long timestamp) {
+  public AddChirp(String text, @Nullable MessageID parentId, long timestamp) {
     if (text.length() > MAX_CHIRP_CHARS) {
       throw new IllegalArgumentException("the text exceed the maximum numbers of characters");
     }
@@ -51,7 +52,7 @@ public class AddChirp extends Data {
     return text;
   }
 
-  public Optional<String> getParentId() {
+  public Optional<MessageID> getParentId() {
     return Optional.ofNullable(parentId);
   }
 

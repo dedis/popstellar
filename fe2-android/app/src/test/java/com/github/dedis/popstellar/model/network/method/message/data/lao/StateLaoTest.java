@@ -1,23 +1,28 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
+import static com.github.dedis.popstellar.Base64DataUtils.generateSignature;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
+import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,12 +31,13 @@ public class StateLaoTest {
   private final String name = " Lao name";
   private final long creation = 0x10;
   private final long lastModified = 0x999;
-  private final String organizer = "Organizer Id";
-  private final String modificationId = " modification id";
-  private final Set<String> witnesses = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
+  private final PublicKey organizer = generatePublicKey();
+  private final MessageID modificationId = generateMessageID();
+  private final Set<PublicKey> witnesses = Sets.newSet(generatePublicKey(), generatePublicKey());
   private final String id = Lao.generateLaoId(organizer, creation, name);
   private final List<PublicKeySignaturePair> modificationSignatures =
-      Collections.singletonList(new PublicKeySignaturePair(new byte[10], new byte[10]));
+      Collections.singletonList(
+          new PublicKeySignaturePair(generatePublicKey(), generateSignature()));
   private final StateLao stateLao =
       new StateLao(
           id,
@@ -131,7 +137,7 @@ public class StateLaoTest {
             creation,
             lastModified,
             organizer,
-            "random",
+            Base64DataUtils.generateMessageIDOtherThan(modificationId),
             witnesses,
             modificationSignatures));
     // same goes for modification signatures
@@ -151,7 +157,8 @@ public class StateLaoTest {
             modificationId,
             witnesses,
             modificationSignatures));
-    newId = Lao.generateLaoId(random, creation, name);
+    PublicKey newKey = Base64DataUtils.generatePublicKeyOtherThan(organizer);
+    newId = Lao.generateLaoId(newKey, creation, name);
     assertNotEquals(
         stateLao,
         new StateLao(
@@ -159,7 +166,7 @@ public class StateLaoTest {
             name,
             creation,
             lastModified,
-            random,
+            newKey,
             modificationId,
             witnesses,
             modificationSignatures));
@@ -195,7 +202,7 @@ public class StateLaoTest {
             lastModified,
             organizer,
             modificationId,
-            new HashSet<>(Collections.singletonList("0x3434")),
+            Sets.newSet(generatePublicKey()),
             modificationSignatures));
   }
 
@@ -204,7 +211,8 @@ public class StateLaoTest {
     JsonTestUtils.testData(stateLao);
 
     String pathDir = "protocol/examples/messageData/lao_state/";
-    String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_additional_params.json");
+    String jsonInvalid1 =
+        JsonTestUtils.loadFile(pathDir + "wrong_lao_state_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_state_missing_params.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));

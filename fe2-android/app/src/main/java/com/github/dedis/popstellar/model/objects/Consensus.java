@@ -3,6 +3,8 @@ package com.github.dedis.popstellar.model.objects;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.Collections;
@@ -12,7 +14,7 @@ import java.util.Set;
 
 public final class Consensus {
 
-  private String messageId;
+  private MessageID messageId;
   private String channel;
   private String id;
 
@@ -24,10 +26,10 @@ public final class Consensus {
   private boolean isAccepted;
   private boolean isFailed;
 
-  private String proposer;
-  private Set<String> nodes;
+  private PublicKey proposer;
+  private Set<PublicKey> nodes;
   // map the public key of acceptors to the id of their message
-  private final Map<String, String> acceptorToMessageId;
+  private final Map<PublicKey, MessageID> acceptorToMessageId;
 
   public Consensus(long creation, ConsensusKey key, Object value) {
     this.id = generateConsensusId(key.getType(), key.getId(), key.getProperty());
@@ -39,11 +41,11 @@ public final class Consensus {
     this.acceptorToMessageId = new HashMap<>();
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
-  public void setMessageId(@NonNull String messageId) {
+  public void setMessageId(@NonNull MessageID messageId) {
     this.messageId = messageId;
   }
 
@@ -90,27 +92,28 @@ public final class Consensus {
     this.creation = creation;
   }
 
-  public String getProposer() {
+  public PublicKey getProposer() {
     return proposer;
   }
 
-  public void setProposer(@NonNull String proposer) {
+  public void setProposer(@NonNull PublicKey proposer) {
     this.proposer = proposer;
   }
 
-  public Set<String> getNodes() {
+  public Set<PublicKey> getNodes() {
     return nodes;
   }
 
-  public void setNodes(@NonNull Set<String> nodes) {
+  public void setNodes(@NonNull Set<PublicKey> nodes) {
     this.nodes = nodes;
   }
 
-  public Map<String, String> getAcceptorsToMessageId() {
+  public Map<PublicKey, MessageID> getAcceptorsToMessageId() {
     return Collections.unmodifiableMap(acceptorToMessageId);
   }
 
-  public void putPositiveAcceptorResponse(@NonNull String acceptor, @NonNull String messageId) {
+  public void putPositiveAcceptorResponse(
+      @NonNull PublicKey acceptor, @NonNull MessageID messageId) {
     acceptorToMessageId.put(acceptor, messageId);
   }
 

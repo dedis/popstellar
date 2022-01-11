@@ -12,6 +12,8 @@ const chirp = new Chirp({
   likes: 42,
 });
 
+jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
+
 beforeAll(() => {
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021

@@ -90,8 +90,11 @@ object MessageDecoder {
       case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
       case (ObjectType.CHIRP, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddChirp)
       case (ObjectType.CHIRP, ActionType.NOTIFY_ADD) => request.toTypedRequest(JsonRpcRequestNotifyAddChirp)
+      case (ObjectType.CHIRP, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteChirp)
+      case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE) => request.toTypedRequest(JsonRpcRequestNotifyDeleteChirp)
       case (ObjectType.REACTION, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddReaction)
       case (ObjectType.REACTION, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteReaction)
+      
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
     }
     case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")

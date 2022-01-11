@@ -20,7 +20,7 @@ exports[`ChirpCard renders correctly 1`] = `
       }
     }
   >
-    <Text />
+    ProfileIcon
   </View>
   <View
     style={

@@ -16,6 +16,7 @@ import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 import RollCallOpened from '../RollCallOpened';
 
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
+const mockPublicKey2 = new PublicKey(keyPair.publicKey2);
 
 const org = mockPublicKey;
 const TIMESTAMP = 1609455600;
@@ -38,7 +39,7 @@ jest.mock('@react-navigation/core');
 jest.mock('react-qr-reader');
 jest.mock('network/MessageApi');
 
-const mockToastShow = jest.fn();
+let mockToastShow = jest.fn();
 jest.mock('react-native-toast-notifications', () => ({
   useToast: () => ({
     show: mockToastShow,
@@ -66,6 +67,10 @@ jest.mock('model/objects/wallet/Token.ts', () => ({
   generateToken: jest.fn(() => Promise.resolve(mockPopToken)),
 }));
 
+beforeEach(() => {
+  mockToastShow = jest.fn();
+});
+
 describe('RollCallOpened', () => {
   const useSelectorMock = jest.spyOn(reactRedux, 'useSelector');
   useSelectorMock.mockReturnValue({ mockLao });
@@ -83,7 +88,7 @@ describe('RollCallOpened', () => {
     });
   });
 
-  it('can scan attendees', async () => {
+  it('shows toast when scanning attendees', async () => {
     (useRoute as jest.Mock).mockReturnValue({
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },
@@ -100,7 +105,45 @@ describe('RollCallOpened', () => {
     });
   });
 
-  it('close correctly with no attendee', async () => {
+  it('shows toast when adding an attendee manually', async () => {
+    (useRoute as jest.Mock).mockReturnValue({
+      name: STRINGS.roll_call_open,
+      params: { rollCallID: rollCallId, time: time },
+    });
+    const { getByText, getByPlaceholderText } = render(
+      <RollCallOpened />,
+    );
+    const addAttendeeButton = getByText(STRINGS.roll_call_add_attendee_manually);
+    fireEvent.press(addAttendeeButton);
+    const textInput = getByPlaceholderText(STRINGS.roll_call_attendee_token_placeholder);
+    fireEvent.changeText(textInput, mockPublicKey2.valueOf());
+    const confirmButton = getByText(STRINGS.general_add);
+    fireEvent.press(confirmButton);
+    await waitFor(() => {
+      expect(mockToastShow).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('shows toast when trying to add an incorrect token manually', async () => {
+    (useRoute as jest.Mock).mockReturnValue({
+      name: STRINGS.roll_call_open,
+      params: { rollCallID: rollCallId, time: time },
+    });
+    const { getByText, getByPlaceholderText } = render(
+      <RollCallOpened />,
+    );
+    const addAttendeeButton = getByText(STRINGS.roll_call_add_attendee_manually);
+    fireEvent.press(addAttendeeButton);
+    const textInput = getByPlaceholderText(STRINGS.roll_call_attendee_token_placeholder);
+    fireEvent.changeText(textInput, 'data');
+    const confirmButton = getByText(STRINGS.general_add);
+    fireEvent.press(confirmButton);
+    await waitFor(() => {
+      expect(mockToastShow).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  it('closes correctly with no attendee', async () => {
     (useRoute as jest.Mock).mockReturnValue({
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },
@@ -117,7 +160,7 @@ describe('RollCallOpened', () => {
     });
   });
 
-  it('close correctly with two attendees', async () => {
+  it('closes correctly with two attendees', async () => {
     (useRoute as jest.Mock).mockReturnValue({
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },

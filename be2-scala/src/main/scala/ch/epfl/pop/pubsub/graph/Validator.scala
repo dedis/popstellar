@@ -153,8 +153,11 @@ object Validator {
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
       case message@(_: JsonRpcRequestAddChirp) => validateAddChirp(message)
       case message@(_: JsonRpcRequestNotifyAddChirp) => validateNotifyAddChirp(message)
+      case message@(_: JsonRpcRequestDeleteChirp) => validateDeleteChirp(message)
+      case message@(_: JsonRpcRequestNotifyDeleteChirp) => validateNotifyDeleteChirp(message)
       case message@(_: JsonRpcRequestAddReaction) => validateAddReaction(message)
       case message@(_: JsonRpcRequestDeleteReaction) => validateDeleteReaction(message)
+
       case _ => Right(validationError(jsonRpcMessage match {
         case r: JsonRpcRequest => r.id
         case r: JsonRpcResponse => r.id

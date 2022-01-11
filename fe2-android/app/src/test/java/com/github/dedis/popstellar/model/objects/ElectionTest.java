@@ -9,6 +9,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
@@ -20,6 +22,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ElectionTest {
+
+  private static final PublicKey SENDER_1 =
+      new PublicKey("oOcKZjUeandJOFVgn-E6e-7QksviBBbHUPicdzUgIm8");
+  private static final PublicKey SENDER_2 =
+      new PublicKey("TrWJNl4kA9VUBydvUwfWw9A-EJlLL6xLaQqRdynvhYw");
+
+  private static final MessageID MESSAGE_ID_1 =
+      new MessageID("bVuVwESHUTTlMb_-Ks-pIv88S0_1fsxMDgPyZjPEJrg");
+  private static final MessageID MESSAGE_ID_2 =
+      new MessageID("kwCQ-Es_Ysu_c_ZGVA77Bh_lx61aq0_H0DJgZahx7RA");
 
   private final ElectionQuestion electionQuestion =
       new ElectionQuestion(
@@ -105,10 +117,10 @@ public class ElectionTest {
         Arrays.asList(
             new ElectionVote("c", Collections.singletonList(3), false, "", "my election id"),
             new ElectionVote("d", Collections.singletonList(4), false, "", "my election id"));
-    election.putVotesBySender("sender2", votes2);
-    election.putSenderByMessageId("sender1", "message1");
-    election.putSenderByMessageId("sender2", "message2");
-    election.putVotesBySender("sender1", votes1);
+    election.putVotesBySender(SENDER_2, votes2);
+    election.putSenderByMessageId(SENDER_1, MESSAGE_ID_1);
+    election.putSenderByMessageId(SENDER_2, MESSAGE_ID_2);
+    election.putVotesBySender(SENDER_1, votes1);
     String hash =
         Hash.hash(
             votes1.get(1).getId(),

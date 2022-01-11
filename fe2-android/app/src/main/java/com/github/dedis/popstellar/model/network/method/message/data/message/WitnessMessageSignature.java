@@ -1,17 +1,21 @@
 package com.github.dedis.popstellar.model.network.method.message.data.message;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.google.gson.annotations.SerializedName;
 
 /** Data sent to attest the message as a witness */
 public class WitnessMessageSignature extends Data {
 
   @SerializedName("message_id")
-  private final String messageId;
+  private final MessageID messageId;
 
-  private final String signature;
+  private final Signature signature;
 
   /**
    * Constructor for a data Witness Message Signature
@@ -19,16 +23,16 @@ public class WitnessMessageSignature extends Data {
    * @param messageId ID of the message
    * @param signature signature by the witness over the message ID
    */
-  public WitnessMessageSignature(String messageId, String signature) {
+  public WitnessMessageSignature(MessageID messageId, Signature signature) {
     this.messageId = messageId;
     this.signature = signature;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
-  public String getSignature() {
+  public Signature getSignature() {
     return signature;
   }
 
@@ -60,6 +64,7 @@ public class WitnessMessageSignature extends Data {
     return java.util.Objects.hash(getMessageId(), getSignature());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "WitnessMessageSignature{"

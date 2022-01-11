@@ -1,10 +1,14 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.network.method.message.PublicKeySignaturePair;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
@@ -22,12 +26,12 @@ public class StateLao extends Data {
   @SerializedName("last_modified")
   private final long lastModified;
 
-  private final String organizer;
+  private final PublicKey organizer;
 
   @SerializedName("modification_id")
-  private final String modificationId;
+  private final MessageID modificationId;
 
-  private final Set<String> witnesses;
+  private final Set<PublicKey> witnesses;
 
   @SerializedName("modification_signatures")
   private final List<PublicKeySignaturePair> modificationSignatures;
@@ -48,9 +52,9 @@ public class StateLao extends Data {
       String name,
       long creation,
       long lastModified,
-      String organizer,
-      String modificationId,
-      Set<String> witnesses,
+      PublicKey organizer,
+      MessageID modificationId,
+      Set<PublicKey> witnesses,
       List<PublicKeySignaturePair> modificationSignatures) {
     if (!id.equals(Lao.generateLaoId(organizer, creation, name))) {
       throw new IllegalArgumentException("StateLao id must be Hash(organizer||creation||name)");
@@ -91,11 +95,11 @@ public class StateLao extends Data {
     return lastModified;
   }
 
-  public String getOrganizer() {
+  public PublicKey getOrganizer() {
     return organizer;
   }
 
-  public Set<String> getWitnesses() {
+  public Set<PublicKey> getWitnesses() {
     return new HashSet<>(witnesses);
   }
 
@@ -122,6 +126,7 @@ public class StateLao extends Data {
         getId(), getName(), getCreation(), getLastModified(), getOrganizer(), getWitnesses());
   }
 
+  @NonNull
   @Override
   public String toString() {
     return "StateLao{"
@@ -148,7 +153,7 @@ public class StateLao extends Data {
         + '}';
   }
 
-  public String getModificationId() {
+  public MessageID getModificationId() {
     return modificationId;
   }
 
