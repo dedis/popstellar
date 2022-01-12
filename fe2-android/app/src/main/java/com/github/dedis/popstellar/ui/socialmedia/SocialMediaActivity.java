@@ -111,20 +111,23 @@ public class SocialMediaActivity extends AppCompatActivity {
 
     // Get the submenu and clear its unique item. The item was needed to create the submenu
     SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
-    laosList.clear();
 
     // Adding all currently opened lao name to the submenu
-    if (mViewModel.getLAOs().getValue() != null) {
-      for (int i = 0; i < mViewModel.getLAOs().getValue().size(); ++i) {
-        // Creating a unique id using laos_list and laos ids such that it doesn't override
-        // them in onOptionsItemSelected
-        laosList.add(
-            Menu.NONE,
-            R.id.laos_list + R.id.laos + i,
-            i,
-            mViewModel.getLAOs().getValue().get(i).getName());
-      }
-    }
+    mViewModel
+        .getLAOs()
+        .observe(
+            this,
+            LAOsList -> {
+              if (LAOsList != null) {
+                laosList.clear();
+                for (int i = 0; i < LAOsList.size(); ++i) {
+                  // Creating a unique id using laos_list and laos ids such that it doesn't override
+                  // them in onOptionsItemSelected
+                  laosList.add(
+                      Menu.NONE, R.id.laos_list + R.id.laos + i, i, LAOsList.get(i).getName());
+                }
+              }
+            });
 
     return true;
   }
