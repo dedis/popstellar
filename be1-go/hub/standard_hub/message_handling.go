@@ -208,10 +208,14 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
-	alreadyReceived := h.broadcastToServers(publish.Params.Message, byteMessage)
+	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
 	if alreadyReceived {
 		h.log.Info().Msg("message was already received")
 		return publish.ID, nil
+	}
+
+	if err != nil {
+		return -1, xerrors.Errorf("failed to broadcast message: %v", err)
 	}
 
 	if publish.Params.Channel == rootChannel {

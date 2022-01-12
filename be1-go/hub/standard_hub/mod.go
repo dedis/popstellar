@@ -488,18 +488,40 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 }
 
 // broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(message message.Message, byteMessage []byte) bool {
+func (h *Hub) broadcastToServers(msg message.Message, channel string) (bool, error) {
 	h.Lock()
 	defer h.Unlock()
 
-	_, ok := h.hubInbox.GetMessage(message.MessageID)
-	if !ok {
-		h.serverSockets.SendToAll(byteMessage)
-		h.hubInbox.StoreMessage(message)
-		return false
+	_, ok := h.hubInbox.GetMessage(msg.MessageID)
+	if ok {
+		return true, nil
 	}
 
-	return true
+	broadcastMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			channel,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(broadcastMessage)
+	if err != nil {
+		return false, xerrors.Errorf("failed to marshal broadcast query: %v", err)
+	}
+
+	h.serverSockets.SendToAll(buf)
+	h.hubInbox.StoreMessage(msg)
+
+	return false, nil
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
