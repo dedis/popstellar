@@ -23,8 +23,6 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -204,34 +202,26 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void subscribeToChannel(String laoId) {
     Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/<sender>");
 
-    try {
-      String channel = ROOT + laoId + "/social/" + mKeyManager.getMainPublicKey().getEncoded();
+    String channel = ROOT + laoId + "/social/" + mKeyManager.getMainPublicKey().getEncoded();
 
-      Disposable disposable =
-          mLaoRepository
-              .sendSubscribe(channel)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "subscribed to the channel");
-                    } else {
-                      Log.d(TAG, "failed to subscribe to the channel");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
+    Disposable disposable =
+        mLaoRepository
+            .sendSubscribe(channel)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "subscribed to the channel");
+                  } else {
+                    Log.d(TAG, "failed to subscribe to the channel");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
 
-      disposables.add(disposable);
-
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-      Toast.makeText(
-              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
-          .show();
-    }
+    disposables.add(disposable);
   }
 
   /**
@@ -252,38 +242,31 @@ public class SocialMediaViewModel extends AndroidViewModel {
     }
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
-    try {
-      KeyPair mainKey = mKeyManager.getMainKeyPair();
-      String channel = laoChannel + "/social/" + mainKey.getPublicKey().getEncoded();
-      Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(mainKey, addChirp, mGson);
+    KeyPair mainKey = mKeyManager.getMainKeyPair();
+    String channel = laoChannel + "/social/" + mainKey.getPublicKey().getEncoded();
+    Log.d(TAG, PUBLISH_MESSAGE);
+    MessageGeneral msg = new MessageGeneral(mainKey, addChirp, mGson);
 
-      Disposable disposable =
-          mLaoRepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId());
-                    } else {
-                      Log.d(TAG, "failed to send chirp");
-                      Toast.makeText(
-                              getApplication().getApplicationContext(),
-                              R.string.toast_error_sending_chirp,
-                              Toast.LENGTH_LONG)
-                          .show();
-                    }
-                  },
-                  throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-      Toast.makeText(
-              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
-          .show();
-    }
+    Disposable disposable =
+        mLaoRepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId());
+                  } else {
+                    Log.d(TAG, "failed to send chirp");
+                    Toast.makeText(
+                            getApplication().getApplicationContext(),
+                            R.string.toast_error_sending_chirp,
+                            Toast.LENGTH_LONG)
+                        .show();
+                  }
+                },
+                throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
+    disposables.add(disposable);
   }
 }
