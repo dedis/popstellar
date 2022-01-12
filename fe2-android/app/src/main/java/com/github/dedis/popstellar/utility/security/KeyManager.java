@@ -34,6 +34,7 @@ public class KeyManager {
 
   private final AndroidKeysetManager keysetManager;
   private final Wallet wallet;
+  private KeyPair keyPair;
 
   @Inject
   public KeyManager(AndroidKeysetManager keysetManager, Wallet wallet) {
@@ -41,22 +42,24 @@ public class KeyManager {
     this.wallet = wallet;
 
     try {
+      regenerateMainKey();
       Log.d(TAG, "Public Key = " + getMainPublicKey().getEncoded());
     } catch (IOException | GeneralSecurityException e) {
       Log.e(TAG, "Failed to retrieve public key", e);
-      throw new IllegalStateException("Failed to retrieve public key", e);
+      throw new IllegalStateException("Failed to retrieve device key", e);
     }
   }
 
-  public PublicKey getMainPublicKey() throws IOException, GeneralSecurityException {
-    return getPublicKey(keysetManager.getKeysetHandle());
+  public void regenerateMainKey() throws GeneralSecurityException, IOException {
+    keyPair = getKeyPair(keysetManager.getKeysetHandle());
   }
 
-  public KeyPair getMainKeyPair() throws IOException, GeneralSecurityException {
-    PrivateKey privateKey = new ProtectedPrivateKey(keysetManager.getKeysetHandle());
-    PublicKey publicKey = getMainPublicKey();
+  public PublicKey getMainPublicKey() {
+    return keyPair.getPublicKey();
+  }
 
-    return new KeyPair(privateKey, publicKey);
+  public KeyPair getMainKeyPair() {
+    return keyPair;
   }
 
   public PoPToken getPoPToken(String laoID, String rollCallID) throws KeyException {
