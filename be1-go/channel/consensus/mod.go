@@ -38,10 +38,16 @@ const (
 
 	proposerRole = "proposer"
 	acceptorRole = "acceptor"
+
+	fastTimeout = 3 * time.Second
+	// timeout fot the elect-accept messages
+	slowTimeout = 5 * time.Minute
 )
 
 // Channel defines a consensus channel
 type Channel struct {
+	sync.Mutex
+
 	clock clock.Clock
 
 	sockets channel.Sockets
@@ -59,7 +65,10 @@ type Channel struct {
 
 	registry registry.MessageRegistry
 
-	consensusInstances map[string]*ConsensusInstance
+	consensusInstances struct {
+		sync.Mutex
+		m map[string]*ConsensusInstance
+	}
 }
 
 // Save the state of a consensus instance
@@ -121,14 +130,20 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 	log = log.With().Str("channel", "consensus").Logger()
 
 	newChannel := &Channel{
-		clock:              clock.New(),
-		sockets:            channel.NewSockets(),
-		inbox:              inbox,
-		channelID:          channelID,
-		hub:                hub,
-		attendees:          make(map[string]struct{}),
-		log:                log,
-		consensusInstances: make(map[string]*ConsensusInstance),
+		clock:     clock.New(),
+		sockets:   channel.NewSockets(),
+		inbox:     inbox,
+		channelID: channelID,
+		hub:       hub,
+		attendees: make(map[string]struct{}),
+		log:       log,
+		consensusInstances: struct {
+			sync.Mutex
+			m map[string]*ConsensusInstance
+		}{
+			sync.Mutex{},
+			make(map[string]*ConsensusInstance),
+		},
 	}
 
 	newChannel.registry = newChannel.NewConsensusRegistry()
@@ -179,9 +194,19 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 			case messagedata.ConsensusActionLearn,
 				messagedata.ConsensusActionFailure:
 				return
+
+			case messagedata.ConsensusActionElectAccept,
+				messagedata.ConsensusActionPrepare,
+				messagedata.ConsensusActionPromise,
+				messagedata.ConsensusActionPropose,
+				messagedata.ConsensusActionAccept:
+
+			default:
+				c.log.Error().Msgf("action %s isn't a recognised action", action)
+				return
 			}
 
-		case <-c.clock.After(3 * time.Second):
+		case <-c.clock.After(fastTimeout):
 			switch instance.lastSent {
 			case messagedata.ConsensusActionElectAccept:
 				select {
@@ -192,7 +217,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 						return
 					}
 
-				case <-c.clock.After(5 * time.Minute):
+				case <-c.clock.After(slowTimeout):
 					c.timeoutFailure(instance, messageID)
 					return
 				}
@@ -210,7 +235,7 @@ func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
 						return
 					}
 
-				case <-c.clock.After(3 * time.Second):
+				case <-c.clock.After(fastTimeout):
 					c.timeoutFailure(instance, messageID)
 					return
 				}
@@ -389,7 +414,7 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 		electInstances: make(map[string]*ElectInstance),
 	}
 
-	c.consensusInstances[instanceID] = consensusInstance
+	c.consensusInstances.m[instanceID] = consensusInstance
 
 	return consensusInstance
 }
@@ -415,10 +440,13 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 	}
 
 	// Creates a consensus instance if it doesn't exist yet
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	c.consensusInstances.Lock()
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		consensusInstance = c.createConsensusInstance(data.InstanceID)
 	}
+	c.consensusInstances.Unlock()
+
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
@@ -427,9 +455,6 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 	if sender.Equal(c.hub.GetPubKeyOrg()) {
 		consensusInstance.role = proposerRole
 	}
-
-	// Reset the decision and failure
-	consensusInstance.decided = false
 
 	consensusInstance.lastSent = messagedata.ConsensusActionElectAccept
 
@@ -449,12 +474,12 @@ func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
 	}
 
 	// If enough rejection, failure of the consensus
-	if len(electInstance.negativeAcceptors) >= (i.electInstances[messageID].acceptorNumber/2 + 1) {
+	if len(electInstance.negativeAcceptors) >= (electInstance.acceptorNumber/2 + 1) {
 		return messagedata.ConsensusActionFailure
 	}
 
 	// If enough acception, go to next step of the consensus
-	if len(electInstance.positiveAcceptors) >= (i.electInstances[messageID].acceptorNumber/2 + 1) {
+	if len(electInstance.positiveAcceptors) >= (electInstance.acceptorNumber/2 + 1) {
 		return messagedata.ConsensusActionPrepare
 	}
 
@@ -519,7 +544,7 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
@@ -593,7 +618,7 @@ func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
@@ -653,7 +678,7 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
@@ -725,7 +750,7 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
@@ -793,7 +818,7 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
@@ -864,7 +889,7 @@ func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}) 
 		return xerrors.Errorf("message doesn't correspond to any received message")
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
@@ -906,7 +931,7 @@ func (c *Channel) processConsensusFailure(_ message.Message, msgData interface{}
 		return xerrors.Errorf("message doesn't correspond to any received message")
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
 		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}

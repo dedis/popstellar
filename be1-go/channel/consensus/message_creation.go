@@ -144,10 +144,15 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messa
 // createFailureMessage creates the data for a failure message
 func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
 
-	if consensusInstance.electInstances[messageID].failed {
+	electInstance, ok := consensusInstance.electInstances[messageID]
+	if !ok {
+		return nil, xerrors.Errorf("message Id doesn't correspond to any previously received message")
+	}
+
+	if electInstance.failed {
 		return nil, xerrors.Errorf("consensus already failed")
 	}
-	consensusInstance.electInstances[messageID].failed = true
+	electInstance.failed = true
 
 	c.log.Warn().Msgf("failure of the consensus")
 

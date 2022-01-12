@@ -951,7 +951,7 @@ func Test_Consensus_Publish_Accept(t *testing.T) {
 	messagePublish.Params.Message = msg
 
 	// Update the proposed value to true
-	consensusChannel.consensusInstances[consensusInstanceID].proposedValue = true
+	consensusChannel.consensusInstances.m[consensusInstanceID].proposedValue = true
 
 	// Create the broadcast message to check that it is sent
 	fileBroadcast := filepath.Join(protocolRelativePath,
