@@ -86,8 +86,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
   private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   private static final String PUBLISH_MESSAGE = "sending publish message";
-  private static final String KEYSET_HANDLE_FAILURE_MESSAGE = "failed to get public keyset handle";
-  private static final String GET_PK_FAILURE = "failed to get public key";
   /*
    * LiveData objects for capturing events like button clicks
    */

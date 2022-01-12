@@ -41,7 +41,6 @@ import io.reactivex.schedulers.Schedulers;
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
-  private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   private static final String PUBLISH_MESSAGE = "sending publish message";
   private static final String ROOT = "/root/";
   public static final Integer MAX_CHAR_NUMBERS = 300;
