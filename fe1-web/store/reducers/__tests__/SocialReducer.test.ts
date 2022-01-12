@@ -413,7 +413,7 @@ describe('SocialReducer', () => {
     });
   });
 
-    describe('reaction reducer', () => {
+  describe('reaction reducer', () => {
     it('should create entry for a chirp when receiving the first reaction on it', () => {
       expect(socialReduce(emptyState, addReaction(mockLaoId, reaction1)))
         .toEqual(reactionFilledState1);
