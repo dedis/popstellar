@@ -117,14 +117,13 @@ public class SocialMediaActivity extends AppCompatActivity {
         .getLAOs()
         .observe(
             this,
-            LAOsList -> {
-              if (LAOsList != null) {
+            list -> {
+              if (list != null) {
                 laosList.clear();
-                for (int i = 0; i < LAOsList.size(); ++i) {
+                for (int i = 0; i < list.size(); ++i) {
                   // Creating a unique id using laos_list and laos ids such that it doesn't override
                   // them in onOptionsItemSelected
-                  laosList.add(
-                      Menu.NONE, R.id.laos_list + R.id.laos + i, i, LAOsList.get(i).getName());
+                  laosList.add(Menu.NONE, R.id.laos_list + R.id.laos + i, i, list.get(i).getName());
                 }
               }
             });
@@ -137,13 +136,11 @@ public class SocialMediaActivity extends AppCompatActivity {
   public boolean onOptionsItemSelected(MenuItem item) {
     // Retrieve the index of the lao within the list
     int i = item.getItemId() - R.id.laos_list - R.id.laos;
-    if (mViewModel.getLAOs().getValue() != null) {
-      if (i >= 0) {
-        Lao lao = mViewModel.getLAOs().getValue().get(i);
-        mViewModel.setLaoId(lao.getId());
-        mViewModel.setLaoName(lao.getName());
-        return true;
-      }
+    if (mViewModel.getLAOs().getValue() != null && i >= 0) {
+      Lao lao = mViewModel.getLAOs().getValue().get(i);
+      mViewModel.setLaoId(lao.getId());
+      mViewModel.setLaoName(lao.getName());
+      return true;
     }
     return super.onOptionsItemSelected(item);
   }

@@ -15,8 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class SocialMediaSearchFragment extends Fragment {
-  private SocialMediaSearchFragmentBinding mSocialMediaSearchFragBinding;
-  private SocialMediaViewModel mSocialMediaViewModel;
 
   public static SocialMediaSearchFragment newInstance() {
     return new SocialMediaSearchFragment();
@@ -28,6 +26,9 @@ public class SocialMediaSearchFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+    SocialMediaSearchFragmentBinding mSocialMediaSearchFragBinding;
+    SocialMediaViewModel mSocialMediaViewModel;
+
     mSocialMediaSearchFragBinding =
         SocialMediaSearchFragmentBinding.inflate(inflater, container, false);
 

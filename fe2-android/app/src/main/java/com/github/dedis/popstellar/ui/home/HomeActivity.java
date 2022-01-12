@@ -143,19 +143,8 @@ public class HomeActivity extends AppCompatActivity {
               }
             });
 
-    // Subscribe to "open social media" event
-    mViewModel
-        .getOpenSocialMediaEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSocialMediaActivity();
-              }
-            });
-
     subscribeWalletEvents();
+    subscribeSocialMediaEvent();
   }
 
   private void subscribeWalletEvents() {
@@ -197,6 +186,20 @@ public class HomeActivity extends AppCompatActivity {
               String laoId = stringEvent.getContentIfNotHandled();
               if (laoId != null) {
                 openContentWallet(laoId);
+              }
+            });
+  }
+
+  private void subscribeSocialMediaEvent() {
+    // Subscribe to "open social media" event
+    mViewModel
+        .getOpenSocialMediaEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSocialMediaActivity();
               }
             });
   }

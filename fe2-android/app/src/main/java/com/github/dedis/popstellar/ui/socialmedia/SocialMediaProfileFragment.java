@@ -15,8 +15,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class SocialMediaProfileFragment extends Fragment {
-  private SocialMediaProfileFragmentBinding mSocialMediaProfileFragBinding;
-  private SocialMediaViewModel mSocialMediaViewModel;
 
   public static SocialMediaProfileFragment newInstance() {
     return new SocialMediaProfileFragment();
@@ -28,6 +26,9 @@ public class SocialMediaProfileFragment extends Fragment {
       @NonNull LayoutInflater inflater,
       @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+    SocialMediaProfileFragmentBinding mSocialMediaProfileFragBinding;
+    SocialMediaViewModel mSocialMediaViewModel;
+
     mSocialMediaProfileFragBinding =
         SocialMediaProfileFragmentBinding.inflate(inflater, container, false);
 
