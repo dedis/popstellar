@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
 });
 
 const FOUR_SECONDS = 4000;
+
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const { userPublicKey } = props;

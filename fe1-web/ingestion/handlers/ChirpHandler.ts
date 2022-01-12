@@ -82,7 +82,6 @@ function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
     sender: sender,
     time: chirpMessage.timestamp,
     text: '',
-    isDeleted: true,
   });
 
   dispatch(deleteChirp(lao.id, chirp.toState()));
