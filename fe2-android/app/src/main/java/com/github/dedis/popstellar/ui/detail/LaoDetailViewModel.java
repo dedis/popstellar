@@ -42,6 +42,7 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -49,13 +50,13 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -287,8 +288,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                     Log.d(TAG, "failed to end the election");
                   }
                 },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on election/end", throwable));
+                throwable -> Log.d(TAG, "timed out waiting for result on election/end", throwable));
 
     disposables.add(disposable);
   }
@@ -318,40 +318,53 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
 
-    String laoChannel = lao.getChannel();
-    String laoId = laoChannel.substring(6);
-    CastVote castVote = new CastVote(votes, election.getId(), laoId);
-    // Is channel set ?
-    String electionChannel = election.getChannel();
+    try {
+      PoPToken token = mKeyManager.getValidPoPToken(lao);
+      String laoChannel = lao.getChannel();
+      String laoId = laoChannel.substring(6);
+      CastVote castVote = new CastVote(votes, election.getId(), laoId);
+      // Is channel set ?
+      String electionChannel = election.getChannel();
 
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), castVote, mGson);
+      MessageGeneral msg = new MessageGeneral(token, castVote, mGson);
 
-    Log.d(TAG, PUBLISH_MESSAGE);
-    Disposable disposable =
-        mLAORepository
-            .sendPublish(electionChannel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
-            .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "sent a vote successfully");
-                    // Toast ? + send back to election screen or details screen ?
-                    Toast.makeText(
-                            getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
-                        .show();
-                  } else {
-                    Log.d(TAG, "failed to send the vote");
-                    Toast.makeText(
-                            getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
-                        .show();
-                  }
-                  openLaoDetail();
-                },
-                throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
+      Log.d(TAG, PUBLISH_MESSAGE);
+      Disposable disposable =
+          mLAORepository
+              .sendPublish(electionChannel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "sent a vote successfully");
+                      // Toast ? + send back to election screen or details screen ?
+                      Toast.makeText(
+                              getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
+                          .show();
+                    } else {
+                      Log.d(TAG, "failed to send the vote");
+                      Toast.makeText(
+                              getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
+                          .show();
+                    }
+                    openLaoDetail();
+                  },
+                  throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
-    disposables.add(disposable);
+      disposables.add(disposable);
+    } catch (KeyException e) {
+      Log.i(
+          TAG,
+          "User tried to send a message that expected proof-of-personhood but it could not be achieved.",
+          e);
+      Toast.makeText(
+              getApplication(),
+              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+          .show();
+    }
   }
 
   /**
@@ -580,9 +593,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 },
                 throwable ->
                     Log.d(
-                        TAG,
-                        "timed out waiting for result on consensus/elect_accept",
-                        throwable));
+                        TAG, "timed out waiting for result on consensus/elect_accept", throwable));
 
     disposables.add(disposable);
   }
@@ -1157,15 +1168,13 @@ public class LaoDetailViewModel extends AndroidViewModel
                 answer -> {
                   if (answer instanceof Result) {
                     Log.d(TAG, "updated lao witnesses");
-                    dipatchLaoUpdate(
-                        "lao state with new witnesses", updateLao, lao, channel, msg);
+                    dipatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg);
                   } else {
                     Log.d(TAG, "failed to update lao witnesses");
                   }
                 },
                 throwable ->
-                    Log.d(
-                        TAG, "timed out waiting for result on update lao witnesses", throwable));
+                    Log.d(TAG, "timed out waiting for result on update lao witnesses", throwable));
     disposables.add(disposable);
   }
 

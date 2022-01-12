@@ -17,9 +17,11 @@ import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -202,26 +204,45 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void subscribeToChannel(String laoId) {
     Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/<sender>");
 
-    String channel = ROOT + laoId + "/social/" + mKeyManager.getMainPublicKey().getEncoded();
+    LAOState laoState = mLaoRepository.getLaoById().get(laoId);
+    if (laoState == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
 
-    Disposable disposable =
-        mLaoRepository
-            .sendSubscribe(channel)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
-            .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "subscribed to the channel");
-                  } else {
-                    Log.d(TAG, "failed to subscribe to the channel");
-                  }
-                },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
+    try {
+      String channel =
+          ROOT
+              + laoId
+              + "/social/"
+              + mKeyManager.getValidPoPToken(laoState.getLao()).getPublicKey().getEncoded();
 
-    disposables.add(disposable);
+      Disposable disposable =
+          mLaoRepository
+              .sendSubscribe(channel)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "subscribed to the channel");
+                    } else {
+                      Log.d(TAG, "failed to subscribe to the channel");
+                    }
+                  },
+                  throwable ->
+                      Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
+
+      disposables.add(disposable);
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not retrieve PoP Token", e);
+      Toast.makeText(
+              getApplication(),
+              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+          .show();
+    }
   }
 
   /**
@@ -236,37 +257,48 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
     String laoChannel = ROOT + getLaoId().getValue();
-    Lao lao = mLaoRepository.getLaoByChannel(laoChannel);
-    if (lao == null) {
-      Log.d(TAG, LAO_FAILURE_MESSAGE);
+    LAOState laoState = mLaoRepository.getLaoById().get(getLaoId().getValue());
+    if (laoState == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return;
     }
+
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
-    KeyPair mainKey = mKeyManager.getMainKeyPair();
-    String channel = laoChannel + "/social/" + mainKey.getPublicKey().getEncoded();
-    Log.d(TAG, PUBLISH_MESSAGE);
-    MessageGeneral msg = new MessageGeneral(mainKey, addChirp, mGson);
+    try {
+      PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
+      String channel = laoChannel + "/social/" + token.getPublicKey().getEncoded();
+      Log.d(TAG, PUBLISH_MESSAGE);
+      MessageGeneral msg = new MessageGeneral(token, addChirp, mGson);
 
-    Disposable disposable =
-        mLaoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
-            .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId());
-                  } else {
-                    Log.d(TAG, "failed to send chirp");
-                    Toast.makeText(
-                            getApplication().getApplicationContext(),
-                            R.string.toast_error_sending_chirp,
-                            Toast.LENGTH_LONG)
-                        .show();
-                  }
-                },
-                throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
-    disposables.add(disposable);
+      Disposable disposable =
+          mLaoRepository
+              .sendPublish(channel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId());
+                    } else {
+                      Log.d(TAG, "failed to send chirp");
+                      Toast.makeText(
+                              getApplication().getApplicationContext(),
+                              R.string.toast_error_sending_chirp,
+                              Toast.LENGTH_LONG)
+                          .show();
+                    }
+                  },
+                  throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
+      disposables.add(disposable);
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not retrieve PoP Token", e);
+      Toast.makeText(
+              getApplication(),
+              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+              .show();
+    }
   }
 }
