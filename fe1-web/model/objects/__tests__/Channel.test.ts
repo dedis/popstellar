@@ -5,6 +5,7 @@ import {
   channelFromIds,
   getGeneralChirpsChannel,
   getLastPartOfChannel,
+  getReactionChannel,
   getUserSocialChannel,
 } from '../Channel';
 import { PublicKey } from '../PublicKey';
@@ -26,6 +27,11 @@ describe('Channel object', () => {
   it('getGeneralChirpsChannel should return the correct channel', () => {
     expect(getGeneralChirpsChannel(FAKE_ID))
       .toStrictEqual(`/root/${FAKE_ID}/social/chirps`);
+  });
+
+  it('getReactionChannel should return the correct channel', () => {
+    expect(getReactionChannel(FAKE_ID))
+      .toStrictEqual(`/root/${FAKE_ID}/social/reactions`);
   });
 
   it('getLastPartOfChannel works correctly', () => {
