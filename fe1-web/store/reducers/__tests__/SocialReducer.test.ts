@@ -342,22 +342,22 @@ describe('SocialReducer', () => {
 
     it('should add the first chirp correctly', () => {
       expect(socialReduce(emptyState, addChirp(mockLaoId, chirp1)))
-        .toEqual(filledState1);
+        .toEqual(chirpFilledState1);
     });
 
     it('should add the newer chirp before the first chirp', () => {
-      expect(socialReduce(filledState1, addChirp(mockLaoId, chirp2)))
-        .toEqual(filledState2);
+      expect(socialReduce(chirpFilledState1, addChirp(mockLaoId, chirp2)))
+        .toEqual(chirpFilledState2);
     });
 
     it('should add the newer chirp after the second chirp', () => {
-      expect(socialReduce(filledState2, addChirp(mockLaoId, chirp3)))
-        .toEqual(filledState3);
+      expect(socialReduce(chirpFilledState2, addChirp(mockLaoId, chirp3)))
+        .toEqual(chirpFilledState3);
     });
 
     it('should add the newest chirp on top', () => {
-      expect(socialReduce(filledState3, addChirp(mockLaoId, chirp4)))
-        .toEqual(filledState4);
+      expect(socialReduce(chirpFilledState3, addChirp(mockLaoId, chirp4)))
+        .toEqual(chirpFilledState4);
     });
   });
 
@@ -375,44 +375,44 @@ describe('SocialReducer', () => {
 
     it('should return the first chirp state', () => {
       socialReduce(emptyState, addChirp(mockLaoId, chirp1));
-      expect(makeChirpsList().resultFunc(filledState1, mockLaoId))
+      expect(makeChirpsList().resultFunc(chirpFilledState1, mockLaoId))
         .toEqual([chirp1]);
     });
 
     it('should return the newer chirp before the first chirp', () => {
-      socialReduce(filledState1, addChirp(mockLaoId, chirp2));
-      expect(makeChirpsList().resultFunc(filledState2, mockLaoId))
+      socialReduce(chirpFilledState1, addChirp(mockLaoId, chirp2));
+      expect(makeChirpsList().resultFunc(chirpFilledState2, mockLaoId))
         .toEqual([chirp2, chirp1]);
     });
 
     it('should add the newer chirp after the second chirp', () => {
-      socialReduce(filledState2, addChirp(mockLaoId, chirp3));
-      expect(makeChirpsList().resultFunc(filledState3, mockLaoId))
+      socialReduce(chirpFilledState2, addChirp(mockLaoId, chirp3));
+      expect(makeChirpsList().resultFunc(chirpFilledState3, mockLaoId))
         .toEqual([chirp2, chirp3, chirp1]);
     });
 
     it('should return the newest chirp on top', () => {
-      socialReduce(filledState3, addChirp(mockLaoId, chirp4));
-      expect(makeChirpsList().resultFunc(filledState4, mockLaoId))
+      socialReduce(chirpFilledState3, addChirp(mockLaoId, chirp4));
+      expect(makeChirpsList().resultFunc(chirpFilledState4, mockLaoId))
         .toEqual([chirp4, chirp2, chirp3, chirp1]);
     });
 
     it('should return the correct chirps list for an active user', () => {
-      expect(makeChirpsListOfUser(chirp1.sender).resultFunc(filledState3, mockLaoId))
+      expect(makeChirpsListOfUser(chirp1.sender).resultFunc(chirpFilledState3, mockLaoId))
         .toEqual([chirp3, chirp1]);
     });
 
     it('should return an empty list for an inactive user', () => {
-      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(filledState1, mockLaoId))
+      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(chirpFilledState1, mockLaoId))
         .toEqual([]);
     });
 
     it('should return an empty list for an undefined lao', () => {
-      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(filledState1, undefined))
+      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(chirpFilledState1, undefined))
         .toEqual([]);
     });
   });
-  
+
     describe('reaction reducer', () => {
     it('should create entry for a chirp when receiving the first reaction on it', () => {
       expect(socialReduce(emptyState, addReaction(mockLaoId, reaction1)))
