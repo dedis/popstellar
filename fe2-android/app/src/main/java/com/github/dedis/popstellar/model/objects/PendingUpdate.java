@@ -1,11 +1,13 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+
 public class PendingUpdate implements Comparable<PendingUpdate> {
 
   private final long modificationTime;
-  private final String messageId;
+  private final MessageID messageId;
 
-  public PendingUpdate(long modificationTime, String messageId) {
+  public PendingUpdate(long modificationTime, MessageID messageId) {
     this.modificationTime = modificationTime;
     this.messageId = messageId;
   }
@@ -14,7 +16,7 @@ public class PendingUpdate implements Comparable<PendingUpdate> {
     return modificationTime;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 

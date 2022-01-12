@@ -1197,7 +1197,6 @@ func Test_Publish_New_Message(t *testing.T) {
 
 	// Create the hub
 	keypair := generateKeyPair(t)
-	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
@@ -1226,9 +1225,11 @@ func Test_Publish_New_Message(t *testing.T) {
 
 	signature := base64.URLEncoding.EncodeToString(signatureBuf)
 
+	pubKeyServBuf, _ := fakeHub.pubKeyServ.MarshalBinary()
+
 	expectedMessage := message.Message{
 		Data:              data64,
-		Sender:            publicKey64,
+		Sender:            base64.URLEncoding.EncodeToString(pubKeyServBuf),
 		Signature:         signature,
 		MessageID:         messagedata.Hash(data64, signature),
 		WitnessSignatures: make([]message.WitnessSignature, 0),
@@ -1890,7 +1891,7 @@ type fakeHub struct {
 
 	closedSockets chan string
 
-	pubKeyOrg kyber.Point
+	pubKeyOwner kyber.Point
 
 	pubKeyServ kyber.Point
 	secKeyServ kyber.Scalar
@@ -1909,7 +1910,7 @@ type fakeHub struct {
 }
 
 // NewHub returns a Organizer Hub.
-func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
+func NewfakeHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory) (*fakeHub, error) {
 
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
@@ -1924,7 +1925,7 @@ func NewfakeHub(publicOrg kyber.Point, log zerolog.Logger, laoFac channel.LaoFac
 		messageChan:     make(chan socket.IncomingMessage),
 		channelByID:     make(map[string]channel.Channel),
 		closedSockets:   make(chan string),
-		pubKeyOrg:       publicOrg,
+		pubKeyOwner:     pubKeyOwner,
 		pubKeyServ:      pubServ,
 		secKeyServ:      secServ,
 		schemaValidator: schemaValidator,
@@ -1951,14 +1952,14 @@ func (h *fakeHub) RegisterNewChannel(channeID string, channel channel.Channel) {
 	h.Unlock()
 }
 
-// GetPubKeyOrg implements channel.HubFunctionalities
-func (h *fakeHub) GetPubKeyOrg() kyber.Point {
-	return h.pubKeyOrg
+// GetPubKeyOwner implements channel.HubFunctionalities
+func (h *fakeHub) GetPubKeyOwner() kyber.Point {
+	return h.pubKeyOwner
 }
 
 // GetPubKeyServ implements channel.HubFunctionalities
 func (h *fakeHub) GetPubKeyServ() kyber.Point {
-	return h.pubKeyOrg
+	return h.pubKeyServ
 }
 
 // Sign implements channel.HubFunctionalities

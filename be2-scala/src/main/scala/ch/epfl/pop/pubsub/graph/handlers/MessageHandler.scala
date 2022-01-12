@@ -12,7 +12,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait MessageHandler extends AskPatternConstants {
-  implicit final val dbActor: AskableActorRef = DbActor.getInstance
+
+  /**
+    * May be overriden by the reference of the used DbActor
+    */
+  def dbActor: AskableActorRef = DbActor.getInstance
 
   val handler: Flow[GraphMessage, GraphMessage, NotUsed]
 

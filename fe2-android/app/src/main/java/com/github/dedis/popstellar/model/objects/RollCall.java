@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.objects;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.Arrays;
@@ -18,7 +19,7 @@ public class RollCall extends Event {
   private long start;
   private long end;
   private EventState state;
-  private Set<String> attendees;
+  private Set<PublicKey> attendees;
 
   private String location;
   private String description;
@@ -90,11 +91,11 @@ public class RollCall extends Event {
     this.state = state;
   }
 
-  public Set<String> getAttendees() {
+  public Set<PublicKey> getAttendees() {
     return attendees;
   }
 
-  public void setAttendees(Set<String> attendees) {
+  public void setAttendees(Set<PublicKey> attendees) {
     this.attendees = attendees;
   }
 

@@ -17,9 +17,11 @@ import { requestAddChirp } from 'network/MessageApi';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { PublicKey } from 'model/objects';
+import PropTypes from 'prop-types';
 
 /**
- * UI for the Social Media component
+ * UI for the Social Media home screen component
  */
 const styles = StyleSheet.create({
   viewCenter: {
@@ -42,15 +44,15 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const SocialHome = () => {
+const SocialHome = (props: IPropTypes) => {
+  const { currentUserPublicKey } = props;
   const [inputChirp, setInputChirp] = useState('');
 
   const publishChirp = () => {
-    requestAddChirp(inputChirp)
+    requestAddChirp(currentUserPublicKey, inputChirp)
       .catch((err) => {
-        console.error('Could not add chirp, error:', err);
+        console.error('Failed to post chirp, error:', err);
       });
-    setInputChirp('');
   };
 
   const chirps = makeChirpsList();
@@ -71,6 +73,9 @@ const SocialHome = () => {
         <TextInputChirp
           onChangeText={setInputChirp}
           onPress={publishChirp}
+          // The publish button is disabled when the user public key is not defined
+          publishIsDisabledCond={currentUserPublicKey.valueOf() === ''}
+          currentUserPublicKey={currentUserPublicKey}
         />
         <FlatList
           data={chirpList}
@@ -80,6 +85,16 @@ const SocialHome = () => {
       </View>
     </View>
   );
+};
+
+const propTypes = {
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+};
+
+SocialHome.prototype = propTypes;
+
+type IPropTypes = {
+  currentUserPublicKey: PublicKey,
 };
 
 export default SocialHome;

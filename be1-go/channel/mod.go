@@ -37,7 +37,7 @@ type Channel interface {
 	Broadcast(msg method.Broadcast) error
 }
 
-// NewSockets returns a new initialized sockets
+// NewSockets returns a new initialized Sockets
 func NewSockets() Sockets {
 	return Sockets{
 		store: make(map[string]socket.Socket),
@@ -91,7 +91,7 @@ func (s *Sockets) Delete(ID string) bool {
 
 // HubFunctionalities defines the functions needed by a channel from the hub.
 type HubFunctionalities interface {
-	GetPubKeyOrg() kyber.Point
+	GetPubKeyOwner() kyber.Point
 	GetPubKeyServ() kyber.Point
 	Sign([]byte) ([]byte, error)
 	GetSchemaValidator() validation.SchemaValidator

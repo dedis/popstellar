@@ -1,0 +1,7 @@
+{
+  "object": "chirp",
+  "action": "notify_delete",
+  "chirp_id": "@@@",
+  "channel": "/root/<lao_id>/social/<sender>",
+  "timestamp": 1634760180
+}

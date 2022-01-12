@@ -1,36 +1,21 @@
 import 'jest-extended';
 
-import { KeyPairStore } from 'store';
 import { Hash } from '../Hash';
 import {
   channelFromIds,
   getGeneralChirpsChannel,
   getLastPartOfChannel,
-  getCurrentUserSocialChannel,
+  getReactionChannel,
   getUserSocialChannel,
 } from '../Channel';
-import { KeyPair } from '../KeyPair';
 import { PublicKey } from '../PublicKey';
 
 const FAKE_ID = Hash.fromStringArray('id');
-const PUBLIC_KEY = '1234';
-const PRIVATE_KEY = '5678';
 
 describe('Channel object', () => {
   it('channelFromIds should should return the correct channel', () => {
     expect(channelFromIds()).toEqual('/root');
     expect(channelFromIds(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}`);
-  });
-
-  it('getCurrentUserSocialChannel should return the correct channel', () => {
-    const keyPair = KeyPair.fromState({
-      publicKey: PUBLIC_KEY,
-      privateKey: PRIVATE_KEY,
-    });
-    KeyPairStore.store(keyPair);
-    const pk = new PublicKey(PUBLIC_KEY);
-    expect(getCurrentUserSocialChannel(FAKE_ID))
-      .toStrictEqual(`/root/${FAKE_ID}/social/${pk}`);
   });
 
   it('getUserSocialChannel should return the correct channel', () => {
@@ -42,6 +27,11 @@ describe('Channel object', () => {
   it('getGeneralChirpsChannel should return the correct channel', () => {
     expect(getGeneralChirpsChannel(FAKE_ID))
       .toStrictEqual(`/root/${FAKE_ID}/social/chirps`);
+  });
+
+  it('getReactionChannel should return the correct channel', () => {
+    expect(getReactionChannel(FAKE_ID))
+      .toStrictEqual(`/root/${FAKE_ID}/social/reactions`);
   });
 
   it('getLastPartOfChannel works correctly', () => {
