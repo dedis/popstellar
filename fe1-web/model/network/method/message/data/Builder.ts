@@ -16,6 +16,7 @@ import {
   SetupElection,
 } from './election';
 import { AddChirp, NotifyAddChirp } from './chirp';
+import { AddReaction } from './reaction';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -87,6 +88,15 @@ function buildChirpMessage(msgData: MessageData): MessageData {
   }
 }
 
+function buildReactionMessage(msgData: MessageData): MessageData {
+  switch (msgData.action) {
+    case ActionType.ADD:
+      return AddReaction.fromJson(msgData);
+    default:
+      throw new Error(`Unknown action '${msgData.action}' encountered while adding a reaction MessageData`);
+  }
+}
+
 function buildWitnessMessage(msgData: MessageData): MessageData {
   return WitnessMessage.fromJson(msgData);
 }
@@ -110,6 +120,9 @@ export function buildMessageData(msgData: MessageData): MessageData {
 
     case ObjectType.CHIRP:
       return buildChirpMessage(msgData);
+
+    case ObjectType.REACTION:
+      return buildReactionMessage(msgData);
 
     default:
       throw new Error(`Unknown object '${msgData.object}' encountered while creating a MessageData`);
