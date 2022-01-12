@@ -256,6 +256,9 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
+    final String LAO_ID = "LAO_ID";
+    final String LAO_NAME = "LAO_NAME";
+    final String OPENED_FROM = "OPENED_FROM";
     mViewModel
         .getOpenSocialMediaEvent()
         .observe(
@@ -265,9 +268,9 @@ public class LaoDetailActivity extends AppCompatActivity {
               if (event != null) {
                 Intent intent = new Intent(this, SocialMediaActivity.class);
                 Log.d(TAG, "Trying to open social media");
-                intent.putExtra("LAO_ID", mViewModel.getCurrentLaoValue().getId());
-                intent.putExtra("LAO_NAME", mViewModel.getCurrentLaoValue().getName());
-                intent.putExtra("OPENED_FROM", "LaoDetailActivity");
+                intent.putExtra(LAO_ID, mViewModel.getCurrentLaoValue().getId());
+                intent.putExtra(LAO_NAME, mViewModel.getCurrentLaoValue().getName());
+                intent.putExtra(OPENED_FROM, TAG);
                 startActivity(intent);
               }
             });

@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -29,13 +30,17 @@ public class SocialMediaActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    final String OPENED_FROM = "OPENED_FROM";
+    final String LAO_ID = "LAO_ID";
+    final String LAO_NAME = "LAO_NAME";
+
     setContentView(R.layout.social_media_activity);
     mViewModel = obtainViewModel(this);
 
     // When we launch the social media from a lao, it directly sets its id and name
-    if (getIntent().getExtras().get("OPENED_FROM").equals("LaoDetailActivity")) {
-      mViewModel.setLaoId((String) getIntent().getExtras().get("LAO_ID"));
-      mViewModel.setLaoName((String) getIntent().getExtras().get("LAO_NAME"));
+    if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
+      mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
+      mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
     }
     setupSocialMediaHomeFragment();
     setupNavigationBar();

@@ -306,12 +306,13 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
+    final String OPENED_FROM = "OPENED_FROM";
     if (mViewModel.getLAOs().getValue() == null) {
       Toast.makeText(getApplicationContext(), R.string.toast_no_lao, Toast.LENGTH_LONG).show();
     } else {
       Intent intent = new Intent(this, SocialMediaActivity.class);
       Log.d(TAG, "Trying to open social media");
-      intent.putExtra("OPENED_FROM", "HomeActivity");
+      intent.putExtra(OPENED_FROM, TAG);
       startActivity(intent);
     }
   }
