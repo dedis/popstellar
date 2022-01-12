@@ -12,9 +12,8 @@ import {
 import { Chirp } from 'model/objects/Chirp';
 
 /**
- * Handler for social media
+ * Handler for social media chirp
  */
-
 const getCurrentLao = makeCurrentLao();
 
 /**
@@ -91,14 +90,14 @@ function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles all social media messages by redirecting them to the correct function based on the
+ * Handles all social media chirp messages by redirecting them to the correct function based on the
  * action.
  *
  * @param msg - The received extended message
  */
-export function handleSocialMessage(msg: ExtendedMessage): boolean {
+export function handleChirpMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP) {
-    console.warn('handleSocialMessage was called to process an unsupported message', msg);
+    console.warn('handleChirpMessage was called to process an unsupported message', msg);
     return false;
   }
 
@@ -108,7 +107,7 @@ export function handleSocialMessage(msg: ExtendedMessage): boolean {
     case ActionType.DELETE:
       return handleDeleteChirpMessage(msg);
     default:
-      console.warn('A Social Media message was received but its processing logic is not '
+      console.warn('A Social Media chirp message was received but its processing logic is not '
         + 'yet implemented:', msg);
       return false;
   }

@@ -19,6 +19,7 @@ export enum ObjectType {
   ROLL_CALL = 'roll_call',
   ELECTION = 'election',
   CHIRP = 'chirp',
+  REACTION = 'reaction',
 }
 
 export enum ActionType {
@@ -85,6 +86,9 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
     [ActionType.NOTIFY_ADD]: 'dataNotifyAddChirp',
     [ActionType.DELETE]: 'dataDeleteChirp',
     [ActionType.NOTIFY_DELETE]: 'dataNotifyDeleteChirp',
+  },
+  [ObjectType.REACTION]: {
+    [ActionType.ADD]: 'dataAddReaction',
   },
 };
 

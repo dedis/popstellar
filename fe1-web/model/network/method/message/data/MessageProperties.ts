@@ -25,6 +25,9 @@ export const messagePropertiesMap: Map<ObjectType, Map<ActionType, MessageProper
     [ActionType.DELETE, { isPopTokenSigned: true }],
     [ActionType.NOTIFY_DELETE, { isPopTokenSigned: false }],
   ])],
+  [ObjectType.REACTION, new Map<ActionType, MessageProperties>([
+    [ActionType.ADD, { isPopTokenSigned: true }],
+  ])],
   [ObjectType.ELECTION, new Map<ActionType, MessageProperties>([
     [ActionType.CAST_VOTE, { isPopTokenSigned: true }],
     [ActionType.RESULT, { isPopTokenSigned: false }],

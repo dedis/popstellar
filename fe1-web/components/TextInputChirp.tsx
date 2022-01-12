@@ -6,8 +6,8 @@ import {
 import STRINGS from 'res/strings';
 import { gray, red } from 'styles/colors';
 import { Ionicons } from '@expo/vector-icons';
+import { PublicKey } from 'model/objects';
 import TextBlock from './TextBlock';
-import { PublicKey } from '../model/objects';
 import ProfileIcon from './ProfileIcon';
 
 const MAX_CHIRP_CHARS = 300;

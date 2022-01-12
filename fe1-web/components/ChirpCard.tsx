@@ -1,17 +1,19 @@
 import React from 'react';
 import {
-  View, Text, StyleSheet, ViewStyle, TextStyle,
+  StyleSheet, ViewStyle, View, TextStyle, Text, Pressable,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { Chirp } from 'model/objects/Chirp';
 import DeleteButton from 'components/DeleteButton';
-import { requestDeleteChirp } from 'network';
+import { requestDeleteChirp, requestAddReaction } from 'network';
 import { PublicKey } from 'model/objects';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
+import { makeReactionsList } from 'store';
 import ProfileIcon from './ProfileIcon';
 
 /**
@@ -71,14 +73,27 @@ const styles = StyleSheet.create({
 });
 
 const FOUR_SECONDS = 4000;
-
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const { userPublicKey } = props;
   const toast = useToast();
+  const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
 
-  // This is temporary for now
   const zero = '  0';
+  const thumbsUp = reactions ? reactions['👍'] : 0;
+  const thumbsDown = reactions ? reactions['👎'] : 0;
+  const heart = reactions ? reactions['❤️'] : 0;
+
+  const addReaction = (reaction_codepoint: string) => {
+    requestAddReaction(reaction_codepoint, chirp.id)
+      .catch((err) => {
+        toast.show(`Could not add reaction, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      });
+  };
 
   // TODO: delete a chirp posted with a PoP token from a previous roll call.
   const isSender = userPublicKey.valueOf() === chirp.sender.valueOf();
@@ -110,16 +125,22 @@ const ChirpCard = (props: IPropTypes) => {
           {!chirp.isDeleted && (
           <>
             <View style={styles.reactionView}>
-              <Ionicons name="thumbs-up" size={16} color="black" />
-              <Text>{zero}</Text>
+              <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
+                <Ionicons name="thumbs-up" size={16} color="black" />
+              </Pressable>
+              <Text>{`  ${thumbsUp}`}</Text>
             </View>
             <View style={styles.reactionView}>
-              <Ionicons name="thumbs-down" size={16} color="black" />
-              <Text>{zero}</Text>
+              <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
+                <Ionicons name="thumbs-down" size={16} color="black" />
+              </Pressable>
+              <Text>{`  ${thumbsDown}`}</Text>
             </View>
             <View style={styles.reactionView}>
-              <Ionicons name="heart" size={16} color="black" />
-              <Text>{zero}</Text>
+              <Pressable onPress={() => addReaction('❤️')} testID="heart">
+                <Ionicons name="heart" size={16} color="black" />
+              </Pressable>
+              <Text>{`  ${heart}`}</Text>
             </View>
           </>
           )}

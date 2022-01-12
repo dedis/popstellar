@@ -19,7 +19,7 @@ const sampleNotifyAddChirp: Partial<NotifyAddChirp> = {
   timestamp: TIMESTAMP,
 };
 
-const dataNotifyAdd = `{
+const dataNotifyAddChirp = `{
     "object": "${ObjectType.CHIRP}",
     "action":"${ActionType.NOTIFY_ADD}",
     "chirp_id": "${ID}",
@@ -41,7 +41,7 @@ describe('NotifyAddChirp', () => {
   });
 
   it('should be parsed correctly from JSON', () => {
-    const obj = JSON.parse(dataNotifyAdd);
+    const obj = JSON.parse(dataNotifyAddChirp);
     expect(NotifyAddChirp.fromJson(obj)).toBeJsonEqual(sampleNotifyAddChirp);
   });
 
