@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
+import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
 import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
@@ -28,7 +29,6 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -105,15 +105,16 @@ public class Wallet {
    * @param rollCallTokens a {@link Set} containing the public keys of all attendees present on
    *     roll-call’s results.
    * @return the PoP Token if the user participated in that roll-call or else empty.
-   * @throws KeyGenerationException if an error occurs
+   * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
+   * @throws InvalidPoPTokenException if the token is not a valid attendee
    */
-  public Optional<PoPToken> recoverKey(
+  public PoPToken recoverKey(
       @NonNull String laoID, @NonNull String rollCallID, @NonNull Set<PublicKey> rollCallTokens)
-      throws KeyGenerationException, UninitializedWalletException {
+      throws KeyGenerationException, UninitializedWalletException, InvalidPoPTokenException {
     PoPToken token = generatePoPToken(laoID, rollCallID);
-    if (rollCallTokens.contains(token.getPublicKey())) return Optional.of(token);
-    else return Optional.empty();
+    if (rollCallTokens.contains(token.getPublicKey())) return token;
+    else throw new InvalidPoPTokenException(token);
   }
 
   /**
