@@ -1,6 +1,7 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
@@ -16,25 +17,36 @@ import scala.concurrent.{Await, Future}
 
 import spray.json._
 
-case object SocialMediaHandler extends MessageHandler {
+object SocialMediaHandler extends MessageHandler {
+  override val handler = new SocialMediaHandler(super.dbActor).handler
+}
 
-    override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestAddChirp) => handleAddChirp(message)
-      case message@(_: JsonRpcRequestDeleteChirp) => handleDeleteChirp(message)
-      case message@(_: JsonRpcRequestNotifyAddChirp) => handleAddChirp(message)
-      case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleDeleteChirp(message)
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: SocialMediaHandler was given a message it could not recognize",
-        jsonRpcMessage match {
-          case r: JsonRpcRequest => r.id
-          case r: JsonRpcResponse => r.id
-          case _ => None
-        }
-      ))
-    }
-    case graphMessage@_ => graphMessage
+sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
+
+  /**
+    * Overrides default DbActor with provided parameter
+    */
+  override final val dbActor: AskableActorRef = dbRef
+
+  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+  case Left(jsonRpcMessage) => jsonRpcMessage match {
+    case message@(_: JsonRpcRequestAddChirp) => handleAddChirp(message)
+    case message@(_: JsonRpcRequestDeleteChirp) => handleDeleteChirp(message)
+    case message@(_: JsonRpcRequestNotifyAddChirp) => handleAddChirp(message)
+    case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleDeleteChirp(message)
+    case message@(_: JsonRpcRequestAddReaction) => handleAddReaction(message)
+    case message@(_: JsonRpcRequestDeleteReaction) => handleDeleteReaction(message)
+    case _ => Right(PipelineError(
+      ErrorCodes.SERVER_ERROR.id,
+      "Internal server fault: SocialMediaHandler was given a message it could not recognize",
+      jsonRpcMessage match {
+        case r: JsonRpcRequest => r.id
+        case r: JsonRpcResponse => r.id
+        case _ => None
+      }
+    ))
+  }
+  case graphMessage@_ => graphMessage
   }
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
@@ -70,9 +82,9 @@ case object SocialMediaHandler extends MessageHandler {
     Await.result(ask, duration) match {
       case Left(msg) => {
         val channelChirp: Channel = rpcMessage.getParamsChannel
-        channelChirp.decodeSubChannel match {
+        channelChirp.decodeChannelLaoId match {
           case(Some(lao_id)) => {
-            val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
+            val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
                 // we can't get the message_id as a Base64Data, it is a Hash
@@ -98,9 +110,9 @@ case object SocialMediaHandler extends MessageHandler {
     Await.result(ask, duration) match {
       case Left(msg) => {
         val channelChirp: Channel = rpcMessage.getParamsChannel
-        channelChirp.decodeSubChannel match {
+        channelChirp.decodeChannelLaoId match {
           case(Some(lao_id)) => {
-            val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
+            val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
                 val chirp_id: Hash = params.message_id
