@@ -26,13 +26,13 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class SocialMediaActivity extends AppCompatActivity {
   private SocialMediaViewModel mViewModel;
+  public static final String OPENED_FROM = "OPENED_FROM";
+  public static final String LAO_ID = "LAO_ID";
+  public static final String LAO_NAME = "LAO_NAME";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    final String OPENED_FROM = "OPENED_FROM";
-    final String LAO_ID = "LAO_ID";
-    final String LAO_NAME = "LAO_NAME";
 
     setContentView(R.layout.social_media_activity);
     mViewModel = obtainViewModel(this);

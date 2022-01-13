@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -306,7 +308,6 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
-    final String OPENED_FROM = "OPENED_FROM";
     if (mViewModel.getLAOs().getValue() == null) {
       Toast.makeText(getApplicationContext(), R.string.toast_no_lao, Toast.LENGTH_LONG).show();
     } else {

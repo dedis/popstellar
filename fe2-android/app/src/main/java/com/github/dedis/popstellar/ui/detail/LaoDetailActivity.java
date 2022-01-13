@@ -1,5 +1,9 @@
 package com.github.dedis.popstellar.ui.detail;
 
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_ID;
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_NAME;
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -256,9 +260,6 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
-    final String LAO_ID = "LAO_ID";
-    final String LAO_NAME = "LAO_NAME";
-    final String OPENED_FROM = "OPENED_FROM";
     mViewModel
         .getOpenSocialMediaEvent()
         .observe(
