@@ -5,8 +5,6 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
-import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCreateRollCall
 
 import ch.epfl.pop.model.objects.{Channel, Signature, Base64Data, PublicKey, Hash, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator

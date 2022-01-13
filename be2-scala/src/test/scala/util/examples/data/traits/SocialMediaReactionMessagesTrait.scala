@@ -10,7 +10,7 @@ import java.nio.file.Path
 import java.nio.file.Files
 
 /**
-  * Trait to be implemented by RollCallMessages examples
+  * Trait to be implemented by SocialMediaMessages examples (reactions)
   */
 trait SocialMediaReactionMessagesTrait extends ExampleMessagesTrait {
   override val obj = ObjectType.REACTION

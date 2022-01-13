@@ -14,9 +14,9 @@ import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.model.network.requests.socialMedia._
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.objects.{Base64Data, Channel, LaoData, PublicKey, PrivateKey}
+import ch.epfl.pop.model.objects.Channel
 
-import util.examples.JsonRpcRequestExample
+import util.examples.{JsonRpcRequestExample, LaoDataExample}
 import util.examples.data.{AddReactionMessages, DeleteReactionMessages, AddChirpMessages, DeleteChirpMessages}
 
 
@@ -25,11 +25,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     implicit val duration = FiniteDuration(5 ,"seconds")
     implicit val timeout  = Timeout(duration)
 
-    private final val PUBLICKEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
-    private final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
-    private final val PKOWNER: PublicKey = PublicKey(Base64Data.encode("owner"))
-    private final val PKATTENDEE: PublicKey = PublicKey(Base64Data.encode("attendee1"))
-    private final val laoData: LaoData = LaoData(PKOWNER, List(PKATTENDEE), PRIVATEKEY, PUBLICKEY, List.empty)
+    
 
     override def afterAll(): Unit = {
         // Stops the testKit
@@ -65,7 +61,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
                     system.log.info("Received {}", m)
                     system.log.info("Responding with a Ack")
 
-                    sender ! DbActor.DbActorReadLaoDataAck(Some(laoData))
+                    sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
             }
             }
         )
@@ -94,7 +90,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
                     system.log.info("Received {}", m)
                     system.log.info("Responding with a Ack")
 
-                    sender ! DbActor.DbActorReadLaoDataAck(Some(laoData))
+                    sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
             }
             }
         )
