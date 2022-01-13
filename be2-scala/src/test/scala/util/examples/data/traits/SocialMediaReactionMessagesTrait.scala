@@ -12,8 +12,8 @@ import java.nio.file.Files
 /**
   * Trait to be implemented by RollCallMessages examples
   */
-trait RollCallMessagesTrait extends ExampleMessagesTrait {
-  override val obj = ObjectType.ROLL_CALL
+trait SocialMediaReactionMessagesTrait extends ExampleMessagesTrait {
+  override val obj = ObjectType.REACTION
   override val METHOD_TYPE: MethodType.MethodType = MethodType.PUBLISH
 
 }
