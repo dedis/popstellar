@@ -21,6 +21,20 @@ final case class Channel(channel: String) {
   }
 
   /**
+   * Extract the laoId from a channel name (even though it might be in the middle)
+   *
+   * @return an array of bytes corresponding to the decoded laoId or None if an error occurred
+   */
+  def decodeChannelLaoId: Option[Array[Byte]] = channel match {
+    case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
+      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.SEPARATOR)(0).getBytes)) match {
+        case Success(value) => Some(value)
+        case _ => None
+      }
+    case _ => None
+  }
+
+  /**
    * Extract the channel id from a Channel (i.e. the last part of the path)
    *
    * @return the id of the Channel
@@ -53,9 +67,9 @@ object Channel {
   private final def channelRegex: String = "^/root(/[^/]+)*$"
   final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
 
-  final val SOCIAL_MEDIA_POSTS_PREFIX: String = s"${SEPARATOR}posts"
   final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social${SEPARATOR}"
-  final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions${SEPARATOR}"
+  final val SOCIAL_MEDIA_CHIRPS_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}chirps"
+  final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions"
 
   def apply(channel: String): Channel = {
     if(channel.isBlank() || !channel.matches(channelRegex)){

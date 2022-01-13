@@ -50,7 +50,7 @@ case object LaoHandler extends MessageHandler {
           case DbActorAck() => {
             val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
               case DbActorWriteAck() => {
-                val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
+                val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
                 val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
                   case DbActorAck() => {
                     val reactionChannel: Channel = Channel(channel + Channel.REACTIONS_CHANNEL_PREFIX)
