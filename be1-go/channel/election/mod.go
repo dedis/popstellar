@@ -218,10 +218,35 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	err := xerrors.Errorf("an election channel shouldn't need to broadcast a message")
-	c.log.Err(err)
-	return err
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+	err := c.VerifyBroadcastMessage(broadcast)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message on an "+
+			"election channel: %w", err)
+	}
+
+	msg := broadcast.Params.Message
+
+	data := msg.Data
+
+	jsonData, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action: %v", err)
+	}
+
+	if object == messagedata.ElectionObject {
+		err = c.processElectionObject(action, msg, socket)
+		if err != nil {
+			return xerrors.Errorf("failed to process %q action: %w", action, err)
+		}
+	}
+
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -253,6 +278,33 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 	}
 
 	c.sockets.SendToAll(buf)
+}
+
+// VerifyBroadcastMessage checks if a Broadcast message is valid
+func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
+	c.log.Info().Msg("received broadcast")
+
+	// Check if the structure of the message is correct
+	msg := broadcast.Params.Message
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
 }
 
 // VerifyPublishMessage checks if a Publish message is valid

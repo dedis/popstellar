@@ -64,7 +64,7 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 		sock.SendError(&publish.ID, err)
 	}
 
-	err = h.createLao(publish, laoCreate, sock)
+	err = h.createLao(publish.Params.Message, laoCreate, sock)
 	if err != nil {
 		h.log.Err(err).Msg("failed to create lao")
 		sock.SendError(&publish.ID, err)
@@ -72,6 +72,67 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 	}
 
 	h.rootInbox.StoreMessage(publish.Params.Message)
+
+	return nil
+}
+
+// handleRootChannelPublishMesssage handles an incominxg publish message on the root channel.
+func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast method.Broadcast) error {
+	id := -1
+
+	jsonData, err := base64.URLEncoding.DecodeString(broadcast.Params.Message.Data)
+	if err != nil {
+		err := xerrors.Errorf("failed to decode message data: %v", err)
+		sock.SendError(&id, err)
+		return err
+	}
+
+	// validate message data against the json schema
+	err = h.schemaValidator.VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		err := xerrors.Errorf("failed to validate message against json schema: %v", err)
+		sock.SendError(&id, err)
+		return err
+	}
+
+	// get object#action
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		err := xerrors.Errorf("failed to get object#action: %v", err)
+		sock.SendError(&id, err)
+		return err
+	}
+
+	// must be "lao#create"
+	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
+		err := answer.NewErrorf(id, "only lao#create is allowed on root, but found %s#%s", object, action)
+		sock.SendError(&id, err)
+		return err
+	}
+
+	var laoCreate messagedata.LaoCreate
+
+	err = broadcast.Params.Message.UnmarshalData(&laoCreate)
+	if err != nil {
+		h.log.Err(err).Msg("failed to unmarshal lao#create")
+		sock.SendError(&id, err)
+		return err
+	}
+
+	err = laoCreate.Verify()
+	if err != nil {
+		h.log.Err(err).Msg("invalid lao#create message")
+		sock.SendError(&id, err)
+	}
+
+	err = h.createLao(broadcast.Params.Message, laoCreate, sock)
+	if err != nil {
+		h.log.Err(err).Msg("failed to create lao")
+		sock.SendError(&id, err)
+		return err
+	}
+
+	h.rootInbox.StoreMessage(broadcast.Params.Message)
 
 	return nil
 }
@@ -237,6 +298,48 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	}
 
 	return publish.ID, nil
+}
+
+func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
+	var broadcast method.Broadcast
+
+	err := json.Unmarshal(byteMessage, &broadcast)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal publish message: %v", err)
+	}
+
+	h.Lock()
+	_, ok := h.hubInbox.GetMessage(broadcast.Params.Message.MessageID)
+	if ok {
+		h.log.Info().Msg("message was already received")
+		return nil
+	}
+	h.hubInbox.StoreMessage(broadcast.Params.Message)
+	h.Unlock()
+
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
+
+	if broadcast.Params.Channel == rootChannel {
+		err := h.handleRootChannelBroadcastMesssage(socket, broadcast)
+		if err != nil {
+			return xerrors.Errorf("failed to handle root channel message: %v", err)
+		}
+		return nil
+	}
+
+	channel, err := h.getChan(broadcast.Params.Channel)
+	if err != nil {
+		return xerrors.Errorf("failed to get channel: %v", err)
+	}
+
+	err = channel.Broadcast(broadcast, socket)
+	if err != nil {
+		return xerrors.Errorf(publishError, err)
+	}
+
+	return nil
 }
 
 func (h *Hub) handleSubscribe(socket socket.Socket, byteMessage []byte) (int, error) {

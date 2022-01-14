@@ -3,8 +3,6 @@ package chirp
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/inbox"
@@ -17,6 +15,9 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 const msgID = "msg id"
@@ -172,7 +173,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		},
 	}
 
-	err = c.generalChannel.Broadcast(rpcMessage)
+	err = c.generalChannel.Broadcast(rpcMessage, nil)
 	if err != nil {
 		return xerrors.Errorf("the general channel failed to broadcast the chirp message: %v", err)
 	}
@@ -215,11 +216,56 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	c.log.Error().
-		Str(msgID, msg.Params.Message.MessageID).
-		Msg("chirp channel should not need to broadcast")
-	return xerrors.Errorf("chirp channel should not need to broadcast")
+func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
+	err := c.VerifyBroadcastMessage(broadcast)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message on a "+
+			"chirping channel: %w", err)
+	}
+
+	msg := broadcast.Params.Message
+	data := msg.Data
+
+	jsonData, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action from message data: %v", err)
+	}
+
+	if object != messagedata.ChirpObject {
+		return xerrors.Errorf("object should be 'chirp' but is %s", object)
+	}
+
+	switch action {
+	case messagedata.ChirpActionAdd:
+		err := c.publishAddChirp(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to publish chirp: %v", err)
+		}
+	case messagedata.ChirpActionDelete:
+		err := c.publishDeleteChirp(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to delete chirp: %v", err)
+		}
+	default:
+		return answer.NewInvalidActionError(action)
+	}
+
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast to all clients: %v", err)
+	}
+
+	err = c.broadcastViaGeneral(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast the chirp message via general : %v", err)
+	}
+
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -259,6 +305,33 @@ func (c *Channel) verifyPublishMessage(publish method.Publish) error {
 
 	// Check if the structure of the message is correct
 	msg := publish.Params.Message
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
+}
+
+// VerifyBroadcastMessage checks if a Broadcast message is valid
+func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
+	c.log.Info().Msg("received broadcast")
+
+	// Check if the structure of the message is correct
+	msg := broadcast.Params.Message
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {

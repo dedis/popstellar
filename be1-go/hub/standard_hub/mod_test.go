@@ -822,7 +822,7 @@ func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 }
 
 // Broadcast implements channel.Channel
-func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
+func (f *fakeChannel) Broadcast(msg method.Broadcast, _ socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()
 

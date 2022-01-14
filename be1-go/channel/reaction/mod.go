@@ -3,8 +3,6 @@ package reaction
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/inbox"
@@ -18,6 +16,9 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 const msgID = "msg id"
@@ -133,11 +134,52 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	c.log.Error().
-		Str(msgID, msg.Params.Message.MessageID).
-		Msg("reaction channel should not need to broadcast")
-	return xerrors.Errorf("reaction channel should not need to broadcast")
+func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
+	err := c.verifyBroadcastMessage(broadcast)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message on a "+
+			"reaction channel: %w", err)
+	}
+
+	msg := broadcast.Params.Message
+
+	data := msg.Data
+
+	jsonData, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action from message data: %v", err)
+	}
+
+	if object != messagedata.ReactionObject {
+		return xerrors.Errorf("object should be 'reaction' but is %s", object)
+	}
+
+	switch action {
+	case messagedata.ReactionActionAdd:
+		err := c.publishAddReaction(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to publish reaction: %v", err)
+		}
+	case messagedata.ReactionActionDelete:
+		err := c.publishDeleteReaction(msg)
+		if err != nil {
+			return xerrors.Errorf("failed to delete reaction: %v", err)
+		}
+	default:
+		return answer.NewInvalidActionError(action)
+	}
+
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast to all clients: %v", err)
+	}
+
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -165,6 +207,33 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	}
 
 	c.sockets.SendToAll(buf)
+
+	return nil
+}
+
+// verifyBroadcastMessage checks if a Broadcast message is valid
+func (c *Channel) verifyBroadcastMessage(broadcast method.Broadcast) error {
+	c.log.Info().Msg("received broadcast")
+
+	// Check if the structure of the message is correct
+	msg := broadcast.Params.Message
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
+		return answer.NewError(-3, "message already exists")
+	}
 
 	return nil
 }

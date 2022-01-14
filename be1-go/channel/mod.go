@@ -34,7 +34,7 @@ type Channel interface {
 	Catchup(msg method.Catchup) []message.Message
 
 	// Broadcast is used to handle a broadcast message.
-	Broadcast(msg method.Broadcast) error
+	Broadcast(msg method.Broadcast, socket socket.Socket) error
 }
 
 // NewSockets returns a new initialized Sockets
@@ -103,7 +103,7 @@ type HubFunctionalities interface {
 
 // Broadcastable defines a channel that can broadcast
 type Broadcastable interface {
-	Broadcast(msg method.Broadcast) error
+	Broadcast(msg method.Broadcast, _ socket.Socket) error
 	GetChannelPath() string
 }
 

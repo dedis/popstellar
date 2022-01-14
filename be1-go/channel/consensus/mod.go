@@ -156,10 +156,26 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	err := xerrors.Errorf("a consensus channel shouldn't need to broadcast a message")
-	c.log.Err(err)
-	return err
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+	err := c.VerifyBroadcastMessage(broadcast)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message: %w", err)
+	}
+
+	msg := broadcast.Params.Message
+
+	err = c.registry.Process(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to process message: %w", err)
+	}
+
+	c.inbox.StoreMessage(msg)
+
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
+	return nil
 }
 
 // broadcastToAllWitnesses is a helper message to broadcast a message to all
@@ -237,6 +253,33 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
+}
+
+// VerifyBroadcastMessage checks if a Broadcast message is valid
+func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
+	c.log.Info().Msg("received broadcast")
+
+	// Check if the structure of the message is correct
+	msg := broadcast.Params.Message
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
 		return answer.NewError(-3, "message already exists")
 	}
 

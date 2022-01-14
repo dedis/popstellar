@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
@@ -26,6 +25,8 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
@@ -141,10 +142,47 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	err := xerrors.Errorf("a lao shouldn't need to broadcast a message")
-	c.log.Err(err)
-	return err
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+	err := c.VerifyBroadcastMessage(broadcast)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message: %w", err)
+	}
+
+	msg := broadcast.Params.Message
+
+	data := msg.Data
+
+	jsonData, err := base64.URLEncoding.DecodeString(data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get the action or the object: %v", err)
+	}
+
+	switch object {
+	case messagedata.LAOObject:
+		err = c.processLaoObject(action, msg)
+	case messagedata.MeetingObject:
+		err = c.processMeetingObject(action, msg)
+	case messagedata.MessageObject:
+		err = c.processMessageObject(action, msg)
+	case messagedata.RollCallObject:
+		err = c.processRollCallObject(action, msg, socket)
+	case messagedata.ElectionObject:
+		err = c.processElectionObject(action, msg, socket)
+	default:
+		err = xerrors.Errorf("object not accepted in a LAO channel.")
+	}
+
+	if err != nil {
+		return xerrors.Errorf("failed to process %q object: %w", object, err)
+	}
+
+	c.broadcastToAllClients(msg)
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -200,6 +238,33 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+		return answer.NewError(-3, "message already exists")
+	}
+
+	return nil
+}
+
+// VerifyBroadcastMessage checks if a Broadcast message is valid
+func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
+	c.log.Info().Msg("received broadcast")
+
+	// Check if the structure of the message is correct
+	msg := broadcast.Params.Message
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	// Verify the data
+	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
+	if err != nil {
+		return xerrors.Errorf("failed to verify json schema: %w", err)
+	}
+
+	// Check if the message already exists
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
 		return answer.NewError(-3, "message already exists")
 	}
 

@@ -446,6 +446,8 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
+	case query.MethodBroadcast:
+		handlerErr = h.handleBroadcast(socket, byteMessage)
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
@@ -525,7 +527,7 @@ func (h *Hub) broadcastToServers(msg message.Message, channel string) (bool, err
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
+func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	socket socket.Socket) error {
 
 	laoChannelPath := rootPrefix + laoCreate.ID
@@ -534,7 +536,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	senderBuf, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return answer.NewErrorf(-4, "failed to decode public key of the sender: %v", err)
 	}
@@ -546,9 +548,9 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log, senderPubKey, socket)
+	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
 
-	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
+	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
 
 	h.NotifyNewChannel(laoChannelPath, laoCh, socket)
 
