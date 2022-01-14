@@ -3,7 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
-import com.github.dedis.popstellar.model.objects.Consensus;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.google.gson.annotations.SerializedName;
 
 public final class ConsensusElect extends Data {
@@ -19,7 +19,7 @@ public final class ConsensusElect extends Data {
   private final Object value;
 
   public ConsensusElect(long creation, String objId, String type, String property, Object value) {
-    this.instanceId = Consensus.generateConsensusId(type, objId, property);
+    this.instanceId = ElectInstance.generateConsensusId(type, objId, property);
     this.creation = creation;
     this.key = new ConsensusKey(type, objId, property);
     this.value = value;

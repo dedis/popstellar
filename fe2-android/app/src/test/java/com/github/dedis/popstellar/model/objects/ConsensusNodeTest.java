@@ -2,13 +2,14 @@ package com.github.dedis.popstellar.model.objects;
 
 import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
 import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
-import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.ACCEPTED;
-import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.FAILED;
-import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.STARTING;
-import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.WAITING;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.STARTING;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.WAITING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusKey;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -16,30 +17,37 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 
 public class ConsensusNodeTest {
 
   private static final ConsensusKey key = new ConsensusKey("type", "id", "property");
-  private static final Consensus consensus1 = new Consensus(1000, key, "value_1");
-  private static final Consensus consensus2 = new Consensus(2000, key, "value_2");
-  private static final Consensus consensus3 = new Consensus(3000, key, "value_3");
-  private static final String instanceId = consensus1.getId();
+  private static final ConsensusElect elect1 =
+      new ConsensusElect(1000, key.getId(), key.getType(), key.getProperty(), "value_1");
+  private static final ConsensusElect elect2 =
+      new ConsensusElect(2000, key.getId(), key.getType(), key.getProperty(), "value_2");
+  private static final ConsensusElect elect3 =
+      new ConsensusElect(3000, key.getId(), key.getType(), key.getProperty(), "value_3");
+  private static final String instanceId = elect1.getInstanceId();
+  private static final String channel = "/root/laoChannel/consensus";
   private static final PublicKey publicKey = generatePublicKey();
   private static final MessageID messageId1 = generateMessageID();
   private static final MessageID messageId2 = generateMessageID();
   private static final MessageID messageId3 = generateMessageID();
+  private static final ElectInstance electInstance1 =
+      new ElectInstance(messageId1, channel, publicKey, Collections.emptySet(), elect1);
+  private static final ElectInstance electInstance2 =
+      new ElectInstance(messageId2, channel, publicKey, Collections.emptySet(), elect2);
+  private static final ElectInstance electInstance3 =
+      new ElectInstance(messageId3, channel, publicKey, Collections.emptySet(), elect3);
   private static final String random = "random";
 
   @Before
   public void setup() {
-    consensus1.setMessageId(messageId1);
-    consensus2.setMessageId(messageId2);
-    consensus3.setMessageId(messageId3);
-
-    consensus1.setFailed(true);
-    consensus3.setAccepted(true);
+    electInstance1.setState(FAILED);
+    electInstance3.setState(ACCEPTED);
   }
 
   @Test
@@ -49,24 +57,24 @@ public class ConsensusNodeTest {
   }
 
   @Test
-  public void getLastConsensusTest() {
+  public void getLastElectInstanceTest() {
     ConsensusNode node = new ConsensusNode(publicKey);
 
-    assertEquals(Optional.empty(), node.getLastConsensus(instanceId));
+    assertEquals(Optional.empty(), node.getLastElectInstance(instanceId));
 
-    node.addConsensus(consensus1);
+    node.addElectInstance(electInstance1);
 
-    Optional<Consensus> opt = node.getLastConsensus(instanceId);
+    Optional<ElectInstance> opt = node.getLastElectInstance(instanceId);
     assertTrue(opt.isPresent());
-    assertEquals(consensus1, opt.get());
+    assertEquals(electInstance1, opt.get());
 
-    node.addConsensus(consensus2);
+    node.addElectInstance(electInstance2);
 
-    Optional<Consensus> opt2 = node.getLastConsensus(instanceId);
+    Optional<ElectInstance> opt2 = node.getLastElectInstance(instanceId);
     assertTrue(opt2.isPresent());
-    assertEquals(consensus2, opt2.get());
+    assertEquals(electInstance2, opt2.get());
 
-    assertEquals(Optional.empty(), node.getLastConsensus(random));
+    assertEquals(Optional.empty(), node.getLastElectInstance(random));
   }
 
   @Test
@@ -75,13 +83,13 @@ public class ConsensusNodeTest {
 
     assertEquals(WAITING, node.getState(instanceId));
 
-    node.addConsensus(consensus1);
+    node.addElectInstance(electInstance1);
     assertEquals(FAILED, node.getState(instanceId));
 
-    node.addConsensus(consensus2);
+    node.addElectInstance(electInstance2);
     assertEquals(STARTING, node.getState(instanceId));
 
-    node.addConsensus(consensus3);
+    node.addElectInstance(electInstance3);
     assertEquals(ACCEPTED, node.getState(instanceId));
   }
 
@@ -91,8 +99,8 @@ public class ConsensusNodeTest {
 
     assertTrue(node.getAcceptedMessageIds().isEmpty());
 
-    node.addMessageIdOfAnAcceptedConsensus(messageId1);
-    node.addMessageIdOfAnAcceptedConsensus(messageId2);
+    node.addMessageIdOfAnAcceptedElect(messageId1);
+    node.addMessageIdOfAnAcceptedElect(messageId2);
 
     Set<MessageID> messageIds = node.getAcceptedMessageIds();
     assertEquals(2, messageIds.size());

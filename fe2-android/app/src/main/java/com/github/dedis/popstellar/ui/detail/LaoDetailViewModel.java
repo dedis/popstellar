@@ -32,8 +32,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
-import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -42,6 +42,7 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -504,7 +505,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   /**
-   * Creates new consensus.
+   * Sends a ConsensusElect message.
    *
    * <p>Publish a GeneralMessage containing ConsensusElect data.
    *
@@ -514,7 +515,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param property the property the value refers to (e.g. "state")
    * @param value the proposed new value for the property (e.g. "started")
    */
-  public void createNewConsensus(
+  public void sendConsensusElect(
       long creation, String objId, String type, String property, Object value) {
     Log.d(
         TAG,
@@ -557,18 +558,19 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   /**
-   * Sends an ConsensusElectAccept message.
+   * Sends a ConsensusElectAccept message.
    *
    * <p>Publish a GeneralMessage containing ConsensusElectAccept data.
    *
-   * @param consensus the corresponding consensus
+   * @param electInstance the corresponding ElectInstance
    * @param accept true if accepted, false if rejected
    */
-  public void sendConsensusElectAccept(Consensus consensus, boolean accept) {
+  public void sendConsensusElectAccept(ElectInstance electInstance, boolean accept) {
+    MessageID messageID = electInstance.getMessageId();
     Log.d(
         TAG,
         "sending a new elect_accept for consensus with messageId : "
-            + consensus.getMessageId()
+            + messageID
             + " with value "
             + accept);
 
@@ -579,7 +581,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
 
     ConsensusElectAccept consensusElectAccept =
-        new ConsensusElectAccept(consensus.getId(), consensus.getMessageId(), accept);
+        new ConsensusElectAccept(electInstance.getInstanceId(), messageID, accept);
 
     try {
       MessageGeneral msg =
@@ -588,7 +590,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
           mLAORepository
-              .sendPublish(consensus.getChannel(), msg)
+              .sendPublish(electInstance.getChannel(), msg)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
               .timeout(5, TimeUnit.SECONDS)
@@ -600,7 +602,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                       Log.d(
                           TAG,
                           "failed to send the elect_accept for consensus with messageId : "
-                              + consensus.getMessageId());
+                              + messageID);
                     }
                   },
                   throwable ->
