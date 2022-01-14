@@ -22,7 +22,7 @@
   - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
   - [Ending an Election (election#end)](#ending-an-election-electionend)
   - [Sending the results of an Election (election#result)](#sending-the-results-of-an-election-electionresult)
-  - [Publishing  a Chirp (chirp#add)](#publishing--a-chirp-chirpadd)
+  - [Publishing a Chirp (chirp#add)](#publishing-a-chirp-chirpadd)
   - [Removing a Chirp (chirp#delete)](#removing-a-chirp-chirpdelete)
   - [Publishing a reaction (reaction#add)](#publishing-a-reaction-reactionadd)
   - [Removing a reaction (reaction#delete)](#removing-a-reaction-reactiondelete)
@@ -1528,7 +1528,7 @@ and has received the witness signatures on the result.
 
 ```
 
-## Publishing  a Chirp (chirp#add)
+## Publishing a Chirp (chirp#add)
 
 A user that owns a PoP token can publish a chirp by sending a chirp/add message to his/her chirp channel ("/root/lao_id/social/sender_id").
 
@@ -1536,7 +1536,6 @@ Each Chirp data object consists of the following:
 - Text: Max 300 characters (i.e., Unicode code points). The UI needs to enforce this rule. The organizer + witness servers also need to enforce this restriction, rejecting the publication of a chirp.
 - Parent ID: The parent chirp’s message id if it is not the top level chirp.
 - Timestamp: UNIX timestamp in UTC of the time that the chirp is published; 2 chirps cannot be posted on the same second; The organizer + witness servers enforce that the timestamp field is valid (by verifying the timestamp against the server’s time +/- a threshold).
-
 
 <details>
 <summary>
@@ -1592,8 +1591,8 @@ Each Chirp data object consists of the following:
 }
 
 ```
-After validating the chirp, the organizer’s server propagates the above message on the channel it is meant for (like usual) but it also creates the following message and sends it to a universal chirp channel ("/root/lao_id/social/chirps"):
 
+After validating the chirp, the organizer’s server propagates the above message on the channel it is meant for (like usual) but it also creates the following message and sends it to a universal chirp channel ("/root/lao_id/social/chirps"):
 
 <details>
 <summary>
@@ -1650,13 +1649,9 @@ After validating the chirp, the organizer’s server propagates the above messag
 
 ```
 
-
-
-
 ## Removing a Chirp (chirp#delete)
 
 A user that has published a chirp in the past can remove the chirp by sending a chirp/delete message to his/her chirp channel ("/root/lao_id/social/sender_id"). Although a chirp can be removed from the UI, by design of the pub-sub communication protocol, the chirp will always exist in historical records of the users’ channel.
-
 
 <details>
 <summary>
@@ -1709,7 +1704,6 @@ A user that has published a chirp in the past can remove the chirp by sending a 
 
 After validating the removal of the chirp, the organizer’s server propagates the above message on the channel it is meant for (like usual) but it also creates the following message and sends it to a universal chirp channel ("/root/lao_id/social/chirps"):
 
-
 <details>
 <summary>
 💡 See an example
@@ -1726,6 +1720,7 @@ After validating the removal of the chirp, the organizer’s server propagates t
     "timestamp": 1634760180
 }
 ```
+
 </details>
 
 ```json5
@@ -1773,7 +1768,6 @@ Each reaction contains the following:
 - Reaction Codepoint: Emoji indicating a reaction: https://unicode.org/emoji/charts/full-emoji-list.html
 - Chirp ID: The chirp that the sender is reacting to.
 - Timestamp: UNIX timestamp in UTC of the time that the user reacted.
-
 
 <details>
 <summary>
@@ -1834,7 +1828,6 @@ Each reaction contains the following:
 ## Removing a reaction (reaction#delete)
 
 A user that has published a reaction in the past can remove the reaction by sending a reaction/delete message to the reaction channel ("/root/lao_id/social/reactions"). Although a reaction can be removed from the UI, by design of the pub-sub communication protocol, the reaction will always exist in historical records of the reactions’ channel.
-
 
 <details>
 <summary>
