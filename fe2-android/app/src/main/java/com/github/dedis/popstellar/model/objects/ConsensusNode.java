@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+/** Class representing a Node for consensus. */
 public final class ConsensusNode {
 
   private final PublicKey publicKey;
@@ -28,10 +29,21 @@ public final class ConsensusNode {
     return publicKey;
   }
 
+  /**
+   * Get a set of messageId of Elect that this node has accepted.
+   *
+   * @return the set of accepted Elect messageId
+   */
   public Set<MessageID> getAcceptedMessageIds() {
     return Collections.unmodifiableSet(acceptedMessageIds);
   }
 
+  /**
+   * Get the latest ElectInstance that this node has created for the given instanceId.
+   *
+   * @param instanceId the id of the consensus
+   * @return an Optional ElectInstance
+   */
   public Optional<ElectInstance> getLastElectInstance(String instanceId) {
     // get the latest ElectInstance for the given instanceId
     return electInstances.stream()
@@ -39,6 +51,13 @@ public final class ConsensusNode {
         .max(Comparator.comparingLong(ElectInstance::getCreation));
   }
 
+  /**
+   * Get the state of this node for the latest ElectInstance that this node has created for the
+   * given instanceId. If empty, it will return WAITING.
+   *
+   * @param instanceId the id of the consensus
+   * @return the current state
+   */
   public State getState(String instanceId) {
     Optional<ElectInstance> lastElect = getLastElectInstance(instanceId);
     return lastElect.map(ElectInstance::getState).orElse(State.WAITING);

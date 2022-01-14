@@ -14,6 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Class holding information of an ConsensusElect message and its current states including the
+ * key/messageId of every node that have accepted this Elect with an ElectAccept.
+ */
 public final class ElectInstance {
 
   private final MessageID messageId;
@@ -108,6 +112,17 @@ public final class ElectInstance {
         state);
   }
 
+  /**
+   * Generate the id for a consensus instance. This instanceId is used to group all Elect that
+   * refers to the same object and property and will be used in every Consensus Data message.
+   *
+   * <p>https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElect.json
+   *
+   * @param type The object type that the consensus refers to
+   * @param id The object id that the consensus refers to
+   * @param property The property of the object that the value refers to
+   * @return the id computed as HashLen('consensus', key:type, key:id, key:property)
+   */
   public static String generateConsensusId(
       @NonNull String type, @NonNull String id, @NonNull String property) {
     return Hash.hash("consensus", type, id, property);
