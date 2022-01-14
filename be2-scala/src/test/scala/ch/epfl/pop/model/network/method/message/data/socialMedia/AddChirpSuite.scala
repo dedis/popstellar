@@ -20,9 +20,9 @@ class AddChirpSuite extends FunSuite with Matchers {
     }
 
     test("json conversions work back and forth"){
-        val msg2: AddChirp = AddChirp.buildFromJson(AddChirpExample.ADDCHIRP_MESSAGE.toJson.toString)
+        val msg2: AddChirp = AddChirp.buildFromJson(ADDCHIRP_MESSAGE.toJson.toString)
 
-        msg2 should equal(AddChirpExample.ADDCHIRP_MESSAGE)
+        msg2 should equal(ADDCHIRP_MESSAGE)
     }
 }
 
