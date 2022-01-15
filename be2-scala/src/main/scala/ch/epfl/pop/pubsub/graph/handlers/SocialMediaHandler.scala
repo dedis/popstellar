@@ -51,7 +51,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 
-  private def generateSocialChannel(lao_id: Array[Byte]): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
+  private def generateSocialChannel(lao_id: Base64Data): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + lao_id + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
 
   /**
    * Helper function for both Social Media broadcasts

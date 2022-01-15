@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Channel, PublicKey, LaoData}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, LaoData}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
@@ -95,7 +95,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               }
             }
 
-            val laoChannel: Option[Array[Byte]] = rpcMessage.getParamsChannel.decodeSubChannel
+            val laoChannel: Option[Base64Data] = rpcMessage.getParamsChannel.decodeSubChannel
             laoChannel match {
               case None => Right(PipelineError(
                 ErrorCodes.SERVER_ERROR.id,

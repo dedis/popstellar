@@ -11,9 +11,9 @@ final case class Channel(channel: String) {
    *
    * @return an array of bytes corresponding to the decoded sub-channel name or None if an error occurred
    */
-  def decodeSubChannel: Option[Array[Byte]] = channel match {
+  def decodeSubChannel: Option[Base64Data] = channel match {
     case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
-      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).getBytes)) match {
+      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length))) match {
         case Success(value) => Some(value)
         case _ => None
       }
@@ -25,9 +25,9 @@ final case class Channel(channel: String) {
    *
    * @return an array of bytes corresponding to the decoded laoId or None if an error occurred
    */
-  def decodeChannelLaoId: Option[Array[Byte]] = channel match {
+  def decodeChannelLaoId: Option[Base64Data] = channel match {
     case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
-      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.SEPARATOR)(0).getBytes)) match {
+      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.SEPARATOR)(0))) match {
         case Success(value) => Some(value)
         case _ => None
       }
