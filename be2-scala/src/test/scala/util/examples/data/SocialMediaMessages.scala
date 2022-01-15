@@ -63,8 +63,3 @@ object DeleteChirpMessages extends SocialMediaChirpMessagesTrait {
   //TODO: Generate other messages
 }
 
-/*
-object SocialMediaCustomBuilders {
-  //TODO: Add here custom highlevel message builders to forge data
-}*/
-

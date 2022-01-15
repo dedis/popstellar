@@ -5,11 +5,11 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.objects.Timestamp
+import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 case class DeleteReaction(
-                          reaction_id: String,
+                          reaction_id: Hash,
                           timestamp: Timestamp
                         ) extends MessageData {
   override val _object: ObjectType = ObjectType.REACTION
@@ -18,7 +18,7 @@ case class DeleteReaction(
 
 object DeleteReaction extends Parsable {
   def apply(
-            reaction_id: String,
+            reaction_id: Hash,
             timestamp: Timestamp
         ): DeleteReaction = new DeleteReaction(reaction_id, timestamp)
 

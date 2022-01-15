@@ -1,8 +1,8 @@
 package ch.epfl.pop.model.network.method.message.data.socialMedia
 
 import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.Timestamp
 import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.model.objects.{Base64Data, Hash, Timestamp}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import spray.json._
 
@@ -25,7 +25,7 @@ class AddReactionSuite extends FunSuite with Matchers {
 
 object AddReactionExample {
     val REACTION_CODEPOINT: String = "👍"
-    val CHIRP_ID: String = "chirpid"
+    val CHIRP_ID: Hash = Hash(Base64Data.encode("chirpid"))
     val TIMESTAMP = Timestamp(0)
 
     val ADDREACTION_MESSAGE: AddReaction = AddReaction(REACTION_CODEPOINT, CHIRP_ID, TIMESTAMP)

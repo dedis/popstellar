@@ -88,8 +88,6 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
                   val socialChannel: String = generateSocialChannel(rpcMessage.getParamsChannel, head)
                   val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel(socialChannel), ObjectType.CHIRP)).map {
                     case DbActorAck() => createAttendeeChannels(tail, rpcMessage)
-                    //the distinction between the NAck cases this is to prevent errors for now within a LAO for successive Roll Calls with the same participants since the public key should not change, as the channel already exists
-                    case DbActorNAck(code, description) if code == ErrorCodes.INVALID_RESOURCE.id => createAttendeeChannels(tail, rpcMessage)
                     case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
                     case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
                   }

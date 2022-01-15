@@ -85,7 +85,7 @@ class ChannelSuite extends FunSuite with Matchers {
   }
 
   test("Real LaoId extraction fails with wrong channel structure (not base64Data)") {
-    val laoId = "base64_lao_id"; // Not encoded in BASE64
+    val laoId = "not_base64_lao_id";
     def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId)
     val expected = None
 
@@ -100,7 +100,7 @@ class ChannelSuite extends FunSuite with Matchers {
   }
 
   test("Bad LaoId: not encoded in base64 extraction channel test (2)") {
-    val laoId = "base64_lao_id"; // Not encoded in BASE64
+    val laoId = "not_base64_lao_id";
     def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId)
     val expected = None
     noException shouldBe thrownBy(channel)

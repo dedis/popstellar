@@ -1,8 +1,8 @@
 package ch.epfl.pop.model.network.method.message.data.socialMedia
 
 import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.Timestamp
 import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.model.objects.{Base64Data, Hash, Timestamp}
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import spray.json._
 
@@ -25,7 +25,7 @@ class DeleteReactionSuite extends FunSuite with Matchers {
 }
 
 object DeleteReactionExample {
-    val REACTION_ID: String = "reactionid"
+    val REACTION_ID: Hash = Hash(Base64Data.encode("reactionid"))
     val TIMESTAMP = Timestamp(0)
 
     val DELETEREACTION_MESSAGE: DeleteReaction = DeleteReaction(REACTION_ID, TIMESTAMP)

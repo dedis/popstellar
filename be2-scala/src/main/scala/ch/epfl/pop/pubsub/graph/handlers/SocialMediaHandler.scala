@@ -32,8 +32,8 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
   case Left(jsonRpcMessage) => jsonRpcMessage match {
     case message@(_: JsonRpcRequestAddChirp) => handleAddChirp(message)
     case message@(_: JsonRpcRequestDeleteChirp) => handleDeleteChirp(message)
-    case message@(_: JsonRpcRequestNotifyAddChirp) => handleAddChirp(message)
-    case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleDeleteChirp(message)
+    case message@(_: JsonRpcRequestNotifyAddChirp) => handleNotifyAddChirp(message)
+    case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleNotifyDeleteChirp(message)
     case message@(_: JsonRpcRequestAddReaction) => handleAddReaction(message)
     case message@(_: JsonRpcRequestDeleteReaction) => handleDeleteReaction(message)
     case _ => Right(PipelineError(
@@ -50,6 +50,8 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
   }
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
+
+  private def generateSocialChannel(lao_id: Array[Byte]): Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
 
   /**
    * Helper function for both Social Media broadcasts
@@ -84,7 +86,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeChannelLaoId match {
           case(Some(lao_id)) => {
-            val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
+            val broadcastChannel: Channel = generateSocialChannel(lao_id)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
                 // we can't get the message_id as a Base64Data, it is a Hash
@@ -112,7 +114,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeChannelLaoId match {
           case(Some(lao_id)) => {
-            val broadcastChannel: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode(lao_id) + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
+            val broadcastChannel: Channel = generateSocialChannel(lao_id)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
                 val chirp_id: Hash = params.message_id

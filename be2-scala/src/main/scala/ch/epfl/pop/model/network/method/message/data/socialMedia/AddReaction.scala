@@ -5,12 +5,12 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.objects.Timestamp
+import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
 case class AddReaction(
                           reaction_codepoint: String,
-                          chirp_id: String,
+                          chirp_id: Hash,
                           timestamp: Timestamp
                         ) extends MessageData {
   override val _object: ObjectType = ObjectType.REACTION
@@ -20,7 +20,7 @@ case class AddReaction(
 object AddReaction extends Parsable {
   def apply(
             reaction_codepoint: String,
-            chirp_id: String,
+            chirp_id: Hash,
             timestamp: Timestamp
         ): AddReaction = new AddReaction(reaction_codepoint, chirp_id, timestamp)
 
