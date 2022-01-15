@@ -95,6 +95,7 @@ const socialSlice = createSlice({
           store.byId[chirp.id] = chirp;
         }
 
+        // even the chirp is deleted, we add it to allIdsInOrder to display the message
         const insertIdxInAll = findInsertIdx(
           store.allIdsInOrder, store.byId, chirp.time,
         );
@@ -133,13 +134,18 @@ const socialSlice = createSlice({
         const store = state.byLaoId[laoId];
 
         // store the deleted chirp
-        store.byId[chirp.id] = new Chirp({
+        const deletedChirp = new Chirp({
           id: new Hash(chirp.id),
           sender: new Hash(chirp.sender),
           time: new Timestamp(chirp.time),
           text: '',
           isDeleted: true,
         }).toState();
+        if ((!store.byId[chirp.id])
+          || (store.byId[chirp.id] && store.byId[chirp.id].sender === deletedChirp.sender)) {
+          store.byId[chirp.id] = deletedChirp;
+        }
+        // we ignore the case if the delete request not send by the original sender
       },
     },
 

@@ -61,6 +61,14 @@ const chirp1Deleted = new Chirp({
   isDeleted: true,
 }).toState();
 
+const chirp1DeletedFake = new Chirp({
+  id: mockChirpId1,
+  sender: mockSender2,
+  text: '',
+  time: new Timestamp(1605555500),
+  isDeleted: true,
+}).toState();
+
 const chirp2 = new Chirp({
   id: mockChirpId2,
   sender: mockSender2,
@@ -484,6 +492,11 @@ describe('social reducer', () => {
       test('delete a non-stored chirp should store it in byId as deleted', () => {
         expect(socialReduce(emptyState, deleteChirp(mockLaoId, chirp0DeletedFake)))
           .toEqual(chirpFilledState0Deleted);
+      });
+
+      test('reducer should ignore delete request sent by non-original sender', () => {
+        expect(socialReduce(chirpFilledState4, deleteChirp(mockLaoId, chirp1DeletedFake)))
+          .toEqual(chirpFilledState4);
       });
 
       test('reducer should update/add a chirp if it has been deleted by a different sender', () => {
