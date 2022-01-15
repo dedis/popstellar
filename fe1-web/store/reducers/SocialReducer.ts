@@ -145,7 +145,7 @@ const socialSlice = createSlice({
           || (store.byId[chirp.id] && store.byId[chirp.id].sender === deletedChirp.sender)) {
           store.byId[chirp.id] = deletedChirp;
         }
-        // we ignore the case if the delete request not send by the original sender
+        // we ignore the case if the delete request is not sent by the original sender
       },
     },
 
