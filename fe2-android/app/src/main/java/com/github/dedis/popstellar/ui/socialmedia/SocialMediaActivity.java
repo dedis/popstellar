@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -126,9 +127,8 @@ public class SocialMediaActivity extends AppCompatActivity {
               if (list != null) {
                 laosList.clear();
                 for (int i = 0; i < list.size(); ++i) {
-                  // Creating a unique id using laos_list and laos ids such that it doesn't override
-                  // them in onOptionsItemSelected
-                  laosList.add(Menu.NONE, R.id.laos_list + R.id.laos + i, i, list.get(i).getName());
+                  // Creating a unique id using the index of the lao within the list
+                  laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, list.get(i).getName());
                 }
               }
             });
@@ -140,9 +140,10 @@ public class SocialMediaActivity extends AppCompatActivity {
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     // Retrieve the index of the lao within the list
-    int i = item.getItemId() - R.id.laos_list - R.id.laos;
-    if (mViewModel.getLAOs().getValue() != null && i >= 0) {
-      Lao lao = mViewModel.getLAOs().getValue().get(i);
+    int i = item.getItemId();
+    List<Lao> laos = mViewModel.getLAOs().getValue();
+    if (laos != null && i >= 0 && i < laos.size()) {
+      Lao lao = laos.get(i);
       mViewModel.setLaoId(lao.getId());
       mViewModel.setLaoName(lao.getName());
       return true;
@@ -152,8 +153,7 @@ public class SocialMediaActivity extends AppCompatActivity {
 
   @SuppressLint("NonConstantResourceId")
   public void setupNavigationBar() {
-    BottomNavigationView bottomNavigationView =
-        (BottomNavigationView) findViewById(R.id.social_media_nav_bar);
+    BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
     bottomNavigationView.setOnItemSelectedListener(
         item -> {
           switch (item.getItemId()) {
