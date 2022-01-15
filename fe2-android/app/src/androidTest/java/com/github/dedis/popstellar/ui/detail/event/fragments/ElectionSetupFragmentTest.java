@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.ui.detail.event.fragments;
 
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -11,21 +13,65 @@ import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageOb
 import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.startDateView;
 import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.startTimeView;
 import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.timePicker;
-
-import android.icu.util.Calendar;
+import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSetupPageObject.addBallot;
+import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSetupPageObject.addQuestion;
+import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSetupPageObject.ballotOptionAtPosition;
+import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSetupPageObject.electionName;
+import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSetupPageObject.questionText;
+import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSetupPageObject.submit;
+import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSetupPageObject.writeIn;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.when;
 
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.filters.LargeTest;
 
+import com.github.dedis.popstellar.model.network.GenericMessage;
+import com.github.dedis.popstellar.model.network.answer.Result;
+import com.github.dedis.popstellar.model.network.method.Message;
+import com.github.dedis.popstellar.model.network.method.Publish;
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
+import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.repository.LAODataSource;
+import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
+import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
+import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
+import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.gson.Gson;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
 import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.Observable;
 
 @LargeTest
 @HiltAndroidTest
@@ -43,6 +89,23 @@ public class ElectionSetupFragmentTest {
   private static final int MINUTES = 15;
   private static final String TIME = String.format(TIME_FORMAT, HOURS, MINUTES);
 
+  private static final String ELECTION_NAME = "aaaaaaaaaaa";
+  private static final String LAO_NAME = "bbbbbbbbbbbb";
+  private static final PublicKey ORGANIZER =
+      new PublicKey("5c2zk_5uCrrNmdUhQAloCDqYJAC2rD4KHo9gGNFVS9c");
+  private static final Lao LAO = new Lao(LAO_NAME, ORGANIZER, 0);
+
+  @Inject KeyManager keyManager;
+  @Inject MessageHandler messageHandler;
+  @Inject Gson gson;
+
+  @BindValue LAORepository laoRepository;
+
+  @Mock LAODataSource.Remote remoteDataSource;
+  @Mock LAODataSource.Local localDataSource;
+
+  private static final ArgumentCaptor<Message> CAPTOR = ArgumentCaptor.forClass(Message.class);
+
   static {
     // Make sure the date is always in the future
     Calendar today = Calendar.getInstance();
@@ -58,9 +121,57 @@ public class ElectionSetupFragmentTest {
   private final FragmentScenarioRule<ElectionSetupFragment> fragmentRule =
       FragmentScenarioRule.launch(ElectionSetupFragment.class);
 
+  private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
+
+  private final TestRule setupRule =
+      new ExternalResource() {
+        @Override
+        protected void before()
+            throws IOException, GeneralSecurityException, DataHandlingException {
+          // Injection with hilt
+          hiltRule.inject();
+
+          when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
+          when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
+          Observable<GenericMessage> upstream = Observable.fromArray(new Result(0), new Result(42));
+
+          // Mock the remote data source to receive a response
+          when(remoteDataSource.observeMessage()).thenReturn(upstream);
+
+          laoRepository =
+              new LAORepository(
+                  remoteDataSource,
+                  localDataSource,
+                  keyManager,
+                  messageHandler,
+                  gson,
+                  new ProdSchedulerProvider());
+        }
+      };
+
   @Rule
   public final RuleChain chain =
-      RuleChain.outerRule(new HiltAndroidRule(this)).around(fragmentRule);
+      RuleChain.outerRule(MockitoJUnit.testRule(this))
+          .around(hiltRule)
+          .around(setupRule)
+          .around(fragmentRule);
+
+  private ElectionSetup getInterceptedElectionSetupMsg() {
+    Mockito.verify(remoteDataSource, atLeast(1)).sendMessage(CAPTOR.capture());
+    Publish publish = (Publish) CAPTOR.getValue();
+    MessageGeneral electionSetupMsg = publish.getMessage();
+    return (ElectionSetup) electionSetupMsg.getData();
+  }
+
+  private void setupViewModel() {
+    fragmentRule
+        .getScenario()
+        .onActivity(
+            activity -> {
+              LaoDetailViewModel laoDetailViewModel = LaoDetailActivity.obtainViewModel(activity);
+              laoDetailViewModel.setCurrentLao(LAO);
+            });
+  }
 
   @Test
   public void canLaunchDatePickerFragmentFromStartDateButton() {
@@ -276,5 +387,94 @@ public class ElectionSetupFragmentTest {
     datePicker().perform(PickerActions.setDate(year, monthOfYear, dayOfMonth));
     pickerAcceptButton().perform(click());
     startTimeView().check(matches(withText("")));
+  }
+
+  private void pickValidDateAndTime() {
+    startDateView().perform(click());
+    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
+    pickerAcceptButton().perform(click());
+
+    endDateView().perform(click());
+    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
+    pickerAcceptButton().perform(click());
+
+    startTimeView().perform(click());
+    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
+    pickerAcceptButton().perform(click());
+
+    endTimeView().perform(click());
+    timePicker().perform(PickerActions.setTime(HOURS + 1, MINUTES));
+    pickerAcceptButton().perform(click());
+  }
+
+  @Test
+  public void multiplePluralityQuestionsTest() {
+    setupViewModel();
+
+    electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
+    pickValidDateAndTime();
+
+    // Add Question 1, with 3 ballots options, no write in
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    addBallot().perform(click());
+
+    for (int i = 0; i < 3; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 1." + i), closeSoftKeyboard());
+    }
+
+    // Add Question 2, with 2 ballots options, with write in
+    addQuestion().perform(click());
+    questionText().perform(click(), typeText("Question 2"), closeSoftKeyboard());
+    writeIn().perform(click());
+
+    for (int i = 0; i < 2; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 2." + i), closeSoftKeyboard());
+    }
+
+    // Submit and intercept the ElectionSetup message
+    long minCreation = Instant.now().getEpochSecond();
+    submit().perform(click());
+    ElectionSetup electionSetup = getInterceptedElectionSetupMsg();
+    long maxCreation = Instant.now().getEpochSecond();
+
+    // Check that the creation time was when we submit the ElectionSetup
+    assertTrue(minCreation <= electionSetup.getCreation());
+    assertTrue(maxCreation >= electionSetup.getCreation());
+
+    // Check the start/end time
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(YEAR, MONTH_OF_YEAR - 1, DAY_OF_MONTH, HOURS, MINUTES, 0);
+    long expectedStartTime = calendar.toInstant().getEpochSecond();
+    calendar.set(YEAR, MONTH_OF_YEAR - 1, DAY_OF_MONTH, HOURS + 1, MINUTES, 0);
+    long expectedEndTime = calendar.toInstant().getEpochSecond();
+
+    assertEquals(expectedStartTime, electionSetup.getStartTime());
+    assertEquals(expectedEndTime, electionSetup.getEndTime());
+
+    assertEquals(ELECTION_NAME, electionSetup.getName());
+    assertEquals(LAO.getId(), electionSetup.getLao());
+
+    List<ElectionQuestion> questionList = electionSetup.getQuestions();
+    assertEquals(2, questionList.size());
+    ElectionQuestion question1 = questionList.get(0);
+    ElectionQuestion question2 = questionList.get(1);
+
+    // Check the Questions 1
+    assertEquals("Question 1", question1.getQuestion());
+    assertFalse(question1.getWriteIn());
+    List<String> ballotOptions1 = question1.getBallotOptions();
+    assertEquals(3, ballotOptions1.size());
+    for (int i = 0; i < 3; ++i) {
+      assertEquals("answer 1." + i, ballotOptions1.get(i));
+    }
+
+    // Check the Questions 2
+    assertEquals("Question 2", question2.getQuestion());
+    // assertTrue(question2.getWriteIn());
+    List<String> ballotOptions2 = question2.getBallotOptions();
+    assertEquals(2, ballotOptions2.size());
+    for (int i = 0; i < 2; ++i) {
+      assertEquals("answer 2." + i, ballotOptions2.get(i));
+    }
   }
 }
