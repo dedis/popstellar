@@ -25,7 +25,7 @@ public class ScalaServer extends Server implements Configurable {
   @Override
   public String[] getCmd() {
     String configPath = Paths.get("src", "main", "scala", "ch", "epfl", "pop", "config").toString();
-    return new String[] { "sbt.bat", "-Dscala.config=" + configPath, "run" };
+    return new String[] { "sbt", "-Dscala.config=" + configPath, "run" };
   }
 
   @Override
