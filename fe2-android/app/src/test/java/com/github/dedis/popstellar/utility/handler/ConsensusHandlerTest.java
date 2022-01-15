@@ -124,7 +124,7 @@ public class ConsensusHandlerTest {
             GSON,
             testSchedulerProvider);
 
-    lao = new Lao(LAO_CHANNEL);
+    lao = new Lao(LAO_ID);
     laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
     messageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
