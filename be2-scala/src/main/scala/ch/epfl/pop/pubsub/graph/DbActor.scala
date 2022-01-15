@@ -79,9 +79,17 @@ object DbActor extends AskPatternConstants {
   /**
    * Request to create channel <channel> in the db with a type
    *
-   * @param channel channel to create
+   * @param channel     channel to create
+   * @param objectType  channel type
    */
   final case class CreateChannel(channel: Channel, objectType: ObjectType.ObjectType) extends Event
+
+  /**
+   * Request to create List of channels in the db with given types
+   *
+   * @param list list from which channels are created
+   */
+  final case class CreateChannelsFromList(list: List[(Channel, ObjectType.ObjectType)]) extends Event
 
   /** Request to check if channel <channel> exists in the db
     *
@@ -409,6 +417,14 @@ object DbActor extends AskPatternConstants {
       }
     }
 
+    private def createChannelsFromList(li: List[(Channel, ObjectType.ObjectType)]): DbActorMessage = li match {
+      case Nil => DbActorAck()
+      case head::tail => createChannel(head._1, head._2) match {
+        case DbActorAck() => createChannelsFromList(tail)
+        case nack@DbActorNAck(_, _) => nack
+      }
+    }
+
 
     private def channelExists(channel: Channel): DbActorMessage = {
       Try(db.get(channel.toString.getBytes)) match {
@@ -448,6 +464,10 @@ object DbActor extends AskPatternConstants {
       case CreateChannel(channel, objectType) =>
         log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
         sender ! createChannel(channel, objectType)
+      
+      case CreateChannelsFromList(list) =>
+        log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
+        sender ! createChannelsFromList(list)
 
       case ChannelExists(channel) =>
         log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")

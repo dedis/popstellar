@@ -81,18 +81,13 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
             //Creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a GraphMessage
             def createAttendeeChannels(attendees: List[PublicKey], rpcMessage: JsonRpcRequest): GraphMessage = {
-              attendees match {
-                case Nil => Left(rpcMessage)
-                case head::tail =>
-                  //a closeRollCall is always sent in the lao's main channel so we are allowed to do this
-                  val socialChannel: String = generateSocialChannel(rpcMessage.getParamsChannel, head)
-                  val ask: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(Channel(socialChannel), ObjectType.CHIRP)).map {
-                    case DbActorAck() => createAttendeeChannels(tail, rpcMessage)
-                    case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-                    case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
-                  }
-                  Await.result(ask, duration)
+              val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map(attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP))
+              val askCreateChannels: Future[GraphMessage] = (dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)).map{
+                case DbActorAck() => Left(rpcMessage)
+                case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+                case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
               }
+              Await.result(askCreateChannels, duration)
             }
 
             val laoChannel: Option[Base64Data] = rpcMessage.getParamsChannel.decodeSubChannel
@@ -133,5 +128,5 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 
-  private def generateSocialChannel(channel: Channel, pk: PublicKey): String = channel + Channel.SOCIAL_CHANNEL_PREFIX + pk.base64Data
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): Channel = Channel(channel + Channel.SOCIAL_CHANNEL_PREFIX + pk.base64Data)
 }
