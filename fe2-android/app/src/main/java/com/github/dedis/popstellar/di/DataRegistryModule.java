@@ -5,12 +5,14 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CAST_VOTE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CLOSE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.CREATE;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.DELETE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.ELECT_ACCEPT;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.END;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.FAILURE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.LEARN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_ADD;
+import static com.github.dedis.popstellar.model.network.method.message.data.Action.NOTIFY_DELETE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.OPEN;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PREPARE;
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.PROMISE;
@@ -52,7 +54,9 @@ import com.github.dedis.popstellar.model.network.method.message.data.rollcall.Cl
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.NotifyAddChirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.NotifyDeleteChirp;
 import com.github.dedis.popstellar.utility.handler.data.ChirpHandler;
 import com.github.dedis.popstellar.utility.handler.data.ConsensusHandler;
 import com.github.dedis.popstellar.utility.handler.data.ElectionHandler;
@@ -123,7 +127,9 @@ public abstract class DataRegistryModule {
     // Social Media
     builder
         .add(CHIRP, ADD, AddChirp.class, ChirpHandler::handleChirpAdd)
-        .add(CHIRP, NOTIFY_ADD, NotifyAddChirp.class, null);
+        .add(CHIRP, NOTIFY_ADD, NotifyAddChirp.class, null)
+        .add(CHIRP, DELETE, DeleteChirp.class, ChirpHandler::handleDeleteChirp)
+        .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
 
     return builder.build();
   }
