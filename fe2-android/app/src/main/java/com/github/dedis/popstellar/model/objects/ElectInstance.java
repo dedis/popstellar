@@ -31,12 +31,12 @@ public final class ElectInstance {
   private State state;
 
   public ElectInstance(
-      @NonNull MessageID messageID,
+      @NonNull MessageID messageId,
       @NonNull String channel,
       @NonNull PublicKey proposer,
       @NonNull Set<PublicKey> nodes,
       @NonNull ConsensusElect elect) {
-    this.messageId = messageID;
+    this.messageId = messageId;
     this.channel = channel;
     this.proposer = proposer;
     this.elect = elect;
@@ -88,10 +88,10 @@ public final class ElectInstance {
 
   public void addElectAccept(
       @NonNull PublicKey publicKey,
-      @NonNull MessageID messageID,
+      @NonNull MessageID messageId,
       @NonNull ConsensusElectAccept electAccept) {
     if (electAccept.isAccept()) {
-      acceptorToMessageId.put(publicKey, messageID);
+      acceptorToMessageId.put(publicKey, messageId);
     }
   }
 

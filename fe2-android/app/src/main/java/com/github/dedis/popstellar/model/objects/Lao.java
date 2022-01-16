@@ -94,15 +94,15 @@ public final class Lao {
    * @param electInstance the ElectInstance
    */
   public void updateElectInstance(@NonNull ElectInstance electInstance) {
-    MessageID messageID = electInstance.getMessageId();
-    messageIdToElectInstance.put(messageID, electInstance);
+    MessageID messageId = electInstance.getMessageId();
+    messageIdToElectInstance.put(messageId, electInstance);
 
     Map<PublicKey, MessageID> acceptorsToMessageId = electInstance.getAcceptorsToMessageId();
     // add to each node the messageId of the Elect if they accept it
     keyToNode.forEach(
         (key, node) -> {
           if (acceptorsToMessageId.containsKey(key)) {
-            node.addMessageIdOfAnAcceptedElect(messageID);
+            node.addMessageIdOfAnAcceptedElect(messageId);
           }
         });
 
@@ -149,8 +149,8 @@ public final class Lao {
     return Optional.ofNullable(elections.get(id));
   }
 
-  public Optional<ElectInstance> getElectInstance(MessageID messageID) {
-    return Optional.ofNullable(messageIdToElectInstance.get(messageID));
+  public Optional<ElectInstance> getElectInstance(MessageID messageId) {
+    return Optional.ofNullable(messageIdToElectInstance.get(messageId));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(MessageID id) {

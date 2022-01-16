@@ -566,11 +566,11 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @param accept true if accepted, false if rejected
    */
   public void sendConsensusElectAccept(ElectInstance electInstance, boolean accept) {
-    MessageID messageID = electInstance.getMessageId();
+    MessageID messageId = electInstance.getMessageId();
     Log.d(
         TAG,
         "sending a new elect_accept for consensus with messageId : "
-            + messageID
+            + messageId
             + " with value "
             + accept);
 
@@ -581,7 +581,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
 
     ConsensusElectAccept consensusElectAccept =
-        new ConsensusElectAccept(electInstance.getInstanceId(), messageID, accept);
+        new ConsensusElectAccept(electInstance.getInstanceId(), messageId, accept);
 
     try {
       MessageGeneral msg =
@@ -602,7 +602,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                       Log.d(
                           TAG,
                           "failed to send the elect_accept for consensus with messageId : "
-                              + messageID);
+                              + messageId);
                     }
                   },
                   throwable ->
