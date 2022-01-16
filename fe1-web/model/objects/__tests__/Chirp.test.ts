@@ -21,6 +21,7 @@ describe('Chirp object', () => {
       text: TEXT,
       time: 1234,
       parentId: '5678',
+      isDeleted: false,
     };
     const chirp = Chirp.fromState(chirpState);
     expect(chirp.toState()).toStrictEqual(chirpState);
@@ -45,6 +46,7 @@ describe('Chirp object', () => {
         text: TEXT,
         time: TIMESTAMP,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -55,6 +57,7 @@ describe('Chirp object', () => {
         text: TEXT,
         time: TIMESTAMP,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -65,6 +68,7 @@ describe('Chirp object', () => {
         sender: PK,
         time: TIMESTAMP,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -75,8 +79,20 @@ describe('Chirp object', () => {
         sender: PK,
         text: TEXT,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
+    });
+
+    it('initializes isDeleted to false if it is undefined', () => {
+      const newChirp = new Chirp({
+        id: HASH_ID,
+        sender: PK,
+        text: TEXT,
+        time: TIMESTAMP,
+        parentId: HASH_PARENT,
+      });
+      expect(newChirp.isDeleted).toStrictEqual(false);
     });
   });
 });
