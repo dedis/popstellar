@@ -5,6 +5,8 @@ import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
+import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.datePicker;
 import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.endDateView;
@@ -476,5 +478,88 @@ public class ElectionSetupFragmentTest {
     for (int i = 0; i < 2; ++i) {
       assertEquals("answer 2." + i, ballotOptions2.get(i));
     }
+  }
+
+  @Test
+  public void cannotSubmitWithoutElectionNameElectionTest() {
+    setupViewModel();
+
+    pickValidDateAndTime();
+
+    // Add Question 1, with 2 ballots options, no write in
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    for (int i = 0; i < 2; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 1." + i), closeSoftKeyboard());
+    }
+
+    submit().check(matches(isNotEnabled()));
+    electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
+    submit().check(matches(isEnabled()));
+  }
+
+  @Test
+  public void cannotSubmitWithoutDateAndTimeTest() {
+    setupViewModel();
+
+    electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
+    // Add Question 1, with 2 ballots options, no write in
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    for (int i = 0; i < 2; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 1." + i), closeSoftKeyboard());
+    }
+
+    submit().check(matches(isNotEnabled()));
+    pickValidDateAndTime();
+    submit().check(matches(isEnabled()));
+  }
+
+  @Test
+  public void cannotSubmitWithoutQuestionTest() {
+    setupViewModel();
+
+    electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
+    pickValidDateAndTime();
+
+    // add 2 ballots options
+    for (int i = 0; i < 2; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 1." + i), closeSoftKeyboard());
+    }
+
+    submit().check(matches(isNotEnabled()));
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    submit().check(matches(isEnabled()));
+  }
+
+  @Test
+  public void cannotSubmitWithoutAllBallotTest() {
+    setupViewModel();
+
+    electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
+    pickValidDateAndTime();
+
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    ballotOptionAtPosition(0).perform(click(), typeText("answer 1.0"), closeSoftKeyboard());
+
+    submit().check(matches(isNotEnabled()));
+    ballotOptionAtPosition(1).perform(click(), typeText("answer 1.1"), closeSoftKeyboard());
+    submit().check(matches(isEnabled()));
+  }
+
+  @Test
+  public void cannotSubmitWithIdenticalBallotTest() {
+    setupViewModel();
+
+    electionName().perform(click(), typeText(ELECTION_NAME), closeSoftKeyboard());
+    pickValidDateAndTime();
+
+    // Add Question 1, with 2 identical ballots options, no write in
+    questionText().perform(click(), typeText("Question 1"), closeSoftKeyboard());
+    for (int i = 0; i < 2; ++i) {
+      ballotOptionAtPosition(i).perform(click(), typeText("answer 1.0"), closeSoftKeyboard());
+    }
+
+    submit().check(matches(isNotEnabled()));
+    ballotOptionAtPosition(1).perform(click(), typeText("answer 1.1"), closeSoftKeyboard());
+    submit().check(matches(isEnabled()));
   }
 }
