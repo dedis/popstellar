@@ -9,6 +9,7 @@ import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import WideButtonView from './WideButtonView';
 import ProfileIcon from './ProfileIcon';
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * Component that shows a user's profile picture, his public key and two buttons:
@@ -50,6 +51,7 @@ const styles = StyleSheet.create({
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const { laoId, publicKey } = props;
+  const navigation = useNavigation();
 
   const followUser = () => {
     subscribeToChannel(getUserSocialChannel(laoId, publicKey))
@@ -59,9 +61,9 @@ const UserListItem = (props: IPropTypes) => {
     setIsFollowing(true);
   };
 
-  // TODO: Navigates to the profile of the user
   const goToUserProfile = () => {
-    console.error('Profile navigation is not implemented yet.');
+    navigation.navigate(STRINGS.social_media_navigation_tab_user_profile as never,
+      { userPublicKey: publicKey } as never);
   };
 
   return (
