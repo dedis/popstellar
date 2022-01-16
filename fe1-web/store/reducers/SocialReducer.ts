@@ -1,6 +1,6 @@
-import { ChirpState } from 'model/objects/Chirp';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Hash } from 'model/objects';
+import { Hash, Timestamp } from 'model/objects';
 import { ReactionState } from 'model/objects/Reaction';
 import { getLaosState } from './LaoReducer';
 
@@ -86,22 +86,66 @@ const socialSlice = createSlice({
 
         const store = state.byLaoId[laoId];
 
-        if (!store.byId[chirp.id]) {
+        // add the chirp to byId or update the chirp state if it's already in byId
+        // if the chirp has not been added (didn't receive a delete request before)
+        // or if the addChirp and deleteChirp of this chirp.id are sent by different sender
+        // in this case we trust the sender of addChirp and keep the chirp as not deleted
+        if (!(store.byId[chirp.id]
+          && store.byId[chirp.id].sender === chirp.sender)) {
           store.byId[chirp.id] = chirp;
-
-          const insertIdxInAll = findInsertIdx(
-            store.allIdsInOrder, store.byId, chirp.time,
-          );
-          store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
-
-          if (!state.byLaoId[laoId].byUser[chirp.sender]) {
-            store.byUser[chirp.sender] = [chirp.id];
-          } else {
-            const senderChirps = store.byUser[chirp.sender];
-            const insertIdxInUser = findInsertIdx(senderChirps, store.byId, chirp.time);
-            senderChirps.splice(insertIdxInUser, 0, chirp.id);
-          }
         }
+
+        // even the chirp is deleted, we add it to allIdsInOrder to display the message
+        const insertIdxInAll = findInsertIdx(
+          store.allIdsInOrder, store.byId, chirp.time,
+        );
+        store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
+
+        if (!state.byLaoId[laoId].byUser[chirp.sender]) {
+          store.byUser[chirp.sender] = [chirp.id];
+        } else {
+          const senderChirps = store.byUser[chirp.sender];
+          const insertIdxInUser = findInsertIdx(senderChirps, store.byId, chirp.time);
+          senderChirps.splice(insertIdxInUser, 0, chirp.id);
+        }
+      },
+    },
+
+    // Delete a chirp in the list of chirps
+    deleteChirp: {
+      prepare(laoId: Hash | string, chirp: ChirpState): any {
+        return { payload: { laoId: laoId.valueOf(), chirp: chirp } };
+      },
+      reducer(state, action: PayloadAction<{
+        laoId: string,
+        chirp: ChirpState,
+      }>) {
+        const { laoId, chirp } = action.payload;
+
+        if (!(laoId in state.byLaoId)) {
+          state.byLaoId[laoId] = {
+            allIdsInOrder: [],
+            byId: {},
+            byUser: {},
+            reactionsByChirp: {},
+          };
+        }
+
+        const store = state.byLaoId[laoId];
+
+        // store the deleted chirp
+        const deletedChirp = new Chirp({
+          id: new Hash(chirp.id),
+          sender: new Hash(chirp.sender),
+          time: new Timestamp(chirp.time),
+          text: '',
+          isDeleted: true,
+        }).toState();
+        if ((!store.byId[chirp.id])
+          || (store.byId[chirp.id] && store.byId[chirp.id].sender === deletedChirp.sender)) {
+          store.byId[chirp.id] = deletedChirp;
+        }
+        // we ignore the case if the delete request is not sent by the original sender
       },
     },
 
@@ -143,7 +187,7 @@ const socialSlice = createSlice({
 });
 
 export const {
-  addChirp, addReaction,
+  addChirp, deleteChirp, addReaction,
 } = socialSlice.actions;
 
 export const socialReduce = socialSlice.reducer;

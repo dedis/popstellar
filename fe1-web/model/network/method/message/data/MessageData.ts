@@ -30,6 +30,8 @@ export enum ActionType {
   CLOSE = 'close',
   ADD = 'add',
   NOTIFY_ADD = 'notify_add',
+  DELETE = 'delete',
+  NOTIFY_DELETE = 'notify_delete',
 }
 
 export interface MessageData {

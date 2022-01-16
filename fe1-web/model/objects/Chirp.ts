@@ -12,6 +12,7 @@ export interface ChirpState {
   text: string;
   time: number;
   parentId?: string;
+  isDeleted: boolean;
 }
 
 export class Chirp {
@@ -20,7 +21,7 @@ export class Chirp {
   // The sender's public key
   public readonly sender: PublicKey;
 
-  // The text of the chirp
+  // The text of the chirp if it's not deleted
   public readonly text: string;
 
   // The time when the chirp was posted
@@ -28,6 +29,9 @@ export class Chirp {
 
   // The id of the parent chirp (if it is a reply)
   public readonly parentId?: Hash;
+
+  // The flag indicates if the chirp is deleted or not
+  public readonly isDeleted: boolean;
 
   constructor(obj: Partial<Chirp>) {
     if (obj === undefined || obj === null) {
@@ -47,6 +51,7 @@ export class Chirp {
     if (obj.time === undefined) {
       throw new Error("Undefined 'time' when creating 'Chirp'");
     }
+    this.isDeleted = !!obj.isDeleted;
 
     this.id = obj.id;
     this.sender = obj.sender;
@@ -67,6 +72,7 @@ export class Chirp {
       text: chirpState.text,
       time: new Timestamp(chirpState.time),
       parentId: chirpState.parentId ? new Hash(chirpState.parentId) : undefined,
+      isDeleted: chirpState.isDeleted,
     });
   }
 
