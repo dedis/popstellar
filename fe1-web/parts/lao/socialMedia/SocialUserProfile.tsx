@@ -7,8 +7,10 @@ import { useSelector } from 'react-redux';
 import ChirpCard from 'components/ChirpCard';
 import ProfileIcon from 'components/ProfileIcon';
 import TextBlock from 'components/TextBlock';
+import BackButton from 'components/BackButton';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
 import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
+import STRINGS from 'res/strings';
 
 /**
  * UI for the profile of a user.
@@ -34,6 +36,9 @@ const SocialUserProfile = ({ route }: any) => {
   return (
     <View style={styles.viewCenter}>
       <View style={styles.topView}>
+        <View style={{ marginBottom: 15 }}>
+          <BackButton navigationTabName={STRINGS.social_media_navigation_tab_search} />
+        </View>
         <ProfileIcon
           publicKey={userPublicKey}
           size={8}
