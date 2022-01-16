@@ -52,7 +52,7 @@ public class KeyManager {
     this.wallet = wallet;
 
     try {
-      regenerateMainKey();
+      cacheMainKey();
       Log.d(TAG, "Public Key = " + getMainPublicKey().getEncoded());
     } catch (IOException | GeneralSecurityException e) {
       Log.e(TAG, "Failed to retrieve device's key", e);
@@ -61,14 +61,14 @@ public class KeyManager {
   }
 
   /**
-   * This will regenerate the cached device KeyPair.
+   * This will cache the device KeyPair by extracting it from Tink.
    *
    * <p>Use this only if you know what you are doing
    *
    * @throws IOException when the key cannot be retrieved due to IO errors
    * @throws GeneralSecurityException when the retrieved key is not valid
    */
-  public void regenerateMainKey() throws GeneralSecurityException, IOException {
+  private void cacheMainKey() throws GeneralSecurityException, IOException {
     keyPair = getKeyPair(keysetManager.getKeysetHandle());
   }
 
