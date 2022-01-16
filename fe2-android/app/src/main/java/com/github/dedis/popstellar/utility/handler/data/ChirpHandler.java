@@ -9,6 +9,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
 import java.util.Optional;
 
@@ -52,7 +53,8 @@ public final class ChirpHandler {
    * @param context the HandlerContext of the message
    * @param deleteChirp the data of the message that was received
    */
-  public static void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp) {
+  public static void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp)
+      throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
 
@@ -62,10 +64,9 @@ public final class ChirpHandler {
     Chirp chirp;
 
     if (!chirpOptional.isPresent()) {
-      throw new IllegalArgumentException("The chirp does not exist");
-    } else {
-      chirp = chirpOptional.get();
+      throw new DataHandlingException(deleteChirp);
     }
+    chirp = chirpOptional.get();
 
     if (chirp.getIsDeleted()) {
       Log.d(TAG, "The chirp is already deleted");

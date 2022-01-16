@@ -56,10 +56,14 @@ public class DeleteChirpTest {
     String pathDir = "protocol/examples/messageData/chirp_delete_publish/";
     assertThrows(
         JsonParseException.class,
-        () -> JsonTestUtils.parse(pathDir + "wrong_chirp_delete_publish_negative_time.json"));
+        () ->
+            JsonTestUtils.parse(
+                JsonTestUtils.loadFile(pathDir + "wrong_chirp_delete_publish_negative_time.json")));
     assertThrows(
         JsonParseException.class,
         () ->
-            JsonTestUtils.parse(pathDir + "wrong_chirp_delete_publish_not_base_64_chirp_id.json"));
+            JsonTestUtils.parse(
+                JsonTestUtils.loadFile(
+                    pathDir + "wrong_chirp_delete_publish_not_base_64_chirp_id.json")));
   }
 }
