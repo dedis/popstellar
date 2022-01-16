@@ -69,7 +69,11 @@ public final class ConsensusNode {
    * @param electInstance the ElectInstance to add
    */
   public void addElectInstance(ElectInstance electInstance) {
-    electInstances.add(electInstance);
+    MessageID messageId = electInstance.getMessageId();
+    // if the ElectInstance is not present, add it
+    if (electInstances.stream().map(ElectInstance::getMessageId).noneMatch(messageId::equals)) {
+      electInstances.add(electInstance);
+    }
   }
 
   /**
