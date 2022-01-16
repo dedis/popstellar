@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Class holding information of an ConsensusElect message and its current states including the
+ * Class holding information of a ConsensusElect message and its current states including the
  * key/messageId of every node that have accepted this Elect with an ElectAccept.
  */
 public final class ElectInstance {
