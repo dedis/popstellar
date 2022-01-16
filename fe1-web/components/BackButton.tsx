@@ -9,13 +9,13 @@ import { useNavigation } from '@react-navigation/native';
  * navigate along with its size in its properties.
  */
 const BackButton = (props: IPropTypes) => {
-  const { navigationTabName, size } = props;
+  const { navigationTabName, size, testID } = props;
   const navigation = useNavigation();
 
   return (
     // The view is there to set the button's clickable layout correctly.
     <View style={{ width: size }}>
-      <Pressable onPress={() => navigation.navigate(navigationTabName as never)}>
+      <Pressable onPress={() => navigation.navigate(navigationTabName as never)} testID={testID}>
         <Ionicons name="chevron-back-outline" size={size} />
       </Pressable>
     </View>
@@ -25,15 +25,18 @@ const BackButton = (props: IPropTypes) => {
 const propTypes = {
   navigationTabName: PropTypes.string.isRequired,
   size: PropTypes.number,
+  testID: PropTypes.string,
 };
 
 type IPropTypes = {
   navigationTabName: string,
   size: number,
+  testID: string,
 };
 
 BackButton.defaultProps = {
   size: 23,
+  testID: 'backButton',
 };
 
 BackButton.propTypes = propTypes;

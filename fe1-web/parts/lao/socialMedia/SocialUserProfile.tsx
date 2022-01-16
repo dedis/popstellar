@@ -37,7 +37,10 @@ const SocialUserProfile = ({ route }: any) => {
     <View style={styles.viewCenter}>
       <View style={styles.topView}>
         <View style={{ marginBottom: 15 }}>
-          <BackButton navigationTabName={STRINGS.social_media_navigation_tab_search} />
+          <BackButton
+            navigationTabName={STRINGS.social_media_navigation_tab_search}
+            testID="backButtonUserProfile"
+          />
         </View>
         <ProfileIcon
           publicKey={userPublicKey}
