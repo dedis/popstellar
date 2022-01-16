@@ -159,7 +159,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	require.NoError(t, err)
 
 	err = channel.Publish(message, socket.ClientSocket{})
-	require.Error(t, err, "a consensus channel shouldn't need to broadcast a message")
+	require.Error(t, err, "nothing should be directly published in the general")
 }
 
 // -----------------------------------------------------------------------------

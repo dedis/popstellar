@@ -9,7 +9,9 @@ import (
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -148,10 +150,11 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel throws an error when it receives a broadcast message
+// Tests that the channel works when it receives a broadcast message
 func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
@@ -161,17 +164,52 @@ func Test_Consensus_Channel_Broadcast(t *testing.T) {
 	consensusChannel, ok := channel.(*Channel)
 	require.True(t, ok)
 
+	// Create a socket subscribed to the channel
+	sckt := &fakeSocket{id: "socket"}
+	consensusChannel.sockets.Upsert(sckt)
+
+	// Create a consensus elect message
 	file := filepath.Join(protocolRelativePath,
-		"examples", "query", "broadcast", "broadcast.json")
+		"examples", "messageData", "consensus_elect", "elect.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var message method.Broadcast
+	bufb64 := base64.URLEncoding.EncodeToString(buf)
+
+	message := message.Message{
+		Data:              bufb64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	file = filepath.Join(protocolRelativePath,
+		"examples", "query", "broadcast", "broadcast.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var broadcast method.Broadcast
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	err = consensusChannel.Broadcast(message)
-	require.Error(t, err, "a consensus channel shouldn't need to broadcast a message")
+	broadcast.Base = query.Base{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
+		Method: "broadcast",
+	}
+	broadcast.Params.Message = message
+	broadcast.Params.Channel = "channel0"
+
+	err = consensusChannel.Broadcast(broadcast, nil)
+	require.NoError(t, err)
+
+	// Checks that the broadcast message is broadcast to clients
+	byteBroad, err := json.Marshal(&broadcast)
+	require.NoError(t, err)
+
+	require.Equal(t, byteBroad, sckt.msg)
 }
 
 // Tests that the channel works correctly when it receives an elect message

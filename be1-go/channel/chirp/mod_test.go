@@ -10,7 +10,9 @@ import (
 	"popstellar/channel"
 	"popstellar/channel/generalChirping"
 	"popstellar/crypto"
+	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -162,7 +164,7 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel throws an error when it receives a broadcast message
+// Tests that the channel works when it receives a broadcast message
 func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
@@ -170,19 +172,52 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
-	// Create the channel
-	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
+	// Create the channels
+	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
-	file := filepath.Join(relativeQueryExamplePath, "broadcast", "broadcast.json")
+	fakeSock := &fakeSocket{id: "fakeSock"}
+	cha.sockets.Upsert(fakeSock)
+
+	// Create the message
+	file := filepath.Join(relativeMsgDataExamplePath, "chirp_add_publish",
+		"chirp_add_publish.json")
 	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	file = filepath.Join(relativeQueryExamplePath, "broadcast", "broadcast.json")
+	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
 	var msg method.Broadcast
 	err = json.Unmarshal(buf, &msg)
 	require.NoError(t, err)
 
-	// a chirp channel isn't supposed to broadcast a message - must fail
-	require.Error(t, cha.Broadcast(msg))
+	msg.Base = query.Base{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
+		Method: "broadcast",
+	}
+	msg.Params.Channel = cha.channelID
+	msg.Params.Message = m
+
+	require.NoError(t, cha.Broadcast(msg, nil))
+
+	broadBuf, err := json.Marshal(msg)
+	require.NoError(t, err)
+
+	require.Equal(t, broadBuf, fakeSock.msg)
 }
 
 // Tests that the channel works correctly when receiving an add chirp message

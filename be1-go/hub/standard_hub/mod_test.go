@@ -697,7 +697,25 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 		},
 	}
 
-	publishBuf, err := json.Marshal(&publish)
+	broadcast := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodBroadcast,
+		},
+
+		Params: struct {
+			Channel string          "json:\"channel\""
+			Message message.Message "json:\"message\""
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	broadcastBuf, err := json.Marshal(&broadcast)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
@@ -711,7 +729,7 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 
 	// > check the socket
 	sock.Lock()
-	require.Equal(t, publishBuf, sock.msg)
+	require.Equal(t, broadcastBuf, sock.msg)
 	sock.Unlock()
 
 	// > check that the channel has been called with the publish message
