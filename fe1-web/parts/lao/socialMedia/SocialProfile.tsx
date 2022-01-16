@@ -1,26 +1,58 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { PublicKey } from 'model/objects';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
 import TextBlock from 'components/TextBlock';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import ChirpCard from 'components/ChirpCard';
+import ProfileIcon from 'components/ProfileIcon';
+import {
+  FlatList, ListRenderItemInfo, Text, View,
+} from 'react-native';
 import STRINGS from 'res/strings';
-import SocialUserProfile from './SocialUserProfile';
-
-const styles = StyleSheet.create({
-  textUnavailableView: {
-    alignSelf: 'center',
-    width: 600,
-    marginTop: 20,
-  } as ViewStyle,
-});
+import { makeChirpsListOfUser } from 'store';
+import { useSelector } from 'react-redux';
+import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
 
 /**
  * UI for the profile of the current user.
  */
+
+const styles = socialMediaProfile;
+
 const SocialProfile = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
-  if (currentUserPublicKey.valueOf() !== '') {
-    return <SocialUserProfile userPublicKey={currentUserPublicKey} />;
+  if (currentUserPublicKey && currentUserPublicKey.valueOf() !== '') {
+    const userChirps = makeChirpsListOfUser(currentUserPublicKey);
+    const userChirpList = useSelector(userChirps);
+
+    const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
+      <ChirpCard
+        chirp={Chirp.fromState(item)}
+      />
+    );
+
+    return (
+      <View style={styles.viewCenter}>
+        <View style={styles.topView}>
+          <ProfileIcon
+            publicKey={currentUserPublicKey}
+            size={8}
+            scale={10}
+          />
+          <View style={styles.textView}>
+            <Text style={styles.profileText}>{currentUserPublicKey.valueOf()}</Text>
+            <Text>{`${userChirpList.length} chirps`}</Text>
+          </View>
+        </View>
+        <View style={styles.userFeed}>
+          <FlatList
+            data={userChirpList}
+            renderItem={renderChirpState}
+            keyExtractor={(item) => item.id.toString()}
+          />
+        </View>
+      </View>
+    );
   }
   return (
     <View style={styles.textUnavailableView}>

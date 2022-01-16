@@ -1,54 +1,27 @@
 import * as React from 'react';
 import {
-  FlatList,
-  ListRenderItemInfo,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
+  FlatList, ListRenderItemInfo, Text, View,
 } from 'react-native';
 import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
 import ChirpCard from 'components/ChirpCard';
-import { Chirp, ChirpState } from 'model/objects/Chirp';
 import ProfileIcon from 'components/ProfileIcon';
-import { PublicKey } from 'model/objects';
-import PropTypes from 'prop-types';
-import { gray } from 'styles/colors';
+import TextBlock from 'components/TextBlock';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
+import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
 
 /**
  * UI for the profile of a user.
  */
-const styles = StyleSheet.create({
-  viewCenter: {
-    alignSelf: 'center',
-    width: 600,
-  } as ViewStyle,
-  topView: {
-    marginTop: 20,
-    flexDirection: 'column',
-    alignSelf: 'flex-start',
-  } as ViewStyle,
-  textView: {
-    alignSelf: 'flex-start',
-    marginTop: 15,
-  } as ViewStyle,
-  profileText: {
-    marginBottom: 5,
-    fontSize: 22,
-    fontWeight: 'bold',
-  } as TextStyle,
-  userFeed: {
-    borderColor: gray,
-    borderTopWidth: 1,
-    flexDirection: 'column',
-    marginTop: 20,
-  } as ViewStyle,
-});
 
-const SocialUserProfile = (props: IPropTypes) => {
-  const { userPublicKey } = props;
+const styles = socialMediaProfile;
+
+const SocialUserProfile = ({ route }: any) => {
+  const { userPublicKey } = route.params;
+  if (!userPublicKey) {
+    return <TextBlock text="Impossible to load profile of user: public key not provided." />;
+  }
+
   const userChirps = makeChirpsListOfUser(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
@@ -80,16 +53,6 @@ const SocialUserProfile = (props: IPropTypes) => {
       </View>
     </View>
   );
-};
-
-const propTypes = {
-  userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialUserProfile.prototype = propTypes;
-
-type IPropTypes = {
-  userPublicKey: PublicKey,
 };
 
 export default SocialUserProfile;
