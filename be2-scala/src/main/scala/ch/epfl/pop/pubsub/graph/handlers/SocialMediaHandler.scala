@@ -80,8 +80,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
   }
 
   def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    Await.result(ask, duration) match {
+    writeAndPropagate(rpcMessage) match {
       case Left(msg) => {
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeChannelLaoId match {
@@ -108,8 +107,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
   }
 
   def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    Await.result(ask, duration) match {
+    writeAndPropagate(rpcMessage) match {
       case Left(msg) => {
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeChannelLaoId match {
@@ -144,11 +142,14 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
   }
 
   def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    Await.result(ask, duration)
+    writeAndPropagate(rpcMessage)
   }
 
   def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
+    writeAndPropagate(rpcMessage)
+  }
+
+  private def writeAndPropagate(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }

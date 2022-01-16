@@ -18,7 +18,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
 
         rpcMessage.getParamsMessage match {
 
-            // FIXME need more checks
+            // TODO need more checks
             case Some(message) => {
                 val data: AddChirp = message.decodedData.get.asInstanceOf[AddChirp]
 
@@ -62,7 +62,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
                 if (!validateTimestampStaleness(data.timestamp)) {
                     Right(validationError(s"stale timestamp (${data.timestamp})"))
                 }
-                // FIXME: add more checks
+                // TODO: add more checks
                 else{
                     Left(rpcMessage)
                 }
@@ -82,7 +82,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
                 if (!validateTimestampStaleness(data.timestamp)) {
                     Right(validationError(s"stale timestamp (${data.timestamp})"))
                 }
-                // FIXME: add more checks
+                // TODO: add more checks
                 else{
                     Left(rpcMessage)
                 }
