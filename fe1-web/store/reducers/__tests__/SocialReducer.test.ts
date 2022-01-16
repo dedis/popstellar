@@ -10,6 +10,7 @@ import {
   addChirp,
   makeChirpsList,
   makeChirpsListOfUser,
+  deleteChirp,
   addReaction,
   makeReactionsList,
 } from '../SocialReducer';
@@ -23,15 +24,50 @@ const mockLaoIdHash: Hash = Hash.fromStringArray(
 const mockLaoId: string = mockLaoIdHash.toString();
 const mockSender1: PublicKey = new PublicKey('Douglas Adams');
 const mockSender2: PublicKey = new PublicKey('Gandalf');
+const mockChirpId0: Hash = Hash.fromString('000');
 const mockChirpId1: Hash = Hash.fromString('1234');
 const mockChirpId2: Hash = Hash.fromString('5678');
+const mockChirpId3: Hash = Hash.fromString('123456');
 const mockTimestamp: Timestamp = new Timestamp(1606666600);
+
+const chirp0DeletedFake = new Chirp({
+  id: mockChirpId0,
+  sender: new PublicKey('Joker'),
+  text: '',
+  time: mockTimestamp,
+  isDeleted: true,
+}).toState();
+
+const chirp0 = new Chirp({
+  id: mockChirpId0,
+  sender: mockSender1,
+  text: 'Don\'t delete me!',
+  time: mockTimestamp,
+  isDeleted: false,
+}).toState();
 
 const chirp1 = new Chirp({
   id: mockChirpId1,
   sender: mockSender1,
   text: 'Don\'t panic.',
   time: new Timestamp(1605555500),
+  isDeleted: false,
+}).toState();
+
+const chirp1Deleted = new Chirp({
+  id: mockChirpId1,
+  sender: mockSender1,
+  text: '',
+  time: new Timestamp(1605555500),
+  isDeleted: true,
+}).toState();
+
+const chirp1DeletedFake = new Chirp({
+  id: mockChirpId1,
+  sender: mockSender2,
+  text: '',
+  time: new Timestamp(1605555500),
+  isDeleted: true,
 }).toState();
 
 const chirp2 = new Chirp({
@@ -49,10 +85,18 @@ const chirp3 = new Chirp({
 }).toState();
 
 const chirp4 = new Chirp({
-  id: Hash.fromString('123456'),
+  id: mockChirpId3,
   sender: mockSender1,
   text: 'The answer is 42',
   time: new Timestamp(1608888800),
+}).toState();
+
+const chirp4Deleted = new Chirp({
+  id: mockChirpId3,
+  sender: mockSender1,
+  text: '',
+  time: new Timestamp(1608888800),
+  isDeleted: true,
 }).toState();
 
 const reaction1 = new Reaction({
@@ -93,6 +137,40 @@ const emptyState = {
       allIdsInOrder: [],
       byId: {},
       byUser: {},
+      reactionsByChirp: {},
+    },
+  },
+};
+
+const chirpFilledState0Deleted = {
+  byLaoId: {
+    myLaoId: {
+      allIdsInOrder: [],
+      byId: {},
+      byUser: {},
+      reactionsByChirp: {},
+    },
+    [mockLaoId]: {
+      allIdsInOrder: [],
+      byId: { [mockChirpId0.toString()]: chirp0DeletedFake },
+      byUser: {},
+      reactionsByChirp: {},
+    },
+  },
+};
+
+const chirpFilledState0Added = {
+  byLaoId: {
+    myLaoId: {
+      allIdsInOrder: [],
+      byId: {},
+      byUser: {},
+      reactionsByChirp: {},
+    },
+    [mockLaoId]: {
+      allIdsInOrder: [chirp0.id],
+      byId: { [chirp0.id]: chirp0 },
+      byUser: { [chirp0.sender]: [chirp0.id] },
       reactionsByChirp: {},
     },
   },
@@ -164,6 +242,50 @@ const chirpFilledState4 = {
         [chirp2.id]: chirp2,
         [chirp3.id]: chirp3,
         [chirp4.id]: chirp4,
+      },
+      byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
+      reactionsByChirp: {},
+    },
+  },
+};
+
+const chirpFilledState4Chirp1Deleted = {
+  byLaoId: {
+    myLaoId: {
+      allIdsInOrder: [],
+      byId: {},
+      byUser: {},
+      reactionsByChirp: {},
+    },
+    [mockLaoId]: {
+      allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
+      byId: {
+        [chirp1.id]: chirp1Deleted,
+        [chirp2.id]: chirp2,
+        [chirp3.id]: chirp3,
+        [chirp4.id]: chirp4,
+      },
+      byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
+      reactionsByChirp: {},
+    },
+  },
+};
+
+const chirpFilledState4Chirp4Deleted = {
+  byLaoId: {
+    myLaoId: {
+      allIdsInOrder: [],
+      byId: {},
+      byUser: {},
+      reactionsByChirp: {},
+    },
+    [mockLaoId]: {
+      allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
+      byId: {
+        [chirp1.id]: chirp1,
+        [chirp2.id]: chirp2,
+        [chirp3.id]: chirp3,
+        [chirp4.id]: chirp4Deleted,
       },
       byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
       reactionsByChirp: {},
@@ -342,22 +464,48 @@ describe('SocialReducer', () => {
 
     it('should add the first chirp correctly', () => {
       expect(socialReduce(emptyState, addChirp(mockLaoId, chirp1)))
-        .toEqual(filledState1);
+        .toEqual(chirpFilledState1);
     });
 
     it('should add the newer chirp before the first chirp', () => {
-      expect(socialReduce(filledState1, addChirp(mockLaoId, chirp2)))
-        .toEqual(filledState2);
+      expect(socialReduce(chirpFilledState1, addChirp(mockLaoId, chirp2)))
+        .toEqual(chirpFilledState2);
     });
 
     it('should add the newer chirp after the second chirp', () => {
-      expect(socialReduce(filledState2, addChirp(mockLaoId, chirp3)))
-        .toEqual(filledState3);
+      expect(socialReduce(chirpFilledState2, addChirp(mockLaoId, chirp3)))
+        .toEqual(chirpFilledState3);
     });
 
     it('should add the newest chirp on top', () => {
-      expect(socialReduce(filledState3, addChirp(mockLaoId, chirp4)))
-        .toEqual(filledState4);
+      expect(socialReduce(chirpFilledState3, addChirp(mockLaoId, chirp4)))
+        .toEqual(chirpFilledState4);
+    });
+
+    it('should mark chirp 1 as deleted', () => {
+      expect(socialReduce(chirpFilledState4, deleteChirp(mockLaoId, chirp1Deleted)))
+        .toEqual(chirpFilledState4Chirp1Deleted);
+    });
+
+    it('delete a non-stored chirp should store it in byId as deleted', () => {
+      expect(socialReduce(emptyState, deleteChirp(mockLaoId, chirp0DeletedFake)))
+        .toEqual(chirpFilledState0Deleted);
+    });
+
+    it('should ignore delete request sent by non-original sender', () => {
+      expect(socialReduce(chirpFilledState4, deleteChirp(mockLaoId, chirp1DeletedFake)))
+        .toEqual(chirpFilledState4);
+    });
+
+    it('should update/add a chirp if it has been deleted by a different sender', () => {
+      expect(socialReduce(chirpFilledState0Deleted, addChirp(mockLaoId, chirp0)))
+        .toEqual(chirpFilledState0Added);
+    });
+
+    it('should not re-add a chirp if it has already been deleted by the same sender', () => {
+      const stateDeleted = socialReduce(chirpFilledState3, deleteChirp(mockLaoId, chirp4));
+      expect(socialReduce(stateDeleted, addChirp(mockLaoId, chirp4)))
+        .toEqual(chirpFilledState4Chirp4Deleted);
     });
   });
 
@@ -375,45 +523,45 @@ describe('SocialReducer', () => {
 
     it('should return the first chirp state', () => {
       socialReduce(emptyState, addChirp(mockLaoId, chirp1));
-      expect(makeChirpsList().resultFunc(filledState1, mockLaoId))
+      expect(makeChirpsList().resultFunc(chirpFilledState1, mockLaoId))
         .toEqual([chirp1]);
     });
 
     it('should return the newer chirp before the first chirp', () => {
-      socialReduce(filledState1, addChirp(mockLaoId, chirp2));
-      expect(makeChirpsList().resultFunc(filledState2, mockLaoId))
+      socialReduce(chirpFilledState1, addChirp(mockLaoId, chirp2));
+      expect(makeChirpsList().resultFunc(chirpFilledState2, mockLaoId))
         .toEqual([chirp2, chirp1]);
     });
 
     it('should add the newer chirp after the second chirp', () => {
-      socialReduce(filledState2, addChirp(mockLaoId, chirp3));
-      expect(makeChirpsList().resultFunc(filledState3, mockLaoId))
+      socialReduce(chirpFilledState2, addChirp(mockLaoId, chirp3));
+      expect(makeChirpsList().resultFunc(chirpFilledState3, mockLaoId))
         .toEqual([chirp2, chirp3, chirp1]);
     });
 
     it('should return the newest chirp on top', () => {
-      socialReduce(filledState3, addChirp(mockLaoId, chirp4));
-      expect(makeChirpsList().resultFunc(filledState4, mockLaoId))
+      socialReduce(chirpFilledState3, addChirp(mockLaoId, chirp4));
+      expect(makeChirpsList().resultFunc(chirpFilledState4, mockLaoId))
         .toEqual([chirp4, chirp2, chirp3, chirp1]);
     });
 
     it('should return the correct chirps list for an active user', () => {
-      expect(makeChirpsListOfUser(chirp1.sender).resultFunc(filledState3, mockLaoId))
+      expect(makeChirpsListOfUser(chirp1.sender).resultFunc(chirpFilledState3, mockLaoId))
         .toEqual([chirp3, chirp1]);
     });
 
     it('should return an empty list for an inactive user', () => {
-      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(filledState1, mockLaoId))
+      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(chirpFilledState1, mockLaoId))
         .toEqual([]);
     });
 
     it('should return an empty list for an undefined lao', () => {
-      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(filledState1, undefined))
+      expect(makeChirpsListOfUser(chirp2.sender).resultFunc(chirpFilledState1, undefined))
         .toEqual([]);
     });
   });
-  
-    describe('reaction reducer', () => {
+
+  describe('reaction reducer', () => {
     it('should create entry for a chirp when receiving the first reaction on it', () => {
       expect(socialReduce(emptyState, addReaction(mockLaoId, reaction1)))
         .toEqual(reactionFilledState1);
@@ -485,4 +633,3 @@ describe('SocialReducer', () => {
     });
   });
 });
-

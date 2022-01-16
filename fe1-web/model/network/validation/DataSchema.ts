@@ -13,6 +13,8 @@ import dataEndElection from 'protocol/query/method/message/data/dataEndElection.
 import dataResultElection from 'protocol/query/method/message/data/dataResultElection.json';
 import dataAddChirp from 'protocol/query/method/message/data/dataAddChirp.json';
 import dataNotifyAddChirp from 'protocol/query/method/message/data/dataNotifyAddChirp.json';
+import dataDeleteChirp from 'protocol/query/method/message/data/dataDeleteChirp.json';
+import dataNotifyDeleteChirp from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
 import dataAddReaction from 'protocol/query/method/message/data/dataAddReaction.json';
 
 const dataSchemas = [
@@ -36,6 +38,8 @@ const dataSchemas = [
 
   dataAddChirp,
   dataNotifyAddChirp,
+  dataDeleteChirp,
+  dataNotifyDeleteChirp,
 
   dataAddReaction,
 ];
