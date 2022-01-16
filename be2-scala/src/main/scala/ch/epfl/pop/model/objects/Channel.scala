@@ -7,28 +7,14 @@ import scala.util.{Success, Try}
 final case class Channel(channel: String) {
 
   /**
-   * Extract the sub-channel (laoId) from a channel name
-   *
-   * @return an array of bytes corresponding to the decoded sub-channel name or None if an error occurred
-   */
-  def decodeSubChannel: Option[Base64Data] = channel match {
-    case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
-      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).getBytes)) match {
-        case Success(value) => Some(Base64Data.encode(value))
-        case _ => None
-      }
-    case _ => None
-  }
-
-  /**
    * Extract the laoId from a channel name (even though it might be in the middle)
    *
-   * @return an array of bytes corresponding to the decoded laoId or None if an error occurred
+   * @return An Option of Base64Data corresponding to the decoded laoId or None if an error occurred
    */
   def decodeChannelLaoId: Option[Base64Data] = channel match {
     case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
-      Try(Base64.getUrlDecoder.decode(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.SEPARATOR)(0).getBytes)) match {
-        case Success(value) => Some(Base64Data.encode(value))
+      Try(Base64Data(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.SEPARATOR)(0))) match {
+        case Success(value) => Some(value)
         case _ => None
       }
     case _ => None

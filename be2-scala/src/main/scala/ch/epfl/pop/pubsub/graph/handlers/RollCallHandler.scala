@@ -90,7 +90,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               Await.result(askCreateChannels, duration)
             }
 
-            val laoChannel: Option[Base64Data] = rpcMessage.getParamsChannel.decodeSubChannel
+            val laoChannel: Option[Base64Data] = rpcMessage.getParamsChannel.decodeChannelLaoId
             laoChannel match {
               case None => Right(PipelineError(
                 ErrorCodes.SERVER_ERROR.id,
