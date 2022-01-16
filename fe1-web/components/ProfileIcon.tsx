@@ -5,13 +5,13 @@ import { PublicKey } from 'model/objects';
 import { popBlue, popGray } from 'styles/colors';
 
 const ProfileIcon = (props: IPropTypes) => {
-  const { publicKey } = props;
+  const { publicKey, size, scale } = props;
 
   return (
     <Blockies
       seed={publicKey.valueOf()}
-      size={8}
-      scale={5}
+      size={size}
+      scale={scale}
       color={popBlue}
       bgColor="#ffffff"
       spotColor={popGray}
@@ -21,12 +21,21 @@ const ProfileIcon = (props: IPropTypes) => {
 
 const propTypes = {
   publicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  size: PropTypes.number,
+  scale: PropTypes.number,
+};
+
+ProfileIcon.defaultProps = {
+  size: 8,
+  scale: 5,
 };
 
 ProfileIcon.propTypes = propTypes;
 
 type IPropTypes = {
   publicKey: PublicKey,
+  size: number,
+  scale: number,
 };
 
 export default ProfileIcon;

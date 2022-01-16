@@ -1,6 +1,6 @@
 import { Chirp, ChirpState } from 'model/objects/Chirp';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { ReactionState } from 'model/objects/Reaction';
 import { getLaosState } from './LaoReducer';
 
@@ -218,6 +218,33 @@ export const makeChirpsList = () => createSelector(
     return [];
   },
 );
+
+export const makeChirpsListOfUser = (user: PublicKey | string) => {
+  const userPublicKey = user.valueOf();
+  return createSelector(
+    // First input: Get all chirps across all LAOs
+    (state) => getSocialState(state),
+    // Second input: Get the current LAO id,
+    (state) => getLaosState(state).currentId,
+    (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
+      if (!laoId || !userPublicKey) {
+        return [];
+      }
+      const laoChirps = chirpList.byLaoId[laoId];
+      if (laoChirps) {
+        const allUserChirps: ChirpState[] = [];
+        const userChirps = laoChirps.byUser[userPublicKey];
+        if (userChirps) {
+          userChirps.forEach(
+            (id: string) => allUserChirps.push(chirpList.byLaoId[laoId].byId[id]),
+          );
+          return allUserChirps;
+        }
+      }
+      return [];
+    },
+  );
+};
 
 const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
   '👍': reactionByUser['👍'] ? reactionByUser['👍'].length : 0,
