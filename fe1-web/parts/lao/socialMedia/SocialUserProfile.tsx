@@ -23,7 +23,15 @@ const styles = socialMediaProfile;
 const SocialUserProfile = ({ currentUserPublicKey, route }: IPropTypes) => {
   const { userPublicKey } = route.params;
   if (!userPublicKey) {
-    return <TextBlock text="Impossible to load profile of user: public key not provided." />;
+    return (
+      <View style={styles.topView}>
+        <BackButton
+          navigationTabName={STRINGS.social_media_navigation_tab_search}
+          testID="backButtonUserProfile"
+        />
+        <TextBlock text="Impossible to load profile of user: public key not provided." />
+      </View>
+    );
   }
 
   const userChirps = makeChirpsListOfUser(userPublicKey);
@@ -69,9 +77,7 @@ const SocialUserProfile = ({ currentUserPublicKey, route }: IPropTypes) => {
 const propTypes = {
   currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
   route: {
-    params: {
-      userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-    },
+    userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
   },
 };
 
