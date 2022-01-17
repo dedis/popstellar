@@ -7,6 +7,7 @@ import { getUserSocialChannel, Hash, PublicKey } from 'model/objects';
 import { gray } from 'styles/colors';
 import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
+import { useNavigation } from '@react-navigation/native';
 import WideButtonView from './WideButtonView';
 import ProfileIcon from './ProfileIcon';
 
@@ -49,7 +50,8 @@ const styles = StyleSheet.create({
 
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
-  const { laoId, publicKey } = props;
+  const { currentUserPublicKey, laoId, publicKey } = props;
+  const navigation = useNavigation();
 
   const followUser = () => {
     subscribeToChannel(getUserSocialChannel(laoId, publicKey))
@@ -59,9 +61,9 @@ const UserListItem = (props: IPropTypes) => {
     setIsFollowing(true);
   };
 
-  // TODO: Navigates to the profile of the user
   const goToUserProfile = () => {
-    console.error('Profile navigation is not implemented yet.');
+    navigation.navigate(STRINGS.social_media_navigation_tab_user_profile,
+      { currentUserPublicKey: currentUserPublicKey, userPublicKey: publicKey });
   };
 
   return (
@@ -95,6 +97,7 @@ const UserListItem = (props: IPropTypes) => {
 const propTypes = {
   laoId: PropTypes.instanceOf(Hash).isRequired,
   publicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 UserListItem.prototype = propTypes;
@@ -102,6 +105,7 @@ UserListItem.prototype = propTypes;
 type IPropTypes = {
   laoId: Hash,
   publicKey: PublicKey,
+  currentUserPublicKey: PublicKey
 };
 
 export default UserListItem;

@@ -1,67 +1,60 @@
 import * as React from 'react';
 import {
-  FlatList,
-  ListRenderItemInfo,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-  ViewStyle,
+  FlatList, ListRenderItemInfo, Text, View,
 } from 'react-native';
 import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
 import ChirpCard from 'components/ChirpCard';
-import { Chirp, ChirpState } from 'model/objects/Chirp';
 import ProfileIcon from 'components/ProfileIcon';
-import { PublicKey } from 'model/objects';
-import PropTypes from 'prop-types';
-import { gray } from 'styles/colors';
+import TextBlock from 'components/TextBlock';
+import BackButton from 'components/BackButton';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
+import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
+import STRINGS from 'res/strings';
 
 /**
  * UI for the profile of a user.
  */
-const styles = StyleSheet.create({
-  viewCenter: {
-    alignSelf: 'center',
-    width: 600,
-  } as ViewStyle,
-  topView: {
-    marginTop: 20,
-    flexDirection: 'column',
-    alignSelf: 'flex-start',
-  } as ViewStyle,
-  textView: {
-    alignSelf: 'flex-start',
-    marginTop: 15,
-  } as ViewStyle,
-  profileText: {
-    marginBottom: 5,
-    fontSize: 22,
-    fontWeight: 'bold',
-  } as TextStyle,
-  userFeed: {
-    borderColor: gray,
-    borderTopWidth: 1,
-    flexDirection: 'column',
-    marginTop: 20,
-  } as ViewStyle,
-});
 
-const SocialUserProfile = (props: IPropTypes) => {
-  const { currentUserPublicKey, userPublicKey } = props;
+const styles = socialMediaProfile;
+
+const SocialUserProfile = ({ route }: any) => {
+  const { currentUserPublicKey, userPublicKey } = route.params;
+  if (!userPublicKey) {
+    return (
+      <View style={styles.viewCenter}>
+        <View style={styles.topView}>
+          <View style={{ marginBottom: 15 }}>
+            <BackButton
+              navigationTabName={STRINGS.social_media_navigation_tab_search}
+              testID="backButtonUserProfile"
+            />
+          </View>
+          <TextBlock text="Impossible to load profile of user: public key not provided." />
+        </View>
+      </View>
+    );
+  }
+
   const userChirps = makeChirpsListOfUser(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
       chirp={Chirp.fromState(item)}
-      userPublicKey={currentUserPublicKey}
+      currentUserPublicKey={currentUserPublicKey}
     />
   );
 
   return (
     <View style={styles.viewCenter}>
       <View style={styles.topView}>
+        <View style={{ marginBottom: 15 }}>
+          <BackButton
+            navigationTabName={STRINGS.social_media_navigation_tab_search}
+            testID="backButtonUserProfile"
+          />
+        </View>
         <ProfileIcon
           publicKey={userPublicKey}
           size={8}
@@ -81,18 +74,6 @@ const SocialUserProfile = (props: IPropTypes) => {
       </View>
     </View>
   );
-};
-
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-  userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialUserProfile.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey,
-  userPublicKey: PublicKey,
 };
 
 export default SocialUserProfile;

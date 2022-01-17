@@ -2,16 +2,20 @@ import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import STRINGS from 'res/strings';
-import { red, gray } from 'styles/colors';
+import { gray, popBlue } from 'styles/colors';
 import { useEffect, useState } from 'react';
 import { PublicKey, RollCall } from 'model/objects';
 import { generateToken } from 'model/objects/wallet';
 import { makeCurrentLao, makeEventGetter } from 'store';
 import { useSelector } from 'react-redux';
-import SocialProfile from './SocialProfile';
-import SocialSearch from './SocialSearch';
-import SocialFollows from './SocialFollows';
-import SocialHome from './SocialHome';
+import SocialProfile from 'parts/lao/socialMedia/SocialProfile';
+import SocialFollows from 'parts/lao/socialMedia/SocialFollows';
+import SocialHome from 'parts/lao/socialMedia/SocialHome';
+import SocialSearchNavigation from './SocialSearchNavigation';
+
+/**
+ * This class manages the social media navigation and creates the corresponding navigation bar.
+ */
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -65,7 +69,7 @@ const SocialMediaNavigation = () => {
 
           return <Ionicons name={iconName} size={23} color={color} />;
         },
-        tabBarActiveTintColor: red,
+        tabBarActiveTintColor: popBlue,
         tabBarInactiveTintColor: gray,
         swipeEnabled: false,
       })}
@@ -74,7 +78,7 @@ const SocialMediaNavigation = () => {
         {() => <SocialHome currentUserPublicKey={currentUserPublicKey} />}
       </Tab.Screen>
       <Tab.Screen name={STRINGS.social_media_navigation_tab_search}>
-        {() => <SocialSearch currentUserPublicKey={currentUserPublicKey} />}
+        {() => <SocialSearchNavigation currentUserPublicKey={currentUserPublicKey} />}
       </Tab.Screen>
       <Tab.Screen
         name={STRINGS.social_media_navigation_tab_follows}

@@ -51,7 +51,13 @@ const SocialSearch = (props: IPropTypes) => {
     if (item.valueOf() === currentUserPublicKey.valueOf()) {
       return null;
     }
-    return <UserListItem laoId={currentLao.id} publicKey={item} />;
+    return (
+      <UserListItem
+        laoId={currentLao.id}
+        publicKey={item}
+        currentUserPublicKey={currentUserPublicKey}
+      />
+    );
   };
 
   return (
