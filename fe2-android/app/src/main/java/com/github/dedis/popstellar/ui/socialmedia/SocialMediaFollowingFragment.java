@@ -13,6 +13,7 @@ import com.github.dedis.popstellar.databinding.SocialMediaFollowingFragmentBindi
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/** Fragment that shows people we are subscribed to */
 @AndroidEntryPoint
 public class SocialMediaFollowingFragment extends Fragment {
 

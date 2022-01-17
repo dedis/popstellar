@@ -24,6 +24,7 @@ import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+/** Activity for the social media */
 @AndroidEntryPoint
 public class SocialMediaActivity extends AppCompatActivity {
   private SocialMediaViewModel mViewModel;
