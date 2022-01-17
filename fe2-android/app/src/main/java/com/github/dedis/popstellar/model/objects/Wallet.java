@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.objects;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.util.Pair;
 
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
@@ -21,12 +22,13 @@ import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import javax.inject.Inject;
@@ -46,8 +48,8 @@ import io.github.novacrypto.bip39.wordlists.English;
 public class Wallet {
 
   private static final String TAG = Wallet.class.getSimpleName();
-  private static final int PURPOSE = 888;
-  private static final int ACCOUNT = 0;
+  private static final String PURPOSE = "888";
+  private static final String ACCOUNT = "0";
   private byte[] seed;
   private Aead aead;
   private boolean isSetup = false;
@@ -61,12 +63,9 @@ public class Wallet {
   /**
    * Method to overwrite the seed of the current wallet with a new seed.
    *
-   * @param seed
+   * @param seed to apply
    */
-  public void initialize(String seed) {
-    if (seed == null) {
-      throw new IllegalArgumentException("Unable to init seed from a null param!");
-    }
+  public void initialize(@NonNull String seed) {
     this.seed = Utils.hexToBytes(seed);
     isSetup = true;
     Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(this.seed));
@@ -75,18 +74,18 @@ public class Wallet {
   /**
    * Method to init the AndroidKeysetManager
    *
-   * @param applicationContext
+   * @param context of the application
    */
-  public void initKeysManager(Context applicationContext)
-      throws IOException, GeneralSecurityException {
+  public void initKeysManager(Context context) throws IOException, GeneralSecurityException {
     AesGcmKeyManager.register(true);
     AeadConfig.register();
     AndroidKeysetManager keysetManager =
         new AndroidKeysetManager.Builder()
-            .withSharedPref(applicationContext, "POP_KEYSET_2", "POP_KEYSET_SP_2")
+            .withSharedPref(context, "POP_KEYSET_2", "POP_KEYSET_SP_2")
             .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
             .withMasterKeyUri("android-keystore://POP_MASTER_KEY_2")
             .build();
+
     aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
   }
 
@@ -97,23 +96,18 @@ public class Wallet {
    * @return the generated PoP Token
    * @throws GeneralSecurityException if an error occurs
    */
-  public PoPToken generateKeyFromPath(String path) throws GeneralSecurityException {
-    if (path == null) {
-      throw new IllegalArgumentException("Unable to find keys from a null path!");
-    }
-    // split the path string
-    List<String> pathValue = new ArrayList<>(Arrays.asList(path.split("/")));
-    Log.d(TAG, "Path decomposed: " + pathValue);
-
-    pathValue.remove(0); // remove the first element (m)
-
+  public PoPToken generateKeyFromPath(@NonNull String path) throws GeneralSecurityException {
     // convert the path string in an array of int
     int[] pathValueInt =
-        pathValue.stream().map(Integer::parseInt).mapToInt(Integer::intValue).toArray();
+        Arrays.stream(path.split("/"))
+            .skip(1) // remove the first element ('m')
+            .mapToInt(Integer::parseInt)
+            .toArray();
 
     // derive private and public key
     byte[] privateKey =
         SLIP10.deriveEd25519PrivateKey(aead.decrypt(seed, new byte[0]), pathValueInt);
+
     Ed25519PrivateKeyParameters prK = new Ed25519PrivateKeyParameters(privateKey, 0);
     Ed25519PublicKeyParameters puK = prK.generatePublicKey();
     byte[] publicKey = puK.getEncoded();
@@ -129,53 +123,53 @@ public class Wallet {
    * @return the PoP Token
    * @throws GeneralSecurityException if an error occurs
    */
-  public PoPToken findKeyPair(String laoID, String rollCallID) throws GeneralSecurityException {
-    if (laoID == null || rollCallID == null) {
-      throw new IllegalArgumentException("Unable to find keys from a null param");
-    }
+  public PoPToken findKeyPair(@NonNull String laoID, @NonNull String rollCallID)
+      throws GeneralSecurityException {
     // Generate the string path
-    StringJoiner joiner = new StringJoiner("/");
-    joiner.add("m");
-    joiner.add(Integer.toString(PURPOSE));
-    joiner.add(Integer.toString(ACCOUNT));
-    joiner.add(convertStringToPath(laoID));
-    joiner.add(convertStringToPath(rollCallID));
-    String res = joiner.toString();
+    String res =
+        String.join(
+            "/", // delimiter
+            "m",
+            PURPOSE,
+            ACCOUNT,
+            convertDataToPath(laoID),
+            convertDataToPath(rollCallID));
 
     Log.d(TAG, "Generated path: " + res);
 
     return generateKeyFromPath(res);
   }
 
-  /*
-  This method allow to take a 256-bit string, and split it in many 24-bit or less string.
-  So, we convert first the string in an byte array, and we iterate on it taking 3 element (byte)
-  each time concatenate them and append to our result string.
-  (string of the format: 3-byte/3-byte/... )
-  */
-  private String convertStringToPath(String string) {
+  /**
+   * This method allow to take a 256-bit string, and split it in many 24-bit or less string.
+   *
+   * <p>So, we first convert the string into an byte array, and we iterate on it taking 3 element
+   * (byte) each time concatenate them and append to our result string.
+   *
+   * @param data to covert into a path
+   * @return string of the form 3-byte/3-byte/...
+   */
+  private String convertDataToPath(String data) {
     // extract byte form string
-    byte[] byteString = Base64.getUrlDecoder().decode(string);
-    int remainder = byteString.length % 3;
+    byte[] byteString = Base64.getUrlDecoder().decode(data);
+
+    StringJoiner joiner = new StringJoiner("/");
+    StringBuilder curPath = new StringBuilder();
 
     // create 31-bit index path
-    StringJoiner joiner = new StringJoiner("/");
-    int i;
-    for (i = 0; i + 3 <= byteString.length; i += 3) {
-      String path =
-          Integer.toString(byteString[i] & 0xFF)
-              .concat(Integer.toString(byteString[i + 1] & 0xFF))
-              .concat(Integer.toString(byteString[i + 2] & 0xFF));
+    for (int i = 0; i < byteString.length; i++) {
+      curPath.append(byteString[i] & 0xFF);
 
-      joiner.add(path);
+      // Every 3 bytes, add the current path to the joiner and reset the builder
+      if (i % 3 == 2) {
+        joiner.add(curPath.toString());
+        curPath = new StringBuilder();
+      }
     }
-    if (remainder == 1) {
-      joiner.add(Integer.toString(byteString[i] & 0xFF));
-    } else if (remainder == 2) {
-      joiner.add(
-          Integer.toString(byteString[i] & 0xFF)
-              .concat(Integer.toString(byteString[i + 1] & 0xFF)));
-    }
+
+    // If the path is not complete, add the remaining bytes to the joiner
+    if (curPath.length() > 0) joiner.add(curPath.toString());
+
     return joiner.toString();
   }
 
@@ -185,18 +179,14 @@ public class Wallet {
    *
    * @param laoID a String.
    * @param rollCallID a String.
-   * @param rollCallTokens a {@link List} containing the public keys of all attendees present on
+   * @param rollCallTokens a {@link Set} containing the public keys of all attendees present on
    *     roll-call’s results.
    * @return the PoP Token if the user participated in that roll-call or else null.
    * @throws GeneralSecurityException if an error occurs
    */
-  public PoPToken recoverKey(String laoID, String rollCallID, List<PublicKey> rollCallTokens)
+  public PoPToken recoverKey(
+      @NonNull String laoID, @NonNull String rollCallID, @NonNull Set<PublicKey> rollCallTokens)
       throws GeneralSecurityException {
-
-    if (laoID == null || rollCallID == null) {
-      throw new IllegalArgumentException("Unable to find keys from a null param");
-    }
-
     PoPToken token = findKeyPair(laoID, rollCallID);
     if (rollCallTokens.contains(token.getPublicKey())) return token;
     else return null;
@@ -213,16 +203,12 @@ public class Wallet {
    * @throws GeneralSecurityException if an error occurs
    */
   public Map<Pair<String, String>, PoPToken> recoverAllKeys(
-      String seed, Map<Pair<String, String>, List<PublicKey>> knowsLaosRollCalls)
+      String seed, @NonNull Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls)
       throws GeneralSecurityException {
-    if (knowsLaosRollCalls == null) {
-      throw new IllegalArgumentException("Unable to find recover keys from a null param");
-    }
-
     initialize(seed);
 
     Map<Pair<String, String>, PoPToken> result = new HashMap<>();
-    for (Map.Entry<Pair<String, String>, List<PublicKey>> entry : knowsLaosRollCalls.entrySet()) {
+    for (Map.Entry<Pair<String, String>, Set<PublicKey>> entry : knowsLaosRollCalls.entrySet()) {
       String laoID = entry.getKey().first;
       String rollCallID = entry.getKey().second;
       PoPToken recoverKey = recoverKey(laoID, rollCallID, entry.getValue());
@@ -246,23 +232,25 @@ public class Wallet {
       SecureRandom random = new SecureRandom();
       byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
-      StringBuilder sb = new StringBuilder();
+      List<CharSequence> words = new LinkedList<>();
       MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
-      generator.createMnemonic(entropy, sb::append);
+      generator.createMnemonic(entropy, words::add);
 
-      String[] words = sb.toString().split(" ");
-      Log.d(TAG, "the array of word generated:" + Arrays.toString(words));
+      String[] wordsFiltered =
+          words.stream()
+              .filter(s -> !s.equals(" ")) // Filter out spaces
+              .map(CharSequence::toString)
+              .toArray(String[]::new);
 
-      StringJoiner joiner = new StringJoiner(" ");
-      for (String i : words) {
-        joiner.add(i);
-      }
-      seed = aead.encrypt(new SeedCalculator().calculateSeed(joiner.toString(), ""), new byte[0]);
+      Log.d(TAG, "the array of word generated:" + Arrays.toString(wordsFiltered));
+
+      seed =
+          aead.encrypt(new SeedCalculator().calculateSeed(String.join("", words), ""), new byte[0]);
       Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
 
-      return words;
+      return wordsFiltered;
     } else {
-      Log.d(TAG, "key set manager not init!");
+      Log.d(TAG, "key set manager not initialized yet!");
       return new String[0];
     }
   }
@@ -276,10 +264,7 @@ public class Wallet {
    * @return a mapping of the pairs (Lao_ID, Roll_call_ID) to the recovered tokens.
    */
   public Map<Pair<String, String>, PoPToken> importSeed(
-      String words, Map<Pair<String, String>, List<PublicKey>> knowsLaosRollCalls) {
-    if (words == null) {
-      throw new IllegalArgumentException("Unable to find recover tokens from a null param");
-    }
+      @NonNull String words, Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls) {
     if (aead != null) {
       try {
         MnemonicValidator.ofWordList(English.INSTANCE).validate(words);
