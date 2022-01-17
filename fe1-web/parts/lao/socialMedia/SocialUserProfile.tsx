@@ -9,8 +9,10 @@ import ProfileIcon from 'components/ProfileIcon';
 import TextBlock from 'components/TextBlock';
 import BackButton from 'components/BackButton';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { PublicKey } from 'model/objects';
 import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
 import STRINGS from 'res/strings';
+import PropTypes from 'prop-types';
 
 /**
  * UI for the profile of a user.
@@ -18,7 +20,7 @@ import STRINGS from 'res/strings';
 
 const styles = socialMediaProfile;
 
-const SocialUserProfile = ({ route }: any) => {
+const SocialUserProfile = ({ currentUserPublicKey, route }: IPropTypes) => {
   const { userPublicKey } = route.params;
   if (!userPublicKey) {
     return <TextBlock text="Impossible to load profile of user: public key not provided." />;
@@ -30,6 +32,7 @@ const SocialUserProfile = ({ route }: any) => {
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
       chirp={Chirp.fromState(item)}
+      userPublicKey={currentUserPublicKey}
     />
   );
 
@@ -61,6 +64,22 @@ const SocialUserProfile = ({ route }: any) => {
       </View>
     </View>
   );
+};
+
+const propTypes = {
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  route: {
+    params: {
+      userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+    },
+  },
+};
+
+SocialUserProfile.prototype = propTypes;
+
+type IPropTypes = {
+  currentUserPublicKey: PublicKey,
+  route: any,
 };
 
 export default SocialUserProfile;
