@@ -7,9 +7,9 @@ import { getUserSocialChannel, Hash, PublicKey } from 'model/objects';
 import { gray } from 'styles/colors';
 import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
+import { useNavigation } from '@react-navigation/native';
 import WideButtonView from './WideButtonView';
 import ProfileIcon from './ProfileIcon';
-import { useNavigation } from '@react-navigation/native';
 
 /**
  * Component that shows a user's profile picture, his public key and two buttons:

@@ -15,7 +15,7 @@ const BackButton = (props: IPropTypes) => {
   return (
     // The view is there to set the button's clickable layout correctly.
     <View style={{ width: size }}>
-      <Pressable onPress={() => navigation.navigate(navigationTabName as never)} testID={testID}>
+      <Pressable onPress={() => navigation.navigate(navigationTabName)} testID={testID}>
         <Ionicons name="chevron-back-outline" size={size} />
       </Pressable>
     </View>
