@@ -76,4 +76,16 @@ const SocialUserProfile = ({ route }: any) => {
   );
 };
 
+const propTypes = {
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+};
+
+SocialUserProfile.prototype = propTypes;
+
+type IPropTypes = {
+  currentUserPublicKey: PublicKey,
+  userPublicKey: PublicKey,
+};
+
 export default SocialUserProfile;
