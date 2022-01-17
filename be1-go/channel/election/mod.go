@@ -22,6 +22,7 @@ import (
 )
 
 const msgID = "msg id"
+const failedToDecodeData = "failed to decode message data: %v"
 
 // attendees represents the attendees in an election.
 type attendees struct {
@@ -144,7 +145,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
@@ -231,7 +232,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
@@ -289,7 +290,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data
@@ -318,7 +319,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data

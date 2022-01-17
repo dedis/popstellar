@@ -38,6 +38,8 @@ const (
 	keyDecodeError    = "failed to decode sender key: %v"
 	keyUnmarshalError = "failed to unmarshal public key of the sender: %v"
 
+	failedToDecodeData = "failed to decode message data: %v"
+
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
 	dbRowIterErr  = "error in row iteration: %v"
@@ -154,7 +156,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
@@ -227,7 +229,7 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data
@@ -253,7 +255,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data
@@ -315,7 +317,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)

@@ -38,6 +38,10 @@ const (
 	// used to keep an image of the laos
 	rootPrefix = rootChannel + "/"
 
+	// Strings used to return error messages
+	rootChannelErr = "failed to handle root channel message: %v"
+	getChannelErr  = "failed to get channel: %v"
+
 	// Strings used to return error messages in relation with a database
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"

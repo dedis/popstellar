@@ -21,6 +21,7 @@ import (
 )
 
 const msgID = "msg id"
+const failedToDecodeData = "failed to decode message data: %v"
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
@@ -64,7 +65,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
@@ -228,7 +229,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
@@ -308,7 +309,7 @@ func (c *Channel) verifyPublishMessage(publish method.Publish) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data
@@ -335,7 +336,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data

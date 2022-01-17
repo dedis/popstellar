@@ -727,7 +727,8 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	// wait for the goroutine created by the function
 	time.Sleep(100 * time.Millisecond)
 
-	// > check the socket
+	// Check the socket. The message is a broadcast message because it will be
+	// broadcast before the check
 	sock.Lock()
 	require.Equal(t, broadcastBuf, sock.msg)
 	sock.Unlock()

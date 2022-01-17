@@ -243,14 +243,14 @@ func (h *Hub) handleDuringCatchup(socket socket.Socket, publish method.Publish) 
 	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMesssage(socket, publish)
 		if err != nil {
-			return xerrors.Errorf("failed to handle root channel message: %v", err)
+			return xerrors.Errorf(rootChannelErr, err)
 		}
 		return nil
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return xerrors.Errorf("failed to get channel: %v", err)
+		return xerrors.Errorf(getChannelErr, err)
 	}
 
 	err = channel.Publish(publish, socket)
@@ -282,14 +282,14 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMesssage(socket, publish)
 		if err != nil {
-			return publish.ID, xerrors.Errorf("failed to handle root channel message: %v", err)
+			return publish.ID, xerrors.Errorf(rootChannelErr, err)
 		}
 		return publish.ID, nil
 	}
 
 	channel, err := h.getChan(publish.Params.Channel)
 	if err != nil {
-		return publish.ID, xerrors.Errorf("failed to get channel: %v", err)
+		return publish.ID, xerrors.Errorf(getChannelErr, err)
 	}
 
 	err = channel.Publish(publish, socket)
@@ -324,14 +324,14 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	if broadcast.Params.Channel == rootChannel {
 		err := h.handleRootChannelBroadcastMesssage(socket, broadcast)
 		if err != nil {
-			return xerrors.Errorf("failed to handle root channel message: %v", err)
+			return xerrors.Errorf(rootChannelErr, err)
 		}
 		return nil
 	}
 
 	channel, err := h.getChan(broadcast.Params.Channel)
 	if err != nil {
-		return xerrors.Errorf("failed to get channel: %v", err)
+		return xerrors.Errorf(getChannelErr, err)
 	}
 
 	err = channel.Broadcast(broadcast, socket)
