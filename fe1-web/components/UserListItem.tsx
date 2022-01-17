@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
 
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
-  const { laoId, publicKey } = props;
+  const { currentUserPublicKey, laoId, publicKey } = props;
   const navigation = useNavigation();
 
   const followUser = () => {
@@ -62,8 +62,8 @@ const UserListItem = (props: IPropTypes) => {
   };
 
   const goToUserProfile = () => {
-    navigation.navigate(STRINGS.social_media_navigation_tab_user_profile as never,
-      { currentUserPublicKey: publicKey } as never);
+    navigation.navigate(STRINGS.social_media_navigation_tab_user_profile,
+      { currentUserPublicKey: currentUserPublicKey, userPublicKey: publicKey });
   };
 
   return (
@@ -97,6 +97,7 @@ const UserListItem = (props: IPropTypes) => {
 const propTypes = {
   laoId: PropTypes.instanceOf(Hash).isRequired,
   publicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 UserListItem.prototype = propTypes;
@@ -104,6 +105,7 @@ UserListItem.prototype = propTypes;
 type IPropTypes = {
   laoId: Hash,
   publicKey: PublicKey,
+  currentUserPublicKey: PublicKey
 };
 
 export default UserListItem;

@@ -27,6 +27,10 @@ const SocialSearchNavigation = (props: IPropTypes) => {
       <Stack.Screen
         name={STRINGS.social_media_navigation_tab_user_profile}
         component={SocialUserProfile}
+        initialParams={{
+          currentUserPublicKey: currentUserPublicKey,
+          userPublicKey: currentUserPublicKey,
+        }}
       />
     </Stack.Navigator>
   );

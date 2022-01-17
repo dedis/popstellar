@@ -9,10 +9,8 @@ import ProfileIcon from 'components/ProfileIcon';
 import TextBlock from 'components/TextBlock';
 import BackButton from 'components/BackButton';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
-import { PublicKey } from 'model/objects';
 import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
 import STRINGS from 'res/strings';
-import PropTypes from 'prop-types';
 
 /**
  * UI for the profile of a user.
@@ -20,16 +18,20 @@ import PropTypes from 'prop-types';
 
 const styles = socialMediaProfile;
 
-const SocialUserProfile = ({ currentUserPublicKey, route }: IPropTypes) => {
-  const { userPublicKey } = route.params;
+const SocialUserProfile = ({ route }: any) => {
+  const { currentUserPublicKey, userPublicKey } = route?.params;
   if (!userPublicKey) {
     return (
-      <View style={styles.topView}>
-        <BackButton
-          navigationTabName={STRINGS.social_media_navigation_tab_search}
-          testID="backButtonUserProfile"
-        />
-        <TextBlock text="Impossible to load profile of user: public key not provided." />
+      <View style={styles.viewCenter}>
+        <View style={styles.topView}>
+          <View style={{ marginBottom: 15 }}>
+            <BackButton
+              navigationTabName={STRINGS.social_media_navigation_tab_search}
+              testID="backButtonUserProfile"
+            />
+          </View>
+          <TextBlock text="Impossible to load profile of user: public key not provided." />
+        </View>
       </View>
     );
   }
@@ -72,20 +74,6 @@ const SocialUserProfile = ({ currentUserPublicKey, route }: IPropTypes) => {
       </View>
     </View>
   );
-};
-
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-  route: {
-    userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-  },
-};
-
-SocialUserProfile.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey,
-  route: any,
 };
 
 export default SocialUserProfile;
