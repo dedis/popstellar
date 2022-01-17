@@ -9,6 +9,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
 import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
@@ -34,11 +36,11 @@ public final class ConsensusHandler {
   public static void handleElect(HandlerContext context, ConsensusElect consensusElect) {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
-    String senderPk = context.getSenderPk();
+    MessageID messageId = context.getMessageId();
+    PublicKey senderPk = context.getSenderPk();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Set<String> nodes = new HashSet<>(lao.getWitnesses());
+    Set<PublicKey> nodes = new HashSet<>(lao.getWitnesses());
     nodes.add(lao.getOrganizer());
 
     Consensus consensus =
@@ -59,8 +61,8 @@ public final class ConsensusHandler {
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
     String channel = context.getChannel();
-    String messageId = context.getMessageId();
-    String senderPk = context.getSenderPk();
+    MessageID messageId = context.getMessageId();
+    PublicKey senderPk = context.getSenderPk();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<Consensus> consensusOpt = lao.getConsensus(consensusElectAccept.getMessageId());

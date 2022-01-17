@@ -15,7 +15,10 @@ import {
   EndElection,
   SetupElection,
 } from './election';
-import { AddChirp, AddChirpBroadcast } from './chirp';
+import {
+  AddChirp, NotifyAddChirp, DeleteChirp, NotifyDeleteChirp,
+} from './chirp';
+import { AddReaction } from './reaction';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
   const data = JSON.stringify(msgData);
@@ -80,10 +83,23 @@ function buildChirpMessage(msgData: MessageData): MessageData {
   switch (msgData.action) {
     case ActionType.ADD:
       return AddChirp.fromJson(msgData);
-    case ActionType.ADD_BROADCAST:
-      return AddChirpBroadcast.fromJson(msgData);
+    case ActionType.NOTIFY_ADD:
+      return NotifyAddChirp.fromJson(msgData);
+    case ActionType.DELETE:
+      return DeleteChirp.fromJson(msgData);
+    case ActionType.NOTIFY_DELETE:
+      return NotifyDeleteChirp.fromJson(msgData);
     default:
       throw new Error(`Unknown action '${msgData.action}' encountered while adding a chirp MessageData`);
+  }
+}
+
+function buildReactionMessage(msgData: MessageData): MessageData {
+  switch (msgData.action) {
+    case ActionType.ADD:
+      return AddReaction.fromJson(msgData);
+    default:
+      throw new Error(`Unknown action '${msgData.action}' encountered while adding a reaction MessageData`);
   }
 }
 
@@ -110,6 +126,9 @@ export function buildMessageData(msgData: MessageData): MessageData {
 
     case ObjectType.CHIRP:
       return buildChirpMessage(msgData);
+
+    case ObjectType.REACTION:
+      return buildReactionMessage(msgData);
 
     default:
       throw new Error(`Unknown object '${msgData.object}' encountered while creating a MessageData`);

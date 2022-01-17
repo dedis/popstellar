@@ -33,8 +33,9 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
-        } //FIXME: check who is allowed to create a meeting and add a verification
-        else if (!validateChannelType(ObjectType.LAO, channel)) {
+        } else if (!validateOwner(sender, channel)){
+          Right(validationError(s"invalid sender $sender"))
+        } else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)

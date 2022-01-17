@@ -51,15 +51,8 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
   def validateAttendee(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
     Await.result(ask, duration) match {
-      case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
-        laoData.attendees.contains(sender)
-      }
-      case DbActor.DbActorReadLaoDataAck(None) => {
-        false
-      }
-      case DbActor.DbActorNAck(code, description) => {
-        false
-      }
+      case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.attendees.contains(sender)
+      case _ => false
     }
   }
 
@@ -73,8 +66,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
     Await.result(ask, duration) match {
       case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.owner == sender
-      case DbActor.DbActorReadLaoDataAck(None) => false
-      case DbActor.DbActorNAck(code, description) => false
+      case _ => false
     }
   }
 

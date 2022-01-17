@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
@@ -14,7 +15,7 @@ public final class ConsensusLearn extends Data {
   private final String instanceId;
 
   @SerializedName("message_id")
-  private final String messageId;
+  private final MessageID messageId;
 
   @SerializedName("created_at")
   private final long creation;
@@ -36,7 +37,7 @@ public final class ConsensusLearn extends Data {
    */
   public ConsensusLearn(
       String instanceId,
-      String messageId,
+      MessageID messageId,
       long creation,
       boolean decision,
       List<String> acceptorSignatures) {
@@ -51,7 +52,7 @@ public final class ConsensusLearn extends Data {
     return instanceId;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
@@ -103,6 +104,6 @@ public final class ConsensusLearn extends Data {
   public String toString() {
     return String.format(
         "ConsensusLearn{instance_id='%s', message_id='%s', acceptor-signatures=%s}",
-        instanceId, messageId, acceptorSignatures);
+        instanceId, messageId.getEncoded(), acceptorSignatures);
   }
 }

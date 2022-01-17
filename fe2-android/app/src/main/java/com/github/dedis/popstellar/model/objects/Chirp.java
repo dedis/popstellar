@@ -2,37 +2,40 @@ package com.github.dedis.popstellar.model.objects;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 /** Class modeling a Chirp */
 public class Chirp {
 
   private static final int MAX_CHIRP_CHARS = 300;
 
-  private String id;
+  private MessageID id;
   private String channel;
 
-  private String sender;
+  private PublicKey sender;
   private String text;
   private long timestamp;
-  private int likes;
-  private String parentId;
+  private boolean isDeleted;
+  private MessageID parentId;
 
-  public Chirp(String id) {
+  public Chirp(MessageID id) {
     if (id == null) {
       throw new IllegalArgumentException("The id is null");
-    } else if (id.isEmpty()) {
+    } else if (id.getEncoded().isEmpty()) {
       throw new IllegalArgumentException("The id of the Chirp is empty");
     }
     this.id = id;
   }
 
-  public String getId() {
+  public MessageID getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(MessageID id) {
     if (id == null) {
       throw new IllegalArgumentException("The id is null");
-    } else if (id.isEmpty()) {
+    } else if (id.getEncoded().isEmpty()) {
       throw new IllegalArgumentException("The id of the Chirp is empty");
     }
     this.id = id;
@@ -46,11 +49,11 @@ public class Chirp {
     this.channel = channel;
   }
 
-  public String getSender() {
+  public PublicKey getSender() {
     return sender;
   }
 
-  public void setSender(String sender) {
+  public void setSender(PublicKey sender) {
     this.sender = sender;
   }
 
@@ -73,26 +76,27 @@ public class Chirp {
     this.timestamp = timestamp;
   }
 
-  public int getLikes() {
-    return likes;
+  public boolean getIsDeleted() {
+    return isDeleted;
   }
 
-  public void setLikes(int likes) {
-    this.likes = likes;
+  public void setIsDeleted(boolean isDeleted) {
+    this.isDeleted = isDeleted;
   }
 
-  public String getParentId() {
+  public MessageID getParentId() {
     return parentId;
   }
 
-  public void setParentId(String parentId) {
+  public void setParentId(MessageID parentId) {
     this.parentId = parentId;
   }
 
+  @NonNull
   @Override
   public String toString() {
     return String.format(
-        "Chirp{id='%s', channel='%s', sender='%s', text='%s', timestamp='%s', likes='%s', parentId='%s'",
-        id, channel, sender, text, timestamp, likes, parentId);
+        "Chirp{id='%s', channel='%s', sender='%s', text='%s', timestamp='%s', isDeleted='%s', parentId='%s'",
+        id.getEncoded(), channel, sender, text, timestamp, isDeleted, parentId.getEncoded());
   }
 }

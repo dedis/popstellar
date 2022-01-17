@@ -79,9 +79,17 @@ object DbActor extends AskPatternConstants {
   /**
    * Request to create channel <channel> in the db with a type
    *
-   * @param channel channel to create
+   * @param channel     channel to create
+   * @param objectType  channel type
    */
   final case class CreateChannel(channel: Channel, objectType: ObjectType.ObjectType) extends Event
+
+  /**
+   * Request to create List of channels in the db with given types
+   *
+   * @param list list from which channels are created
+   */
+  final case class CreateChannelsFromList(list: List[(Channel, ObjectType.ObjectType)]) extends Event
 
   /** Request to check if channel <channel> exists in the db
     *
@@ -214,8 +222,8 @@ object DbActor extends AskPatternConstants {
           DbActorAck()
         case _ =>
           val objectType = message.decodedData match {
-            case Some(data) if (data._object == ObjectType.ELECTION || data._object == ObjectType.CHIRP) => data._object
-            case _ => ObjectType.LAO
+            case Some(data) if (data._object == ObjectType.ELECTION || data._object == ObjectType.CHIRP || data._object == ObjectType.REACTION) => data._object
+            case _ => ObjectType.LAO //this is the "general" channel type
           }
           // for now, we don't have meetup or roll call channels, so we just create Lao channels instead, easy to change if needed
           createChannel(channel, objectType) match {
@@ -234,8 +242,8 @@ object DbActor extends AskPatternConstants {
 
     //may return null if the extractLaoId fails
     private def generateLaoDataKey(channel: Channel): String = {
-      channel.decodeSubChannel match {
-        case Some(data) => new String(data, StandardCharsets.UTF_8) + Channel.LAO_DATA_LOCATION
+      channel.decodeChannelLaoId match {
+        case Some(data) => data + Channel.LAO_DATA_LOCATION
         case None =>
           log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
           null
@@ -409,6 +417,14 @@ object DbActor extends AskPatternConstants {
       }
     }
 
+    private def createChannelsFromList(li: List[(Channel, ObjectType.ObjectType)]): DbActorMessage = li match {
+      case Nil => DbActorAck()
+      case head::tail => createChannel(head._1, head._2) match {
+        case DbActorAck() => createChannelsFromList(tail)
+        case nack@DbActorNAck(_, _) => nack
+      }
+    }
+
 
     private def channelExists(channel: Channel): DbActorMessage = {
       Try(db.get(channel.toString.getBytes)) match {
@@ -448,6 +464,10 @@ object DbActor extends AskPatternConstants {
       case CreateChannel(channel, objectType) =>
         log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
         sender ! createChannel(channel, objectType)
+      
+      case CreateChannelsFromList(list) =>
+        log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
+        sender ! createChannelsFromList(list)
 
       case ChannelExists(channel) =>
         log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")

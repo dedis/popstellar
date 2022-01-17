@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -16,10 +16,9 @@ import STRINGS from 'res/strings';
 import { requestAddChirp } from 'network/MessageApi';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
-import { PublicKey, RollCall } from 'model/objects';
-import { generateToken } from 'model/objects/wallet/Token';
-import { makeCurrentLao, makeEventGetter } from 'store';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { PublicKey } from 'model/objects';
+import PropTypes from 'prop-types';
 
 /**
  * UI for the Social Media home screen component
@@ -45,33 +44,12 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const SocialHome = () => {
+const SocialHome = (props: IPropTypes) => {
+  const { currentUserPublicKey } = props;
   const [inputChirp, setInputChirp] = useState('');
-  const [userPublicKey, setUserPublicKey] = useState(new PublicKey(''));
-
-  const laoSelect = makeCurrentLao();
-  const lao = useSelector(laoSelect);
-
-  if (lao === undefined) {
-    throw new Error('LAO is currently undefined, impossible to access to Social Media');
-  }
-
-  // Get the pop token of the user using the last tokenized roll call
-  const rollCallId = lao.last_tokenized_roll_call_id;
-  const eventSelect = makeEventGetter(lao.id, rollCallId);
-  const rollCall: RollCall = useSelector(eventSelect) as RollCall;
-
-  // This will be run again each time the lao.last_tokenized_roll_call_id changes
-  useEffect(() => {
-    generateToken(lao.id, rollCallId).then((token) => {
-      if (token && rollCall.containsToken(token)) {
-        setUserPublicKey(token.publicKey);
-      }
-    });
-  }, [lao.last_tokenized_roll_call_id]);
 
   const publishChirp = () => {
-    requestAddChirp(userPublicKey, inputChirp)
+    requestAddChirp(currentUserPublicKey, inputChirp)
       .catch((err) => {
         console.error('Failed to post chirp, error:', err);
       });
@@ -83,6 +61,7 @@ const SocialHome = () => {
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
       chirp={Chirp.fromState(item)}
+      userPublicKey={currentUserPublicKey}
     />
   );
 
@@ -96,7 +75,8 @@ const SocialHome = () => {
           onChangeText={setInputChirp}
           onPress={publishChirp}
           // The publish button is disabled when the user public key is not defined
-          publishIsDisabledCond={userPublicKey.valueOf() === ''}
+          publishIsDisabledCond={currentUserPublicKey.valueOf() === ''}
+          currentUserPublicKey={currentUserPublicKey}
         />
         <FlatList
           data={chirpList}
@@ -106,6 +86,16 @@ const SocialHome = () => {
       </View>
     </View>
   );
+};
+
+const propTypes = {
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+};
+
+SocialHome.prototype = propTypes;
+
+type IPropTypes = {
+  currentUserPublicKey: PublicKey,
 };
 
 export default SocialHome;

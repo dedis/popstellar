@@ -5,7 +5,8 @@ import { handleWitnessMessage } from './Witness';
 import { handleMeetingMessage } from './Meeting';
 import { handleRollCallMessage } from './RollCall';
 import { handleElectionMessage } from './Election';
-import { handleSocialMessage } from './SocialHandler';
+import { handleChirpMessage } from './ChirpHandler';
+import { handleReactionMessage } from './ReactionHandler';
 
 /** Processes the messages from storage by dispatching them to the right handler
  *
@@ -27,7 +28,9 @@ export function handleMessage(msg: ExtendedMessage) {
     case ObjectType.ELECTION:
       return handleElectionMessage(msg);
     case ObjectType.CHIRP:
-      return handleSocialMessage(msg);
+      return handleChirpMessage(msg);
+    case ObjectType.REACTION:
+      return handleReactionMessage(msg);
     default:
       console.warn('A message was received and ignored because'
         + ' its processing logic is not yet implemented:', msg);

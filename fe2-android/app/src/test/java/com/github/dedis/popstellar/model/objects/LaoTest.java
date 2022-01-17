@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -9,28 +11,31 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+
 import org.junit.Test;
+import org.mockito.internal.util.collections.Sets;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class LaoTest {
 
   private static final String LAO_NAME_1 = "LAO name 1";
-  private static final String ORGANIZER = "0x2365";
+  private static final PublicKey ORGANIZER = generatePublicKey();
   private static final String rollCallId1 = "rollCallId1";
   private static final String rollCallId2 = "rollCallId2";
   private static final String rollCallId3 = "rollCallId3";
   private static final String electionId1 = "electionId1";
   private static final String electionId2 = "electionId2";
   private static final String electionId3 = "electionId3";
-  private static final Set<String> WITNESSES = new HashSet<>(Arrays.asList("0x3434", "0x4747"));
-  private static final Set<String> WITNESSES_WITH_NULL =
-      new HashSet<>(Arrays.asList("0x3939", null, "0x4747"));
+  private static final Set<PublicKey> WITNESSES =
+      Sets.newSet(generatePublicKey(), generatePublicKey());
+  private static final Set<PublicKey> WITNESSES_WITH_NULL =
+      Sets.newSet(generatePublicKey(), null, generatePublicKey());
 
   private static final Lao LAO_1 = new Lao(LAO_NAME_1, ORGANIZER, Instant.now().getEpochSecond());
   private static final Map<String, RollCall> rollCalls =
@@ -247,8 +252,9 @@ public class LaoTest {
 
   @Test
   public void setAndGetModificationIdTest() {
-    LAO_1.setModificationId("Modification Id");
-    assertThat(LAO_1.getModificationId(), is("Modification Id"));
+    MessageID id = generateMessageID();
+    LAO_1.setModificationId(id);
+    assertThat(LAO_1.getModificationId(), is(id));
   }
 
   @Test

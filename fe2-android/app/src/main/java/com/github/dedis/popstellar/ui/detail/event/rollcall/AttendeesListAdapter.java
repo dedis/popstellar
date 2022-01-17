@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.github.dedis.popstellar.databinding.AttendeeLayoutBinding;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import net.glxn.qrgen.android.QRCode;
 
@@ -17,15 +18,15 @@ import java.util.List;
 
 public class AttendeesListAdapter extends BaseAdapter {
 
-  private List<String> attendees;
+  private List<PublicKey> attendees;
   private final LifecycleOwner lifecycleOwner;
 
-  public AttendeesListAdapter(List<String> attendees, LifecycleOwner activity) {
+  public AttendeesListAdapter(List<PublicKey> attendees, LifecycleOwner activity) {
     setList(attendees);
     lifecycleOwner = activity;
   }
 
-  private void setList(List<String> attendees) {
+  private void setList(List<PublicKey> attendees) {
     this.attendees = attendees;
     notifyDataSetChanged();
   }
@@ -59,7 +60,7 @@ public class AttendeesListAdapter extends BaseAdapter {
 
     if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
 
-    String attendee = attendees.get(position);
+    String attendee = attendees.get(position).getEncoded();
 
     binding.publicKey.setText("Public key:\n" + attendee);
 

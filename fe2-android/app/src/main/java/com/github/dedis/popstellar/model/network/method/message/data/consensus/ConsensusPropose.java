@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
@@ -14,7 +15,7 @@ public final class ConsensusPropose extends Data {
   private final String instanceId;
 
   @SerializedName("message_id")
-  private final String messageId;
+  private final MessageID messageId;
 
   @SerializedName("created_at")
   private final long creation;
@@ -37,7 +38,7 @@ public final class ConsensusPropose extends Data {
    */
   public ConsensusPropose(
       String instanceId,
-      String messageId,
+      MessageID messageId,
       long creation,
       int proposedTry,
       boolean proposedValue,
@@ -63,7 +64,7 @@ public final class ConsensusPropose extends Data {
     return instanceId;
   }
 
-  public String getMessageId() {
+  public MessageID getMessageId() {
     return messageId;
   }
 
@@ -107,7 +108,7 @@ public final class ConsensusPropose extends Data {
     return String.format(
         "ConsensusPropose{instance_id='%s', message_id='%s', created_at=%s, value=%s, acceptor-signatures=%s}",
         instanceId,
-        messageId,
+        messageId.getEncoded(),
         creation,
         proposeValue,
         Arrays.toString(acceptorSignatures.toArray()));

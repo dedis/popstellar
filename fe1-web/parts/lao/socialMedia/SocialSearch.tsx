@@ -9,6 +9,7 @@ import { PublicKey } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import UserListItem from 'components/UserListItem';
 import { gray } from 'styles/colors';
+import PropTypes from 'prop-types';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
@@ -32,7 +33,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const SocialSearch = () => {
+const SocialSearch = (props: IPropTypes) => {
+  const { currentUserPublicKey } = props;
   const laoSelect = makeCurrentLao();
   const currentLao = useSelector(laoSelect);
 
@@ -44,9 +46,13 @@ const SocialSearch = () => {
   const attendeesSelect = makeLastRollCallAttendeesList(currentLao.id, rollCallId);
   const attendees = useSelector(attendeesSelect);
 
-  const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => (
-    <UserListItem laoId={currentLao.id} publicKey={item} />
-  );
+  const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
+    // Not show our own profile
+    if (item.valueOf() === currentUserPublicKey.valueOf()) {
+      return null;
+    }
+    return <UserListItem laoId={currentLao.id} publicKey={item} />;
+  };
 
   return (
     <View style={styles.viewCenter}>
@@ -62,6 +68,16 @@ const SocialSearch = () => {
       </View>
     </View>
   );
+};
+
+const propTypes = {
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+};
+
+SocialSearch.prototype = propTypes;
+
+type IPropTypes = {
+  currentUserPublicKey: PublicKey,
 };
 
 export default SocialSearch;

@@ -9,6 +9,7 @@ export enum ObjectType {
   ROLL_CALL = 'roll_call',
   ELECTION = 'election',
   CHIRP = 'chirp',
+  REACTION = 'reaction',
 }
 
 /** Enumeration of all possible "action" field values in MessageData */
@@ -28,7 +29,9 @@ export enum ActionType {
   RESULT = 'result',
   CLOSE = 'close',
   ADD = 'add',
-  ADD_BROADCAST = 'add_broadcast',
+  NOTIFY_ADD = 'notify_add',
+  DELETE = 'delete',
+  NOTIFY_DELETE = 'notify_delete',
 }
 
 export interface MessageData {

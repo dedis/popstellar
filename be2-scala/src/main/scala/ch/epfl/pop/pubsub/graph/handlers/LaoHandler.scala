@@ -35,35 +35,32 @@ case object LaoHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
+  private val unknownAnswerDB: String = "Database actor returned an unknown answer"
+
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
         // we are using the lao id instead of the message_id at lao creation
         val channel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
-        //this prevents a write-through to an already existing LaoId
-        val askCreate = (dbActor ? DbActor.CreateChannel(channel, ObjectType.LAO))
+        val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
+        val reactionChannel: Channel = Channel(channel + Channel.REACTIONS_CHANNEL_PREFIX)
+        val askCreate = (dbActor ? DbActor.CreateChannelsFromList(List(
+          (channel, ObjectType.LAO),
+          (socialChannel, ObjectType.CHIRP),
+          (reactionChannel, ObjectType.REACTION)
+        )))
         Await.result(askCreate, duration) match {
-          case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-          case DbActorAck() => {
-            val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
-              case DbActorWriteAck() => {
-                val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_POSTS_PREFIX)
-                val askSocial: Future[GraphMessage] = (dbActor ? DbActor.CreateChannel(socialChannel, ObjectType.CHIRP)).map {
-                  case DbActorAck() => Left(rpcMessage)
-                  case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-                  case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
-                }
-                Await.result(askSocial, duration)
-              }
+          case DbActorAck() =>
+            val ask = (dbActor ? DbActor.Write(channel, message))
+            Await.result(ask, duration) match {
+              case DbActorWriteAck() => Left(rpcMessage)
               case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
             }
-
-            Await.result(ask, duration)
-          }
+          case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
         }
-
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",
@@ -74,7 +71,7 @@ case object LaoHandler extends MessageHandler {
 
   def handleStateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateLao].modification_id
-    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateMeeting is not implemented", rpcMessage.id))
+    Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateLao is not implemented", rpcMessage.id))
   }
 
   def handleUpdateLao(rpcMessage: JsonRpcRequest): GraphMessage = {

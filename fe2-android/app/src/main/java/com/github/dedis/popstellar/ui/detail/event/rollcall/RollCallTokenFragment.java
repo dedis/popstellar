@@ -9,20 +9,21 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.RollCallTokenFragmentBinding;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import net.glxn.qrgen.android.QRCode;
 
 import java.security.GeneralSecurityException;
-import java.util.Base64;
 import java.util.Optional;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -32,6 +33,7 @@ public class RollCallTokenFragment extends Fragment {
   public static final String TAG = RollCallTokenFragment.class.getSimpleName();
   public static final String EXTRA_ID = "rollcall_id";
 
+  @Inject Wallet wallet;
   private LaoDetailViewModel mLaoDetailViewModel;
   private RollCallTokenFragmentBinding mRollCallTokenFragmentBinding;
   private RollCall rollCall;
@@ -70,21 +72,18 @@ public class RollCallTokenFragment extends Fragment {
             .getCurrentLaoValue()
             .getChannel()
             .substring(6); // use the laoId set at creation + need to remove /root/ prefix
-    String sk = "";
+
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {
-      Pair<byte[], byte[]> token =
-          Wallet.getInstance().findKeyPair(firstLaoId, rollCall.getPersistentId());
-      sk = Base64.getUrlEncoder().encodeToString(token.first);
-      pk = Base64.getUrlEncoder().encodeToString(token.second);
+      PoPToken token = wallet.findKeyPair(firstLaoId, rollCall.getPersistentId());
+      pk = token.getPublicKey().getEncoded();
     } catch (GeneralSecurityException e) {
       Log.d(TAG, "failed to retrieve token from wallet", e);
       mLaoDetailViewModel.openLaoWallet();
     }
 
     mRollCallTokenFragmentBinding.rollcallName.setText("Roll Call: " + rollCall.getName());
-    mRollCallTokenFragmentBinding.privateKey.setText("Private key:\n" + sk);
     mRollCallTokenFragmentBinding.publicKey.setText("Public key:\n" + pk);
 
     Bitmap myBitmap = QRCode.from(pk).bitmap();

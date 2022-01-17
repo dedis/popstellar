@@ -50,6 +50,7 @@ The project relies on several sbt dependencies (external libraries) :
 - Json parser : [**spray-json**](https://github.com/spray/spray-json) for Json encoding/decoding
 - encryption : [**tink**](https://github.com/google/tink/blob/master/docs/JAVA-HOWTO.md) to verify signatures
 - testing : [**scalatest**](https://www.scalatest.org/) for unit tests
+- Json schema validator : [**networknt**](https://github.com/networknt/json-schema-validator) for Json schema validation
 
 ---
 

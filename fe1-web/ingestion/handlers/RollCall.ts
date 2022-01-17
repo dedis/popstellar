@@ -6,7 +6,9 @@ import {
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
-import { RollCall, RollCallStatus, Wallet } from 'model/objects';
+import {
+  RollCall, RollCallStatus, Wallet, getUserSocialChannel, getReactionChannel,
+} from 'model/objects';
 import {
   addEvent,
   AsyncDispatch,
@@ -16,6 +18,7 @@ import {
   setLaoLastRollCall,
   updateEvent,
 } from 'store';
+import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
@@ -136,6 +139,11 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
               err);
           });
       }
+      // everyone is automatically subscribed to the reaction channel after the roll call
+      await subscribeToChannel(getReactionChannel(lao.id))
+        .catch((err) => {
+          console.error('Could not subscribe to reaction channel, error:', err);
+        });
     } catch (err) {
       console.debug(err);
     }
