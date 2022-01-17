@@ -145,45 +145,18 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 
 // Broadcast is used to handle a broadcast message.
 func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
-	err := c.VerifyBroadcastMessage(broadcast)
+	c.log.Info().Msg("received a broadcast")
+
+	err := c.verifyMessage(broadcast.Params.Message)
 	if err != nil {
-		return xerrors.Errorf("failed to verify publish message: %w", err)
+		return xerrors.Errorf("failed to verify broadcast message: %w", err)
 	}
 
-	msg := broadcast.Params.Message
-
-	data := msg.Data
-
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err = c.handleMessage(broadcast.Params.Message, socket)
 	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
+		return xerrors.Errorf("failed to handle broadcast message: %v", err)
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get the action or the object: %v", err)
-	}
-
-	switch object {
-	case messagedata.LAOObject:
-		err = c.processLaoObject(action, msg)
-	case messagedata.MeetingObject:
-		err = c.processMeetingObject(action, msg)
-	case messagedata.MessageObject:
-		err = c.processMessageObject(action, msg)
-	case messagedata.RollCallObject:
-		err = c.processRollCallObject(action, msg, socket)
-	case messagedata.ElectionObject:
-		err = c.processElectionObject(action, msg, socket)
-	default:
-		err = xerrors.Errorf("object not accepted in a LAO channel.")
-	}
-
-	if err != nil {
-		return xerrors.Errorf("failed to process %q object: %w", object, err)
-	}
-
-	c.broadcastToAllClients(msg)
 	return nil
 }
 
@@ -218,14 +191,8 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 	c.sockets.SendToAll(buf)
 }
 
-// VerifyPublishMessage checks if a Publish message is valid
-func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(publish.ID)).
-		Msg("received a publish")
-
-	// Check if the structure of the message is correct
-	msg := publish.Params.Message
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
@@ -240,33 +207,6 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
-		return answer.NewError(-3, "message already exists")
-	}
-
-	return nil
-}
-
-// VerifyBroadcastMessage checks if a Broadcast message is valid
-func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
-	c.log.Info().Msg("received broadcast")
-
-	// Check if the structure of the message is correct
-	msg := broadcast.Params.Message
-
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
-	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
-	}
-
-	// Verify the data
-	err = c.hub.GetSchemaValidator().VerifyJSON(jsonData, validation.Data)
-	if err != nil {
-		return xerrors.Errorf("failed to verify json schema: %w", err)
-	}
-
-	// Check if the message already exists
-	_, ok := c.inbox.GetMessage(msg.MessageID)
-	if ok {
 		return answer.NewError(-3, "message already exists")
 	}
 
@@ -306,16 +246,27 @@ type rollCall struct {
 
 // Publish handles publish messages for the LAO channel.
 func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
-	err := c.VerifyPublishMessage(publish)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
 	}
 
-	msg := publish.Params.Message
+	err = c.handleMessage(publish.Params.Message, socket)
+	if err != nil {
+		return xerrors.Errorf("failed to handle publish message: %v", err)
+	}
 
-	data := msg.Data
+	return nil
+}
 
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+// handleMessage handles a message received in a broadcast or publish method
+func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
 	}
@@ -345,6 +296,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	}
 
 	c.broadcastToAllClients(msg)
+
 	return nil
 }
 
