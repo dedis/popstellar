@@ -8,9 +8,9 @@ import { PublicKey, RollCall } from 'model/objects';
 import { generateToken } from 'model/objects/wallet';
 import { makeCurrentLao, makeEventGetter } from 'store';
 import { useSelector } from 'react-redux';
-import SocialProfile from './SocialProfile';
-import SocialFollows from './SocialFollows';
-import SocialHome from './SocialHome';
+import SocialProfile from 'parts/lao/socialMedia/SocialProfile';
+import SocialFollows from 'parts/lao/socialMedia/SocialFollows';
+import SocialHome from 'parts/lao/socialMedia/SocialHome';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
 /**
