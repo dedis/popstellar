@@ -134,10 +134,11 @@ const socialSlice = createSlice({
         const store = state.byLaoId[laoId];
 
         // store the deleted chirp
+        const displayTime = store.byId[chirp.id] ? store.byId[chirp.id].time : chirp.time;
         const deletedChirp = new Chirp({
           id: new Hash(chirp.id),
           sender: new Hash(chirp.sender),
-          time: new Timestamp(chirp.time),
+          time: new Timestamp(displayTime),
           text: '',
           isDeleted: true,
         }).toState();
