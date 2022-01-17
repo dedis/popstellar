@@ -9,6 +9,10 @@ import androidx.core.util.Pair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
+import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
+import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
+import com.github.dedis.popstellar.utility.error.keys.WordValidationException;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AesGcmKeyManager;
@@ -28,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -38,6 +43,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
+import io.github.novacrypto.bip39.Validation.InvalidChecksumException;
+import io.github.novacrypto.bip39.Validation.InvalidWordCountException;
+import io.github.novacrypto.bip39.Validation.UnexpectedWhiteSpaceException;
+import io.github.novacrypto.bip39.Validation.WordNotFoundException;
 import io.github.novacrypto.bip39.Words;
 import io.github.novacrypto.bip39.wordlists.English;
 
@@ -101,9 +110,15 @@ public class Wallet {
    *
    * @param path a String path of the form: m/i/j/k/... where i,j,k,.. are 31-bit integer.
    * @return the generated PoP Token
-   * @throws GeneralSecurityException if an error occurs
+   * @throws KeyGenerationException if an error occurs
+   * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
-  public PoPToken generateKeyFromPath(@NonNull String path) throws GeneralSecurityException {
+  public PoPToken generateKeyFromPath(@NonNull String path)
+      throws KeyGenerationException, UninitializedWalletException {
+    if (!isSetup) {
+      throw new UninitializedWalletException();
+    }
+
     // convert the path string in an array of int
     int[] pathValueInt =
         Arrays.stream(path.split("/"))
@@ -111,15 +126,19 @@ public class Wallet {
             .mapToInt(Integer::parseInt)
             .toArray();
 
-    // derive private and public key
-    byte[] privateKey =
-        SLIP10.deriveEd25519PrivateKey(aead.decrypt(seed, new byte[0]), pathValueInt);
+    try {
+      // derive private and public key
+      byte[] privateKey =
+          SLIP10.deriveEd25519PrivateKey(aead.decrypt(seed, new byte[0]), pathValueInt);
 
-    Ed25519PrivateKeyParameters prK = new Ed25519PrivateKeyParameters(privateKey, 0);
-    Ed25519PublicKeyParameters puK = prK.generatePublicKey();
-    byte[] publicKey = puK.getEncoded();
+      Ed25519PrivateKeyParameters prK = new Ed25519PrivateKeyParameters(privateKey, 0);
+      Ed25519PublicKeyParameters puK = prK.generatePublicKey();
+      byte[] publicKey = puK.getEncoded();
 
-    return new PoPToken(privateKey, publicKey);
+      return new PoPToken(privateKey, publicKey);
+    } catch (GeneralSecurityException e) {
+      throw new KeyGenerationException(e);
+    }
   }
 
   /**
@@ -128,10 +147,11 @@ public class Wallet {
    * @param laoID a String.
    * @param rollCallID a String.
    * @return the PoP Token
-   * @throws GeneralSecurityException if an error occurs
+   * @throws KeyGenerationException if an error occurs
+   * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
   public PoPToken findKeyPair(@NonNull String laoID, @NonNull String rollCallID)
-      throws GeneralSecurityException {
+      throws KeyGenerationException, UninitializedWalletException {
     // Generate the string path
     String res =
         String.join(
@@ -188,15 +208,16 @@ public class Wallet {
    * @param rollCallID a String.
    * @param rollCallTokens a {@link Set} containing the public keys of all attendees present on
    *     roll-call’s results.
-   * @return the PoP Token if the user participated in that roll-call or else null.
-   * @throws GeneralSecurityException if an error occurs
+   * @return the PoP Token if the user participated in that roll-call or else empty.
+   * @throws KeyGenerationException if an error occurs
+   * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
-  public PoPToken recoverKey(
+  public Optional<PoPToken> recoverKey(
       @NonNull String laoID, @NonNull String rollCallID, @NonNull Set<PublicKey> rollCallTokens)
-      throws GeneralSecurityException {
+      throws KeyGenerationException, UninitializedWalletException {
     PoPToken token = findKeyPair(laoID, rollCallID);
-    if (rollCallTokens.contains(token.getPublicKey())) return token;
-    else return null;
+    if (rollCallTokens.contains(token.getPublicKey())) return Optional.of(token);
+    else return Optional.empty();
   }
 
   /**
@@ -207,20 +228,21 @@ public class Wallet {
    * @param knowsLaosRollCalls a mapping of the pairs (Lao_ID, Roll_call_ID) to all the attendees
    *     public keys.
    * @return a mapping of the pairs (Lao_ID, Roll_call_ID) to the recovered tokens.
-   * @throws GeneralSecurityException if an error occurs
+   * @throws KeyGenerationException if an error occurs
+   * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
   public Map<Pair<String, String>, PoPToken> recoverAllKeys(
       String seed, @NonNull Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls)
-      throws GeneralSecurityException {
+      throws KeyGenerationException, UninitializedWalletException {
     initialize(seed);
 
     Map<Pair<String, String>, PoPToken> result = new HashMap<>();
     for (Map.Entry<Pair<String, String>, Set<PublicKey>> entry : knowsLaosRollCalls.entrySet()) {
       String laoID = entry.getKey().first;
       String rollCallID = entry.getKey().second;
-      PoPToken recoverKey = recoverKey(laoID, rollCallID, entry.getValue());
 
-      if (recoverKey != null) result.put(new Pair<>(laoID, rollCallID), recoverKey);
+      Optional<PoPToken> recoverKey = recoverKey(laoID, rollCallID, entry.getValue());
+      recoverKey.ifPresent(key -> result.put(new Pair<>(laoID, rollCallID), key));
     }
 
     return result;
@@ -235,31 +257,26 @@ public class Wallet {
    * @throws GeneralSecurityException if an error occurs
    */
   public String[] exportSeed() throws GeneralSecurityException {
-    if (aead != null) {
-      SecureRandom random = new SecureRandom();
-      byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
+    SecureRandom random = new SecureRandom();
+    byte[] entropy = random.generateSeed(Words.TWELVE.byteLength());
 
-      List<CharSequence> words = new LinkedList<>();
-      MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
-      generator.createMnemonic(entropy, words::add);
+    List<CharSequence> words = new LinkedList<>();
+    MnemonicGenerator generator = new MnemonicGenerator(English.INSTANCE);
+    generator.createMnemonic(entropy, words::add);
 
-      String[] wordsFiltered =
-          words.stream()
-              .filter(s -> !s.equals(" ")) // Filter out spaces
-              .map(CharSequence::toString)
-              .toArray(String[]::new);
+    String[] wordsFiltered =
+        words.stream()
+            .filter(s -> !s.equals(" ")) // Filter out spaces
+            .map(CharSequence::toString)
+            .toArray(String[]::new);
 
-      Log.d(TAG, "the array of word generated:" + Arrays.toString(wordsFiltered));
+    Log.d(TAG, "the array of word generated:" + Arrays.toString(wordsFiltered));
 
-      seed =
-          aead.encrypt(new SeedCalculator().calculateSeed(String.join("", words), ""), new byte[0]);
-      Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
+    seed =
+        aead.encrypt(new SeedCalculator().calculateSeed(String.join("", words), ""), new byte[0]);
+    Log.d(TAG, "ExportSeed: new seed initialized: " + Utils.bytesToHex(seed));
 
-      return wordsFiltered;
-    } else {
-      Log.d(TAG, "key set manager not initialized yet!");
-      return new String[0];
-    }
+    return wordsFiltered;
   }
 
   /**
@@ -271,21 +288,21 @@ public class Wallet {
    * @return a mapping of the pairs (Lao_ID, Roll_call_ID) to the recovered tokens.
    */
   public Map<Pair<String, String>, PoPToken> importSeed(
-      @NonNull String words, Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls) {
-    if (aead != null) {
-      try {
-        MnemonicValidator.ofWordList(English.INSTANCE).validate(words);
-        seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
-        Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
-        return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
+      @NonNull String words, Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls)
+      throws KeyException, GeneralSecurityException {
 
-      } catch (Exception e) {
-        Log.d(TAG, "Unable to import words:" + e.getMessage());
-        return null;
-      }
-    } else {
-      return null;
+    try {
+      MnemonicValidator.ofWordList(English.INSTANCE).validate(words);
+    } catch (InvalidChecksumException
+        | InvalidWordCountException
+        | WordNotFoundException
+        | UnexpectedWhiteSpaceException e) {
+      throw new WordValidationException(words, e);
     }
+
+    seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
+    Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
+    return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
   }
 
   /**

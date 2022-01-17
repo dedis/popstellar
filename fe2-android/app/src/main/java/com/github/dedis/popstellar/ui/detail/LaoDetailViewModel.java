@@ -49,6 +49,8 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
+import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
@@ -233,7 +235,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     try {
       PublicKey pk = wallet.findKeyPair(firstLaoId, rollcall.getPersistentId()).getPublicKey();
       return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
-    } catch (GeneralSecurityException e) {
+    } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }

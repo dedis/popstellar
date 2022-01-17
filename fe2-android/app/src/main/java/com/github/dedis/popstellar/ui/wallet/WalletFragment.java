@@ -15,11 +15,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.databinding.WalletFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -31,7 +28,6 @@ public class WalletFragment extends Fragment {
 
   private WalletFragmentBinding mWalletFragBinding;
   private HomeViewModel mHomeViewModel;
-  @Inject Wallet wallet;
 
   public static WalletFragment newInstance() {
     return new WalletFragment();

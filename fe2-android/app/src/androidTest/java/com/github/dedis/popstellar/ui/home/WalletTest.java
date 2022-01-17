@@ -8,6 +8,7 @@ import androidx.test.core.app.ApplicationProvider;
 
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import net.i2p.crypto.eddsa.Utils;
 
@@ -46,7 +47,8 @@ public class WalletTest {
   }
 
   @Test
-  public void crossValidationWithFe1Web() throws GeneralSecurityException, IOException {
+  public void crossValidationWithFe1Web()
+      throws GeneralSecurityException, IOException, KeyException {
     String Lao_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
     String Roll_Call_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
 
