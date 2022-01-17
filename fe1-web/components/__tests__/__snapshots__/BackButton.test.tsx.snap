@@ -21,6 +21,7 @@ exports[`BackButton renders correctly 1`] = `
     onResponderTerminate={[Function]}
     onResponderTerminationRequest={[Function]}
     onStartShouldSetResponder={[Function]}
+    testID="backButton"
   >
     <Text />
   </View>

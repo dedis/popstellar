@@ -19,7 +19,7 @@ import STRINGS from 'res/strings';
 const styles = socialMediaProfile;
 
 const SocialUserProfile = ({ route }: any) => {
-  const { currentUserPublicKey, userPublicKey } = route?.params;
+  const { currentUserPublicKey, userPublicKey } = route.params;
   if (!userPublicKey) {
     return (
       <View style={styles.viewCenter}>
@@ -74,18 +74,6 @@ const SocialUserProfile = ({ route }: any) => {
       </View>
     </View>
   );
-};
-
-const propTypes = {
-  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-  userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
-};
-
-SocialUserProfile.prototype = propTypes;
-
-type IPropTypes = {
-  currentUserPublicKey: PublicKey,
-  userPublicKey: PublicKey,
 };
 
 export default SocialUserProfile;
