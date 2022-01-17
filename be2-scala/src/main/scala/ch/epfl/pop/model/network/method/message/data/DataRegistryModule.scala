@@ -5,7 +5,6 @@ import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, U
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CreateRollCall, OpenRollCall, ReopenRollCall, CloseRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 
-
 object DataRegistryModule {
 
   final val REGISTRY: DataRegistry = {
@@ -27,6 +26,9 @@ object DataRegistryModule {
     builder.add(CHIRP, NOTIFY_ADD, DataSchemaValidator.validateSchema(CHIRP)(NOTIFY_ADD), NotifyAddChirp.buildFromJson)("NotifyAddChirp could not be parsed")
     builder.add(CHIRP, DELETE,  DataSchemaValidator.validateSchema(CHIRP)(DELETE), DeleteChirp.buildFromJson)("DeleteChirp could not be parsed")
     builder.add(CHIRP, NOTIFY_DELETE, DataSchemaValidator.validateSchema(CHIRP)(NOTIFY_DELETE), NotifyDeleteChirp.buildFromJson)("NotifyDeleteChirp could not be parsed")
+
+    builder.add(REACTION, ADD,  DataSchemaValidator.validateSchema(REACTION)(ADD), AddReaction.buildFromJson)("AddReaction could not be parsed")
+    builder.add(REACTION, DELETE,  DataSchemaValidator.validateSchema(REACTION)(DELETE), DeleteReaction.buildFromJson)("DeleteReaction could not be parsed")
 
     //TODO: add other object/action entries
     builder.build

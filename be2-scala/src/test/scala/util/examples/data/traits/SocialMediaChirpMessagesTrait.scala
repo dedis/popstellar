@@ -10,10 +10,10 @@ import java.nio.file.Path
 import java.nio.file.Files
 
 /**
-  * Trait to be implemented by RollCallMessages examples
+  * Trait to be implemented by SocialMediaMessages examples (chirps)
   */
-trait RollCallMessagesTrait extends ExampleMessagesTrait {
-  override val obj = ObjectType.ROLL_CALL
+trait SocialMediaChirpMessagesTrait extends ExampleMessagesTrait {
+  override val obj = ObjectType.CHIRP
   override val METHOD_TYPE: MethodType.MethodType = MethodType.PUBLISH
 
 }
