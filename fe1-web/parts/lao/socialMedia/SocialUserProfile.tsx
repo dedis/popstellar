@@ -55,6 +55,7 @@ const SocialUserProfile = (props: IPropTypes) => {
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
       chirp={Chirp.fromState(item)}
+      userPublicKey={userPublicKey}
     />
   );
 
