@@ -32,7 +32,7 @@ const SocialUserProfile = ({ currentUserPublicKey, route }: IPropTypes) => {
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
       chirp={Chirp.fromState(item)}
-      userPublicKey={currentUserPublicKey}
+      currentUserPublicKey={currentUserPublicKey}
     />
   );
 

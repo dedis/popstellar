@@ -63,7 +63,7 @@ const UserListItem = (props: IPropTypes) => {
 
   const goToUserProfile = () => {
     navigation.navigate(STRINGS.social_media_navigation_tab_user_profile as never,
-      { userPublicKey: publicKey } as never);
+      { currentUserPublicKey: publicKey } as never);
   };
 
   return (

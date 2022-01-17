@@ -76,7 +76,7 @@ const FOUR_SECONDS = 4000;
 
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
-  const { userPublicKey } = props;
+  const { currentUserPublicKey } = props;
   const toast = useToast();
   const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
 
@@ -97,10 +97,10 @@ const ChirpCard = (props: IPropTypes) => {
   };
 
   // TODO: delete a chirp posted with a PoP token from a previous roll call.
-  const isSender = userPublicKey.valueOf() === chirp.sender.valueOf();
+  const isSender = currentUserPublicKey.valueOf() === chirp.sender.valueOf();
 
   const deleteChirp = () => {
-    requestDeleteChirp(userPublicKey, chirp.id)
+    requestDeleteChirp(currentUserPublicKey, chirp.id)
       .catch((err) => {
         toast.show(`Could not remove chirp, error: ${err}`, {
           type: 'danger',
@@ -161,7 +161,7 @@ const ChirpCard = (props: IPropTypes) => {
 
 const propTypes = {
   chirp: PropTypes.instanceOf(Chirp).isRequired,
-  userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 ChirpCard.prototype = propTypes;

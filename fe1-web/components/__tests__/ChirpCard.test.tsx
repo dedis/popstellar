@@ -68,7 +68,7 @@ describe('ChirpCard', () => {
       const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
       getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const obj = render(
-        <ChirpCard chirp={chirp} userPublicKey={sender} />,
+        <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
       );
       expect(obj.toJSON()).toMatchSnapshot();
     });
@@ -77,7 +77,7 @@ describe('ChirpCard', () => {
       const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
       getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const obj = render(
-        <ChirpCard chirp={chirp} userPublicKey={new PublicKey('IAmNotTheSender')} />,
+        <ChirpCard chirp={chirp} currentUserPublicKey={new PublicKey('IAmNotTheSender')} />,
       );
       expect(obj.toJSON()).toMatchSnapshot();
     });
@@ -86,7 +86,7 @@ describe('ChirpCard', () => {
       const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
       getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const button = render(
-        <ChirpCard chirp={chirp} userPublicKey={sender} />,
+        <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
       ).getByLabelText('delete');
       fireEvent.press(button);
       expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
@@ -96,7 +96,7 @@ describe('ChirpCard', () => {
       const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
       getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const obj = render(
-        <ChirpCard chirp={deletedChirp} userPublicKey={sender} />,
+        <ChirpCard chirp={deletedChirp} currentUserPublicKey={sender} />,
       );
       expect(obj.toJSON()).toMatchSnapshot();
     });
@@ -104,32 +104,32 @@ describe('ChirpCard', () => {
 
   describe('for reaction', () => {
     it('renders correctly with reaction', () => {
-      const obj = render(<ChirpCard chirp={chirp} userPublicKey={sender} />);
+      const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON())
         .toMatchSnapshot();
     });
 
     it('renders correctly without reaction', () => {
-      const obj = render(<ChirpCard chirp={chirp1} userPublicKey={sender} />);
+      const obj = render(<ChirpCard chirp={chirp1} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('adds thumbs up correctly', () => {
-      const { getByTestId } = render(<ChirpCard chirp={chirp} userPublicKey={sender} />);
+      const { getByTestId } = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       const thumbsUpButton = getByTestId('thumbs-up');
       fireEvent.press(thumbsUpButton);
       expect(mockRequestAddReaction).toHaveBeenCalledWith('👍', ID);
     });
 
     it('adds thumbs down correctly', () => {
-      const { getByTestId } = render(<ChirpCard chirp={chirp} userPublicKey={sender} />);
+      const { getByTestId } = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       const thumbsDownButton = getByTestId('thumbs-down');
       fireEvent.press(thumbsDownButton);
       expect(mockRequestAddReaction).toHaveBeenCalledWith('👎', ID);
     });
 
     it('adds heart correctly', () => {
-      const { getByTestId } = render(<ChirpCard chirp={chirp} userPublicKey={sender} />);
+      const { getByTestId } = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       const heartButton = getByTestId('heart');
       fireEvent.press(heartButton);
       expect(mockRequestAddReaction).toHaveBeenCalledWith('❤️', ID);
