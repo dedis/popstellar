@@ -21,42 +21,44 @@ const styles = socialMediaProfile;
 
 const SocialProfile = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
-  if (currentUserPublicKey && currentUserPublicKey.valueOf() !== '') {
-    const userChirps = makeChirpsListOfUser(currentUserPublicKey);
-    const userChirpList = useSelector(userChirps);
+  const userChirps = makeChirpsListOfUser(currentUserPublicKey);
+  const userChirpList = useSelector(userChirps);
 
-    const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-      <ChirpCard
-        chirp={Chirp.fromState(item)}
-      />
-    );
-
+  if (!currentUserPublicKey || currentUserPublicKey.valueOf() === '') {
     return (
-      <View style={styles.viewCenter}>
-        <View style={styles.topView}>
-          <ProfileIcon
-            publicKey={currentUserPublicKey}
-            size={8}
-            scale={10}
-          />
-          <View style={styles.textView}>
-            <Text style={styles.profileText}>{currentUserPublicKey.valueOf()}</Text>
-            <Text>{`${userChirpList.length} chirps`}</Text>
-          </View>
-        </View>
-        <View style={styles.userFeed}>
-          <FlatList
-            data={userChirpList}
-            renderItem={renderChirpState}
-            keyExtractor={(item) => item.id.toString()}
-          />
-        </View>
+      <View style={styles.textUnavailableView}>
+        <TextBlock text={STRINGS.social_media_your_profile_unavailable} />
       </View>
     );
   }
+
+  const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
+    <ChirpCard
+      chirp={Chirp.fromState(item)}
+      userPublicKey={currentUserPublicKey}
+    />
+  );
+
   return (
-    <View style={styles.textUnavailableView}>
-      <TextBlock text={STRINGS.social_media_your_profile_unavailable} />
+    <View style={styles.viewCenter}>
+      <View style={styles.topView}>
+        <ProfileIcon
+          publicKey={currentUserPublicKey}
+          size={8}
+          scale={10}
+        />
+        <View style={styles.textView}>
+          <Text style={styles.profileText}>{currentUserPublicKey.valueOf()}</Text>
+          <Text>{`${userChirpList.length} chirps`}</Text>
+        </View>
+      </View>
+      <View style={styles.userFeed}>
+        <FlatList
+          data={userChirpList}
+          renderItem={renderChirpState}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      </View>
     </View>
   );
 };
