@@ -34,15 +34,11 @@ public class WalletTest {
     String Lao_ID = "1234123412341234";
     String Roll_Call_ID = "1234123412341234";
 
-    Wallet hdw1 = new Wallet();
-
-    hdw1.initKeysManager(context);
-
+    Wallet hdw1 = new Wallet(context);
     String seed = String.join(" ", hdw1.exportSeed());
     PoPToken res1 = hdw1.findKeyPair(Lao_ID, Roll_Call_ID);
 
-    Wallet hdw2 = new Wallet();
-    hdw2.initKeysManager(context);
+    Wallet hdw2 = new Wallet(context);
     hdw2.importSeed(seed, new HashMap<>());
     PoPToken res2 = hdw2.findKeyPair(Lao_ID, Roll_Call_ID);
 
@@ -54,8 +50,7 @@ public class WalletTest {
     String Lao_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
     String Roll_Call_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
 
-    Wallet hdw = new Wallet();
-    hdw.initKeysManager(context);
+    Wallet hdw = new Wallet(context);
     hdw.importSeed(
         "garbage effort river orphan negative kind outside quit hat camera approve first",
         new HashMap<>());

@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.wallet;
 
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,9 +18,6 @@ import com.github.dedis.popstellar.databinding.WalletFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
-
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 
 import javax.inject.Inject;
 
@@ -57,16 +53,7 @@ public class WalletFragment extends Fragment {
     } else {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
-    try {
-      wallet.initKeysManager(requireContext().getApplicationContext());
-    } catch (IOException | GeneralSecurityException e) {
-      Toast.makeText(
-              requireContext().getApplicationContext(),
-              "Error import key, try again",
-              Toast.LENGTH_LONG)
-          .show();
-      Log.d(TAG, "Error while importing the key", e);
-    }
+
     mWalletFragBinding.setViewModel(mHomeViewModel);
     mWalletFragBinding.setLifecycleOwner(activity);
 

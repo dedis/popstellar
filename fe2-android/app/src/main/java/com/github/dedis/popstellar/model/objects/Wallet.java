@@ -34,6 +34,7 @@ import java.util.StringJoiner;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
@@ -56,8 +57,14 @@ public class Wallet {
 
   /** Class constructor, initialize the wallet with a new random seed. */
   @Inject
-  public Wallet() {
+  public Wallet(@ApplicationContext Context context) {
     setRandomSeed();
+    try {
+      initKeysManager(context);
+    } catch (IOException | GeneralSecurityException e) {
+      Log.e(TAG, "Failed to initialize the Wallet", e);
+      throw new IllegalStateException("Failed to initialize the Wallet", e);
+    }
   }
 
   /**
@@ -76,7 +83,7 @@ public class Wallet {
    *
    * @param context of the application
    */
-  public void initKeysManager(Context context) throws IOException, GeneralSecurityException {
+  private void initKeysManager(Context context) throws IOException, GeneralSecurityException {
     AesGcmKeyManager.register(true);
     AeadConfig.register();
     AndroidKeysetManager keysetManager =
