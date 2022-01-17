@@ -48,13 +48,14 @@ const styles = StyleSheet.create({
 });
 
 const SocialUserProfile = (props: IPropTypes) => {
-  const { userPublicKey } = props;
+  const { currentUserPublicKey, userPublicKey } = props;
   const userChirps = makeChirpsListOfUser(userPublicKey);
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
     <ChirpCard
       chirp={Chirp.fromState(item)}
+      userPublicKey={currentUserPublicKey}
     />
   );
 
@@ -83,12 +84,14 @@ const SocialUserProfile = (props: IPropTypes) => {
 };
 
 const propTypes = {
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
   userPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 SocialUserProfile.prototype = propTypes;
 
 type IPropTypes = {
+  currentUserPublicKey: PublicKey,
   userPublicKey: PublicKey,
 };
 

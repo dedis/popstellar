@@ -20,7 +20,12 @@ const styles = StyleSheet.create({
 const SocialProfile = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
   if (currentUserPublicKey.valueOf() !== '') {
-    return <SocialUserProfile userPublicKey={currentUserPublicKey} />;
+    return (
+      <SocialUserProfile
+        currentUserPublicKey={currentUserPublicKey}
+        userPublicKey={currentUserPublicKey}
+      />
+    );
   }
   return (
     <View style={styles.textUnavailableView}>
