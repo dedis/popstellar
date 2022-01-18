@@ -58,12 +58,10 @@ public class Wallet {
   private static final String ACCOUNT = "0";
   private byte[] seed;
   private Aead aead;
-  private boolean isSetup = false;
 
   /** Class constructor, initialize the wallet with a new random seed. */
   @Inject
   public Wallet(@ApplicationContext Context context) {
-    setRandomSeed();
     try {
       initKeysManager(context);
     } catch (IOException | GeneralSecurityException e) {
@@ -168,7 +166,6 @@ public class Wallet {
 
     seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
     Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
-    initialize(seed);
   }
 
   /**
@@ -177,31 +174,19 @@ public class Wallet {
    * @return true if wallet has been set up, false otherwise
    */
   public boolean isSetUp() {
-    return isSetup;
+    return seed != null;
   }
 
   /** Logout the wallet by replacing the seed by a random one */
   public void logout() {
-    setRandomSeed();
+    seed = null;
   }
 
-  /** Utility function to initialize the wallet with a new random seed. */
-  private void setRandomSeed() {
+  /** Initialized the wallet with a new random seed */
+  public void newSeed() {
     SecureRandom random = new SecureRandom();
     seed = random.generateSeed(64);
-    isSetup = false;
     Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
-  }
-
-  /**
-   * Method to overwrite the seed of the current wallet with a new seed.
-   *
-   * @param seed to apply
-   */
-  private void initialize(@NonNull byte[] seed) {
-    this.seed = seed;
-    isSetup = true;
-    Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(this.seed));
   }
 
   /**
@@ -265,7 +250,7 @@ public class Wallet {
    */
   private PoPToken generateKeyFromPath(@NonNull String path)
       throws KeyGenerationException, UninitializedWalletException {
-    if (!isSetup) {
+    if (!isSetUp()) {
       throw new UninitializedWalletException();
     }
 

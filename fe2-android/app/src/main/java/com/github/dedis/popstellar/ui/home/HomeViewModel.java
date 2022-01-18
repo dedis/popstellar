@@ -204,6 +204,11 @@ public class HomeViewModel extends AndroidViewModel
     openWallet();
   }
 
+  public void newSeed() {
+    wallet.newSeed();
+    mOpenSeedEvent.postValue(new SingleEvent<>(true));
+  }
+
   /*
    * Getters for MutableLiveData instances declared above
    */
@@ -293,10 +298,6 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openWallet() {
     mOpenWalletEvent.postValue(new SingleEvent<>(isWalletSetUp()));
-  }
-
-  public void openSeed() {
-    mOpenSeedEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openLaoWallet(String laoId) {

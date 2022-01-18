@@ -118,6 +118,6 @@ public class WalletFragment extends Fragment {
   }
 
   private void setupNewWalletButton() {
-    mWalletFragBinding.buttonNewWallet.setOnClickListener(v -> mHomeViewModel.openSeed());
+    mWalletFragBinding.buttonNewWallet.setOnClickListener(v -> mHomeViewModel.newSeed());
   }
 }
