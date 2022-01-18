@@ -20,7 +20,7 @@ const styles = socialMediaProfile;
 
 const SocialUserProfile = ({ route }: any) => {
   const { currentUserPublicKey, userPublicKey } = route.params;
-  if (!userPublicKey || userPublicKey === '') {
+  if (!userPublicKey) {
     return (
       <View style={styles.viewCenter}>
         <View style={styles.topView}>
