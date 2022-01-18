@@ -6,10 +6,15 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import java.util.Set;
 
 public class InvalidPoPTokenException extends KeyException {
-  private Set<PublicKey> validTokens;
+
+  private final Set<PublicKey> validTokens;
 
   public InvalidPoPTokenException(PoPToken token, Set<PublicKey> validTokens) {
-    super("The token " + token.getPublicKey() + " is invalid is it");
+    super("The token " + token.getPublicKey() + " is invalid");
     this.validTokens = validTokens;
+  }
+
+  public Set<PublicKey> getValidTokens() {
+    return validTokens;
   }
 }
