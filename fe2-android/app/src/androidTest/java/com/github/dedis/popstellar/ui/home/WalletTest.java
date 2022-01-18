@@ -35,11 +35,11 @@ public class WalletTest {
 
     Wallet hdw1 = new Wallet(context);
     String seed = String.join(" ", hdw1.exportSeed());
-    PoPToken res1 = hdw1.findKeyPair(Lao_ID, Roll_Call_ID);
+    PoPToken res1 = hdw1.generatePoPToken(Lao_ID, Roll_Call_ID);
 
     Wallet hdw2 = new Wallet(context);
     hdw2.importSeed(seed);
-    PoPToken res2 = hdw2.findKeyPair(Lao_ID, Roll_Call_ID);
+    PoPToken res2 = hdw2.generatePoPToken(Lao_ID, Roll_Call_ID);
 
     assertEquals(res1, res2);
   }
@@ -52,7 +52,7 @@ public class WalletTest {
     Wallet hdw = new Wallet(context);
     hdw.importSeed(
         "garbage effort river orphan negative kind outside quit hat camera approve first");
-    PoPToken res = hdw.findKeyPair(Lao_ID, Roll_Call_ID);
+    PoPToken res = hdw.generatePoPToken(Lao_ID, Roll_Call_ID);
     assertEquals(
         "9e8ca414e088b2276d140bb69302269ccede242197e1f1751c45ec40b01678a0",
         Utils.bytesToHex(res.getPrivateKey().getData()));

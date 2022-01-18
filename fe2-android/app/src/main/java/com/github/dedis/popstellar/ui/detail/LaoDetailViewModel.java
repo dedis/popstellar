@@ -233,7 +233,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     // find out if user has attended the rollcall
     String firstLaoId = lao.getChannel().substring(6);
     try {
-      PublicKey pk = wallet.findKeyPair(firstLaoId, rollcall.getPersistentId()).getPublicKey();
+      PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
       return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
     } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
@@ -1329,7 +1329,7 @@ public class LaoDetailViewModel extends AndroidViewModel
             .substring(6); // use the laoId set at creation + need to remove /root/ prefix
     String errorMessage = "failed to retrieve public key from wallet";
     try {
-      PublicKey publicKey = wallet.findKeyPair(firstLaoId, id).getPublicKey();
+      PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();
       mPkRollCallEvent.postValue(new SingleEvent<>(publicKey));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);

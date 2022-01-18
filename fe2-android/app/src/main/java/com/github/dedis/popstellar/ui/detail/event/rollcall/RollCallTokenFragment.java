@@ -76,7 +76,7 @@ public class RollCallTokenFragment extends Fragment {
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {
-      PoPToken token = wallet.findKeyPair(firstLaoId, rollCall.getPersistentId());
+      PoPToken token = wallet.generatePoPToken(firstLaoId, rollCall.getPersistentId());
       pk = token.getPublicKey().getEncoded();
     } catch (KeyException e) {
       Log.d(TAG, "failed to retrieve token from wallet", e);

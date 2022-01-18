@@ -60,7 +60,7 @@ public class KeyManager {
   }
 
   public PoPToken getPoPToken(String laoID, String rollCallID) throws KeyException {
-    return wallet.findKeyPair(laoID, rollCallID);
+    return wallet.generatePoPToken(laoID, rollCallID);
   }
 
   public KeyPair getKeyPair(KeysetHandle keysetHandle)
