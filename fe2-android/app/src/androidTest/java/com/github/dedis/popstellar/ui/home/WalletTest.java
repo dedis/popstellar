@@ -15,7 +15,6 @@ import net.i2p.crypto.eddsa.Utils;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.HashMap;
 
@@ -47,8 +46,7 @@ public class WalletTest {
   }
 
   @Test
-  public void crossValidationWithFe1Web()
-      throws GeneralSecurityException, IOException, KeyException {
+  public void crossValidationWithFe1Web() throws GeneralSecurityException, KeyException {
     String Lao_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
     String Roll_Call_ID = "T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=";
 
