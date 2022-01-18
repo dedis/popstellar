@@ -3,6 +3,7 @@ module popstellar
 go 1.16
 
 require (
+	github.com/benbjohnson/clock v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-sqlite3 v1.14.6

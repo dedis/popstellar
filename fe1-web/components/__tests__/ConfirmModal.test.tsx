@@ -29,6 +29,20 @@ describe('ConfirmModal', () => {
     expect(component).toMatchSnapshot();
   });
 
+  it('renders correctly with text input', () => {
+    const component = render(
+      <ConfirmModal
+        visibility
+        setVisibility={setModalIsVisible}
+        title={TITLE}
+        description={DESCRIPTION}
+        onConfirmPress={() => onConfirmPress()}
+        hasTextInput
+      />,
+    ).toJSON();
+    expect(component).toMatchSnapshot();
+  });
+
   it('disappears correctly after dismissing', () => {
     const { getByText, toJSON } = render(
       <ConfirmModal
@@ -59,5 +73,24 @@ describe('ConfirmModal', () => {
     const confirmButton = getByText(CONFIRM);
     fireEvent.press(confirmButton);
     expect(onConfirmPress).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls onConfirmPress with textInput', () => {
+    const { getByText, getByDisplayValue } = render(
+      <ConfirmModal
+        visibility
+        setVisibility={setModalIsVisible}
+        title={TITLE}
+        description={DESCRIPTION}
+        onConfirmPress={onConfirmPress}
+        buttonConfirmText={CONFIRM}
+        hasTextInput
+      />,
+    );
+    const textInput = getByDisplayValue('');
+    fireEvent.changeText(textInput, 'input');
+    const confirmButton = getByText(CONFIRM);
+    fireEvent.press(confirmButton);
+    expect(onConfirmPress).toHaveBeenCalledWith('input');
   });
 });

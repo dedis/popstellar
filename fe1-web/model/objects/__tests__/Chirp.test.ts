@@ -20,8 +20,8 @@ describe('Chirp object', () => {
       sender: 'me',
       text: TEXT,
       time: 1234,
-      likes: 6,
       parentId: '5678',
+      isDeleted: false,
     };
     const chirp = Chirp.fromState(chirpState);
     expect(chirp.toState()).toStrictEqual(chirpState);
@@ -45,8 +45,8 @@ describe('Chirp object', () => {
         sender: PK,
         text: TEXT,
         time: TIMESTAMP,
-        likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -56,8 +56,8 @@ describe('Chirp object', () => {
         id: HASH_ID,
         text: TEXT,
         time: TIMESTAMP,
-        likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -67,8 +67,8 @@ describe('Chirp object', () => {
         id: HASH_ID,
         sender: PK,
         time: TIMESTAMP,
-        likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
@@ -78,13 +78,13 @@ describe('Chirp object', () => {
         id: HASH_ID,
         sender: PK,
         text: TEXT,
-        likes: 0,
         parentId: HASH_PARENT,
+        isDeleted: false,
       });
       expect(createWrongChirp).toThrow(Error);
     });
 
-    it('initializes likes to zero if it is undefined', () => {
+    it('initializes isDeleted to false if it is undefined', () => {
       const newChirp = new Chirp({
         id: HASH_ID,
         sender: PK,
@@ -92,7 +92,7 @@ describe('Chirp object', () => {
         time: TIMESTAMP,
         parentId: HASH_PARENT,
       });
-      expect(newChirp.likes).toStrictEqual(0);
+      expect(newChirp.isDeleted).toStrictEqual(false);
     });
   });
 });

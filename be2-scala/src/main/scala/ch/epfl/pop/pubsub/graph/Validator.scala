@@ -8,7 +8,7 @@ import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcR
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
-import ch.epfl.pop.model.network.requests.socialMedia.JsonRpcRequestAddChirp
+import ch.epfl.pop.model.network.requests.socialMedia._
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph.validators.ElectionValidator._
 import ch.epfl.pop.pubsub.graph.validators.LaoValidator._
@@ -152,6 +152,12 @@ object Validator {
       case message@(_: JsonRpcRequestEndElection) => validateEndElection(message)
       case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
       case message@(_: JsonRpcRequestAddChirp) => validateAddChirp(message)
+      case message@(_: JsonRpcRequestNotifyAddChirp) => validateNotifyAddChirp(message)
+      case message@(_: JsonRpcRequestDeleteChirp) => validateDeleteChirp(message)
+      case message@(_: JsonRpcRequestNotifyDeleteChirp) => validateNotifyDeleteChirp(message)
+      case message@(_: JsonRpcRequestAddReaction) => validateAddReaction(message)
+      case message@(_: JsonRpcRequestDeleteReaction) => validateDeleteReaction(message)
+
       case _ => Right(validationError(jsonRpcMessage match {
         case r: JsonRpcRequest => r.id
         case r: JsonRpcResponse => r.id

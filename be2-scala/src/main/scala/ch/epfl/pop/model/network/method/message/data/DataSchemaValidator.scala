@@ -30,6 +30,11 @@ object DataSchemaValidator {
   private final val dataCloseRC = baseDir + "dataCloseRollCall.json"
   private final val dataAddChirp = baseDir + "dataAddChirp.json"
   private final val dataNotifyAddChirp = baseDir + "dataNotifyAddChirp.json"
+  private final val dataDeleteChirp = baseDir + "dataDeleteChirp.json"
+  private final val dataNotifyDeleteChirp = baseDir + "dataNotifyDeleteChirp.json"
+
+  private final val dataAddReaction = baseDir + "dataAddReaction.json"
+  private final val dataDeleteReaction = baseDir + "dataDeleteReaction.json"
 
   /* Validation Schemas */
   //TODO: Add schemas for other features: Meetings, RollCalls...
@@ -42,8 +47,13 @@ object DataSchemaValidator {
   private final lazy val closeRcSchema: JsonSchema   = Validator.setupSchemaValidation(dataCloseRC, objectMapper)
   private final lazy val addChirpSchema: JsonSchema  = Validator.setupSchemaValidation(dataAddChirp, objectMapper)
   private final lazy val notifyAddChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataNotifyAddChirp, objectMapper)
+  private final lazy val deleteChirpSchema: JsonSchema  = Validator.setupSchemaValidation(dataDeleteChirp, objectMapper)
+  private final lazy val notifyDeleteChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataNotifyDeleteChirp, objectMapper)
+  private final lazy val addReactionSchema: JsonSchema  = Validator.setupSchemaValidation(dataAddReaction, objectMapper)
+  private final lazy val deleteReactionSchema: JsonSchema  = Validator.setupSchemaValidation(dataDeleteReaction, objectMapper)
 
   //TODO: Add validaton schemas for other features: Meetings, Elections...
+
   def validateSchema(objType: ObjectType)(actionType: ActionType)(payload: String): Try[Unit] =
     (objType, actionType) match {
       //LAO
@@ -60,6 +70,11 @@ object DataSchemaValidator {
       //Social Media
       case (ObjectType.CHIRP, ActionType.ADD)             => validateWithSchema(addChirpSchema)(payload)
       case (ObjectType.CHIRP, ActionType.NOTIFY_ADD)      => validateWithSchema(notifyAddChirpSchema)(payload)
+      case (ObjectType.CHIRP, ActionType.DELETE)          => validateWithSchema(deleteChirpSchema)(payload)
+      case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE)   => validateWithSchema(notifyDeleteChirpSchema)(payload)
+
+      case (ObjectType.REACTION, ActionType.ADD)          => validateWithSchema(addReactionSchema)(payload)
+      case (ObjectType.REACTION, ActionType.DELETE)       => validateWithSchema(deleteReactionSchema)(payload)
 
       //TODO:Add other cases
       case _ =>

@@ -16,7 +16,7 @@ public class Chirp {
   private PublicKey sender;
   private String text;
   private long timestamp;
-  private int likes;
+  private boolean isDeleted;
   private MessageID parentId;
 
   public Chirp(MessageID id) {
@@ -76,12 +76,12 @@ public class Chirp {
     this.timestamp = timestamp;
   }
 
-  public int getLikes() {
-    return likes;
+  public boolean getIsDeleted() {
+    return isDeleted;
   }
 
-  public void setLikes(int likes) {
-    this.likes = likes;
+  public void setIsDeleted(boolean isDeleted) {
+    this.isDeleted = isDeleted;
   }
 
   public MessageID getParentId() {
@@ -96,7 +96,7 @@ public class Chirp {
   @Override
   public String toString() {
     return String.format(
-        "Chirp{id='%s', channel='%s', sender='%s', text='%s', timestamp='%s', likes='%s', parentId='%s'",
-        id.getEncoded(), channel, sender, text, timestamp, likes, parentId.getEncoded());
+        "Chirp{id='%s', channel='%s', sender='%s', text='%s', timestamp='%s', isDeleted='%s', parentId='%s'",
+        id.getEncoded(), channel, sender, text, timestamp, isDeleted, parentId.getEncoded());
   }
 }
