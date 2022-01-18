@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.wallet;
 
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import androidx.fragment.app.FragmentActivity;
 import com.github.dedis.popstellar.databinding.WalletFragmentBinding;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
+
+import java.security.GeneralSecurityException;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -96,10 +100,13 @@ public class WalletFragment extends Fragment {
           builder.setPositiveButton(
               "Set up wallet",
               (dialog, which) -> {
-                if (!mHomeViewModel.importSeed(input.getText().toString())) {
+                try {
+                  mHomeViewModel.importSeed(input.getText().toString());
+                } catch (GeneralSecurityException | SeedValidationException e) {
+                  Log.e(TAG, "Error importing key", e);
                   Toast.makeText(
                           requireContext().getApplicationContext(),
-                          "Error import key, try again",
+                          "Error importing key : " + e.getMessage() + "\ntry again",
                           Toast.LENGTH_LONG)
                       .show();
                 }

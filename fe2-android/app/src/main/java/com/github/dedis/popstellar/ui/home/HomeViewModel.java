@@ -24,13 +24,13 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -198,18 +198,10 @@ public class HomeViewModel extends AndroidViewModel
     }
   }
 
-  public boolean importSeed(String seed) {
-    try {
-      if (wallet.importSeed(seed, new HashMap<>()) == null) {
-        return false;
-      } else {
-        setIsWalletSetUp(true);
-        openWallet();
-        return true;
-      }
-    } catch (Exception e) {
-      return false;
-    }
+  public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
+    wallet.importSeed(seed);
+    setIsWalletSetUp(true);
+    openWallet();
   }
 
   /*

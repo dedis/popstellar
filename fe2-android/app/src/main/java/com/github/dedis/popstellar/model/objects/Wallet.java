@@ -9,7 +9,6 @@ import androidx.core.util.Pair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
-import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
@@ -81,8 +80,8 @@ public class Wallet {
    *
    * @param seed to apply
    */
-  public void initialize(@NonNull String seed) {
-    this.seed = Utils.hexToBytes(seed);
+  private void initialize(@NonNull byte[] seed) {
+    this.seed = seed;
     isSetup = true;
     Log.d(TAG, "New seed initialized: " + Utils.bytesToHex(this.seed));
   }
@@ -224,17 +223,15 @@ public class Wallet {
    * Method that allows to recover all the pop tokens when the master secret is imported initially,
    * by iterating over all the historical LAO events.
    *
-   * @param seed the master secret String
    * @param knowsLaosRollCalls a mapping of the pairs (Lao_ID, Roll_call_ID) to all the attendees
    *     public keys.
    * @return a mapping of the pairs (Lao_ID, Roll_call_ID) to the recovered tokens.
    * @throws KeyGenerationException if an error occurs
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    */
-  public Map<Pair<String, String>, PoPToken> recoverAllKeys(
-      String seed, @NonNull Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls)
+  private Map<Pair<String, String>, PoPToken> recoverAllKeys(
+      @NonNull Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls)
       throws KeyGenerationException, UninitializedWalletException {
-    initialize(seed);
 
     Map<Pair<String, String>, PoPToken> result = new HashMap<>();
     for (Map.Entry<Pair<String, String>, Set<PublicKey>> entry : knowsLaosRollCalls.entrySet()) {
@@ -283,13 +280,9 @@ public class Wallet {
    * Method that allow import mnemonic seed.
    *
    * @param words a String.
-   * @param knowsLaosRollCalls a mapping of the pairs (Lao_ID, Roll_call_ID) to all the attendees
-   *     public keys.
-   * @return a mapping of the pairs (Lao_ID, Roll_call_ID) to the recovered tokens.
    */
-  public Map<Pair<String, String>, PoPToken> importSeed(
-      @NonNull String words, Map<Pair<String, String>, Set<PublicKey>> knowsLaosRollCalls)
-      throws KeyException, GeneralSecurityException {
+  public void importSeed(@NonNull String words)
+      throws SeedValidationException, GeneralSecurityException {
 
     try {
       MnemonicValidator.ofWordList(English.INSTANCE).validate(words);
@@ -302,7 +295,7 @@ public class Wallet {
 
     seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
     Log.d(TAG, "ImportSeed: new seed: " + Utils.bytesToHex(seed));
-    return recoverAllKeys(Utils.bytesToHex(seed), knowsLaosRollCalls);
+    initialize(seed);
   }
 
   /**
