@@ -11,8 +11,8 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
+import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
-import com.github.dedis.popstellar.utility.error.keys.WordValidationException;
 import com.google.crypto.tink.Aead;
 import com.google.crypto.tink.aead.AeadConfig;
 import com.google.crypto.tink.aead.AesGcmKeyManager;
@@ -297,7 +297,7 @@ public class Wallet {
         | InvalidWordCountException
         | WordNotFoundException
         | UnexpectedWhiteSpaceException e) {
-      throw new WordValidationException(words, e);
+      throw new SeedValidationException(e);
     }
 
     seed = aead.encrypt(new SeedCalculator().calculateSeed(words, ""), new byte[0]);
