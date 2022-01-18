@@ -21,7 +21,7 @@ const SocialSearchNavigation = (props: IPropTypes) => {
         headerShown: false,
       }}
     >
-      <Stack.Screen name={STRINGS.social_media_navigation_tab_search}>
+      <Stack.Screen name={STRINGS.social_media_navigation_tab_attendee_list}>
         {() => <SocialSearch currentUserPublicKey={currentUserPublicKey} />}
       </Stack.Screen>
       <Stack.Screen
