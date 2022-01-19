@@ -36,7 +36,7 @@ import java.util.Comparator;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-/** Service manging keys and providing easy access to the main device key and PoP Tokens */
+/** Service managing keys and providing easy access to the main device key and PoP Tokens */
 @Singleton
 public class KeyManager {
 
@@ -86,7 +86,7 @@ public class KeyManager {
    * Try to retrieve the user's PoPToken for the given Lao.
    *
    * @param lao we want to retrieve the PoP Token from
-   * @return the PoP Token if it was retrieve, empty if no RollCall exist in the LAO
+   * @return the PoP Token if it was retrieved, empty if no RollCall exist in the LAO
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    * @throws InvalidPoPTokenException if the token is not a valid attendee
@@ -102,7 +102,7 @@ public class KeyManager {
   }
 
   /**
-   * Try to retrieve the user's PoPToken for the given Lao. It will fail is the user did not attend
+   * Try to retrieve the user's PoPToken for the given Lao and RollCall. It will fail is the user did not attend
    * the roll call of if the token cannot be generated
    *
    * @param lao we want to retrieve the PoP Token from
