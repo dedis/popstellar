@@ -283,10 +283,38 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	err := xerrors.Errorf("a consensus channel shouldn't need to broadcast a message")
-	c.log.Err(err)
-	return err
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+	c.log.Info().Msg("received a broadcast")
+
+	err := c.verifyMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify broadcast message: %w", err)
+	}
+
+	err = c.handleMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to handle broadcast message: %v", err)
+	}
+
+	return nil
+}
+
+// handleMessage handles a message received in a broadcast or publish method
+func (c *Channel) handleMessage(msg message.Message) error {
+
+	err := c.registry.Process(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to process message: %w", err)
+	}
+
+	c.inbox.StoreMessage(msg)
+
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
+
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -321,35 +349,25 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 
 // Publish handles publish messages for the consensus channel
 func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
-	err := c.VerifyPublishMessage(publish)
-	if err != nil {
-		return xerrors.Errorf("failed to verify publish message: %w", err)
-	}
-
-	msg := publish.Params.Message
-
-	err = c.registry.Process(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to process message: %w", err)
-	}
-
-	c.inbox.StoreMessage(msg)
-
-	err = c.broadcastToAllClients(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
-	}
-	return nil
-}
-
-// VerifyPublishMessage checks if a Publish message is valid
-func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
 
-	// Check if the structure of the message is correct
-	msg := publish.Params.Message
+	err := c.verifyMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message: %w", err)
+	}
+
+	err = c.handleMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to handle publish message: %v", err)
+	}
+
+	return nil
+}
+
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {

@@ -3,8 +3,6 @@ package generalChirping
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/inbox"
@@ -17,6 +15,9 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 const msgID = "msg id"
@@ -55,7 +56,7 @@ func (c *Channel) Publish(msg method.Publish, socket socket.Socket) error {
 }
 
 // Broadcast is used to handle broadcast messages.
-func (c *Channel) Broadcast(broadcast method.Broadcast) error {
+func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 	err := c.VerifyBroadcastMessage(broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on an "+
