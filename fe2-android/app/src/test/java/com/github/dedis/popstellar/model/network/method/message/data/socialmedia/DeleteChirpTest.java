@@ -59,11 +59,11 @@ public class DeleteChirpTest {
         () ->
             JsonTestUtils.parse(
                 JsonTestUtils.loadFile(pathDir + "wrong_chirp_delete_publish_negative_time.json")));
-    //    assertThrows(
-    //        JsonParseException.class,
-    //        () ->
-    //            JsonTestUtils.parse(
-    //                JsonTestUtils.loadFile(
-    //                    pathDir + "wrong_chirp_delete_publish_not_base_64_chirp_id.json")));
+    assertThrows(
+        JsonParseException.class,
+        () ->
+            JsonTestUtils.parse(
+                JsonTestUtils.loadFile(
+                    pathDir + "wrong_chirp_delete_publish_not_base_64_chirp_id.json")));
   }
 }
