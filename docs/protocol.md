@@ -4,21 +4,21 @@
 <!-- DO NOT EDIT THIS SECTION, INSTEAD RE-RUN doctoc.sh TO UPDATE -->
 **:book: Table of Contents**
 
-- [Protocol specification](#)
-- [Introduction](#)
-  - [Validation and Disambiguation](#)
-  - [Representation of complex data types in the protocol](#)
-  - [Concatenation for hashing](#)
-- [JSON RPC (low-level)](#)
-  - [Query](#)
-    - [Subscribing to a channel](#)
-    - [Unsubscribing from a channel](#)
-    - [Publishing a message on a channel](#)
-    - [Propagating a message on a channel](#)
-    - [Catching up on past messages on a channel](#)
-  - [Answer](#)
-    - [RPC answer error](#)
-- [Mid-level (message) communication](#)
+- [Protocol specification](#protocol-specification)
+- [Introduction](#introduction)
+  - [Validation and Disambiguation](#validation-and-disambiguation)
+  - [Representation of complex data types in the protocol](#representation-of-complex-data-types-in-the-protocol)
+  - [Concatenation for hashing](#concatenation-for-hashing)
+- [JSON RPC (low-level)](#json-rpc-low-level)
+  - [Query](#query)
+    - [Subscribing to a channel](#subscribing-to-a-channel)
+    - [Unsubscribing from a channel](#unsubscribing-from-a-channel)
+    - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
+    - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
+    - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
+  - [Answer](#answer)
+    - [RPC answer error](#rpc-answer-error)
+- [Mid-level (message) communication](#mid-level-message-communication)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
