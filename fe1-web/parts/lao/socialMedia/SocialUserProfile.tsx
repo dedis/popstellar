@@ -62,7 +62,7 @@ const SocialUserProfile = ({ route }: any) => {
         />
         <View style={styles.textView}>
           <Text style={styles.profileText}>{userPublicKey.valueOf()}</Text>
-          <Text>{`${userChirpList.length} chirps`}</Text>
+          <Text>{`${userChirpList.length} ${userChirpList.length === 1 ? 'chirp' : 'chirps'}`}</Text>
         </View>
       </View>
       <View style={styles.userFeed}>
