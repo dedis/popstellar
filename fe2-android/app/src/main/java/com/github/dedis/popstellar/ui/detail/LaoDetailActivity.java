@@ -1,5 +1,9 @@
 package com.github.dedis.popstellar.ui.detail;
 
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_ID;
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.LAO_NAME;
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +35,7 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.LaoWalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
@@ -63,6 +68,7 @@ public class LaoDetailActivity extends AppCompatActivity {
     }
     setupHomeButton();
     setupIdentityButton();
+    setupSocialMediaButton();
     // Subscribe to "open lao detail event"
     mViewModel
         .getOpenLaoDetailEvent()
@@ -78,6 +84,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupHomeActivity();
     // Subscribe to "open identity" event
     setupIdentityFragment();
+    // Subscribe to " open social media " event
+    setupSocialMediaActivity();
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
     // Subscribe to "add witness" event
@@ -213,6 +221,11 @@ public class LaoDetailActivity extends AppCompatActivity {
     identityButton.setOnClickListener(v -> mViewModel.openIdentity());
   }
 
+  public void setupSocialMediaButton() {
+    Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
+    socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
+  }
+
   private void setupLaoFragment() {
     setCurrentFragment(R.id.fragment_lao_detail, LaoDetailFragment::newInstance);
   }
@@ -242,6 +255,24 @@ public class LaoDetailActivity extends AppCompatActivity {
               if (publicKey != null) {
                 setCurrentFragment(
                     R.id.fragment_identity, () -> IdentityFragment.newInstance(publicKey));
+              }
+            });
+  }
+
+  private void setupSocialMediaActivity() {
+    mViewModel
+        .getOpenSocialMediaEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                Intent intent = new Intent(this, SocialMediaActivity.class);
+                Log.d(TAG, "Trying to open social media");
+                intent.putExtra(LAO_ID, mViewModel.getCurrentLaoValue().getId());
+                intent.putExtra(LAO_NAME, mViewModel.getCurrentLaoValue().getName());
+                intent.putExtra(OPENED_FROM, TAG);
+                startActivity(intent);
               }
             });
   }

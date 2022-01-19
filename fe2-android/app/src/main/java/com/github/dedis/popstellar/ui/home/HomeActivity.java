@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
+
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
@@ -21,6 +24,7 @@ import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
@@ -60,6 +64,7 @@ public class HomeActivity extends AppCompatActivity {
     setupLaunchButton();
     setupConnectButton();
     setupWalletButton();
+    setupSocialMediaButton();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -141,6 +146,7 @@ public class HomeActivity extends AppCompatActivity {
             });
 
     subscribeWalletEvents();
+    subscribeSocialMediaEvent();
   }
 
   private void subscribeWalletEvents() {
@@ -182,6 +188,20 @@ public class HomeActivity extends AppCompatActivity {
               String laoId = stringEvent.getContentIfNotHandled();
               if (laoId != null) {
                 openContentWallet(laoId);
+              }
+            });
+  }
+
+  private void subscribeSocialMediaEvent() {
+    // Subscribe to "open social media" event
+    mViewModel
+        .getOpenSocialMediaEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSocialMediaActivity();
               }
             });
   }
@@ -233,8 +253,13 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupWalletButton() {
-    Button launchButton = (Button) findViewById(R.id.tab_wallet);
-    launchButton.setOnClickListener(v -> mViewModel.openWallet());
+    Button walletButton = (Button) findViewById(R.id.tab_wallet);
+    walletButton.setOnClickListener(v -> mViewModel.openWallet());
+  }
+
+  public void setupSocialMediaButton() {
+    Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
+    socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
   private void setupHomeFragment() {
@@ -280,6 +305,17 @@ public class HomeActivity extends AppCompatActivity {
     Intent intent = new Intent(this, SettingsActivity.class);
     Log.d(TAG, "Trying to open settings");
     startActivity(intent);
+  }
+
+  private void setupSocialMediaActivity() {
+    if (mViewModel.getLAOs().getValue() == null) {
+      Toast.makeText(getApplicationContext(), R.string.toast_no_lao, Toast.LENGTH_LONG).show();
+    } else {
+      Intent intent = new Intent(this, SocialMediaActivity.class);
+      Log.d(TAG, "Trying to open social media");
+      intent.putExtra(OPENED_FROM, TAG);
+      startActivity(intent);
+    }
   }
 
   private void openLaoDetails(String laoId) {

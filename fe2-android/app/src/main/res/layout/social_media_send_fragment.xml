@@ -61,10 +61,10 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginStart="@dimen/margin_button"
-          android:background="@drawable/rounded_corner_button"
+          android:background="@drawable/send_button_selector"
           android:enabled="@{!(entryBoxChirp.text.length() > view_model.MAX_CHAR_NUMBERS)}"
           android:text="@string/send"
-          android:textColor="@color/white" />
+          android:textColor="@drawable/send_button_text_selector" />
       </LinearLayout>
 
     </LinearLayout>
