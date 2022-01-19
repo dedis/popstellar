@@ -59,7 +59,7 @@ public class Wallet {
   private byte[] seed;
   private Aead aead;
 
-  /** Class constructor, initialize the wallet with a new random seed. */
+  /** Class constructor, initialize the wallet keyset. */
   @Inject
   public Wallet(@ApplicationContext Context context) {
     try {
@@ -230,7 +230,7 @@ public class Wallet {
       // Every 3 bytes, add the current path to the joiner and reset the builder
       if (i % 3 == 2) {
         joiner.add(curPath.toString());
-        curPath = new StringBuilder();
+        curPath.setLength(0);
       }
     }
 
