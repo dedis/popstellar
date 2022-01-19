@@ -1895,3 +1895,713 @@ protocol, the reaction will always exist in historical records of the reactions�
   "required": ["object", "action", "reaction_id", "timestamp"]
 }
 ```
+
+## Consensus (introduction)
+
+A consensus has the following phases:
+
+Elect → Elect-Accept → Prepare → Promise → Propose → Accept → Learn
+
+**Elect**: This phase consists of an organizer or witness taking the role of a
+proposer and starting a consensus.
+**Elect-Accept**: This phase consists of the accpetors accepting the start of
+the consensus.
+**Prepare**: This phase consists of the proposer asking if it holds the last
+proposed value and that there is no already accepted value.
+**Promise**: This phase consists of the acceptors telling their last promised
+value and if they already accepted a value or not.
+**Propose**: This phase consists of the proposer proposing the latest promised
+value, or the accepted value, in the system.
+**Accept**: This phase consists of the acceptors accepting a value.
+**Learn**: This phase consists of the proposer sending a result after a successfull
+consensus.
+
+## Starting a Consensus (consensus#elect)
+
+An organizer or a witness can start a consensus to start an election by sending
+a consensus/elect message on a consensus channel ("/root/lao_id/consensus").
+When receiving this message, the channel will create the state of this consensus
+instance, with some values linked with the object on which the consensus happens
+and some values linked with the consensus/elect message starting the consensus.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_elect/elect.json
+
+{
+    "object": "consensus",
+    "action": "elect",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "created_at": 1634553005,
+    "key": {
+        "type": "election",
+        "id": "GXVFZVHlVNpOJsdRsJkUmJW2hnrd9n_vKtEc7P6FMF4=",
+        "property": "state"
+    },
+    "value": "started"
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataElect.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataElect.json",
+    "description": "Match an elect query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "elect"
+        },
+        "instance_id": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Hash : HashLen('consensus', key:type, key:id, key:property)"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "key": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "description": "The object type that the consensus refers to",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "The object id that the consensus refers to",
+                    "contentEncoding": "base64",
+                    "type": "string"
+                },
+                "property": {
+                    "description": "The property of the object that the value refers to",
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "id",
+                "property"
+            ]
+        },
+        "value": {
+            "description": "The proposed value",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "created_at",
+        "key",
+        "value"
+    ]
+}
+```
+
+## Accepting the start of a Consensus (consensus#elect_accept)
+
+An acceptor in a consensus instance can accept the start of the consensus
+by sending a consensus/elect_accept message. Once the majority of acceptors
+have accepted the start of the consensus, it can start.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_elect_accept/elect_accept.json
+
+{
+    "object": "consensus",
+    "action": "elect_accept",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "accept": true
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataElectAccept.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataElectAccept.json",
+    "description": "Match an elect_accept query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "elect_accept"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance taken from the elect message",
+            "type": "string"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "accept": {
+            "description": "Indicating whether the proposal is accepted (true) or rejected (false)",
+            "type": "boolean"
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "accept"
+    ]
+}
+```
+
+## Preparing nodes for a Consensus (consensus#prepare)
+
+Once enough consensus/elect_accept messages have been received, the
+server of the proposer will send a consensus/prepare message to all
+acceptors, containing an integer identifying the proposition made by
+this proposer in the proposed_try field.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_prepare/prepare.json
+
+{
+    "object": "consensus",
+    "action": "prepare",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "created_at": 1634760000,
+    "value": {
+        "proposed_try": 4
+    }
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataPrepare.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPrepare.json",
+    "description": "Match a prepare query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "prepare"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance",
+            "type": "string"
+        },
+        "message_id": {
+            "type": "string",
+            "description": "message_id of the elect message"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "proposed_try": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "proposed_try"
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "created_at",
+        "value"
+    ]
+}
+```
+
+## Promising a value in the Consensus (consensus#promise)
+
+After receiving a consensus/prepare message an acceptor answer with a
+consensu/promise message if the proposed_try field of the received message
+is bigger than the promised_try stored in the consensus instance stored
+by the acceptor, the promised_try is also changed to the received proposed_try.
+The new message contains the promised_try of the stored consensus instance and
+both its accepted_try and accepted value.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_promise/promise.json
+
+{
+    "object": "consensus",
+    "action": "promise",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "created_at": 1634760060,
+    "value": {
+        "accepted_try": 4,
+        "accepted_value": true,
+        "promised_try": 4
+    }
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataPromise.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPromise.json",
+    "description": "Match a promise query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "promise"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance",
+            "type": "string"
+        },
+        "message_id": {
+            "type": "string",
+            "description": "message_id of the elect message"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "accepted_try": {
+                    "type": "integer",
+                    "minimum": -1
+                },
+                "accepted_value": {
+                    "type": "boolean"
+                },
+                "promised_try": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "accepted_try",
+                "accepted_value",
+                "promised_try"
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "created_at",
+        "value"
+    ]
+}
+```
+
+## Proposing a value during a Consensus (consensus#propose)
+
+After receiving consensus/promise messages from a majority of the acceptors,
+the proposer will first check if there is any accepted_try greater than -1 in the
+set of received message. If there is, it means that a value was already accepted.
+The proposer will then send a consensus/propose message containing either its stored
+proposed_try and proposed_value if there is no already accepted value, or containing
+the greater received accepted_try and its corresponding accepted_value.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_propose/propose.json
+
+{
+    "object": "consensus",
+    "action": "propose",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "created_at": 1634760120,
+    "value": {
+        "proposed_try": 4,
+        "proposed_value": true
+    },
+    "acceptor-signatures": [
+        "WTptZUxeSDE0I0N9ODshRio4OzBRRTM_bzxBWjV5Xi1=",
+        "Z1ghQm4iVihAPSZRVXteZWJTekNdbWAhXDtOKyJwag4=",
+        "LkNLWW1_RXV5Y11XO2xHLypFSlRodzMmJVN0NXlQZCs="
+    ]
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataPropose.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPropose.json",
+    "description": "Match a propose query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "propose"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance",
+            "type": "string"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "proposed_try": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "proposed_value": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "proposed_try",
+                "proposed_value"
+            ]
+        },
+        "acceptor-signatures": {
+            "description": "Signatures of all received Promise messages",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "created_at",
+        "value",
+        "acceptor-signatures"
+    ]
+}
+```
+
+## Accepting a value during a Consensus (consensus#accept)
+
+After receiving a consensus/propose message, an acceptor will check wether the proposed_try
+field of the message is greater or equal than its own proposed_try field. If it is the case,
+it will change its accepted_try and accepted_value by those contained in the message and send
+a consensus/accept message containing these values.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_accept/accept.json
+
+{
+    "object": "consensus",
+    "action": "accept",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "created_at": 1634760180,
+    "value": {
+        "accepted_try": 4,
+        "accepted_value": true
+    }
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataAccept.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAccept.json",
+    "description": "Match an accept query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "accept"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance",
+            "type": "string"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "accepted_try": {
+                    "type": "integer",
+                    "minimum": 0
+                },
+                "accepted_value": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "accepted_try",
+                "accepted_value"
+            ]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "created_at",
+        "value"
+    ]
+}
+```
+
+## Sending the result of a Consensus (consensus#learn)
+
+After having consensus/accept messages from the majority of acceptors, the
+proposer will send a consensus/learn message confirming the accepted value
+to all proposers, acceptors, and their clients.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_learn/learn.json
+
+{
+    "object": "consensus",
+    "action": "learn",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "created_at": 1635624000,
+    "value": {
+        "decision": true
+    },
+    "acceptor-signatures": [
+        "pFFLRiOVyFX2UwFw8kd8PnVg6rshT-ofWYVAc_QuRz4=",
+        "cSaSHaZzvVR_sfcD5xngSxafK1eCDxmrd0d1C7-VHXJ=",
+        "OtP_nVgrshTofWYVAcQ-uRz44UD_2tFJUOLLvTbFmzO="
+    ]
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataLearn.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataLearn.json",
+    "description": "Match a learn query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "learn"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance taken from the elect accept",
+            "type": "string"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        },
+        "value": {
+            "type": "object",
+            "properties": {
+                "decision": {
+                    "type": "boolean"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "decision"
+            ]
+        },
+        "acceptor-signatures": {
+            "description": "Signatures of all received Accept messages",
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "instance_id",
+        "message_id",
+        "created_at",
+        "value",
+        "acceptor-signatures"
+    ]
+}
+```
+
+## Sending the failure of a Consensus (consensus#failure)
+
+If a majority of acceptors send a negative consensus/elect_accept message to the
+proposer, or if the consensus times out in any node at any point of the consensus,
+a consensus/failure message is sent informing the system of the failure.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/consensus_failure/failure.json
+
+{
+    "object": "consensus",
+    "action": "failure",
+    "instance_id": "6wCJZmUn0UwsdZGyJVy7iiAIiPEHwsBRmIsL_TxM4Cs=",
+    "message_id": "7J0d6d8Bw28AJwB4ttOUiMgm_DUTHSYFXM30_8kmd1Q=",
+    "created_at": 1634760120
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataFailure.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataFailure.json",
+    "description": "Match a Failure query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "consensus"
+        },
+        "action": {
+            "const": "failure"
+        },
+        "instance_id": {
+            "description": "Unique id of the consensus instance",
+            "type": "string"
+        },
+        "message_id": {
+            "description": "message_id of the elect message",
+            "type": "string"
+        },
+        "created_at": {
+            "description": "[Timestamp] creation time",
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "instance_id",
+        "message_id",
+        "created_at"
+    ]
+}
+```
