@@ -234,7 +234,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
               ]
             }
           >
-            
+            
           </Text>
         </View>
         <Text>
@@ -283,7 +283,7 @@ exports[`ChirpCard for deletion renders correctly for non-sender 1`] = `
               ]
             }
           >
-            
+            
           </Text>
         </View>
         <Text>
@@ -721,7 +721,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
               ]
             }
           >
-            
+            
           </Text>
         </View>
         <Text>
@@ -770,7 +770,7 @@ exports[`ChirpCard for reaction renders correctly with reaction 1`] = `
               ]
             }
           >
-            
+            
           </Text>
         </View>
         <Text>
@@ -1015,7 +1015,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
               ]
             }
           >
-            
+            
           </Text>
         </View>
         <Text>
@@ -1064,7 +1064,7 @@ exports[`ChirpCard for reaction renders correctly without reaction 1`] = `
               ]
             }
           >
-            
+            
           </Text>
         </View>
         <Text>

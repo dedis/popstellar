@@ -127,13 +127,13 @@ const ChirpCard = (props: IPropTypes) => {
           <>
             <View style={styles.reactionView}>
               <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
-                <Ionicons name="thumbs-up" size={16} color="black" />
+                <Ionicons name="thumbs-up-sharp" size={16} color="black" />
               </Pressable>
               <Text>{`  ${thumbsUp}`}</Text>
             </View>
             <View style={styles.reactionView}>
               <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
-                <Ionicons name="thumbs-down" size={16} color="black" />
+                <Ionicons name="thumbs-down-sharp" size={16} color="black" />
               </Pressable>
               <Text>{`  ${thumbsDown}`}</Text>
             </View>
