@@ -12,7 +12,7 @@ import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'parts/lao/attendee/Attendee';
-import SocialMediaNavigation from 'parts/lao/socialMedia/SocialMediaNavigation';
+import SocialMediaNavigation from 'navigation/socialMedia/SocialMediaNavigation';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
 import WalletNavigation from './wallet/WalletNavigation';

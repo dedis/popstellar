@@ -35,6 +35,11 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   final val TEST_CHANNEL_WRITELAO_3: String = "/root/channelNumber456561164"
   final val TEST_CHANNEL_WRITELAO_4: String = "/root/channelNumber2056764656"
 
+  final val TEST_CHANNEL_CREATEMANY_1: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("createmany1"))
+  final val TEST_CHANNEL_CREATEMANY_2: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("createmany2"))
+  final val TEST_CHANNEL_CREATEMANY_3: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("createmany3"))
+  final val TEST_CHANNEL_CREATEMANY_4: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("createmany4"))
+
   final val GENERATOR = scala.util.Random
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
@@ -81,6 +86,30 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     val answer2 = Await.result(ask2, duration)
 
     answer2 shouldBe a [DbActor.DbActorNAck]
+  }
+
+  test("DbActor succeeds during CreateChannelsFromList with an empty list"){
+    val ask = dbActorRef ? DbActor.CreateChannelsFromList(List.empty)
+    val answer = Await.result(ask, duration)
+    answer shouldBe a [DbActor.DbActorAck]
+  }
+
+  test("DbActor succeeds during CreateChannelsFromList with a singleton list"){
+    val ask = dbActorRef ? DbActor.CreateChannelsFromList(List((TEST_CHANNEL_CREATEMANY_1, ObjectType.LAO)))
+    val answer = Await.result(ask, duration)
+    answer shouldBe a [DbActor.DbActorAck]
+  }
+
+  test("DbActor succeeds during CreateChannelsFromList with more than one element in list"){
+    val ask = dbActorRef ? DbActor.CreateChannelsFromList(List((TEST_CHANNEL_CREATEMANY_2, ObjectType.LAO), (TEST_CHANNEL_CREATEMANY_3, ObjectType.LAO)))
+    val answer = Await.result(ask, duration)
+    answer shouldBe a [DbActor.DbActorAck]
+  }
+
+  test("DbActor fails during CreateChannelsFromList when trying to create twice the same channel (namewise) from a list"){
+    val ask = dbActorRef ? DbActor.CreateChannelsFromList(List((TEST_CHANNEL_CREATEMANY_4, ObjectType.LAO), (TEST_CHANNEL_CREATEMANY_4, ObjectType.LAO)))
+    val answer = Await.result(ask, duration)
+    answer shouldBe a [DbActor.DbActorNAck]
   }
 
   test("DbActor knows whether channel exists or not"){

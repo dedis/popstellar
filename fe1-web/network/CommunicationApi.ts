@@ -4,7 +4,7 @@ import { storeMessage } from 'ingestion';
 
 export async function subscribeToChannel(channel: Channel) {
   if (!channel) {
-    throw new Error('Could not suscribe to channel without a valid channel');
+    throw new Error('Could not subscribe to channel without a valid channel');
   }
 
   console.debug('Subscribing to channel: ', channel);

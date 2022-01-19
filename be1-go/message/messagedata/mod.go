@@ -14,6 +14,7 @@ const (
 	ConsensusActionAccept      = "accept"
 	ConsensusActionElect       = "elect"
 	ConsensusActionElectAccept = "elect_accept"
+	ConsensusActionFailure     = "failure"
 	ConsensusActionLearn       = "learn"
 	ConsensusActionPrepare     = "prepare"
 	ConsensusActionPromise     = "promise"

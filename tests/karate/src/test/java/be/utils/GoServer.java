@@ -28,4 +28,12 @@ public class GoServer extends Server implements Configurable {
   public String getLogPath() {
     return Paths.get("go.log").toString();
   }
+
+  @Override
+  public void deleteDatabaseDir() {
+    //TODO: delete GO backend database if necessary
+    System.out.println("No database to delete for GO backend");
+
+  }
+
 }

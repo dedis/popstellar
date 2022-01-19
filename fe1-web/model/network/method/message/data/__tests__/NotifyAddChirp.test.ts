@@ -27,7 +27,7 @@ const dataNotifyAddChirp = `{
     "timestamp": ${TIMESTAMP}
   }`;
 
-describe('AddBroadcastChirp', () => {
+describe('NotifyAddChirp', () => {
   it('should be created correctly from JSON', () => {
     expect(new NotifyAddChirp(sampleNotifyAddChirp)).toBeJsonEqual(sampleNotifyAddChirp);
     const temp = {

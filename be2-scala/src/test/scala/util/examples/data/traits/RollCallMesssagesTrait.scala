@@ -10,7 +10,7 @@ import java.nio.file.Path
 import java.nio.file.Files
 
 /**
-  * Trait to be implemented by RollCallMessages exapmles
+  * Trait to be implemented by RollCallMessages examples
   */
 trait RollCallMessagesTrait extends ExampleMessagesTrait {
   override val obj = ObjectType.ROLL_CALL

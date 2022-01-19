@@ -24,7 +24,11 @@ public class JsonBase64DataSerializer<T extends Base64URLData>
   @Override
   public T deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    return constructor.apply(json.getAsString());
+    try {
+      return constructor.apply(json.getAsString());
+    } catch (Exception e) {
+      throw new JsonParseException(e);
+    }
   }
 
   @Override

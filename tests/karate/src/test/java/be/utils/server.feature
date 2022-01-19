@@ -1,6 +1,9 @@
 @ignore @report=false
 Feature: This feature starts a server and stops it after every scenario.
 
+  Background:
+    * def MAX_CONNECTION_ATTEMPTS = 5
+
   Scenario: Start the server and configure Karate
         # Handler can be used to filter websocket messages
     * def handle = function(msg){ karate.signal(msg); return msg.startsWith('{')}
@@ -33,10 +36,16 @@ Feature: This feature starts a server and stops it after every scenario.
     * def waitForPort =
             """
                 function() {
-                    karate.waitForPort(host, port)
-                    // Scala takes more time to start the server
-                    if(env == 'scala')
-                        wait(10)
+                    var i = 0;
+                    while(i < MAX_CONNECTION_ATTEMPTS && !karate.waitForPort(host, port)){
+                      //Wait 5 secs before polling again
+                      wait(5)
+                      i++
+                    }
+                    if(i >= MAX_CONNECTION_ATTEMPTS){
+                      server.stop()
+                      karate.fail(`Failed waiting for ${wsURL}`)
+                    }
                 }
             """
 
@@ -59,8 +68,13 @@ Feature: This feature starts a server and stops it after every scenario.
                     server.stop();
                 }
             """
-
-        # Start server
+    * def deleteDB =
+            """
+              function() {
+                  server.deleteDatabaseDir();
+              }
+            """
+    # Start server
     * call startServer
     * karate.log('Waiting for server start up ....')
 
@@ -69,7 +83,12 @@ Feature: This feature starts a server and stops it after every scenario.
     * karate.log('Executing tests')
 
         # Shutdown server automatically after the end of a scenario and  feature
-    * configure afterScenario = stopServer
-
-        # Configure an after feature function
+    * configure afterScenario =
+          """
+            function() {
+              stopServer();
+              deleteDB();
+            }
+          """
+    # Configure an after feature function
     * configure afterFeature = karate.get('afterScenario')
