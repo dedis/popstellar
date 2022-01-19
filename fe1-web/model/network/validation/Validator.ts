@@ -19,6 +19,7 @@ export enum ObjectType {
   ROLL_CALL = 'roll_call',
   ELECTION = 'election',
   CHIRP = 'chirp',
+  REACTION = 'reaction',
 }
 
 export enum ActionType {
@@ -38,6 +39,8 @@ export enum ActionType {
   CLOSE = 'close',
   ADD = 'add',
   NOTIFY_ADD = 'notify_add',
+  DELETE = 'delete',
+  NOTIFY_DELETE = 'notify_delete',
 }
 
 const ajv = new Ajv();
@@ -81,6 +84,11 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.CHIRP]: {
     [ActionType.ADD]: 'dataAddChirp',
     [ActionType.NOTIFY_ADD]: 'dataNotifyAddChirp',
+    [ActionType.DELETE]: 'dataDeleteChirp',
+    [ActionType.NOTIFY_DELETE]: 'dataNotifyDeleteChirp',
+  },
+  [ObjectType.REACTION]: {
+    [ActionType.ADD]: 'dataAddReaction',
   },
 };
 

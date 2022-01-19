@@ -31,7 +31,7 @@ case object MeetingHandler extends MessageHandler {
   }
 
   def handleCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
-    rpcMessage.getParamsChannel.decodeSubChannel match {
+    rpcMessage.getParamsChannel.decodeChannelLaoId match {
       case Some(_) =>
         val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
         Await.result(ask, duration)

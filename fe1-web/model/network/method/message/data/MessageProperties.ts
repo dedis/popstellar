@@ -22,6 +22,11 @@ export const messagePropertiesMap: Map<ObjectType, Map<ActionType, MessageProper
   [ObjectType.CHIRP, new Map<ActionType, MessageProperties>([
     [ActionType.ADD, { isPopTokenSigned: true }],
     [ActionType.NOTIFY_ADD, { isPopTokenSigned: false }],
+    [ActionType.DELETE, { isPopTokenSigned: true }],
+    [ActionType.NOTIFY_DELETE, { isPopTokenSigned: false }],
+  ])],
+  [ObjectType.REACTION, new Map<ActionType, MessageProperties>([
+    [ActionType.ADD, { isPopTokenSigned: true }],
   ])],
   [ObjectType.ELECTION, new Map<ActionType, MessageProperties>([
     [ActionType.CAST_VOTE, { isPopTokenSigned: true }],

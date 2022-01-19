@@ -12,7 +12,10 @@ import dataCastVote from 'protocol/query/method/message/data/dataCastVote.json';
 import dataEndElection from 'protocol/query/method/message/data/dataEndElection.json';
 import dataResultElection from 'protocol/query/method/message/data/dataResultElection.json';
 import dataAddChirp from 'protocol/query/method/message/data/dataAddChirp.json';
-import dataNotifyAdd from 'protocol/query/method/message/data/dataNotifyAddChirp.json';
+import dataNotifyAddChirp from 'protocol/query/method/message/data/dataNotifyAddChirp.json';
+import dataDeleteChirp from 'protocol/query/method/message/data/dataDeleteChirp.json';
+import dataNotifyDeleteChirp from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
+import dataAddReaction from 'protocol/query/method/message/data/dataAddReaction.json';
 
 const dataSchemas = [
   dataCreateLao,
@@ -34,7 +37,11 @@ const dataSchemas = [
   dataWitnessMessage,
 
   dataAddChirp,
-  dataNotifyAdd,
+  dataNotifyAddChirp,
+  dataDeleteChirp,
+  dataNotifyDeleteChirp,
+
+  dataAddReaction,
 ];
 
 export default dataSchemas;

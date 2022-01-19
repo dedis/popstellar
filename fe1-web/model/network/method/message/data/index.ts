@@ -7,3 +7,4 @@ export * from './meeting';
 export * from './rollCall';
 export * from './election';
 export * from './chirp';
+export * from './reaction';

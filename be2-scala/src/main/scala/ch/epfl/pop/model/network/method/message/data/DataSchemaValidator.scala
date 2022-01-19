@@ -33,6 +33,9 @@ object DataSchemaValidator {
   private final val dataDeleteChirp = baseDir + "dataDeleteChirp.json"
   private final val dataNotifyDeleteChirp = baseDir + "dataNotifyDeleteChirp.json"
 
+  private final val dataAddReaction = baseDir + "dataAddReaction.json"
+  private final val dataDeleteReaction = baseDir + "dataDeleteReaction.json"
+
   /* Validation Schemas */
   //TODO: Add schemas for other features: Meetings, RollCalls...
   private final lazy val createLaoSchema: JsonSchema = Validator.setupSchemaValidation(dataCreateLaoPath, objectMapper)
@@ -46,6 +49,8 @@ object DataSchemaValidator {
   private final lazy val notifyAddChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataNotifyAddChirp, objectMapper)
   private final lazy val deleteChirpSchema: JsonSchema  = Validator.setupSchemaValidation(dataDeleteChirp, objectMapper)
   private final lazy val notifyDeleteChirpSchema: JsonSchema = Validator.setupSchemaValidation(dataNotifyDeleteChirp, objectMapper)
+  private final lazy val addReactionSchema: JsonSchema  = Validator.setupSchemaValidation(dataAddReaction, objectMapper)
+  private final lazy val deleteReactionSchema: JsonSchema  = Validator.setupSchemaValidation(dataDeleteReaction, objectMapper)
 
   //TODO: Add validaton schemas for other features: Meetings, Elections...
 
@@ -67,6 +72,9 @@ object DataSchemaValidator {
       case (ObjectType.CHIRP, ActionType.NOTIFY_ADD)      => validateWithSchema(notifyAddChirpSchema)(payload)
       case (ObjectType.CHIRP, ActionType.DELETE)          => validateWithSchema(deleteChirpSchema)(payload)
       case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE)   => validateWithSchema(notifyDeleteChirpSchema)(payload)
+
+      case (ObjectType.REACTION, ActionType.ADD)          => validateWithSchema(addReactionSchema)(payload)
+      case (ObjectType.REACTION, ActionType.DELETE)       => validateWithSchema(deleteReactionSchema)(payload)
 
       //TODO:Add other cases
       case _ =>

@@ -52,6 +52,8 @@ const STRINGS = {
   social_media_navigation_tab_search: 'Search',
   social_media_navigation_tab_follows: 'My Follows',
   social_media_navigation_tab_profile: 'My Profile',
+  social_media_navigation_tab_user_profile: 'User profile',
+  social_media_navigation_tab_attendee_list: 'List of attendees',
 
   /* --- Home Strings --- */
   home_welcome: 'Welcome to Personhood.Online!',
@@ -61,9 +63,11 @@ const STRINGS = {
   /* --- Social Media Strings --- */
   button_publish: 'Publish',
   your_chirp: 'Your chirp',
+  deleted_chirp: 'This chirp was deleted',
   attendees_of_last_roll_call: 'Attendees of last roll call',
   follow_button: 'Follow',
   profile_button: 'Profile',
+  social_media_your_profile_unavailable: 'You do not have a social media profile yet, be sure to have participated in a roll call.',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',
