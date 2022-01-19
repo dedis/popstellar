@@ -80,7 +80,7 @@ public final class MessageHandler {
       Log.d(TAG, "subscribing to LAO with id " + channel);
 
       // Create the new LAO and add it to the LAORepository LAO lists
-      Lao lao = new Lao(channel);
+      Lao lao = new Lao(channel.replace("/root/", ""));
       laoRepository.getLaoById().put(channel, new LAOState(lao));
       laoRepository.setAllLaoSubject();
 
@@ -153,7 +153,7 @@ public final class MessageHandler {
     createLaoRequests.remove(id);
 
     // Create new LAO and add it to the LAORepository LAO lists
-    Lao lao = new Lao(channel);
+    Lao lao = new Lao(channel.replace("/root/", ""));
     laoRepository.getLaoById().put(channel, new LAOState(lao));
     laoRepository.setAllLaoSubject();
 

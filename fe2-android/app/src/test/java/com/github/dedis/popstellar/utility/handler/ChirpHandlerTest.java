@@ -56,7 +56,7 @@ public class ChirpHandlerTest {
   private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME);
   private static final String LAO_CHANNEL = "/root/" + LAO_ID;
   private static final String CHIRP_CHANNEL = LAO_CHANNEL + "/social/" + SENDER;
-  private static final Lao LAO = new Lao(LAO_CHANNEL);
+  private static final Lao LAO = new Lao(LAO_ID);
 
   private static final String TEXT = "textOfTheChirp";
   private static final MessageID PARENT_ID = generateMessageID();

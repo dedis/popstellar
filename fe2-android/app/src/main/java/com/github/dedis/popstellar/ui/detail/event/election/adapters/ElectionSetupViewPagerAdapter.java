@@ -165,6 +165,17 @@ public class ElectionSetupViewPagerAdapter
    * and the ballots are filled
    */
   public void checkIfAnInputIsValid() {
+    for (List<String> ballotsList : ballotOptions) {
+      // Check if there is a duplicate ballot, if true invalidate the input
+      for (int i = 0; i < ballotsList.size(); ++i) {
+        String ballot = ballotsList.get(i);
+        if (ballotsList.subList(i + 1, ballotsList.size()).contains(ballot)) {
+          isAnInputValid.setValue(false);
+          return;
+        }
+      }
+    }
+
     for (Integer i : listOfValidQuestions) {
       if (listOfValidBallots.contains(i)) {
         isAnInputValid.setValue(true);
