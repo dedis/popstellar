@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class SocialMediaHomeFragment extends Fragment {
   private SocialMediaHomeFragmentBinding mSocialMediaHomeFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
+  private ChirpListAdapter mChirpListAdapter;
 
   public static SocialMediaHomeFragment newInstance() {
     return new SocialMediaHomeFragment();
@@ -71,6 +73,14 @@ public class SocialMediaHomeFragment extends Fragment {
 
   private void setupSocialMediaSendFragment() {
     setCurrentFragment(R.id.fragment_social_media_send, SocialMediaSendFragment::newInstance);
+  }
+
+  private void setupListViewAdapter() {
+    ListView listView = mSocialMediaHomeFragBinding.chirpsList;
+    mChirpListAdapter =
+        new ChirpListAdapter(
+            getActivity(), mSocialMediaViewModel.getChirpList(), mSocialMediaViewModel);
+    listView.setAdapter(mChirpListAdapter);
   }
 
   /**

@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -25,6 +26,7 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -285,5 +287,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
               getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
           .show();
     }
+  }
+
+  public List<Chirp> getChirpList() {
+    Lao lao = mLaoRepository.getLaoByChannel(ROOT + getLaoId().getValue());
+    return new ArrayList<>(lao.getChirps().values());
   }
 }
