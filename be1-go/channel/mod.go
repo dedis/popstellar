@@ -97,8 +97,7 @@ type HubFunctionalities interface {
 	GetSchemaValidator() validation.SchemaValidator
 	NotifyNewChannel(channelID string, channel Channel, socket socket.Socket)
 	GetServerNumber() int
-	SendAndHandleMessage(method.Publish) error
-	SetMessageID(publish *method.Publish)
+	SendAndHandleMessage(method.Broadcast) error
 }
 
 // Broadcastable defines a channel that can broadcast

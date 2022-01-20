@@ -839,26 +839,6 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	publish := method.Publish{
-		Base: query.Base{
-			JSONRPCBase: jsonrpc.JSONRPCBase{
-				JSONRPC: "2.0",
-			},
-
-			Method: query.MethodPublish,
-		},
-
-		ID: 1,
-
-		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
-		}{
-			Channel: rootPrefix + laoID,
-			Message: msg,
-		},
-	}
-
 	broadcast := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
@@ -883,21 +863,20 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	sock := &fakeSocket{}
 	hub.serverSockets.Upsert(sock)
 
-	err = hub.SendAndHandleMessage(publish)
+	err = hub.SendAndHandleMessage(broadcast)
 	require.NoError(t, err)
 
 	// wait for the goroutine created by the function
 	time.Sleep(100 * time.Millisecond)
 
-	// Check the socket. The message is a broadcast message because it will be
-	// broadcast before the check
+	// Check the socket.
 	sock.Lock()
 	require.Equal(t, broadcastBuf, sock.msg)
 	sock.Unlock()
 
-	// > check that the channel has been called with the publish message
+	// > check that the channel has been called with the broadcast message
 	c.Lock()
-	require.Equal(t, publish, c.publish)
+	require.Equal(t, broadcast, c.broadcast)
 	c.Unlock()
 }
 
