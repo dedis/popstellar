@@ -42,6 +42,7 @@ import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -49,13 +50,13 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -85,8 +86,6 @@ public class LaoDetailViewModel extends AndroidViewModel
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve current lao";
   private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   private static final String PUBLISH_MESSAGE = "sending publish message";
-  private static final String KEYSET_HANDLE_FAILURE_MESSAGE = "failed to get public keyset handle";
-  private static final String GET_PK_FAILURE = "failed to get public key";
   /*
    * LiveData objects for capturing events like button clicks
    */
@@ -247,12 +246,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @return the public key
    */
   public PublicKey getPublicKey() {
-    try {
-      return mKeyManager.getMainPublicKey();
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-      return null;
-    }
+    return mKeyManager.getMainPublicKey();
   }
 
   @Override
@@ -274,32 +268,27 @@ public class LaoDetailViewModel extends AndroidViewModel
     ElectionEnd electionEnd =
         new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
 
-    try {
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionEnd, mGson);
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionEnd, mGson);
 
-      Log.d(TAG, PUBLISH_MESSAGE);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "ended election successfully");
-                      endElectionEvent();
-                    } else {
-                      Log.d(TAG, "failed to end the election");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on election/end", throwable));
+    Log.d(TAG, PUBLISH_MESSAGE);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "ended election successfully");
+                    endElectionEvent();
+                  } else {
+                    Log.d(TAG, "failed to end the election");
+                  }
+                },
+                throwable -> Log.d(TAG, "timed out waiting for result on election/end", throwable));
 
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+    disposables.add(disposable);
   }
 
   /**
@@ -327,14 +316,15 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
 
-    String laoChannel = lao.getChannel();
-    String laoId = laoChannel.substring(6);
-    CastVote castVote = new CastVote(votes, election.getId(), laoId);
-    // Is channel set ?
-    String electionChannel = election.getChannel();
-
     try {
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), castVote, mGson);
+      PoPToken token = mKeyManager.getValidPoPToken(lao);
+      String laoChannel = lao.getChannel();
+      String laoId = laoChannel.substring(6);
+      CastVote castVote = new CastVote(votes, election.getId(), laoId);
+      // Is channel set ?
+      String electionChannel = election.getChannel();
+
+      MessageGeneral msg = new MessageGeneral(token, castVote, mGson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
@@ -362,8 +352,16 @@ public class LaoDetailViewModel extends AndroidViewModel
                   throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
 
       disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    } catch (KeyException e) {
+      Log.i(
+          TAG,
+          "User tried to send a message that expected proof-of-personhood but it could not be achieved.",
+          e);
+      Toast.makeText(
+              getApplication(),
+              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+          .show();
     }
   }
 
@@ -406,40 +404,35 @@ public class LaoDetailViewModel extends AndroidViewModel
         new ElectionSetup(
             name, creation, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
 
-    try {
-      // Retrieve identity of who is creating the election
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionSetup, mGson);
+    // Retrieve identity of who is creating the election
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionSetup, mGson);
 
-      Log.d(TAG, PUBLISH_MESSAGE);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "setup an election");
-                      mElectionCreatedEvent.postValue(new SingleEvent<>(true));
-                    } else if (answer instanceof Error) {
-                      Log.d(
-                          TAG,
-                          "failed to setup an election because of the following error : "
-                              + ((Error) answer).getError().getDescription());
-                    } else {
-                      Log.d(TAG, "failed to setup an election");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on election/create", throwable));
+    Log.d(TAG, PUBLISH_MESSAGE);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "setup an election");
+                    mElectionCreatedEvent.postValue(new SingleEvent<>(true));
+                  } else if (answer instanceof Error) {
+                    Log.d(
+                        TAG,
+                        "failed to setup an election because of the following error : "
+                            + ((Error) answer).getError().getDescription());
+                  } else {
+                    Log.d(TAG, "failed to setup an election");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on election/create", throwable));
 
-      disposables.add(disposable);
+    disposables.add(disposable);
 
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-      return null;
-    }
     return electionSetup.getId();
   }
 
@@ -475,34 +468,30 @@ public class LaoDetailViewModel extends AndroidViewModel
         new CreateRollCall(
             title, creation, proposedStart, proposedEnd, "Lausanne", description, laoId);
 
-    try {
-      Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), createRollCall, mGson);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
-                      if (open) {
-                        openRollCall(createRollCall.getId());
-                      } else {
-                        mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
-                      }
+    Log.d(TAG, PUBLISH_MESSAGE);
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), createRollCall, mGson);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
+                    if (open) {
+                      openRollCall(createRollCall.getId());
                     } else {
-                      Log.d(TAG, "failed to create a roll call");
+                      mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
                     }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on roll_call/create", throwable));
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+                  } else {
+                    Log.d(TAG, "failed to create a roll call");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable));
+    disposables.add(disposable);
   }
 
   /**
@@ -532,30 +521,26 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
-    try {
-      Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElect, mGson);
+    Log.d(TAG, PUBLISH_MESSAGE);
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElect, mGson);
 
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "created a consensus with messageId: " + msg.getMessageId());
-                    } else {
-                      Log.d(TAG, "failed to create a consensus");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on consensus/elect", throwable));
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "created a consensus with messageId: " + msg.getMessageId());
+                  } else {
+                    Log.d(TAG, "failed to create a consensus");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on consensus/elect", throwable));
+    disposables.add(disposable);
   }
 
   /**
@@ -583,38 +568,32 @@ public class LaoDetailViewModel extends AndroidViewModel
     ConsensusElectAccept consensusElectAccept =
         new ConsensusElectAccept(consensus.getId(), consensus.getMessageId(), accept);
 
-    try {
-      MessageGeneral msg =
-          new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElectAccept, mGson);
+    MessageGeneral msg =
+        new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElectAccept, mGson);
 
-      Log.d(TAG, PUBLISH_MESSAGE);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(consensus.getChannel(), msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "sent an elect_accept successfully");
-                    } else {
-                      Log.d(
-                          TAG,
-                          "failed to send the elect_accept for consensus with messageId : "
-                              + consensus.getMessageId());
-                    }
-                  },
-                  throwable ->
-                      Log.d(
-                          TAG,
-                          "timed out waiting for result on consensus/elect_accept",
-                          throwable));
+    Log.d(TAG, PUBLISH_MESSAGE);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(consensus.getChannel(), msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "sent an elect_accept successfully");
+                  } else {
+                    Log.d(
+                        TAG,
+                        "failed to send the elect_accept for consensus with messageId : "
+                            + consensus.getMessageId());
+                  }
+                },
+                throwable ->
+                    Log.d(
+                        TAG, "timed out waiting for result on consensus/elect_accept", throwable));
 
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+    disposables.add(disposable);
   }
 
   /**
@@ -644,31 +623,27 @@ public class LaoDetailViewModel extends AndroidViewModel
     OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
     attendees = new HashSet<>(rollCall.getAttendees());
 
-    try {
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), openRollCall, mGson);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "opened the roll call");
-                      mCurrentRollCallId = openRollCall.getUpdateId();
-                      scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
-                      openScanning();
-                    } else {
-                      Log.d(TAG, "failed to open the roll call");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on roll_call/open", throwable));
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), openRollCall, mGson);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "opened the roll call");
+                    mCurrentRollCallId = openRollCall.getUpdateId();
+                    scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
+                    openScanning();
+                  } else {
+                    Log.d(TAG, "failed to open the roll call");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on roll_call/open", throwable));
+    disposables.add(disposable);
   }
 
   /**
@@ -688,31 +663,27 @@ public class LaoDetailViewModel extends AndroidViewModel
     String laoId = channel.substring(6); // removing /root/ prefix
     CloseRollCall closeRollCall =
         new CloseRollCall(laoId, mCurrentRollCallId, end, new ArrayList<>(attendees));
-    try {
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), closeRollCall, mGson);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "closed the roll call");
-                      mCurrentRollCallId = "";
-                      attendees.clear();
-                      mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
-                    } else {
-                      Log.d(TAG, "failed to close the roll call");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on roll_call/open", throwable));
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), closeRollCall, mGson);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "closed the roll call");
+                    mCurrentRollCallId = "";
+                    attendees.clear();
+                    mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
+                  } else {
+                    Log.d(TAG, "failed to close the roll call");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on roll_call/open", throwable));
+    disposables.add(disposable);
   }
 
   public void signMessage(WitnessMessage witnessMessage) {
@@ -755,7 +726,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                   throwable ->
                       Log.d(TAG, "timed out waiting for result on sign message", throwable)));
 
-    } catch (GeneralSecurityException | IOException e) {
+    } catch (GeneralSecurityException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
     }
   }
@@ -884,34 +855,17 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public LiveData<Boolean> isWitness() {
-    try {
-      boolean isWitness =
-          getCurrentLaoValue().getWitnesses().contains(mKeyManager.getMainPublicKey());
-      Log.d(TAG, "isWitness: " + isWitness);
-      mIsWitness.setValue(isWitness);
-      return mIsWitness;
-
-    } catch (GeneralSecurityException e) {
-      Log.d(TAG, KEYSET_HANDLE_FAILURE_MESSAGE, e);
-    } catch (IOException e) {
-      Log.d(TAG, GET_PK_FAILURE, e);
-    }
-    mIsWitness.setValue(false);
+    boolean isWitness =
+        getCurrentLaoValue().getWitnesses().contains(mKeyManager.getMainPublicKey());
+    Log.d(TAG, "isWitness: " + isWitness);
+    mIsWitness.setValue(isWitness);
     return mIsWitness;
   }
 
   public LiveData<Boolean> isSignedByCurrentWitness(Set<PublicKey> witnesses) {
-    try {
-      boolean isSignedByCurrentWitness = witnesses.contains(mKeyManager.getMainPublicKey());
-      Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
-      mIsSignedByCurrentWitness.setValue(isSignedByCurrentWitness);
-      return mIsSignedByCurrentWitness;
-    } catch (GeneralSecurityException e) {
-      Log.d(TAG, KEYSET_HANDLE_FAILURE_MESSAGE, e);
-    } catch (IOException e) {
-      Log.d(TAG, GET_PK_FAILURE, e);
-    }
-    mIsSignedByCurrentWitness.setValue(false);
+    boolean isSignedByCurrentWitness = witnesses.contains(mKeyManager.getMainPublicKey());
+    Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
+    mIsSignedByCurrentWitness.setValue(isSignedByCurrentWitness);
     return mIsSignedByCurrentWitness;
   }
 
@@ -1046,14 +1000,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openIdentity() {
     if (mCurrentRollCallId.equals("")) {
-      PublicKey publicKey = null;
-      try {
-        publicKey = mKeyManager.getMainPublicKey();
-      } catch (GeneralSecurityException | IOException e) {
-        Log.d(TAG, PK_FAILURE_MESSAGE, e);
-      }
-
-      mOpenIdentityEvent.setValue(new SingleEvent<>(publicKey));
+      mOpenIdentityEvent.setValue(new SingleEvent<>(mKeyManager.getMainPublicKey()));
     } else {
       mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_identity));
     }
@@ -1160,38 +1107,34 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     Lao lao = getCurrentLaoValue();
     String channel = lao.getChannel();
-    try {
-      KeyPair mainKey = mKeyManager.getMainKeyPair();
-      long now = Instant.now().getEpochSecond();
-      UpdateLao updateLao =
-          new UpdateLao(
-              mainKey.getPublicKey(),
-              lao.getCreation(),
-              mLaoName.getValue(),
-              now,
-              lao.getWitnesses());
-      MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "updated lao name");
-                      dipatchLaoUpdate("lao name", updateLao, lao, channel, msg);
-                    } else {
-                      Log.d(TAG, "failed to update lao name");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on update lao name", throwable));
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+    KeyPair mainKey = mKeyManager.getMainKeyPair();
+    long now = Instant.now().getEpochSecond();
+    UpdateLao updateLao =
+        new UpdateLao(
+            mainKey.getPublicKey(),
+            lao.getCreation(),
+            mLaoName.getValue(),
+            now,
+            lao.getWitnesses());
+    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "updated lao name");
+                    dipatchLaoUpdate("lao name", updateLao, lao, channel, msg);
+                  } else {
+                    Log.d(TAG, "failed to update lao name");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on update lao name", throwable));
+    disposables.add(disposable);
   }
 
   /**
@@ -1208,35 +1151,29 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     String channel = lao.getChannel();
-    try {
-      KeyPair mainKey = mKeyManager.getMainKeyPair();
-      long now = Instant.now().getEpochSecond();
-      UpdateLao updateLao =
-          new UpdateLao(mainKey.getPublicKey(), lao.getCreation(), lao.getName(), now, witnesses);
-      MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
-      Disposable disposable =
-          mLAORepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "updated lao witnesses");
-                      dipatchLaoUpdate(
-                          "lao state with new witnesses", updateLao, lao, channel, msg);
-                    } else {
-                      Log.d(TAG, "failed to update lao witnesses");
-                    }
-                  },
-                  throwable ->
-                      Log.d(
-                          TAG, "timed out waiting for result on update lao witnesses", throwable));
-      disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+    KeyPair mainKey = mKeyManager.getMainKeyPair();
+    long now = Instant.now().getEpochSecond();
+    UpdateLao updateLao =
+        new UpdateLao(mainKey.getPublicKey(), lao.getCreation(), lao.getName(), now, witnesses);
+    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
+    Disposable disposable =
+        mLAORepository
+            .sendPublish(channel, msg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "updated lao witnesses");
+                    dipatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg);
+                  } else {
+                    Log.d(TAG, "failed to update lao witnesses");
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on update lao witnesses", throwable));
+    disposables.add(disposable);
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
@@ -1252,27 +1189,24 @@ public class LaoDetailViewModel extends AndroidViewModel
             msg.getMessageId(),
             updateLao.getWitnesses(),
             new ArrayList<>());
-    try {
-      MessageGeneral stateMsg = new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
-      disposables.add(
-          mLAORepository
-              .sendPublish(channel, stateMsg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer2 -> {
-                    if (answer2 instanceof Result) {
-                      Log.d(TAG, "updated " + desc);
-                    } else {
-                      Log.d(TAG, "failed to update " + desc);
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on update " + desc, throwable)));
-    } catch (IOException | GeneralSecurityException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
-    }
+
+    MessageGeneral stateMsg = new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
+    disposables.add(
+        mLAORepository
+            .sendPublish(channel, stateMsg)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer2 -> {
+                  if (answer2 instanceof Result) {
+                    Log.d(TAG, "updated " + desc);
+                  } else {
+                    Log.d(TAG, "failed to update " + desc);
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for result on update " + desc, throwable)));
   }
 
   public void cancelEdit() {
@@ -1290,17 +1224,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                 lao -> {
                   Log.d(TAG, "got an update for lao: " + lao.getName());
                   mCurrentLao.postValue(lao);
-                  try {
-                    boolean isOrganizer = lao.getOrganizer().equals(mKeyManager.getMainPublicKey());
-                    Log.d(TAG, "isOrganizer: " + isOrganizer);
-                    mIsOrganizer.setValue(isOrganizer);
-                    return;
-                  } catch (GeneralSecurityException e) {
-                    Log.d(TAG, KEYSET_HANDLE_FAILURE_MESSAGE, e);
-                  } catch (IOException e) {
-                    Log.d(TAG, GET_PK_FAILURE, e);
-                  }
-                  mIsOrganizer.setValue(false);
+                  boolean isOrganizer = lao.getOrganizer().equals(mKeyManager.getMainPublicKey());
+                  Log.d(TAG, "isOrganizer: " + isOrganizer);
+                  mIsOrganizer.setValue(isOrganizer);
                 }));
   }
 
