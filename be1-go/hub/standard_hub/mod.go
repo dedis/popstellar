@@ -97,7 +97,6 @@ func newQueries() queries {
 	return queries{
 		state:   make(map[int]*bool),
 		queries: make(map[int]method.Catchup),
-		nextID:  0,
 	}
 }
 
@@ -142,16 +141,6 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 	q.nextID++
 
 	return rpcMessage
-}
-
-func (q *queries) getNextID() int {
-	q.Lock()
-	defer q.Unlock()
-
-	nextID := q.nextID
-	q.nextID++
-
-	return nextID
 }
 
 // NewHub returns a new Hub.
@@ -266,8 +255,8 @@ func (h *Hub) GetServerNumber() int {
 
 // SendAndHandleMessage sends a publish message to all other known servers and
 // handle it
-func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
-	byteMsg, err := json.Marshal(publishMsg)
+func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
+	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal publish message: %v", err)
 	}
@@ -277,7 +266,7 @@ func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
 	h.serverSockets.SendToAll(byteMsg)
 
 	go func() {
-		_, err = h.handlePublish(nil, byteMsg)
+		err = h.handleBroadcast(nil, byteMsg)
 		if err != nil {
 			h.log.Err(err).Msgf("Failed to handle self-produced message")
 		}
@@ -599,11 +588,6 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 		h.log.Info().Msgf("catching up on channel %v", channelID)
 		h.catchupToServer(sock, channelID)
 	}
-}
-
-// SetMessageID sets the id of a publish message before sending it
-func (h *Hub) SetMessageID(publish *method.Publish) {
-	publish.ID = h.queries.getNextID()
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {

@@ -705,6 +705,10 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 
 	electInstance := consensusInstance.electInstances[data.MessageID]
 
+	if consensusInstance.decided || electInstance.failed {
+		return xerrors.Errorf(consensusFinished, data.InstanceID)
+	}
+
 	consensusInstance.promises = append(consensusInstance.promises, *data)
 
 	// if enough Promise messages are received, the proposer send a Propose message
@@ -844,6 +848,10 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 	defer consensusInstance.Unlock()
 
 	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return xerrors.Errorf(consensusFinished, data.InstanceID)
+	}
 
 	if data.Value.AcceptedTry == consensusInstance.proposedTry &&
 		data.Value.AcceptedValue == consensusInstance.proposedValue {
@@ -999,12 +1007,12 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 		WitnessSignatures: make([]message.WitnessSignature, 0),
 	}
 
-	publish := method.Publish{
+	broadcast := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: "publish",
+			Method: "broadcast",
 		},
 
 		Params: struct {
@@ -1016,9 +1024,7 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 		},
 	}
 
-	c.hub.SetMessageID(&publish)
-
-	err = c.hub.SendAndHandleMessage(publish)
+	err = c.hub.SendAndHandleMessage(broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to send new message: %v", err)
 	}
