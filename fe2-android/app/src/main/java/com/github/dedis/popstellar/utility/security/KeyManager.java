@@ -86,7 +86,7 @@ public class KeyManager {
    * Try to retrieve the user's PoPToken for the given Lao.
    *
    * @param lao we want to retrieve the PoP Token from
-   * @return the PoP Token if it was retrieved, empty if no RollCall exist in the LAO
+   * @return the PoP Token if it was retrieved
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    * @throws InvalidPoPTokenException if the token is not a valid attendee
@@ -102,12 +102,12 @@ public class KeyManager {
   }
 
   /**
-   * Try to retrieve the user's PoPToken for the given Lao and RollCall. It will fail is the user did not attend
-   * the roll call of if the token cannot be generated
+   * Try to retrieve the user's PoPToken for the given Lao and RollCall. It will fail if the user did not attend
+   * the roll call or if the token cannot be generated
    *
    * @param lao we want to retrieve the PoP Token from
    * @param rollCall we want to retrieve the PoP Token from
-   * @return the generated token is present in the rollcall
+   * @return the generated token if present in the rollcall
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    * @throws InvalidPoPTokenException if the token is not a valid attendee

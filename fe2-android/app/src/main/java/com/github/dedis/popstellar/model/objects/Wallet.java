@@ -104,7 +104,7 @@ public class Wallet {
    * @param rollCallID a String.
    * @param rollCallTokens a {@link Set} containing the public keys of all attendees present on
    *     roll-call’s results.
-   * @return the PoP Token if the user participated in that roll-call or else empty.
+   * @return the PoP Token if the user participated in that roll-call.
    * @throws KeyGenerationException if an error occurs during key generation
    * @throws UninitializedWalletException if the wallet is not initialized with a seed
    * @throws InvalidPoPTokenException if the token is not a valid attendee
