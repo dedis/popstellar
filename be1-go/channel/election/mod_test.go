@@ -495,8 +495,8 @@ func (h *fakeHub) GetServerNumber() int {
 	return 1
 }
 
-func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
-	byteMsg, err := json.Marshal(publishMsg)
+func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
+	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
@@ -504,10 +504,6 @@ func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
 	h.fakeSock.msg = byteMsg
 
 	return nil
-}
-
-func (h *fakeHub) SetMessageID(publish *method.Publish) {
-	publish.ID = 0
 }
 
 // fakeSocket is a fake implementation of a socket

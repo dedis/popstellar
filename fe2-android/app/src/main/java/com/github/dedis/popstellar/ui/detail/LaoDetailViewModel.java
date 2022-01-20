@@ -49,6 +49,8 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
+import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
@@ -231,9 +233,9 @@ public class LaoDetailViewModel extends AndroidViewModel
     // find out if user has attended the rollcall
     String firstLaoId = lao.getChannel().substring(6);
     try {
-      PublicKey pk = wallet.findKeyPair(firstLaoId, rollcall.getPersistentId()).getPublicKey();
+      PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
       return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
-    } catch (GeneralSecurityException e) {
+    } catch (KeyGenerationException | UninitializedWalletException e) {
       Log.d(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
@@ -1327,7 +1329,7 @@ public class LaoDetailViewModel extends AndroidViewModel
             .substring(6); // use the laoId set at creation + need to remove /root/ prefix
     String errorMessage = "failed to retrieve public key from wallet";
     try {
-      PublicKey publicKey = wallet.findKeyPair(firstLaoId, id).getPublicKey();
+      PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();
       mPkRollCallEvent.postValue(new SingleEvent<>(publicKey));
     } catch (Exception e) {
       Log.d(TAG, errorMessage, e);

@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Blockies from 'react-blockies';
+import { popBlue } from 'styles/colors';
 import { PublicKey } from 'model/objects';
-import { popBlue, popGray } from 'styles/colors';
 
 const ProfileIcon = (props: IPropTypes) => {
   const { publicKey, size, scale } = props;
@@ -12,9 +12,8 @@ const ProfileIcon = (props: IPropTypes) => {
       seed={publicKey.valueOf()}
       size={size}
       scale={scale}
-      color={popBlue}
+      spotColor={popBlue}
       bgColor="#ffffff"
-      spotColor={popGray}
     />
   );
 };

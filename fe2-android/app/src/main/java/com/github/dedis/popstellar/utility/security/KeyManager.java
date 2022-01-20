@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PrivateKey;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.privatekey.ProtectedPrivateKey;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.google.crypto.tink.CleartextKeysetHandle;
 import com.google.crypto.tink.JsonKeysetWriter;
 import com.google.crypto.tink.KeysetHandle;
@@ -58,8 +59,8 @@ public class KeyManager {
     return new KeyPair(privateKey, publicKey);
   }
 
-  public PoPToken getPoPToken(String laoID, String rollCallID) throws GeneralSecurityException {
-    return wallet.findKeyPair(laoID, rollCallID);
+  public PoPToken getPoPToken(String laoID, String rollCallID) throws KeyException {
+    return wallet.generatePoPToken(laoID, rollCallID);
   }
 
   public KeyPair getKeyPair(KeysetHandle keysetHandle)
