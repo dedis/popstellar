@@ -239,7 +239,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
     } catch (KeyException e) {
       Log.e(TAG, "Could not retrieve PoP Token", e);
       Toast.makeText(
-              getApplication(),
+              getApplication().getApplicationContext(),
               "Could not retrieve a valid PoP Token : " + e.getMessage(),
               Toast.LENGTH_LONG)
           .show();
@@ -296,7 +296,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
     } catch (KeyException e) {
       Log.e(TAG, "Could not retrieve PoP Token", e);
       Toast.makeText(
-              getApplication(),
+              getApplication().getApplicationContext(),
               "Could not retrieve a valid PoP Token : " + e.getMessage(),
               Toast.LENGTH_LONG)
           .show();

@@ -83,6 +83,19 @@ public class KeyManager {
   }
 
   /**
+   * Generate the PoP Token for the given Lao - RollCall pair
+   *
+   * @param lao to generate the PoP Token from
+   * @param rollCall to generate the PoP Token from
+   * @return the generated PoP Token
+   * @throws KeyGenerationException if an error occurs during key generation
+   * @throws UninitializedWalletException if the wallet is not initialized with a seed
+   */
+  public PoPToken getPoPToken(Lao lao, RollCall rollCall) throws KeyException {
+    return wallet.generatePoPToken(lao.getId(), rollCall.getPersistentId());
+  }
+
+  /**
    * Try to retrieve the user's PoPToken for the given Lao.
    *
    * @param lao we want to retrieve the PoP Token from
@@ -95,15 +108,16 @@ public class KeyManager {
   public PoPToken getValidPoPToken(Lao lao) throws KeyException {
     // Find the latest closed RollCall and use the wallet to retrieve the key
     RollCall rollCall =
-        lao.getRollCalls().values().stream().max(Comparator.comparing(RollCall::getEnd))
+        lao.getRollCalls().values().stream()
+            .max(Comparator.comparing(RollCall::getEnd))
             .orElseThrow(() -> new NoRollCallException(lao));
 
     return getValidPoPToken(lao, rollCall);
   }
 
   /**
-   * Try to retrieve the user's PoPToken for the given Lao and RollCall. It will fail if the user did not attend
-   * the roll call or if the token cannot be generated
+   * Try to retrieve the user's PoPToken for the given Lao and RollCall. It will fail if the user
+   * did not attend the roll call or if the token cannot be generated
    *
    * @param lao we want to retrieve the PoP Token from
    * @param rollCall we want to retrieve the PoP Token from
@@ -113,7 +127,7 @@ public class KeyManager {
    * @throws InvalidPoPTokenException if the token is not a valid attendee
    */
   public PoPToken getValidPoPToken(Lao lao, RollCall rollCall) throws KeyException {
-    return wallet.recoverKey(lao.getId(), rollCall.getId(), rollCall.getAttendees());
+    return wallet.recoverKey(lao.getId(), rollCall.getPersistentId(), rollCall.getAttendees());
   }
 
   @VisibleForTesting

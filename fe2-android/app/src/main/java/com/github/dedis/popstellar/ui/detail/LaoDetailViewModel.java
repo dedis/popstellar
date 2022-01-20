@@ -623,6 +623,17 @@ public class LaoDetailViewModel extends AndroidViewModel
     OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
     attendees = new HashSet<>(rollCall.getAttendees());
 
+    try {
+      attendees.add(mKeyManager.getPoPToken(lao, rollCall).getPublicKey());
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not add the organizer's token to the attendees", e);
+      Toast.makeText(
+              getApplication().getApplicationContext(),
+              "Could not add your PoPToken to the attendees : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+              .show();
+    }
+
     MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), openRollCall, mGson);
     Disposable disposable =
         mLAORepository
