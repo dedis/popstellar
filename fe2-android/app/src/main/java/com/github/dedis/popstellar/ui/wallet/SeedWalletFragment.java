@@ -21,7 +21,9 @@ import com.github.dedis.popstellar.databinding.WalletSeedFragmentBinding;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
+import java.security.GeneralSecurityException;
 import java.util.StringJoiner;
 
 import javax.inject.Inject;
@@ -118,11 +120,13 @@ public class SeedWalletFragment extends Fragment {
           builder.setPositiveButton(
               "Yes",
               (dialog, which) -> {
-                if (!mHomeViewModel.importSeed(
-                    mWalletSeedFragBinding.seedWallet.getText().toString())) {
+                try {
+                  mHomeViewModel.importSeed(mWalletSeedFragBinding.seedWallet.getText().toString());
+                } catch (GeneralSecurityException | SeedValidationException e) {
+                  Log.e(TAG, "Error importing key", e);
                   Toast.makeText(
                           requireContext().getApplicationContext(),
-                          "Error import key, try again",
+                          "Error importing key : " + e.getMessage() + "\ntry again",
                           Toast.LENGTH_LONG)
                       .show();
                 }

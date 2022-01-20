@@ -159,7 +159,7 @@ func Test_General_Channel_Publish(t *testing.T) {
 	require.NoError(t, err)
 
 	err = channel.Publish(message, socket.ClientSocket{})
-	require.Error(t, err, "a consensus channel shouldn't need to broadcast a message")
+	require.Error(t, err, "nothing should be directly published in the general")
 }
 
 // -----------------------------------------------------------------------------
@@ -279,11 +279,9 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
+func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
-
-func (h *fakeHub) SetMessageID(publish *method.Publish) {}
 
 // fakeSocket is a fake implementation of a socket
 //

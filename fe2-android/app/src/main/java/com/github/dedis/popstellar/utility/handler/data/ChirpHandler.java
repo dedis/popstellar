@@ -1,11 +1,17 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
+import android.util.Log;
+
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+
+import java.util.Optional;
 
 /** Chirp messages handler class */
 public final class ChirpHandler {
@@ -39,5 +45,34 @@ public final class ChirpHandler {
     chirp.setParentId(addChirp.getParentId().orElse(new MessageID("")));
 
     lao.updateChirp(messageId, chirp);
+  }
+
+  /**
+   * process a DeleteChirp message.
+   *
+   * @param context the HandlerContext of the message
+   * @param deleteChirp the data of the message that was received
+   */
+  public static void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp)
+      throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    String channel = context.getChannel();
+
+    Lao lao = laoRepository.getLaoByChannel(channel);
+
+    Optional<Chirp> chirpOptional = lao.getChirp(deleteChirp.getChirpId());
+    Chirp chirp;
+
+    if (!chirpOptional.isPresent()) {
+      throw new DataHandlingException(deleteChirp);
+    }
+    chirp = chirpOptional.get();
+
+    if (chirp.getIsDeleted()) {
+      Log.d(TAG, "The chirp is already deleted");
+    } else {
+      chirp.setIsDeleted(true);
+      chirp.setText("");
+    }
   }
 }

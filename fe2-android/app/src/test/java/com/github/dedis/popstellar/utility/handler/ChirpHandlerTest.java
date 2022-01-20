@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -52,13 +53,15 @@ public class ChirpHandlerTest {
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final long CREATION_TIME = 1631280815;
+  private static final long DELETION_TIME = 1642244760;
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME);
   private static final String LAO_CHANNEL = "/root/" + LAO_ID;
   private static final String CHIRP_CHANNEL = LAO_CHANNEL + "/social/" + SENDER;
-  private static final Lao LAO = new Lao(LAO_CHANNEL);
+  private static final Lao LAO = new Lao(LAO_ID);
 
   private static final String TEXT = "textOfTheChirp";
+  private static final String EMPTY_STRING = "";
   private static final MessageID PARENT_ID = generateMessageID();
 
   private static final CreateLao CREATE_LAO =
@@ -121,6 +124,32 @@ public class ChirpHandlerTest {
     assertEquals(CHIRP_CHANNEL, chirp.getChannel());
     assertEquals(SENDER, chirp.getSender());
     assertEquals(TEXT, chirp.getText());
+    assertEquals(CREATION_TIME, chirp.getTimestamp());
+    assertEquals(PARENT_ID, chirp.getParentId());
+
+    Map<MessageID, Chirp> chirps = LAO.getChirps();
+    assertEquals(1, chirps.size());
+    assertEquals(chirp, chirps.get(chirp.getId()));
+  }
+
+  @Test
+  public void testHandleDeleteChirp() throws DataHandlingException {
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, ADD_CHIRP, GSON);
+    messageHandler.handleMessage(laoRepository, CHIRP_CHANNEL, message);
+
+    final DeleteChirp DELETE_CHIRP = new DeleteChirp(message.getMessageId(), DELETION_TIME);
+
+    MessageGeneral message2 = new MessageGeneral(SENDER_KEY, DELETE_CHIRP, GSON);
+    messageHandler.handleMessage(laoRepository, CHIRP_CHANNEL, message2);
+
+    Optional<Chirp> chirpOpt = LAO.getChirp(message.getMessageId());
+    assertTrue(chirpOpt.isPresent());
+    Chirp chirp = chirpOpt.get();
+
+    assertEquals(message.getMessageId(), chirp.getId());
+    assertEquals(CHIRP_CHANNEL, chirp.getChannel());
+    assertEquals(SENDER, chirp.getSender());
+    assertEquals(EMPTY_STRING, chirp.getText());
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
