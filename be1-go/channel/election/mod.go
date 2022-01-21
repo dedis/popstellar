@@ -22,6 +22,7 @@ import (
 )
 
 const msgID = "msg id"
+const failedToDecodeData = "failed to decode message data: %v"
 
 // attendees represents the attendees in an election.
 type attendees struct {
@@ -132,31 +133,19 @@ type validVote struct {
 
 // Publish is used to handle publish messages in the election channel.
 func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
-	err := c.VerifyPublishMessage(publish)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on an "+
 			"election channel: %w", err)
 	}
 
-	msg := publish.Params.Message
-
-	data := msg.Data
-
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err = c.handleMessage(publish.Params.Message, socket)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
-	}
-
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get object and action: %v", err)
-	}
-
-	if object == messagedata.ElectionObject {
-		err = c.processElectionObject(action, msg, socket)
-		if err != nil {
-			return xerrors.Errorf("failed to process %q action: %w", action, err)
-		}
+		return xerrors.Errorf("failed to handle a publish message: %v", err)
 	}
 
 	return nil
@@ -218,10 +207,42 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	err := xerrors.Errorf("an election channel shouldn't need to broadcast a message")
-	c.log.Err(err)
-	return err
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+	err := c.verifyMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify broadcast message on an "+
+			"election channel: %w", err)
+	}
+
+	err = c.handleMessage(broadcast.Params.Message, socket)
+	if err != nil {
+		return xerrors.Errorf("failed to handle broadcast message: %v", err)
+	}
+
+	return nil
+}
+
+// handleMessage handles a message received in a broadcast or publish method
+func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf(failedToDecodeData, err)
+	}
+
+	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action: %v", err)
+	}
+
+	if object == messagedata.ElectionObject {
+		err = c.processElectionObject(action, msg, socket)
+		if err != nil {
+			return xerrors.Errorf("failed to process %q action: %w", action, err)
+		}
+	}
+
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -255,18 +276,12 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 	c.sockets.SendToAll(buf)
 }
 
-// VerifyPublishMessage checks if a Publish message is valid
-func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(publish.ID)).
-		Msg("received a publish")
-
-	// Check if the structure of the message is correct
-	msg := publish.Params.Message
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data
@@ -276,7 +291,8 @@ func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	}
 
 	// Check if the message already exists
-	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
+	_, ok := c.inbox.GetMessage(msg.MessageID)
+	if ok {
 		return answer.NewError(-3, "message already exists")
 	}
 

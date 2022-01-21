@@ -434,6 +434,168 @@ func Test_Handle_Publish(t *testing.T) {
 	require.Equal(t, publish, c.publish)
 }
 
+// Check that if the server receives a broadcast message, it will call the
+// broadcast function on the appropriate channel.
+func Test_Handle_Broadcast(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	c := &fakeChannel{}
+
+	hub, err := NewHub(keypair.public, nolog, nil, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	laoID := "XXX"
+
+	hub.channelByID[rootPrefix+laoID] = c
+
+	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	broadcast := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodBroadcast,
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: rootPrefix + laoID,
+			Message: msg,
+		},
+	}
+
+	broadcastBuf, err := json.Marshal(&broadcast)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromClient(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: broadcastBuf,
+	})
+
+	// Check the socket
+	require.Error(t, sock.err, "unexpected method: 'broadcast'")
+
+	// Emtpy the socket
+	sock.err = nil
+
+	// Check that there is no errors with messages from witness too
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: broadcastBuf,
+	})
+
+	// Check the socket
+	require.NoError(t, sock.err)
+	require.Equal(t, 0, sock.resultID)
+
+	// Check that the channel has been called with the publish message
+	require.Equal(t, broadcast, c.broadcast)
+}
+
+// Test that a LAO is correctly created when receiveing a broadcast message
+func Test_Create_LAO_Broadcast(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	h := sha256.New()
+	h.Write(keypair.publicBuf)
+	h.Write([]byte(fmt.Sprintf("%d", now)))
+	h.Write([]byte(name))
+
+	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  123,
+		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	msg := message.Message{
+		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         base64.URLEncoding.EncodeToString(signature),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	broadcast := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodBroadcast,
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&broadcast)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.Equal(t, 0, sock.resultID)
+
+	// > we are expecting the lao channel factor be called with the right
+	// arguments.
+	require.Equal(t, rootPrefix+data.ID, fakeChannelFac.chanID)
+	require.Equal(t, msg.Data, fakeChannelFac.msg.Data)
+	require.Equal(t, msg.MessageID, fakeChannelFac.msg.MessageID)
+	require.Equal(t, msg.Sender, fakeChannelFac.msg.Sender)
+	require.Equal(t, msg.Signature, fakeChannelFac.msg.Signature)
+	require.Equal(t, msg.WitnessSignatures, fakeChannelFac.msg.WitnessSignatures)
+
+	// > the organizer should have saved the channel locally
+
+	require.Contains(t, hub.channelByID, rootPrefix+data.ID)
+	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
+}
+
 // Check that if the organizer receives a subscribe message, it will call the
 // subscribe function on the appropriate channel.
 func Test_Handle_Subscribe(t *testing.T) {
@@ -677,46 +839,44 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	publish := method.Publish{
+	broadcast := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
 
-			Method: query.MethodPublish,
+			Method: query.MethodBroadcast,
 		},
 
-		ID: 1,
-
 		Params: struct {
-			Channel string          `json:"channel"`
-			Message message.Message `json:"message"`
+			Channel string          "json:\"channel\""
+			Message message.Message "json:\"message\""
 		}{
 			Channel: rootPrefix + laoID,
 			Message: msg,
 		},
 	}
 
-	publishBuf, err := json.Marshal(&publish)
+	broadcastBuf, err := json.Marshal(&broadcast)
 	require.NoError(t, err)
 
 	sock := &fakeSocket{}
 	hub.serverSockets.Upsert(sock)
 
-	err = hub.SendAndHandleMessage(publish)
+	err = hub.SendAndHandleMessage(broadcast)
 	require.NoError(t, err)
 
 	// wait for the goroutine created by the function
 	time.Sleep(100 * time.Millisecond)
 
-	// > check the socket
+	// Check the socket.
 	sock.Lock()
-	require.Equal(t, publishBuf, sock.msg)
+	require.Equal(t, broadcastBuf, sock.msg)
 	sock.Unlock()
 
-	// > check that the channel has been called with the publish message
+	// > check that the channel has been called with the broadcast message
 	c.Lock()
-	require.Equal(t, publish, c.publish)
+	require.Equal(t, broadcast, c.broadcast)
 	c.Unlock()
 }
 
@@ -822,7 +982,7 @@ func (f *fakeChannel) Catchup(msg method.Catchup) []message.Message {
 }
 
 // Broadcast implements channel.Channel
-func (f *fakeChannel) Broadcast(msg method.Broadcast) error {
+func (f *fakeChannel) Broadcast(msg method.Broadcast, _ socket.Socket) error {
 	f.Lock()
 	defer f.Unlock()
 

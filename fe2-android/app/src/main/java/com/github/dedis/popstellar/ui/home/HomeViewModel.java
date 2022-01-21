@@ -24,13 +24,12 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -166,50 +165,40 @@ public class HomeViewModel extends AndroidViewModel
   public void launchLao() {
     String laoName = mLaoName.getValue();
 
-    try {
-      Log.d(TAG, "creating lao with name " + laoName);
-      CreateLao createLao = new CreateLao(laoName, mKeyManager.getMainPublicKey());
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), createLao, mGson);
+    Log.d(TAG, "creating lao with name " + laoName);
+    CreateLao createLao = new CreateLao(laoName, mKeyManager.getMainPublicKey());
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), createLao, mGson);
 
-      disposables.add(
-          mLAORepository
-              .sendPublish("/root", msg)
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
-              .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "got success result for create lao");
-                      openHome();
-                    } else {
-                      Log.d(
-                          TAG,
-                          "got failure result for create lao: "
-                              + ((Error) answer).getError().getDescription());
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for a response for create lao", throwable)));
-
-    } catch (GeneralSecurityException e) {
-      Log.d(TAG, "failed to get public key", e);
-    } catch (IOException e) {
-      Log.d(TAG, "failed to encode public key", e);
-    }
+    disposables.add(
+        mLAORepository
+            .sendPublish("/root", msg)
+            .observeOn(AndroidSchedulers.mainThread())
+            .timeout(5, TimeUnit.SECONDS)
+            .subscribe(
+                answer -> {
+                  if (answer instanceof Result) {
+                    Log.d(TAG, "got success result for create lao");
+                    openHome();
+                  } else {
+                    Log.d(
+                        TAG,
+                        "got failure result for create lao: "
+                            + ((Error) answer).getError().getDescription());
+                  }
+                },
+                throwable ->
+                    Log.d(TAG, "timed out waiting for a response for create lao", throwable)));
   }
 
-  public boolean importSeed(String seed) {
-    try {
-      if (wallet.importSeed(seed, new HashMap<>()) == null) {
-        return false;
-      } else {
-        setIsWalletSetUp(true);
-        openWallet();
-        return true;
-      }
-    } catch (Exception e) {
-      return false;
-    }
+  public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
+    wallet.importSeed(seed);
+    setIsWalletSetUp(true);
+    openWallet();
+  }
+
+  public void newSeed() {
+    wallet.newSeed();
+    mOpenSeedEvent.postValue(new SingleEvent<>(true));
   }
 
   /*
@@ -301,10 +290,6 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openWallet() {
     mOpenWalletEvent.postValue(new SingleEvent<>(isWalletSetUp()));
-  }
-
-  public void openSeed() {
-    mOpenSeedEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openLaoWallet(String laoId) {

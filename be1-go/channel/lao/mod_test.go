@@ -9,7 +9,9 @@ import (
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -119,28 +121,68 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.Error(t, channel.Unsubscribe("inexistingSocket", message))
 }
 
-func TestLAOChannel_Broadcast_mustFail(t *testing.T) {
+// Tests that the channel works when it receives a broadcast message
+func TestLAOChannel_Broadcast(t *testing.T) {
 	keypair := generateKeyPair(t)
+	publicKey64 := base64.URLEncoding.EncodeToString(keypair.publicBuf)
 
 	fakeHub, err := NewfakeHub(keypair.public, nolog, nil)
 	require.NoError(t, err)
 
 	m := message.Message{MessageID: "0"}
 	channel := NewChannel("channel0", fakeHub, m, nolog, keypair.public, nil)
+	laoChannel := channel.(*Channel)
 
+	// Creates a socket subscribed to the channel
+	fakeSock := &fakeSocket{id: "socket"}
+	laoChannel.sockets.Upsert(fakeSock)
+
+	// Create an update lao message
 	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData", "lao_update")
+
+	file := filepath.Join(relativePath, "lao_update.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	bufb64 := base64.URLEncoding.EncodeToString(buf)
+
+	m1 := message.Message{
+		Data:              bufb64,
+		Sender:            publicKey64,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(bufb64, publicKey64),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePath = filepath.Join(protocolRelativePath,
 		"examples", "query", "broadcast")
 
-	file := filepath.Join(relativePath, "broadcast.json")
-	buf, err := os.ReadFile(file)
+	file = filepath.Join(relativePath, "broadcast.json")
+	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
 	var message method.Broadcast
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	// a lao channel isn't supposed to broadcast a message - must fail
-	require.Error(t, channel.Broadcast(message))
+	message.Base = query.Base{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
+
+		Method: "broadcast",
+	}
+	message.Params.Channel = laoChannel.channelID
+	message.Params.Message = m1
+
+	require.NoError(t, channel.Broadcast(message, nil))
+
+	// Check that the message is broadcast to the subscribed sockets
+	bufBroad, err := json.Marshal(message)
+	require.NoError(t, err)
+
+	require.Equal(t, bufBroad, fakeSock.msg)
 }
 
 func TestLAOChannel_Catchup(t *testing.T) {
@@ -589,11 +631,9 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
+func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
-
-func (h *fakeHub) SetMessageID(publish *method.Publish) {}
 
 // fakeSocket is a fake implementation of a socket
 //

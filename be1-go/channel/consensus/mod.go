@@ -19,21 +19,37 @@ import (
 	"sync"
 	"time"
 
+	"github.com/benbjohnson/clock"
+
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )
 
 const (
-	msgID                       = "msg id"
-	messageNotReceived          = "message doesn't correspond to any previously received message"
-	messageStateInexistant      = "messageState with ID %s inexistant"
-	consensusInstanceInexistant = "consensusInstance with ID %s inexistant"
-	messageNotInCorrectPhase    = "consensus corresponding to the message hasn't entered"
+	msgID = "msg id"
+
+	messageNotReceived  = "message doesn't correspond to any previously received message"
+	consensusInexistant = "consensusInstance with ID %s inexistant"
+	consensusFinished   = "consensus with id %s already finished"
+
+	failedFailureCreation = "failed to create failure message"
+	failedFailureSending  = "failed to send failure message"
+
+	proposerRole = "proposer"
+	acceptorRole = "acceptor"
+
+	fastTimeout = 3 * time.Second
+	// timeout fot the elect-accept messages
+	slowTimeout = 5 * time.Minute
 )
 
 // Channel defines a consensus channel
 type Channel struct {
+	sync.Mutex
+
+	clock clock.Clock
+
 	sockets channel.Sockets
 
 	inbox *inbox.Inbox
@@ -49,8 +65,10 @@ type Channel struct {
 
 	registry registry.MessageRegistry
 
-	consensusInstances map[string]*ConsensusInstance
-	messageStates      map[string]*MessageState
+	consensusInstances struct {
+		sync.Mutex
+		m map[string]*ConsensusInstance
+	}
 }
 
 // Save the state of a consensus instance
@@ -58,37 +76,52 @@ type ConsensusInstance struct {
 	sync.RWMutex
 	id string
 
-	proposed_try int64
-	promised_try int64
-	accepted_try int64
+	role string
 
-	accepted_value bool
+	lastSent string
 
-	decided        bool
-	decision       bool
-	proposed_value bool
+	proposedTry int64
+	promisedTry int64
+	acceptedTry int64
+
+	proposedValue bool
+	acceptedValue bool
+
+	decided  bool
+	decision bool
 
 	promises []messagedata.ConsensusPromise
 	accepts  []messagedata.ConsensusAccept
+
+	electInstances map[string]*ElectInstance
 }
 
-// State of a consensus by messageID, used when two messages on the same object
-// happens
-type MessageState struct {
-	sync.Mutex
+// Store the state of a consensus dependant on the elect message
+type ElectInstance struct {
+	timeoutChan chan string
 
-	currentPhase      Phase
-	proposer          kyber.Point
-	electAcceptNumber int
+	acceptorNumber int
+
+	failed bool
+
+	positiveAcceptors map[string]int
+	negativeAcceptors map[string]int
 }
 
-type Phase int
+// createElectInstance creates the state of the consensus for a specific elect
+// message
+func (i *ConsensusInstance) createElectInstance(messageID string, acceptorNumber int) {
+	i.electInstances[messageID] = &ElectInstance{
+		timeoutChan: make(chan string),
 
-const (
-	ElectAcceptPhase Phase = 1
-	PromisePhase     Phase = 2
-	AcceptPhase      Phase = 3
-)
+		failed: false,
+
+		positiveAcceptors: make(map[string]int),
+		negativeAcceptors: make(map[string]int),
+
+		acceptorNumber: acceptorNumber,
+	}
+}
 
 // NewChannel returns a new initialized consensus channel
 func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
@@ -97,14 +130,20 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, log zerolog.Lo
 	log = log.With().Str("channel", "consensus").Logger()
 
 	newChannel := &Channel{
-		sockets:            channel.NewSockets(),
-		inbox:              inbox,
-		channelID:          channelID,
-		hub:                hub,
-		attendees:          make(map[string]struct{}),
-		log:                log,
-		consensusInstances: make(map[string]*ConsensusInstance),
-		messageStates:      make(map[string]*MessageState),
+		clock:     clock.New(),
+		sockets:   channel.NewSockets(),
+		inbox:     inbox,
+		channelID: channelID,
+		hub:       hub,
+		attendees: make(map[string]struct{}),
+		log:       log,
+		consensusInstances: struct {
+			sync.Mutex
+			m map[string]*ConsensusInstance
+		}{
+			sync.Mutex{},
+			make(map[string]*ConsensusInstance),
+		},
 	}
 
 	newChannel.registry = newChannel.NewConsensusRegistry()
@@ -123,8 +162,96 @@ func (c *Channel) NewConsensusRegistry() registry.MessageRegistry {
 	registry.Register(messagedata.ConsensusPropose{}, c.processConsensusPropose)
 	registry.Register(messagedata.ConsensusAccept{}, c.processConsensusAccept)
 	registry.Register(messagedata.ConsensusLearn{}, c.processConsensusLearn)
+	registry.Register(messagedata.ConsensusFailure{}, c.processConsensusFailure)
 
 	return registry
+}
+
+// timeoutFailure sends a failure message during a timeout
+func (c *Channel) timeoutFailure(instance *ConsensusInstance, messageID string) {
+	byteMsg, err := c.createFailureMessage(instance, messageID)
+	if err != nil {
+		c.log.Err(err).Msg(failedFailureCreation)
+		return
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		c.log.Err(err).Msg(failedFailureSending)
+	}
+}
+
+// startTimer starts the timeout logic for the consensus
+func (c *Channel) startTimer(instance *ConsensusInstance, messageID string) {
+
+	timeoutChan := instance.electInstances[messageID].timeoutChan
+
+	for {
+		select {
+		case action := <-timeoutChan:
+			switch action {
+			// Stop the timer when receiving one action finishing it
+			case messagedata.ConsensusActionLearn,
+				messagedata.ConsensusActionFailure:
+				return
+
+			case messagedata.ConsensusActionElectAccept,
+				messagedata.ConsensusActionPrepare,
+				messagedata.ConsensusActionPromise,
+				messagedata.ConsensusActionPropose,
+				messagedata.ConsensusActionAccept:
+
+			default:
+				c.log.Error().Msgf("action %s isn't a recognised action", action)
+				return
+			}
+
+		case <-c.clock.After(fastTimeout):
+			switch instance.lastSent {
+			case messagedata.ConsensusActionElectAccept:
+				select {
+				case action := <-timeoutChan:
+					// Stop the timer when receiving one action finishing it
+					if action == messagedata.ConsensusActionLearn ||
+						action == messagedata.ConsensusActionFailure {
+						return
+					}
+
+				case <-c.clock.After(slowTimeout):
+					c.timeoutFailure(instance, messageID)
+					return
+				}
+
+			case messagedata.ConsensusActionPrepare,
+				messagedata.ConsensusActionPropose:
+
+				instance.role = acceptorRole
+
+				select {
+				case action := <-timeoutChan:
+					// Stop the timer when receiving one action finishing it
+					if action == messagedata.ConsensusActionLearn ||
+						action == messagedata.ConsensusActionFailure {
+						return
+					}
+
+				case <-c.clock.After(fastTimeout):
+					c.timeoutFailure(instance, messageID)
+					return
+				}
+
+			case messagedata.ConsensusActionPromise,
+				messagedata.ConsensusActionAccept:
+
+				c.timeoutFailure(instance, messageID)
+				return
+
+			case messagedata.ConsensusActionLearn,
+				messagedata.ConsensusActionFailure:
+				return
+			}
+		}
+	}
 }
 
 // Subscribe is used to handle a subscribe message from the client
@@ -156,14 +283,42 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	err := xerrors.Errorf("a consensus channel shouldn't need to broadcast a message")
-	c.log.Err(err)
-	return err
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+	c.log.Info().Msg("received a broadcast")
+
+	err := c.verifyMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify broadcast message: %w", err)
+	}
+
+	err = c.handleMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to handle broadcast message: %v", err)
+	}
+
+	return nil
 }
 
-// broadcastToAllWitnesses is a helper message to broadcast a message to all
-// witnesses.
+// handleMessage handles a message received in a broadcast or publish method
+func (c *Channel) handleMessage(msg message.Message) error {
+
+	err := c.registry.Process(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to process message: %w", err)
+	}
+
+	c.inbox.StoreMessage(msg)
+
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
+
+	return nil
+}
+
+// broadcastToAllClients is a helper message to broadcast a message to all
+// clients.
 func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all witnesses")
 
@@ -194,35 +349,25 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 
 // Publish handles publish messages for the consensus channel
 func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
-	err := c.VerifyPublishMessage(publish)
-	if err != nil {
-		return xerrors.Errorf("failed to verify publish message: %w", err)
-	}
-
-	msg := publish.Params.Message
-
-	err = c.registry.Process(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to process message: %w", err)
-	}
-
-	c.inbox.StoreMessage(msg)
-
-	err = c.broadcastToAllClients(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
-	}
-	return nil
-}
-
-// VerifyPublishMessage checks if a Publish message is valid
-func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
 
-	// Check if the structure of the message is correct
-	msg := publish.Params.Message
+	err := c.verifyMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify publish message: %w", err)
+	}
+
+	err = c.handleMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to handle publish message: %v", err)
+	}
+
+	return nil
+}
+
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
@@ -262,35 +407,34 @@ func getSender(msg message.Message) (kyber.Point, error) {
 
 // createConsensusInstance adds a new consensus instance to the
 // consensusInstances array
-func (c *Channel) createConsensusInstance(instanceID string) {
-	c.consensusInstances[instanceID] = &ConsensusInstance{
+func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance {
+	consensusInstance := &ConsensusInstance{
 
 		id: instanceID,
 
-		proposed_try: 0,
-		promised_try: -1,
-		accepted_try: -1,
+		role: acceptorRole,
 
-		accepted_value: false,
-		decided:        false,
-		decision:       false,
-		proposed_value: false,
+		lastSent: "",
+
+		proposedTry: 0,
+		promisedTry: -1,
+		acceptedTry: -1,
+
+		acceptedValue: false,
+		proposedValue: false,
+
+		decided:  false,
+		decision: false,
 
 		promises: make([]messagedata.ConsensusPromise, 0),
 		accepts:  make([]messagedata.ConsensusAccept, 0),
-	}
-}
 
-// createMessageInstance creates a new message instance to the messageStates
-// array
-func (c *Channel) createMessageInstance(messageID string, proposer kyber.Point) {
-	newMessageState := MessageState{
-		currentPhase:      ElectAcceptPhase,
-		proposer:          proposer,
-		electAcceptNumber: 0,
+		electInstances: make(map[string]*ElectInstance),
 	}
 
-	c.messageStates[messageID] = &newMessageState
+	c.consensusInstances.m[instanceID] = consensusInstance
+
+	return consensusInstance
 }
 
 // processConsensusElect processes an elect action.
@@ -308,24 +452,97 @@ func (c *Channel) processConsensusElect(message message.Message, msgData interfa
 		return xerrors.Errorf("invalid consensus#elect message: %v", err)
 	}
 
-	// Creates a consensus instance if there is none on the object
-	_, ok = c.consensusInstances[data.InstanceID]
-	if !ok {
-		c.createConsensusInstance(data.InstanceID)
-	}
-
 	sender, err := getSender(message)
 	if err != nil {
 		return xerrors.Errorf("failed to get consensus#elect message sender: %v", err)
 	}
 
-	c.createMessageInstance(message.MessageID, sender)
+	// Creates a consensus instance if it doesn't exist yet
+	c.consensusInstances.Lock()
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
+	if !ok {
+		consensusInstance = c.createConsensusInstance(data.InstanceID)
+	}
+	c.consensusInstances.Unlock()
+
+	consensusInstance.Lock()
+	defer consensusInstance.Unlock()
+
+	consensusInstance.createElectInstance(message.MessageID, c.hub.GetServerNumber())
+
+	if sender.Equal(c.hub.GetPubKeyOwner()) {
+		consensusInstance.role = proposerRole
+	}
+
+	consensusInstance.lastSent = messagedata.ConsensusActionElectAccept
+
+	// Start a channel linked to the message id
+	go c.startTimer(consensusInstance, message.MessageID)
+
+	return nil
+}
+
+// nextMessage verify if a prepare or failure message should be sent
+func (c *Channel) nextMessage(i *ConsensusInstance, messageID string) string {
+
+	electInstance := i.electInstances[messageID]
+
+	if i.role != proposerRole {
+		return ""
+	}
+
+	// If enough rejection, failure of the consensus
+	if len(electInstance.negativeAcceptors) >= (electInstance.acceptorNumber/2 + 1) {
+		return messagedata.ConsensusActionFailure
+	}
+
+	// If enough acception, go to next step of the consensus
+	if len(electInstance.positiveAcceptors) >= (electInstance.acceptorNumber/2 + 1) {
+		return messagedata.ConsensusActionPrepare
+	}
+
+	return ""
+}
+
+// updateAcceptors updates the acceptors of an electInstance
+func (e *ElectInstance) updateAcceptors(sender string, accept bool) error {
+	_, ok := e.positiveAcceptors[sender]
+	if ok {
+		return xerrors.Errorf("Acceptor %s already accepted this value", sender)
+	}
+
+	_, ok = e.negativeAcceptors[sender]
+	if ok {
+		return xerrors.Errorf("Acceptor %s already refused this value", sender)
+	}
+
+	// Update the elect state
+	if accept {
+		e.positiveAcceptors[sender] = 0
+	} else {
+		e.negativeAcceptors[sender] = 0
+	}
+
+	return nil
+}
+
+// electAcceptFailure sends a failure message when consensus is refused
+func (c *Channel) electAcceptFailure(instance *ConsensusInstance, messageID string) error {
+	byteMsg, err := c.createFailureMessage(instance, messageID)
+	if err != nil {
+		return xerrors.Errorf("failed to create consensus#failure message: %v", err)
+	}
+
+	err = c.publishNewMessage(byteMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to send new consensus#failure message: %v", err)
+	}
 
 	return nil
 }
 
 // processConsensusElectAccept processes an elect accept action.
-func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusElectAccept(message message.Message, msgData interface{}) error {
 
 	data, ok := msgData.(*messagedata.ConsensusElectAccept)
 	if !ok {
@@ -341,52 +558,54 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 
 	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
-
 	if !valid {
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	messageState, ok := c.messageStates[data.MessageID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
-		return xerrors.Errorf(messageStateInexistant, data.MessageID)
-	}
-	messageState.Lock()
-	defer messageState.Unlock()
-	if data.Accept {
-		messageState.electAcceptNumber++
-	}
-
-	// Once all Elect_Accept have been received, proposer creates new prepare
-	// message
-	if messageState.electAcceptNumber < c.hub.GetServerNumber() {
-		return nil
-	}
-	if messageState.currentPhase != ElectAcceptPhase ||
-		!messageState.proposer.Equal(c.hub.GetPubKeyOwner()) {
-		return nil
-	}
-
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
-	if !ok {
-		return xerrors.Errorf(consensusInstanceInexistant, data.InstanceID)
+		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	if consensusInstance.proposed_try >= consensusInstance.promised_try {
-		consensusInstance.proposed_try++
+	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return xerrors.Errorf(consensusFinished, data.InstanceID)
+	}
+
+	err = electInstance.updateAcceptors(message.Sender, data.Accept)
+	if err != nil {
+		return xerrors.Errorf("failed to update acceptors: %v", err)
+	}
+
+	nextMessage := c.nextMessage(consensusInstance, data.MessageID)
+	if nextMessage == "" {
+		return nil
+	}
+
+	if nextMessage == messagedata.ConsensusActionFailure {
+		return c.electAcceptFailure(consensusInstance, data.MessageID)
+	}
+
+	electInstance.timeoutChan <- messagedata.ConsensusActionElectAccept
+
+	if consensusInstance.proposedTry >= consensusInstance.promisedTry {
+		consensusInstance.proposedTry++
 	} else {
-		consensusInstance.proposed_try = consensusInstance.promised_try + 1
+		consensusInstance.proposedTry = consensusInstance.promisedTry + 1
 	}
 
 	// For now the consensus always accept a true if it complete
-	consensusInstance.proposed_value = true
+	consensusInstance.proposedValue = true
 
-	byteMsg, err := c.createPrepareMessage(data.InstanceID,
-		data.MessageID, consensusInstance)
+	byteMsg, err := c.createPrepareMessage(consensusInstance, data.MessageID)
 	if err != nil {
 		return xerrors.Errorf("failed to create consensus#prepare message: %v", err)
 	}
+
+	consensusInstance.lastSent = messagedata.ConsensusActionPrepare
 
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
@@ -394,31 +613,6 @@ func (c *Channel) processConsensusElectAccept(_ message.Message, msgData interfa
 	}
 
 	return nil
-}
-
-// createPrepareMessage creates the data for a new prepare message
-func (c *Channel) createPrepareMessage(instanceID string, messageID string,
-	consensusInstance *ConsensusInstance) ([]byte, error) {
-
-	newData := messagedata.ConsensusPrepare{
-		Object:     "consensus",
-		Action:     "prepare",
-		InstanceID: instanceID,
-		MessageID:  messageID,
-
-		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValuePrepare{
-			ProposedTry: consensusInstance.proposed_try,
-		},
-	}
-
-	byteMsg, err := json.Marshal(newData)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal new consensus#prepare message: %v", err)
-	}
-
-	return byteMsg, nil
 }
 
 // processConsensusPrepare processes a prepare action.
@@ -442,32 +636,35 @@ func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	messageState, ok := c.messageStates[data.MessageID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
-		return xerrors.Errorf(messageStateInexistant, data.MessageID)
-	}
-	messageState.Lock()
-	defer messageState.Unlock()
-
-	messageState.currentPhase = PromisePhase
-
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
-	if !ok {
-		return xerrors.Errorf(consensusInstanceInexistant, data.InstanceID)
+		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	if consensusInstance.promised_try >= data.Value.ProposedTry {
+	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return xerrors.Errorf(consensusFinished, data.InstanceID)
+	}
+
+	electInstance.timeoutChan <- messagedata.ConsensusActionPrepare
+
+	if consensusInstance.promisedTry >= data.Value.ProposedTry {
 		return nil
 	}
 
-	consensusInstance.promised_try = data.Value.ProposedTry
+	consensusInstance.promisedTry = data.Value.ProposedTry
 
-	byteMsg, err := c.createPromiseMessage(data.InstanceID,
-		data.MessageID, consensusInstance)
+	byteMsg, err := c.createPromiseMessage(consensusInstance, data.MessageID)
 	if err != nil {
 		return xerrors.Errorf("failed to create consensus#promise message, %v", err)
+	}
+
+	// The proposer will timeout as if having last sent a prepare message
+	if consensusInstance.role == acceptorRole {
+		consensusInstance.lastSent = messagedata.ConsensusActionPromise
 	}
 
 	err = c.publishNewMessage(byteMsg)
@@ -476,33 +673,6 @@ func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}
 	}
 
 	return nil
-}
-
-// createPromiseMessage creates the data for a new prepare message
-func (c *Channel) createPromiseMessage(instanceID string, messageID string,
-	consensusInstance *ConsensusInstance) ([]byte, error) {
-
-	newData := messagedata.ConsensusPromise{
-		Object:     "consensus",
-		Action:     "promise",
-		InstanceID: instanceID,
-		MessageID:  messageID,
-
-		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValuePromise{
-			AcceptedTry:   consensusInstance.accepted_try,
-			AcceptedValue: consensusInstance.accepted_value,
-			PromisedTry:   consensusInstance.promised_try,
-		},
-	}
-
-	byteMsg, err := json.Marshal(newData)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
-	}
-
-	return byteMsg, nil
 }
 
 // processConsensusPromise processes a promise action.
@@ -526,35 +696,35 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	messageState, ok := c.messageStates[data.MessageID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
-		return xerrors.Errorf(messageStateInexistant, data.MessageID)
-	}
-	messageState.Lock()
-	defer messageState.Unlock()
-
-	if messageState.currentPhase < PromisePhase {
-		return xerrors.Errorf(messageNotInCorrectPhase + " the promise phase")
-	}
-
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
-	if !ok {
-		return xerrors.Errorf(consensusInstanceInexistant, data.InstanceID)
+		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
+	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return xerrors.Errorf(consensusFinished, data.InstanceID)
+	}
+
 	consensusInstance.promises = append(consensusInstance.promises, *data)
 
 	// if enough Promise messages are received, the proposer send a Propose message
-	if len(consensusInstance.promises) < c.hub.GetServerNumber()/2+1 {
+	if len(consensusInstance.promises) < electInstance.acceptorNumber/2+1 {
 		return nil
 	}
 
-	if messageState.currentPhase != PromisePhase ||
-		!messageState.proposer.Equal(c.hub.GetPubKeyOwner()) {
+	if consensusInstance.role != proposerRole {
 		return nil
 	}
+
+	if consensusInstance.lastSent != messagedata.ConsensusActionPrepare {
+		return nil
+	}
+
+	electInstance.timeoutChan <- messagedata.ConsensusActionPromise
 
 	highestAccepted := int64(-1)
 	highestAcceptedValue := true
@@ -565,11 +735,13 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 		}
 	}
 
-	byteMsg, err := c.createProposeMessage(data.InstanceID, data.MessageID,
-		consensusInstance, highestAccepted, highestAcceptedValue)
+	byteMsg, err := c.createProposeMessage(consensusInstance, data.MessageID,
+		highestAccepted, highestAcceptedValue)
 	if err != nil {
 		return xerrors.Errorf("failed to create consensus#propose message: %v", err)
 	}
+
+	consensusInstance.lastSent = messagedata.ConsensusActionPropose
 
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
@@ -577,39 +749,6 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 	}
 
 	return nil
-}
-
-// createProposeMessage creates the data for a new propose message
-func (c *Channel) createProposeMessage(instanceID string, messageID string, consensusInstance *ConsensusInstance,
-	highestAccepted int64, highestValue bool) ([]byte, error) {
-
-	newData := messagedata.ConsensusPropose{
-		Object:     "consensus",
-		Action:     "propose",
-		InstanceID: instanceID,
-		MessageID:  messageID,
-
-		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValuePropose{
-			ProposedValue: highestValue,
-		},
-
-		AcceptorSignatures: make([]string, 0),
-	}
-
-	if highestAccepted == -1 {
-		newData.Value.ProposedTry = consensusInstance.proposed_try
-	} else {
-		newData.Value.ProposedTry = highestAccepted
-	}
-
-	byteMsg, err := json.Marshal(newData)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal new consensus#propose message: %v", err)
-	}
-
-	return byteMsg, nil
 }
 
 // processConsensusPropose processes a propose action.
@@ -629,30 +768,24 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 
 	// check whether a message with the correct ID was received previously
 	_, valid := c.inbox.GetMessage(data.MessageID)
-
 	if !valid {
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	messageState, ok := c.messageStates[data.MessageID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
-		return xerrors.Errorf(messageStateInexistant, data.MessageID)
-	}
-	messageState.Lock()
-	defer messageState.Unlock()
-
-	if messageState.currentPhase < PromisePhase {
-		return xerrors.Errorf(messageNotInCorrectPhase + " the promise phase")
-	}
-
-	messageState.currentPhase = AcceptPhase
-
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
-	if !ok {
-		return xerrors.Errorf(consensusInstanceInexistant, data.InstanceID)
+		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
+
+	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return xerrors.Errorf(consensusFinished, data.InstanceID)
+	}
+
+	electInstance.timeoutChan <- messagedata.ConsensusActionPropose
 
 	// If the server has no client subscribed to the consensus channel, it
 	// doesn't take part in it
@@ -660,17 +793,21 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 		return nil
 	}
 
-	if consensusInstance.promised_try > data.Value.ProposedTry {
+	if consensusInstance.promisedTry > data.Value.ProposedTry {
 		return nil
 	}
 
-	consensusInstance.accepted_try = data.Value.ProposedTry
-	consensusInstance.accepted_value = data.Value.ProposedValue
+	consensusInstance.acceptedTry = data.Value.ProposedTry
+	consensusInstance.acceptedValue = data.Value.ProposedValue
 
-	byteMsg, err := c.createAcceptMessage(data.InstanceID,
-		data.MessageID, consensusInstance)
+	byteMsg, err := c.createAcceptMessage(consensusInstance, data.MessageID)
 	if err != nil {
 		return xerrors.Errorf("failed to create consensus#accept message: %v", err)
+	}
+
+	// The proposer will timeout as if having last sent a propose message
+	if consensusInstance.role == acceptorRole {
+		consensusInstance.lastSent = messagedata.ConsensusActionAccept
 	}
 
 	err = c.publishNewMessage(byteMsg)
@@ -679,32 +816,6 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 	}
 
 	return nil
-}
-
-// createAcceptMessage creates the data for a new accept message
-func (c *Channel) createAcceptMessage(instanceID string, messageID string,
-	consensusInstance *ConsensusInstance) ([]byte, error) {
-
-	newData := messagedata.ConsensusAccept{
-		Object:     "consensus",
-		Action:     "accept",
-		InstanceID: instanceID,
-		MessageID:  messageID,
-
-		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValueAccept{
-			AcceptedTry:   consensusInstance.accepted_try,
-			AcceptedValue: consensusInstance.accepted_value,
-		},
-	}
-
-	byteMsg, err := json.Marshal(newData)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal new consensus#accept message: %v", err)
-	}
-
-	return byteMsg, nil
 }
 
 // processConsensusAccept proccesses an accept action.
@@ -729,33 +840,29 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 		return xerrors.Errorf(messageNotReceived)
 	}
 
-	messageState, ok := c.messageStates[data.MessageID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
-		return xerrors.Errorf(messageStateInexistant, data.MessageID)
-	}
-	messageState.Lock()
-	defer messageState.Unlock()
-
-	if messageState.currentPhase < AcceptPhase {
-		return xerrors.Errorf(messageNotInCorrectPhase + " the accept phase")
-	}
-
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
-	if !ok {
-		return xerrors.Errorf(consensusInstanceInexistant, data.InstanceID)
+		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	if data.Value.AcceptedTry == consensusInstance.proposed_try &&
-		data.Value.AcceptedValue == consensusInstance.proposed_value {
+	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return xerrors.Errorf(consensusFinished, data.InstanceID)
+	}
+
+	if data.Value.AcceptedTry == consensusInstance.proposedTry &&
+		data.Value.AcceptedValue == consensusInstance.proposedValue {
 		consensusInstance.accepts = append(consensusInstance.accepts, *data)
 	}
 
-	if len(consensusInstance.accepts) < c.hub.GetServerNumber()/2+1 {
+	if len(consensusInstance.accepts) < electInstance.acceptorNumber/2+1 {
 		return nil
 	}
-	if !messageState.proposer.Equal(c.hub.GetPubKeyOwner()) {
+
+	if consensusInstance.role != proposerRole {
 		return nil
 	}
 
@@ -763,48 +870,27 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 		return nil
 	}
 
-	consensusInstance.decided = true
-	consensusInstance.decision = consensusInstance.proposed_value
+	if consensusInstance.lastSent != messagedata.ConsensusActionPropose {
+		return nil
+	}
 
-	byteMsg, err := c.createLearnMessage(data.InstanceID,
-		data.MessageID, consensusInstance)
+	electInstance.timeoutChan <- messagedata.ConsensusActionAccept
+
+	consensusInstance.decided = true
+	consensusInstance.decision = consensusInstance.proposedValue
+
+	byteMsg, err := c.createLearnMessage(consensusInstance, data.MessageID)
 	if err != nil {
 		return xerrors.Errorf("failed to create new consensus#learn message")
 	}
 
+	consensusInstance.lastSent = messagedata.ConsensusActionLearn
 	err = c.publishNewMessage(byteMsg)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-// createLearnMessage creates the data for a learn message
-func (c *Channel) createLearnMessage(instanceID string, messageID string,
-	consensusInstance *ConsensusInstance) ([]byte, error) {
-
-	newData := messagedata.ConsensusLearn{
-		Object:     "consensus",
-		Action:     "learn",
-		InstanceID: instanceID,
-		MessageID:  messageID,
-
-		CreatedAt: time.Now().Unix(),
-
-		Value: messagedata.ValueLearn{
-			Decision: consensusInstance.decision,
-		},
-
-		AcceptorSignatures: make([]string, 0),
-	}
-
-	byteMsg, err := json.Marshal(newData)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to marshal new consensus#promise message: %v", err)
-	}
-
-	return byteMsg, nil
 }
 
 // processConsensusLearn processes a learn action.
@@ -829,17 +915,64 @@ func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}) 
 		return xerrors.Errorf("message doesn't correspond to any received message")
 	}
 
-	consensusInstance, ok := c.consensusInstances[data.InstanceID]
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
 	if !ok {
-		return xerrors.Errorf(consensusInstanceInexistant, data.InstanceID)
+		return xerrors.Errorf(consensusInexistant, data.InstanceID)
 	}
 	consensusInstance.Lock()
 	defer consensusInstance.Unlock()
 
-	if !consensusInstance.decided {
-		consensusInstance.decided = true
-		consensusInstance.decision = data.Value.Decision
+	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if consensusInstance.decided || electInstance.failed {
+		return nil
 	}
+	electInstance.timeoutChan <- messagedata.ConsensusActionLearn
+
+	consensusInstance.decided = true
+	consensusInstance.decision = data.Value.Decision
+
+	return nil
+}
+
+// processConsensusFailure processes a failure action
+func (c *Channel) processConsensusFailure(_ message.Message, msgData interface{}) error {
+
+	data, ok := msgData.(*messagedata.ConsensusFailure)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a consensus#failure message", msgData)
+	}
+
+	c.log.Info().Msg("received a consensus#failure message")
+
+	err := data.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid consensus#failure message: %v", err)
+	}
+
+	// check whether a message with the correct ID was received previously
+	_, valid := c.inbox.GetMessage(data.MessageID)
+
+	if !valid {
+		return xerrors.Errorf("message doesn't correspond to any received message")
+	}
+
+	consensusInstance, ok := c.consensusInstances.m[data.InstanceID]
+	if !ok {
+		return xerrors.Errorf(consensusInexistant, data.InstanceID)
+	}
+	consensusInstance.Lock()
+	defer consensusInstance.Unlock()
+
+	electInstance := consensusInstance.electInstances[data.MessageID]
+
+	if electInstance.failed || consensusInstance.decided {
+		return nil
+	}
+
+	electInstance.timeoutChan <- messagedata.ConsensusActionFailure
+
+	electInstance.failed = true
 
 	return nil
 }
@@ -874,12 +1007,12 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 		WitnessSignatures: make([]message.WitnessSignature, 0),
 	}
 
-	publish := method.Publish{
+	broadcast := method.Broadcast{
 		Base: query.Base{
 			JSONRPCBase: jsonrpc.JSONRPCBase{
 				JSONRPC: "2.0",
 			},
-			Method: "publish",
+			Method: "broadcast",
 		},
 
 		Params: struct {
@@ -891,9 +1024,7 @@ func (c *Channel) publishNewMessage(byteMsg []byte) error {
 		},
 	}
 
-	c.hub.SetMessageID(&publish)
-
-	err = c.hub.SendAndHandleMessage(publish)
+	err = c.hub.SendAndHandleMessage(broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to send new message: %v", err)
 	}

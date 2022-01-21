@@ -1,7 +1,7 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
+import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
@@ -18,7 +18,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
 
         rpcMessage.getParamsMessage match {
 
-            // FIXME need more checks
+            // TODO need more checks
             case Some(message) => {
                 val data: AddChirp = message.decodedData.get.asInstanceOf[AddChirp]
 
@@ -49,5 +49,45 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
     //no need for validation for now, as the server is not supposed to receive the broadcasts
     def validateNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         Left(rpcMessage)
+    }
+
+    def validateAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
+        def validationError(reason: String): PipelineError = super.validationError(reason, "DeleteReaction", rpcMessage.id)
+
+        rpcMessage.getParamsMessage match {
+
+            case Some(message) => {
+                val data: AddReaction = message.decodedData.get.asInstanceOf[AddReaction]
+
+                if (!validateTimestampStaleness(data.timestamp)) {
+                    Right(validationError(s"stale timestamp (${data.timestamp})"))
+                }
+                // TODO: add more checks
+                else{
+                    Left(rpcMessage)
+                }
+            }
+            case _ => Right(validationErrorNoMessage(rpcMessage.id))
+        }
+    }
+
+    def validateDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
+        def validationError(reason: String): PipelineError = super.validationError(reason, "DeleteReaction", rpcMessage.id)
+
+        rpcMessage.getParamsMessage match {
+
+            case Some(message) => {
+                val data: DeleteReaction = message.decodedData.get.asInstanceOf[DeleteReaction]
+
+                if (!validateTimestampStaleness(data.timestamp)) {
+                    Right(validationError(s"stale timestamp (${data.timestamp})"))
+                }
+                // TODO: add more checks
+                else{
+                    Left(rpcMessage)
+                }
+            }
+            case _ => Right(validationErrorNoMessage(rpcMessage.id))
+        }
     }
 }

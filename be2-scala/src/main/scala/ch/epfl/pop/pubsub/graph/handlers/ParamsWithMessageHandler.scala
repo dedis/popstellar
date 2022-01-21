@@ -34,6 +34,7 @@ object ParamsWithMessageHandler {
           case (ObjectType.ELECTION, _) => portElection
           case (ObjectType.MESSAGE, _) => portWitness
           case (ObjectType.CHIRP, _) => portSocialMedia
+          case (ObjectType.REACTION, _) => portSocialMedia
         }
         case _ => portPipelineError // Pipeline error goes directly in handlerMerger
       }))

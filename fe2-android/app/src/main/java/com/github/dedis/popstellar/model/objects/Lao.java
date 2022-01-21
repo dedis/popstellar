@@ -45,7 +45,7 @@ public final class Lao {
     } else if (id.isEmpty()) {
       throw new IllegalArgumentException(" The id of the Lao is empty");
     }
-    this.channel = id;
+    this.channel = "/root/" + id;
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();

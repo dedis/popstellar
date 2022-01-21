@@ -5,12 +5,15 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { gray } from 'styles/colors';
 import { Chirp } from 'model/objects/Chirp';
-import { useSelector } from 'react-redux';
-import { requestAddReaction } from 'network';
-import { makeReactionsList } from 'store';
+import DeleteButton from 'components/DeleteButton';
+import { requestDeleteChirp, requestAddReaction } from 'network';
+import { PublicKey } from 'model/objects';
+import STRINGS from 'res/strings';
+import { gray } from 'styles/colors';
 import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
+import { makeReactionsList } from 'store';
 import ProfileIcon from './ProfileIcon';
 
 /**
@@ -47,6 +50,13 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     width: 520,
   } as TextStyle,
+  deletedChirpText: {
+    fontSize: 18,
+    paddingBottom: 20,
+    paddingTop: 10,
+    width: 520,
+    color: gray,
+  } as TextStyle,
   reactionsView: {
     flexDirection: 'row',
     fontSize: 18,
@@ -63,8 +73,10 @@ const styles = StyleSheet.create({
 });
 
 const FOUR_SECONDS = 4000;
+
 const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
+  const { currentUserPublicKey } = props;
   const toast = useToast();
   const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
 
@@ -84,6 +96,20 @@ const ChirpCard = (props: IPropTypes) => {
       });
   };
 
+  // TODO: delete a chirp posted with a PoP token from a previous roll call.
+  const isSender = currentUserPublicKey.valueOf() === chirp.sender.valueOf();
+
+  const deleteChirp = () => {
+    requestDeleteChirp(currentUserPublicKey, chirp.id)
+      .catch((err) => {
+        toast.show(`Could not remove chirp, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
@@ -93,26 +119,32 @@ const ChirpCard = (props: IPropTypes) => {
         <View style={styles.senderView}>
           <Text style={styles.senderText}>{chirp.sender.valueOf()}</Text>
         </View>
-        <Text style={styles.chirpText}>{chirp.text}</Text>
+        {chirp.isDeleted
+          ? <Text style={styles.deletedChirpText}>{STRINGS.deleted_chirp}</Text>
+          : <Text style={styles.chirpText}>{chirp.text}</Text>}
         <View style={styles.reactionsView}>
-          <View style={styles.reactionView}>
-            <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
-              <Ionicons name="thumbs-up" size={16} color="black" />
-            </Pressable>
-            <Text>{`  ${thumbsUp}`}</Text>
-          </View>
-          <View style={styles.reactionView}>
-            <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
-              <Ionicons name="thumbs-down" size={16} color="black" />
-            </Pressable>
-            <Text>{`  ${thumbsDown}`}</Text>
-          </View>
-          <View style={styles.reactionView}>
-            <Pressable onPress={() => addReaction('❤️')} testID="heart">
-              <Ionicons name="heart" size={16} color="black" />
-            </Pressable>
-            <Text>{`  ${heart}`}</Text>
-          </View>
+          {!chirp.isDeleted && (
+          <>
+            <View style={styles.reactionView}>
+              <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
+                <Ionicons name="thumbs-up-sharp" size={16} color="black" />
+              </Pressable>
+              <Text>{`  ${thumbsUp}`}</Text>
+            </View>
+            <View style={styles.reactionView}>
+              <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
+                <Ionicons name="thumbs-down-sharp" size={16} color="black" />
+              </Pressable>
+              <Text>{`  ${thumbsDown}`}</Text>
+            </View>
+            <View style={styles.reactionView}>
+              <Pressable onPress={() => addReaction('❤️')} testID="heart">
+                <Ionicons name="heart" size={16} color="black" />
+              </Pressable>
+              <Text>{`  ${heart}`}</Text>
+            </View>
+          </>
+          )}
           <View style={styles.reactionView}>
             <Ionicons name="chatbubbles" size={16} color="black" />
             <Text>{zero}</Text>
@@ -121,6 +153,7 @@ const ChirpCard = (props: IPropTypes) => {
         <View style={styles.timeView}>
           <TimeAgo date={chirp.time.valueOf() * 1000} />
         </View>
+        { isSender && !chirp.isDeleted && <DeleteButton action={() => { deleteChirp(); }} />}
       </View>
     </View>
   );
@@ -128,12 +161,11 @@ const ChirpCard = (props: IPropTypes) => {
 
 const propTypes = {
   chirp: PropTypes.instanceOf(Chirp).isRequired,
+  currentUserPublicKey: PropTypes.instanceOf(PublicKey).isRequired,
 };
 
 ChirpCard.prototype = propTypes;
 
-type IPropTypes = {
-  chirp: Chirp,
-};
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ChirpCard;

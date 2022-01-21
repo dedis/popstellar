@@ -22,6 +22,10 @@
   - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
   - [Ending an Election (election#end)](#ending-an-election-electionend)
   - [Sending the results of an Election (election#result)](#sending-the-results-of-an-election-electionresult)
+  - [Publishing a Chirp (chirp#add)](#publishing-a-chirp-chirpadd)
+  - [Removing a Chirp (chirp#delete)](#removing-a-chirp-chirpdelete)
+  - [Publishing a reaction (reaction#add)](#publishing-a-reaction-reactionadd)
+  - [Removing a reaction (reaction#delete)](#removing-a-reaction-reactiondelete)
 
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
@@ -75,7 +79,7 @@ broadcast”).
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/lao_create.json
+// ../protocol/examples/messageData/lao_create/lao_create.json
 
 {
     "object": "lao",
@@ -172,7 +176,7 @@ all witnesses and clients (see “LAO state broadcast”).
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/lao_update.json
+// ../protocol/examples/messageData/lao_update/lao_update.json
 
 {
     "object": "lao",
@@ -257,7 +261,7 @@ the required number of witness signatures.
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/lao_state.json
+// ../protocol/examples/messageData/lao_state/lao_state.json
 
 {
     "object": "lao",
@@ -1058,7 +1062,7 @@ The election may allow write-in or have ballot options.
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/election_setup.json
+// ../protocol/examples/messageData/election_setup/election_setup.json
 
 {
     "object": "election",
@@ -1213,7 +1217,7 @@ If write-in is allowed for the election then the vote has to have a write-in.
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/vote_cast_vote.json
+// ../protocol/examples/messageData/vote_cast_vote/vote_cast_vote.json
 
 {
     "object": "election",
@@ -1299,7 +1303,7 @@ If write-in is allowed for the election then the vote has to have a write-in.
                             "question": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "ID of the question"
+                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
                             }
                         },
                         "required": ["id", "question"]
@@ -1354,7 +1358,7 @@ message on the election channel. This message indicates that the organizer will 
 </summary>
 
 ```json5
-// ../protocol/examples/messageData/election_end.json
+// ../protocol/examples/messageData/election_end/election_end.json
 
 {
     "object": "election",
@@ -1522,4 +1526,372 @@ and has received the witness signatures on the result.
     "required": ["object", "action", "questions"]
 }
 
+```
+
+## Publishing a Chirp (chirp#add)
+
+A user that owns a PoP token can publish a chirp by sending a chirp/add message 
+to his/her chirp channel ("/root/lao_id/social/sender_id").
+
+Each Chirp data object consists of the following:
+- Text: Max 300 characters (i.e., Unicode code points). The UI needs to enforce 
+this rule. The organizer + witness servers also need to enforce this restriction, 
+rejecting the publication of a chirp.
+- Parent ID: The parent chirp’s message id if it is not the top level chirp.
+- Timestamp: UNIX timestamp in UTC of the time that the chirp is published; 
+2 chirps cannot be posted on the same second; The organizer + witness servers 
+enforce that the timestamp field is valid (by verifying the timestamp against 
+the server’s time +/- a threshold).
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/chirp_add_publish/chirp_add_publish.json
+
+{
+    "object": "chirp",
+    "action": "add",
+    "text": "I love PoP",
+    "timestamp": 1634760180
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataAddChirp.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddChirp.json",
+    "description": "Match an add chirp query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "chirp"
+        },
+        "action": {
+            "const": "add"
+        },
+        "text": {
+            "type": "string",
+            "$comment": "text in the chirp"
+        },
+        "parent_id": {
+            "description": "message_id of parent chirp",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "optional (only in case the chirp is a reply)"
+        },
+        "timestamp": {
+            "description": "UNIX Timestamp in UTC of this deletion request",
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "text", "timestamp"]
+}
+
+```
+
+After validating the chirp, the organizer’s server propagates the above message 
+on the channel it is meant for (like usual) but it also creates the following 
+message and sends it to a universal chirp channel ("/root/lao_id/social/chirps"):
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/chirp_notify_add/chirp_notify_add.json
+
+{
+    "object": "chirp",
+    "action": "notify_add",
+    "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
+    "channel": "/root/<lao_id>/social/<sender>",
+    "timestamp": 1634760180
+}
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataNotifyAddChirp.json
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataNotifyAddChirp.json",
+  "description": "Match a add chirp broadcast query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "chirp"
+    },
+    "action": {
+      "const": "notify_add"
+    },
+    "chirp_id": {
+      "description": "message_id of the chirp message above",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "channel": {
+      "description": "[String] name of the channel",
+      "pattern": "^/root/([^/]+)/social/([^/]+)",
+      "type": "string"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC of this deletion request",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "chirp_id", "channel", "timestamp"]
+}
+
+```
+
+## Removing a Chirp (chirp#delete)
+
+A user that has published a chirp in the past can remove the chirp by sending a 
+chirp/delete message to his/her chirp channel ("/root/lao_id/social/sender_id"). 
+Although a chirp can be removed from the UI, by design of the pub-sub communication 
+protocol, the chirp will always exist in historical records of the users’ channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/chirp_delete_publish/chirp_delete_publish.json
+
+{
+    "object": "chirp",
+    "action": "delete",
+    "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
+    "timestamp": 1634760180
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataDeleteChirp.json
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataDeleteChirp.json",
+  "description": "Match a delete chirp query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "chirp"
+    },
+    "action": {
+      "const": "delete"
+    },
+    "chirp_id": {
+      "description": "Message id of the chirp published",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC of this deletion request",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "chirp_id", "timestamp"]
+}
+```
+
+After validating the removal of the chirp, the organizer’s server propagates the above message 
+on the channel it is meant for (like usual) but it also creates the following message and sends 
+it to a universal chirp channel ("/root/lao_id/social/chirps"):
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/chirp_notify_delete/chirp_notify_delete.json
+
+{
+    "object": "chirp",
+    "action": "notify_delete",
+    "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
+    "channel": "/root/<lao_id>/social/<sender>",
+    "timestamp": 1634760180
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataNotifyDeleteChirp.json
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataNotifyDeleteChirp.json",
+  "description": "Match a delete chirp broadcast query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "chirp"
+    },
+    "action": {
+      "const": "notify_delete"
+    },
+    "chirp_id": {
+      "description": "message_id of the chirp message above",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "channel": {
+      "description": "The channel where the chirp is located (starting from social/ inclusive)",
+      "type": "string",
+      "pattern": "^/root/([^/]+)/social/([^/]+)",
+      "$comment": "Note: the regex matches a \"social\" or a \"social/<channel>\""
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC given by the message above (deletion request)",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "chirp_id", "channel", "timestamp"]
+}
+```
+
+## Publishing a reaction (reaction#add)
+
+Anyone with an active PoP token for that LAO may react (like/dislike/heart/etc...) to a chirp. 
+All reactions are posted in a single channel: "root/lao_id/social/reactions" to enable users 
+to see what is being popular.
+
+Each reaction contains the following:
+- Reaction Codepoint: Emoji indicating a reaction: https://unicode.org/emoji/charts/full-emoji-list.html
+- Chirp ID: The chirp that the sender is reacting to.
+- Timestamp: UNIX timestamp in UTC of the time that the user reacted.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/reaction_add/reaction_add.json
+
+{
+  "object": "reaction",
+  "action": "add",
+  "reaction_codepoint": "👍",
+  "chirp_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
+  "timestamp": 1634760180
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataAddReaction.json
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddReaction.json",
+  "description": "Match a add reaction query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "reaction"
+    },
+    "action": {
+      "const": "add"
+    },
+    "reaction_codepoint": {
+      "description": "Emoji indicating a reaction",
+      "type": "string",
+      "examples": ["👍", "👎"],
+      "$comment": "We represent the emojis with the character itself"
+    },
+    "chirp_id": {
+      "description": "message_id of the chirp message",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC of this reaction request",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "reaction_codepoint", "chirp_id", "timestamp"]
+}
+```
+
+## Removing a reaction (reaction#delete)
+
+A user that has published a reaction in the past can remove the reaction by sending 
+a reaction/delete message to the reaction channel ("/root/lao_id/social/reactions"). 
+Although a reaction can be removed from the UI, by design of the pub-sub communication 
+protocol, the reaction will always exist in historical records of the reactions’ channel.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/reaction_delete/reaction_delete.json
+
+{
+  "object": "reaction",
+  "action": "delete",
+  "reaction_id": "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=",
+  "timestamp": 1634760180
+}
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataDeleteReaction.json
+
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataDeleteReaction.json",
+  "description": "Match a delete reaction query",
+  "type": "object",
+  "properties": {
+    "object": {
+      "const": "reaction"
+    },
+    "action": {
+      "const": "delete"
+    },
+    "reaction_id": {
+      "description": "message_id of the add reaction message",
+      "type": "string",
+      "contentEncoding": "base64"
+    },
+    "timestamp": {
+      "description": "UNIX Timestamp in UTC of this deletion of reaction request",
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "additionalProperties": false,
+  "required": ["object", "action", "reaction_id", "timestamp"]
+}
 ```

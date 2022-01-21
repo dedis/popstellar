@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Button is enabled -->
+  <item android:drawable="@drawable/rounded_corner_button" android:state_enabled="true" />
+  <!-- Button is disabled -->
+  <item android:drawable="@drawable/rounded_corner_button_disabled" android:state_enabled="false" />
+</selector>
