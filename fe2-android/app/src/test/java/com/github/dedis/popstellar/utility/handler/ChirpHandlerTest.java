@@ -127,7 +127,7 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = LAO.getChirps();
+    Map<MessageID, Chirp> chirps = LAO.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }
@@ -153,7 +153,7 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = LAO.getChirps();
+    Map<MessageID, Chirp> chirps = LAO.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }
