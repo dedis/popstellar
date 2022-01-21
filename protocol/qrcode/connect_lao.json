@@ -8,7 +8,8 @@
     "properties": {
         "server": {
             "type": "string",
-            "pattern": "wss?://([\\w-]+\\.)+[\\w-]+(:\\d+)?(/[\\w-._~:?#\\[\\]@!$&'()/*+,;=]*%)?",
+			"format": "uri-reference",
+			"pattern": "(http|ws)s?://.*",
             "description": "The organizer's server URL"
         },
         "lao": {
