@@ -128,18 +128,19 @@ public final class RollCallHandler {
     rollCall.setState(EventState.CLOSED);
 
     lao.updateRollCall(closes, rollCall);
-
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
 
     // Subscribe to the social media channels
-    laoRepository.sendSubscribe(channel + "/social/chirps");
     try {
       PoPToken token = laoRepository.getKeyManager().getValidPoPToken(lao, rollCall);
       laoRepository.sendSubscribe(channel + "/social/" + token.getPublicKey().getEncoded());
     } catch (InvalidPoPTokenException e) {
-      Log.i(TAG, "Receive a close roll-call that you did not attend");
+      Log.i(TAG, "Received a close roll-call that you did not attend");
     } catch (KeyException e) {
-      Log.e(TAG, "Could not retrieve your PoP Token to subscribe you to social media channels", e);
+      Log.e(
+          TAG,
+          "Could not retrieve your PoP Token to subscribe you to your social media channel",
+          e);
     }
   }
 

@@ -29,6 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:text="@string/username"
+        android:textSize="@dimen/size_for_longer_text"
         android:textStyle="bold" />
 
       <TextView

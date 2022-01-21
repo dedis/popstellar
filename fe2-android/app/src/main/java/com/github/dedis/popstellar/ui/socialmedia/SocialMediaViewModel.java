@@ -205,7 +205,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void subscribeToChannel(String laoId) {
     Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/<sender>");
 
-    LAOState laoState = mLaoRepository.getLaoById().get(laoId);
+    LAOState laoState = mLaoRepository.getLaoById().get(ROOT + laoId);
     if (laoState == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -258,7 +258,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
     String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = mLaoRepository.getLaoById().get(getLaoId().getValue());
+    LAOState laoState = mLaoRepository.getLaoById().get(laoChannel);
     if (laoState == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;

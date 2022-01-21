@@ -52,6 +52,7 @@ public class SocialMediaHomeFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     setupSendButton();
+    setupListViewAdapter();
 
     // Subscribe to "open send" event
     mSocialMediaViewModel

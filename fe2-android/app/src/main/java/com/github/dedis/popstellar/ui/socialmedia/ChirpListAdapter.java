@@ -59,6 +59,7 @@ public class ChirpListAdapter extends BaseAdapter {
     PublicKey publicKey = chirp.getSender();
     long timestamp = chirp.getTimestamp();
     String text;
+
     if (chirp.getIsDeleted()) {
       text = "Chirp is deleted.";
     } else {
@@ -69,7 +70,7 @@ public class ChirpListAdapter extends BaseAdapter {
     itemUsername.setText(publicKey.getEncoded());
 
     TextView itemTime = view.findViewById(R.id.social_media_time);
-    itemTime.setText(getRelativeTimeSpanString(timestamp));
+    itemTime.setText(getRelativeTimeSpanString(timestamp * 1000));
 
     TextView itemText = view.findViewById(R.id.social_media_text);
     itemText.setText(text);
