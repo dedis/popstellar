@@ -11,38 +11,50 @@ import android.widget.TextView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
+import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.List;
+import java.util.Map;
 
 public class ChirpListAdapter extends BaseAdapter {
 
   private final Context context;
-  private List<Chirp> chirps;
+  private List<MessageID> chirpsId;
+  private Map<MessageID, Chirp> allChirps;
   private SocialMediaViewModel socialMediaViewModel;
   private LayoutInflater layoutInflater;
 
   public ChirpListAdapter(
-      Context context, List<Chirp> chirps, SocialMediaViewModel socialMediaViewModel) {
+      Context context,
+      List<MessageID> chirpsId,
+      Map<MessageID, Chirp> allChirps,
+      SocialMediaViewModel socialMediaViewModel) {
     this.context = context;
-    this.chirps = chirps;
+    this.chirpsId = chirpsId;
+    this.allChirps = allChirps;
     this.socialMediaViewModel = socialMediaViewModel;
     layoutInflater = LayoutInflater.from(context);
   }
 
-  public void replaceList(List<Chirp> chirps) {
-    this.chirps = chirps;
+  public void replaceList(List<MessageID> chirpsId) {
+    this.chirpsId = chirpsId;
+    notifyDataSetChanged();
+  }
+
+  public void replaceMap(Map<MessageID, Chirp> allChirps) {
+    this.allChirps = allChirps;
     notifyDataSetChanged();
   }
 
   @Override
   public int getCount() {
-    return chirps != null ? chirps.size() : 0;
+    return chirpsId != null ? chirpsId.size() : 0;
   }
 
   @Override
-  public Chirp getItem(int position) {
-    return chirps.get(position);
+  public MessageID getItem(int position) {
+    return chirpsId.get(position);
   }
 
   @Override
@@ -55,7 +67,7 @@ public class ChirpListAdapter extends BaseAdapter {
 
     view = layoutInflater.inflate(R.layout.chirp_card, null);
 
-    Chirp chirp = getItem(position);
+    Chirp chirp = allChirps.get(getItem(position));
     PublicKey publicKey = chirp.getSender();
     long timestamp = chirp.getTimestamp();
     String text;
