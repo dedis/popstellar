@@ -55,8 +55,8 @@
       <ImageButton
         android:layout_width="@dimen/social_media_delete"
         android:layout_height="@dimen/social_media_delete"
-        android:src="@drawable/ic_social_media_delete_foreground"
         android:contentDescription="@string/delete_button"
+        android:src="@drawable/ic_social_media_delete_foreground"
         android:visibility="gone" />
     </LinearLayout>
 

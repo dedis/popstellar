@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +23,13 @@ public class ChirpListAdapter extends BaseAdapter {
   private final Context context;
   private List<MessageID> chirpsId;
   private Map<MessageID, Chirp> allChirps;
-  private SocialMediaViewModel socialMediaViewModel;
   private LayoutInflater layoutInflater;
 
   public ChirpListAdapter(
-      Context context,
-      List<MessageID> chirpsId,
-      Map<MessageID, Chirp> allChirps,
-      SocialMediaViewModel socialMediaViewModel) {
+      Context context, List<MessageID> chirpsId, Map<MessageID, Chirp> allChirps) {
     this.context = context;
     this.chirpsId = chirpsId;
     this.allChirps = allChirps;
-    this.socialMediaViewModel = socialMediaViewModel;
     layoutInflater = LayoutInflater.from(context);
   }
 
@@ -62,12 +58,15 @@ public class ChirpListAdapter extends BaseAdapter {
     return position;
   }
 
+  @SuppressLint({"ViewHolder", "InflateParams"})
   @Override
   public View getView(int position, View view, ViewGroup viewGroup) {
-
     view = layoutInflater.inflate(R.layout.chirp_card, null);
 
     Chirp chirp = allChirps.get(getItem(position));
+    if (chirp == null) {
+      throw new IllegalArgumentException("The chirp does not exist");
+    }
     PublicKey publicKey = chirp.getSender();
     long timestamp = chirp.getTimestamp();
     String text;
