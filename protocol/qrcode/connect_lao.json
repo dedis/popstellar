@@ -8,8 +8,8 @@
     "properties": {
         "server": {
             "type": "string",
-			"format": "uri-reference",
-			"pattern": "(http|ws)s?://.*",
+            "format": "uri-reference",
+            "pattern": "(http|ws)s?://.*",
             "description": "The organizer's server URL"
         },
         "lao": {
