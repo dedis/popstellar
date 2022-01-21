@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,11 +11,14 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.SocialMediaHomeFragmentBinding;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -53,6 +57,8 @@ public class SocialMediaHomeFragment extends Fragment {
 
     setupSendButton();
     setupListViewAdapter();
+    setupListUpdate();
+    setupSwipeRefresh();
 
     // Subscribe to "open send" event
     mSocialMediaViewModel
@@ -72,6 +78,26 @@ public class SocialMediaHomeFragment extends Fragment {
         v -> mSocialMediaViewModel.openSend());
   }
 
+  private void setupSwipeRefresh() {
+    SwipeRefreshLayout swipeRefreshLayout = mSocialMediaHomeFragBinding.swipeRefreshChirps;
+    swipeRefreshLayout.setOnRefreshListener(
+        () -> {
+          mChirpListAdapter.replaceList(
+              mSocialMediaViewModel.getChirpIdList(mSocialMediaViewModel.getLaoId().getValue()));
+          mChirpListAdapter.replaceMap(
+              mSocialMediaViewModel.getAllChirps(mSocialMediaViewModel.getLaoId().getValue()));
+
+          final Handler handler = new Handler();
+          handler.postDelayed(
+              () -> {
+                if (swipeRefreshLayout.isRefreshing()) {
+                  swipeRefreshLayout.setRefreshing(false);
+                }
+              },
+              1000);
+        });
+  }
+
   private void setupSocialMediaSendFragment() {
     setCurrentFragment(R.id.fragment_social_media_send, SocialMediaSendFragment::newInstance);
   }
@@ -80,8 +106,19 @@ public class SocialMediaHomeFragment extends Fragment {
     ListView listView = mSocialMediaHomeFragBinding.chirpsList;
     mChirpListAdapter =
         new ChirpListAdapter(
-            getActivity(), mSocialMediaViewModel.getChirpList(), mSocialMediaViewModel);
+            getActivity(), new ArrayList<>(), new HashMap<>(), mSocialMediaViewModel);
     listView.setAdapter(mChirpListAdapter);
+  }
+
+  private void setupListUpdate() {
+    mSocialMediaViewModel
+        .getLaoId()
+        .observe(
+            getViewLifecycleOwner(),
+            newLaoId -> {
+              mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpIdList(newLaoId));
+              mChirpListAdapter.replaceMap(mSocialMediaViewModel.getAllChirps(newLaoId));
+            });
   }
 
   /**

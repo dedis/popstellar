@@ -26,8 +26,8 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -303,8 +303,13 @@ public class SocialMediaViewModel extends AndroidViewModel {
     }
   }
 
-  public List<Chirp> getChirpList() {
-    Lao lao = mLaoRepository.getLaoByChannel(ROOT + getLaoId().getValue());
-    return new ArrayList<>(lao.getChirps().values());
+  public List<MessageID> getChirpIdList(String laoId) {
+    Lao lao = mLaoRepository.getLaoByChannel(ROOT + laoId);
+    return lao.getChirpsIdInOrder();
+  }
+
+  public Map<MessageID, Chirp> getAllChirps(String laoId) {
+    Lao lao = mLaoRepository.getLaoByChannel(ROOT + laoId);
+    return lao.getAllChirps();
   }
 }

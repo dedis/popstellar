@@ -29,7 +29,8 @@
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
           android:layout_width="match_parent"
-          android:layout_height="match_parent">
+          android:layout_height="match_parent"
+          android:id="@+id/swipe_refresh_chirps">
 
           <ListView
             android:id="@+id/chirps_list"
