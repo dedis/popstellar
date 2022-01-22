@@ -192,6 +192,7 @@ copy {
 
     include 'answer/**'
     include 'examples/**'
+    include 'qrcode/**'
     include 'query/**'
     include 'jsonRPC.json'
 
