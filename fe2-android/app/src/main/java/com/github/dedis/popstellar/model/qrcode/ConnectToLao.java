@@ -9,7 +9,7 @@ public class ConnectToLao {
   public final String server;
   public final String lao;
 
-  private ConnectToLao(String server, String lao) {
+  public ConnectToLao(String server, String lao) {
     this.server = server;
     this.lao = lao;
   }
