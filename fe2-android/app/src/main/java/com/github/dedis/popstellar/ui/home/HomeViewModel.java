@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -20,13 +21,16 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.gson.Gson;
+import com.google.gson.JsonParseException;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -84,6 +88,7 @@ public class HomeViewModel extends AndroidViewModel
   private final LAORepository mLAORepository;
   private final KeyManager mKeyManager;
   private final Wallet wallet;
+  private final LAORequestFactory mRequestFactory;
 
   private final CompositeDisposable disposables = new CompositeDisposable();
 
@@ -93,13 +98,15 @@ public class HomeViewModel extends AndroidViewModel
       Gson gson,
       Wallet wallet,
       LAORepository laoRepository,
-      KeyManager keyManager) {
+      KeyManager keyManager,
+      LAORequestFactory requestFactory) {
     super(application);
 
     mLAORepository = laoRepository;
     mGson = gson;
     mKeyManager = keyManager;
     this.wallet = wallet;
+    mRequestFactory = requestFactory;
 
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
@@ -124,7 +131,19 @@ public class HomeViewModel extends AndroidViewModel
   @Override
   public void onQRCodeDetected(Barcode barcode) {
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
-    String channel = "/root/" + barcode.rawValue;
+    ConnectToLao data;
+    try {
+      data = ConnectToLao.extractFrom(mGson, barcode);
+    } catch (JsonParseException e) {
+      Log.e(TAG, "Invalid QRCode data", e);
+      Toast.makeText(
+              getApplication().getApplicationContext(), "Invalid QRCode data", Toast.LENGTH_LONG)
+          .show();
+      return;
+    }
+
+    mRequestFactory.setUrl(data.server);
+    String channel = "/root/" + data.lao;
     disposables.add(
         mLAORepository
             .sendSubscribe(channel)
