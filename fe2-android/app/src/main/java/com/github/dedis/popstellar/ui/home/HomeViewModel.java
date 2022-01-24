@@ -133,7 +133,7 @@ public class HomeViewModel extends AndroidViewModel
     Log.d(TAG, "Detected barcode with value: " + barcode.rawValue);
     ConnectToLao data;
     try {
-      data = ConnectToLao.extractFrom(mGson, barcode);
+      data = ConnectToLao.extractFrom(mGson, barcode.rawValue);
     } catch (JsonParseException e) {
       Log.e(TAG, "Invalid QRCode data", e);
       Toast.makeText(
