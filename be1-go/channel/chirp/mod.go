@@ -3,8 +3,6 @@ package chirp
 import (
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog"
-	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/crypto"
 	"popstellar/inbox"
@@ -17,9 +15,13 @@ import (
 	"popstellar/network/socket"
 	"popstellar/validation"
 	"strconv"
+
+	"github.com/rs/zerolog"
+	"golang.org/x/xerrors"
 )
 
 const msgID = "msg id"
+const failedToDecodeData = "failed to decode message data: %v"
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
@@ -52,18 +54,31 @@ type Channel struct {
 
 // Publish is used to handle publish messages in the chirp channel.
 func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
-	err := c.verifyPublishMessage(publish)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message on a "+
 			"chirping channel: %w", err)
 	}
 
-	msg := publish.Params.Message
+	err = c.handleMessage(publish.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to handle publish message: %v", err)
+	}
+
+	return nil
+}
+
+// handleMessage handles a message received in a broadcast or publish method
+func (c *Channel) handleMessage(msg message.Message) error {
 	data := msg.Data
 
 	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
@@ -172,7 +187,7 @@ func (c *Channel) broadcastViaGeneral(msg message.Message) error {
 		},
 	}
 
-	err = c.generalChannel.Broadcast(rpcMessage)
+	err = c.generalChannel.Broadcast(rpcMessage, nil)
 	if err != nil {
 		return xerrors.Errorf("the general channel failed to broadcast the chirp message: %v", err)
 	}
@@ -215,11 +230,21 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	c.log.Error().
-		Str(msgID, msg.Params.Message.MessageID).
-		Msg("chirp channel should not need to broadcast")
-	return xerrors.Errorf("chirp channel should not need to broadcast")
+func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
+	c.log.Info().Msg("received a broadcast")
+
+	err := c.verifyMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify broadcast message on a "+
+			"chirping channel: %w", err)
+	}
+
+	err = c.handleMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to handle broadcast message: %v", err)
+	}
+
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -251,18 +276,12 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	return nil
 }
 
-// VerifyPublishMessage checks if a Publish message is valid
-func (c *Channel) verifyPublishMessage(publish method.Publish) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(publish.ID)).
-		Msg("received a publish")
-
-	// Check if the structure of the message is correct
-	msg := publish.Params.Message
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data

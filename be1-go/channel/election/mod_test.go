@@ -4,12 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
@@ -23,6 +17,13 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -131,11 +132,15 @@ func Test_Election_Channel_Catchup(t *testing.T) {
 	}
 }
 
-// Tests that the channel throws an error when it receives a broadcast message
+// Tests that the channel works when it receives a broadcast message
 func Test_Election_Channel_Broadcast(t *testing.T) {
 
 	// create election channel: election with one question
 	electChannel, _ := newFakeChannel(t)
+
+	// create a fakeSocket that is listening to the channel
+	fakeSock := &fakeSocket{id: "socket"}
+	electChannel.sockets.Upsert(fakeSock)
 
 	relativePath := filepath.Join(relativeQueryExamplePath, "broadcast")
 
@@ -143,12 +148,11 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
 
-	var broad method.Broadcast
-	err = json.Unmarshal(buf, &broad)
+	var broadcast method.Broadcast
+	err = json.Unmarshal(buf, &broadcast)
 	require.NoError(t, err)
 
-	// an election channel isn't supposed to broadcast a message - must fail
-	require.Error(t, electChannel.Broadcast(broad))
+	require.NoError(t, electChannel.Broadcast(broadcast, nil))
 }
 
 // Tests that the channel works correctly when it receives a cast vote and
@@ -491,8 +495,8 @@ func (h *fakeHub) GetServerNumber() int {
 	return 1
 }
 
-func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
-	byteMsg, err := json.Marshal(publishMsg)
+func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
+	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
@@ -500,10 +504,6 @@ func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
 	h.fakeSock.msg = byteMsg
 
 	return nil
-}
-
-func (h *fakeHub) SetMessageID(publish *method.Publish) {
-	publish.ID = 0
 }
 
 // fakeSocket is a fake implementation of a socket

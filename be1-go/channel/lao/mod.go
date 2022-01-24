@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog/log"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
@@ -27,6 +26,8 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/rs/zerolog/log"
+
 	"github.com/rs/zerolog"
 	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
@@ -36,6 +37,8 @@ import (
 const (
 	keyDecodeError    = "failed to decode sender key: %v"
 	keyUnmarshalError = "failed to unmarshal public key of the sender: %v"
+
+	failedToDecodeData = "failed to decode message data: %v"
 
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
@@ -141,10 +144,20 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(msg method.Broadcast) error {
-	err := xerrors.Errorf("a lao shouldn't need to broadcast a message")
-	c.log.Err(err)
-	return err
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+	c.log.Info().Msg("received a broadcast")
+
+	err := c.verifyMessage(broadcast.Params.Message)
+	if err != nil {
+		return xerrors.Errorf("failed to verify broadcast message: %w", err)
+	}
+
+	err = c.handleMessage(broadcast.Params.Message, socket)
+	if err != nil {
+		return xerrors.Errorf("failed to handle broadcast message: %v", err)
+	}
+
+	return nil
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
@@ -178,18 +191,12 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 	c.sockets.SendToAll(buf)
 }
 
-// VerifyPublishMessage checks if a Publish message is valid
-func (c *Channel) VerifyPublishMessage(publish method.Publish) error {
-	c.log.Info().
-		Str(msgID, strconv.Itoa(publish.ID)).
-		Msg("received a publish")
-
-	// Check if the structure of the message is correct
-	msg := publish.Params.Message
+// verifyMessage checks if a message in a Publish or Broadcast method is valid
+func (c *Channel) verifyMessage(msg message.Message) error {
 
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	// Verify the data
@@ -239,18 +246,29 @@ type rollCall struct {
 
 // Publish handles publish messages for the LAO channel.
 func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
-	err := c.VerifyPublishMessage(publish)
+	c.log.Info().
+		Str(msgID, strconv.Itoa(publish.ID)).
+		Msg("received a publish")
+
+	err := c.verifyMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
 	}
 
-	msg := publish.Params.Message
-
-	data := msg.Data
-
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err = c.handleMessage(publish.Params.Message, socket)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf("failed to handle publish message: %v", err)
+	}
+
+	return nil
+}
+
+// handleMessage handles a message received in a broadcast or publish method
+func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+
+	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	if err != nil {
+		return xerrors.Errorf(failedToDecodeData, err)
 	}
 
 	object, action, err := messagedata.GetObjectAndAction(jsonData)
@@ -278,6 +296,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	}
 
 	c.broadcastToAllClients(msg)
+
 	return nil
 }
 

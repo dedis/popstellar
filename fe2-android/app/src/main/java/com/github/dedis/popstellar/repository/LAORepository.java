@@ -28,8 +28,6 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 import com.tinder.scarlet.WebSocket;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -191,29 +189,23 @@ public class LAORepository {
    * @param channel Represents the channel on which to send the stateLao message
    */
   public void sendStateLao(Lao lao, MessageGeneral msg, MessageID messageId, String channel) {
-    try {
-      if (mKeyManager.getMainPublicKey().equals(lao.getOrganizer())) {
-        UpdateLao updateLao = (UpdateLao) msg.getData();
-        StateLao stateLao =
-            new StateLao(
-                lao.getId(),
-                updateLao.getName(),
-                lao.getCreation(),
-                updateLao.getLastModified(),
-                lao.getOrganizer(),
-                messageId,
-                updateLao.getWitnesses(),
-                msg.getWitnessSignatures());
+    if (mKeyManager.getMainPublicKey().equals(lao.getOrganizer())) {
+      UpdateLao updateLao = (UpdateLao) msg.getData();
+      StateLao stateLao =
+          new StateLao(
+              lao.getId(),
+              updateLao.getName(),
+              lao.getCreation(),
+              updateLao.getLastModified(),
+              lao.getOrganizer(),
+              messageId,
+              updateLao.getWitnesses(),
+              msg.getWitnessSignatures());
 
-        MessageGeneral stateLaoMsg =
-            new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
+      MessageGeneral stateLaoMsg =
+          new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
 
-        sendPublish(channel, stateLaoMsg);
-      }
-    } catch (GeneralSecurityException e) {
-      Log.d(TAG, "failed to get keyset handle: " + e.getMessage());
-    } catch (IOException e) {
-      Log.d(TAG, "failed to get encoded public key: " + e.getMessage());
+      sendPublish(channel, stateLaoMsg);
     }
   }
 
@@ -300,13 +292,8 @@ public class LAORepository {
    * @param data the data to encapsulate in the message
    */
   public Single<Answer> sendMessageGeneral(String channel, Data data) {
-    try {
-      MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), data, mGson);
-      return sendPublish(channel, msg);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.e(TAG, "failed to retrieve public key");
-      return Single.error(e);
-    }
+    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), data, mGson);
+    return sendPublish(channel, msg);
   }
 
   /**
@@ -315,12 +302,7 @@ public class LAORepository {
    * @return the public key
    */
   public PublicKey getPublicKey() {
-    try {
-      return mKeyManager.getMainPublicKey();
-    } catch (Exception e) {
-      Log.e(TAG, "failed to retrieve public key", e);
-      return null;
-    }
+    return mKeyManager.getMainPublicKey();
   }
 
   /**

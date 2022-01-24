@@ -51,7 +51,7 @@ const SocialUserProfile = ({ route }: any) => {
       <View style={styles.topView}>
         <View style={{ marginBottom: 15 }}>
           <BackButton
-            navigationTabName={STRINGS.social_media_navigation_tab_search}
+            navigationTabName={STRINGS.social_media_navigation_tab_attendee_list}
             testID="backButtonUserProfile"
           />
         </View>
@@ -62,7 +62,7 @@ const SocialUserProfile = ({ route }: any) => {
         />
         <View style={styles.textView}>
           <Text style={styles.profileText}>{userPublicKey.valueOf()}</Text>
-          <Text>{`${userChirpList.length} chirps`}</Text>
+          <Text>{`${userChirpList.length} ${userChirpList.length === 1 ? 'chirp' : 'chirps'}`}</Text>
         </View>
       </View>
       <View style={styles.userFeed}>

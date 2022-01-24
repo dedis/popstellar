@@ -17,10 +17,10 @@ import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import net.glxn.qrgen.android.QRCode;
 
-import java.security.GeneralSecurityException;
 import java.util.Optional;
 
 import javax.inject.Inject;
@@ -76,9 +76,9 @@ public class RollCallTokenFragment extends Fragment {
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {
-      PoPToken token = wallet.findKeyPair(firstLaoId, rollCall.getPersistentId());
+      PoPToken token = wallet.generatePoPToken(firstLaoId, rollCall.getPersistentId());
       pk = token.getPublicKey().getEncoded();
-    } catch (GeneralSecurityException e) {
+    } catch (KeyException e) {
       Log.d(TAG, "failed to retrieve token from wallet", e);
       mLaoDetailViewModel.openLaoWallet();
     }
