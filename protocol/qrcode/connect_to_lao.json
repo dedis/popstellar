@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/jsonRPC.json",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/connect_to_lao.json",
     "title": "QRCode data",
     "description": "Match a data contained in a qrcode used to connect to an LAO.",
     "type": "object",
