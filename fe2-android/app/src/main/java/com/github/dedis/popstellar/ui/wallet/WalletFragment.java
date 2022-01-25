@@ -16,14 +16,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.databinding.WalletFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
+import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
-
-import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -35,7 +32,6 @@ public class WalletFragment extends Fragment {
 
   private WalletFragmentBinding mWalletFragBinding;
   private HomeViewModel mHomeViewModel;
-  @Inject Wallet wallet;
 
   public static WalletFragment newInstance() {
     return new WalletFragment();
@@ -57,16 +53,7 @@ public class WalletFragment extends Fragment {
     } else {
       throw new IllegalArgumentException("Cannot obtain view model for " + TAG);
     }
-    try {
-      wallet.initKeysManager(requireContext().getApplicationContext());
-    } catch (IOException | GeneralSecurityException e) {
-      Toast.makeText(
-              requireContext().getApplicationContext(),
-              "Error import key, try again",
-              Toast.LENGTH_LONG)
-          .show();
-      Log.d(TAG, "Error while importing the key", e);
-    }
+
     mWalletFragBinding.setViewModel(mHomeViewModel);
     mWalletFragBinding.setLifecycleOwner(activity);
 
@@ -113,10 +100,13 @@ public class WalletFragment extends Fragment {
           builder.setPositiveButton(
               "Set up wallet",
               (dialog, which) -> {
-                if (!mHomeViewModel.importSeed(input.getText().toString())) {
+                try {
+                  mHomeViewModel.importSeed(input.getText().toString());
+                } catch (GeneralSecurityException | SeedValidationException e) {
+                  Log.e(TAG, "Error importing key", e);
                   Toast.makeText(
                           requireContext().getApplicationContext(),
-                          "Error import key, try again",
+                          "Error importing key : " + e.getMessage() + "\ntry again",
                           Toast.LENGTH_LONG)
                       .show();
                 }
@@ -128,6 +118,6 @@ public class WalletFragment extends Fragment {
   }
 
   private void setupNewWalletButton() {
-    mWalletFragBinding.buttonNewWallet.setOnClickListener(v -> mHomeViewModel.openSeed());
+    mWalletFragBinding.buttonNewWallet.setOnClickListener(v -> mHomeViewModel.newSeed());
   }
 }

@@ -4,18 +4,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/zerolog"
-	"github.com/stretchr/testify/require"
-	"go.dedis.ch/kyber/v3"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
-	"golang.org/x/sync/semaphore"
-	"golang.org/x/xerrors"
 	"io"
 	"os"
 	"path/filepath"
 	"popstellar/channel"
 	"popstellar/crypto"
+	jsonrpc "popstellar/message"
 	"popstellar/message/messagedata"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -23,6 +19,13 @@ import (
 	"sync"
 	"testing"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/stretchr/testify/require"
+	"go.dedis.ch/kyber/v3"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
+	"golang.org/x/sync/semaphore"
+	"golang.org/x/xerrors"
 )
 
 const (
@@ -125,8 +128,8 @@ func TestLAOChannel_wrongUnsubscribe(t *testing.T) {
 	require.Error(t, cha.Unsubscribe("inexistingSocket", message))
 }
 
-// Tests that the channel throws an error when it receives a broadcast message
-func TestReactionChannel_Broadcast_mustFail(t *testing.T) {
+// Tests that the channel works when it receives a broadcast message
+func TestReactionChannel_Broadcast(t *testing.T) {
 	// Create the hub
 	keypair := generateKeyPair(t)
 
@@ -136,19 +139,57 @@ func TestReactionChannel_Broadcast_mustFail(t *testing.T) {
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
+	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+
+	fakeSock := &fakeSocket{id: "socket"}
+	cha.sockets.Upsert(fakeSock)
+
+	// Create the message
 	relativePath := filepath.Join(protocolRelativePath,
+		"examples", "messageData")
+
+	file := filepath.Join(relativePath, "reaction_add", "reaction_add.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	m := message.Message{
+		Data:              buf64,
+		Sender:            sender,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	relativePath = filepath.Join(protocolRelativePath,
 		"examples", "query", "broadcast")
 
-	file := filepath.Join(relativePath, "broadcast.json")
-	buf, err := os.ReadFile(file)
+	file = filepath.Join(relativePath, "broadcast.json")
+	buf, err = os.ReadFile(file)
 	require.NoError(t, err)
 
 	var message method.Broadcast
 	err = json.Unmarshal(buf, &message)
 	require.NoError(t, err)
 
-	// a reaction channel isn't supposed to broadcast a message - must fail
-	require.Error(t, cha.Broadcast(message))
+	message.Base = query.Base{
+		JSONRPCBase: jsonrpc.JSONRPCBase{
+			JSONRPC: "2.0",
+		},
+
+		Method: "broadcast",
+	}
+	message.Params.Channel = cha.channelID
+	message.Params.Message = m
+
+	require.NoError(t, cha.Broadcast(message, nil))
+
+	// Checks that the broadcast message is broadcast to the sockets
+	bufBroad, err := json.Marshal(message)
+	require.NoError(t, err)
+
+	require.Equal(t, bufBroad, fakeSock.msg)
 }
 
 // Tests that the channel works correctly when it receives a catchup
@@ -521,11 +562,9 @@ func (h *fakeHub) GetServerNumber() int {
 	return 0
 }
 
-func (h *fakeHub) SendAndHandleMessage(publishMsg method.Publish) error {
+func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
-
-func (h *fakeHub) SetMessageID(publish *method.Publish) {}
 
 // fakeSocket is a fake implementation of a socket
 //

@@ -38,6 +38,10 @@ const (
 	// used to keep an image of the laos
 	rootPrefix = rootChannel + "/"
 
+	// Strings used to return error messages
+	rootChannelErr = "failed to handle root channel message: %v"
+	getChannelErr  = "failed to get channel: %v"
+
 	// Strings used to return error messages in relation with a database
 	dbPrepareErr  = "failed to prepare query: %v"
 	dbParseRowErr = "failed to parse row: %v"
@@ -93,7 +97,6 @@ func newQueries() queries {
 	return queries{
 		state:   make(map[int]*bool),
 		queries: make(map[int]method.Catchup),
-		nextID:  0,
 	}
 }
 
@@ -138,16 +141,6 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 	q.nextID++
 
 	return rpcMessage
-}
-
-func (q *queries) getNextID() int {
-	q.Lock()
-	defer q.Unlock()
-
-	nextID := q.nextID
-	q.nextID++
-
-	return nextID
 }
 
 // NewHub returns a new Hub.
@@ -262,8 +255,8 @@ func (h *Hub) GetServerNumber() int {
 
 // SendAndHandleMessage sends a publish message to all other known servers and
 // handle it
-func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
-	byteMsg, err := json.Marshal(publishMsg)
+func (h *Hub) SendAndHandleMessage(msg method.Broadcast) error {
+	byteMsg, err := json.Marshal(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to marshal publish message: %v", err)
 	}
@@ -273,7 +266,7 @@ func (h *Hub) SendAndHandleMessage(publishMsg method.Publish) error {
 	h.serverSockets.SendToAll(byteMsg)
 
 	go func() {
-		_, err = h.handlePublish(nil, byteMsg)
+		err = h.handleBroadcast(nil, byteMsg)
 		if err != nil {
 			h.log.Err(err).Msgf("Failed to handle self-produced message")
 		}
@@ -446,6 +439,8 @@ func (h *Hub) handleMessageFromServer(incomingMessage *socket.IncomingMessage) e
 		id, handlerErr = h.handleUnsubscribe(socket, byteMessage)
 	case query.MethodCatchUp:
 		msgs, id, handlerErr = h.handleCatchup(socket, byteMessage)
+	case query.MethodBroadcast:
+		handlerErr = h.handleBroadcast(socket, byteMessage)
 	default:
 		err = answer.NewErrorf(-2, "unexpected method: '%s'", queryBase.Method)
 		socket.SendError(nil, err)
@@ -488,22 +483,44 @@ func (h *Hub) handleIncomingMessage(incomingMessage *socket.IncomingMessage) err
 }
 
 // broadcastToServers broadcast a message to all other known servers
-func (h *Hub) broadcastToServers(message message.Message, byteMessage []byte) bool {
+func (h *Hub) broadcastToServers(msg message.Message, channel string) (bool, error) {
 	h.Lock()
 	defer h.Unlock()
 
-	_, ok := h.hubInbox.GetMessage(message.MessageID)
-	if !ok {
-		h.serverSockets.SendToAll(byteMessage)
-		h.hubInbox.StoreMessage(message)
-		return false
+	_, ok := h.hubInbox.GetMessage(msg.MessageID)
+	if ok {
+		return true, nil
 	}
 
-	return true
+	broadcastMessage := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+			Method: "broadcast",
+		},
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			channel,
+			msg,
+		},
+	}
+
+	buf, err := json.Marshal(broadcastMessage)
+	if err != nil {
+		return false, xerrors.Errorf("failed to marshal broadcast query: %v", err)
+	}
+
+	h.serverSockets.SendToAll(buf)
+	h.hubInbox.StoreMessage(msg)
+
+	return false, nil
 }
 
 // createLao creates a new LAO using the data in the publish parameter.
-func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
+func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	socket socket.Socket) error {
 
 	laoChannelPath := rootPrefix + laoCreate.ID
@@ -512,7 +529,7 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 		return answer.NewErrorf(-3, "failed to create lao: duplicate lao path: %q", laoChannelPath)
 	}
 
-	senderBuf, err := base64.URLEncoding.DecodeString(publish.Params.Message.Sender)
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
 		return answer.NewErrorf(-4, "failed to decode public key of the sender: %v", err)
 	}
@@ -524,9 +541,9 @@ func (h *Hub) createLao(publish method.Publish, laoCreate messagedata.LaoCreate,
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
 
-	laoCh := h.laoFac(laoChannelPath, h, publish.Params.Message, h.log, senderPubKey, socket)
+	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
 
-	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, publish.Params.Message)
+	h.log.Info().Msgf("storing new channel '%s' %v", laoChannelPath, msg)
 
 	h.NotifyNewChannel(laoChannelPath, laoCh, socket)
 
@@ -571,11 +588,6 @@ func (h *Hub) NotifyNewChannel(channelID string, channel channel.Channel, sock s
 		h.log.Info().Msgf("catching up on channel %v", channelID)
 		h.catchupToServer(sock, channelID)
 	}
-}
-
-// SetMessageID sets the id of a publish message before sending it
-func (h *Hub) SetMessageID(publish *method.Publish) {
-	publish.ID = h.queries.getNextID()
 }
 
 func generateKeys() (kyber.Point, kyber.Scalar) {
