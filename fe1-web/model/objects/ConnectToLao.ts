@@ -1,6 +1,9 @@
 import { validateConnectToLao } from '../network/validation';
 import { ProtocolError } from '../network';
 
+/**
+ * object containing server url and Lao id for generating qr code of a Lao
+ */
 export class ConnectToLao {
   public readonly server: string;
 
@@ -8,16 +11,16 @@ export class ConnectToLao {
 
   constructor(connectToLao: Partial<ConnectToLao>) {
     if (connectToLao === undefined || connectToLao === null) {
-      throw new Error('Error encountered while creating a ConnectToLao object: '
+      throw new ProtocolError('Error encountered while creating a ConnectToLao object: '
         + 'undefined/null parameters');
     }
 
     if (connectToLao.lao === undefined) {
-      throw new Error("undefined 'lao' when creating 'ConnectToLao'");
+      throw new ProtocolError("undefined 'lao' when creating 'ConnectToLao'");
     }
 
     if (connectToLao.server === undefined) {
-      throw new Error("undefined 'server' when creating 'ConnectToLao'");
+      throw new ProtocolError("undefined 'server' when creating 'ConnectToLao'");
     }
 
     this.lao = connectToLao.lao;
