@@ -2173,7 +2173,7 @@ this proposer in the proposed_try field.
 ## Promising a value in the Consensus (consensus#promise)
 
 After receiving a consensus/prepare message an acceptor answer with a
-consensu/promise message if the proposed_try field of the received message
+consensus/promise message if the proposed_try field of the received message
 is bigger than the promised_try stored in the consensus instance stored
 by the acceptor, the promised_try is also changed to the received proposed_try.
 The new message contains the promised_try of the stored consensus instance and
