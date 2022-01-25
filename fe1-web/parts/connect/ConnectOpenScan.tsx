@@ -28,9 +28,9 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     console.log(data);
     if (data) {
       setQrWasScanned(true);
-      const laoIdUrl = data.split(' ', 2);
+      const obj = JSON.parse(data);
       navigation.navigate(STRINGS.connect_confirm_title,
-        { laoIdIn: laoIdUrl[0], url: laoIdUrl[1] });
+        { laoIdIn: obj.lao, url: obj.server });
     }
   };
 

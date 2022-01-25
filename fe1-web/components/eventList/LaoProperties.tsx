@@ -11,17 +11,21 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
 import PropTypes from 'prop-types';
+import { ConnectToLao } from 'model/objects/ConnectToLao';
 import QRCode from '../QRCode';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.timestampToString();
-  const value = lao.id.toString().concat(' ').concat(url);
+  const connectToLao = new ConnectToLao({
+    server: url,
+    lao: lao.id.toString(),
+  });
 
   return (
     <>
       <ParagraphBlock text={`Lao name: ${lao.name}`} />
       <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
-      <QRCode value={value} visibility />
+      <QRCode value={JSON.stringify(connectToLao)} visibility />
     </>
   );
 }
