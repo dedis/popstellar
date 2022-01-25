@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
 
@@ -23,7 +23,8 @@ const Attendee = () => {
   const currentEvents: LaoEvent[] = [];
   const futureEvents: LaoEvent[] = [];
   const route = useRoute();
-  const { url } = route.params || ''; // url is set for organizer and empty for attendees
+  const { url } = route.params || '';
+  const [serverUrl] = useState(url);
 
   events.forEach((e: LaoEvent) => {
     if ((e.end && e.end.before(now))
@@ -56,7 +57,7 @@ const Attendee = () => {
 
   return (
     <ScrollView>
-      <LaoProperties url={url} />
+      <LaoProperties url={serverUrl} />
       <EventListCollapsible data={DATA_EXAMPLE} />
     </ScrollView>
   );

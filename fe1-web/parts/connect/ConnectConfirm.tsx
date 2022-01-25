@@ -85,7 +85,11 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
     try {
       await subscribeToChannel(channel);
       navigation.navigate(STRINGS.app_navigation_tab_organizer, {
-        screen: 'Attendee',
+        screen: STRINGS.organization_navigation_tab_organizer,
+        params: {
+          screen: STRINGS.organizer_navigation_tab_home,
+          params: { url: serverUrl },
+        },
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);
