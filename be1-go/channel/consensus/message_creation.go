@@ -76,6 +76,10 @@ func (c *Channel) createProposeMessage(consensusInstance *ConsensusInstance, mes
 		AcceptorSignatures: make([]string, 0),
 	}
 
+	for acceptor := range consensusInstance.promises {
+		newData.AcceptorSignatures = append(newData.AcceptorSignatures, acceptor)
+	}
+
 	if highestAccepted == -1 {
 		newData.Value.ProposedTry = consensusInstance.proposedTry
 	} else {
@@ -131,6 +135,10 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messa
 		},
 
 		AcceptorSignatures: make([]string, 0),
+	}
+
+	for acceptor := range consensusInstance.accepts {
+		newData.AcceptorSignatures = append(newData.AcceptorSignatures, acceptor)
 	}
 
 	byteMsg, err := json.Marshal(newData)

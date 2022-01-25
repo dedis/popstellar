@@ -90,8 +90,8 @@ type ConsensusInstance struct {
 	decided  bool
 	decision bool
 
-	promises []messagedata.ConsensusPromise
-	accepts  []messagedata.ConsensusAccept
+	promises map[string]messagedata.ConsensusPromise
+	accepts  map[string]messagedata.ConsensusAccept
 
 	electInstances map[string]*ElectInstance
 }
@@ -426,8 +426,8 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 		decided:  false,
 		decision: false,
 
-		promises: make([]messagedata.ConsensusPromise, 0),
-		accepts:  make([]messagedata.ConsensusAccept, 0),
+		promises: make(map[string]messagedata.ConsensusPromise),
+		accepts:  make(map[string]messagedata.ConsensusAccept),
 
 		electInstances: make(map[string]*ElectInstance),
 	}
@@ -676,7 +676,7 @@ func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}
 }
 
 // processConsensusPromise processes a promise action.
-func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusPromise(msg message.Message, msgData interface{}) error {
 
 	data, ok := msgData.(*messagedata.ConsensusPromise)
 	if !ok {
@@ -709,7 +709,7 @@ func (c *Channel) processConsensusPromise(_ message.Message, msgData interface{}
 		return xerrors.Errorf(consensusFinished, data.InstanceID)
 	}
 
-	consensusInstance.promises = append(consensusInstance.promises, *data)
+	consensusInstance.promises[msg.Signature] = *data
 
 	// if enough Promise messages are received, the proposer send a Propose message
 	if len(consensusInstance.promises) < electInstance.acceptorNumber/2+1 {
@@ -819,7 +819,7 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 }
 
 // processConsensusAccept proccesses an accept action.
-func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusAccept(msg message.Message, msgData interface{}) error {
 
 	data, ok := msgData.(*messagedata.ConsensusAccept)
 	if !ok {
@@ -855,7 +855,7 @@ func (c *Channel) processConsensusAccept(_ message.Message, msgData interface{})
 
 	if data.Value.AcceptedTry == consensusInstance.proposedTry &&
 		data.Value.AcceptedValue == consensusInstance.proposedValue {
-		consensusInstance.accepts = append(consensusInstance.accepts, *data)
+		consensusInstance.accepts[msg.Signature] = *data
 	}
 
 	if len(consensusInstance.accepts) < electInstance.acceptorNumber/2+1 {
