@@ -1,3 +1,6 @@
+import { validateConnectToLao } from '../network/validation';
+import { ProtocolError } from '../network';
+
 export class ConnectToLao {
   public readonly server: string;
 
@@ -22,6 +25,14 @@ export class ConnectToLao {
   }
 
   public static fromJson(obj: any): ConnectToLao {
-    const { errors } =
+    const { errors } = validateConnectToLao(obj);
+
+    if (errors !== null) {
+      throw new ProtocolError(`Invalid connection to lao\n\n${errors}`);
+    }
+
+    return new ConnectToLao({
+      ...obj,
+    });
   }
 }

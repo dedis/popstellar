@@ -1,1 +1,3 @@
-export { validateJsonRpcRequest, validateJsonRpcResponse, validateDataObject } from './Validator';
+export {
+  validateJsonRpcRequest, validateJsonRpcResponse, validateDataObject, validateConnectToLao,
+} from './Validator';
