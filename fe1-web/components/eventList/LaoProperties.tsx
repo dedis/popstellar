@@ -10,21 +10,27 @@ import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
+import PropTypes from 'prop-types';
+import { ConnectToLao } from 'model/objects/ConnectToLao';
 import QRCode from '../QRCode';
 
-function renderProperties(lao: Lao) {
+function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.timestampToString();
+  const connectToLao = new ConnectToLao({
+    server: url,
+    lao: lao.id.toString(),
+  });
 
   return (
     <>
       <ParagraphBlock text={`Lao name: ${lao.name}`} />
       <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
-      <QRCode value={lao.id.toString()} visibility />
+      <QRCode value={JSON.stringify(connectToLao)} visibility />
     </>
   );
 }
 
-const LaoProperties = () => {
+const LaoProperties = ({ url }: IPropTypes) => {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
@@ -40,10 +46,17 @@ const LaoProperties = () => {
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
 
-        { toggleChildrenVisible && lao && renderProperties(lao) }
+        { toggleChildrenVisible && lao && renderProperties(lao, url) }
       </View>
     </>
   );
 };
+
+const propTypes = {
+  url: PropTypes.string.isRequired,
+};
+LaoProperties.prototype = propTypes;
+
+type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default LaoProperties;

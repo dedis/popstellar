@@ -79,6 +79,7 @@ const STRINGS = {
   // Scanning Connect Strings
   connect_scanning_title: 'Scanning',
   connect_scanning_camera_view: 'Camera view',
+  connect_scanning_fail: 'Invalid QRCode data',
 
   // Connecting Connect Strings
   connect_connecting_title: 'Connecting',

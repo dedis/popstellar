@@ -48,7 +48,13 @@ const Launch = ({ navigation }: IPropTypes) => {
       .then((channel: Channel) => subscribeToChannel(channel)
         .then(() => {
           // navigate to the newly created LAO
-          navigation.navigate(STRINGS.app_navigation_tab_organizer, {});
+          navigation.navigate(STRINGS.app_navigation_tab_organizer, {
+            screen: STRINGS.organization_navigation_tab_organizer,
+            params: {
+              screen: STRINGS.organizer_navigation_tab_home,
+              params: { url: inputAddress },
+            },
+          });
         }))
       .catch(
         ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),

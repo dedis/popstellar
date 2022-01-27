@@ -1,5 +1,6 @@
 import Ajv from 'ajv';
 import jsonRPC from 'protocol/jsonRPC.json';
+import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
 import querySchema from './QuerySchema';
 import messageSchema from './MessageSchema';
 import dataSchema from './DataSchema';
@@ -47,6 +48,7 @@ const ajv = new Ajv();
 ajv.opts.strict = false;
 ajv.addSchema([
   jsonRPC,
+  connectToLaoSchema,
   ...answerSchema,
   ...dataSchema,
   ...messageSchema,
@@ -126,4 +128,8 @@ export function validateDataObject(obj: ObjectType, action: ActionType, data: an
   return schemaId !== null
     ? validate(schemaId, data)
     : { errors: 'Unsupported data object - schema not found' };
+}
+
+export function validateConnectToLao(obj: any): ValidationResult {
+  return validate(`${schemaPrefix}/qrcode/connect_to_lao.json`, obj);
 }

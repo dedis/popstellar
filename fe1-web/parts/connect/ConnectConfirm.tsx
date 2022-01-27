@@ -18,6 +18,7 @@ import PROPS_TYPE from 'res/Props';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
+import { useRoute } from '@react-navigation/core';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -65,14 +66,11 @@ export function validateLaoId(laoId: string): Channel | undefined {
   return undefined;
 }
 
-const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
-  const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/demo');
-  const [laoId, setLaoId] = useState('');
-
-  if (route.params && laoId === '') {
-    setLaoId(route.params.laoIdIn);
-    console.log(laoId);
-  }
+const ConnectConfirm = ({ navigation }: IPropTypes) => {
+  const route = useRoute();
+  const { laoIdIn, url } = route.params;
+  const [serverUrl, setServerUrl] = useState(url);
+  const [laoId, setLaoId] = useState(laoIdIn);
 
   const onButtonConfirm = async () => {
     if (!connectTo(serverUrl)) {
@@ -87,7 +85,11 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
     try {
       await subscribeToChannel(channel);
       navigation.navigate(STRINGS.app_navigation_tab_organizer, {
-        screen: 'Attendee',
+        screen: STRINGS.organization_navigation_tab_organizer,
+        params: {
+          screen: STRINGS.organizer_navigation_tab_home,
+          params: { url: serverUrl },
+        },
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);
