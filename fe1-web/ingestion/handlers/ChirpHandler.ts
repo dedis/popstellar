@@ -9,7 +9,7 @@ import {
   makeCurrentLao,
   deleteChirp,
 } from 'store';
-import { Chirp } from 'model/objects/Chirp';
+import { Chirp } from 'model/objects';
 
 /**
  * Handler for social media chirp

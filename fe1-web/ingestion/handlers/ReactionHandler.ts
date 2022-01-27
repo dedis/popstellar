@@ -3,7 +3,7 @@ import {
   addReaction, dispatch, getStore, makeCurrentLao,
 } from 'store';
 import { ActionType, AddReaction, ObjectType } from 'model/network/method/message/data';
-import { Reaction } from 'model/objects/Reaction';
+import { Reaction } from 'model/objects';
 
 /**
  * Handler for social media chirp's reactions

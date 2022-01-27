@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { PublicKey } from 'model/objects';
-import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { Chirp, ChirpState, PublicKey } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import ChirpCard from 'components/ChirpCard';
 import ProfileIcon from 'components/ProfileIcon';

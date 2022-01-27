@@ -1,6 +1,5 @@
-import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { Chirp, ChirpState, Hash, PublicKey, Timestamp } from 'model/objects';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { ReactionState } from 'model/objects/Reaction';
 import { getLaosState } from './LaoReducer';
 
