@@ -16,11 +16,10 @@ import QRCode from '../QRCode';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.timestampToString();
-  const obj = new ConnectToLao({
+  const connectToLao = new ConnectToLao({
     server: url,
     lao: lao.id.toString(),
   });
-  const connectToLao = ConnectToLao.fromJson(obj);
 
   return (
     <>

@@ -9,6 +9,10 @@ import PropTypes from 'prop-types';
 import styleContainer from 'styles/stylesheets/container';
 import { Colors } from 'styles';
 import WideButtonView from 'components/WideButtonView';
+import { ConnectToLao } from 'model/objects';
+import { useToast } from 'react-native-toast-notifications';
+
+const FOUR_SECONDS = 4000;
 
 /**
  * Starts a QR code scan
@@ -19,6 +23,7 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   // Remove the user to go back to the ConnectEnableCamera as he has already given
   // his permission to use the camera
   const [QrWasScanned, setQrWasScanned] = useState(false);
+  const toast = useToast();
 
   const handleError = (err: string) => {
     console.error(err);
@@ -28,9 +33,18 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     console.log(data);
     if (data) {
       setQrWasScanned(true);
-      const obj = JSON.parse(data);
-      navigation.navigate(STRINGS.connect_confirm_title,
-        { laoIdIn: obj.lao, url: obj.server });
+      try {
+        const obj = JSON.parse(data);
+        const connectToLao = ConnectToLao.fromJson(obj);
+        navigation.navigate(STRINGS.connect_confirm_title,
+          { laoIdIn: connectToLao.lao, url: connectToLao.server });
+      } catch (error) {
+        toast.show(STRINGS.connect_scanning_fail, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      }
     }
   };
 
