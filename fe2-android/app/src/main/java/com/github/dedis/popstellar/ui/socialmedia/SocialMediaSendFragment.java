@@ -73,7 +73,7 @@ public class SocialMediaSendFragment extends Fragment {
     // make a toast appear
     if (mSocialMediaViewModel.getLaoId().getValue() == null) {
       Toast.makeText(
-              requireContext().getApplicationContext(), R.string.toast_no_lao, Toast.LENGTH_LONG)
+              requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
           .show();
     } else {
       mSocialMediaViewModel.sendChirp(

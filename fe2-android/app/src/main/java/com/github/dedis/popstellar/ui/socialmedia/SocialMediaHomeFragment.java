@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -101,7 +102,7 @@ public class SocialMediaHomeFragment extends Fragment {
           mChirpListAdapter.replaceMap(
               mSocialMediaViewModel.getAllChirps(mSocialMediaViewModel.getLaoId().getValue()));
 
-          final Handler handler = new Handler();
+          final Handler handler = new Handler(Looper.getMainLooper());
           handler.postDelayed(
               () -> {
                 if (swipeRefreshLayout.isRefreshing()) {

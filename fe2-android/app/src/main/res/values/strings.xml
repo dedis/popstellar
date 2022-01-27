@@ -217,11 +217,15 @@
   <string name="send_button_desc">button to write a chirp</string>
   <string name="hint_chirp">Your chirp</string>
   <string name="laos_list">Laos list</string>
-  <string name="toast_no_lao">You are not in a LAO</string>
-  <string name="toast_error_sending_chirp">Error when sending chirp. Please try again</string>
   <string name="username">username</string>
   <string name="time_ago">time ago</string>
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
+
+  <!-- Error Messages -->
+  <string name="error_pop_token">Could not retrieve PoP Token</string>
+  <string name="error_toast_pop_token">Could not retrieve a valid PoP Token : </string>
+  <string name="error_sending_chirp">Error when sending chirp. Please try again</string>
+  <string name="error_no_lao">You are not in a LAO</string>
 
 </resources>

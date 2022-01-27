@@ -238,27 +238,27 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   public void setupHomeButton() {
-    Button homeButton = (Button) findViewById(R.id.tab_home);
+    Button homeButton = findViewById(R.id.tab_home);
     homeButton.setOnClickListener(v -> mViewModel.openHome());
   }
 
   public void setupConnectButton() {
-    Button connectButton = (Button) findViewById(R.id.tab_connect);
+    Button connectButton = findViewById(R.id.tab_connect);
     connectButton.setOnClickListener(v -> mViewModel.openConnect());
   }
 
   public void setupLaunchButton() {
-    Button launchButton = (Button) findViewById(R.id.tab_launch);
+    Button launchButton = findViewById(R.id.tab_launch);
     launchButton.setOnClickListener(v -> mViewModel.openLaunch());
   }
 
   public void setupWalletButton() {
-    Button walletButton = (Button) findViewById(R.id.tab_wallet);
+    Button walletButton = findViewById(R.id.tab_wallet);
     walletButton.setOnClickListener(v -> mViewModel.openWallet());
   }
 
   public void setupSocialMediaButton() {
-    Button socialMediaButton = (Button) findViewById(R.id.tab_social_media);
+    Button socialMediaButton = findViewById(R.id.tab_social_media);
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
@@ -309,7 +309,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void setupSocialMediaActivity() {
     if (mViewModel.getLAOs().getValue() == null) {
-      Toast.makeText(getApplicationContext(), R.string.toast_no_lao, Toast.LENGTH_LONG).show();
+      Toast.makeText(getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG).show();
     } else {
       Intent intent = new Intent(this, SocialMediaActivity.class);
       Log.d(TAG, "Trying to open social media");

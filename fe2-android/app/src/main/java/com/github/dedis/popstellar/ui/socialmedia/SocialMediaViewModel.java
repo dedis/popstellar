@@ -46,6 +46,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
   private static final String ROOT = "/root/";
+  private static final String SOCIAL = "/social/";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
   /*
@@ -225,7 +226,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
       String channel =
           ROOT
               + laoId
-              + "/social/"
+              + SOCIAL
               + mKeyManager.getValidPoPToken(laoState.getLao()).getPublicKey().getEncoded();
 
       Disposable disposable =
@@ -247,10 +248,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.e(TAG, "Could not retrieve PoP Token", e);
+      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
       Toast.makeText(
               getApplication().getApplicationContext(),
-              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              R.string.error_toast_pop_token + e.getMessage(),
               Toast.LENGTH_LONG)
           .show();
     }
@@ -278,7 +279,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     try {
       PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
-      String channel = laoChannel + "/social/" + token.getPublicKey().getEncoded();
+      String channel = laoChannel + SOCIAL + token.getPublicKey().getEncoded();
       Log.d(TAG, PUBLISH_MESSAGE);
       MessageGeneral msg = new MessageGeneral(token, addChirp, mGson);
 
@@ -296,7 +297,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
                       Log.d(TAG, "failed to send chirp");
                       Toast.makeText(
                               getApplication().getApplicationContext(),
-                              R.string.toast_error_sending_chirp,
+                              R.string.error_sending_chirp,
                               Toast.LENGTH_LONG)
                           .show();
                     }
@@ -304,10 +305,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
                   throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.e(TAG, "Could not retrieve PoP Token", e);
+      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
       Toast.makeText(
               getApplication().getApplicationContext(),
-              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              R.string.error_toast_pop_token + e.getMessage(),
               Toast.LENGTH_LONG)
           .show();
     }
@@ -326,7 +327,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     try {
       PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
-      String channel = laoChannel + "/social/" + token.getPublicKey().getEncoded();
+      String channel = laoChannel + SOCIAL + token.getPublicKey().getEncoded();
       Log.d(TAG, PUBLISH_MESSAGE);
       MessageGeneral msg = new MessageGeneral(token, deleteChirp, mGson);
 
@@ -358,10 +359,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
                       Log.d(TAG, "Timed out waiting for result on chirp/delete", throwable));
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.e(TAG, "Could not retrieve PoP Token", e);
+      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
       Toast.makeText(
               getApplication().getApplicationContext(),
-              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              R.string.error_toast_pop_token + e.getMessage(),
               Toast.LENGTH_LONG)
           .show();
     }
@@ -397,7 +398,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
       PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
       isOwner = sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
-      Log.e(TAG, "Could not retrieve PoP Token", e);
+      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
     }
     return isOwner;
   }

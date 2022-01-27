@@ -22,7 +22,6 @@ import java.util.Map;
 
 public class ChirpListAdapter extends BaseAdapter {
 
-  private final Context context;
   private SocialMediaViewModel socialMediaViewModel;
   private List<MessageID> chirpsId;
   private Map<MessageID, Chirp> allChirps;
@@ -33,7 +32,6 @@ public class ChirpListAdapter extends BaseAdapter {
       SocialMediaViewModel socialMediaViewModel,
       List<MessageID> chirpsId,
       Map<MessageID, Chirp> allChirps) {
-    this.context = context;
     this.socialMediaViewModel = socialMediaViewModel;
     this.chirpsId = chirpsId;
     this.allChirps = allChirps;
@@ -68,7 +66,7 @@ public class ChirpListAdapter extends BaseAdapter {
   @SuppressLint({"ViewHolder", "InflateParams"})
   @Override
   public View getView(int position, View view, ViewGroup viewGroup) {
-    view = layoutInflater.inflate(R.layout.chirp_card, null);
+    View chirpView = layoutInflater.inflate(R.layout.chirp_card, null);
 
     Chirp chirp = allChirps.get(getItem(position));
     if (chirp == null) {
@@ -78,19 +76,19 @@ public class ChirpListAdapter extends BaseAdapter {
     long timestamp = chirp.getTimestamp();
     String text;
 
-    TextView itemUsername = view.findViewById(R.id.social_media_username);
-    TextView itemTime = view.findViewById(R.id.social_media_time);
-    TextView itemText = view.findViewById(R.id.social_media_text);
+    TextView itemUsername = chirpView.findViewById(R.id.social_media_username);
+    TextView itemTime = chirpView.findViewById(R.id.social_media_time);
+    TextView itemText = chirpView.findViewById(R.id.social_media_text);
 
     if (socialMediaViewModel.isOwner(publicKey.getEncoded())) {
-      ImageButton deleteChirp = view.findViewById(R.id.delete_chirp_button);
+      ImageButton deleteChirp = chirpView.findViewById(R.id.delete_chirp_button);
       deleteChirp.setVisibility(View.VISIBLE);
       deleteChirp.setOnClickListener(v -> socialMediaViewModel.deleteChirpEvent(chirp.getId()));
     }
 
     if (chirp.getIsDeleted()) {
       text = "Chirp is deleted.";
-      ImageButton deleteChirp = view.findViewById(R.id.delete_chirp_button);
+      ImageButton deleteChirp = chirpView.findViewById(R.id.delete_chirp_button);
       deleteChirp.setVisibility(View.GONE);
       itemText.setTextColor(Color.GRAY);
     } else {
@@ -101,6 +99,6 @@ public class ChirpListAdapter extends BaseAdapter {
     itemTime.setText(getRelativeTimeSpanString(timestamp * 1000));
     itemText.setText(text);
 
-    return view;
+    return chirpView;
   }
 }
