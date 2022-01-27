@@ -17,14 +17,14 @@ import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.objects.Lao;
-import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -41,7 +41,6 @@ import io.reactivex.schedulers.Schedulers;
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
-  private static final String PK_FAILURE_MESSAGE = "failed to retrieve public key";
   private static final String PUBLISH_MESSAGE = "sending publish message";
   private static final String ROOT = "/root/";
   public static final Integer MAX_CHAR_NUMBERS = 300;
@@ -204,8 +203,18 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void subscribeToChannel(String laoId) {
     Log.d(TAG, "subscribing to channel: " + ROOT + laoId + "/social/<sender>");
 
+    LAOState laoState = mLaoRepository.getLaoById().get(laoId);
+    if (laoState == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+
     try {
-      String channel = ROOT + laoId + "/social/" + mKeyManager.getMainPublicKey().getEncoded();
+      String channel =
+          ROOT
+              + laoId
+              + "/social/"
+              + mKeyManager.getValidPoPToken(laoState.getLao()).getPublicKey().getEncoded();
 
       Disposable disposable =
           mLaoRepository
@@ -225,11 +234,12 @@ public class SocialMediaViewModel extends AndroidViewModel {
                       Log.d(TAG, "timed out waiting for result on subscribe/channel", throwable));
 
       disposables.add(disposable);
-
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not retrieve PoP Token", e);
       Toast.makeText(
-              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
+              getApplication(),
+              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              Toast.LENGTH_LONG)
           .show();
     }
   }
@@ -246,17 +256,19 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
     String laoChannel = ROOT + getLaoId().getValue();
-    Lao lao = mLaoRepository.getLaoByChannel(laoChannel);
-    if (lao == null) {
-      Log.d(TAG, LAO_FAILURE_MESSAGE);
+    LAOState laoState = mLaoRepository.getLaoById().get(getLaoId().getValue());
+    if (laoState == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return;
     }
+
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
     try {
-      KeyPair mainKey = mKeyManager.getMainKeyPair();
-      String channel = laoChannel + "/social/" + mainKey.getPublicKey().getEncoded();
+      PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
+      String channel = laoChannel + "/social/" + token.getPublicKey().getEncoded();
       Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(mainKey, addChirp, mGson);
+      MessageGeneral msg = new MessageGeneral(token, addChirp, mGson);
 
       Disposable disposable =
           mLaoRepository
@@ -279,11 +291,13 @@ public class SocialMediaViewModel extends AndroidViewModel {
                   },
                   throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
       disposables.add(disposable);
-    } catch (GeneralSecurityException | IOException e) {
-      Log.d(TAG, PK_FAILURE_MESSAGE, e);
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not retrieve PoP Token", e);
       Toast.makeText(
-              getApplication().getApplicationContext(), PK_FAILURE_MESSAGE, Toast.LENGTH_SHORT)
-          .show();
+              getApplication(),
+              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+              .show();
     }
   }
 }

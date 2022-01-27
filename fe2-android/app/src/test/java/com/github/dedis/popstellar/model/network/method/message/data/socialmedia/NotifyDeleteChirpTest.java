@@ -65,16 +65,11 @@ public class NotifyDeleteChirpTest {
     JsonTestUtils.testData(NOTIFY_DELETE_CHIRP);
 
     String pathDir = "protocol/examples/messageData/chirp_notify_delete/";
-    assertThrows(
-        JsonParseException.class,
-        () ->
-            JsonTestUtils.parse(
-                JsonTestUtils.loadFile(pathDir + "wrong_chirp_notify_delete_negative_time.json")));
-    //    assertThrows(
-    //        JsonParseException.class,
-    //        () ->
-    //            JsonTestUtils.parse(
-    //                JsonTestUtils.loadFile(
-    //                    pathDir + "wrong_chirp_notify_delete_not_base_64_chirp_id.json")));
+    String jsonInvalid1 =
+        JsonTestUtils.loadFile(pathDir + "wrong_chirp_notify_delete_negative_time.json");
+    String jsonInvalid2 =
+        JsonTestUtils.loadFile(pathDir + "wrong_chirp_notify_delete_not_base_64_chirp_id.json");
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
+    assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));
   }
 }
