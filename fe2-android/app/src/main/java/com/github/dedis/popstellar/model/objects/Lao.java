@@ -8,6 +8,7 @@ import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -281,8 +282,15 @@ public final class Lao {
     this.pendingUpdates = pendingUpdates;
   }
 
+  /**
+   * Get the list of all nodes of this Lao sorted by the base64 representation of their public key.
+   *
+   * @return a sorted List of ConsensusNode
+   */
   public List<ConsensusNode> getNodes() {
-    return new ArrayList<>(keyToNode.values());
+    List<ConsensusNode> nodes = new ArrayList<>(keyToNode.values());
+    nodes.sort(Comparator.comparing(node -> node.getPublicKey().getEncoded()));
+    return nodes;
   }
 
   public ConsensusNode getNode(@NonNull PublicKey key) {
