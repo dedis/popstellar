@@ -2,7 +2,7 @@ import { validateConnectToLao } from '../network/validation';
 import { ProtocolError } from '../network';
 
 /**
- * object containing server url and Lao id for generating qr code of a Lao
+ * Object containing the server url and Lao id to generate the QR code of a Lao.
  */
 export class ConnectToLao {
   public readonly server: string;
