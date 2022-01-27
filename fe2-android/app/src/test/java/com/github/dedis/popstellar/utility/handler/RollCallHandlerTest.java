@@ -1,11 +1,13 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.Base64DataUtils.generatePoPToken;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.closeRollCallWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.createRollCallWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.openRollCallWitnessMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -23,12 +25,14 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
 import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
@@ -67,6 +71,7 @@ public class RollCallHandlerTest {
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
+  private static final PoPToken POP_TOKEN = generatePoPToken();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
   private static final String CHANNEL = "/root";
@@ -78,7 +83,7 @@ public class RollCallHandlerTest {
   private MessageGeneral createLaoMessage;
 
   @Before
-  public void setup() throws GeneralSecurityException, IOException {
+  public void setup() throws GeneralSecurityException, IOException, KeyException {
     SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
     TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
 
@@ -92,6 +97,7 @@ public class RollCallHandlerTest {
 
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
+    lenient().when(keyManager.getValidPoPToken(any(), any())).thenReturn(POP_TOKEN);
 
     laoRepository =
         new LAORepository(
