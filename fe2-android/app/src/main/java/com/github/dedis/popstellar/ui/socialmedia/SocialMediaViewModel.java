@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
+import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -56,6 +57,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenFollowingEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenProfileEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<MessageID>> mDeleteChirpEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
@@ -120,6 +122,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
     return mSendNewChirpEvent;
   }
 
+  public LiveData<SingleEvent<MessageID>> getDeleteChirpEvent() {
+    return mDeleteChirpEvent;
+  }
+
   public LiveData<Integer> getNumberCharsLeft() {
     return mNumberCharsLeft;
   }
@@ -161,6 +167,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   public void sendNewChirpEvent() {
     mSendNewChirpEvent.postValue(new SingleEvent<>(true));
+  }
+
+  public void deleteChirpEvent(MessageID chirpId) {
+    mDeleteChirpEvent.postValue(new SingleEvent<>(chirpId));
   }
 
   public void setNumberCharsLeft(Integer numberChars) {
@@ -303,6 +313,60 @@ public class SocialMediaViewModel extends AndroidViewModel {
     }
   }
 
+  public void deleteChirp(MessageID chirpId, long timestamp) {
+    Log.d(TAG, "Deleting the chirp with id: " + chirpId);
+    String laoChannel = ROOT + getLaoId().getValue();
+    LAOState laoState = mLaoRepository.getLaoById().get(laoChannel);
+    if (laoState == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+
+    DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
+
+    try {
+      PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
+      String channel = laoChannel + "/social/" + token.getPublicKey().getEncoded();
+      Log.d(TAG, PUBLISH_MESSAGE);
+      MessageGeneral msg = new MessageGeneral(token, deleteChirp, mGson);
+
+      Disposable disposable =
+          mLaoRepository
+              .sendPublish(channel, msg)
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .timeout(5, TimeUnit.SECONDS)
+              .subscribe(
+                  answer -> {
+                    if (answer instanceof Result) {
+                      Log.d(TAG, "Deleted chirp with messageId: " + msg.getMessageId());
+                      Toast.makeText(
+                              getApplication().getApplicationContext(),
+                              "Deleted chirp!",
+                              Toast.LENGTH_LONG)
+                          .show();
+                    } else {
+                      Log.d(TAG, "Failed to delete chirp");
+                      Toast.makeText(
+                              getApplication().getApplicationContext(),
+                              "Error when deleting chirp. Please try again",
+                              Toast.LENGTH_LONG)
+                          .show();
+                    }
+                  },
+                  throwable ->
+                      Log.d(TAG, "Timed out waiting for result on chirp/delete", throwable));
+      disposables.add(disposable);
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not retrieve PoP Token", e);
+      Toast.makeText(
+              getApplication().getApplicationContext(),
+              "Could not retrieve a valid PoP Token : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+          .show();
+    }
+  }
+
   public List<MessageID> getChirpIdList(String laoId) {
     Lao lao = mLaoRepository.getLaoByChannel(ROOT + laoId);
     return lao.getChirpsIdInOrder();
@@ -311,5 +375,30 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public Map<MessageID, Chirp> getAllChirps(String laoId) {
     Lao lao = mLaoRepository.getLaoByChannel(ROOT + laoId);
     return lao.getAllChirps();
+  }
+
+  /**
+   * Check whether the sender of a chirp is the current user
+   *
+   * @param sender String of the PoPToken PublicKey
+   * @return true if the sender is the current user
+   */
+  public boolean isOwner(String sender) {
+    Log.d(TAG, "Testing if the sender is also the owner");
+    boolean isOwner = false;
+    String laoChannel = ROOT + getLaoId().getValue();
+    LAOState laoState = mLaoRepository.getLaoById().get(laoChannel);
+    if (laoState == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      return false;
+    }
+
+    try {
+      PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
+      isOwner = sender.equals(token.getPublicKey().getEncoded());
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not retrieve PoP Token", e);
+    }
+    return isOwner;
   }
 }
