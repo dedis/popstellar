@@ -4,10 +4,12 @@ import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.github.dedis.popstellar.R;
@@ -21,13 +23,18 @@ import java.util.Map;
 public class ChirpListAdapter extends BaseAdapter {
 
   private final Context context;
+  private SocialMediaViewModel socialMediaViewModel;
   private List<MessageID> chirpsId;
   private Map<MessageID, Chirp> allChirps;
   private LayoutInflater layoutInflater;
 
   public ChirpListAdapter(
-      Context context, List<MessageID> chirpsId, Map<MessageID, Chirp> allChirps) {
+      Context context,
+      SocialMediaViewModel socialMediaViewModel,
+      List<MessageID> chirpsId,
+      Map<MessageID, Chirp> allChirps) {
     this.context = context;
+    this.socialMediaViewModel = socialMediaViewModel;
     this.chirpsId = chirpsId;
     this.allChirps = allChirps;
     layoutInflater = LayoutInflater.from(context);
@@ -71,19 +78,27 @@ public class ChirpListAdapter extends BaseAdapter {
     long timestamp = chirp.getTimestamp();
     String text;
 
+    TextView itemUsername = view.findViewById(R.id.social_media_username);
+    TextView itemTime = view.findViewById(R.id.social_media_time);
+    TextView itemText = view.findViewById(R.id.social_media_text);
+
+    if (socialMediaViewModel.isOwner(publicKey.getEncoded())) {
+      ImageButton deleteChirp = view.findViewById(R.id.delete_chirp_button);
+      deleteChirp.setVisibility(View.VISIBLE);
+      deleteChirp.setOnClickListener(v -> socialMediaViewModel.deleteChirpEvent(chirp.getId()));
+    }
+
     if (chirp.getIsDeleted()) {
       text = "Chirp is deleted.";
+      ImageButton deleteChirp = view.findViewById(R.id.delete_chirp_button);
+      deleteChirp.setVisibility(View.GONE);
+      itemText.setTextColor(Color.GRAY);
     } else {
       text = chirp.getText();
     }
 
-    TextView itemUsername = view.findViewById(R.id.social_media_username);
     itemUsername.setText(publicKey.getEncoded());
-
-    TextView itemTime = view.findViewById(R.id.social_media_time);
     itemTime.setText(getRelativeTimeSpanString(timestamp * 1000));
-
-    TextView itemText = view.findViewById(R.id.social_media_text);
     itemText.setText(text);
 
     return view;
