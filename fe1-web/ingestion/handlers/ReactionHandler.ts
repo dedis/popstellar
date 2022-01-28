@@ -59,12 +59,11 @@ export function handleReactionMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
-  switch (msg.messageData.action) {
-    case ActionType.ADD:
-      return handleAddReactionMessage(msg);
-    default:
-      console.warn('A Social Media reaction message was received but its processing logic is not '
-        + 'yet implemented:', msg);
-      return false;
+  if (msg.messageData.action === ActionType.ADD) {
+    return handleAddReactionMessage(msg);
   }
+
+  console.warn('A Social Media reaction message was received but its processing logic is not '
+    + 'yet implemented:', msg);
+  return false;
 }

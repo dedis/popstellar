@@ -7,7 +7,7 @@ import { makeIsLaoOrganizer } from 'store';
 import { Spacing } from 'styles';
 
 import ParagraphBlock from 'components/ParagraphBlock';
-import styleEventView from 'styles/stylesheets/eventView';
+import eventViewStyles from 'styles/stylesheets/eventViewStyles';
 import TextBlock from 'components/TextBlock';
 import {
   Election, Hash, RollCall, Timestamp, Meeting,
@@ -54,7 +54,7 @@ const Event = (props: IPropTypes) => {
   };
 
   return (
-    <View style={[styleEventView.default, { marginTop: Spacing.s }]}>
+    <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
       <TextBlock text={event.name} />
       { buildEvent() }
     </View>

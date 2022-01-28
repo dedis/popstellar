@@ -32,29 +32,48 @@ const CheckboxList = (props: IPropTypes) => {
   const { clickableOptions } = props;
   const { title } = props;
   const { disabled } = props;
-  const [checked, setChecked] = useState(new Array(values.length).fill(false));
+  const [checked, setChecked] = useState(new Array<boolean>(values.length).fill(false));
 
-  // This function determines whether the user can check or uncheck a given checkbox
+  /**
+   * Handles a CheckBox press if there are multiple options.
+   * A user can always uncheck. He can also check a box if he hasn't reached the max number of
+   * selectable options.
+   *
+   * @param idx - The index of the pressed CheckBox.
+   */
+  const handleMultipleOptionsPress = (idx: number) => {
+    setChecked((prev) => prev.map((item, id) => (idx === id ? !item : item)));
+    onChange(values.map((val, id) => {
+      if ((checked[id] && id !== idx) || (id === idx && !checked[id])) {
+        return idx;
+      }
+      return -1;
+    }).filter((prev) => prev !== -1));
+  };
+
+  /**
+   * Handles a CheckBox press if there is one option.
+   * In this case, the buttons should behave like radio buttons: the user doesn't have to deselect
+   * his option to select a new one.
+   *
+   * @param idx - The index of the pressed CheckBox.
+   */
+  const handleOneOptionPress = (idx: number) => {
+    setChecked((prev) => prev.map((item, id) => (idx === id)));
+    onChange(values.map((val, id) => ((id === idx) ? id : -1))
+      .filter((prev) => prev !== -1));
+  };
+
+  /**
+   * Determines whether the user can check or uncheck a given checkbox
+   *
+   * @param idx - The index of the pressed CheckBox.
+   */
   const onCheckBoxPress = (idx: number): void => {
-    if (checked[idx] === true || !(clickableOptions === checked.filter(Boolean).length)) {
-      // A user can always uncheck || a user can check a box if he hasn't reached the max number of
-      // selectable options yet
-      setChecked((prev) => prev.map((item, id) => (idx === id ? !item : item)));
-      onChange(values.map((val, id) => {
-        if (checked[id] === true && id !== idx) {
-          return idx;
-        }
-        if (id === idx && checked[id] === false) {
-          return idx;
-        }
-        return -1;
-      }).filter((prev) => prev !== -1));
+    if (checked[idx] || clickableOptions !== checked.filter(Boolean).length) {
+      handleMultipleOptionsPress(idx);
     } else if (clickableOptions === 1) {
-      // if only 1 selectable option the buttons should behave like radio buttons
-      // (User doesn't have to deselect his option to select a new option)
-      setChecked((prev) => prev.map((item, id) => (idx === id)));
-      onChange(values.map((val, id) => ((id === idx) ? id : -1))
-        .filter((prev) => prev !== -1));
+      handleOneOptionPress(idx);
     }
   };
 

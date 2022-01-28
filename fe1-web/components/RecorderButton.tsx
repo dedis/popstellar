@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 
 import { Colors } from 'styles';
-import stylesCircularButton from 'styles/stylesheets/circlarButton';
+import circularButtonStyles from 'styles/stylesheets/circlarButtonStyles';
 
 /**
  * Recorder button that executes an onPress action given in props
@@ -29,7 +29,7 @@ function RecorderButton({ action }: IPropTypes) {
 
   return (
     <TouchableOpacity
-      style={[stylesCircularButton.button, { backgroundColor: Colors.red }]}
+      style={[circularButtonStyles.button, { backgroundColor: Colors.red }]}
       onPress={() => {
         action();
         setIsRecording(!isRecording);

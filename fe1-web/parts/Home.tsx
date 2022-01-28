@@ -6,7 +6,7 @@ import { makeLaosList } from 'store';
 import { Lao } from 'model/objects';
 
 import { Spacing } from 'styles';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 
 import LAOItem from 'components/LAOItem';
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
 // FIXME: define interface + types, requires availableLaosReducer to be migrated first
 function getConnectedLaosDisplay(laos: Lao[]) {
   return (
-    <View style={styleContainer.centered}>
+    <View style={containerStyles.centered}>
       <FlatList
         data={laos}
         keyExtractor={(item) => item.id.toString()}
@@ -41,7 +41,7 @@ function getConnectedLaosDisplay(laos: Lao[]) {
 
 function getWelcomeMessageDisplay() {
   return (
-    <View style={styleContainer.centered}>
+    <View style={containerStyles.centered}>
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />

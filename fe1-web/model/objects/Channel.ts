@@ -5,7 +5,9 @@ export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
 
 export function channelFromIds(...args: Hash[]) : Channel {
-  if (args.length === 0) return ROOT_CHANNEL;
+  if (args.length === 0) {
+    return ROOT_CHANNEL;
+  }
 
   return `${ROOT_CHANNEL}/${
     args.map((c) => c.valueOf())

@@ -76,10 +76,6 @@ wsServer.on('request', (request) => {
         error: '[test] I could not accept your request :( (from server LocalMockServer.js)',
       }];
 
-      // const answers = [{type: "answer", msg: JSON.parse(message.utf8Data)}];
-      // const answers = [{type: "answer", msg: message.utf8Data}];
-      // answers = [JSON.parse(message.utf8Data)];
-
       if (JSON.parse(message.utf8Data).method === 'catchup') {
         answers = [generalCatchupAnswerPositive];
       } else {
@@ -87,16 +83,12 @@ wsServer.on('request', (request) => {
         answers = [generalAnswerPositive];
       }
 
-      // const idx = 0;
-      // const idx = 1;
-
       // choose a random index of the array answers
       const idx = (Math.floor(Math.random() * (1000000))) % answers.length;
 
       // broadcasting message to all connected clients
       Object.keys(clients).forEach((key) => {
         clients[key].sendUTF(JSON.stringify(answers[idx]));
-        // console.log('sent Message to: ', clients[key]);
       });
     }
   });

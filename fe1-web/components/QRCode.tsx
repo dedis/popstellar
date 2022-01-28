@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import QRCodeDisplay from 'qrcode.react';
 import { View } from 'react-native';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 /**
  * Creates and displays a QR code with the public key of the current user
@@ -15,7 +15,7 @@ const QRCode = (props: IPropTypes) => {
   // Displays a QR code with the Public key of the current user
   return (visibility)
     ? (
-      <View style={[styleContainer.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
+      <View style={[containerStyles.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
         <QRCodeDisplay value={value} size={size} />
       </View>
     )

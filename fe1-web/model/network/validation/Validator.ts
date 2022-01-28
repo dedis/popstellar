@@ -1,9 +1,9 @@
 import Ajv from 'ajv';
 import jsonRPC from 'protocol/jsonRPC.json';
-import querySchema from './QuerySchema';
-import messageSchema from './MessageSchema';
-import dataSchema from './DataSchema';
-import answerSchema from './AnswerSchema';
+import querySchema from './querySchema';
+import messageSchema from './messageSchema';
+import dataSchema from './dataSchema';
+import answerSchema from './answerSchema';
 
 // FIXME: these two enums need to be redefined locally because otherwise their values are
 //  undefined here, it could be due to cyclical dependencies that still need to be fixed.

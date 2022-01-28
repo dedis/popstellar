@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
@@ -38,7 +38,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
 
   function getInsertSeedWalletDisplay() {
     return (
-      <View style={styleContainer.centered}>
+      <View style={containerStyles.centered}>
         <TextBlock text={STRINGS.type_seed_info} />
         <TextInputLine
           placeholder={STRINGS.type_seed_example}
