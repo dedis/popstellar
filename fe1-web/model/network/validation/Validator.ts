@@ -1,9 +1,9 @@
 import Ajv from 'ajv';
 import jsonRPC from 'protocol/jsonRPC.json';
-import querySchema from './querySchema';
-import messageSchema from './messageSchema';
-import dataSchema from './dataSchema';
-import answerSchema from './answerSchema';
+import querySchemas from './querySchemas';
+import messageSchemas from './messageSchemas';
+import dataSchemas from './dataSchemas';
+import answerSchemas from './answerSchemas';
 
 // FIXME: these two enums need to be redefined locally because otherwise their values are
 //  undefined here, it could be due to cyclical dependencies that still need to be fixed.
@@ -47,10 +47,10 @@ const ajv = new Ajv();
 ajv.opts.strict = false;
 ajv.addSchema([
   jsonRPC,
-  ...answerSchema,
-  ...dataSchema,
-  ...messageSchema,
-  ...querySchema,
+  ...answerSchemas,
+  ...dataSchemas,
+  ...messageSchemas,
+  ...querySchemas,
 ]);
 
 const schemaPrefix = 'https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol';
