@@ -14,9 +14,11 @@ import TextInputLine from 'components/TextInputLine';
 import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
+import { useToast } from 'react-native-toast-notifications';
 import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
+const FOUR_SECONDS = 4000;
 
 /**
  * Screen to create a roll-call event
@@ -27,6 +29,7 @@ const DEFAULT_ROLL_CALL_DURATION = 3600;
 const CreateRollCall = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
+  const toast = useToast();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
   const [proposedEndTime, setProposedEndTime] = useState(Timestamp.EpochNow()
@@ -76,6 +79,11 @@ const CreateRollCall = ({ route }: any) => {
       })
       .catch((err) => {
         console.error('Could not create roll call, error:', err);
+        toast.show(`Could not create roll call, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
   };
 

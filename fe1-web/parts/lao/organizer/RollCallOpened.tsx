@@ -62,6 +62,11 @@ const RollCallOpened = () => {
 
   const handleError = (err: string) => {
     console.error(err);
+    toast.show(err, {
+      type: 'danger',
+      placement: 'top',
+      duration: FOUR_SECONDS,
+    });
   };
 
   const addAttendeeAndShowToast = (attendee: string, toastMessage: string) => {

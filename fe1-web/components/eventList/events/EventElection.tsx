@@ -24,6 +24,7 @@ import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
 import BarChartDisplay from 'components/BarChartDisplay';
 import { getEventFromId } from 'ingestion/handlers/Utils';
+import { useToast } from 'react-native-toast-notifications';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -44,9 +45,12 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
+const FOUR_SECOND = 4000;
+
 const EventElection = (props: IPropTypes) => {
   const { election } = props;
   const { isOrganizer } = props;
+  const toast = useToast();
   const questions = election.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
   const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
   const [hasVoted, setHasVoted] = useState(0);
@@ -93,6 +97,11 @@ const EventElection = (props: IPropTypes) => {
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
+        toast.show(`Could not cast Vote, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECOND,
+        });
       });
   };
 
@@ -120,6 +129,11 @@ const EventElection = (props: IPropTypes) => {
       .then(() => console.log('Election Terminated'))
       .catch((err) => {
         console.error('Could not terminate election, error:', err);
+        toast.show(`Could not terminate election, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECOND,
+        });
       });
   };
 

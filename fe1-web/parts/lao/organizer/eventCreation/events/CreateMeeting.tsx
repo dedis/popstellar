@@ -15,9 +15,11 @@ import TextInputLine from 'components/TextInputLine';
 import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
+import { useToast } from 'react-native-toast-notifications';
 import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_MEETING_DURATION = 3600;
+const FOUR_SECONDS = 4000;
 
 /**
  * Screen to create a meeting event: a name text input, a start time text and its buttons,
@@ -28,6 +30,7 @@ const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
   const navigation = useNavigation();
+  const toast = useToast();
 
   const [meetingName, setMeetingName] = useState('');
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
@@ -48,6 +51,11 @@ const CreateMeeting = ({ route }: any) => {
       })
       .catch((err) => {
         console.error('Could not create meeting, error:', err);
+        toast.show(`Could not create meeting, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
   };
 

@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
 import { PublicKey } from 'model/objects';
 import PropTypes from 'prop-types';
+import { useToast } from 'react-native-toast-notifications';
 
 /**
  * UI for the Social Media home screen component
@@ -43,15 +44,22 @@ const styles = StyleSheet.create({
     alignContent: 'flex-end',
   } as TextStyle,
 });
+const FOUR_SECONDS = 4000;
 
 const SocialHome = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
   const [inputChirp, setInputChirp] = useState('');
+  const toast = useToast();
 
   const publishChirp = () => {
     requestAddChirp(currentUserPublicKey, inputChirp)
       .catch((err) => {
         console.error('Failed to post chirp, error:', err);
+        toast.show(`Failed to post chirp, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
   };
 

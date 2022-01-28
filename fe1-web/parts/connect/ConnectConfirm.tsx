@@ -18,6 +18,7 @@ import PROPS_TYPE from 'res/Props';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
+import { useToast } from 'react-native-toast-notifications';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -33,6 +34,7 @@ const styles = StyleSheet.create({
     margin: Spacing.xs,
   } as ViewStyle,
 });
+const FOUR_SECONDS = 4000;
 
 /**
  * Connects to the given server URL.
@@ -68,6 +70,7 @@ export function validateLaoId(laoId: string): Channel | undefined {
 const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
   const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/demo');
   const [laoId, setLaoId] = useState('');
+  const toast = useToast();
 
   if (route.params && laoId === '') {
     setLaoId(route.params.laoIdIn);
@@ -91,6 +94,11 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);
+      toast.show(`Failed to establish lao connection: ${err}`, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
     }
   };
 

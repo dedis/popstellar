@@ -8,6 +8,7 @@ import { gray } from 'styles/colors';
 import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { useNavigation } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications';
 import WideButtonView from './WideButtonView';
 import ProfileIcon from './ProfileIcon';
 
@@ -48,15 +49,23 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+const FOUR_SECONDS = 4000;
+
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const { currentUserPublicKey, laoId, publicKey } = props;
   const navigation = useNavigation();
+  const toast = useToast();
 
   const followUser = () => {
     subscribeToChannel(getUserSocialChannel(laoId, publicKey))
       .catch((error) => {
         console.error(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`);
+        toast.show(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
     setIsFollowing(true);
   };
