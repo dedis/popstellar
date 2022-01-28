@@ -9,6 +9,7 @@ import {
   requestDeleteChirp as mockRequestDeleteChirp,
 } from 'network/MessageApi';
 import { OpenedLaoStore } from 'store';
+import STRINGS from 'res/strings';
 import ChirpCard from '../ChirpCard';
 
 const TIMESTAMP = 1609455600;
@@ -85,10 +86,11 @@ describe('ChirpCard', () => {
     it('calls delete correctly', () => {
       const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
       getMockLao.mockImplementation(() => Lao.fromState(laoState));
-      const button = render(
+      const { getByLabelText, getByText } = render(
         <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
-      ).getByLabelText('delete');
-      fireEvent.press(button);
+      );
+      fireEvent.press(getByLabelText('delete'));
+      fireEvent.press(getByText(STRINGS.general_yes));
       expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
     });
 
