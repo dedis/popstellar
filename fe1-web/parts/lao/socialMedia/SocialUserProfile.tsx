@@ -8,7 +8,7 @@ import ChirpCard from 'components/ChirpCard';
 import ProfileIcon from 'components/ProfileIcon';
 import TextBlock from 'components/TextBlock';
 import BackButton from 'components/BackButton';
-import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { Chirp, ChirpState } from 'model/objects';
 import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
 import STRINGS from 'res/strings';
 
