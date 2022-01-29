@@ -1,9 +1,8 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import {
-  Hash, LaoState, PublicKey, Timestamp, Lao,
+  Hash, LaoState, PublicKey, Timestamp, Lao, Chirp,
 } from 'model/objects';
-import { Chirp } from 'model/objects/Chirp';
 import {
   requestAddReaction as mockRequestAddReaction,
   requestDeleteChirp as mockRequestDeleteChirp,

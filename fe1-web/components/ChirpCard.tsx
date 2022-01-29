@@ -5,10 +5,9 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { Chirp } from 'model/objects/Chirp';
+import { Chirp, PublicKey } from 'model/objects';
 import DeleteButton from 'components/DeleteButton';
 import { requestDeleteChirp, requestAddReaction } from 'network';
-import { PublicKey } from 'model/objects';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
 import { useToast } from 'react-native-toast-notifications';
