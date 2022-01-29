@@ -989,6 +989,7 @@ Array [
         }
       >
         <View
+          accessibilityLabel="deleteChirpButton"
           accessible={true}
           collapsable={false}
           focusable={true}
@@ -1304,26 +1305,7 @@ Array [
               onStartShouldSetResponder={[Function]}
               testID="thumbs-up"
             >
-              <Text
-                allowFontScaling={false}
-                style={
-                  Array [
-                    Object {
-                      "color": "black",
-                      "fontSize": 16,
-                    },
-                    undefined,
-                    Object {
-                      "fontFamily": "ionicons",
-                      "fontStyle": "normal",
-                      "fontWeight": "normal",
-                    },
-                    Object {},
-                  ]
-                }
-              >
-                
-              </Text>
+              <Text />
             </View>
             <Text>
                 1
@@ -1353,26 +1335,7 @@ Array [
               onStartShouldSetResponder={[Function]}
               testID="thumbs-down"
             >
-              <Text
-                allowFontScaling={false}
-                style={
-                  Array [
-                    Object {
-                      "color": "black",
-                      "fontSize": 16,
-                    },
-                    undefined,
-                    Object {
-                      "fontFamily": "ionicons",
-                      "fontStyle": "normal",
-                      "fontWeight": "normal",
-                    },
-                    Object {},
-                  ]
-                }
-              >
-                
-              </Text>
+              <Text />
             </View>
             <Text>
                 0
@@ -1402,26 +1365,7 @@ Array [
               onStartShouldSetResponder={[Function]}
               testID="heart"
             >
-              <Text
-                allowFontScaling={false}
-                style={
-                  Array [
-                    Object {
-                      "color": "black",
-                      "fontSize": 16,
-                    },
-                    undefined,
-                    Object {
-                      "fontFamily": "ionicons",
-                      "fontStyle": "normal",
-                      "fontWeight": "normal",
-                    },
-                    Object {},
-                  ]
-                }
-              >
-                
-              </Text>
+              <Text />
             </View>
             <Text>
                 0
@@ -1436,26 +1380,7 @@ Array [
               }
             }
           >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
+            <Text />
             <Text>
                 0
             </Text>
@@ -1480,6 +1405,7 @@ Array [
         }
       >
         <View
+          accessibilityLabel="deleteChirpButton"
           accessible={true}
           collapsable={false}
           focusable={true}
@@ -1493,26 +1419,7 @@ Array [
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
         >
-          <Text
-            allowFontScaling={false}
-            style={
-              Array [
-                Object {
-                  "color": "red",
-                  "fontSize": 20,
-                },
-                undefined,
-                Object {
-                  "fontFamily": "ionicons",
-                  "fontStyle": "normal",
-                  "fontWeight": "normal",
-                },
-                Object {},
-              ]
-            }
-          >
-            
-          </Text>
+          <Text />
         </View>
       </View>
       <View
