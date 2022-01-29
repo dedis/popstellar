@@ -89,7 +89,7 @@ describe('ChirpCard', () => {
       const { getByLabelText, getByText } = render(
         <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
       );
-      fireEvent.press(getByLabelText('delete'));
+      fireEvent.press(getByLabelText('deleteChirpButton'));
       fireEvent.press(getByText(STRINGS.general_yes));
       expect(mockRequestDeleteChirp).toHaveBeenCalledTimes(1);
     });

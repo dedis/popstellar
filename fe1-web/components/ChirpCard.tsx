@@ -162,7 +162,10 @@ const ChirpCard = (props: IPropTypes) => {
         <View style={styles.bottomView}>
           { isSender && !chirp.isDeleted && (
             <View style={{ marginRight: 'auto' }}>
-              <Pressable onPress={() => { setDeleteModalIsVisible(true); }}>
+              <Pressable
+                onPress={() => { setDeleteModalIsVisible(true); }}
+                accessibilityLabel="deleteChirpButton"
+              >
                 <Ionicons name="close-outline" size={20} color="red" />
               </Pressable>
             </View>

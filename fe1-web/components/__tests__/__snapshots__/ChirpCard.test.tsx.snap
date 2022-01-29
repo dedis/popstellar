@@ -8,7 +8,7 @@ Array [
         "borderColor": "gray",
         "borderTopWidth": 0,
         "borderWidth": 1,
-        "flexDirection": "row",
+        "flexDirection": "column",
         "padding": 10,
         "width": 600,
       }
@@ -17,99 +17,116 @@ Array [
     <View
       style={
         Object {
-          "width": 60,
-        }
-      }
-    >
-      ProfileIcon
-    </View>
-    <View
-      style={
-        Object {
-          "display": "flex",
-          "flexDirection": "column",
+          "flexDirection": "row",
         }
       }
     >
       <View
         style={
           Object {
-            "fontSize": 18,
-            "marginTop": 7,
+            "width": 60,
           }
         }
       >
-        <Text
-          style={
-            Object {
-              "fontSize": 18,
-              "fontWeight": "600",
-            }
-          }
-        >
-          Douglas Adams
-        </Text>
+        ProfileIcon
       </View>
-      <Text
-        style={
-          Object {
-            "color": "gray",
-            "fontSize": 18,
-            "paddingBottom": 20,
-            "paddingTop": 10,
-            "width": 520,
-          }
-        }
-      >
-        This chirp was deleted
-      </Text>
       <View
         style={
           Object {
-            "flexDirection": "row",
-            "fontSize": 18,
+            "display": "flex",
+            "flexDirection": "column",
           }
         }
       >
         <View
           style={
             Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
+              "fontSize": 18,
+              "marginTop": 7,
             }
           }
         >
           <Text
-            allowFontScaling={false}
             style={
-              Array [
-                Object {
-                  "color": "black",
-                  "fontSize": 16,
-                },
-                undefined,
-                Object {
-                  "fontFamily": "ionicons",
-                  "fontStyle": "normal",
-                  "fontWeight": "normal",
-                },
-                Object {},
-              ]
+              Object {
+                "fontSize": 18,
+                "fontWeight": "600",
+              }
             }
           >
-            
-          </Text>
-          <Text>
-              0
+            Douglas Adams
           </Text>
         </View>
+        <Text
+          style={
+            Object {
+              "color": "gray",
+              "fontSize": 18,
+              "paddingBottom": 20,
+              "paddingTop": 10,
+              "width": 520,
+            }
+          }
+        >
+          This chirp was deleted
+        </Text>
+        <View
+          style={
+            Object {
+              "flexDirection": "row",
+              "fontSize": 18,
+            }
+          }
+        >
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "black",
+                    "fontSize": 16,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "ionicons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              
+            </Text>
+            <Text>
+                0
+            </Text>
+          </View>
+        </View>
       </View>
+    </View>
+    <View
+      style={
+        Object {
+          "display": "flex",
+          "flexDirection": "row",
+          "marginTop": 10,
+        }
+      }
+    >
       <View
         style={
           Object {
-            "alignSelf": "flex-end",
-            "marginTop": 10,
+            "marginLeft": "auto",
           }
         }
       >
@@ -312,7 +329,7 @@ Array [
         "borderColor": "gray",
         "borderTopWidth": 0,
         "borderWidth": 1,
-        "flexDirection": "row",
+        "flexDirection": "column",
         "padding": 10,
         "width": 600,
       }
@@ -321,245 +338,262 @@ Array [
     <View
       style={
         Object {
-          "width": 60,
+          "flexDirection": "row",
         }
       }
     >
-      ProfileIcon
+      <View
+        style={
+          Object {
+            "width": 60,
+          }
+        }
+      >
+        ProfileIcon
+      </View>
+      <View
+        style={
+          Object {
+            "display": "flex",
+            "flexDirection": "column",
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "fontSize": 18,
+              "marginTop": 7,
+            }
+          }
+        >
+          <Text
+            style={
+              Object {
+                "fontSize": 18,
+                "fontWeight": "600",
+              }
+            }
+          >
+            Douglas Adams
+          </Text>
+        </View>
+        <Text
+          style={
+            Object {
+              "fontSize": 18,
+              "paddingBottom": 20,
+              "paddingTop": 10,
+              "width": 520,
+            }
+          }
+        >
+          Don't panic.
+        </Text>
+        <View
+          style={
+            Object {
+              "flexDirection": "row",
+              "fontSize": 18,
+            }
+          }
+        >
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-up"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                1
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-down"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="heart"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "black",
+                    "fontSize": 16,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "ionicons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              
+            </Text>
+            <Text>
+                0
+            </Text>
+          </View>
+        </View>
+      </View>
     </View>
     <View
       style={
         Object {
           "display": "flex",
-          "flexDirection": "column",
+          "flexDirection": "row",
+          "marginTop": 10,
         }
       }
     >
       <View
         style={
           Object {
-            "fontSize": 18,
-            "marginTop": 7,
-          }
-        }
-      >
-        <Text
-          style={
-            Object {
-              "fontSize": 18,
-              "fontWeight": "600",
-            }
-          }
-        >
-          Douglas Adams
-        </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "fontSize": 18,
-            "paddingBottom": 20,
-            "paddingTop": 10,
-            "width": 520,
-          }
-        }
-      >
-        Don't panic.
-      </Text>
-      <View
-        style={
-          Object {
-            "flexDirection": "row",
-            "fontSize": 18,
-          }
-        }
-      >
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-up"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              1
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-down"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="heart"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <Text
-            allowFontScaling={false}
-            style={
-              Array [
-                Object {
-                  "color": "black",
-                  "fontSize": 16,
-                },
-                undefined,
-                Object {
-                  "fontFamily": "ionicons",
-                  "fontStyle": "normal",
-                  "fontWeight": "normal",
-                },
-                Object {},
-              ]
-            }
-          >
-            
-          </Text>
-          <Text>
-              0
-          </Text>
-        </View>
-      </View>
-      <View
-        style={
-          Object {
-            "alignSelf": "flex-end",
-            "marginTop": 10,
+            "marginLeft": "auto",
           }
         }
       >
@@ -762,7 +796,7 @@ Array [
         "borderColor": "gray",
         "borderTopWidth": 0,
         "borderWidth": 1,
-        "flexDirection": "row",
+        "flexDirection": "column",
         "padding": 10,
         "width": 600,
       }
@@ -771,169 +805,210 @@ Array [
     <View
       style={
         Object {
-          "width": 60,
+          "flexDirection": "row",
         }
       }
     >
-      ProfileIcon
+      <View
+        style={
+          Object {
+            "width": 60,
+          }
+        }
+      >
+        ProfileIcon
+      </View>
+      <View
+        style={
+          Object {
+            "display": "flex",
+            "flexDirection": "column",
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "fontSize": 18,
+              "marginTop": 7,
+            }
+          }
+        >
+          <Text
+            style={
+              Object {
+                "fontSize": 18,
+                "fontWeight": "600",
+              }
+            }
+          >
+            Douglas Adams
+          </Text>
+        </View>
+        <Text
+          style={
+            Object {
+              "fontSize": 18,
+              "paddingBottom": 20,
+              "paddingTop": 10,
+              "width": 520,
+            }
+          }
+        >
+          Don't panic.
+        </Text>
+        <View
+          style={
+            Object {
+              "flexDirection": "row",
+              "fontSize": 18,
+            }
+          }
+        >
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-up"
+            >
+              <Text />
+            </View>
+            <Text>
+                1
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-down"
+            >
+              <Text />
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="heart"
+            >
+              <Text />
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <Text />
+            <Text>
+                0
+            </Text>
+          </View>
+        </View>
+      </View>
     </View>
     <View
       style={
         Object {
           "display": "flex",
-          "flexDirection": "column",
+          "flexDirection": "row",
+          "marginTop": 10,
         }
       }
     >
       <View
         style={
           Object {
-            "fontSize": 18,
-            "marginTop": 7,
-          }
-        }
-      >
-        <Text
-          style={
-            Object {
-              "fontSize": 18,
-              "fontWeight": "600",
-            }
-          }
-        >
-          Douglas Adams
-        </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "fontSize": 18,
-            "paddingBottom": 20,
-            "paddingTop": 10,
-            "width": 520,
-          }
-        }
-      >
-        Don't panic.
-      </Text>
-      <View
-        style={
-          Object {
-            "flexDirection": "row",
-            "fontSize": 18,
+            "marginRight": "auto",
           }
         }
       >
         <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-up"
-          >
-            <Text />
-          </View>
-          <Text>
-              1
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-down"
-          >
-            <Text />
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="heart"
-          >
-            <Text />
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
         >
           <Text />
-          <Text>
-              0
-          </Text>
         </View>
       </View>
       <View
         style={
           Object {
-            "alignSelf": "flex-end",
-            "marginTop": 10,
+            "marginLeft": "auto",
           }
         }
       >
@@ -943,31 +1018,6 @@ Array [
         >
           4 months ago
         </time>
-      </View>
-      <View
-        accessible={true}
-        collapsable={false}
-        focusable={true}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onFocus={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-      >
-        <Image
-          accessibilityLabel="delete"
-          source={1}
-          style={
-            Object {
-              "height": 26,
-              "width": 26,
-            }
-          }
-        />
       </View>
     </View>
   </View>,
@@ -1161,7 +1211,7 @@ Array [
         "borderColor": "gray",
         "borderTopWidth": 0,
         "borderWidth": 1,
-        "flexDirection": "row",
+        "flexDirection": "column",
         "padding": 10,
         "width": 600,
       }
@@ -1170,222 +1220,286 @@ Array [
     <View
       style={
         Object {
-          "width": 60,
+          "flexDirection": "row",
         }
       }
     >
-      ProfileIcon
+      <View
+        style={
+          Object {
+            "width": 60,
+          }
+        }
+      >
+        ProfileIcon
+      </View>
+      <View
+        style={
+          Object {
+            "display": "flex",
+            "flexDirection": "column",
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "fontSize": 18,
+              "marginTop": 7,
+            }
+          }
+        >
+          <Text
+            style={
+              Object {
+                "fontSize": 18,
+                "fontWeight": "600",
+              }
+            }
+          >
+            Douglas Adams
+          </Text>
+        </View>
+        <Text
+          style={
+            Object {
+              "fontSize": 18,
+              "paddingBottom": 20,
+              "paddingTop": 10,
+              "width": 520,
+            }
+          }
+        >
+          Don't panic.
+        </Text>
+        <View
+          style={
+            Object {
+              "flexDirection": "row",
+              "fontSize": 18,
+            }
+          }
+        >
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-up"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                1
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-down"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="heart"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "black",
+                    "fontSize": 16,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "ionicons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              
+            </Text>
+            <Text>
+                0
+            </Text>
+          </View>
+        </View>
+      </View>
     </View>
     <View
       style={
         Object {
           "display": "flex",
-          "flexDirection": "column",
+          "flexDirection": "row",
+          "marginTop": 10,
         }
       }
     >
       <View
         style={
           Object {
-            "fontSize": 18,
-            "marginTop": 7,
-          }
-        }
-      >
-        <Text
-          style={
-            Object {
-              "fontSize": 18,
-              "fontWeight": "600",
-            }
-          }
-        >
-          Douglas Adams
-        </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "fontSize": 18,
-            "paddingBottom": 20,
-            "paddingTop": 10,
-            "width": 520,
-          }
-        }
-      >
-        Don't panic.
-      </Text>
-      <View
-        style={
-          Object {
-            "flexDirection": "row",
-            "fontSize": 18,
+            "marginRight": "auto",
           }
         }
       >
         <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-up"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              1
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-down"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="heart"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
+          accessible={true}
+          collapsable={false}
+          focusable={true}
+          onBlur={[Function]}
+          onClick={[Function]}
+          onFocus={[Function]}
+          onResponderGrant={[Function]}
+          onResponderMove={[Function]}
+          onResponderRelease={[Function]}
+          onResponderTerminate={[Function]}
+          onResponderTerminationRequest={[Function]}
+          onStartShouldSetResponder={[Function]}
         >
           <Text
             allowFontScaling={false}
             style={
               Array [
                 Object {
-                  "color": "black",
-                  "fontSize": 16,
+                  "color": "red",
+                  "fontSize": 20,
                 },
                 undefined,
                 Object {
@@ -1397,18 +1511,14 @@ Array [
               ]
             }
           >
-            
-          </Text>
-          <Text>
-              0
+            
           </Text>
         </View>
       </View>
       <View
         style={
           Object {
-            "alignSelf": "flex-end",
-            "marginTop": 10,
+            "marginLeft": "auto",
           }
         }
       >
@@ -1418,31 +1528,6 @@ Array [
         >
           4 months ago
         </time>
-      </View>
-      <View
-        accessible={true}
-        collapsable={false}
-        focusable={true}
-        onBlur={[Function]}
-        onClick={[Function]}
-        onFocus={[Function]}
-        onResponderGrant={[Function]}
-        onResponderMove={[Function]}
-        onResponderRelease={[Function]}
-        onResponderTerminate={[Function]}
-        onResponderTerminationRequest={[Function]}
-        onStartShouldSetResponder={[Function]}
-      >
-        <Image
-          accessibilityLabel="delete"
-          source={1}
-          style={
-            Object {
-              "height": 26,
-              "width": 26,
-            }
-          }
-        />
       </View>
     </View>
   </View>,
@@ -1636,7 +1721,7 @@ Array [
         "borderColor": "gray",
         "borderTopWidth": 0,
         "borderWidth": 1,
-        "flexDirection": "row",
+        "flexDirection": "column",
         "padding": 10,
         "width": 600,
       }
@@ -1645,245 +1730,262 @@ Array [
     <View
       style={
         Object {
-          "width": 60,
+          "flexDirection": "row",
         }
       }
     >
-      ProfileIcon
+      <View
+        style={
+          Object {
+            "width": 60,
+          }
+        }
+      >
+        ProfileIcon
+      </View>
+      <View
+        style={
+          Object {
+            "display": "flex",
+            "flexDirection": "column",
+          }
+        }
+      >
+        <View
+          style={
+            Object {
+              "fontSize": 18,
+              "marginTop": 7,
+            }
+          }
+        >
+          <Text
+            style={
+              Object {
+                "fontSize": 18,
+                "fontWeight": "600",
+              }
+            }
+          >
+            Anonymous
+          </Text>
+        </View>
+        <Text
+          style={
+            Object {
+              "fontSize": 18,
+              "paddingBottom": 20,
+              "paddingTop": 10,
+              "width": 520,
+            }
+          }
+        >
+          Ignore me
+        </Text>
+        <View
+          style={
+            Object {
+              "flexDirection": "row",
+              "fontSize": 18,
+            }
+          }
+        >
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-up"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="thumbs-down"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <View
+              accessible={true}
+              collapsable={false}
+              focusable={true}
+              onBlur={[Function]}
+              onClick={[Function]}
+              onFocus={[Function]}
+              onResponderGrant={[Function]}
+              onResponderMove={[Function]}
+              onResponderRelease={[Function]}
+              onResponderTerminate={[Function]}
+              onResponderTerminationRequest={[Function]}
+              onStartShouldSetResponder={[Function]}
+              testID="heart"
+            >
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
+            </View>
+            <Text>
+                0
+            </Text>
+          </View>
+          <View
+            style={
+              Object {
+                "flex": 1,
+                "flexDirection": "row",
+                "marginRight": 10,
+              }
+            }
+          >
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "black",
+                    "fontSize": 16,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "ionicons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              
+            </Text>
+            <Text>
+                0
+            </Text>
+          </View>
+        </View>
+      </View>
     </View>
     <View
       style={
         Object {
           "display": "flex",
-          "flexDirection": "column",
+          "flexDirection": "row",
+          "marginTop": 10,
         }
       }
     >
       <View
         style={
           Object {
-            "fontSize": 18,
-            "marginTop": 7,
-          }
-        }
-      >
-        <Text
-          style={
-            Object {
-              "fontSize": 18,
-              "fontWeight": "600",
-            }
-          }
-        >
-          Anonymous
-        </Text>
-      </View>
-      <Text
-        style={
-          Object {
-            "fontSize": 18,
-            "paddingBottom": 20,
-            "paddingTop": 10,
-            "width": 520,
-          }
-        }
-      >
-        Ignore me
-      </Text>
-      <View
-        style={
-          Object {
-            "flexDirection": "row",
-            "fontSize": 18,
-          }
-        }
-      >
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-up"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="thumbs-down"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <View
-            accessible={true}
-            collapsable={false}
-            focusable={true}
-            onBlur={[Function]}
-            onClick={[Function]}
-            onFocus={[Function]}
-            onResponderGrant={[Function]}
-            onResponderMove={[Function]}
-            onResponderRelease={[Function]}
-            onResponderTerminate={[Function]}
-            onResponderTerminationRequest={[Function]}
-            onStartShouldSetResponder={[Function]}
-            testID="heart"
-          >
-            <Text
-              allowFontScaling={false}
-              style={
-                Array [
-                  Object {
-                    "color": "black",
-                    "fontSize": 16,
-                  },
-                  undefined,
-                  Object {
-                    "fontFamily": "ionicons",
-                    "fontStyle": "normal",
-                    "fontWeight": "normal",
-                  },
-                  Object {},
-                ]
-              }
-            >
-              
-            </Text>
-          </View>
-          <Text>
-              0
-          </Text>
-        </View>
-        <View
-          style={
-            Object {
-              "flex": 1,
-              "flexDirection": "row",
-              "marginRight": 10,
-            }
-          }
-        >
-          <Text
-            allowFontScaling={false}
-            style={
-              Array [
-                Object {
-                  "color": "black",
-                  "fontSize": 16,
-                },
-                undefined,
-                Object {
-                  "fontFamily": "ionicons",
-                  "fontStyle": "normal",
-                  "fontWeight": "normal",
-                },
-                Object {},
-              ]
-            }
-          >
-            
-          </Text>
-          <Text>
-              0
-          </Text>
-        </View>
-      </View>
-      <View
-        style={
-          Object {
-            "alignSelf": "flex-end",
-            "marginTop": 10,
+            "marginLeft": "auto",
           }
         }
       >
