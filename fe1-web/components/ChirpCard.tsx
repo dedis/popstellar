@@ -5,7 +5,7 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { Chirp } from 'model/objects/Chirp';
+import { Chirp, PublicKey } from 'model/objects';
 import { requestDeleteChirp, requestAddReaction } from 'network';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
