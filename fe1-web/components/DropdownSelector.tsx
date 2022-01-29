@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Picker } from '@react-native-picker/picker';
-import styles from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 /**
  * Simple dropdown where the user can select options
@@ -22,7 +22,7 @@ const DropdownSelector = (props: IPropTypes) => {
     <Picker
       selectedValue={selected}
       onValueChange={(val: any) => onChange(val)}
-      style={styles.centerWithMargin}
+      style={containerStyles.centerWithMargin}
     >
       { options }
     </Picker>

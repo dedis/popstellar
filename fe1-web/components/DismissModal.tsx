@@ -4,7 +4,7 @@ import {
   View, Modal, Text,
 } from 'react-native';
 import STRINGS from 'res/strings';
-import styles from 'styles/stylesheets/modal';
+import modalStyles from 'styles/stylesheets/modalStyles';
 import WideButtonView from './WideButtonView';
 
 /**
@@ -23,12 +23,12 @@ const DismissModal = (props: IPropTypes) => {
       visible={visibility}
       transparent
     >
-      <View style={styles.modalView}>
-        <View style={styles.titleView}>
-          <Text style={styles.modalTitle}>{title}</Text>
+      <View style={modalStyles.modalView}>
+        <View style={modalStyles.titleView}>
+          <Text style={modalStyles.modalTitle}>{title}</Text>
         </View>
-        <Text style={styles.modalDescription}>{description}</Text>
-        <View style={styles.buttonView}>
+        <Text style={modalStyles.modalDescription}>{description}</Text>
+        <View style={modalStyles.buttonView}>
           <WideButtonView
             title={buttonText}
             onPress={() => setVisibility(!visibility)}

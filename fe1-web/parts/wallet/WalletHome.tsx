@@ -2,7 +2,7 @@ import React from 'react';
 import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
@@ -33,7 +33,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   }
 
   return (
-    <View style={styleContainer.centered}>
+    <View style={containerStyles.centered}>
       <TextBlock bold text={STRINGS.welcome_to_wallet_display} />
       <View style={styles.smallPadding} />
       <TextBlock text={STRINGS.info_to_set_wallet} />

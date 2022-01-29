@@ -2,7 +2,7 @@ import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { white } from '../colors';
 import { Typography } from '../index';
 
-const styles = StyleSheet.create({
+const modalStyles = StyleSheet.create({
   modalView: {
     backgroundColor: white,
     borderRadius: 10,
@@ -34,4 +34,4 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-export default styles;
+export default modalStyles;

@@ -10,13 +10,13 @@ import {
 import STRINGS from 'res/strings';
 import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
-import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
+import socialMediaProfileStyles from 'styles/stylesheets/socialMediaProfileStyles';
 
 /**
  * UI for the profile of the current user.
  */
 
-const styles = socialMediaProfile;
+const styles = socialMediaProfileStyles;
 
 const SocialProfile = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;

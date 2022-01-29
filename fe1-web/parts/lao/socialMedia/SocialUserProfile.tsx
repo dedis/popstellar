@@ -8,15 +8,15 @@ import ChirpCard from 'components/ChirpCard';
 import ProfileIcon from 'components/ProfileIcon';
 import TextBlock from 'components/TextBlock';
 import BackButton from 'components/BackButton';
-import { Chirp, ChirpState } from 'model/objects';
-import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
+import { Chirp, ChirpState } from 'model/objects/Chirp';
+import socialMediaProfileStyles from 'styles/stylesheets/socialMediaProfileStyles';
 import STRINGS from 'res/strings';
 
 /**
  * UI for the profile of a user.
  */
 
-const styles = socialMediaProfile;
+const styles = socialMediaProfileStyles;
 
 const SocialUserProfile = ({ route }: any) => {
   const { currentUserPublicKey, userPublicKey } = route.params;

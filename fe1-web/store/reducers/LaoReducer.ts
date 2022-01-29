@@ -5,7 +5,6 @@ import { REHYDRATE } from 'redux-persist';
 
 import { Hash, Lao, LaoState } from 'model/objects';
 import { getKeyPairState } from './KeyPairReducer';
-// import laosData from 'res/laoData';
 
 /**
  * Reducer & associated function implementation to store all known LAOs

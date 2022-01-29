@@ -109,7 +109,9 @@ const EventElection = (props: IPropTypes) => {
     votes.sort((a, b) => (
       a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
     const arrayToHash: Hash[] = [];
-    votes.forEach((registeredVote) => { arrayToHash.push(...registeredVote.voteIDs); });
+    votes.forEach((registeredVote) => {
+      arrayToHash.push(...registeredVote.voteIDs);
+    });
     const stringArray: string[] = arrayToHash.map((hash) => hash.valueOf());
     return Hash.fromStringArray(...stringArray);
   };
@@ -130,16 +132,19 @@ const EventElection = (props: IPropTypes) => {
     dispatch(updateEvent(election.lao, newElec.toState()));
   };
 
+  const doesNothing = () => {
+    // This is intentional to return an empty function at the end of useEffect
+  };
+
   // This makes sure the screen gets updated when the event starts
   useEffect(() => {
     if (untilStart >= 0) {
       const startTimer = setTimeout(() => {
         updateElection(ElectionStatus.RUNNING);
-        // setStatus(ElectionStatus.RUNNING);
       }, untilStart);
       return () => clearTimeout(startTimer);
     }
-    return () => {};
+    return doesNothing;
   }, []);
 
   // This makes sure the screen gets updated when the event ends - user can't vote anymore
@@ -150,7 +155,7 @@ const EventElection = (props: IPropTypes) => {
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
-    return () => {};
+    return doesNothing;
   }, []);
 
   // Here we use the election object form the redux store in order to see the electionStatus

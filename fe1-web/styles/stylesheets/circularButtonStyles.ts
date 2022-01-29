@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Colors } from 'styles';
 
-const stylesCircularButton = StyleSheet.create({
+const circularButtonStyles = StyleSheet.create({
   button: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -12,4 +12,4 @@ const stylesCircularButton = StyleSheet.create({
   },
 });
 
-export default stylesCircularButton;
+export default circularButtonStyles;

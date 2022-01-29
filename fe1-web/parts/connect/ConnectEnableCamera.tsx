@@ -5,15 +5,13 @@ import PROPS_TYPE from 'res/Props';
 import WideButtonView from 'components/WideButtonView';
 import TextBlock from 'components/TextBlock';
 import PropTypes from 'prop-types';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 /**
  * ConnectEnableCamera pane asks for the user to enable camera access in order to scan QR codes
- *
- * TODO ask the user for the camera permission when click on the permission button
  */
 const ConnectEnableCamera = ({ navigation }: IPropTypes) => (
-  <View style={styleContainer.flex}>
+  <View style={containerStyles.flex}>
     <TextBlock text={STRINGS.connect_description} />
     <WideButtonView
       title={STRINGS.connect_button_camera}
