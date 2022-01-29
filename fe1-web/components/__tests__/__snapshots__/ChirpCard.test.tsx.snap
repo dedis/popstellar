@@ -1305,7 +1305,26 @@ Array [
               onStartShouldSetResponder={[Function]}
               testID="thumbs-up"
             >
-              <Text />
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
             </View>
             <Text>
                 1
@@ -1335,7 +1354,26 @@ Array [
               onStartShouldSetResponder={[Function]}
               testID="thumbs-down"
             >
-              <Text />
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
             </View>
             <Text>
                 0
@@ -1365,7 +1403,26 @@ Array [
               onStartShouldSetResponder={[Function]}
               testID="heart"
             >
-              <Text />
+              <Text
+                allowFontScaling={false}
+                style={
+                  Array [
+                    Object {
+                      "color": "black",
+                      "fontSize": 16,
+                    },
+                    undefined,
+                    Object {
+                      "fontFamily": "ionicons",
+                      "fontStyle": "normal",
+                      "fontWeight": "normal",
+                    },
+                    Object {},
+                  ]
+                }
+              >
+                
+              </Text>
             </View>
             <Text>
                 0
@@ -1380,7 +1437,26 @@ Array [
               }
             }
           >
-            <Text />
+            <Text
+              allowFontScaling={false}
+              style={
+                Array [
+                  Object {
+                    "color": "black",
+                    "fontSize": 16,
+                  },
+                  undefined,
+                  Object {
+                    "fontFamily": "ionicons",
+                    "fontStyle": "normal",
+                    "fontWeight": "normal",
+                  },
+                  Object {},
+                ]
+              }
+            >
+              
+            </Text>
             <Text>
                 0
             </Text>
@@ -1419,7 +1495,26 @@ Array [
           onResponderTerminationRequest={[Function]}
           onStartShouldSetResponder={[Function]}
         >
-          <Text />
+          <Text
+            allowFontScaling={false}
+            style={
+              Array [
+                Object {
+                  "color": "red",
+                  "fontSize": 20,
+                },
+                undefined,
+                Object {
+                  "fontFamily": "ionicons",
+                  "fontStyle": "normal",
+                  "fontWeight": "normal",
+                },
+                Object {},
+              ]
+            }
+          >
+            
+          </Text>
         </View>
       </View>
       <View
