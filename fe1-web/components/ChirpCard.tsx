@@ -10,7 +10,6 @@ import { requestDeleteChirp, requestAddReaction } from 'network';
 import { PublicKey } from 'model/objects';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
-import { Typography } from 'styles';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { makeReactionsList } from 'store';
