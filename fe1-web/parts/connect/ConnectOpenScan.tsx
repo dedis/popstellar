@@ -9,6 +9,8 @@ import PropTypes from 'prop-types';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import { Colors } from 'styles';
 import WideButtonView from 'components/WideButtonView';
+import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * Starts a QR code scan
@@ -17,9 +19,15 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   // Remove the user to go back to the ConnectEnableCamera as he has already given
   // his permission to use the camera
   const [QrWasScanned, setQrWasScanned] = useState(false);
+  const toast = useToast();
 
   const handleError = (err: string) => {
     console.error(err);
+    toast.show(err, {
+      type: 'danger',
+      placement: 'top',
+      duration: FOUR_SECONDS,
+    });
   };
 
   const handleScan = (data: string) => {

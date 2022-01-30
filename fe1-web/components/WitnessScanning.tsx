@@ -9,7 +9,7 @@ import CameraButton from './CameraButton';
 /**
  * Scanning witness component: a camera view and a camera button
  *
- * The cammera button do a goBack
+ * The camera button do a goBack
  *
  * TODO press on the button will scan a QR code and add a witness
 */
