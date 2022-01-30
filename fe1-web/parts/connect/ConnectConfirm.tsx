@@ -10,7 +10,7 @@ import { subscribeToChannel } from 'network/CommunicationApi';
 import { Channel, channelFromIds, Hash } from 'model/objects';
 
 import { Spacing } from 'styles';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
@@ -103,7 +103,7 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
   };
 
   return (
-    <View style={styleContainer.flex}>
+    <View style={containerStyles.flex}>
       <View style={styles.viewCenter}>
         <TextBlock text={STRINGS.connect_confirm_description} />
         <TextInputLine

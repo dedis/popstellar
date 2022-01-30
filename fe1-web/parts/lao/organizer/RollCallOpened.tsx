@@ -3,7 +3,7 @@ import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
 import { Spacing } from 'styles';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 import QrReader from 'react-qr-reader';
 import STRINGS from 'res/strings';
@@ -112,7 +112,7 @@ const RollCallOpened = () => {
   };
 
   return (
-    <View style={styleContainer.flex}>
+    <View style={containerStyles.flex}>
       <View style={styles.viewCenter}>
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader

@@ -4,6 +4,7 @@ export const Wallet = w;
 
 export * from './Base64Url';
 export * from './Channel';
+export * from './Chirp';
 export * from './Election';
 export * from './Hash';
 export * from './KeyPair';
@@ -14,6 +15,7 @@ export * from './Meeting';
 export * from './PopToken';
 export * from './PrivateKey';
 export * from './PublicKey';
+export * from './Reaction';
 export * from './RollCall';
 export * from './Signature';
 export * from './Timestamp';

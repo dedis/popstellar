@@ -16,8 +16,7 @@ import STRINGS from 'res/strings';
 import { requestAddChirp } from 'network/MessageApi';
 import { makeChirpsList } from 'store/reducers/SocialReducer';
 import { useSelector } from 'react-redux';
-import { Chirp, ChirpState } from 'model/objects/Chirp';
-import { PublicKey } from 'model/objects';
+import { Chirp, ChirpState, PublicKey } from 'model/objects';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 

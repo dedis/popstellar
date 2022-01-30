@@ -6,7 +6,7 @@ import QrReader from 'react-qr-reader';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import { Colors } from 'styles';
 import WideButtonView from 'components/WideButtonView';
 import { useToast } from 'react-native-toast-notifications';
@@ -15,8 +15,6 @@ const FOUR_SECONDS = 4000;
 
 /**
  * Starts a QR code scan
- *
- * TODO use the camera to scan a QR code and give the URL find to the ConnectConnecting component
  */
 const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   // Remove the user to go back to the ConnectEnableCamera as he has already given
@@ -43,9 +41,9 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
 
   return QrWasScanned
     ? (
-      <View style={styleContainer.centered} />
+      <View style={containerStyles.centered} />
     ) : (
-      <View style={styleContainer.centered}>
+      <View style={containerStyles.centered}>
         <QrReader
           delay={300}
           onError={handleError}

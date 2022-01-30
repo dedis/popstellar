@@ -1,7 +1,7 @@
 import base64url from 'base64url';
 import platformCrypto from 'platform/crypto';
+import { getWalletState, setWallet, clearWallet } from 'store/reducers';
 import { AsyncDispatch, getStore } from '../Storage';
-import { getWalletState, setWallet, clearWallet } from '../reducers/WalletReducer';
 
 /**
  * Encrypt Uint8Array plaintext into a ciphertext (string)
@@ -10,8 +10,7 @@ import { getWalletState, setWallet, clearWallet } from '../reducers/WalletReduce
  */
 async function encrypt(plaintext: Uint8Array): Promise<string> {
   const encrypted = await platformCrypto.encrypt(plaintext);
-  const encoded = base64url.encode(Buffer.from(encrypted));
-  return encoded;
+  return base64url.encode(Buffer.from(encrypted));
 }
 
 /**

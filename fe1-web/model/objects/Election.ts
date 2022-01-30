@@ -152,7 +152,8 @@ export class Election implements LaoEvent {
     const now = Timestamp.EpochNow();
     if (now.before(start)) {
       return ElectionStatus.NOTSTARTED;
-    } if (now.before(end)) {
+    }
+    if (now.before(end)) {
       return ElectionStatus.RUNNING;
     }
     return ElectionStatus.FINISHED;

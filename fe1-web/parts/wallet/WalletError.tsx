@@ -1,5 +1,5 @@
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import TextBlock from 'components/TextBlock';
 import STRINGS from 'res/strings';
 import WideButtonView from 'components/WideButtonView';
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 const WalletError = ({ navigation }: IPropTypes) => {
   function getWalletErrorDisplay() {
     return (
-      <View style={styleContainer.centered}>
+      <View style={containerStyles.centered}>
         <TextBlock text={STRINGS.wallet_error} />
         <View style={styles.largePadding} />
         <WideButtonView
