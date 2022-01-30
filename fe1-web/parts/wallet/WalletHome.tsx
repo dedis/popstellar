@@ -6,9 +6,8 @@ import styleContainer from 'styles/stylesheets/container';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import PROPS_TYPE from 'res/Props';
-import PropTypes from 'prop-types';
 import { WalletStore } from 'store/stores/WalletStore';
+import { useNavigation } from '@react-navigation/native';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -23,7 +22,9 @@ const styles = StyleSheet.create({
  * wallet home screen
  * @constructor
  */
-const WalletHome = ({ navigation }: IPropTypes) => {
+const WalletHome = () => {
+  const navigation = useNavigation();
+
   function importSeed() {
     if (WalletStore.hasSeed()) {
       navigation.navigate(STRINGS.navigation_synced_wallet);
@@ -50,12 +51,5 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-WalletHome.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default WalletHome;

@@ -190,7 +190,7 @@ Array [
           }
         }
       >
-        Are you sure you want to delete this chirp ?
+        Are you sure you want to delete this chirp?
       </Text>
       <View
         style={
@@ -657,7 +657,7 @@ Array [
           }
         }
       >
-        Are you sure you want to delete this chirp ?
+        Are you sure you want to delete this chirp?
       </Text>
       <View
         style={
@@ -1073,7 +1073,7 @@ Array [
           }
         }
       >
-        Are you sure you want to delete this chirp ?
+        Are you sure you want to delete this chirp?
       </Text>
       <View
         style={
@@ -1584,7 +1584,7 @@ Array [
           }
         }
       >
-        Are you sure you want to delete this chirp ?
+        Are you sure you want to delete this chirp?
       </Text>
       <View
         style={
@@ -2051,7 +2051,7 @@ Array [
           }
         }
       >
-        Are you sure you want to delete this chirp ?
+        Are you sure you want to delete this chirp?
       </Text>
       <View
         style={
