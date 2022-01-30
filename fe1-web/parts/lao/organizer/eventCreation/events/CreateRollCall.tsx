@@ -15,10 +15,10 @@ import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
 import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
-const FOUR_SECONDS = 4000;
 
 /**
  * Screen to create a roll-call event

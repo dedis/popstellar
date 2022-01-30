@@ -20,6 +20,7 @@ import {
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
@@ -35,7 +36,6 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const FOUR_SECONDS = 4000;
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 const RollCallOpened = () => {

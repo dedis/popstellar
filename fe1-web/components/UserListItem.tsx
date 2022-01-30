@@ -9,6 +9,7 @@ import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { useNavigation } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 import WideButtonView from './WideButtonView';
 import ProfileIcon from './ProfileIcon';
 
@@ -48,8 +49,6 @@ const styles = StyleSheet.create({
     flex: 1,
   } as ViewStyle,
 });
-
-const FOUR_SECONDS = 4000;
 
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);

@@ -25,6 +25,7 @@ import STRINGS from 'res/strings';
 import BarChartDisplay from 'components/BarChartDisplay';
 import { getEventFromId } from 'ingestion/handlers/Utils';
 import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -44,8 +45,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
   } as TextStyle,
 });
-
-const FOUR_SECOND = 4000;
 
 const EventElection = (props: IPropTypes) => {
   const { election } = props;
@@ -100,7 +99,7 @@ const EventElection = (props: IPropTypes) => {
         toast.show(`Could not cast Vote, error: ${err}`, {
           type: 'danger',
           placement: 'top',
-          duration: FOUR_SECOND,
+          duration: FOUR_SECONDS,
         });
       });
   };

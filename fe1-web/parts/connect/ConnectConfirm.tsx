@@ -19,6 +19,7 @@ import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
 import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -34,7 +35,6 @@ const styles = StyleSheet.create({
     margin: Spacing.xs,
   } as ViewStyle,
 });
-const FOUR_SECONDS = 4000;
 
 /**
  * Connects to the given server URL.

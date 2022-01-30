@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import { Chirp, ChirpState, PublicKey } from 'model/objects';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * UI for the Social Media home screen component
@@ -43,7 +44,6 @@ const styles = StyleSheet.create({
     alignContent: 'flex-end',
   } as TextStyle,
 });
-const FOUR_SECONDS = 4000;
 
 const SocialHome = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;

@@ -10,8 +10,7 @@ import containerStyles from 'styles/stylesheets/containerStyles';
 import { Colors } from 'styles';
 import WideButtonView from 'components/WideButtonView';
 import { useToast } from 'react-native-toast-notifications';
-
-const FOUR_SECONDS = 4000;
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * Starts a QR code scan
