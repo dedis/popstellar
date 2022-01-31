@@ -1,5 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { shape } from 'prop-types';
 import { View } from 'react-native';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import { BarChart } from 'react-native-chart-kit';
@@ -42,7 +42,10 @@ const BarChartDisplay = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  data: PropTypes.arrayOf(PropTypes.number).isRequired,
+  data: PropTypes.arrayOf(shape({
+    ballot_option: PropTypes.string.isRequired,
+    count: PropTypes.number.isRequired,
+  })).isRequired,
 };
 BarChartDisplay.propTypes = propTypes;
 

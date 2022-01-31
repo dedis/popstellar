@@ -90,6 +90,7 @@ const CheckboxList = (props: IPropTypes) => {
             checkedIcon="dot-circle-o"
             uncheckedIcon="circle-o"
             onPress={() => onCheckBoxPress(idx)}
+            testID={`checkBox${value}`}
           />
         ))}
       </View>
