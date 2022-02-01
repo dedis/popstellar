@@ -18,6 +18,7 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3"
 	"golang.org/x/xerrors"
 )
 
@@ -42,7 +43,7 @@ func (a *attendees) isPresent(key string) bool {
 
 // NewChannel returns a new initialized election channel
 func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger, organizerPubKey kyber.Point) Channel {
 
 	log = log.With().Str("channel", "election").Logger()
 
@@ -65,6 +66,8 @@ func NewChannel(channelPath string, start, end int64, questions []messagedata.El
 		hub: hub,
 
 		log: log,
+
+		organiserPubKey: organizerPubKey,
 	}
 }
 
@@ -95,6 +98,8 @@ type Channel struct {
 	hub channel.HubFunctionalities
 
 	log zerolog.Logger
+
+	organiserPubKey kyber.Point
 }
 
 // question represents a question in an election.
@@ -313,7 +318,7 @@ func (c *Channel) processCastVote(msg message.Message) error {
 	}
 
 	// verify sender is an attendee or the organizer
-	ok := c.attendees.isPresent(msg.Sender) || c.hub.GetPubKeyOwner().Equal(senderPoint)
+	ok := c.attendees.isPresent(msg.Sender) || c.organiserPubKey.Equal(senderPoint)
 	if !ok {
 		return answer.NewError(-4, "only attendees can cast a vote in an election")
 	}
@@ -359,7 +364,7 @@ func (c *Channel) processElectionEnd(msg message.Message) error {
 	}
 
 	// check sender of the election end message is the organizer
-	if !c.hub.GetPubKeyOwner().Equal(senderPoint) {
+	if !c.organiserPubKey.Equal(senderPoint) {
 		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
 	}
 
