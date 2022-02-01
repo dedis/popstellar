@@ -21,7 +21,6 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -98,9 +97,7 @@ public class SocialMediaHomeFragment extends Fragment {
     swipeRefreshLayout.setOnRefreshListener(
         () -> {
           mChirpListAdapter.replaceList(
-              mSocialMediaViewModel.getChirpIdList(mSocialMediaViewModel.getLaoId().getValue()));
-          mChirpListAdapter.replaceMap(
-              mSocialMediaViewModel.getAllChirps(mSocialMediaViewModel.getLaoId().getValue()));
+              mSocialMediaViewModel.getChirpList(mSocialMediaViewModel.getLaoId().getValue()));
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.postDelayed(
@@ -120,8 +117,7 @@ public class SocialMediaHomeFragment extends Fragment {
   private void setupListViewAdapter() {
     ListView listView = mSocialMediaHomeFragBinding.chirpsList;
     mChirpListAdapter =
-        new ChirpListAdapter(
-            getActivity(), mSocialMediaViewModel, new ArrayList<>(), new HashMap<>());
+        new ChirpListAdapter(getActivity(), mSocialMediaViewModel, new ArrayList<>());
     listView.setAdapter(mChirpListAdapter);
   }
 
@@ -130,10 +126,8 @@ public class SocialMediaHomeFragment extends Fragment {
         .getLaoId()
         .observe(
             getViewLifecycleOwner(),
-            newLaoId -> {
-              mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpIdList(newLaoId));
-              mChirpListAdapter.replaceMap(mSocialMediaViewModel.getAllChirps(newLaoId));
-            });
+            newLaoId ->
+                mChirpListAdapter.replaceList(mSocialMediaViewModel.getChirpList(newLaoId)));
   }
 
   private void deleteChirp(MessageID chirpId) {

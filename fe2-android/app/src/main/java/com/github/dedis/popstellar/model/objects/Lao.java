@@ -5,12 +5,14 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
@@ -32,7 +34,6 @@ public final class Lao {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
-  private List<MessageID> chirpsIdInOrder;
   private Map<MessageID, Chirp> allChirps;
   private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, Consensus> messageIdToConsensus;
@@ -48,7 +49,6 @@ public final class Lao {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
-    this.chirpsIdInOrder = new ArrayList<>();
     this.allChirps = new HashMap<>();
     this.chirpsByUser = new HashMap<>();
     this.nodes = new ArrayList<>();
@@ -126,19 +126,6 @@ public final class Lao {
   }
 
   /**
-   * Update the list of chirps that have been set in the lao in descending order of timestamp. If
-   * the list of chirps contain one * with Id prevId, it will remove it from the list then add the
-   * new chirp into it.
-   *
-   * @param prevId the previous id of a chirp
-   * @param index in which we should insert the chirp id
-   */
-  public void updateChirpsInOrder(MessageID prevId, int index) {
-    chirpsIdInOrder.remove(prevId);
-    chirpsIdInOrder.add(index, prevId);
-  }
-
-  /**
    * Update the list of chirps that have been sent in the lao. If the list of chirps contain one
    * with Id prevId, it will remove it from the list then add the new chirp into it.
    *
@@ -152,56 +139,13 @@ public final class Lao {
     allChirps.remove(prevId);
     allChirps.put(chirp.getId(), chirp);
 
-    int index1 = findIndexOfChirpIdOrderedByTime(chirpsIdInOrder, allChirps, chirp.getTimestamp());
-    updateChirpsInOrder(prevId, index1);
-
-    int index2 = 0;
     PublicKey user = chirp.getSender();
     if (chirpsByUser.containsKey(user)) {
-      index2 =
-          findIndexOfChirpIdOrderedByTime(chirpsByUser.get(user), allChirps, chirp.getTimestamp());
-    }
-    updateChirpsByUser(prevId, user, index2);
-  }
-
-  /**
-   * Update the list of chirps that have been set in the lao from a user. If the list of chirps
-   * contain one * with Id prevId, it will remove it from the list then add the new chirp into it.
-   *
-   * @param prevId the previous id of a chirp
-   * @param user the user that sent the chirp
-   */
-  public void updateChirpsByUser(MessageID prevId, PublicKey user, int index) {
-    if (chirpsByUser.containsKey(user)) {
-      chirpsByUser.get(user).add(index, prevId);
+      chirpsByUser.get(user).add(prevId);
     } else {
       chirpsByUser.put(user, new ArrayList<>());
       chirpsByUser.get(user).add(prevId);
     }
-  }
-
-  /**
-   * Helper function to find the index of where we should insert the chirp
-   *
-   * @param chirpsId list of chirps in descending order of timestamp
-   * @param allChirps map of MessageID to Chirp containing all chirps sent in the lao
-   * @param timestamp of the chirp to insert
-   * @return index in the list chirpsId
-   */
-  public int findIndexOfChirpIdOrderedByTime(
-      List<MessageID> chirpsId, Map<MessageID, Chirp> allChirps, long timestamp) {
-    int left = 0;
-    int right = chirpsId.size();
-
-    while (left < right) {
-      final int mid = (left + right) / 2;
-      if (allChirps.get(chirpsId.get(mid)).getTimestamp() > timestamp) {
-        left = mid + 1;
-      } else {
-        right = mid;
-      }
-    }
-    return left;
   }
 
   public Optional<RollCall> getRollCall(String id) {
@@ -371,8 +315,10 @@ public final class Lao {
     return witnessMessages;
   }
 
-  public List<MessageID> getChirpsIdInOrder() {
-    return chirpsIdInOrder;
+  public List<Chirp> getChirpsInOrder() {
+    return allChirps.values().stream()
+        .sorted(Comparator.comparingLong(Chirp::getTimestamp).reversed())
+        .collect(Collectors.toList());
   }
 
   public Map<MessageID, Chirp> getAllChirps() {

@@ -28,7 +28,6 @@ import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -368,14 +367,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
     }
   }
 
-  public List<MessageID> getChirpIdList(String laoId) {
+  public List<Chirp> getChirpList(String laoId) {
     Lao lao = mLaoRepository.getLaoByChannel(ROOT + laoId);
-    return lao.getChirpsIdInOrder();
-  }
-
-  public Map<MessageID, Chirp> getAllChirps(String laoId) {
-    Lao lao = mLaoRepository.getLaoByChannel(ROOT + laoId);
-    return lao.getAllChirps();
+    return lao.getChirpsInOrder();
   }
 
   /**
@@ -386,7 +380,6 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
-    boolean isOwner = false;
     String laoChannel = ROOT + getLaoId().getValue();
     LAOState laoState = mLaoRepository.getLaoById().get(laoChannel);
     if (laoState == null) {
@@ -396,10 +389,10 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     try {
       PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
-      isOwner = sender.equals(token.getPublicKey().getEncoded());
+      return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
       Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
+      return false;
     }
-    return isOwner;
   }
 }

@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.socialmedia;
 
 import static android.text.format.DateUtils.getRelativeTimeSpanString;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -14,48 +13,36 @@ import android.widget.TextView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Chirp;
-import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
 import java.util.List;
-import java.util.Map;
 
 public class ChirpListAdapter extends BaseAdapter {
 
-  private SocialMediaViewModel socialMediaViewModel;
-  private List<MessageID> chirpsId;
-  private Map<MessageID, Chirp> allChirps;
-  private LayoutInflater layoutInflater;
+  private final SocialMediaViewModel socialMediaViewModel;
+  private List<Chirp> chirps;
+  private final LayoutInflater layoutInflater;
 
   public ChirpListAdapter(
-      Context context,
-      SocialMediaViewModel socialMediaViewModel,
-      List<MessageID> chirpsId,
-      Map<MessageID, Chirp> allChirps) {
+      Context context, SocialMediaViewModel socialMediaViewModel, List<Chirp> chirps) {
     this.socialMediaViewModel = socialMediaViewModel;
-    this.chirpsId = chirpsId;
-    this.allChirps = allChirps;
+    this.chirps = chirps;
     layoutInflater = LayoutInflater.from(context);
   }
 
-  public void replaceList(List<MessageID> chirpsId) {
-    this.chirpsId = chirpsId;
-    notifyDataSetChanged();
-  }
-
-  public void replaceMap(Map<MessageID, Chirp> allChirps) {
-    this.allChirps = allChirps;
+  public void replaceList(List<Chirp> chirps) {
+    this.chirps = chirps;
     notifyDataSetChanged();
   }
 
   @Override
   public int getCount() {
-    return chirpsId != null ? chirpsId.size() : 0;
+    return chirps != null ? chirps.size() : 0;
   }
 
   @Override
-  public MessageID getItem(int position) {
-    return chirpsId.get(position);
+  public Chirp getItem(int position) {
+    return chirps.get(position);
   }
 
   @Override
@@ -63,12 +50,11 @@ public class ChirpListAdapter extends BaseAdapter {
     return position;
   }
 
-  @SuppressLint({"ViewHolder", "InflateParams"})
   @Override
   public View getView(int position, View view, ViewGroup viewGroup) {
     View chirpView = layoutInflater.inflate(R.layout.chirp_card, null);
 
-    Chirp chirp = allChirps.get(getItem(position));
+    Chirp chirp = getItem(position);
     if (chirp == null) {
       throw new IllegalArgumentException("The chirp does not exist");
     }
