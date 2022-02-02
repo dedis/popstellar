@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet, ViewStyle, View, TextStyle, Text, Pressable,
 } from 'react-native';
@@ -6,7 +6,6 @@ import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
 import { Chirp, PublicKey } from 'model/objects';
-import DeleteButton from 'components/DeleteButton';
 import { requestDeleteChirp, requestAddReaction } from 'network';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
@@ -14,6 +13,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import { makeReactionsList } from 'store';
 import ProfileIcon from './ProfileIcon';
+import ConfirmModal from './ConfirmModal';
 
 /**
  * Component to display a chirp
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     borderColor: gray,
     borderTopWidth: 0,
     borderWidth: 1,
-    flexDirection: 'row',
+    flexDirection: 'column',
     padding: 10,
     width: 600,
   } as ViewStyle,
@@ -65,8 +65,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 10,
   } as ViewStyle,
-  timeView: {
-    alignSelf: 'flex-end',
+  bottomView: {
+    flexDirection: 'row',
+    display: 'flex',
     marginTop: 10,
   } as ViewStyle,
 });
@@ -83,6 +84,8 @@ const ChirpCard = (props: IPropTypes) => {
   const thumbsUp = reactions ? reactions['👍'] : 0;
   const thumbsDown = reactions ? reactions['👎'] : 0;
   const heart = reactions ? reactions['❤️'] : 0;
+
+  const [deleteModalIsVisible, setDeleteModalIsVisible] = useState(false);
 
   const addReaction = (reaction_codepoint: string) => {
     requestAddReaction(reaction_codepoint, chirp.id)
@@ -107,54 +110,79 @@ const ChirpCard = (props: IPropTypes) => {
           duration: FOUR_SECONDS,
         });
       });
+    setDeleteModalIsVisible(false);
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.leftView}>
-        <ProfileIcon publicKey={chirp.sender} />
-      </View>
-      <View style={styles.rightView}>
-        <View style={styles.senderView}>
-          <Text style={styles.senderText}>{chirp.sender.valueOf()}</Text>
-        </View>
-        {chirp.isDeleted
-          ? <Text style={styles.deletedChirpText}>{STRINGS.deleted_chirp}</Text>
-          : <Text style={styles.chirpText}>{chirp.text}</Text>}
-        <View style={styles.reactionsView}>
-          {!chirp.isDeleted && (
-          <>
-            <View style={styles.reactionView}>
-              <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
-                <Ionicons name="thumbs-up-sharp" size={16} color="black" />
-              </Pressable>
-              <Text>{`  ${thumbsUp}`}</Text>
+    <>
+      <View style={styles.container}>
+        <View style={{ flexDirection: 'row' }}>
+          <View style={styles.leftView}>
+            <ProfileIcon publicKey={chirp.sender} />
+          </View>
+          <View style={styles.rightView}>
+            <View style={styles.senderView}>
+              <Text style={styles.senderText}>{chirp.sender.valueOf()}</Text>
             </View>
-            <View style={styles.reactionView}>
-              <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
-                <Ionicons name="thumbs-down-sharp" size={16} color="black" />
-              </Pressable>
-              <Text>{`  ${thumbsDown}`}</Text>
+            {chirp.isDeleted
+              ? <Text style={styles.deletedChirpText}>{STRINGS.deleted_chirp}</Text>
+              : <Text style={styles.chirpText}>{chirp.text}</Text>}
+            <View style={styles.reactionsView}>
+              {!chirp.isDeleted && (
+              <>
+                <View style={styles.reactionView}>
+                  <Pressable onPress={() => addReaction('👍')} testID="thumbs-up">
+                    <Ionicons name="thumbs-up-sharp" size={16} color="black" />
+                  </Pressable>
+                  <Text>{`  ${thumbsUp}`}</Text>
+                </View>
+                <View style={styles.reactionView}>
+                  <Pressable onPress={() => addReaction('👎')} testID="thumbs-down">
+                    <Ionicons name="thumbs-down-sharp" size={16} color="black" />
+                  </Pressable>
+                  <Text>{`  ${thumbsDown}`}</Text>
+                </View>
+                <View style={styles.reactionView}>
+                  <Pressable onPress={() => addReaction('❤️')} testID="heart">
+                    <Ionicons name="heart" size={16} color="black" />
+                  </Pressable>
+                  <Text>{`  ${heart}`}</Text>
+                </View>
+              </>
+              )}
+              <View style={styles.reactionView}>
+                <Ionicons name="chatbubbles" size={16} color="black" />
+                <Text>{zero}</Text>
+              </View>
             </View>
-            <View style={styles.reactionView}>
-              <Pressable onPress={() => addReaction('❤️')} testID="heart">
-                <Ionicons name="heart" size={16} color="black" />
-              </Pressable>
-              <Text>{`  ${heart}`}</Text>
-            </View>
-          </>
-          )}
-          <View style={styles.reactionView}>
-            <Ionicons name="chatbubbles" size={16} color="black" />
-            <Text>{zero}</Text>
           </View>
         </View>
-        <View style={styles.timeView}>
-          <TimeAgo date={chirp.time.valueOf() * 1000} />
+        <View style={styles.bottomView}>
+          { isSender && !chirp.isDeleted && (
+            <View style={{ marginRight: 'auto' }}>
+              <Pressable
+                onPress={() => { setDeleteModalIsVisible(true); }}
+                accessibilityLabel="deleteChirpButton"
+              >
+                <Ionicons name="close-outline" size={20} color="red" />
+              </Pressable>
+            </View>
+          )}
+          <View style={{ marginLeft: 'auto' }}>
+            <TimeAgo date={chirp.time.valueOf() * 1000} />
+          </View>
         </View>
-        { isSender && !chirp.isDeleted && <DeleteButton action={() => { deleteChirp(); }} />}
       </View>
-    </View>
+      <ConfirmModal
+        visibility={deleteModalIsVisible}
+        setVisibility={setDeleteModalIsVisible}
+        title={STRINGS.modal_chirp_deletion_title}
+        description={STRINGS.modal_chirp_deletion_description}
+        onConfirmPress={() => deleteChirp()}
+        buttonConfirmText={STRINGS.general_yes}
+        buttonCancelText={STRINGS.general_no}
+      />
+    </>
   );
 };
 
