@@ -68,7 +68,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
                 if (!validateTimestampStaleness(data.timestamp)) {
                     Right(validationError(s"stale timestamp (${data.timestamp})"))
                 } else if (!validateChannelType(ObjectType.CHIRP, channel)){
-                    Right(validationError(s"trying to add a Chirp on a wrong type of channel $channel"))
+                    Right(validationError(s"trying to delete a Chirp on a wrong type of channel $channel"))
                 } else if (!validateAttendee(sender, channel)){
                     Right(validationError(s"Sender $sender has an invalid PoP token."))
                 } else if (channel.extractChildChannel.base64Data != sender.base64Data) {
@@ -101,7 +101,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
                 if (!validateTimestampStaleness(data.timestamp)) {
                     Right(validationError(s"stale timestamp (${data.timestamp})"))
                 } else if (!validateChannelType(ObjectType.REACTION, channel)){
-                    Right(validationError(s"trying to add a Chirp on a wrong type of channel $channel"))
+                    Right(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
                 } else if (!validateAttendee(sender, channel)){
                     Right(validationError(s"Sender $sender has an invalid PoP token."))
                 } else{
@@ -125,7 +125,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
                 if (!validateTimestampStaleness(data.timestamp)) {
                     Right(validationError(s"stale timestamp (${data.timestamp})"))
                 } else if (!validateChannelType(ObjectType.REACTION, channel)){
-                    Right(validationError(s"trying to add a Chirp on a wrong type of channel $channel"))
+                    Right(validationError(s"trying to delete a reaction on a wrong type of channel $channel"))
                 } else if (!validateAttendee(sender, channel)){
                     Right(validationError(s"Sender $sender has an invalid PoP token."))
                 } else{
