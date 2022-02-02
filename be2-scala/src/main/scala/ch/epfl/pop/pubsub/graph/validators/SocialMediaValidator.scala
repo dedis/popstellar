@@ -10,11 +10,11 @@ import MessageValidator._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-
-
 case object SocialMediaValidator extends MessageDataContentValidator with EventValidator {
 
     override def EVENT_HASH_PREFIX: String = Channel.SEPARATOR + "posts"
+
+    private val CHIRP_TEXT_LENGTH = 300
 
     def validateAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = {
         def validationError(reason: String): PipelineError = super.validationError(reason, "AddChirp", rpcMessage.id)
@@ -36,6 +36,8 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
                     Right(validationError(s"Sender $sender has an invalid PoP token."))
                 } else if (channel.extractChildChannel.base64Data != sender.base64Data) {
                     Right(validationError(s"Sender $sender has an invalid PoP token - doesn't own the channel."))
+                } else if (data.text.length > CHIRP_TEXT_LENGTH) {
+                    Right(validationError(s"Text is too long (over 300 characters)."))
                 }
                 // FIXME: validate parent ID: check with ChannelData object
                 else{
@@ -87,7 +89,7 @@ case object SocialMediaValidator extends MessageDataContentValidator with EventV
     }
 
     def validateAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = {
-        def validationError(reason: String): PipelineError = super.validationError(reason, "DeleteReaction", rpcMessage.id)
+        def validationError(reason: String): PipelineError = super.validationError(reason, "AddReaction", rpcMessage.id)
 
         rpcMessage.getParamsMessage match {
 
