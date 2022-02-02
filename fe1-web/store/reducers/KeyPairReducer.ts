@@ -36,6 +36,8 @@ export const {
   setKeyPair,
 } = keyPairsSlice.actions;
 
+export const keyPairReduce = keyPairsSlice.reducer;
+
 export default {
   [keyPairReducerPath]: keyPairsSlice.reducer,
 };
