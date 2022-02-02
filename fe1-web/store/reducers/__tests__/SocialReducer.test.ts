@@ -516,31 +516,26 @@ describe('SocialReducer', () => {
     });
 
     it('should return an empty list', () => {
-      socialReduce(undefined, {} as AnyAction);
       expect(makeChirpsList().resultFunc(emptyState, mockLaoId))
         .toEqual([]);
     });
 
     it('should return the first chirp state', () => {
-      socialReduce(emptyState, addChirp(mockLaoId, chirp1));
       expect(makeChirpsList().resultFunc(chirpFilledState1, mockLaoId))
         .toEqual([chirp1]);
     });
 
     it('should return the newer chirp before the first chirp', () => {
-      socialReduce(chirpFilledState1, addChirp(mockLaoId, chirp2));
       expect(makeChirpsList().resultFunc(chirpFilledState2, mockLaoId))
         .toEqual([chirp2, chirp1]);
     });
 
     it('should add the newer chirp after the second chirp', () => {
-      socialReduce(chirpFilledState2, addChirp(mockLaoId, chirp3));
       expect(makeChirpsList().resultFunc(chirpFilledState3, mockLaoId))
         .toEqual([chirp2, chirp3, chirp1]);
     });
 
     it('should return the newest chirp on top', () => {
-      socialReduce(chirpFilledState3, addChirp(mockLaoId, chirp4));
       expect(makeChirpsList().resultFunc(chirpFilledState4, mockLaoId))
         .toEqual([chirp4, chirp2, chirp3, chirp1]);
     });

@@ -4,7 +4,13 @@ import {
   Hash, Meeting, RollCall, RollCallStatus, Timestamp,
 } from 'model/objects';
 import {
-  addEvent, clearAllEvents, eventReduce, removeEvent, updateEvent,
+  addEvent,
+  clearAllEvents,
+  eventReduce, makeEventGetter,
+  makeEventsAliasMap,
+  makeEventsList, makeEventsMap, makeLastRollCallAttendeesList,
+  removeEvent,
+  updateEvent,
 } from '../EventsReducer';
 import { mockLaoId } from './SocialReducer.test';
 
@@ -26,6 +32,7 @@ const mockTime1 = new Timestamp(160000000);
 const mockTime2 = new Timestamp(160050000);
 
 const rollCallId : Hash = new Hash('1234');
+
 const rollCallCreated = new RollCall({
   id: rollCallId,
   name: 'roll call',
@@ -139,5 +146,37 @@ describe('EventsReducer', () => {
   it('should clear all events', () => {
     expect(eventReduce(filledStateAfterAddedMeeting, clearAllEvents()))
       .toEqual(emptyLao);
+  });
+});
+
+describe('event selector', () => {
+  it('should return an empty list of makeEventsList when no lao is opened', () => {
+    expect(makeEventsList().resultFunc(emptyState, undefined))
+      .toEqual([]);
+  });
+
+  it('should return an empty makeEventsList', () => {
+    expect(makeEventsList().resultFunc(emptyState, mockLaoId))
+      .toEqual([]);
+  });
+
+  it('should return an empty makeEventsAliasMap when no lao is opened', () => {
+    expect(makeEventsAliasMap().resultFunc(emptyState, undefined))
+      .toEqual({});
+  });
+
+  it('should return an empty makeEventsMap when no lao is opened', () => {
+    expect(makeEventsMap().resultFunc(emptyState, undefined))
+      .toEqual({});
+  });
+
+  it('should return undefined for makeEventGetter', () => {
+    expect(makeEventGetter(mockLaoId, '1234').resultFunc(emptyState))
+      .toEqual(undefined);
+  });
+
+  it('should return an empty list for lastRollCallAttendeesList', () => {
+    expect(makeLastRollCallAttendeesList(mockLaoId, '1234').resultFunc(emptyState))
+      .toEqual([]);
   });
 });
