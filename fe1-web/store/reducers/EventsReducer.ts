@@ -293,6 +293,8 @@ export const makeLastRollCallAttendeesList = (laoId: Hash | string,
   );
 };
 
+export const eventReduce = eventsSlice.reducer;
+
 export default {
   [eventReducerPath]: eventsSlice.reducer,
 };

@@ -21,7 +21,7 @@ const name = 'MyLao';
 const mockLaoIdHash: Hash = Hash.fromStringArray(
   org.toString(), new Timestamp(160000000).toString(), name,
 );
-const mockLaoId: string = mockLaoIdHash.toString();
+export const mockLaoId: string = mockLaoIdHash.toString();
 const mockSender1: PublicKey = new PublicKey('Douglas Adams');
 const mockSender2: PublicKey = new PublicKey('Gandalf');
 const mockChirpId0: Hash = Hash.fromString('000');
