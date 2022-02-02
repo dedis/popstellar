@@ -24,6 +24,8 @@ import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
 import BarChartDisplay from 'components/BarChartDisplay';
 import { getEventFromId } from 'ingestion/handlers/Utils';
+import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -47,6 +49,7 @@ const styles = StyleSheet.create({
 const EventElection = (props: IPropTypes) => {
   const { election } = props;
   const { isOrganizer } = props;
+  const toast = useToast();
   const questions = election.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
   const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
   const [hasVoted, setHasVoted] = useState(0);
@@ -93,6 +96,11 @@ const EventElection = (props: IPropTypes) => {
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
+        toast.show(`Could not cast Vote, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
   };
 
@@ -109,7 +117,9 @@ const EventElection = (props: IPropTypes) => {
     votes.sort((a, b) => (
       a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
     const arrayToHash: Hash[] = [];
-    votes.forEach((registeredVote) => { arrayToHash.push(...registeredVote.voteIDs); });
+    votes.forEach((registeredVote) => {
+      arrayToHash.push(...registeredVote.voteIDs);
+    });
     const stringArray: string[] = arrayToHash.map((hash) => hash.valueOf());
     return Hash.fromStringArray(...stringArray);
   };
@@ -120,6 +130,11 @@ const EventElection = (props: IPropTypes) => {
       .then(() => console.log('Election Terminated'))
       .catch((err) => {
         console.error('Could not terminate election, error:', err);
+        toast.show(`Could not terminate election, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECOND,
+        });
       });
   };
 
@@ -130,16 +145,19 @@ const EventElection = (props: IPropTypes) => {
     dispatch(updateEvent(election.lao, newElec.toState()));
   };
 
+  const doesNothing = () => {
+    // This is intentional to return an empty function at the end of useEffect
+  };
+
   // This makes sure the screen gets updated when the event starts
   useEffect(() => {
     if (untilStart >= 0) {
       const startTimer = setTimeout(() => {
         updateElection(ElectionStatus.RUNNING);
-        // setStatus(ElectionStatus.RUNNING);
       }, untilStart);
       return () => clearTimeout(startTimer);
     }
-    return () => {};
+    return doesNothing;
   }, []);
 
   // This makes sure the screen gets updated when the event ends - user can't vote anymore
@@ -150,7 +168,7 @@ const EventElection = (props: IPropTypes) => {
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
-    return () => {};
+    return doesNothing;
   }, []);
 
   // Here we use the election object form the redux store in order to see the electionStatus

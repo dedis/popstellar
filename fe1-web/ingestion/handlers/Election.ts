@@ -50,7 +50,7 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
 
   // Subscribing to the election channel corresponding to that election
   const electionChannel = channelFromIds(election.lao, election.id);
-  subscribeToChannel(electionChannel).then(() => {}).catch((err) => {
+  subscribeToChannel(electionChannel).catch((err) => {
     console.error('Could not subscribe to Election channel, error:', err);
   });
 

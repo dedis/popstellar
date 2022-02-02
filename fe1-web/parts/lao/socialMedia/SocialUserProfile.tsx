@@ -9,14 +9,14 @@ import ProfileIcon from 'components/ProfileIcon';
 import TextBlock from 'components/TextBlock';
 import BackButton from 'components/BackButton';
 import { Chirp, ChirpState } from 'model/objects/Chirp';
-import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
+import socialMediaProfileStyles from 'styles/stylesheets/socialMediaProfileStyles';
 import STRINGS from 'res/strings';
 
 /**
  * UI for the profile of a user.
  */
 
-const styles = socialMediaProfile;
+const styles = socialMediaProfileStyles;
 
 const SocialUserProfile = ({ route }: any) => {
   const { currentUserPublicKey, userPublicKey } = route.params;

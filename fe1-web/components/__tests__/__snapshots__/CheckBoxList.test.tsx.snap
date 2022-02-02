@@ -1,0 +1,482 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CheckBoxList renders correctly 1`] = `
+<View
+  style={
+    Object {
+      "alignContent": "center",
+      "alignItems": "center",
+      "flexDirection": "column",
+      "justifyContent": "center",
+      "zIndex": 3,
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "fontSize": 25,
+        "marginHorizontal": 10,
+        "textAlign": "center",
+      }
+    }
+  >
+    What is the answer of life?
+  </Text>
+  <View
+    style={
+      Object {
+        "alignContent": "center",
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "zIndex": 3,
+      }
+    }
+  >
+    <View
+      accessibilityRole="checkbox"
+      accessibilityState={
+        Object {
+          "checked": false,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      nativeID="animatedComponent"
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fafafa",
+          "borderColor": "#ededed",
+          "borderRadius": 3,
+          "borderWidth": 1,
+          "margin": 5,
+          "marginLeft": 10,
+          "marginRight": 10,
+          "opacity": 1,
+          "padding": 10,
+        }
+      }
+      testID="checkBoxYes"
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "flexDirection": "row",
+          }
+        }
+      >
+        <Text />
+        <Text
+          style={
+            Object {
+              "color": "#43484d",
+              "fontWeight": "bold",
+              "marginLeft": 10,
+              "marginRight": 10,
+            }
+          }
+          testID="checkboxTitle"
+        >
+          Yes
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityRole="checkbox"
+      accessibilityState={
+        Object {
+          "checked": false,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      nativeID="animatedComponent"
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fafafa",
+          "borderColor": "#ededed",
+          "borderRadius": 3,
+          "borderWidth": 1,
+          "margin": 5,
+          "marginLeft": 10,
+          "marginRight": 10,
+          "opacity": 1,
+          "padding": 10,
+        }
+      }
+      testID="checkBox42"
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "flexDirection": "row",
+          }
+        }
+      >
+        <Text />
+        <Text
+          style={
+            Object {
+              "color": "#43484d",
+              "fontWeight": "bold",
+              "marginLeft": 10,
+              "marginRight": 10,
+            }
+          }
+          testID="checkboxTitle"
+        >
+          42
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityRole="checkbox"
+      accessibilityState={
+        Object {
+          "checked": false,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      nativeID="animatedComponent"
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fafafa",
+          "borderColor": "#ededed",
+          "borderRadius": 3,
+          "borderWidth": 1,
+          "margin": 5,
+          "marginLeft": 10,
+          "marginRight": 10,
+          "opacity": 1,
+          "padding": 10,
+        }
+      }
+      testID="checkBoxCats"
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "flexDirection": "row",
+          }
+        }
+      >
+        <Text />
+        <Text
+          style={
+            Object {
+              "color": "#43484d",
+              "fontWeight": "bold",
+              "marginLeft": 10,
+              "marginRight": 10,
+            }
+          }
+          testID="checkboxTitle"
+        >
+          Cats
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;
+
+exports[`CheckBoxList renders correctly when disabled 1`] = `
+<View
+  style={
+    Object {
+      "alignContent": "center",
+      "alignItems": "center",
+      "flexDirection": "column",
+      "justifyContent": "center",
+      "zIndex": 3,
+    }
+  }
+>
+  <Text
+    style={
+      Object {
+        "fontSize": 25,
+        "marginHorizontal": 10,
+        "textAlign": "center",
+      }
+    }
+  >
+    What is the answer of life?
+  </Text>
+  <View
+    style={
+      Object {
+        "alignContent": "center",
+        "alignItems": "center",
+        "flexDirection": "row",
+        "justifyContent": "center",
+        "zIndex": 3,
+      }
+    }
+  >
+    <View
+      accessibilityRole="checkbox"
+      accessibilityState={
+        Object {
+          "checked": false,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      nativeID="animatedComponent"
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fafafa",
+          "borderColor": "#ededed",
+          "borderRadius": 3,
+          "borderWidth": 1,
+          "margin": 5,
+          "marginLeft": 10,
+          "marginRight": 10,
+          "opacity": 1,
+          "padding": 10,
+        }
+      }
+      testID="checkBoxYes"
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "flexDirection": "row",
+          }
+        }
+      >
+        <Text
+          allowFontScaling={false}
+          style={
+            Array [
+              Object {
+                "color": "#bfbfbf",
+                "fontSize": 24,
+              },
+              Object {
+                "minWidth": 24,
+              },
+              Object {
+                "fontFamily": "FontAwesome",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              Object {},
+            ]
+          }
+        >
+          
+        </Text>
+        <Text
+          style={
+            Object {
+              "color": "#43484d",
+              "fontWeight": "bold",
+              "marginLeft": 10,
+              "marginRight": 10,
+            }
+          }
+          testID="checkboxTitle"
+        >
+          Yes
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityRole="checkbox"
+      accessibilityState={
+        Object {
+          "checked": false,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      nativeID="animatedComponent"
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fafafa",
+          "borderColor": "#ededed",
+          "borderRadius": 3,
+          "borderWidth": 1,
+          "margin": 5,
+          "marginLeft": 10,
+          "marginRight": 10,
+          "opacity": 1,
+          "padding": 10,
+        }
+      }
+      testID="checkBox42"
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "flexDirection": "row",
+          }
+        }
+      >
+        <Text
+          allowFontScaling={false}
+          style={
+            Array [
+              Object {
+                "color": "#bfbfbf",
+                "fontSize": 24,
+              },
+              Object {
+                "minWidth": 24,
+              },
+              Object {
+                "fontFamily": "FontAwesome",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              Object {},
+            ]
+          }
+        >
+          
+        </Text>
+        <Text
+          style={
+            Object {
+              "color": "#43484d",
+              "fontWeight": "bold",
+              "marginLeft": 10,
+              "marginRight": 10,
+            }
+          }
+          testID="checkboxTitle"
+        >
+          42
+        </Text>
+      </View>
+    </View>
+    <View
+      accessibilityRole="checkbox"
+      accessibilityState={
+        Object {
+          "checked": false,
+        }
+      }
+      accessible={true}
+      collapsable={false}
+      focusable={true}
+      nativeID="animatedComponent"
+      onClick={[Function]}
+      onResponderGrant={[Function]}
+      onResponderMove={[Function]}
+      onResponderRelease={[Function]}
+      onResponderTerminate={[Function]}
+      onResponderTerminationRequest={[Function]}
+      onStartShouldSetResponder={[Function]}
+      style={
+        Object {
+          "backgroundColor": "#fafafa",
+          "borderColor": "#ededed",
+          "borderRadius": 3,
+          "borderWidth": 1,
+          "margin": 5,
+          "marginLeft": 10,
+          "marginRight": 10,
+          "opacity": 1,
+          "padding": 10,
+        }
+      }
+      testID="checkBoxCats"
+    >
+      <View
+        style={
+          Object {
+            "alignItems": "center",
+            "flexDirection": "row",
+          }
+        }
+      >
+        <Text
+          allowFontScaling={false}
+          style={
+            Array [
+              Object {
+                "color": "#bfbfbf",
+                "fontSize": 24,
+              },
+              Object {
+                "minWidth": 24,
+              },
+              Object {
+                "fontFamily": "FontAwesome",
+                "fontStyle": "normal",
+                "fontWeight": "normal",
+              },
+              Object {},
+            ]
+          }
+        >
+          
+        </Text>
+        <Text
+          style={
+            Object {
+              "color": "#43484d",
+              "fontWeight": "bold",
+              "marginLeft": 10,
+              "marginRight": 10,
+            }
+          }
+          testID="checkboxTitle"
+        >
+          Cats
+        </Text>
+      </View>
+    </View>
+  </View>
+</View>
+`;

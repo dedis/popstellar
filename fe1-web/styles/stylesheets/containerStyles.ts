@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Spacing } from 'styles';
 
-const styles = StyleSheet.create({
+const containerStyles = StyleSheet.create({
   flex: {
     flex: 1,
     justifyContent: 'space-evenly',
@@ -23,4 +23,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+export default containerStyles;

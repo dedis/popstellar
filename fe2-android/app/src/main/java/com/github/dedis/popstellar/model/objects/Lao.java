@@ -1,10 +1,13 @@
 package com.github.dedis.popstellar.model.objects;
 
+import androidx.annotation.NonNull;
+
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,8 +39,8 @@ public final class Lao {
   private Map<String, Election> elections;
   private Map<MessageID, Chirp> allChirps;
   private Map<PublicKey, List<MessageID>> chirpsByUser;
-  private final Map<MessageID, Consensus> messageIdToConsensus;
-  private final List<ConsensusNode> nodes;
+  private final Map<MessageID, ElectInstance> messageIdToElectInstance;
+  private final Map<PublicKey, ConsensusNode> keyToNode;
 
   public Lao(String id) {
     if (id == null) {
@@ -51,8 +54,8 @@ public final class Lao {
     this.elections = new HashMap<>();
     this.allChirps = new HashMap<>();
     this.chirpsByUser = new HashMap<>();
-    this.nodes = new ArrayList<>();
-    this.messageIdToConsensus = new HashMap<>();
+    this.keyToNode = new HashMap<>();
+    this.messageIdToElectInstance = new HashMap<>();
     this.witnessMessages = new HashMap<>();
     this.witnesses = new HashSet<>();
     this.pendingUpdates = new HashSet<>();
@@ -90,26 +93,28 @@ public final class Lao {
   }
 
   /**
-   * Store the given consensus and update all nodes concerned by it.
+   * Store the given ElectInstance and update all nodes concerned by it.
    *
-   * @param consensus the consensus
+   * @param electInstance the ElectInstance
    */
-  public void updateConsensus(Consensus consensus) {
-    if (consensus == null) {
-      throw new IllegalArgumentException("The consensus is null");
+  public void updateElectInstance(@NonNull ElectInstance electInstance) {
+    MessageID messageId = electInstance.getMessageId();
+    messageIdToElectInstance.put(messageId, electInstance);
+
+    Map<PublicKey, MessageID> acceptorsToMessageId = electInstance.getAcceptorsToMessageId();
+    // add to each node the messageId of the Elect if they accept it
+    keyToNode.forEach(
+        (key, node) -> {
+          if (acceptorsToMessageId.containsKey(key)) {
+            node.addMessageIdOfAnAcceptedElect(messageId);
+          }
+        });
+
+    // add the ElectInstance to the proposer node
+    ConsensusNode proposer = keyToNode.get(electInstance.getProposer());
+    if (proposer != null) {
+      proposer.addElectInstance(electInstance);
     }
-    messageIdToConsensus.put(consensus.getMessageId(), consensus);
-
-    Map<PublicKey, MessageID> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
-    // add to each node the messageId of the consensus if they accept it
-    nodes.stream()
-        .filter(node -> acceptorsToMessageId.containsKey(node.getPublicKey()))
-        .forEach(node -> node.addMessageIdOfAnAcceptedConsensus(consensus.getMessageId()));
-
-    // add the consensus to node if it is proposer
-    nodes.stream()
-        .filter(node -> node.getPublicKey().equals(consensus.getProposer()))
-        .forEach(node -> node.addConsensus(consensus));
   }
 
   /**
@@ -154,8 +159,8 @@ public final class Lao {
     return Optional.ofNullable(elections.get(id));
   }
 
-  public Optional<Consensus> getConsensus(MessageID messageId) {
-    return Optional.ofNullable(messageIdToConsensus.get(messageId));
+  public Optional<ElectInstance> getElectInstance(MessageID messageId) {
+    return Optional.ofNullable(messageIdToElectInstance.get(messageId));
   }
 
   public Optional<WitnessMessage> getWitnessMessage(MessageID id) {
@@ -186,8 +191,8 @@ public final class Lao {
     return (rollCalls.remove(id) != null);
   }
 
-  public boolean removeConsensus(MessageID messageId) {
-    return (messageIdToConsensus.remove(messageId) != null);
+  public boolean removeElectInstance(MessageID messageId) {
+    return (messageIdToElectInstance.remove(messageId) != null);
   }
 
   public Long getLastModified() {
@@ -257,9 +262,7 @@ public final class Lao {
 
   public void setOrganizer(PublicKey organizer) {
     this.organizer = organizer;
-    if (nodes.stream().map(ConsensusNode::getPublicKey).noneMatch(organizer::equals)) {
-      nodes.add(new ConsensusNode(organizer));
-    }
+    keyToNode.computeIfAbsent(organizer, ConsensusNode::new);
   }
 
   public MessageID getModificationId() {
@@ -281,20 +284,26 @@ public final class Lao {
       }
     }
     this.witnesses = witnesses;
-    witnesses.forEach(
-        w -> {
-          if (nodes.stream().noneMatch(node -> node.getPublicKey().equals(w))) {
-            nodes.add(new ConsensusNode(w));
-          }
-        });
+    witnesses.forEach(w -> keyToNode.computeIfAbsent(w, ConsensusNode::new));
   }
 
   public void setPendingUpdates(Set<PendingUpdate> pendingUpdates) {
     this.pendingUpdates = pendingUpdates;
   }
 
+  /**
+   * Get the list of all nodes of this Lao sorted by the base64 representation of their public key.
+   *
+   * @return a sorted List of ConsensusNode
+   */
   public List<ConsensusNode> getNodes() {
+    List<ConsensusNode> nodes = new ArrayList<>(keyToNode.values());
+    nodes.sort(Comparator.comparing(node -> node.getPublicKey().getEncoded()));
     return nodes;
+  }
+
+  public ConsensusNode getNode(@NonNull PublicKey key) {
+    return keyToNode.get(key);
   }
 
   public Map<String, Election> getElections() {
@@ -305,8 +314,8 @@ public final class Lao {
     return rollCalls;
   }
 
-  public Map<MessageID, Consensus> getMessageIdToConsensus() {
-    return messageIdToConsensus;
+  public Map<MessageID, ElectInstance> getMessageIdToElectInstance() {
+    return Collections.unmodifiableMap(messageIdToElectInstance);
   }
 
   public Map<MessageID, WitnessMessage> getWitnessMessages() {
@@ -373,8 +382,8 @@ public final class Lao {
         + rollCalls
         + ", elections="
         + elections
-        + ", consensuses="
-        + messageIdToConsensus.values()
+        + ", electInstances="
+        + messageIdToElectInstance.values()
         + '}';
   }
 }

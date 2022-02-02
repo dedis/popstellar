@@ -16,7 +16,7 @@ import TextBlock from 'components/TextBlock';
 
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import TextInputLine from 'components/TextInputLine';
 
@@ -79,7 +79,7 @@ const Launch = ({ navigation }: IPropTypes) => {
   const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
 
   return (
-    <View style={styleContainer.flex}>
+    <View style={containerStyles.flex}>
       <View style={styles.viewTop}>
         <TextBlock text={STRINGS.launch_description} />
         <TextInputLine

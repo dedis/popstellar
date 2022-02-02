@@ -10,7 +10,7 @@ import { subscribeToChannel } from 'network/CommunicationApi';
 import { Channel, channelFromIds, Hash } from 'model/objects';
 
 import { Spacing } from 'styles';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
@@ -18,6 +18,8 @@ import PROPS_TYPE from 'res/Props';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
+import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -68,6 +70,7 @@ export function validateLaoId(laoId: string): Channel | undefined {
 const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
   const [serverUrl, setServerUrl] = useState('wss://popdemo.dedis.ch/demo');
   const [laoId, setLaoId] = useState('');
+  const toast = useToast();
 
   if (route.params && laoId === '') {
     setLaoId(route.params.laoIdIn);
@@ -91,11 +94,16 @@ const ConnectConfirm = ({ navigation, route }: IPropTypes) => {
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);
+      toast.show(`Failed to establish lao connection: ${err}`, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
     }
   };
 
   return (
-    <View style={styleContainer.flex}>
+    <View style={containerStyles.flex}>
       <View style={styles.viewCenter}>
         <TextBlock text={STRINGS.connect_confirm_description} />
         <TextInputLine

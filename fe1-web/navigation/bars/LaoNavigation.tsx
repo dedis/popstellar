@@ -24,9 +24,11 @@ const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
  *
  * Displays the following components:
  *  - Home
+ *  - Social Media
  *  - Lao tab (corresponding to user role)
  *  - Identity
- *  - name of the connected lao (fake link)
+ *  - Wallet
+ *  - Name of the connected lao (fake link)
  */
 const styles = StyleSheet.create({
   navigator: {

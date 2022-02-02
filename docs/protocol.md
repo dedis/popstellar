@@ -11,15 +11,15 @@
   - [Concatenation for hashing](#concatenation-for-hashing)
 - [JSON RPC (low-level)](#json-rpc-low-level)
   - [Query](#query)
-    - [Subscribe](#subscribing-to-a-channel)
-    - [Unsubscribe](#unsubscribing-from-a-channel)
-    - [Publish](#publishing-a-message-on-a-channel)
-    - [Broadcast](#propagating-a-message-on-a-channel)
-    - [Catchup](#catching-up-on-past-messages-on-a-channel)
+    - [Subscribing to a channel](#subscribing-to-a-channel)
+    - [Unsubscribing from a channel](#unsubscribing-from-a-channel)
+    - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
+    - [Propagating a message on a channel](#propagating-a-message-on-a-channel)
+    - [Catching up on past messages on a channel](#catching-up-on-past-messages-on-a-channel)
   - [Answer](#answer)
     - [RPC answer error](#rpc-answer-error)
 - [Mid-level (message) communication](#mid-level-message-communication)
-      
+
 <!-- END doctoc.sh generated TOC please keep comment here to allow auto update -->
 
 - [High-level (message data) communication](messageData.md)
@@ -482,6 +482,10 @@ To broadcast a message that was published on a given channel, the server sends
 out a JSON-RPC 2.0 *notification* as defined below. Do notice the absence of an id
 field and of a response, in compliance with the JSON-RPC 2.0 specification.
 
+To broadcast a message between different servers, the same JSON-RPC 2.0 *notification*
+is used. This is the only case when a message should be broadcast on the “/root”
+channel.
+
 The format and content of the `message` parameter is further detailed as part of
 the [Mid-level (message) communication](#mid-level-message-communication) section.
 
@@ -534,7 +538,7 @@ Notification
                 "channel": {
                     "description": "[String] name of the channel",
                     "type": "string",
-                    "pattern": "^/root(/[^/]+)+$"
+                    "pattern": "^/root(/[^/]+)*$"
                 },
 
                 "message": {
@@ -567,6 +571,10 @@ past messages on a specific channel.
 This could be optimized to include some form of pagination, but the system
 hasn't yet been scaled to the extent of needing such features.
 
+A server can also execute a catchup action, and ask another server to receive
+*all* past messages on the root or on a specific channel.
+For now it happens when two servers are connected to each other on the root, and
+when a server cause the creation of a channel on another server.
 
 RPC 
 
@@ -633,7 +641,7 @@ Response (in case of success)
                 "channel": {
                     "description": "[String] name of the channel",
                     "type": "string",
-                    "pattern": "^/root(/[^/]+)+$"
+                    "pattern": "^/root(/[^/]+)*$"
                 }
             },
 

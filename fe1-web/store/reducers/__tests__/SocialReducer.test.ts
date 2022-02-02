@@ -1,10 +1,10 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
 import keyPair from 'test_data/keypair.json';
-import { Hash, PublicKey, Timestamp } from 'model/objects';
-import { Chirp } from 'model/objects/Chirp';
+import {
+  Chirp, Hash, PublicKey, Timestamp, Reaction,
+} from 'model/objects';
 import { describe } from '@jest/globals';
-import { Reaction } from 'model/objects/Reaction';
 import {
   socialReduce,
   addChirp,

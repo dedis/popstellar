@@ -3,7 +3,7 @@ import {
   StyleSheet, Image, View, TouchableOpacity, ImageStyle,
 } from 'react-native';
 import PropTypes from 'prop-types';
-import stylesCircularButton from 'styles/stylesheets/circlarButton';
+import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
 
 const cameraImage = require('res/img/ic_camera.png');
 
@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 function CameraButton({ action }: IPropTypes) {
   return (
     <View>
-      <TouchableOpacity style={stylesCircularButton.button} onPress={action}>
+      <TouchableOpacity style={circularButtonStyles.button} onPress={action}>
         <Image style={styles.icon} source={cameraImage} />
       </TouchableOpacity>
     </View>

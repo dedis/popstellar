@@ -604,7 +604,7 @@ func (c *Channel) createElection(msg message.Message,
 
 	// Create the new election channel
 	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime,
-		setupMsg.Questions, c.attendees, c.hub, c.log)
+		setupMsg.Questions, c.attendees, c.hub, c.log, c.organizerPubKey)
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)
