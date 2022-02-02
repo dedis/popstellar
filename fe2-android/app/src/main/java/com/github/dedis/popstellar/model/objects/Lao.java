@@ -140,12 +140,10 @@ public final class Lao {
     allChirps.put(chirp.getId(), chirp);
 
     PublicKey user = chirp.getSender();
-    if (chirpsByUser.containsKey(user)) {
-      chirpsByUser.get(user).add(prevId);
-    } else {
+    if (!chirpsByUser.containsKey(user)) {
       chirpsByUser.put(user, new ArrayList<>());
-      chirpsByUser.get(user).add(prevId);
     }
+    chirpsByUser.get(user).add(prevId);
   }
 
   public Optional<RollCall> getRollCall(String id) {

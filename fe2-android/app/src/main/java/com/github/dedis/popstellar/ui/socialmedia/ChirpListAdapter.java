@@ -51,8 +51,10 @@ public class ChirpListAdapter extends BaseAdapter {
   }
 
   @Override
-  public View getView(int position, View view, ViewGroup viewGroup) {
-    View chirpView = layoutInflater.inflate(R.layout.chirp_card, null);
+  public View getView(int position, View chirpView, ViewGroup viewGroup) {
+    if (chirpView == null) {
+      chirpView = layoutInflater.inflate(R.layout.chirp_card, null);
+    }
 
     Chirp chirp = getItem(position);
     if (chirp == null) {
