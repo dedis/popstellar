@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.Base64DataUtils.generatePoPToken;
+import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generatePoPToken;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.closeRollCallWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.createRollCallWitnessMessage;
 import static com.github.dedis.popstellar.utility.handler.data.RollCallHandler.openRollCallWitnessMessage;

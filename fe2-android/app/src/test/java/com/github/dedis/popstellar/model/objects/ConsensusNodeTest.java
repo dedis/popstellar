@@ -1,11 +1,11 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
 import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.ACCEPTED;
 import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.FAILED;
 import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.STARTING;
 import static com.github.dedis.popstellar.model.objects.ConsensusNode.State.WAITING;
+import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 

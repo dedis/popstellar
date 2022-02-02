@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.model.network.method.message.data.socialmedia;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageIDOtherThan;
+import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateMessageIDOtherThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;

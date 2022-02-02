@@ -1,16 +1,16 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.testutils.fragment.Base64DataUtils;
 
 import org.junit.Test;
 
@@ -52,12 +52,19 @@ public class ConsensusElectAcceptTest {
   @Test
   public void equalsTest() {
     assertEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, messageId, true));
-    assertEquals(consensusElectAcceptReject, new ConsensusElectAccept(instanceId, messageId, false));
+    assertEquals(
+        consensusElectAcceptReject, new ConsensusElectAccept(instanceId, messageId, false));
 
-    assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept("random", messageId, true));
-    assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), true));
-    assertNotEquals(consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, messageId, false));
-    assertNotEquals(consensusElectAcceptReject, new ConsensusElectAccept(instanceId, messageId, true));
+    assertNotEquals(
+        consensusElectAcceptAccept, new ConsensusElectAccept("random", messageId, true));
+    assertNotEquals(
+        consensusElectAcceptAccept,
+        new ConsensusElectAccept(
+            instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), true));
+    assertNotEquals(
+        consensusElectAcceptAccept, new ConsensusElectAccept(instanceId, messageId, false));
+    assertNotEquals(
+        consensusElectAcceptReject, new ConsensusElectAccept(instanceId, messageId, true));
   }
 
   @Test

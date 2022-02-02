@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar;
+package com.github.dedis.popstellar.testutils.fragment;
 
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
