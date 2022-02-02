@@ -69,14 +69,14 @@ describe('Election object', () => {
   it('does a state round trip correctly', () => {
     const election = Election.fromState(electionState);
     const expectedState = {
-      id: 'electionId',
+      id: ELECTION_ID.valueOf(),
       eventType: LaoEventType.ELECTION,
-      lao: 'MyLao',
-      name: 'MyElection',
-      version: 'version',
-      created_at: 1520255600,
-      start: 1520255600,
-      end: 1520275600,
+      lao: LAO_ID.valueOf(),
+      name: NAME,
+      version: VERSION,
+      created_at: TIMESTAMP_PAST1.valueOf(),
+      start: TIMESTAMP_PAST1.valueOf(),
+      end: TIMESTAMP_PAST2.valueOf(),
       questions: [question1, question2],
       registered_votes: [registeredVotes],
       electionStatus: ElectionStatus.FINISHED,
