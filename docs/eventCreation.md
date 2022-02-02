@@ -16,8 +16,13 @@ asking if the user is willing to start it now.
 
 Here are the modals in fe1-web:
 
+<<<<<<< HEAD
 ![](assets/modal_event_end_time.png)
 ![](assets/modal_event_start_time.png)
+=======
+![](assets/modal_event_end_time)
+![](assets/modal_event_start_time)
+>>>>>>> c715fc2739620887902a9819d7880636d994e363
 
 ## Start time, end time and creation time
 
