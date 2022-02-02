@@ -7,7 +7,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
-import com.github.dedis.popstellar.model.objects.Consensus;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -43,16 +43,9 @@ public final class ConsensusHandler {
     Set<PublicKey> nodes = new HashSet<>(lao.getWitnesses());
     nodes.add(lao.getOrganizer());
 
-    Consensus consensus =
-        new Consensus(
-            consensusElect.getCreation(), consensusElect.getKey(), consensusElect.getValue());
-
-    consensus.setMessageId(messageId);
-    consensus.setProposer(senderPk);
-    consensus.setChannel(channel);
-    consensus.setNodes(nodes);
-
-    lao.updateConsensus(consensus);
+    ElectInstance electInstance =
+        new ElectInstance(messageId, channel, senderPk, nodes, consensusElect);
+    lao.updateElectInstance(electInstance);
     laoRepository.updateNodes(lao.getChannel());
   }
 
@@ -65,19 +58,18 @@ public final class ConsensusHandler {
     PublicKey senderPk = context.getSenderPk();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Optional<Consensus> consensusOpt = lao.getConsensus(consensusElectAccept.getMessageId());
-    if (!consensusOpt.isPresent()) {
+    Optional<ElectInstance> electInstanceOpt =
+        lao.getElectInstance(consensusElectAccept.getMessageId());
+    if (!electInstanceOpt.isPresent()) {
       Log.w(TAG, "elect_accept for invalid messageId : " + consensusElectAccept.getMessageId());
       throw new InvalidMessageIdException(
           consensusElectAccept, consensusElectAccept.getMessageId());
     }
 
-    Consensus consensus = consensusOpt.get();
-    if (consensusElectAccept.isAccept()) {
-      consensus.putPositiveAcceptorResponse(senderPk, messageId);
-    }
+    ElectInstance electInstance = electInstanceOpt.get();
+    electInstance.addElectAccept(senderPk, messageId, consensusElectAccept);
 
-    lao.updateConsensus(consensus);
+    lao.updateElectInstance(electInstance);
     laoRepository.updateNodes(lao.getChannel());
   }
 
@@ -92,17 +84,19 @@ public final class ConsensusHandler {
     String channel = context.getChannel();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Optional<Consensus> consensusOpt = lao.getConsensus(consensusLearn.getMessageId());
+    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(consensusLearn.getMessageId());
 
-    if (!consensusOpt.isPresent()) {
+    if (!electInstanceOpt.isPresent()) {
       Log.w(TAG, "learn for invalid messageId : " + consensusLearn.getMessageId());
       throw new InvalidMessageIdException(consensusLearn, consensusLearn.getMessageId());
     }
 
-    Consensus consensus = consensusOpt.get();
+    ElectInstance electInstance = electInstanceOpt.get();
 
-    consensus.setAccepted(consensusLearn.getLearnValue().isDecision());
-    lao.updateConsensus(consensus);
+    if (consensusLearn.getLearnValue().isDecision()) {
+      electInstance.setState(ElectInstance.State.ACCEPTED);
+    }
+    lao.updateElectInstance(electInstance);
     laoRepository.updateNodes(lao.getChannel());
   }
 
@@ -112,17 +106,17 @@ public final class ConsensusHandler {
     String channel = context.getChannel();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
-    Optional<Consensus> consensusOpt = lao.getConsensus(failure.getMessageId());
+    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(failure.getMessageId());
 
-    if (!consensusOpt.isPresent()) {
+    if (!electInstanceOpt.isPresent()) {
       Log.w(TAG, "Failure for invalid messageId : " + failure.getMessageId());
       throw new InvalidMessageIdException(failure, failure.getMessageId());
     }
 
-    Consensus consensus = consensusOpt.get();
+    ElectInstance electInstance = electInstanceOpt.get();
 
-    consensus.setFailed(true);
-    lao.updateConsensus(consensus);
+    electInstance.setState(ElectInstance.State.FAILED);
+    lao.updateElectInstance(electInstance);
     laoRepository.updateNodes(lao.getChannel());
   }
 }

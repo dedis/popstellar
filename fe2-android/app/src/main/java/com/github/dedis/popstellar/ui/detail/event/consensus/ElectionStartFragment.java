@@ -14,11 +14,11 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.ElectionStartFragmentBinding;
-import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
-import com.github.dedis.popstellar.model.objects.ConsensusNode.State;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
+import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.model.objects.Election;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
@@ -87,7 +87,7 @@ public class ElectionStartFragment extends Fragment {
 
     String scheduledDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
     String electionId = election.getId();
-    String instanceId = Consensus.generateConsensusId("election", electionId, "state");
+    String instanceId = ElectInstance.generateConsensusId("election", electionId, "state");
 
     binding.electionTitle.setText(getString(R.string.election_start_title, election.getName()));
     electionStatus.setText(R.string.waiting_scheduled_time);
@@ -98,9 +98,15 @@ public class ElectionStartFragment extends Fragment {
 
     setupButtonListeners(binding, mLaoDetailViewModel, electionId);
 
-    List<ConsensusNode> nodes = mLaoDetailViewModel.getCurrentLaoValue().getNodes();
+    Lao lao = mLaoDetailViewModel.getCurrentLaoValue();
+    List<ConsensusNode> nodes = lao.getNodes();
+    ownNode = lao.getNode(mLaoDetailViewModel.getPublicKey());
 
-    ownNode = getOwnNode(mLaoDetailViewModel.getPublicKey(), nodes);
+    if (ownNode == null) {
+      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
+      Log.e(TAG, "Couldn't find the Node with public key : " + mLaoDetailViewModel.getPublicKey());
+      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
+    }
 
     NodesAcceptorAdapter adapter =
         new NodesAcceptorAdapter(
@@ -139,18 +145,6 @@ public class ElectionStartFragment extends Fragment {
     return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
-  private ConsensusNode getOwnNode(PublicKey ownPublicKey, List<ConsensusNode> nodes) {
-    Optional<ConsensusNode> ownNodeOpt =
-        nodes.stream().filter(node -> node.getPublicKey().equals(ownPublicKey)).findAny();
-    if (ownNodeOpt.isPresent()) {
-      return ownNodeOpt.get();
-    } else {
-      // Only possible if the user wasn't an acceptor, but shouldn't have access to this fragment
-      Log.e(TAG, "Couldn't find our own Node with public key : " + ownPublicKey);
-      throw new IllegalStateException("Only acceptors are allowed to access ElectionStartFragment");
-    }
-  }
-
   private void setupTimerUpdate(Election election) {
     // Check every seconds until the scheduled time, then show the "election start" button
     Disposable disposable =
@@ -187,7 +181,7 @@ public class ElectionStartFragment extends Fragment {
       String electionId) {
     electionStart.setOnClickListener(
         clicked ->
-            mLaoDetailViewModel.createNewConsensus(
+            mLaoDetailViewModel.sendConsensusElect(
                 Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
 
     binding
@@ -198,14 +192,14 @@ public class ElectionStartFragment extends Fragment {
 
   private void updateStartAndStatus(
       List<ConsensusNode> nodes, Election election, String instanceId) {
-    Optional<Consensus> acceptedConsensus =
+    boolean isAnyElectInstanceAccepted =
         nodes.stream()
-            .map(node -> node.getLastConsensus(instanceId))
+            .map(node -> node.getLastElectInstance(instanceId))
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .filter(Consensus::isAccepted)
-            .findAny();
-    if (acceptedConsensus.isPresent()) {
+            .map(ElectInstance::getState)
+            .anyMatch(State.ACCEPTED::equals);
+    if (isAnyElectInstanceAccepted) {
       // assuming the election start time was updated from scheduled to real start time
       String startedDate = dateFormat.format(new Date(election.getStartTimestampInMillis()));
       electionStatus.setText(R.string.started);

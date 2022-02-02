@@ -1,34 +1,27 @@
 package com.github.dedis.popstellar.model.objects;
 
+import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/** Class representing a Node for consensus. */
 public final class ConsensusNode {
 
-  public enum State {
-    FAILED,
-    WAITING,
-    STARTING,
-    ACCEPTED
-  }
-
   private final PublicKey publicKey;
-  // contains messageId of consensus that this node has accepted
+  // contains messageId of Elect that this node has accepted
   private final Set<MessageID> acceptedMessageIds;
-  // list of all consensus that this node has created
-  private final List<Consensus> consensuses;
+  // list of all elect instances that this node has created
+  private final Set<ElectInstance> electInstances;
 
   public ConsensusNode(PublicKey publicKey) {
     this.publicKey = publicKey;
-    this.consensuses = new ArrayList<>();
+    this.electInstances = new HashSet<>();
     this.acceptedMessageIds = new HashSet<>();
   }
 
@@ -36,59 +29,66 @@ public final class ConsensusNode {
     return publicKey;
   }
 
+  /**
+   * Get a set of messageId of Elect that this node has accepted.
+   *
+   * @return the set of accepted Elect messageId
+   */
   public Set<MessageID> getAcceptedMessageIds() {
     return Collections.unmodifiableSet(acceptedMessageIds);
   }
 
-  public Optional<Consensus> getLastConsensus(String instanceId) {
-    // get the consensus for the given instanceId, with the largest creation time
-    return consensuses.stream()
-        .filter(consensus -> consensus.getId().equals(instanceId))
-        .max(Comparator.comparingLong(Consensus::getCreation));
+  /**
+   * Get the latest ElectInstance that this node has created for the given instanceId.
+   *
+   * @param instanceId the id of the consensus
+   * @return an Optional ElectInstance
+   */
+  public Optional<ElectInstance> getLastElectInstance(String instanceId) {
+    // get the latest ElectInstance for the given instanceId
+    return electInstances.stream()
+        .filter(elect -> elect.getInstanceId().equals(instanceId))
+        .max(Comparator.comparingLong(ElectInstance::getCreation));
   }
 
+  /**
+   * Get the state of this node for the latest ElectInstance that this node has created for the
+   * given instanceId. If empty, it will return WAITING.
+   *
+   * @param instanceId the id of the consensus
+   * @return the current state
+   */
   public State getState(String instanceId) {
-    Optional<Consensus> lastConsensus = getLastConsensus(instanceId);
-    if (lastConsensus.isPresent()) {
-      Consensus consensus = lastConsensus.get();
-      if (consensus.isFailed()) {
-        return State.FAILED;
-      } else if (consensus.isAccepted()) {
-        return State.ACCEPTED;
-      } else {
-        return State.STARTING;
-      }
-    } else {
-      return State.WAITING;
+    Optional<ElectInstance> lastElect = getLastElectInstance(instanceId);
+    return lastElect.map(ElectInstance::getState).orElse(State.WAITING);
+  }
+
+  /**
+   * Add the given ElectInstance to this node. If it was already present, do nothing.
+   *
+   * @param electInstance the ElectInstance to add
+   */
+  public void addElectInstance(ElectInstance electInstance) {
+    MessageID messageId = electInstance.getMessageId();
+    // if the ElectInstance is not present, add it
+    if (electInstances.stream().map(ElectInstance::getMessageId).noneMatch(messageId::equals)) {
+      electInstances.add(electInstance);
     }
   }
 
   /**
-   * Add the given consensus to this node. If it was already present, do nothing.
+   * Add the given messageId to the list of accepted Elect.
    *
-   * @param consensus the consensus to add
+   * @param electMessageId the messageId of the Elect to add
    */
-  public void addConsensus(Consensus consensus) {
-    MessageID messageId = consensus.getMessageId();
-    // If the consensuses does not contain one linked this message id, add it
-    if (consensuses.stream().map(Consensus::getMessageId).noneMatch(messageId::equals)) {
-      consensuses.add(consensus);
-    }
-  }
-
-  /**
-   * Add the given messageId to the list of accepted consensus.
-   *
-   * @param consensusMessageId the messageId of the consensus to add
-   */
-  public void addMessageIdOfAnAcceptedConsensus(MessageID consensusMessageId) {
-    this.acceptedMessageIds.add(consensusMessageId);
+  public void addMessageIdOfAnAcceptedElect(MessageID electMessageId) {
+    this.acceptedMessageIds.add(electMessageId);
   }
 
   @Override
   public String toString() {
     return String.format(
-        "ConsensusNode{publicKey='%s', acceptedMessageIds='%s', consensuses='%s'}",
-        publicKey.getEncoded(), acceptedMessageIds, consensuses);
+        "ConsensusNode{publicKey='%s', acceptedMessageIds='%s', electInstances='%s'}",
+        publicKey.getEncoded(), acceptedMessageIds, electInstances.toString());
   }
 }
