@@ -11,7 +11,7 @@ import { getLaosState } from './LaoReducer';
 
 interface MessageReducerState {
   byId: Record<string, ExtendedMessageState>,
-  allIds: string[]
+  allIds: string[],
   unprocessedIds: string[],
 }
 
@@ -178,6 +178,8 @@ export function getLaoMessagesState(laoId: Hash | string, state: any): MessageRe
     unprocessedIds: [],
   };
 }
+
+export const messageReduce = messagesSlice.reducer;
 
 export default {
   [messageReducerPath]: messagesSlice.reducer,

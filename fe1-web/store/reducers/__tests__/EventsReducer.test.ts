@@ -198,7 +198,8 @@ describe('event selector', () => {
   });
 
   it('should return makeEventByTypeSelector correctly', () => {
-    expect(makeEventByTypeSelector(LaoEventType.ROLL_CALL).resultFunc(filledStateWithRollCallCreated))
+    expect(makeEventByTypeSelector(LaoEventType.ROLL_CALL)
+      .resultFunc(filledStateWithRollCallCreated))
       .toEqual({
         [mockLaoId]: { [rollCallIdString]: RollCall.fromState(rollCallCreated) },
         myLaoId: {},

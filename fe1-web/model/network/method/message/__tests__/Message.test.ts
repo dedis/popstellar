@@ -29,7 +29,7 @@ const mockLao = Lao.fromState(laoState);
 
 const mockPublicKey = testKeyPair.publicKey;
 const mockPrivateKey = testKeyPair.privateKey;
-const mockPopToken = PopToken.fromState({
+export const mockPopToken = PopToken.fromState({
   publicKey: testKeyPair.publicKey2,
   privateKey: testKeyPair.privateKey2,
 });
