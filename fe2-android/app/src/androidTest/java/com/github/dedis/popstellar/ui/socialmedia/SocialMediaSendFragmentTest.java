@@ -3,16 +3,24 @@ package com.github.dedis.popstellar.ui.socialmedia;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.pages.socialmedia.SocialMediaSendPageObject.entryBoxChirpText;
 import static com.github.dedis.popstellar.pages.socialmedia.SocialMediaSendPageObject.sendChirpButton;
+import static com.github.dedis.popstellar.pages.socialmedia.SocialMediaSendPageObject.toast;
+import static org.hamcrest.CoreMatchers.not;
+
+import android.view.View;
+
+import androidx.fragment.app.FragmentActivity;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -29,6 +37,15 @@ public class SocialMediaSendFragmentTest {
   private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
   @Rule public final RuleChain chain = RuleChain.outerRule(hiltRule).around(fragmentRule);
+
+  private View decorView;
+
+  @Before
+  public void setUp() {
+    fragmentRule
+        .getScenario()
+        .onActivity(activity -> decorView = activity.getWindow().getDecorView());
+  }
 
   @Test
   public void writingTextInEditText() {
@@ -62,5 +79,22 @@ public class SocialMediaSendFragmentTest {
                     + " the threshold."));
     sendChirpButton().perform(click());
     sendChirpButton().check(matches(isNotEnabled()));
+  }
+
+  @Test
+  public void displayToastIfLaoIdIsNull() {
+    fragmentRule
+        .getScenario()
+        .onFragment(
+            socialMediaSendFragment -> {
+              FragmentActivity fragmentActivity = socialMediaSendFragment.requireActivity();
+              SocialMediaViewModel socialMediaViewModel =
+                  SocialMediaActivity.obtainViewModel(fragmentActivity);
+              socialMediaViewModel.setLaoId(null);
+            });
+    fragmentRule.getScenario().recreate();
+
+    sendChirpButton().perform(click());
+    toast().inRoot(withDecorView(not(decorView))).check(matches(isDisplayed()));
   }
 }
