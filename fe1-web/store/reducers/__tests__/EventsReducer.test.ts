@@ -1,12 +1,12 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
 import {
-  Hash, Meeting, RollCall, RollCallStatus, Timestamp,
+  Hash, LaoEventType, Meeting, RollCall, RollCallStatus, Timestamp,
 } from 'model/objects';
 import {
   addEvent,
   clearAllEvents,
-  eventReduce, makeEventGetter,
+  eventReduce, makeEventByTypeSelector, makeEventGetter,
   makeEventsAliasMap,
   makeEventsList, makeEventsMap, makeLastRollCallAttendeesList,
   removeEvent,
@@ -31,7 +31,8 @@ const emptyState = {
 const mockTime1 = new Timestamp(160000000);
 const mockTime2 = new Timestamp(160050000);
 
-export const rollCallId : Hash = new Hash('1234');
+const rollCallIdString : string = '1234';
+export const rollCallId : Hash = new Hash(rollCallIdString);
 
 const rollCallCreated = new RollCall({
   id: rollCallId,
@@ -58,6 +59,7 @@ const filledStateWithRollCallCreated = {
   },
 };
 
+const idAliasString : string = '5678';
 const rollCallOpened = new RollCall({
   id: rollCallId,
   name: 'roll call',
@@ -65,7 +67,7 @@ const rollCallOpened = new RollCall({
   creation: mockTime1,
   proposed_start: mockTime1,
   proposed_end: mockTime1,
-  idAlias: new Hash('5678'),
+  idAlias: new Hash(idAliasString),
   opened_at: mockTime1,
   status: RollCallStatus.OPENED,
 }).toState();
@@ -160,9 +162,19 @@ describe('event selector', () => {
       .toEqual([]);
   });
 
+  it('should return makeEventsList correctly', () => {
+    expect(makeEventsList().resultFunc(filledStateWithRollCallCreated, mockLaoId))
+      .toEqual([RollCall.fromState(rollCallCreated)]);
+  });
+
   it('should return an empty makeEventsAliasMap when no lao is opened', () => {
     expect(makeEventsAliasMap().resultFunc(emptyState, undefined))
       .toEqual({});
+  });
+
+  it('should return makeEventsAliasMap correctly', () => {
+    expect(makeEventsAliasMap().resultFunc(filledStateWithRollCallOpened, mockLaoId))
+      .toEqual({ [idAliasString]: rollCallIdString });
   });
 
   it('should return an empty makeEventsMap when no lao is opened', () => {
@@ -170,9 +182,27 @@ describe('event selector', () => {
       .toEqual({});
   });
 
+  it('should return makeEventsMap correctly', () => {
+    expect(makeEventsMap().resultFunc(filledStateWithRollCallCreated, mockLaoId))
+      .toEqual({ [rollCallIdString]: RollCall.fromState(rollCallCreated) });
+  });
+
   it('should return undefined for makeEventGetter', () => {
-    expect(makeEventGetter(mockLaoId, '1234').resultFunc(emptyState))
+    expect(makeEventGetter(mockLaoId, rollCallIdString).resultFunc(emptyState))
       .toEqual(undefined);
+  });
+
+  it('should return makeEventGetter correctly', () => {
+    expect(makeEventGetter(mockLaoId, rollCallIdString).resultFunc(filledStateWithRollCallCreated))
+      .toEqual(RollCall.fromState(rollCallCreated));
+  });
+
+  it('should return makeEventByTypeSelector correctly', () => {
+    expect(makeEventByTypeSelector(LaoEventType.ROLL_CALL).resultFunc(filledStateWithRollCallCreated))
+      .toEqual({
+        [mockLaoId]: { [rollCallIdString]: RollCall.fromState(rollCallCreated) },
+        myLaoId: {},
+      });
   });
 
   it('should return an empty list for lastRollCallAttendeesList', () => {
