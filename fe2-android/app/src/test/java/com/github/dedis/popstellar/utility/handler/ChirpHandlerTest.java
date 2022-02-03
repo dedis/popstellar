@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.lenient;

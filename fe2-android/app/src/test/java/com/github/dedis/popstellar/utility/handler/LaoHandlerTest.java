@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

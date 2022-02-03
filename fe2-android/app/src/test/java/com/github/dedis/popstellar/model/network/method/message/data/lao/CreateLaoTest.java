@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generatePublicKey;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -12,7 +12,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.testutils.fragment.Base64DataUtils;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 

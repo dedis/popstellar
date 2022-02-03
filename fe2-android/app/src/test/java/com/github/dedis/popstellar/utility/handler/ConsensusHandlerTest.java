@@ -2,7 +2,7 @@ package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
 import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
-import static com.github.dedis.popstellar.testutils.fragment.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;

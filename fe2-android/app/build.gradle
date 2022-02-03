@@ -81,6 +81,13 @@ android {
         }
     }
 
+    // Add the common test sources to the project
+    sourceSets
+        .findAll {it.name.toLowerCase().contains("test") }
+        .forEach {
+            it.java.srcDirs += file("$project.projectDir/src/test/common")
+        }
+
     // Make sure the coverage flavor uses the same source set as the mock
     sourceSets {
         cov {
