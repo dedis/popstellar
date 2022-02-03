@@ -31,7 +31,7 @@ const emptyState = {
 const mockTime1 = new Timestamp(160000000);
 const mockTime2 = new Timestamp(160050000);
 
-const rollCallId : Hash = new Hash('1234');
+export const rollCallId : Hash = new Hash('1234');
 
 const rollCallCreated = new RollCall({
   id: rollCallId,

@@ -16,10 +16,11 @@ import {
 } from '../SocialReducer';
 
 const mockPublicKey = new PublicKey(keyPair.publicKey);
-const org = mockPublicKey;
-const name = 'MyLao';
-const mockLaoIdHash: Hash = Hash.fromStringArray(
-  org.toString(), new Timestamp(160000000).toString(), name,
+export const org = mockPublicKey;
+export const mockLaoName = 'MyLao';
+export const mockLaoCreationTime = new Timestamp(160000000);
+export const mockLaoIdHash: Hash = Hash.fromStringArray(
+  org.toString(), mockLaoCreationTime.toString(), mockLaoName,
 );
 export const mockLaoId: string = mockLaoIdHash.toString();
 const mockSender1: PublicKey = new PublicKey('Douglas Adams');

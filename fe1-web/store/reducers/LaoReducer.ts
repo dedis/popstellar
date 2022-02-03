@@ -193,6 +193,8 @@ export const makeIsLaoOrganizer = () => createSelector(
     pKey: string | undefined) : boolean => !!laoId && laoMap[laoId]?.organizer === pKey,
 );
 
+export const laoReduce = laosSlice.reducer;
+
 export default {
   [laoReducerPath]: laosSlice.reducer,
 };
