@@ -11,7 +11,6 @@ import { Colors } from 'styles';
 import WideButtonView from 'components/WideButtonView';
 import { ConnectToLao } from 'model/objects';
 import { useToast } from 'react-native-toast-notifications';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
 
 /**

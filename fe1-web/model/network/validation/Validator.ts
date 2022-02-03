@@ -1,10 +1,10 @@
 import Ajv from 'ajv';
 import jsonRPC from 'protocol/jsonRPC.json';
 import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
-import querySchema from './QuerySchema';
-import messageSchema from './MessageSchema';
-import dataSchema from './DataSchema';
-import answerSchema from './AnswerSchema';
+import querySchema from './querySchemas';
+import messageSchema from './messageSchemas';
+import dataSchema from './dataSchemas';
+import answerSchema from './answerSchemas';
 
 // FIXME: these two enums need to be redefined locally because otherwise their values are
 //  undefined here, it could be due to cyclical dependencies that still need to be fixed.
