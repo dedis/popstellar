@@ -9,11 +9,8 @@ import spray.json._
 
 object AddChirpExamples{
 
-    //private final val PUBLICKEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
-    //private final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
-
     final val NOT_STALE_TIMESTAMP = Timestamp(1577833201L)
-    final val SENDER: PublicKey = PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic="))
+    final val SENDER_ADDCHIRP: PublicKey = PublicKey(Base64Data("to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic="))
     
     val invalidTimestamp: Timestamp = Timestamp(0)
     val invalidTextLength: String = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
@@ -21,32 +18,32 @@ object AddChirpExamples{
 
     val workingAddChirp: AddChirp = AddChirp(validText, None, NOT_STALE_TIMESTAMP)
     final val MESSAGE_ADDCHIRP_WORKING: Message = new Message(
-    Base64Data.encode(workingAddChirp.toJson.toString),
-    SENDER,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
-    List.empty,
-    Some(workingAddChirp)
+        Base64Data.encode(workingAddChirp.toJson.toString),
+        SENDER_ADDCHIRP,
+        Signature(Base64Data("")),
+        Hash(Base64Data("")),
+        List.empty,
+        Some(workingAddChirp)
     )
 
     val wrongTimestampAddChirp: AddChirp = AddChirp(validText, None, invalidTimestamp)
     final val MESSAGE_ADDCHIRP_WRONG_TIMESTAMP: Message = new Message(
-    Base64Data.encode(wrongTimestampAddChirp.toJson.toString),
-    SENDER,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
-    List.empty,
-    Some(wrongTimestampAddChirp)
+        Base64Data.encode(wrongTimestampAddChirp.toJson.toString),
+        SENDER_ADDCHIRP,
+        Signature(Base64Data("")),
+        Hash(Base64Data("")),
+        List.empty,
+        Some(wrongTimestampAddChirp)
     )
 
     val wrongTextAddChirp: AddChirp = AddChirp(invalidTextLength, None, NOT_STALE_TIMESTAMP)
     final val MESSAGE_ADDCHIRP_WRONG_TEXT: Message = new Message(
-    Base64Data.encode(wrongTextAddChirp.toJson.toString),
-    SENDER,
-    Signature(Base64Data("")),
-    Hash(Base64Data("")),
-    List.empty,
-    Some(wrongTextAddChirp)
+        Base64Data.encode(wrongTextAddChirp.toJson.toString),
+        SENDER_ADDCHIRP,
+        Signature(Base64Data("")),
+        Hash(Base64Data("")),
+        List.empty,
+        Some(wrongTextAddChirp)
     )
 
 }
