@@ -98,7 +98,9 @@ public class ChirpListAdapterTest {
               SocialMediaViewModel socialMediaViewModel =
                   SocialMediaActivity.obtainViewModel(activity);
               ChirpListAdapter chirpListAdapter =
-                  createChirpListAdapter(activity, socialMediaViewModel, chirps);
+                  createChirpListAdapter(activity, socialMediaViewModel, null);
+              assertEquals(0, chirpListAdapter.getCount());
+              chirpListAdapter.replaceList(chirps);
               assertEquals(chirps.size(), chirpListAdapter.getCount());
             });
   }
