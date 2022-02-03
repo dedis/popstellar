@@ -4,6 +4,7 @@ export const Wallet = w;
 
 export * from './Base64Url';
 export * from './Channel';
+export * from './ConnectToLao';
 export * from './Chirp';
 export * from './Election';
 export * from './Hash';

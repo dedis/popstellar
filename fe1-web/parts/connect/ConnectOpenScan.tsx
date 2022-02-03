@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import { Colors } from 'styles';
 import WideButtonView from 'components/WideButtonView';
+import { ConnectToLao } from 'model/objects';
 import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
 
@@ -34,7 +35,18 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     console.log(data);
     if (data) {
       setQrWasScanned(true);
-      navigation.navigate(STRINGS.connect_confirm_title, { laoIdIn: data });
+      try {
+        const obj = JSON.parse(data);
+        const connectToLao = ConnectToLao.fromJson(obj);
+        navigation.navigate(STRINGS.connect_confirm_title,
+          { laoIdIn: connectToLao.lao, url: connectToLao.server });
+      } catch (error) {
+        toast.show(STRINGS.connect_scanning_fail, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      }
     }
   };
 

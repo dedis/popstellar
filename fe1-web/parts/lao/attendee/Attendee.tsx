@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
 
@@ -7,6 +7,7 @@ import { LaoEvent, Timestamp } from 'model/objects';
 
 import EventListCollapsible from 'components/eventList/EventListCollapsible';
 import LaoProperties from 'components/eventList/LaoProperties';
+import { useRoute } from '@react-navigation/core';
 
 /**
  * Attendee screen: lists LAO properties and past/ongoing/future events.
@@ -21,6 +22,9 @@ const Attendee = () => {
   const pastEvents: LaoEvent[] = [];
   const currentEvents: LaoEvent[] = [];
   const futureEvents: LaoEvent[] = [];
+  const route = useRoute();
+  const { url } = route.params || '';
+  const [serverUrl] = useState(url);
 
   events.forEach((e: LaoEvent) => {
     if ((e.end && e.end.before(now))
@@ -53,7 +57,7 @@ const Attendee = () => {
 
   return (
     <ScrollView>
-      <LaoProperties />
+      <LaoProperties url={serverUrl} />
       <EventListCollapsible data={DATA_EXAMPLE} />
     </ScrollView>
   );

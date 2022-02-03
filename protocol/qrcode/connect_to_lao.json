@@ -1,0 +1,22 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/qrcode/connect_to_lao.json",
+    "title": "QRCode data",
+    "description": "Match a data contained in a qrcode used to connect to an LAO.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "server": {
+            "type": "string",
+            "format": "uri-reference",
+            "pattern": "^(http|ws)s?://.*",
+            "description": "The organizer's server URL"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "The id of the LAO"
+        }
+    },
+    "required": ["server", "lao"]
+}

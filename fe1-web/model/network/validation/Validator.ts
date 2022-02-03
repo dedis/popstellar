@@ -1,9 +1,10 @@
 import Ajv from 'ajv';
 import jsonRPC from 'protocol/jsonRPC.json';
-import querySchemas from './querySchemas';
-import messageSchemas from './messageSchemas';
-import dataSchemas from './dataSchemas';
-import answerSchemas from './answerSchemas';
+import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
+import querySchema from './querySchemas';
+import messageSchema from './messageSchemas';
+import dataSchema from './dataSchemas';
+import answerSchema from './answerSchemas';
 
 // FIXME: these two enums need to be redefined locally because otherwise their values are
 //  undefined here, it could be due to cyclical dependencies that still need to be fixed.
@@ -47,10 +48,11 @@ const ajv = new Ajv();
 ajv.opts.strict = false;
 ajv.addSchema([
   jsonRPC,
-  ...answerSchemas,
-  ...dataSchemas,
-  ...messageSchemas,
-  ...querySchemas,
+  connectToLaoSchema,
+  ...answerSchema,
+  ...dataSchema,
+  ...messageSchema,
+  ...querySchema,
 ]);
 
 const schemaPrefix = 'https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol';
@@ -126,4 +128,8 @@ export function validateDataObject(obj: ObjectType, action: ActionType, data: an
   return schemaId !== null
     ? validate(schemaId, data)
     : { errors: 'Unsupported data object - schema not found' };
+}
+
+export function validateConnectToLao(obj: any): ValidationResult {
+  return validate(`${schemaPrefix}/qrcode/connect_to_lao.json`, obj);
 }
