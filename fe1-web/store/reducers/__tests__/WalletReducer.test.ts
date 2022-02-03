@@ -12,6 +12,11 @@ const filledState = {
   mnemonic: 'alpha beta',
 };
 
+const wrongState = {
+  seed: undefined,
+  mnemonic: 'alpha beta',
+};
+
 describe('wallet reducer', () => {
   test('should return the initial state', () => {
     expect(walletReduce(undefined, {} as AnyAction))
@@ -21,6 +26,11 @@ describe('wallet reducer', () => {
   test('should handle the wallet being set', () => {
     expect(walletReduce({}, setWallet(filledState)))
       .toEqual(filledState);
+  });
+
+  test('should return the empty set', () => {
+    expect(walletReduce({}, setWallet(wrongState)))
+      .toEqual(emptyState);
   });
 
   test('should handle the wallet being set', () => {
