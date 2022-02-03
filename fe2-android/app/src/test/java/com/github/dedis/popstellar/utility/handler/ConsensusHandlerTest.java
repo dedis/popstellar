@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.ACCEPTED;
+import static com.github.dedis.popstellar.model.objects.ElectInstance.State.FAILED;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
@@ -26,8 +28,8 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -58,7 +60,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import io.reactivex.Observable;
 
@@ -84,7 +85,8 @@ public class ConsensusHandlerTest {
   private static final String PROPERTY = "state";
   private static final String VALUE = "started";
   private static final ConsensusKey KEY = new ConsensusKey(TYPE, KEY_ID, PROPERTY);
-  private static final String INSTANCE_ID = Consensus.generateConsensusId(TYPE, KEY_ID, PROPERTY);
+  private static final String INSTANCE_ID =
+      ElectInstance.generateConsensusId(TYPE, KEY_ID, PROPERTY);
   private static final MessageID INVALID_MSG_ID = new MessageID("SU5BVkxJRF9NU0c=");
 
   private static final CreateLao CREATE_LAO =
@@ -163,15 +165,14 @@ public class ConsensusHandlerTest {
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failureMsg);
 
-    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
-    assertTrue(consensusOpt.isPresent());
-    Consensus consensus = consensusOpt.get();
+    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
+    assertTrue(electInstanceOpt.isPresent());
+    ElectInstance electInstance = electInstanceOpt.get();
 
-    assertTrue(consensus.isFailed());
-    Optional<ConsensusNode> node2Opt =
-        lao.getNodes().stream().filter(n -> n.getPublicKey().equals(NODE_2)).findAny();
-    assertTrue(node2Opt.isPresent());
-    assertEquals(ConsensusNode.State.FAILED, node2Opt.get().getState(INSTANCE_ID));
+    assertEquals(FAILED, electInstance.getState());
+    ConsensusNode node2 = lao.getNode(NODE_2);
+    assertNotNull(node2);
+    assertEquals(FAILED, node2.getState(INSTANCE_ID));
   }
 
   // handle an elect from node2
@@ -180,43 +181,41 @@ public class ConsensusHandlerTest {
   private void handleConsensusElectTest() throws DataHandlingException {
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
 
-    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
-    assertTrue(consensusOpt.isPresent());
-    Consensus consensus = consensusOpt.get();
+    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
+    assertTrue(electInstanceOpt.isPresent());
+    ElectInstance electInstance = electInstanceOpt.get();
 
-    assertEquals(electMsg.getMessageId(), consensus.getMessageId());
-    assertEquals(NODE_2, consensus.getProposer());
-    assertEquals(CONSENSUS_CHANNEL, consensus.getChannel());
-    assertEquals(CREATION_TIME, consensus.getCreation());
-    assertEquals(VALUE, consensus.getValue());
-    assertEquals(KEY, consensus.getKey());
+    assertEquals(electMsg.getMessageId(), electInstance.getMessageId());
+    assertEquals(NODE_2, electInstance.getProposer());
+    assertEquals(CONSENSUS_CHANNEL, electInstance.getChannel());
+    assertEquals(CREATION_TIME, electInstance.getCreation());
+    assertEquals(VALUE, electInstance.getValue());
+    assertEquals(KEY, electInstance.getKey());
 
-    assertTrue(consensus.getAcceptorsToMessageId().isEmpty());
-    assertEquals(Sets.newSet(ORGANIZER, NODE_2, NODE_3), consensus.getNodes());
+    assertTrue(electInstance.getAcceptorsToMessageId().isEmpty());
+    assertEquals(Sets.newSet(ORGANIZER, NODE_2, NODE_3), electInstance.getNodes());
 
-    Map<MessageID, Consensus> messageIdToConsensus = lao.getMessageIdToConsensus();
-    assertEquals(1, messageIdToConsensus.size());
-    assertEquals(consensus, messageIdToConsensus.get(consensus.getMessageId()));
+    Map<MessageID, ElectInstance> messageIdToElectInstance = lao.getMessageIdToElectInstance();
+    assertEquals(1, messageIdToElectInstance.size());
+    assertEquals(electInstance, messageIdToElectInstance.get(electInstance.getMessageId()));
 
-    // Create a map from id to consensus
-    Map<PublicKey, Optional<Consensus>> consensuses =
-        lao.getNodes().stream()
-            .collect(
-                Collectors.toMap(
-                    ConsensusNode::getPublicKey, n -> n.getLastConsensus(INSTANCE_ID)));
-    assertEquals(3, consensuses.size());
+    assertEquals(3, lao.getNodes().size());
+    ConsensusNode organizer = lao.getNode(ORGANIZER);
+    ConsensusNode node2 = lao.getNode(NODE_2);
+    ConsensusNode node3 = lao.getNode(NODE_3);
 
-    Optional<Consensus> organizerConsensus = consensuses.get(ORGANIZER);
-    Optional<Consensus> node2Consensus = consensuses.get(NODE_2);
-    Optional<Consensus> node3Consensus = consensuses.get(NODE_3);
+    assertNotNull(organizer);
+    assertNotNull(node2);
+    assertNotNull(node3);
 
-    assertNotNull(organizerConsensus);
-    assertNotNull(node2Consensus);
-    assertNotNull(node3Consensus);
+    Optional<ElectInstance> organizerElectInstance = organizer.getLastElectInstance(INSTANCE_ID);
+    Optional<ElectInstance> node2ElectInstance = node2.getLastElectInstance(INSTANCE_ID);
+    Optional<ElectInstance> node3ElectInstance = node3.getLastElectInstance(INSTANCE_ID);
 
-    assertEquals(Optional.empty(), organizerConsensus);
-    assertEquals(consensus, node2Consensus.orElse(null));
-    assertEquals(Optional.empty(), node3Consensus);
+    assertEquals(Optional.empty(), organizerElectInstance);
+    assertTrue(node2ElectInstance.isPresent());
+    assertEquals(electInstance, node2ElectInstance.get());
+    assertEquals(Optional.empty(), node3ElectInstance);
   }
 
   // handle an electAccept from node3 for the elect of node2
@@ -226,30 +225,26 @@ public class ConsensusHandlerTest {
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptMsg);
 
-    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
-    assertTrue(consensusOpt.isPresent());
-    Consensus consensus = consensusOpt.get();
+    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
+    assertTrue(electInstanceOpt.isPresent());
+    ElectInstance electInstance = electInstanceOpt.get();
 
-    Map<PublicKey, MessageID> acceptorsToMessageId = consensus.getAcceptorsToMessageId();
+    Map<PublicKey, MessageID> acceptorsToMessageId = electInstance.getAcceptorsToMessageId();
     assertEquals(1, acceptorsToMessageId.size());
     assertEquals(electAcceptMsg.getMessageId(), acceptorsToMessageId.get(NODE_3));
 
-    // only the node3 has accepted the elect of node2
-    Map<PublicKey, Set<MessageID>> consensuses =
-        lao.getNodes().stream()
-            .collect(
-                Collectors.toMap(
-                    ConsensusNode::getPublicKey, ConsensusNode::getAcceptedMessageIds));
+    assertEquals(3, lao.getNodes().size());
+    ConsensusNode organizer = lao.getNode(ORGANIZER);
+    ConsensusNode node2 = lao.getNode(NODE_2);
+    ConsensusNode node3 = lao.getNode(NODE_3);
 
-    assertEquals(3, consensuses.size());
+    assertNotNull(organizer);
+    assertNotNull(node2);
+    assertNotNull(node3);
 
-    Set<MessageID> organizerAcceptedMsg = consensuses.get(ORGANIZER);
-    Set<MessageID> node2AcceptedMsg = consensuses.get(NODE_2);
-    Set<MessageID> node3AcceptedMsg = consensuses.get(NODE_3);
-
-    assertNotNull(organizerAcceptedMsg);
-    assertNotNull(node2AcceptedMsg);
-    assertNotNull(node3AcceptedMsg);
+    Set<MessageID> organizerAcceptedMsg = organizer.getAcceptedMessageIds();
+    Set<MessageID> node2AcceptedMsg = node2.getAcceptedMessageIds();
+    Set<MessageID> node3AcceptedMsg = node3.getAcceptedMessageIds();
 
     assertTrue(organizerAcceptedMsg.isEmpty());
     assertTrue(node2AcceptedMsg.isEmpty());
@@ -264,10 +259,10 @@ public class ConsensusHandlerTest {
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
     messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learnMsg);
 
-    Optional<Consensus> consensusOpt = lao.getConsensus(electMsg.getMessageId());
-    assertTrue(consensusOpt.isPresent());
-    Consensus consensus = consensusOpt.get();
-    assertTrue(consensus.isAccepted());
+    Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
+    assertTrue(electInstanceOpt.isPresent());
+    ElectInstance electInstance = electInstanceOpt.get();
+    assertEquals(ACCEPTED, electInstance.getState());
   }
 
   @Test

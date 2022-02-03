@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { PublicKey } from 'model/objects';
-import { Chirp, ChirpState } from 'model/objects/Chirp';
+import { Chirp, ChirpState, PublicKey } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import ChirpCard from 'components/ChirpCard';
 import ProfileIcon from 'components/ProfileIcon';
@@ -11,13 +10,13 @@ import {
 import STRINGS from 'res/strings';
 import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
-import socialMediaProfile from 'styles/stylesheets/socialMediaProfile';
+import socialMediaProfileStyles from 'styles/stylesheets/socialMediaProfileStyles';
 
 /**
  * UI for the profile of the current user.
  */
 
-const styles = socialMediaProfile;
+const styles = socialMediaProfileStyles;
 
 const SocialProfile = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;

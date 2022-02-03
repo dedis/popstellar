@@ -3,7 +3,7 @@ import {
   ScrollView,
   StyleSheet, View, ViewStyle,
 } from 'react-native';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
@@ -127,7 +127,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
     return (
-      <View style={styleContainer.centered}>
+      <View style={containerStyles.centered}>
         <View style={styles.smallPadding} />
         <TextBlock bold text={STRINGS.lao_id} />
         <CopiableTextInput text={lao.name} />
@@ -196,7 +196,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   }
 
   return (
-    <View style={styleContainer.centered}>
+    <View style={containerStyles.centered}>
       {!showTokens && recoverTokens()}
       {showTokens && displayTokens()}
     </View>

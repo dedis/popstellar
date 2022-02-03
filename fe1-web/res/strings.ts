@@ -68,6 +68,8 @@ const STRINGS = {
   follow_button: 'Follow',
   profile_button: 'Profile',
   social_media_your_profile_unavailable: 'You do not have a social media profile yet, be sure to have participated in a roll call.',
+  modal_chirp_deletion_title: 'Chirp deletion',
+  modal_chirp_deletion_description: 'Are you sure you want to delete this chirp?',
 
   /* --- Connect Strings --- */
   connect_description: 'The easiest way to connect to a local organization is to scan its QR code',

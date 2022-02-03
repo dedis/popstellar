@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { Spacing } from 'styles';
 
-const styles = StyleSheet.create({
+const eventViewStyles = StyleSheet.create({
   default: {
     marginHorizontal: Spacing.s,
     borderWidth: 1,
@@ -11,4 +11,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default styles;
+export default eventViewStyles;

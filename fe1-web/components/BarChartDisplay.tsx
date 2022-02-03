@@ -1,7 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { shape } from 'prop-types';
 import { View } from 'react-native';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import { BarChart } from 'react-native-chart-kit';
 import { MajorityResult } from 'model/objects';
 
@@ -35,14 +35,17 @@ const BarChartDisplay = (props: IPropTypes) => {
 
   // Displays a Bar Chart
   return (
-    <View style={[styleContainer.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
+    <View style={[containerStyles.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
       <BarChart data={data2} width={460} height={260} chartConfig={chartConfig} />
     </View>
   );
 };
 
 const propTypes = {
-  data: PropTypes.arrayOf(PropTypes.number).isRequired,
+  data: PropTypes.arrayOf(shape({
+    ballot_option: PropTypes.string.isRequired,
+    count: PropTypes.number.isRequired,
+  })).isRequired,
 };
 BarChartDisplay.propTypes = propTypes;
 

@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { Spacing } from 'styles';
 import TextBlock from 'components/TextBlock';
-import styleEventView from 'styles/stylesheets/eventView';
+import eventViewStyles from 'styles/stylesheets/eventViewStyles';
 import ListCollapsibleIcon from 'components/eventList/ListCollapsibleIcon';
 import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
@@ -41,7 +41,7 @@ const LaoProperties = ({ url }: IPropTypes) => {
   return (
     <>
       <TextBlock bold text="Lao Properties" />
-      <View style={[styleEventView.default, { marginTop: Spacing.s }]}>
+      <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
         <TouchableOpacity onPress={toggleChildren} style={{ textAlign: 'right' } as ViewStyle}>
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>

@@ -10,9 +10,8 @@ import ConnectNavigation from 'navigation/bars/ConnectNavigation';
 import WalletNavigation from './wallet/WalletNavigation';
 
 /**
- * The main tab navigation component
- *
- * create a tab navigator between the Home, Connect components and Launch component
+ * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch
+ * and Wallet components.
  */
 const HomeTopTabNavigator = createMaterialTopTabNavigator();
 

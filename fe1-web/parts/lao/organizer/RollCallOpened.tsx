@@ -3,7 +3,7 @@ import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
 import { Spacing } from 'styles';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 import QrReader from 'react-qr-reader';
 import STRINGS from 'res/strings';
@@ -20,6 +20,7 @@ import {
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+import { FOUR_SECONDS } from 'res/const';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
@@ -35,7 +36,6 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const FOUR_SECONDS = 4000;
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 const RollCallOpened = () => {
@@ -62,6 +62,11 @@ const RollCallOpened = () => {
 
   const handleError = (err: string) => {
     console.error(err);
+    toast.show(err, {
+      type: 'danger',
+      placement: 'top',
+      duration: FOUR_SECONDS,
+    });
   };
 
   const addAttendeeAndShowToast = (attendee: string, toastMessage: string) => {
@@ -107,7 +112,7 @@ const RollCallOpened = () => {
   };
 
   return (
-    <View style={styleContainer.flex}>
+    <View style={containerStyles.flex}>
       <View style={styles.viewCenter}>
         <TextBlock text={STRINGS.roll_call_scan_description} />
         <QrReader

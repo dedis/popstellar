@@ -20,6 +20,8 @@ import {
 } from 'model/objects';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
+import { useToast } from 'react-native-toast-notifications';
+import { FOUR_SECONDS } from 'res/const';
 import { onConfirmPress } from '../CreateEvent';
 
 const DEFAULT_ELECTION_DURATION = 3600;
@@ -31,6 +33,7 @@ const DEFAULT_ELECTION_DURATION = 3600;
 const CreateElection = ({ route }: any) => {
   const styles = route.params;
   const navigation = useNavigation();
+  const toast = useToast();
 
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
   const [endTime, setEndTime] = useState(Timestamp.EpochNow()
@@ -105,6 +108,11 @@ const CreateElection = ({ route }: any) => {
       })
       .catch((err) => {
         console.error('Could not create Election, error:', err);
+        toast.show(`Could not create Election, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
   };
 

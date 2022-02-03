@@ -95,12 +95,10 @@ function buildChirpMessage(msgData: MessageData): MessageData {
 }
 
 function buildReactionMessage(msgData: MessageData): MessageData {
-  switch (msgData.action) {
-    case ActionType.ADD:
-      return AddReaction.fromJson(msgData);
-    default:
-      throw new Error(`Unknown action '${msgData.action}' encountered while adding a reaction MessageData`);
+  if (msgData.action === ActionType.ADD) {
+    return AddReaction.fromJson(msgData);
   }
+  throw new Error(`Unknown action '${msgData.action}' encountered while adding a reaction MessageData`);
 }
 
 function buildWitnessMessage(msgData: MessageData): MessageData {

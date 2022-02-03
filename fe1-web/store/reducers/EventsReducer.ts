@@ -2,7 +2,6 @@ import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import {
   Hash, LaoEvent, LaoEventState, eventFromState, RollCall, PublicKey,
 } from 'model/objects';
-// import eventsData from 'res/EventData';
 import { getLaosState } from './LaoReducer';
 
 /**

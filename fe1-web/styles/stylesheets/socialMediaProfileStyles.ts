@@ -1,7 +1,7 @@
 import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import { gray } from '../colors';
 
-const styles = StyleSheet.create({
+const socialMediaProfileStyles = StyleSheet.create({
   viewCenter: {
     alignSelf: 'center',
     width: 600,
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-export default styles;
+export default socialMediaProfileStyles;

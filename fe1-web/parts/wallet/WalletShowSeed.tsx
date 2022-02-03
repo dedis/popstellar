@@ -2,7 +2,7 @@ import React from 'react';
 import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
-import styleContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
@@ -30,7 +30,7 @@ const WalletShowSeed = ({ navigation }: IPropTypes) => {
 
   function getShowSeedWalletDisplay() {
     return (
-      <View style={styleContainer.centered}>
+      <View style={containerStyles.centered}>
         <TextBlock bold text={STRINGS.show_seed_info} />
         <View style={styles.smallPadding} />
         <CopiableTextInput text={seed} />

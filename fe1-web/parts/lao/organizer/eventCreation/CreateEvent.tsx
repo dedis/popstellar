@@ -6,7 +6,7 @@ import {
 
 import { Views } from 'styles';
 import STRINGS from 'res/strings';
-import stylesContainer from 'styles/stylesheets/container';
+import containerStyles from 'styles/stylesheets/containerStyles';
 
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
@@ -59,7 +59,7 @@ const CreateEvent = () => {
   };
 
   return (
-    <View style={stylesContainer.flex}>
+    <View style={containerStyles.flex}>
       <TextBlock text={STRINGS.create_description} />
 
       { Object.values(EventTypes).map(

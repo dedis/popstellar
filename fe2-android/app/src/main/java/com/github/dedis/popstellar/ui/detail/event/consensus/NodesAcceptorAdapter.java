@@ -9,9 +9,9 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.github.dedis.popstellar.databinding.ConsensusNodeLayoutBinding;
-import com.github.dedis.popstellar.model.objects.Consensus;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
-import com.github.dedis.popstellar.model.objects.ConsensusNode.State;
+import com.github.dedis.popstellar.model.objects.ElectInstance;
+import com.github.dedis.popstellar.model.objects.ElectInstance.State;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 
 import java.util.List;
@@ -73,11 +73,12 @@ public class NodesAcceptorAdapter extends BaseAdapter {
     }
 
     ConsensusNode node = getItem(position);
-    Optional<Consensus> lastConsensus = node.getLastConsensus(instanceId);
+    Optional<ElectInstance> lastElectInstance = node.getLastElectInstance(instanceId);
     State state = node.getState(instanceId);
     boolean alreadyAccepted =
-        lastConsensus
-            .map(consensus -> ownNode.getAcceptedMessageIds().contains(consensus.getMessageId()))
+        lastElectInstance
+            .map(ElectInstance::getMessageId)
+            .map(ownNode.getAcceptedMessageIds()::contains)
             .orElse(false);
 
     String text = "";
@@ -98,10 +99,10 @@ public class NodesAcceptorAdapter extends BaseAdapter {
 
     binding.nodeButton.setText(text);
     binding.nodeButton.setEnabled(state == State.STARTING && !alreadyAccepted);
-    lastConsensus.ifPresent(
-        consensus ->
+    lastElectInstance.ifPresent(
+        electInstance ->
             binding.nodeButton.setOnClickListener(
-                clicked -> laoDetailViewModel.sendConsensusElectAccept(consensus, true)));
+                clicked -> laoDetailViewModel.sendConsensusElectAccept(electInstance, true)));
 
     binding.setLifecycleOwner(lifecycleOwner);
     binding.executePendingBindings();

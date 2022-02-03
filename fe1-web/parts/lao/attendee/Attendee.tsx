@@ -10,10 +10,10 @@ import LaoProperties from 'components/eventList/LaoProperties';
 import { useRoute } from '@react-navigation/core';
 
 /**
- * Attendee screen: lists LAO properties and past/ongoing/future events
+ * Attendee screen: lists LAO properties and past/ongoing/future events.
+ * By default, only the past and present section are open.
  *
- * TODO By default only the past and present section are open.
- * TODO use the data receive by the organization server
+ * TODO: use the data receive by the organization server
  */
 const Attendee = () => {
   const eventList = makeEventsList();
