@@ -11,7 +11,7 @@ import util.examples.MessageExample
 
 class JsonRpcRequestSuite extends FunSuite with Matchers {
     final val messageEx: Message = MessageExample.MESSAGE
-    final val messageLao: Message = MessageExample.MESSAGE_CREATELAO
+    final val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
     private final val laoId: String = "abcd"
     private final val channelEx: Channel = Channel(Channel.ROOT_CHANNEL_PREFIX + laoId)
     private final val params: Params = new Params(channelEx)
@@ -75,7 +75,7 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
 
         rpcReq2.getDecodedData should equal (None)
 
-        rpcReq3.getDecodedData should equal (Some(CreateLao(Hash(Base64Data("aWQ=")), "LAO", Timestamp(0), PublicKey(Base64Data("a2V5")), List.empty)))
+        rpcReq3.getDecodedData should equal (Some(CreateLao(Hash(Base64Data("aWQ=")), "LAO", MessageExample.NOT_STALE_TIMESTAMP, PublicKey(Base64Data("a2V5")), List.empty)))
     }
 
     test("getDecodedDataHeader returns right value"){

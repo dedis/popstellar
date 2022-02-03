@@ -46,7 +46,7 @@ class LaoDataSuite extends FunSuite with Matchers {
 
     test("LaoData is affected by CloseRollCall and CreateLao messages") {
         val messageCloseRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
-        val messageCreateLao: Message = MessageExample.MESSAGE_CREATELAO
+        val messageCreateLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
 
         LaoData.isAffectedBy(messageCloseRollCall) should equal (true)
         LaoData.isAffectedBy(messageCreateLao) should equal (true)
@@ -75,7 +75,7 @@ class LaoDataSuite extends FunSuite with Matchers {
 
     test("LaoData is updated as it should"){
         val messageCloseRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
-        val messageCreateLao: Message = MessageExample.MESSAGE_CREATELAO
+        val messageCreateLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
         val messageAddChirp: Message = MessageExample.MESSAGE_ADDCHIRP
         val messageWithoutMessageData: Message = MessageExample.MESSAGE
 

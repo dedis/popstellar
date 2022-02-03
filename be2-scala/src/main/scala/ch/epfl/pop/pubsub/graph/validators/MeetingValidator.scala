@@ -2,10 +2,12 @@ package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
-import ch.epfl.pop.model.objects.Hash
+import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
+import MessageValidator._
 
 case object MeetingValidator extends MessageDataContentValidator with EventValidator {
   override def EVENT_HASH_PREFIX: String = "M"
@@ -20,6 +22,9 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
         val laoId: Hash = rpcMessage.extractLaoId
         val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.creation.toString, data.name)
 
+        val sender: PublicKey = message.sender
+        val channel: Channel = rpcMessage.getParamsChannel
+
         if (!validateTimestampStaleness(data.creation)) {
           Right(validationError(s"stale 'creation' timestamp (${data.creation})"))
         } else if (!validateTimestampStaleness(data.start)) {
@@ -28,6 +33,10 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
+        } else if (!validateOwner(sender, channel)){
+          Right(validationError(s"invalid sender $sender"))
+        } else if (!validateChannelType(ObjectType.LAO, channel)) {
+          Right(validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
