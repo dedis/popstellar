@@ -24,11 +24,6 @@ describe('Timestamp object', () => {
     expect(timestamp.timestampToDate().valueOf()).toStrictEqual(TIMESTAMP * 1000);
   });
 
-  it('timestampToString function works', () => {
-    const timestamp = new Timestamp(TIMESTAMP);
-    expect(timestamp.timestampToString().valueOf()).toStrictEqual('5/8/2021, 8:35:00 AM');
-  });
-
   it('before function works', () => {
     const timestamp1 = new Timestamp(TIMESTAMP);
     const timestamp2 = new Timestamp(TIMESTAMP + 1000);
