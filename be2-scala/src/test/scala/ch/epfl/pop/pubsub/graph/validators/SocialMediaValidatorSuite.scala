@@ -280,7 +280,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
     test("Validating a RpcMessage without Params does not work in validateDeleteReaction"){
         val dbActorRef = mockDbWorkingReaction
-        val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddReaction(RPC_NO_PARAMS)
+        val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteReaction(RPC_NO_PARAMS)
         message shouldBe a [Right[_,PipelineError]]
         system.stop(dbActorRef.actorRef)
     }
