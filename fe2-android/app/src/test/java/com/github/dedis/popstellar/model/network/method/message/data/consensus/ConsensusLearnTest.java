@@ -1,13 +1,13 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 
 import org.junit.Test;
@@ -86,7 +86,12 @@ public class ConsensusLearnTest {
         new ConsensusLearn(random, messageId, timeInSeconds, decision, acceptorSignatures));
     assertNotEquals(
         consensusLearn,
-        new ConsensusLearn(instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), timeInSeconds, decision, acceptorSignatures));
+        new ConsensusLearn(
+            instanceId,
+            Base64DataUtils.generateMessageIDOtherThan(messageId),
+            timeInSeconds,
+            decision,
+            acceptorSignatures));
     assertNotEquals(
         consensusLearn, new ConsensusLearn(instanceId, messageId, 0, decision, acceptorSignatures));
     assertNotEquals(

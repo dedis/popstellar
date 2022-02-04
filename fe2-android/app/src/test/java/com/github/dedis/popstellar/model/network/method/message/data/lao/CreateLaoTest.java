@@ -1,18 +1,18 @@
 package com.github.dedis.popstellar.model.network.method.message.data.lao;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
-import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.Hash;
 import com.google.gson.JsonParseException;
 
@@ -44,7 +44,9 @@ public class CreateLaoTest {
     // Hash(organizer||creation||name)
     String expectedId =
         Hash.hash(
-            createLao.getOrganizer().getEncoded(), Long.toString(createLao.getCreation()), createLao.getName());
+            createLao.getOrganizer().getEncoded(),
+            Long.toString(createLao.getCreation()),
+            createLao.getName());
     assertThat(createLao.getId(), is(expectedId));
   }
 
@@ -88,7 +90,8 @@ public class CreateLaoTest {
     assertEquals(createLao, new CreateLao(id, name, creation, organizer, witnesses));
     assertEquals(new CreateLao(name, organizer), new CreateLao(name, organizer));
     assertNotEquals(createLao1, new CreateLao("random", organizer));
-    assertNotEquals(createLao1, new CreateLao(name, Base64DataUtils.generatePublicKeyOtherThan(organizer)));
+    assertNotEquals(
+        createLao1, new CreateLao(name, Base64DataUtils.generatePublicKeyOtherThan(organizer)));
   }
 
   @Test
@@ -96,7 +99,8 @@ public class CreateLaoTest {
     JsonTestUtils.testData(createLao);
 
     String pathDir = "protocol/examples/messageData/lao_create/";
-    String jsonInvalid1 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
+    String jsonInvalid1 =
+        JsonTestUtils.loadFile(pathDir + "wrong_lao_create_additional_params.json");
     String jsonInvalid2 = JsonTestUtils.loadFile(pathDir + "wrong_lao_create_missing_params.json");
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid1));
     assertThrows(JsonParseException.class, () -> JsonTestUtils.parse(jsonInvalid2));

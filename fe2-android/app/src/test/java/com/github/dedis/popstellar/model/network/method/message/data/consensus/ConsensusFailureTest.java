@@ -1,15 +1,15 @@
 package com.github.dedis.popstellar.model.network.method.message.data.consensus;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
-import com.github.dedis.popstellar.Base64DataUtils;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.google.gson.JsonParseException;
 
 import org.junit.Test;
@@ -49,7 +49,10 @@ public class ConsensusFailureTest {
     assertEquals(failure.hashCode(), failure2.hashCode());
 
     assertNotEquals(failure, new ConsensusFailure("random", messageId, timeInSeconds));
-    assertNotEquals(failure, new ConsensusFailure(instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), timeInSeconds));
+    assertNotEquals(
+        failure,
+        new ConsensusFailure(
+            instanceId, Base64DataUtils.generateMessageIDOtherThan(messageId), timeInSeconds));
     assertNotEquals(failure, new ConsensusFailure(instanceId, messageId, 0));
   }
 

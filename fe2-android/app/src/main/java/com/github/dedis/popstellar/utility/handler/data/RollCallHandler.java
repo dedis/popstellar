@@ -10,9 +10,12 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.event.EventState;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
+import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidDataException;
+import com.github.dedis.popstellar.utility.error.keys.InvalidPoPTokenException;
+import com.github.dedis.popstellar.utility.error.keys.KeyException;
 
 import java.util.Optional;
 
@@ -125,8 +128,20 @@ public final class RollCallHandler {
     rollCall.setState(EventState.CLOSED);
 
     lao.updateRollCall(closes, rollCall);
-
     lao.updateWitnessMessage(messageId, closeRollCallWitnessMessage(messageId, rollCall));
+
+    // Subscribe to the social media channels
+    try {
+      PoPToken token = laoRepository.getKeyManager().getValidPoPToken(lao, rollCall);
+      laoRepository.sendSubscribe(channel + "/social/" + token.getPublicKey().getEncoded());
+    } catch (InvalidPoPTokenException e) {
+      Log.i(TAG, "Received a close roll-call that you did not attend");
+    } catch (KeyException e) {
+      Log.e(
+          TAG,
+          "Could not retrieve your PoP Token to subscribe you to your social media channel",
+          e);
+    }
   }
 
   public static WitnessMessage createRollCallWitnessMessage(

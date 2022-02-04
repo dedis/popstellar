@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.repository;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

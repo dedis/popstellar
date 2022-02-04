@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
@@ -36,7 +37,8 @@ public final class Lao {
 
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
-  private Map<MessageID, Chirp> chirps;
+  private Map<MessageID, Chirp> allChirps;
+  private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
 
@@ -50,7 +52,8 @@ public final class Lao {
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
-    this.chirps = new HashMap<>();
+    this.allChirps = new HashMap<>();
+    this.chirpsByUser = new HashMap<>();
     this.keyToNode = new HashMap<>();
     this.messageIdToElectInstance = new HashMap<>();
     this.witnessMessages = new HashMap<>();
@@ -134,12 +137,15 @@ public final class Lao {
    * @param prevId the previous id of a chirp
    * @param chirp the chirp
    */
-  public void updateChirp(MessageID prevId, Chirp chirp) {
+  public void updateAllChirps(MessageID prevId, Chirp chirp) {
     if (chirp == null) {
       throw new IllegalArgumentException("The chirp is null");
     }
-    chirps.remove(prevId);
-    chirps.put(chirp.getId(), chirp);
+    allChirps.remove(prevId);
+    allChirps.put(chirp.getId(), chirp);
+
+    PublicKey user = chirp.getSender();
+    chirpsByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
   }
 
   public Optional<RollCall> getRollCall(String id) {
@@ -159,7 +165,7 @@ public final class Lao {
   }
 
   public Optional<Chirp> getChirp(MessageID id) {
-    return Optional.ofNullable(chirps.get(id));
+    return Optional.ofNullable(allChirps.get(id));
   }
 
   /**
@@ -313,8 +319,14 @@ public final class Lao {
     return witnessMessages;
   }
 
-  public Map<MessageID, Chirp> getChirps() {
-    return chirps;
+  public List<Chirp> getChirpsInOrder() {
+    return allChirps.values().stream()
+        .sorted(Comparator.comparingLong(Chirp::getTimestamp).reversed())
+        .collect(Collectors.toList());
+  }
+
+  public Map<MessageID, Chirp> getAllChirps() {
+    return allChirps;
   }
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {

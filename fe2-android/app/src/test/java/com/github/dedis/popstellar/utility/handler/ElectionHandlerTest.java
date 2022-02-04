@@ -1,6 +1,6 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;

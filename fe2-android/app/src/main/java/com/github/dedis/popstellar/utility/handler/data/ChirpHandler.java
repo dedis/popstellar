@@ -44,7 +44,7 @@ public final class ChirpHandler {
     chirp.setTimestamp(addChirp.getTimestamp());
     chirp.setParentId(addChirp.getParentId().orElse(new MessageID("")));
 
-    lao.updateChirp(messageId, chirp);
+    lao.updateAllChirps(messageId, chirp);
   }
 
   /**

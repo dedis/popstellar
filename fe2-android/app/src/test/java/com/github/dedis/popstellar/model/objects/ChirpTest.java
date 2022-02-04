@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
-import static com.github.dedis.popstellar.Base64DataUtils.generatePublicKey;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generatePublicKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 

@@ -305,6 +305,11 @@ public class LAORepository {
     return mKeyManager.getMainPublicKey();
   }
 
+  /** @return the KeyManager of the repository */
+  public KeyManager getKeyManager() {
+    return mKeyManager;
+  }
+
   /**
    * Checks that a given channel corresponds to a LAO channel, i.e /root/laoId
    *

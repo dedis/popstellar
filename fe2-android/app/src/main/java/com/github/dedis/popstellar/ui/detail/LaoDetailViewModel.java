@@ -593,9 +593,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 },
                 throwable ->
                     Log.d(
-                        TAG,
-                        "timed out waiting for result on consensus/elect_accept",
-                        throwable));
+                        TAG, "timed out waiting for result on consensus/elect_accept", throwable));
 
     disposables.add(disposable);
   }
@@ -626,6 +624,17 @@ public class LaoDetailViewModel extends AndroidViewModel
     RollCall rollCall = optRollCall.get();
     OpenRollCall openRollCall = new OpenRollCall(laoId, id, openedAt, rollCall.getState());
     attendees = new HashSet<>(rollCall.getAttendees());
+
+    try {
+      attendees.add(mKeyManager.getPoPToken(lao, rollCall).getPublicKey());
+    } catch (KeyException e) {
+      Log.e(TAG, "Could not add the organizer's token to the attendees", e);
+      Toast.makeText(
+              getApplication().getApplicationContext(),
+              "Could not add your PoPToken to the attendees : " + e.getMessage(),
+              Toast.LENGTH_LONG)
+          .show();
+    }
 
     MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), openRollCall, mGson);
     Disposable disposable =

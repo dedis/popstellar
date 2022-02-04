@@ -1,7 +1,7 @@
 package com.github.dedis.popstellar.utility.handler;
 
-import static com.github.dedis.popstellar.Base64DataUtils.generateKeyPair;
-import static com.github.dedis.popstellar.Base64DataUtils.generateMessageID;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
+import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateMessageID;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.lenient;
@@ -127,7 +127,7 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = LAO.getChirps();
+    Map<MessageID, Chirp> chirps = LAO.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }
@@ -153,7 +153,7 @@ public class ChirpHandlerTest {
     assertEquals(CREATION_TIME, chirp.getTimestamp());
     assertEquals(PARENT_ID, chirp.getParentId());
 
-    Map<MessageID, Chirp> chirps = LAO.getChirps();
+    Map<MessageID, Chirp> chirps = LAO.getAllChirps();
     assertEquals(1, chirps.size());
     assertEquals(chirp, chirps.get(chirp.getId()));
   }
