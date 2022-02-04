@@ -27,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -49,7 +50,6 @@ import com.google.zxing.qrcode.QRCodeReader;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -146,36 +146,52 @@ public class LaoDetailActivityTest {
 
   // Matches an ImageView containing a QRCode with expected content
   private Matcher<? super View> withQrCode(String expectedContent) {
-    return new TypeSafeMatcher<View>() {
+    return new BoundedMatcher<View, ImageView>(ImageView.class) {
       @Override
-      protected boolean matchesSafely(View item) {
-        if (item instanceof ImageView) {
-          ImageView image = (ImageView) item;
-          Drawable drawable = image.getDrawable();
-
-          if (drawable instanceof BitmapDrawable) {
-            Bitmap qrcode = ((BitmapDrawable) drawable).getBitmap();
-            // Convert the QRCode to something zxing understands
-            int[] buffer = new int[qrcode.getWidth() * qrcode.getHeight()];
-            qrcode.getPixels(
-                buffer, 0, qrcode.getWidth(), 0, 0, qrcode.getWidth(), qrcode.getHeight());
-            LuminanceSource source =
-                new RGBLuminanceSource(qrcode.getWidth(), qrcode.getHeight(), buffer);
-            BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-            try {
-              // Parse the bitmap and check it against expected value
-              return expectedContent.equals(new QRCodeReader().decode(bitmap).getText());
-            } catch (NotFoundException | ChecksumException | FormatException e) {
-              throw new IllegalArgumentException("The provided image is not a valid QRCode", e);
-            }
-          }
-        }
-        return false;
+      protected boolean matchesSafely(ImageView item) {
+        String actualContent = extractContent(item);
+        return expectedContent.equals(actualContent);
       }
 
       @Override
       public void describeTo(Description description) {
-        description.appendText("QRCode : (" + expectedContent + ")");
+        description.appendText("QRCode('" + expectedContent + "')");
+      }
+
+      @Override
+      public void describeMismatch(Object item, Description description) {
+        if (super.matches(item)) {
+          // The type is a match, so the mismatch came from the QRCode content
+          String content = extractContent((ImageView) item);
+          description.appendText("QRCode('" + content + "')");
+        } else {
+          // The mismatch is on the type, let BoundedMatcher handle it
+          super.describeMismatch(item, description);
+        }
+      }
+
+      private String extractContent(ImageView item) {
+        Drawable drawable = item.getDrawable();
+        if (!(drawable instanceof BitmapDrawable))
+          throw new IllegalArgumentException("The provided ImageView does not contain a bitmap");
+
+        BinaryBitmap binary = convertToBinary(((BitmapDrawable) drawable).getBitmap());
+
+        try {
+          // Parse the bitmap and check it against expected value
+          return new QRCodeReader().decode(binary).getText();
+        } catch (NotFoundException | ChecksumException | FormatException e) {
+          throw new IllegalArgumentException("The provided image is not a valid QRCode", e);
+        }
+      }
+
+      private BinaryBitmap convertToBinary(Bitmap qrcode) {
+        // Convert the QRCode to something zxing understands
+        int[] buffer = new int[qrcode.getWidth() * qrcode.getHeight()];
+        qrcode.getPixels(buffer, 0, qrcode.getWidth(), 0, 0, qrcode.getWidth(), qrcode.getHeight());
+        LuminanceSource source =
+            new RGBLuminanceSource(qrcode.getWidth(), qrcode.getHeight(), buffer);
+        return new BinaryBitmap(new HybridBinarizer(source));
       }
     };
   }
