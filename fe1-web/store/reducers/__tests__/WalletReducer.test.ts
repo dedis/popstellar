@@ -12,17 +12,29 @@ const filledState = {
   mnemonic: 'alpha beta',
 };
 
-test('should return the initial state', () => {
-  expect(walletReduce(undefined, {} as AnyAction))
-    .toEqual(emptyState);
-});
+const wrongState = {
+  seed: undefined,
+  mnemonic: 'alpha beta',
+};
 
-test('should handle the wallet being set', () => {
-  expect(walletReduce({}, setWallet(filledState)))
-    .toEqual(filledState);
-});
+describe('wallet reducer', () => {
+  test('should return the initial state', () => {
+    expect(walletReduce(undefined, {} as AnyAction))
+      .toEqual(emptyState);
+  });
 
-test('should handle the wallet being set', () => {
-  expect(walletReduce(filledState, clearWallet()))
-    .toEqual(emptyState);
+  test('should handle the wallet being set', () => {
+    expect(walletReduce({}, setWallet(filledState)))
+      .toEqual(filledState);
+  });
+
+  test('should return the empty set', () => {
+    expect(walletReduce({}, setWallet(wrongState)))
+      .toEqual(emptyState);
+  });
+
+  test('should handle the wallet being set', () => {
+    expect(walletReduce(filledState, clearWallet()))
+      .toEqual(emptyState);
+  });
 });

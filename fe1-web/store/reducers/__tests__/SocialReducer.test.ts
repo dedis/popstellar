@@ -1,10 +1,10 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
-import keyPair from 'test_data/keypair.json';
 import {
   Chirp, Hash, PublicKey, Timestamp, Reaction,
 } from 'model/objects';
 import { describe } from '@jest/globals';
+import { mockLaoId } from '__tests__/utils/TestUtils';
 import {
   socialReduce,
   addChirp,
@@ -15,13 +15,6 @@ import {
   makeReactionsList,
 } from '../SocialReducer';
 
-const mockPublicKey = new PublicKey(keyPair.publicKey);
-const org = mockPublicKey;
-const name = 'MyLao';
-const mockLaoIdHash: Hash = Hash.fromStringArray(
-  org.toString(), new Timestamp(160000000).toString(), name,
-);
-const mockLaoId: string = mockLaoIdHash.toString();
 const mockSender1: PublicKey = new PublicKey('Douglas Adams');
 const mockSender2: PublicKey = new PublicKey('Gandalf');
 const mockChirpId0: Hash = Hash.fromString('000');
@@ -516,31 +509,26 @@ describe('SocialReducer', () => {
     });
 
     it('should return an empty list', () => {
-      socialReduce(undefined, {} as AnyAction);
       expect(makeChirpsList().resultFunc(emptyState, mockLaoId))
         .toEqual([]);
     });
 
     it('should return the first chirp state', () => {
-      socialReduce(emptyState, addChirp(mockLaoId, chirp1));
       expect(makeChirpsList().resultFunc(chirpFilledState1, mockLaoId))
         .toEqual([chirp1]);
     });
 
     it('should return the newer chirp before the first chirp', () => {
-      socialReduce(chirpFilledState1, addChirp(mockLaoId, chirp2));
       expect(makeChirpsList().resultFunc(chirpFilledState2, mockLaoId))
         .toEqual([chirp2, chirp1]);
     });
 
     it('should add the newer chirp after the second chirp', () => {
-      socialReduce(chirpFilledState2, addChirp(mockLaoId, chirp3));
       expect(makeChirpsList().resultFunc(chirpFilledState3, mockLaoId))
         .toEqual([chirp2, chirp3, chirp1]);
     });
 
     it('should return the newest chirp on top', () => {
-      socialReduce(chirpFilledState3, addChirp(mockLaoId, chirp4));
       expect(makeChirpsList().resultFunc(chirpFilledState4, mockLaoId))
         .toEqual([chirp4, chirp2, chirp3, chirp1]);
     });
