@@ -1,10 +1,10 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
-import keyPair from 'test_data/keypair.json';
 import {
   Chirp, Hash, PublicKey, Timestamp, Reaction,
 } from 'model/objects';
 import { describe } from '@jest/globals';
+import { mockLaoId } from '__tests__/utils/TestUtils';
 import {
   socialReduce,
   addChirp,
@@ -15,14 +15,6 @@ import {
   makeReactionsList,
 } from '../SocialReducer';
 
-const mockPublicKey = new PublicKey(keyPair.publicKey);
-export const org = mockPublicKey;
-export const mockLaoName = 'MyLao';
-export const mockLaoCreationTime = new Timestamp(160000000);
-export const mockLaoIdHash: Hash = Hash.fromStringArray(
-  org.toString(), mockLaoCreationTime.toString(), mockLaoName,
-);
-export const mockLaoId: string = mockLaoIdHash.toString();
 const mockSender1: PublicKey = new PublicKey('Douglas Adams');
 const mockSender2: PublicKey = new PublicKey('Gandalf');
 const mockChirpId0: Hash = Hash.fromString('000');

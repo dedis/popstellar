@@ -7,13 +7,15 @@ import {
   Message,
 } from 'model/network/method/message';
 import { AddChirp } from 'model/network/method/message/data';
-import { mockPopToken } from 'model/network/method/message/__tests__/Message.test';
+import { mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import {
-  addMessages, getLaoMessagesState, getMessage, makeLaoMessagesState,
+  addMessages,
+  getLaoMessagesState,
+  getMessage,
+  makeLaoMessagesState,
   messageReduce,
   processMessages,
 } from '../MessageReducer';
-import { mockLaoId } from './SocialReducer.test';
 
 jest.mock('model/objects/wallet/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
@@ -107,12 +109,12 @@ describe('message selectors', () => {
       .toEqual(undefined);
   });
 
-  it('should return empty state', () => {
+  it('should return empty state when byId is empty', () => {
     expect(getLaoMessagesState(mockLaoId, randomState))
       .toEqual(emptyState);
   });
 
-  it('should return undefined', () => {
+  it('should return undefined if the message id is not in store', () => {
     expect(getMessage(randomState, '1234'))
       .toEqual(undefined);
   });

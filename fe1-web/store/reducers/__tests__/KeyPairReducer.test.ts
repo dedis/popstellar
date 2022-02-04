@@ -1,19 +1,16 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
-import testKeyPair from 'test_data/keypair.json';
 import { KeyPair, PrivateKey, PublicKey } from 'model/objects';
+import { mockPrivateKey, mockPublicKey } from '__tests__/utils/TestUtils';
 import { keyPairReduce, setKeyPair } from '../KeyPairReducer';
 
 const emptyState = {
   keyPair: undefined,
 };
 
-const mockPublicKey = new PublicKey(testKeyPair.publicKey);
-const mockPrivateKey = new PrivateKey(testKeyPair.privateKey);
-
 const mockKeyPair = new KeyPair({
-  publicKey: mockPublicKey,
-  privateKey: mockPrivateKey,
+  publicKey: new PublicKey(mockPublicKey),
+  privateKey: new PrivateKey(mockPrivateKey),
 }).toState();
 
 const filledState = {

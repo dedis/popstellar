@@ -1,5 +1,4 @@
 import 'jest-extended';
-import testKeyPair from 'test_data/keypair.json';
 import {
   Base64UrlData,
   EventTags,
@@ -7,12 +6,12 @@ import {
   KeyPair,
   Lao,
   LaoState,
-  PopToken,
   PrivateKey,
   PublicKey,
   Timestamp,
 } from 'model/objects';
 import { KeyPairStore } from 'store';
+import { mockPopToken, mockPrivateKey, mockPublicKey } from '__tests__/utils/TestUtils';
 import { AddChirp, encodeMessageData, EndElection } from '../data';
 import { Message } from '../Message';
 
@@ -27,12 +26,6 @@ const laoState: LaoState = {
 };
 const mockLao = Lao.fromState(laoState);
 
-const mockPublicKey = testKeyPair.publicKey;
-const mockPrivateKey = testKeyPair.privateKey;
-export const mockPopToken = PopToken.fromState({
-  publicKey: testKeyPair.publicKey2,
-  privateKey: testKeyPair.privateKey2,
-});
 jest.mock('model/objects/wallet/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
 }));

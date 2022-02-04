@@ -3,16 +3,20 @@ import { AnyAction } from 'redux';
 import {
   Hash, LaoEventType, Meeting, RollCall, RollCallStatus, Timestamp,
 } from 'model/objects';
+import { mockLaoId } from '__tests__/utils/TestUtils';
 import {
   addEvent,
   clearAllEvents,
-  eventReduce, makeEventByTypeSelector, makeEventGetter,
+  eventReduce,
+  makeEventByTypeSelector,
+  makeEventGetter,
   makeEventsAliasMap,
-  makeEventsList, makeEventsMap, makeLastRollCallAttendeesList,
+  makeEventsList,
+  makeEventsMap,
+  makeLastRollCallAttendeesList,
   removeEvent,
   updateEvent,
 } from '../EventsReducer';
-import { mockLaoId } from './SocialReducer.test';
 
 const emptyLao = {
   byLaoId: {},
@@ -157,7 +161,7 @@ describe('event selector', () => {
       .toEqual([]);
   });
 
-  it('should return an empty makeEventsList', () => {
+  it('should return an empty makeEventsList if the state is empty', () => {
     expect(makeEventsList().resultFunc(emptyState, mockLaoId))
       .toEqual([]);
   });
@@ -187,7 +191,7 @@ describe('event selector', () => {
       .toEqual({ [rollCallIdString]: RollCall.fromState(rollCallCreated) });
   });
 
-  it('should return undefined for makeEventGetter', () => {
+  it('should return undefined for makeEventGetter if the state is empty', () => {
     expect(makeEventGetter(mockLaoId, rollCallIdString).resultFunc(emptyState))
       .toEqual(undefined);
   });
@@ -206,7 +210,7 @@ describe('event selector', () => {
       });
   });
 
-  it('should return an empty list for lastRollCallAttendeesList', () => {
+  it('should return an empty list for lastRollCallAttendeesList if the state is empty', () => {
     expect(makeLastRollCallAttendeesList(mockLaoId, '1234').resultFunc(emptyState))
       .toEqual([]);
   });

@@ -3,21 +3,28 @@ import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
 import { Hash, Lao, Timestamp } from 'model/objects';
 import {
-  addLao,
-  clearAllLaos,
-  connectToLao,
-  disconnectFromLao,
-  laoReduce, makeCurrentLao, makeIsLaoOrganizer, makeLao, makeLaoIdsList, makeLaosList, makeLaosMap,
-  removeLao, setLaoLastRollCall,
-  updateLao,
-} from '../LaoReducer';
-import {
   mockLaoCreationTime,
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
   org,
-} from './SocialReducer.test';
+} from '__tests__/utils/TestUtils';
+import {
+  addLao,
+  clearAllLaos,
+  connectToLao,
+  disconnectFromLao,
+  laoReduce,
+  makeCurrentLao,
+  makeIsLaoOrganizer,
+  makeLao,
+  makeLaoIdsList,
+  makeLaosList,
+  makeLaosMap,
+  removeLao,
+  setLaoLastRollCall,
+  updateLao,
+} from '../LaoReducer';
 import { rollCallId } from './EventsReducer.test';
 
 const emptyState = {
@@ -173,7 +180,7 @@ describe('Lao selector', () => {
       .toEqual(Lao.fromState(lao));
   });
 
-  it('should return an empty makeLaoIdsList', () => {
+  it('should return an empty makeLaoIdsList when there is no lao', () => {
     expect(makeLaoIdsList().resultFunc([]))
       .toEqual([]);
   });
@@ -188,7 +195,7 @@ describe('Lao selector', () => {
       .toEqual({ [mockLaoId]: Lao.fromState(lao) });
   });
 
-  it('should return true for makeIsLaoOrganizer', () => {
+  it('should return true for makeIsLaoOrganizer when it is true', () => {
     expect(makeIsLaoOrganizer().resultFunc(laoRecord, mockLaoId, org.toString()))
       .toEqual(true);
   });
