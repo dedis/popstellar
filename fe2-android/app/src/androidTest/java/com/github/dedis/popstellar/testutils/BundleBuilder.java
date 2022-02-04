@@ -18,8 +18,6 @@ import java.io.Serializable;
  *
  * <p>This class purpose is to bypass this limitation by providing a builder to {@link Bundle}
  *
- * <p>FIXME: 04.12.2021 Currently unused}
- *
  * <p>Creation : 04/12/2021
  */
 public class BundleBuilder {
