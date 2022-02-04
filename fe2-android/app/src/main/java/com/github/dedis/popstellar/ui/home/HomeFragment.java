@@ -13,9 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -24,8 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public final class HomeFragment extends Fragment {
 
   public static final String TAG = HomeFragment.class.getSimpleName();
-  public static final SimpleDateFormat DATE_FORMAT =
-      new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
 
   private HomeFragmentBinding mHomeFragBinding;
   private HomeViewModel mHomeViewModel;
