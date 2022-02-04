@@ -13,13 +13,9 @@ public class BarcodeTracker extends Tracker<Barcode> {
 
   private BarcodeTracker() {}
 
-  public static BarcodeTracker getInstance(QRCodeListener listener) {
+  public static synchronized BarcodeTracker getInstance(QRCodeListener listener) {
     if (INSTANCE == null) {
-      synchronized (BarcodeTracker.class) {
-        if (INSTANCE == null) {
-          INSTANCE = new BarcodeTracker();
-        }
-      }
+      INSTANCE = new BarcodeTracker();
     }
     INSTANCE.setListener(listener);
     return INSTANCE;
