@@ -1,4 +1,4 @@
-# student21_pop: be2-scala branch
+# popstellar: be2-scala branch
 Proof-of-personhood, spring 2021: Scala language back-end
 
 [TOC]

@@ -1,4 +1,4 @@
-# student21_pop: fe2-android
+# popstellar: fe2-android
 Proof-of-personhood, Fall 2021: Android native front-end
 
 ## Running the project

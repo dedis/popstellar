@@ -138,7 +138,7 @@ $ godoc -http=:6060
 ```
 
 The above command would make this module's documentation available at
-[http://localhost:6060/pkg/student20_pop](http://localhost:6060/pkg/student20_pop).
+[http://localhost:6060/pkg/popstellar](http://localhost:6060/pkg/popstellar).
 
 ## Potential improvements
 
