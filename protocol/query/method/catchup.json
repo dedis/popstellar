@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/catchup.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/catchup.json",
     "description": "Match catchup on past message on a channel query",
     "type": "object",
     "additionalProperties": false,

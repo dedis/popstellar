@@ -1,4 +1,4 @@
-# student_21_pop: Protocol Specifications
+# popstellar: Protocol Specifications
 
 Proof-of-personhood, Spring 2021: Protocol specifications
 

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/answer/answer.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/answer/answer.json",
     "title": "Match a custom JsonRpc 2.0 message answer",
     "description": "Match a positive or negative server answer",
     "type": "object",

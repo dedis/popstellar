@@ -1,4 +1,4 @@
-# student_21_pop: fe1-web
+# popstellar: fe1-web
 Proof-of-personhood, Spring 2021: Web-based front-end
 
 ## Running the project

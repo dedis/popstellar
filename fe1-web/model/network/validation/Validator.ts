@@ -55,7 +55,7 @@ ajv.addSchema([
   ...querySchema,
 ]);
 
-const schemaPrefix = 'https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol';
+const schemaPrefix = 'https://raw.githubusercontent.com/dedis/popstellar/master/protocol';
 
 const schemaIds: Record<ObjectType, Record<string, string>> = {
   [ObjectType.INVALID]: {},

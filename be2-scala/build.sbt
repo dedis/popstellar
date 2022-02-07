@@ -70,7 +70,7 @@ Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
 // Configure Sonar
 sonarProperties := Map(
   "sonar.organization" -> "dedis",
-  "sonar.projectKey" -> "dedis_student_21_pop_be2",
+  "sonar.projectKey" -> "dedis_popstellar_be2",
 
   "sonar.sources" -> "src/main/scala",
   "sonar.tests" -> "src/test/scala",

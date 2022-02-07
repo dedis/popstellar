@@ -86,11 +86,11 @@ for more information.
 
 All the messages are encoded using JSON and are validated
 using [JSON Schemas](https://json-schema.org) as defined in
-the [protocol folder](https://github.com/dedis/student_21_pop/tree/master/protocol).
+the [protocol folder](https://github.com/dedis/popstellar/tree/master/protocol).
 
 [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
 also gives an introduction to the different message formats. However, note that
-the [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol) in this repository
+the [schemas](https://github.com/dedis/popstellar/tree/master/protocol) in this repository
 are **always** the source of truth and are more up to date than the Google Doc.
 
 ### Application design
@@ -132,7 +132,7 @@ connected to a LAO to "see" the same thing. Drawing a parallel, one would expect
 users to be able to access the same posts, see (roughly) the same number of associated likes, etc.
 
 In order to achieve this, and as a general rule, the UI displays information from
-the [`LAORepository`](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/LAORepository.java)
+the [`LAORepository`](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/LAORepository.java)
 class (the application state container for now), but it **doesn't** modify the LAO-wide information
 contained in it. The list of LAOs contained in the `LAORepository` only gets updated in response to
 messages from the backends.
@@ -179,7 +179,7 @@ The communication stack within the PoP project is made
 of [multiple layers](https://docs.google.com/document/d/1AeV7JX_SJ30mu9PIwmz24UkIi3jCo6NSYA0sPxdbscU)
 and you need to be familiar with them to understand how communication happens.
 
-The [repository module](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository)
+The [repository module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository)
 contains some of the network communication logic, it is organized as follows:
 
 * The `remote` module deals with the WebSocket-based connections, using
@@ -193,12 +193,12 @@ example the request for a LAO creation is in `HomeViewModel`. In the future an A
 to simplify the logic in the application code and reduce repetition.
 
 For more information on sending messages on the network, please refer to
-the [repository module](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository)
+the [repository module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository)
 and the `ViewModel` classes. Also, make sure you have a solid understanding
 of [JSON-RPC](https://www.jsonrpc.org/specification),
 the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
 and their actual implementation in
-the [protocol schemas](https://github.com/dedis/student_21_pop/tree/master/protocol)
+the [protocol schemas](https://github.com/dedis/popstellar/tree/master/protocol)
 
 ### Getting messages over the wire
 
@@ -216,13 +216,13 @@ the `handler`. The `handler` submodule is responsible for processing different k
 based on their types, and update the application state as needed.
 
 For more information on processing messages received from the network, please refer to
-the [handler](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/utility/handler)
+the [handler](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/utility/handler)
 and the PoP communication protocol.
 
 ### Message definitions
 
 All objects referred to in the protocol specification are defined in `model/network` package,
-closely mirroring the [JSON-Schema](https://github.com/dedis/student_21_pop/tree/master/protocol)
+closely mirroring the [JSON-Schema](https://github.com/dedis/popstellar/tree/master/protocol)
 folder structure.
 
 The logic for parsing them is defined in `model/network/json` package.
@@ -247,11 +247,11 @@ As part of the PoP Android front-end, you'll find the low-level reusable UI comp
 views of the application in `/ui`.
 
 The `/ui` package contains views such as
-the [Home](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/home/HomeFragment.java)
+the [Home](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/home/HomeFragment.java)
 and
-the [Launch](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/home/LaunchFragment.java)
+the [Launch](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/home/LaunchFragment.java)
 view. And it also provides elements such as
-a [Date Picker](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/detail/event/pickers/DatePickerFragment.java)
+a [Date Picker](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/detail/event/pickers/DatePickerFragment.java)
 .
 
 This is the current organization, but as this project evolves you should feel free to reorganize the
@@ -288,7 +288,7 @@ For detailed information, take a look at the following resources:
 
 To provide an instance, you need to define it in a Module. A Module is a collection of rules on how
 to provide a dependency. The modules of the project are defined in
-the [di package](https://github.com/dedis/student_21_pop/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/di)
+the [di package](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/di)
 .
 
 You can either directly provide an instance with arguments or a binding to link a type to another.
@@ -339,7 +339,7 @@ This solution is equivalent to `provideDatabaseImpl()` and it is widely used in 
 If the class is an Activity or a Fragment, you need to annotate it with `@AndroidEntryPoint` and you
 can create package-private fields annotated with @Inject that will be provided by Hilt when they are
 constructed. You can see this usage
-in [SettingsActivity](https://github.com/dedis/student_21_pop/blob/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/settings/SettingsActivity.java)
+in [SettingsActivity](https://github.com/dedis/popstellar/blob/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/ui/settings/SettingsActivity.java)
 
 ## Testing
 
@@ -402,7 +402,7 @@ home view are grouped together.
 ### Github Actions
 
 This project uses Github Actions as a CI, for more information go to
-the [workflows](https://github.com/dedis/student_21_pop/blob/master/.github/workflows/ci.yaml) of
+the [workflows](https://github.com/dedis/popstellar/blob/master/.github/workflows/ci.yaml) of
 this project.
 
 This CI builds and runs the Unit Tests. For the Android Tests,

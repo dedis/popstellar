@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/message.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/message.json",
     "title": "This represents a message someone would want to publish on a specific channel",
     "description": "Match general message content (Create LAO, Update LAO, Broadcast LAO, Create Meeting, Broadcast Meeting)",
     "type": "object",

@@ -1,6 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCloseRollCall.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCloseRollCall.json",
     "description": "Match a close roll-call query",
     "type": "object",
     "properties": {

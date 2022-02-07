@@ -90,11 +90,11 @@ for more information.
 
 All the messages are encoded using JSON and are validated using
 [JSON Schemas](https://json-schema.org) as defined in the
-[protocol folder](https://github.com/dedis/student_21_pop/tree/master/protocol).
+[protocol folder](https://github.com/dedis/popstellar/tree/master/protocol).
 
 [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
 also gives an introduction to the different message formats. However, note that
-the [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol) in this
+the [schemas](https://github.com/dedis/popstellar/tree/master/protocol) in this
 repository are **always** the source of truth and are more up to date than the Google Doc.
 
 ### Managing the application state
@@ -133,7 +133,7 @@ but this would only be valid for local operations affecting local data
 (e.g., changing a local setting, clearing the data stored in the browser, etc.).
 
 For more information on managing the application state, please refer to the
-[store module](https://github.com/dedis/student_21_pop/tree/master/fe1-web/store)
+[store module](https://github.com/dedis/popstellar/tree/master/fe1-web/store)
 and make sure you have a solid understanding of Redux and its concepts.
 
 #### Managing & storing secrets
@@ -165,9 +165,9 @@ to generate non-extractable key material, and the
 [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 to store it reasonably securely.
 This is abstracted away in the
-[WalletStore](https://github.com/dedis/student_21_pop/tree/master/fe1-web/stores/WalletStore.ts),
+[WalletStore](https://github.com/dedis/popstellar/tree/master/fe1-web/stores/WalletStore.ts),
 while the platform implementation is in
-[platform/crypto](https://github.com/dedis/student_21_pop/tree/master/fe1-web/platform/crypto/).
+[platform/crypto](https://github.com/dedis/popstellar/tree/master/fe1-web/platform/crypto/).
 
 Support for mobile devices is planned and the architecture allows it,
 but secret management is not yet implemented.
@@ -178,7 +178,7 @@ The communication stack within the PoP project is made of
 [multiple layers](https://docs.google.com/document/d/1AeV7JX_SJ30mu9PIwmz24UkIi3jCo6NSYA0sPxdbscU)
 and you need to be familiar with them to understand how communication happens.
 
-The [network module](https://github.com/dedis/student_21_pop/tree/master/fe1-web/network)
+The [network module](https://github.com/dedis/popstellar/tree/master/fe1-web/network)
 contains most of the logic to encapsulate application-level messages and pass them down the stack,
 and it is organized as follows, going from the lowest abstraction to the highest:
 * `NetworkManager` and `NetworkConnection` classes abstract away the intricacies of
@@ -194,11 +194,11 @@ and it is organized as follows, going from the lowest abstraction to the highest
   such as subscribing to a channel and retrieving past messages.
 
 For more information on sending messages on the network, please refer to the
-[network module](https://github.com/dedis/student_21_pop/tree/master/fe1-web/network)
+[network module](https://github.com/dedis/popstellar/tree/master/fe1-web/network)
 and make sure you have a solid understanding
 of [JSON-RPC](https://www.jsonrpc.org/specification),
 the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
-and their actual implementation in the [protocol schemas](https://github.com/dedis/student_21_pop/tree/master/protocol)
+and their actual implementation in the [protocol schemas](https://github.com/dedis/popstellar/tree/master/protocol)
 
 ### Getting messages over the wire
 
@@ -215,7 +215,7 @@ to a websocket connection.
 This callback is called whenever the backend sends a JSON-RPC request or notification.
 
 On the "message processing" side,
-the [ingestion module](https://github.com/dedis/student_21_pop/tree/master/fe1-web/ingestion)
+the [ingestion module](https://github.com/dedis/popstellar/tree/master/fe1-web/ingestion)
 is the module responsible for receiving the messages and processing them,
 effectively "ingesting and digesting" them (hence the name).
 It is solely responsible for forwarding incoming messages in the `store`,
@@ -226,7 +226,7 @@ Within the `ingestion` module, the `handlers` submodule is responsible for
 processing different kind of messages, based on their types.
 
 For more information on processing messages received from the network, please refer to the
-the [ingestion module](https://github.com/dedis/student_21_pop/tree/master/fe1-web/ingestion)
+the [ingestion module](https://github.com/dedis/popstellar/tree/master/fe1-web/ingestion)
 and make sure you have a solid understanding of [Redux](https://redux.js.org/)
 and the PoP communication protocol.
 
@@ -262,15 +262,15 @@ As part of the PoP Web front-end, you'll find the low-level reusable UI componen
 `/components` package, while the main views and screens of the application are found in `/parts`.
 
 In concrete terms, the `/components` package provides elements such as a
-[Date Picker](https://github.com/dedis/student_21_pop/tree/master/fe1-web/components/DatePicker.tsx),
-a [QR Code displayer](https://github.com/dedis/student_21_pop/tree/master/fe1-web/components/QRCode.tsx),
+[Date Picker](https://github.com/dedis/popstellar/tree/master/fe1-web/components/DatePicker.tsx),
+a [QR Code displayer](https://github.com/dedis/popstellar/tree/master/fe1-web/components/QRCode.tsx),
 or a component managing
-[a list of Text Inputs](https://github.com/dedis/student_21_pop/tree/master/fe1-web/components/TextInputList.tsx).
+[a list of Text Inputs](https://github.com/dedis/popstellar/tree/master/fe1-web/components/TextInputList.tsx).
 
 The `/parts` package, on the other hand, contains screens such as the
-[Wallet setup](https://github.com/dedis/student_21_pop/tree/master/fe1-web/parts/wallet/WalletSetSeed.tsx)
+[Wallet setup](https://github.com/dedis/popstellar/tree/master/fe1-web/parts/wallet/WalletSetSeed.tsx)
 and the
-[Wallet home](https://github.com/dedis/student_21_pop/tree/master/fe1-web/parts/wallet/WalletHome.tsx).
+[Wallet home](https://github.com/dedis/popstellar/tree/master/fe1-web/parts/wallet/WalletHome.tsx).
 
 This is the current organization, but as this project evolves you should feel free to reorganize the
 code layout (in agreement with your project teammates and the TAs) in any way that is convenient.

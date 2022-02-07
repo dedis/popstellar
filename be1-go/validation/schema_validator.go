@@ -34,7 +34,7 @@ const (
 )
 
 // baseUrl is the baseUrl for all schemas.
-const baseURL = "https://raw.githubusercontent.com/dedis/student_21_pop/master/"
+const baseURL = "https://raw.githubusercontent.com/dedis/popstellar/master/"
 
 // protocolFS is an embedded file system which allows us to bake the schemas
 // into the binary during compilation. Since Go doesn't allow embedded files

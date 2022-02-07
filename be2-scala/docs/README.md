@@ -261,7 +261,7 @@ For the Social Media functionality, each user has their own channel with the ide
 `cd` where you want to have your project located and then clone the project using the following commands
 
 ```bash
-git clone https://github.com/dedis/student_21_pop.git [folderProjectName]
+git clone https://github.com/dedis/popstellar.git [folderProjectName]
 ```
 
 We then want to navigate to the `be2-scala` subfolder
@@ -347,7 +347,7 @@ git merge <x>
 
 ### Create a pull request
 
-Creating a pull request (PR) can only be done with on the [GitHub website](https://github.com/dedis/student_21_pop/pulls) by navigating on "Pull requests". Click on the big green button titled "New pull request" and choose the receiving branch (generally `master`) as well as the branch you want to merge into the latter (e.g. `work-be2-scala-raulinn-test`). Click on "Create pull request".
+Creating a pull request (PR) can only be done with on the [GitHub website](https://github.com/dedis/popstellar/pulls) by navigating on "Pull requests". Click on the big green button titled "New pull request" and choose the receiving branch (generally `master`) as well as the branch you want to merge into the latter (e.g. `work-be2-scala-raulinn-test`). Click on "Create pull request".
 
 You can then set a title and description to your PR as well as set a label (e.g. `be2-scala`), an assignee (the person responsible for the code), a project (if any) and ask for a specific reviewer using the right side bar. Click on "Create pull request"
 

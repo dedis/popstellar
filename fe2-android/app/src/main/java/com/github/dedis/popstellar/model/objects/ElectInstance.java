@@ -116,7 +116,7 @@ public final class ElectInstance {
    * Generate the id for a consensus instance. This instanceId is used to group all Elect that
    * refers to the same object and property and will be used in every Consensus Data message.
    *
-   * <p>https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElect.json
+   * <p>https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataElect.json
    *
    * @param type The object type that the consensus refers to
    * @param id The object id that the consensus refers to

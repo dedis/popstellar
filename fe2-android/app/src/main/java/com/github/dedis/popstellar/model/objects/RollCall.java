@@ -135,7 +135,7 @@ public class RollCall extends Event {
 
   /**
    * Generate the id for dataCreateRollCall.
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCreateRollCall.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCreateRollCall.json
    *
    * @param laoId ID of the LAO
    * @param creation creation time of RollCall
@@ -148,7 +148,7 @@ public class RollCall extends Event {
 
   /**
    * Generate the id for dataOpenRollCall.
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataOpenRollCall.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataOpenRollCall.json
    *
    * @param laoId ID of the LAO
    * @param opens id of RollCall to open
@@ -161,7 +161,7 @@ public class RollCall extends Event {
 
   /**
    * Generate the id for dataCloseRollCall.
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCloseRollCall.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCloseRollCall.json
    *
    * @param laoId ID of the LAO
    * @param closes id of RollCall to close

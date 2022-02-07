@@ -339,8 +339,8 @@ public final class Lao {
 
   /**
    * Generate the id for dataCreateLao and dataUpdateLao.
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCreateLao.json
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataUpdateLao.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCreateLao.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataUpdateLao.json
    *
    * @param organizer ID of the organizer
    * @param creation creation time of the LAO

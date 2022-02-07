@@ -110,7 +110,7 @@ broadcast”).
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCreateLao.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateLao.json",
     "description": "Match a create LAO query",
     "type": "object",
     "properties": {
@@ -205,7 +205,7 @@ all witnesses and clients (see “LAO state broadcast”).
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataUpdateLao.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataUpdateLao.json",
     "description": "Match an update LAO query",
     "type": "object",
     "properties": {
@@ -299,7 +299,7 @@ the required number of witness signatures.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataStateLao.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataStateLao.json",
     "description": "Match a state broadcast LAO query",
     "type": "object",
     "properties": {
@@ -423,7 +423,7 @@ populated with all the witness signatures received by the server.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataWitnessMessage.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataWitnessMessage.json",
     "description": "Match a witness a message query",
     "type": "object",
     "properties": {
@@ -497,7 +497,7 @@ is expected to broadcast the Meeting state to all witnesses and clients (see
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCreateMeeting.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateMeeting.json",
     "description": "Match a create Meeting query",
     "type": "object",
     "properties": {
@@ -597,7 +597,7 @@ expected to publish the meeting/state message to the LAO’s main channel (LAO's
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataStateMeeting.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataStateMeeting.json",
     "description": "Match a state broadcast Meeting query",
     "type": "object",
     "properties": {
@@ -748,7 +748,7 @@ ensuring that each attendee is scanned exactly once.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCreateRollCall.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCreateRollCall.json",
     "description": "Match a create roll-call query",
     "type": "object",
     "properties": {
@@ -841,7 +841,7 @@ message on the LAO channel.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataOpenRollCall.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenRollCall.json",
     "description": "Match a open roll-call query",
     "type": "object",
     "properties": {
@@ -915,7 +915,7 @@ the organizer after scanning all attendees’ public key.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCloseRollCall.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCloseRollCall.json",
     "description": "Match a close roll-call query",
     "type": "object",
     "properties": {
@@ -1004,7 +1004,7 @@ the organizer forgets to scan an attendee’s public key.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataOpenRollCall.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenRollCall.json",
     "description": "Match a open roll-call query",
     "type": "object",
     "properties": {
@@ -1103,7 +1103,7 @@ The election may allow write-in or have ballot options.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataSetupElection.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataSetupElection.json",
     "description": "Match an ElectionSetup query",
     "type": "object",
     "properties": {
@@ -1271,7 +1271,7 @@ If write-in is allowed for the election then the vote has to have a write-in.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataCastVote.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataCastVote.json",
     "description": "Match a cast vote query",
     "type": "object",
     "properties": {
@@ -1387,7 +1387,7 @@ message on the election channel. This message indicates that the organizer will 
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataEndElection.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataEndElection.json",
     "description": "Match an ElectionEnd query",
     "type": "object",
     "properties": {
@@ -1476,7 +1476,7 @@ and has received the witness signatures on the result.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataResultElection.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataResultElection.json",
     "description": "Match an ElectionResult query",
     "type": "object",
     "properties": {
@@ -1575,7 +1575,7 @@ the server’s time +/- a threshold).
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddChirp.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAddChirp.json",
     "description": "Match an add chirp query",
     "type": "object",
     "properties": {
@@ -1634,7 +1634,7 @@ message and sends it to a universal chirp channel ("/root/lao_id/social/chirps")
 
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataNotifyAddChirp.json",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataNotifyAddChirp.json",
   "description": "Match a add chirp broadcast query",
   "type": "object",
   "properties": {
@@ -1696,7 +1696,7 @@ protocol, the chirp will always exist in historical records of the users’ chan
 
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataDeleteChirp.json",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataDeleteChirp.json",
   "description": "Match a delete chirp query",
   "type": "object",
   "properties": {
@@ -1750,7 +1750,7 @@ it to a universal chirp channel ("/root/lao_id/social/chirps"):
 
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataNotifyDeleteChirp.json",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataNotifyDeleteChirp.json",
   "description": "Match a delete chirp broadcast query",
   "type": "object",
   "properties": {
@@ -1817,7 +1817,7 @@ Each reaction contains the following:
 
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAddReaction.json",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAddReaction.json",
   "description": "Match a add reaction query",
   "type": "object",
   "properties": {
@@ -1879,7 +1879,7 @@ protocol, the reaction will always exist in historical records of the reactions�
 
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataDeleteReaction.json",
+  "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataDeleteReaction.json",
   "description": "Match a delete reaction query",
   "type": "object",
   "properties": {
@@ -1962,7 +1962,7 @@ and some values linked with the consensus/elect message starting the consensus.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataElect.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataElect.json",
     "description": "Match an elect query",
     "type": "object",
     "properties": {
@@ -2053,7 +2053,7 @@ have accepted the start of the consensus, it can start.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataElectAccept.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataElectAccept.json",
     "description": "Match an elect_accept query",
     "type": "object",
     "properties": {
@@ -2121,7 +2121,7 @@ this proposer in the proposed_try field.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPrepare.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPrepare.json",
     "description": "Match a prepare query",
     "type": "object",
     "properties": {
@@ -2208,7 +2208,7 @@ both its accepted_try and accepted value.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPromise.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPromise.json",
     "description": "Match a promise query",
     "type": "object",
     "properties": {
@@ -2308,7 +2308,7 @@ the greater received accepted_try and its corresponding accepted_value.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataPropose.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPropose.json",
     "description": "Match a propose query",
     "type": "object",
     "properties": {
@@ -2404,7 +2404,7 @@ a consensus/accept message containing these values.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataAccept.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataAccept.json",
     "description": "Match an accept query",
     "type": "object",
     "properties": {
@@ -2495,7 +2495,7 @@ to all proposers, acceptors, and their clients.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataLearn.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataLearn.json",
     "description": "Match a learn query",
     "type": "object",
     "properties": {
@@ -2581,7 +2581,7 @@ a consensus/failure message is sent informing the system of the failure.
 
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataFailure.json",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataFailure.json",
     "description": "Match a Failure query",
     "type": "object",
     "properties": {

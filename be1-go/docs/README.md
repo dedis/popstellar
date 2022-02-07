@@ -91,10 +91,10 @@ architecture](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy
 for more information.
 
 All the messages are encoded using JSON and are validated using JSON-RPC
-[schemas](https://github.com/dedis/student_21_pop/tree/master/protocol).
+[schemas](https://github.com/dedis/popstellar/tree/master/protocol).
 [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
 also gives an introduction to the different message formats. However, note that
-the [schemas](https://github.com/dedis/student_21_pop/tree/master/protocol) in
+the [schemas](https://github.com/dedis/popstellar/tree/master/protocol) in
 this repository are **always** the source of truth and are more up to date than
 the Google Doc.
 

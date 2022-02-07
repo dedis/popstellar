@@ -210,7 +210,7 @@ public class Election extends Event {
 
   /**
    * Generate the id for dataElectionSetup.
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionSetup.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataElectionSetup.json
    *
    * @param laoId ID of the LAO
    * @param createdAt creation time of the election
@@ -223,8 +223,8 @@ public class Election extends Event {
 
   /**
    * Generate the id for a question of dataElectionSetup and dataElectionResult.
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionSetup.json
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataElectionResult.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataElectionSetup.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataElectionResult.json
    *
    * @param electionId ID of the Election
    * @param question question of the Election
@@ -236,7 +236,7 @@ public class Election extends Event {
 
   /**
    * Generate the id for a vote of dataCastVote.
-   * https://github.com/dedis/student_21_pop/blob/master/protocol/query/method/message/data/dataCastVote.json
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCastVote.json
    *
    * @param electionId ID of the Election
    * @param questionId ID of the Election question
