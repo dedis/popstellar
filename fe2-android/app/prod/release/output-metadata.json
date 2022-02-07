@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.github.dedis.student20_pop",
+  "applicationId": "com.github.dedis.popstellar",
   "variantName": "processProdReleaseResources",
   "elements": [
     {
