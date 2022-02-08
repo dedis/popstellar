@@ -25,7 +25,7 @@ class DeleteReactionSuite extends FunSuite with Matchers {
 
 object DeleteReactionExample {
   val REACTION_ID: Hash = Hash(Base64Data.encode("reactionid"))
-  val TIMESTAMP = Timestamp(0)
+  val TIMESTAMP: Timestamp = Timestamp(0)
 
   val DELETEREACTION_MESSAGE: DeleteReaction = DeleteReaction(REACTION_ID, TIMESTAMP)
 }

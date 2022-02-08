@@ -14,8 +14,8 @@ import scala.concurrent.duration.FiniteDuration
 
 class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicites for system actors
-  implicit val duration = FiniteDuration(5, "seconds")
-  implicit val timeout = Timeout(duration)
+  implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
+  implicit val timeout: Timeout = Timeout(duration)
 
 
   override def afterAll(): Unit = {
@@ -25,7 +25,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   def mockDbWithNack: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
@@ -40,7 +40,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   def mockDbWithAck: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
@@ -61,7 +61,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   def mockDbWithAckAndNotifyNAck: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case DbActor.WriteAndPropagate(channel, message) =>
           if (channel == AddChirpMessages.CHANNEL) {
@@ -90,7 +90,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   def mockDbWithAckButEmptyAckLaoData: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
@@ -111,7 +111,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
 
   def mockDbWithAckButNAckLaoData: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)

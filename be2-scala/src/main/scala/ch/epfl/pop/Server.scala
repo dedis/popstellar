@@ -73,11 +73,11 @@ object Server {
               typedSystem.terminate()
             }) // and shutdown when done
           } catch {
-            case e: InterruptedException => logger.warning("Server shutting thread was interrupted !")
+            case _: InterruptedException => logger.warning("Server shutting thread was interrupted !")
           }
         }
       }
-      Runtime.getRuntime.addShutdownHook(shutdownListener);
+      Runtime.getRuntime.addShutdownHook(shutdownListener)
       Behaviors.empty
     }
     //Deploys system actor with root behavior

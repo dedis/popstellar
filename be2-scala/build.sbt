@@ -36,10 +36,10 @@ copyProtocolTask := {
     }else{
         val source = new File("../protocol")
         val dest   = new File("./src/main/resources/protocol")
-        Try(IO.copyDirectory(source,dest, true)) match {
+        Try(IO.copyDirectory(source,dest, overwrite = true)) match {
             case Success(_) => log.info("Copied !!")
             case Failure(exception) =>
-                log.error("Could not copy protocol to ressource folder")
+                log.error("Could not copy protocol to resource folder")
                 exception.printStackTrace()
         }
     }

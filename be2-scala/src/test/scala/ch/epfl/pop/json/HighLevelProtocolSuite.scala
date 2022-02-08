@@ -58,7 +58,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val source = getFormattedSource(id, sender, signature, data, witnessesSigs)
     var expected: Message = buildExpected(id, sender, signature, data)
     // Add witnesses to the expected message
-    val witness = (WitnessSignaturePair(PublicKey(Base64Data("wit1")), Signature(Base64Data("sig1")))
+    val witness: Unit = (WitnessSignaturePair(PublicKey(Base64Data("wit1")), Signature(Base64Data("sig1")))
       :: WitnessSignaturePair(PublicKey(Base64Data("wit2")), Signature(Base64Data("sig2")))
       :: Nil).reverse.foreach(w => {
       expected = expected.addWitnessSignature(w)
@@ -120,10 +120,9 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
 
     //Test against all the (incorrect) combinations
     forEvery(set union setWitness) {
-      case (t: String, p: MsgField) => {
+      case (t: String, p: MsgField) =>
         val source: String = getFormattedString(p, t)
-        an[IllegalArgumentException] should be thrownBy (Message.buildFromJson(source))
-      }
+        an[IllegalArgumentException] should be thrownBy Message.buildFromJson(source)
     }
   }
 }

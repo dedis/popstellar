@@ -41,7 +41,7 @@ sealed case class DataBuilder(final val REGISTRY: DataRegistry) {
    * @param validator     one of the validators at [[DataSchemaValidator]] to valid the schema of the payload
    * @param buildFromJson the data builder
    * @param errMsg        error message to include in description in case of error
-   * @return built MessageData or throws an exceptition in case of schema failure
+   * @return built MessageData or throws an exception in case of schema failure
    */
   @throws(classOf[ProtocolException])
   private def buildOrReject(payload: String)(validator: String => Try[Unit])(buildFromJson: String => MessageData)(errMsg: String): MessageData = {

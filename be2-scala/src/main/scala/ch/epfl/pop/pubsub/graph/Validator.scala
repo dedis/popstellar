@@ -37,7 +37,7 @@ object Validator {
 
   def setupSchemaValidation(jsonPath: String, objectMapper: ObjectMapper): JsonSchema = {
     //Get input stream of query.json file from resources folder
-    def queryFile: InputStream = this.getClass().getClassLoader().getResourceAsStream(jsonPath)
+    def queryFile: InputStream = this.getClass.getClassLoader.getResourceAsStream(jsonPath)
 
     // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtained from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)

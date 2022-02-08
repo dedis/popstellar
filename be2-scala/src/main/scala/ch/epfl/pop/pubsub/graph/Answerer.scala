@@ -60,7 +60,7 @@ object Answerer {
           case akka.actor.Status.Failure(cause) => cause
         },
         bufferSize = CLIENT_BUFFER_SIZE,
-        overflowStrategy = OverflowStrategy.dropBuffer // OverflowStrategy.backpressure is not allowed!
+        overflowStrategy = OverflowStrategy.dropBuffer // OverflowStrategy back-pressure is not allowed!
       )
       // Send an answer back to the client (the one represented by wsHandle == clientActorRef)
       .map((graphMessage: GraphMessage) => sendAnswer(graphMessage))

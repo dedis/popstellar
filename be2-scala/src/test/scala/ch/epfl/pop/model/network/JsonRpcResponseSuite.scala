@@ -6,7 +6,7 @@ class JsonRpcResponseSuite extends FunSuite with Matchers {
   test("Constructor/apply works as intended") {
     val rpc: String = "rpc"
     val res: ResultObject = new ResultObject(2)
-    val err: ErrorObject = new ErrorObject(1, "Error")
+    val err: ErrorObject = ErrorObject(1, "Error")
     val id: Option[Int] = Some(0)
 
     val response: JsonRpcResponse = JsonRpcResponse(rpc, res, id)
@@ -23,7 +23,7 @@ class JsonRpcResponseSuite extends FunSuite with Matchers {
   test("isPositive returns right Result") {
     val rpc: String = "rpc"
     val res: ResultObject = new ResultObject(2)
-    val err: ErrorObject = new ErrorObject(1, "Error")
+    val err: ErrorObject = ErrorObject(1, "Error")
     val id: Option[Int] = Some(0)
 
     val response: JsonRpcResponse = JsonRpcResponse(rpc, res, id)

@@ -20,8 +20,8 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   final val pathBroadcastJson = "../protocol/examples/query/broadcast/broadcast.json"
 
   // Implicites for system actors
-  implicit val duration = FiniteDuration(5, "seconds")
-  implicit val timeout = Timeout(duration)
+  implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
+  implicit val timeout: Timeout = Timeout(duration)
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -37,7 +37,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
    */
   def mockDbWithMessages(msgs: List[Message]): AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.Catchup(channel) =>
           sender() ! DbActor.DbActorCatchupAck(msgs)
       }
@@ -56,7 +56,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
    */
   def mockDbWithNack(code: Int, description: String): AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.Catchup(_) =>
           sender() ! DbActor.DbActorNAck(code, description)
       }
@@ -81,7 +81,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     message should be(expected)
   }
 
-  lazy val rpcCatchupReq = getJsonRPC(pathCatchupJson)
+  lazy val rpcCatchupReq: JsonRpcRequest = getJsonRPC(pathCatchupJson)
   test("Catchup: correct response test for Nil Messages") {
 
     lazy val dbActorRef = mockDbWithMessages(Nil)

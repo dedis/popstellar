@@ -14,7 +14,7 @@ import scala.concurrent.Future
 trait MessageHandler extends AskPatternConstants {
 
   /**
-   * May be overriden by the reference of the used DbActor
+   * May be overridden by the reference of the used DbActor
    */
   def dbActor: AskableActorRef = DbActor.getInstance
 

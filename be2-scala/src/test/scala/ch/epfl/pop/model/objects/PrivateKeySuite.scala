@@ -11,7 +11,7 @@ class PrivateKeySuite extends FunSuite with Matchers {
 
     val expected: Signature = Signature(Base64Data.encode(ed.sign(data.decode())))
 
-    val pk: PrivateKey = new PrivateKey(keyData)
+    val pk: PrivateKey = PrivateKey(keyData)
 
     pk.signData(data) should equal(expected)
   }

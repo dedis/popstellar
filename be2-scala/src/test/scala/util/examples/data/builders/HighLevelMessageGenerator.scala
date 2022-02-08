@@ -23,7 +23,7 @@ object HighLevelMessageGenerator {
    *
    */
   sealed class MessageBuilder {
-    /** * Builder params ***/
+    /* Builder params */
     private var data: Base64Data = EMPTY_BASE_64
     private var sender: PublicKey = PublicKey(EMPTY_BASE_64)
     private var signature: Signature = Signature(EMPTY_BASE_64)
@@ -68,11 +68,11 @@ object HighLevelMessageGenerator {
     /** * Builder params ***/
     private var id = Some(1)
     private var payload: String = ""
-    private var methodType: MethodType.MethodType = null
+    private var methodType: MethodType.MethodType = _
     private var paramsChannel: Channel = Channel.ROOT_CHANNEL
     /** ********************/
-    private var messageData: MessageData = null
-    private var params: ParamsWithMessage = null
+    private var messageData: MessageData = _
+    private var params: ParamsWithMessage = _
 
     def withId(id: Int): HLMessageBuilder = {
       this.id = Some(id)

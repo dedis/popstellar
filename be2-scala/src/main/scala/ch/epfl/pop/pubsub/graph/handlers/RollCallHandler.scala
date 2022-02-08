@@ -19,7 +19,7 @@ import scala.concurrent.{Await, Future}
  * RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
  */
 object RollCallHandler extends MessageHandler {
-  override val handler = new RollCallHandler(super.dbActor).handler
+  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = new RollCallHandler(super.dbActor).handler
 }
 
 /**
@@ -73,7 +73,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration) match {
-      case Left(msg) => {
+      case Left(_) =>
         rpcMessage.getParamsMessage match {
           case Some(message: Message) =>
             val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
@@ -121,7 +121,6 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
             rpcMessage.id
           ))
         }
-      }
       case error@Right(_) => error
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
     }

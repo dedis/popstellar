@@ -23,7 +23,7 @@ class DeleteChirpSuite extends FunSuite with Matchers {
 
 object DeleteChirpExample {
   val CHIRP_ID: Hash = Hash(Base64Data(""))
-  val TIMESTAMP = Timestamp(0)
+  val TIMESTAMP: Timestamp = Timestamp(0)
 
   val DELETECHIRP_MESSAGE: DeleteChirp = DeleteChirp(CHIRP_ID, TIMESTAMP)
 }

@@ -15,7 +15,7 @@ trait ExampleMessagesTrait {
   import ExampleMessages._
 
   //Default Channel
-  val CHANNEL = DEFAULT_CHANNEL
+  val CHANNEL: Channel = DEFAULT_CHANNEL
 
   //Object and Action type of the message
   val obj: ObjectType
@@ -48,8 +48,8 @@ trait ExampleMessagesTrait {
 
 object ExampleMessages {
   val DEFAULT_BASE_PATH = "../protocol/examples/messageData"
-  val DEFAULT_SENDER = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
-  val DEFAULT_CHANNEL = Channel.ROOT_CHANNEL
+  val DEFAULT_SENDER: PublicKey = PublicKey(Base64Data("J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM="))
+  val DEFAULT_CHANNEL: Channel = Channel.ROOT_CHANNEL
 
   //Default builder used mid level Message
   final val DEFAULT_MESSAGE_BUILDER = new HighLevelMessageGenerator.MessageBuilder().withSender(DEFAULT_SENDER)

@@ -50,7 +50,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
   private def mockDbWorking: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
         case DbActor.ReadChannelData(_) =>
@@ -63,7 +63,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
   private def mockDbWorkingReaction: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
         case DbActor.ReadChannelData(_) =>
@@ -76,7 +76,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
   private def mockDbWrongTokenReaction: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
         case DbActor.ReadChannelData(_) =>
@@ -89,7 +89,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
   private def mockDbWrongToken: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
         case DbActor.ReadChannelData(_) =>
@@ -102,7 +102,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
   private def mockDbWrongChannel: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
           sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
         case DbActor.ReadChannelData(_) =>

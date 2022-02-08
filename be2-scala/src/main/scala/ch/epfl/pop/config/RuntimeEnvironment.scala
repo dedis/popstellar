@@ -7,7 +7,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import scala.sys.SystemProperties
 
 /** RuntimeConfiguration object provider This object provides application config
- * for setting up akka http/actor environemnt
+ * for setting up akka http/actor environment
  *
  * @see
  * [[config/application.conf]]
@@ -23,7 +23,7 @@ object RuntimeEnvironment {
     /*Get config directory path form JVM*/
     val virtualMachineParam = "scala.config"
     val pathConfig = sp(virtualMachineParam)
-    if (pathConfig != null && !pathConfig.trim.isEmpty()) pathConfig.trim
+    if (pathConfig != null && !pathConfig.trim.isEmpty) pathConfig.trim
     else
       throw new RuntimeException(s"-D$virtualMachineParam was not provided.")
 

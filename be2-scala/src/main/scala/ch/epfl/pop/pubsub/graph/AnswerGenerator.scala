@@ -18,7 +18,7 @@ import scala.concurrent.{Await, Future}
  *
  */
 object AnswerGenerator extends AskPatternConstants {
-  lazy val db = DbActor.getInstance
+  lazy val db: AskableActorRef = DbActor.getInstance
   val answerGen = new AnswerGenerator(db)
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = answerGen.generateAnswer(graphMessage)

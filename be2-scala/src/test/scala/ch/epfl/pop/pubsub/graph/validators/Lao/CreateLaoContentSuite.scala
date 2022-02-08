@@ -7,7 +7,7 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder, Validator}
 import org.scalatest.{FlatSpec, GivenWhenThen, Inside, Matchers}
 import util.examples.lao.CreateLaoExamples
 
-class CreateLaoContentSuiteSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
+class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   /** Decodes data before passing it to the test **/
   def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any): Unit = {

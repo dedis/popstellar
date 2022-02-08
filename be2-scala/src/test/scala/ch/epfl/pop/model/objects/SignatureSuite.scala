@@ -43,7 +43,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   test("Basic true signature") {
     forEvery(dataTest) {
       (msg: String) => {
-        val signature = getTrueSignatureTest(msg);
+        val signature = getTrueSignatureTest(msg)
         //Assertion
         val msg_encoded = Base64Data.encode(msg)
         signature.verify(verify_pk, msg_encoded) should be(true)
@@ -53,7 +53,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   test("Basic true empty message signature (1)") {
     //Empty msg
     val msg = ""
-    val signature = getTrueSignatureTest(msg);
+    val signature = getTrueSignatureTest(msg)
     //Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(true)
@@ -62,7 +62,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   test("Basic true one letter message signature (1)") {
     /*Single letter*/
     val msg = "A"
-    val signature = getTrueSignatureTest(msg);
+    val signature = getTrueSignatureTest(msg)
     //Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(true)
@@ -72,7 +72,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
     /** Fake signature **/
     forEvery(dataTest) {
       (msg: String) => {
-        val signature = getFalseSignatureTest(msg);
+        val signature = getFalseSignatureTest(msg)
         //Assertion
         val msg_encoded = Base64Data.encode(msg)
         signature.verify(verify_pk, msg_encoded) should be(false)
@@ -83,7 +83,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   test("Basic false empty message signature") {
     //Empty msg
     val msg = ""
-    val signature = getFalseSignatureTest(msg);
+    val signature = getFalseSignatureTest(msg)
     //Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(false)
@@ -92,7 +92,7 @@ class SignatureSuite extends FunSuite with Matchers with BeforeAndAfterAll {
   test("Basic false one letter message signature") {
     //Single letter
     val msg = "A"
-    val signature = getFalseSignatureTest(msg);
+    val signature = getFalseSignatureTest(msg)
     //Assertion
     val msg_encoded = Base64Data.encode(msg)
     signature.verify(verify_pk, msg_encoded) should be(false)

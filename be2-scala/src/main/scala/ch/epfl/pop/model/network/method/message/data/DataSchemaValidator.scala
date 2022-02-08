@@ -51,7 +51,7 @@ object DataSchemaValidator {
   private final lazy val addReactionSchema: JsonSchema = Validator.setupSchemaValidation(dataAddReaction, objectMapper)
   private final lazy val deleteReactionSchema: JsonSchema = Validator.setupSchemaValidation(dataDeleteReaction, objectMapper)
 
-  //TODO: Add validaton schemas for other features: Meetings, Elections...
+  //TODO: Add validation schemas for other features: Meetings, Elections...
 
   def validateSchema(objType: ObjectType)(actionType: ActionType)(payload: String): Try[Unit] =
     (objType, actionType) match {
@@ -81,7 +81,7 @@ object DataSchemaValidator {
         Failure(new ProtocolException("Schema for data message could not be verified or data of unknown type"))
     }
 
-  /** Validates a certain payload to match a given predifined schema
+  /** Validates a certain payload to match a given predefined schema
    *
    * @param schema  json schema to match against the payload
    * @param payload payload to verify

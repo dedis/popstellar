@@ -17,8 +17,8 @@ import scala.concurrent.duration.FiniteDuration
 class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
 
   // Implicites for system actors
-  implicit val duration = FiniteDuration(5, "seconds")
-  implicit val timeout = Timeout(duration)
+  implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
+  implicit val timeout: Timeout = Timeout(duration)
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -38,7 +38,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
   private def mockDbNack: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(channel) =>
           sender() ! DbActor.DbActorNAck(0, "error")
         case DbActor.ReadChannelData(channel) =>
@@ -51,7 +51,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
   private def mockDbAckWithNone: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(channel) =>
           sender() ! DbActor.DbActorReadLaoDataAck(None)
       }
@@ -62,7 +62,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
   private def mockDbAckWithLaoData(data: LaoData): AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadLaoData(channel) =>
           sender() ! DbActor.DbActorReadLaoDataAck(Some(data))
       }
@@ -73,7 +73,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
   private def mockDbAckWithChannelData(data: ChannelData): AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         case DbActor.ReadChannelData(channel) =>
           sender() ! DbActor.DbActorReadChannelDataAck(Some(data))
       }

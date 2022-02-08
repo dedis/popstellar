@@ -13,8 +13,8 @@ import scala.concurrent.duration.FiniteDuration
 
 class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicites for system actors
-  implicit val duration = FiniteDuration(5, "seconds")
-  implicit val timeout = Timeout(duration)
+  implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
+  implicit val timeout: Timeout = Timeout(duration)
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -23,7 +23,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
 
   def mockDbWIthNack: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
@@ -38,7 +38,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
 
   def mockDbWIthAck: AskableActorRef = {
     val mockedDB = Props(new Actor() {
-      override def receive = {
+      override def receive: Receive = {
         // You can modify the following match case to include more args, names...
         case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)

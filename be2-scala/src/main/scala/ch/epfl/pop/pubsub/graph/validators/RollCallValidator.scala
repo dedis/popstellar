@@ -49,7 +49,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
   /**
    * Validates an rpcMessage for OpenRollCall message
    *
-   * @param rpcMessage
+   * @param rpcMessage rpc message to validate
    * @return GraphMessage: passes the rpcMessages to Left if successful
    *         right with pipeline error
    */
@@ -86,7 +86,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
    * Validates the rpcMessage for a ReOpenRollCall
    * similar to [[validateOpenRollCall]]
    *
-   * @param rpcMessage
+   * @param rpcMessage rpc message to validate
    * @return GraphMessage: passes the rpcMessages to Left if successful
    *         right with pipeline error
    */

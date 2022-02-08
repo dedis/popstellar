@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, MessageDecoder, PipelineError}
-import org.scalatest.{FlatSpec, GivenWhenThen, Inside, Matchers}
+import org.scalatest.{Assertion, FlatSpec, GivenWhenThen, Inside, Matchers}
 import util.examples.lao.CreateLaoExamples
 
 
@@ -15,7 +15,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
     testCode(Left(jsonReq), msg)
   }
 
-  def testGoodFormat =
+  def testGoodFormat: (GraphMessage, Message) => Assertion =
     (gm: GraphMessage, createLaoMessage: Message) => {
       alert("CreateLao message data content maybe invalid but should be correctly decoded")
 
@@ -26,7 +26,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
 
       Then("it should be of type JsonRpcRequestCreateLao")
       inside(parsed) {
-        case Left(createJsonRpc: JsonRpcRequestCreateLao) => {
+        case Left(createJsonRpc: JsonRpcRequestCreateLao) =>
 
           And("the message params of the JsonRpcRequestCreateLao should not be empty")
           createJsonRpc.getParamsMessage should be(defined)
@@ -45,7 +45,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
 
           And("the timestamp exists")
           laoData.creation shouldNot be(null)
-          laoData.creation.time should be > (0L)
+          laoData.creation.time should be > 0L
 
           And("the organizer public key is base64")
           noException shouldBe thrownBy(laoData.organizer.base64Data.decodeToString())
@@ -57,13 +57,12 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
           And("the id is not null")
           laoData.id shouldNot be(null)
           noException shouldBe thrownBy(laoData.id.base64Data.decodeToString())
-        }
         case Right(_) => fail(s"The message data format should succeed with a Left[JsonRpcRequestCreateLao] but was <$parsed>")
         case _ => fail(s"The message data format format yielded an unexpected result <$parsed>")
       }
     }
 
-  def testBadFormat =
+  def testBadFormat: (GraphMessage, Any) => Assertion =
     (gm: GraphMessage, _: Any) => {
       Given("a graph message of JsonRpcRequest with bad message data format")
       //gm
@@ -72,11 +71,10 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
 
       Then("it should fail with the correct type Right[PipelineError]")
       inside(parsed) {
-        case Right(e) => {
+        case Right(e) =>
           e shouldBe a[PipelineError]
           And("report a correct error code")
           e.code should equal(ErrorCodes.INVALID_DATA.id)
-        }
         case Left(_) => fail(s"parsed message should fail with Right[PipelineError] but was a Left: <$parsed>")
         case _ => fail(s"parsed message <$parsed> resulted with an unexpected type")
       }

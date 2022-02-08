@@ -186,10 +186,9 @@ object DbActor extends AskPatternConstants {
         factory.open(new File(DATABASE_FOLDER), options)
       }
       catch {
-        case e: IOException => {
+        case e: IOException =>
           logger.error("Could not open database folder {}", DATABASE_FOLDER)
           throw e
-        }
 
       }
     DbActor(mediatorRef, db, DATABASE_FOLDER)
@@ -199,8 +198,8 @@ object DbActor extends AskPatternConstants {
   sealed case class DbActor(mediatorRef: ActorRef, db: DB, DATABASE_FOLDER: String) extends Actor with ActorLogging {
 
     //Close the db and release the resources right before stopping the actor
-    override def postStop() = {
-      db.close();
+    override def postStop(): Unit = {
+      db.close()
     }
 
     //Map which serves as a cache of keys made from channels with generateLaoDataKey mapped to their LaoDatas (instead of going to the database)
@@ -208,7 +207,7 @@ object DbActor extends AskPatternConstants {
 
     //Generic helper function to check if a key-value pair is valid inside a map (cache in this context)
     private def keyValuePairIsValid[K, V](key: K, cache: collection.mutable.Map[K, V]): Boolean = {
-      cache.keySet.contains(key) && cache.get(key) != None && cache.get(key).get != null
+      cache.keySet.contains(key) && cache.get(key).isDefined && cache(key) != null
     }
 
     //helper function to determine if a channel should be created during write operations
@@ -220,10 +219,10 @@ object DbActor extends AskPatternConstants {
           DbActorAck()
         case _ =>
           val objectType = message.decodedData match {
-            case Some(data) if (data._object == ObjectType.ELECTION || data._object == ObjectType.CHIRP || data._object == ObjectType.REACTION) => data._object
+            case Some(data) if data._object == ObjectType.ELECTION || data._object == ObjectType.CHIRP || data._object == ObjectType.REACTION => data._object
             case _ => ObjectType.LAO //this is the "general" channel type
           }
-          // for now, we don't have meetup or roll call channels, so we just create Lao channels instead, easy to change if needed
+          // for now, we don't have meetings or roll call channels, so we just create Lao channels instead, easy to change if needed
           createChannel(channel, objectType) match {
             case DbActorAck() => DbActorAck()
             case _ =>
@@ -242,7 +241,7 @@ object DbActor extends AskPatternConstants {
       channel.decodeChannelLaoId match {
         case Some(data) => s"$data${Channel.LAO_DATA_LOCATION}"
         case None =>
-          log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
+          log.info(s"Actor $self (db) encountered a problem while decoding sub-channel from '$channel'")
           null
       }
     }
@@ -251,7 +250,7 @@ object DbActor extends AskPatternConstants {
     private def writeBatch(channel: Channel, messageId: Hash, batch: WriteBatch): DbActorMessage = {
       Try(db.write(batch)) match {
         case Success(_) =>
-          log.info(s"Actor $self (db) wrote batch and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
+          log.info(s"Actor $self (db) wrote batch and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/something like that
           DbActorWriteAck()
         case Failure(exception) =>
           log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and batch on channel '$channel' because of the batch write")
@@ -295,16 +294,15 @@ object DbActor extends AskPatternConstants {
 
       //if needed, it is easy to remove the "write-through" functionality (creating a new channel if it does not exist) by simply returning a DbActorNAck if the channel doesn't exist instead of using this function
       writeCreateNewChannel(channel, message) match {
-        case nack@DbActorNAck(id, message) => nack
+        case nack@DbActorNAck(_, _) => nack
         case _ => Try(db.get(channel.toString.getBytes)) match {
           case Success(bytes) if bytes != null => Try(db.createWriteBatch()) match {
-            case Success(batch) => {
+            case Success(batch) =>
               // this will be done whether the message affects LaoData or not
               val json = new String(bytes, StandardCharsets.UTF_8)
               batch.put(channel.toString.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
               batch.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)
               addToBatchThenWrite(channel, message, batch)
-            }
             case Failure(exception) =>
               log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object ${ChannelData.getName} on channel '$channel' because of a batch creation")
               DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
@@ -313,7 +311,7 @@ object DbActor extends AskPatternConstants {
             log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
             DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
           case _ =>
-            log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel', as the channel does not existand wasn't created")
+            log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel', as the channel does not exist and wasn't created")
             DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Channel $channel does not exist and could not be created")
         }
       }
@@ -321,7 +319,7 @@ object DbActor extends AskPatternConstants {
 
     private def read(channel: Channel, messageId: Hash): DbActorMessage = {
       Try(db.get(channel.toString.getBytes)) match {
-        case Success(b) if b != null => {
+        case Success(b) if b != null =>
           Try(db.get(generateMessageKey(channel, messageId).getBytes)) match {
             case Success(bytes) if bytes != null =>
               val json = new String(bytes, StandardCharsets.UTF_8)
@@ -329,7 +327,6 @@ object DbActor extends AskPatternConstants {
             case _ =>
               DbActorNAck(ErrorCodes.SERVER_ERROR.id, "Unknown read database error")
           }
-        }
         case _ => DbActorReadAck(None)
       }
     }
@@ -348,10 +345,10 @@ object DbActor extends AskPatternConstants {
       val dataKey: String = generateLaoDataKey(channel)
       dataKey match {
         case null => DbActorReadLaoDataAck(None)
-        case _ => {
+        case _ =>
           if (keyValuePairIsValid[String, LaoData](dataKey, laoDataCache)) {
             //with our implementation, if a key is in the map, there is always a LaoData value attached to it
-            DbActorReadLaoDataAck(Some(laoDataCache.get(dataKey).get))
+            DbActorReadLaoDataAck(Some(laoDataCache(dataKey)))
           } else {
             Try(db.get(dataKey.getBytes)) match {
               case Success(bytes) if bytes != null =>
@@ -364,7 +361,6 @@ object DbActor extends AskPatternConstants {
                 DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Lao data not found for channel $channel")
             }
           }
-        }
       }
     }
 
@@ -373,10 +369,9 @@ object DbActor extends AskPatternConstants {
       def buildCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
         msgIds match {
           case Nil => acc
-          case head :: tail => {
+          case head :: tail =>
             val message: Message = Message.buildFromJson(new String(db.get(generateMessageKey(channel, head).getBytes), StandardCharsets.UTF_8))
             buildCatchupList(tail, message :: acc)
-          }
         }
       }
 

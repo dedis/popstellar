@@ -119,7 +119,7 @@ object PubSubMediator {
   // unsubscribe a client from a particular channel
   final case class UnsubscribeFrom(channel: Channel, clientActorRef: ActorRef) extends Event
 
-  // propagate a messasge to clients subscribed to a particular channel
+  // propagate a message to clients subscribed to a particular channel
   final case class Propagate(channel: Channel, message: Message) extends Event
 
 

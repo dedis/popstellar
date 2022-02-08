@@ -25,7 +25,7 @@ class AddReactionSuite extends FunSuite with Matchers {
 object AddReactionExample {
   val REACTION_CODEPOINT: String = "👍"
   val CHIRP_ID: Hash = Hash(Base64Data.encode("chirpid"))
-  val TIMESTAMP = Timestamp(0)
+  val TIMESTAMP: Timestamp = Timestamp(0)
 
   val ADDREACTION_MESSAGE: AddReaction = AddReaction(REACTION_CODEPOINT, CHIRP_ID, TIMESTAMP)
 }

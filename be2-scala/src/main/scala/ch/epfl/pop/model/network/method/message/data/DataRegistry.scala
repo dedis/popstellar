@@ -37,17 +37,17 @@ sealed case class DataRegistry(private val mapping: Map[EntryPair, MetaData]) {
    */
   def getMetaData(obj: ObjectType, action: ActionType): MetaData = mapping.get(EntryPair(obj, action)) match {
     case Some(metadata) => metadata
-    case None => throw new IllegalStateException(s"Metadata for ($obj, $action) unsupported or not added yet in DataRegisteryModule")
+    case None => throw new IllegalStateException(s"Metadata for ($obj, $action) unsupported or not added yet in DataRegistryModule")
   }
 
   /**
    * @param obj objectType
-   * @return immuatble map from the main one that contains only mappings (ActionType -> Metadata)
+   * @return immutable map from the main one that contains only mappings (ActionType -> Metadata)
    *         corresponding to ObjectType
    */
   def getFromObject(obj: ObjectType): Map[ActionType, MetaData] =
     mapping.foldLeft(Map.empty[ActionType, MetaData]) {
-      case (acc, value@(EntryPair(o, a), metadata)) if (o == obj) => acc + (a -> metadata)
+      case (acc, (EntryPair(o, a), metadata)) if o == obj => acc + (a -> metadata)
       case (acc, _) => acc
     }
 }
