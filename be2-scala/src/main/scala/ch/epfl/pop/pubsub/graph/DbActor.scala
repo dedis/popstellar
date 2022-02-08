@@ -33,33 +33,33 @@ object DbActor extends AskPatternConstants {
   final case class Write(channel: Channel, message: Message) extends Event
 
   /** Request to read a specific message with id <messageId> from <channel>
-    *
-    * @param channel
-    *   the channel where the message was published
-    * @param messageId
-    *   the id of the message (message_id) we want to read
-    */
+   *
+   * @param channel
+   * the channel where the message was published
+   * @param messageId
+   * the id of the message (message_id) we want to read
+   */
   final case class Read(channel: Channel, messageId: Hash) extends Event
 
   /** Request to read the channelData from <channel>, with key laoId/channel
-    *
-    * @param channel
-    *   the channel we need the data for
-    */
+   *
+   * @param channel
+   * the channel we need the data for
+   */
   final case class ReadChannelData(channel: Channel) extends Event
 
   /** Request to read the laoData of the LAO, with key laoid/
-    *
-    * @param channel
-    *   the channel we need the LAO's data for
-    */
+   *
+   * @param channel
+   * the channel we need the LAO's data for
+   */
   final case class ReadLaoData(channel: Channel) extends Event
 
   /** Request to read all messages from a specific <channel>
-    *
-    * @param channel
-    *   the channel where the messages should be fetched
-    */
+   *
+   * @param channel
+   * the channel where the messages should be fetched
+   */
   final case class Catchup(channel: Channel) extends Event
 
   /**
@@ -68,7 +68,6 @@ object DbActor extends AskPatternConstants {
    *
    * @param channel the channel where the message should be published
    * @param message the message to write in db and propagate to clients
-   *
    * @note DbActor will answer with a [[DbActorWriteAck]] if successful since the propagation cannot fail
    */
   final case class WriteAndPropagate(channel: Channel, message: Message) extends Event
@@ -76,8 +75,8 @@ object DbActor extends AskPatternConstants {
   /**
    * Request to create channel <channel> in the db with a type
    *
-   * @param channel     channel to create
-   * @param objectType  channel type
+   * @param channel    channel to create
+   * @param objectType channel type
    */
   final case class CreateChannel(channel: Channel, objectType: ObjectType.ObjectType) extends Event
 
@@ -89,82 +88,82 @@ object DbActor extends AskPatternConstants {
   final case class CreateChannelsFromList(list: List[(Channel, ObjectType.ObjectType)]) extends Event
 
   /** Request to check if channel <channel> exists in the db
-    *
-    * @param channel
-    *   targeted channel
-    * @note
-    *   db answers with a simple boolean
-    */
+   *
+   * @param channel
+   * targeted channel
+   * @note
+   * db answers with a simple boolean
+   */
   final case class ChannelExists(channel: Channel) extends Event
 
   /** Request to append witness <signature> to a stored message with message_id
-    * <messageId>
-    *
-    * @param messageId
-    *   message_id of the targeted message
-    * @param signature
-    *   signature to append to the witness signature list of the message
-    */
+   * <messageId>
+   *
+   * @param messageId
+   * message_id of the targeted message
+   * @param signature
+   * signature to append to the witness signature list of the message
+   */
   final case class AddWitnessSignature(messageId: Hash, signature: Signature)
-      extends Event
+    extends Event
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
 
   /** Response for a [[Write]] db request Receiving [[DbActorWriteAck]] works as
-    * an acknowledgement that the write request was successful
-    */
+   * an acknowledgement that the write request was successful
+   */
   final case class DbActorWriteAck() extends DbActorMessage
 
   /** Response for a [[Read]] db request Receiving [[DbActorReadAck]] works as
-    * an acknowledgement that the read request was successful
-    *
-    * @param message
-    *   requested message
-    */
+   * an acknowledgement that the read request was successful
+   *
+   * @param message
+   * requested message
+   */
   final case class DbActorReadAck(message: Option[Message])
-      extends DbActorMessage
+    extends DbActorMessage
 
   /** Response for a [[ReadChannelData]] db request Receiving [[DbActorReadChannelDataAck]] works as
-    * an acknowledgement that the request was successful
-    *
-    * @param channelData
-    *   requested channel data
-    */
+   * an acknowledgement that the request was successful
+   *
+   * @param channelData
+   * requested channel data
+   */
   final case class DbActorReadChannelDataAck(channelData: Option[ChannelData])
-      extends DbActorMessage
+    extends DbActorMessage
 
   /** Response for a [[ReadLaoData]] db request Receiving [[DbActorReadLaoDataAck]] works as
-    * an acknowledgement that the request was successful
-    *
-    * @param laoData
-    *   requested lao data
-    */
+   * an acknowledgement that the request was successful
+   *
+   * @param laoData
+   * requested lao data
+   */
   final case class DbActorReadLaoDataAck(laoData: Option[LaoData])
-      extends DbActorMessage
+    extends DbActorMessage
 
   /** Response for a [[Catchup]] db request Receiving [[DbActorCatchupAck]]
-    * works as an acknowledgement that the catchup request was successful
-    *
-    * @param messages
-    *   requested messages
-    */
+   * works as an acknowledgement that the catchup request was successful
+   *
+   * @param messages
+   * requested messages
+   */
   final case class DbActorCatchupAck(messages: List[Message])
-      extends DbActorMessage
+    extends DbActorMessage
 
   /** Response for a general db actor ACK
-    */
+   */
   final case class DbActorAck() extends DbActorMessage
 
   /** Response for a negative db request
-    *
-    * @param code
-    *   error code corresponding to the error encountered
-    * @param description
-    *   description of the error encountered
-    */
+   *
+   * @param code
+   * error code corresponding to the error encountered
+   * @param description
+   * description of the error encountered
+   */
   final case class DbActorNAck(code: Int, description: String)
-      extends DbActorMessage
+    extends DbActorMessage
 
   def getInstance: AskableActorRef = INSTANCE
 
@@ -183,7 +182,9 @@ object DbActor extends AskPatternConstants {
     options.createIfMissing(true)
 
     val db: DB =
-      try { factory.open(new File(DATABASE_FOLDER), options) }
+      try {
+        factory.open(new File(DATABASE_FOLDER), options)
+      }
       catch {
         case e: IOException => {
           logger.error("Could not open database folder {}", DATABASE_FOLDER)
@@ -233,7 +234,6 @@ object DbActor extends AskPatternConstants {
     }
 
 
-
     //helper functions for the database key generation, could make them public later if needed elsewhere
     private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
 
@@ -262,12 +262,12 @@ object DbActor extends AskPatternConstants {
     //extra cases for other data than LaoData can be added here easily later on
     private def addToBatchThenWrite(channel: Channel, message: Message, batch: WriteBatch): DbActorMessage = {
       val messageId: Hash = message.message_id
-      if (LaoData.isAffectedBy(message)){
+      if (LaoData.isAffectedBy(message)) {
         val laoDataKey: String = generateLaoDataKey(channel)
         Try(db.get(laoDataKey.getBytes)) match {
           case Success(bt) =>
             //FIXME: use some sort of compare-and-swap to prevent concurrency issues with LaoData modification if needed
-            if(bt != null){
+            if (bt != null) {
               val laoJson = new String(bt, StandardCharsets.UTF_8)
               val laoDataNew: LaoData = LaoData.buildFromJson(laoJson).updateWith(message)
               batch.put(laoDataKey.getBytes, laoDataNew.toJsonString.getBytes)
@@ -283,7 +283,7 @@ object DbActor extends AskPatternConstants {
             log.error(s"Actor $self (db) encountered a problem with the data of the LAO in the database.")
             DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
         }
-      } else{
+      } else {
         writeBatch(channel, messageId, batch)
       }
     }
@@ -322,7 +322,7 @@ object DbActor extends AskPatternConstants {
     private def read(channel: Channel, messageId: Hash): DbActorMessage = {
       Try(db.get(channel.toString.getBytes)) match {
         case Success(b) if b != null => {
-          Try (db.get(generateMessageKey(channel, messageId).getBytes)) match {
+          Try(db.get(generateMessageKey(channel, messageId).getBytes)) match {
             case Success(bytes) if bytes != null =>
               val json = new String(bytes, StandardCharsets.UTF_8)
               DbActorReadAck(Some(Message.buildFromJson(json)))
@@ -335,7 +335,7 @@ object DbActor extends AskPatternConstants {
     }
 
     private def readChannelData(channel: Channel): DbActorMessage = {
-      Try (db.get(channel.toString.getBytes)) match {
+      Try(db.get(channel.toString.getBytes)) match {
         case Success(bytes) if bytes != null =>
           val json = new String(bytes, StandardCharsets.UTF_8)
           DbActorReadChannelDataAck(Some(ChannelData.buildFromJson(json)))
@@ -349,10 +349,10 @@ object DbActor extends AskPatternConstants {
       dataKey match {
         case null => DbActorReadLaoDataAck(None)
         case _ => {
-          if(keyValuePairIsValid[String, LaoData](dataKey, laoDataCache)){
+          if (keyValuePairIsValid[String, LaoData](dataKey, laoDataCache)) {
             //with our implementation, if a key is in the map, there is always a LaoData value attached to it
             DbActorReadLaoDataAck(Some(laoDataCache.get(dataKey).get))
-          } else{
+          } else {
             Try(db.get(dataKey.getBytes)) match {
               case Success(bytes) if bytes != null =>
                 val json = new String(bytes, StandardCharsets.UTF_8)
@@ -373,7 +373,7 @@ object DbActor extends AskPatternConstants {
       def buildCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
         msgIds match {
           case Nil => acc
-          case head::tail => {
+          case head :: tail => {
             val message: Message = Message.buildFromJson(new String(db.get(generateMessageKey(channel, head).getBytes), StandardCharsets.UTF_8))
             buildCatchupList(tail, message :: acc)
           }
@@ -416,7 +416,7 @@ object DbActor extends AskPatternConstants {
 
     private def createChannelsFromList(li: List[(Channel, ObjectType.ObjectType)]): DbActorMessage = li match {
       case Nil => DbActorAck()
-      case head::tail => createChannel(head._1, head._2) match {
+      case head :: tail => createChannel(head._1, head._2) match {
         case DbActorAck() => createChannelsFromList(tail)
         case nack@DbActorNAck(_, _) => nack
       }
@@ -479,7 +479,7 @@ object DbActor extends AskPatternConstants {
           s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
         )
 
-      case m @ _ =>
+      case m@_ =>
         log.info(s"Actor $self (db) received an unknown message")
         sender ! DbActorNAck(
           ErrorCodes.SERVER_ERROR.id,

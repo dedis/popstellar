@@ -23,14 +23,15 @@ object RollCallHandler extends MessageHandler {
 }
 
 /**
-  * Implementation of the RollCallHandler that provides a testable interface
-  * @param dbRef reference of the db actor
-  */
+ * Implementation of the RollCallHandler that provides a testable interface
+ *
+ * @param dbRef reference of the db actor
+ */
 sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   /**
-    * Overrides default DbActor with provided parameter
-    */
+   * Overrides default DbActor with provided parameter
+   */
   override final val dbActor: AskableActorRef = dbRef
 
   override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
@@ -80,7 +81,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
             //Creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a GraphMessage
             def createAttendeeChannels(attendees: List[PublicKey], rpcMessage: JsonRpcRequest): GraphMessage = {
               val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map(attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP))
-              val askCreateChannels: Future[GraphMessage] = (dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)).map{
+              val askCreateChannels: Future[GraphMessage] = (dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)).map {
                 case DbActorAck() => Left(rpcMessage)
                 case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
                 case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))

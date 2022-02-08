@@ -22,7 +22,7 @@ import scala.util.{Failure, Success}
 object Server {
 
   /** Create a WebServer that handles http requests and WebSockets requests.
-    */
+   */
   def main(args: Array[String]): Unit = {
 
     /* Get configuration object for akka actor/http*/
@@ -68,12 +68,12 @@ object Server {
         override def run(): Unit = {
           try {
             bindingFuture.flatMap(_.unbind()).onComplete(_ => { //trigger unbinding from the port
-                logger.info("Server terminated !")
-                system.terminate()
-                typedSystem.terminate()
-              }) // and shutdown when done
+              logger.info("Server terminated !")
+              system.terminate()
+              typedSystem.terminate()
+            }) // and shutdown when done
           } catch {
-                case  e: InterruptedException =>   logger.warning("Server shutting thread was interrupted !")
+            case e: InterruptedException => logger.warning("Server shutting thread was interrupted !")
           }
         }
       }

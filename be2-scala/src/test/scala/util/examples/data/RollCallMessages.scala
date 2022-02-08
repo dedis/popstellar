@@ -6,13 +6,13 @@ import ch.epfl.pop.model.objects.Channel
 import util.examples.data.traits.RollCallMessagesTrait
 
 /**
-  * Generates high level RollCall Messages from protocol folder
-  * For content validation: all the params are required
-  * For handling: id, message with decoded data, channel are required
-  */
+ * Generates high level RollCall Messages from protocol folder
+ * For content validation: all the params are required
+ * For handling: id, message with decoded data, channel are required
+ */
 object CreateRollCallMessages extends RollCallMessagesTrait {
 
-  override val action  = ActionType.CREATE
+  override val action = ActionType.CREATE
   override val CHANNEL = Channel(Channel.ROOT_CHANNEL_PREFIX + "create_roll_call_channel")
 
   final val createRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_create.json")()
@@ -27,7 +27,7 @@ object OpenRollCallMessages extends RollCallMessagesTrait {
 
   override val CHANNEL = Channel(Channel.ROOT_CHANNEL_PREFIX + "open_roll_call_channel")
 
-  final val openRollCall: JsonRpcRequest =  getJsonRPCRequestFromFile("roll_call_open.json")()
+  final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_open.json")()
 
   //TODO: Generate other Open RollCall messages
 }
@@ -38,7 +38,7 @@ object CloseRollCallMessages extends RollCallMessagesTrait {
 
   override val CHANNEL = Channel(Channel.ROOT_CHANNEL_PREFIX + "close_roll_call_channel")
 
-  final val openRollCall: JsonRpcRequest =  getJsonRPCRequestFromFile("roll_call_close.json")()
+  final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("roll_call_close.json")()
 
   //TODO: Generate other Clsoe RollCall messages
 }
@@ -49,7 +49,7 @@ object ReopenRollCallMessages extends RollCallMessagesTrait {
 
   override val CHANNEL = Channel(Channel.ROOT_CHANNEL_PREFIX + "reopen_roll_call_channel")
 
-  final val openRollCall: JsonRpcRequest =  getJsonRPCRequestFromFile("reopen_call_close.json")()
+  final val openRollCall: JsonRpcRequest = getJsonRPCRequestFromFile("reopen_call_close.json")()
 
   //TODO: Generate other Clsoe RollCall messages
 }

@@ -13,262 +13,261 @@ import scala.concurrent.duration.FiniteDuration
 
 
 class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
-    // Implicites for system actors
-    implicit val duration = FiniteDuration(5 ,"seconds")
-    implicit val timeout  = Timeout(duration)
+  // Implicites for system actors
+  implicit val duration = FiniteDuration(5, "seconds")
+  implicit val timeout = Timeout(duration)
 
 
+  override def afterAll(): Unit = {
+    // Stops the testKit
+    TestKit.shutdownActorSystem(system)
+  }
 
-    override def afterAll(): Unit = {
-        // Stops the testKit
-        TestKit.shutdownActorSystem(system)
+  def mockDbWithNack: AskableActorRef = {
+    val mockedDB = Props(new Actor() {
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m: DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Nack")
+
+          sender ! DbActor.DbActorNAck(1, "error")
+      }
     }
+    )
+    system.actorOf(mockedDB, "MockedDB-NACK")
+  }
 
-    def mockDbWithNack: AskableActorRef = {
-        val mockedDB = Props(new Actor(){
-            override def receive = {
-                // You can modify the following match case to include more args, names...
-                case m : DbActor.WriteAndPropagate =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a Nack")
+  def mockDbWithAck: AskableActorRef = {
+    val mockedDB = Props(new Actor() {
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m: DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
 
-                    sender ! DbActor.DbActorNAck(1, "error")
-            }
-            }
-        )
-        system.actorOf(mockedDB, "MockedDB-NACK")
+          sender ! DbActor.DbActorWriteAck()
+
+        case m: DbActor.ReadLaoData =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
+
+          sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+      }
     }
+    )
+    system.actorOf(mockedDB, "MockedDB-ACK")
+  }
 
-    def mockDbWithAck: AskableActorRef = {
-        val mockedDB = Props(new Actor(){
-            override def receive = {
-                // You can modify the following match case to include more args, names...
-                case m : DbActor.WriteAndPropagate =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a Ack")
+  def mockDbWithAckAndNotifyNAck: AskableActorRef = {
+    val mockedDB = Props(new Actor() {
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case DbActor.WriteAndPropagate(channel, message) =>
+          if (channel == AddChirpMessages.CHANNEL) {
+            system.log.info(s"Received WAP on channel $channel")
+            system.log.info("Responding with a Ack")
 
-                    sender ! DbActor.DbActorWriteAck()
+            sender ! DbActor.DbActorWriteAck()
+          }
+          else {
+            system.log.info(s"Received WAP on channel $channel")
+            system.log.info("Responding with a NAck")
 
-                case m : DbActor.ReadLaoData =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a Ack")
+            sender ! DbActor.DbActorNAck(1, "error")
+          }
 
-                    sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
-            }
-            }
-        )
-        system.actorOf(mockedDB, "MockedDB-ACK")
+        case m: DbActor.ReadLaoData =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
+
+          sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+      }
     }
+    )
+    system.actorOf(mockedDB, "MockedDB-ACK-NAck-on-Notify")
+  }
 
-    def mockDbWithAckAndNotifyNAck: AskableActorRef = {
-        val mockedDB = Props(new Actor(){
-            override def receive = {
-                // You can modify the following match case to include more args, names...
-                case DbActor.WriteAndPropagate(channel, message) =>
-                    if(channel == AddChirpMessages.CHANNEL){
-                        system.log.info(s"Received WAP on channel $channel")
-                        system.log.info("Responding with a Ack")
+  def mockDbWithAckButEmptyAckLaoData: AskableActorRef = {
+    val mockedDB = Props(new Actor() {
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m: DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
 
-                        sender ! DbActor.DbActorWriteAck()
-                    }
-                    else{
-                        system.log.info(s"Received WAP on channel $channel")
-                        system.log.info("Responding with a NAck")
+          sender ! DbActor.DbActorWriteAck()
 
-                        sender ! DbActor.DbActorNAck(1, "error")
-                    }
+        case m: DbActor.ReadLaoData =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a NAck")
 
-                case m : DbActor.ReadLaoData =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a Ack")
-
-                    sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
-            }
-            }
-        )
-        system.actorOf(mockedDB, "MockedDB-ACK-NAck-on-Notify")
+          sender ! DbActor.DbActorReadLaoDataAck(None)
+      }
     }
+    )
+    system.actorOf(mockedDB, "MockedDB-ACK-EmptyAckLaoData")
+  }
 
-    def mockDbWithAckButEmptyAckLaoData: AskableActorRef = {
-        val mockedDB = Props(new Actor(){
-            override def receive = {
-                // You can modify the following match case to include more args, names...
-                case m : DbActor.WriteAndPropagate =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a Ack")
+  def mockDbWithAckButNAckLaoData: AskableActorRef = {
+    val mockedDB = Props(new Actor() {
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m: DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
 
-                    sender ! DbActor.DbActorWriteAck()
+          sender ! DbActor.DbActorWriteAck()
 
-                case m: DbActor.ReadLaoData =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a NAck")
+        case m: DbActor.ReadLaoData =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a NAck")
 
-                    sender ! DbActor.DbActorReadLaoDataAck(None)
-            }
-            }
-        )
-        system.actorOf(mockedDB, "MockedDB-ACK-EmptyAckLaoData")
+          sender ! DbActor.DbActorNAck(1, "error")
+      }
     }
+    )
+    system.actorOf(mockedDB, "MockedDB-ACK-NAckLaoData")
+  }
 
-    def mockDbWithAckButNAckLaoData: AskableActorRef = {
-        val mockedDB = Props(new Actor(){
-            override def receive = {
-                // You can modify the following match case to include more args, names...
-                case m : DbActor.WriteAndPropagate =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a Ack")
+  test("AddReaction fails if the database fails storing the message") {
+    val mockedDB = mockDbWithNack
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = AddReactionMessages.addReaction
 
-                    sender ! DbActor.DbActorWriteAck()
+    rc.handleAddReaction(request) shouldBe an[Right[PipelineError, _]]
 
-                case m: DbActor.ReadLaoData =>
-                    system.log.info("Received {}", m)
-                    system.log.info("Responding with a NAck")
+    system.stop(mockedDB.actorRef)
+  }
 
-                    sender ! DbActor.DbActorNAck(1, "error")
-            }
-            }
-        )
-        system.actorOf(mockedDB, "MockedDB-ACK-NAckLaoData")
-    }
+  test("AddReaction succeeds if the database succeeds storing the message") {
+    val mockedDB = mockDbWithAck
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = AddReactionMessages.addReaction
 
-    test("AddReaction fails if the database fails storing the message"){
-        val mockedDB = mockDbWithNack
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = AddReactionMessages.addReaction
+    rc.handleAddReaction(request) should equal(Left(request))
 
-        rc.handleAddReaction(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("DeleteReaction fails if the database fails storing the message") {
+    val mockedDB = mockDbWithNack
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = DeleteReactionMessages.deleteReaction
 
-    test("AddReaction succeeds if the database succeeds storing the message"){
-        val mockedDB = mockDbWithAck
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = AddReactionMessages.addReaction
+    rc.handleDeleteReaction(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleAddReaction(request) should equal (Left(request))
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("DeleteReaction succeeds if the database succeeds storing the message") {
+    val mockedDB = mockDbWithAck
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = DeleteReactionMessages.deleteReaction
 
-    test("DeleteReaction fails if the database fails storing the message"){
-        val mockedDB = mockDbWithNack
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = DeleteReactionMessages.deleteReaction
+    rc.handleDeleteReaction(request) should equal(Left(request))
 
-        rc.handleDeleteReaction(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("AddChirp fails if the database fails storing the message") {
+    val mockedDB = mockDbWithNack
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = AddChirpMessages.addChirp
 
-    test("DeleteReaction succeeds if the database succeeds storing the message"){
-        val mockedDB = mockDbWithAck
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = DeleteReactionMessages.deleteReaction
+    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleDeleteReaction(request) should equal (Left(request))
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("AddChirp fails if the database provides 'None' laoId") {
+    val mockedDB = mockDbWithAckButEmptyAckLaoData
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = AddChirpMessages.addChirp
 
-    test("AddChirp fails if the database fails storing the message"){
-        val mockedDB = mockDbWithNack
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = AddChirpMessages.addChirp
+    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleAddChirp(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("AddChirp fails if the database fails to provide laoId") {
+    val mockedDB = mockDbWithAckButNAckLaoData
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = AddChirpMessages.addChirp
 
-    test("AddChirp fails if the database provides 'None' laoId"){
-        val mockedDB = mockDbWithAckButEmptyAckLaoData
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = AddChirpMessages.addChirp
+    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleAddChirp(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("AddChirp succeeds if the database succeeds storing the message and managing the notify") {
+    val mockedDB = mockDbWithAck
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = AddChirpMessages.addChirp
 
-    test("AddChirp fails if the database fails to provide laoId"){
-        val mockedDB = mockDbWithAckButNAckLaoData
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = AddChirpMessages.addChirp
+    rc.handleAddChirp(request) should equal(Left(request))
 
-        rc.handleAddChirp(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("AddChirp fails if the database succeeds storing the message and fails the notify") {
+    val mockedDB = mockDbWithAckAndNotifyNAck
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = AddChirpMessages.addChirp
 
-    test("AddChirp succeeds if the database succeeds storing the message and managing the notify"){
-        val mockedDB = mockDbWithAck
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = AddChirpMessages.addChirp
+    rc.handleAddChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleAddChirp(request) should equal (Left(request))
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("DeleteChirp fails if the database fails storing the message") {
+    val mockedDB = mockDbWithNack
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = DeleteChirpMessages.deleteChirp
 
-    test("AddChirp fails if the database succeeds storing the message and fails the notify"){
-        val mockedDB = mockDbWithAckAndNotifyNAck
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = AddChirpMessages.addChirp
+    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleAddChirp(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("DeleteChirp succeeds if the database succeeds storing the message and managing the notify") {
+    val mockedDB = mockDbWithAck
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = DeleteChirpMessages.deleteChirp
 
-    test("DeleteChirp fails if the database fails storing the message"){
-        val mockedDB = mockDbWithNack
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = DeleteChirpMessages.deleteChirp
+    rc.handleDeleteChirp(request) should equal(Left(request))
 
-        rc.handleDeleteChirp(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("DeleteChirp fails if the database succeeds storing the message but fails the notify") {
+    val mockedDB = mockDbWithAckAndNotifyNAck
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = DeleteChirpMessages.deleteChirp
 
-    test("DeleteChirp succeeds if the database succeeds storing the message and managing the notify"){
-        val mockedDB = mockDbWithAck
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = DeleteChirpMessages.deleteChirp
+    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleDeleteChirp(request) should equal (Left(request))
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("DeleteChirp fails if the database provides 'None' laoId") {
+    val mockedDB = mockDbWithAckButEmptyAckLaoData
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = DeleteChirpMessages.deleteChirp
 
-    test("DeleteChirp fails if the database succeeds storing the message but fails the notify"){
-        val mockedDB = mockDbWithAckAndNotifyNAck
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = DeleteChirpMessages.deleteChirp
+    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleDeleteChirp(request) shouldBe an [Right[PipelineError,_]]
+    system.stop(mockedDB.actorRef)
+  }
 
-        system.stop(mockedDB.actorRef)
-    }
+  test("DeleteChirp fails if the database fails to provide laoId") {
+    val mockedDB = mockDbWithAckButNAckLaoData
+    val rc = new SocialMediaHandler(mockedDB)
+    val request = DeleteChirpMessages.deleteChirp
 
-    test("DeleteChirp fails if the database provides 'None' laoId"){
-        val mockedDB = mockDbWithAckButEmptyAckLaoData
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = DeleteChirpMessages.deleteChirp
+    rc.handleDeleteChirp(request) shouldBe an[Right[PipelineError, _]]
 
-        rc.handleDeleteChirp(request) shouldBe an [Right[PipelineError,_]]
-
-        system.stop(mockedDB.actorRef)
-    }
-
-    test("DeleteChirp fails if the database fails to provide laoId"){
-        val mockedDB = mockDbWithAckButNAckLaoData
-        val rc = new SocialMediaHandler(mockedDB)
-        val request = DeleteChirpMessages.deleteChirp
-
-        rc.handleDeleteChirp(request) shouldBe an [Right[PipelineError,_]]
-
-        system.stop(mockedDB.actorRef)
-    }
+    system.stop(mockedDB.actorRef)
+  }
 
 }

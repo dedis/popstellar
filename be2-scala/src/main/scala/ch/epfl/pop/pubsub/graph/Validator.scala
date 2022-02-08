@@ -38,6 +38,7 @@ object Validator {
   def setupSchemaValidation(jsonPath: String, objectMapper: ObjectMapper): JsonSchema = {
     //Get input stream of query.json file from resources folder
     def queryFile: InputStream = this.getClass().getClassLoader().getResourceAsStream(jsonPath)
+
     // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
     // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
@@ -54,7 +55,7 @@ object Validator {
     // Validation of the input, the result is a set of errors (if no errors, the set is empty)
 
     val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
-    if (errors.isEmpty){
+    if (errors.isEmpty) {
       Left(jsonString)
     }
     else {
@@ -76,6 +77,7 @@ object Validator {
       case _ => None
     }
   }
+
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
       case message@(_: JsonRpcRequest) => validateRpcRequest(message)

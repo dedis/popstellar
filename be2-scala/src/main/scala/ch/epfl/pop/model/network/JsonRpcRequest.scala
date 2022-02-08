@@ -49,9 +49,9 @@ class JsonRpcRequest(
   }
 
   /**
-    * @param decodedData decoded data to set to new JsonRpcRequest
-    * @return a new JsonRpcRequest with decoded message data
-    */
+   * @param decodedData decoded data to set to new JsonRpcRequest
+   * @return a new JsonRpcRequest with decoded message data
+   */
   def getWithDecodedData(decodedData: MessageData): Option[JsonRpcRequest] = this.getParamsMessage match {
     case Some(message) => {
       //Get copy of the message and sets its data to the decoded one
@@ -85,5 +85,6 @@ object JsonRpcRequest extends Parsable {
            ): JsonRpcRequest = {
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
+
   override def buildFromJson(payload: String): JsonRpcRequest = payload.parseJson.asJsObject.convertTo[JsonRpcRequest]
 }

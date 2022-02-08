@@ -22,29 +22,29 @@ object SocialMediaHandler extends MessageHandler {
 sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   /**
-    * Overrides default DbActor with provided parameter
-    */
+   * Overrides default DbActor with provided parameter
+   */
   override final val dbActor: AskableActorRef = dbRef
 
   override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-  case Left(jsonRpcMessage) => jsonRpcMessage match {
-    case message@(_: JsonRpcRequestAddChirp) => handleAddChirp(message)
-    case message@(_: JsonRpcRequestDeleteChirp) => handleDeleteChirp(message)
-    case message@(_: JsonRpcRequestNotifyAddChirp) => handleNotifyAddChirp(message)
-    case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleNotifyDeleteChirp(message)
-    case message@(_: JsonRpcRequestAddReaction) => handleAddReaction(message)
-    case message@(_: JsonRpcRequestDeleteReaction) => handleDeleteReaction(message)
-    case _ => Right(PipelineError(
-      ErrorCodes.SERVER_ERROR.id,
-      "Internal server fault: SocialMediaHandler was given a message it could not recognize",
-      jsonRpcMessage match {
-        case r: JsonRpcRequest => r.id
-        case r: JsonRpcResponse => r.id
-        case _ => None
-      }
-    ))
-  }
-  case graphMessage@_ => graphMessage
+    case Left(jsonRpcMessage) => jsonRpcMessage match {
+      case message@(_: JsonRpcRequestAddChirp) => handleAddChirp(message)
+      case message@(_: JsonRpcRequestDeleteChirp) => handleDeleteChirp(message)
+      case message@(_: JsonRpcRequestNotifyAddChirp) => handleNotifyAddChirp(message)
+      case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleNotifyDeleteChirp(message)
+      case message@(_: JsonRpcRequestAddReaction) => handleAddReaction(message)
+      case message@(_: JsonRpcRequestDeleteReaction) => handleDeleteReaction(message)
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_ERROR.id,
+        "Internal server fault: SocialMediaHandler was given a message it could not recognize",
+        jsonRpcMessage match {
+          case r: JsonRpcRequest => r.id
+          case r: JsonRpcResponse => r.id
+          case _ => None
+        }
+      ))
+    }
+    case graphMessage@_ => graphMessage
   }
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
@@ -53,8 +53,9 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
 
   /**
    * Helper function for both Social Media broadcasts
-   * @param rpcMessage : message for which we want to generate the broadcast
-   * @param broadcastData : the message data we broadcast converted to Base64Data
+   *
+   * @param rpcMessage       : message for which we want to generate the broadcast
+   * @param broadcastData    : the message data we broadcast converted to Base64Data
    * @param broadcastChannel : the Channel in which we broadcast
    */
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
@@ -82,7 +83,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
       case Left(msg) => {
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeChannelLaoId match {
-          case(Some(lao_id)) => {
+          case (Some(lao_id)) => {
             val broadcastChannel: Channel = generateSocialChannel(lao_id)
             rpcMessage.getParamsMessage match {
               case Some(params) => {
@@ -109,7 +110,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
       case Left(msg) => {
         val channelChirp: Channel = rpcMessage.getParamsChannel
         channelChirp.decodeChannelLaoId match {
-          case(Some(lao_id)) => {
+          case (Some(lao_id)) => {
             val broadcastChannel: Channel = generateSocialChannel(lao_id)
             rpcMessage.getParamsMessage match {
               case Some(params) => {

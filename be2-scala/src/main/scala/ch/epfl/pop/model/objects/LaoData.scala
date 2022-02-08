@@ -13,37 +13,37 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 //a pair of byte arrays works better as keypair than the actual keypair object, since Ed25519Sign.Keypair isn't directly convertible to json with spray
 //FIXME: the private key should be stored in a secure way in the future
 /**
-* @param owner: the LAO owner's public key, with which the signed messages can be authenticated
-* @param attendees: list of the last roll call attendees
-* @param privateKey: the LAO's own private key, used to sign messages
-* @param publicKey: the LAO's own public key, used to sign messages
-* @param witnesses: the LAO's list of witnesses
-*/
+ * @param owner      : the LAO owner's public key, with which the signed messages can be authenticated
+ * @param attendees  : list of the last roll call attendees
+ * @param privateKey : the LAO's own private key, used to sign messages
+ * @param publicKey  : the LAO's own public key, used to sign messages
+ * @param witnesses  : the LAO's list of witnesses
+ */
 case class LaoData(
-    owner: PublicKey,
-    attendees: List[PublicKey],
-    privateKey: PrivateKey,
-    publicKey: PublicKey,
-    witnesses: List[PublicKey]
-){
-    def toJsonString: String = {
-      val that: LaoData = this // tricks the compiler into inferring the right type
-      that.toJson.toString
-    }
+                    owner: PublicKey,
+                    attendees: List[PublicKey],
+                    privateKey: PrivateKey,
+                    publicKey: PublicKey,
+                    witnesses: List[PublicKey]
+                  ) {
+  def toJsonString: String = {
+    val that: LaoData = this // tricks the compiler into inferring the right type
+    that.toJson.toString
+  }
 
-    def updateWith(message: Message): LaoData = {
-      if (message.decodedData.isEmpty){
+  def updateWith(message: Message): LaoData = {
+    if (message.decodedData.isEmpty) {
+      this
+    } else message.decodedData.get match {
+      case call: CloseRollCall =>
+        LaoData(owner, call.attendees, privateKey, publicKey, witnesses)
+      case lao: CreateLao =>
+        val ownerPk: PublicKey = lao.organizer
+        LaoData(ownerPk, List(ownerPk), privateKey, publicKey, lao.witnesses)
+      case _ =>
         this
-      } else message.decodedData.get match {
-        case call: CloseRollCall =>
-          LaoData(owner, call.attendees, privateKey, publicKey, witnesses)
-        case lao: CreateLao =>
-          val ownerPk: PublicKey = lao.organizer
-          LaoData(ownerPk, List(ownerPk), privateKey, publicKey, lao.witnesses)
-        case _ =>
-          this
-      }
     }
+  }
 
 }
 

@@ -5,16 +5,18 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 
 import scala.util.{Failure, Success, Try}
 
-/**Companion object of DataBuilder that helps building MessageData instances**/
+/** Companion object of DataBuilder that helps building MessageData instances **/
 object DataBuilder {
-    private final val dataBuilder = DataBuilder(DataRegistryModule.REGISTRY)
-    def buildData(_object: ObjectType, action: ActionType, payload: String): MessageData = dataBuilder.buildData(_object, action, payload)
+  private final val dataBuilder = DataBuilder(DataRegistryModule.REGISTRY)
+
+  def buildData(_object: ObjectType, action: ActionType, payload: String): MessageData = dataBuilder.buildData(_object, action, payload)
 }
 
 /**
-  * Builds and parses message data or rejects if it's json schema is incorrect
-  * @param REGISTRY: registry that contains metadata about MessageData builders/parsers
-  */
+ * Builds and parses message data or rejects if it's json schema is incorrect
+ *
+ * @param REGISTRY : registry that contains metadata about MessageData builders/parsers
+ */
 sealed case class DataBuilder(final val REGISTRY: DataRegistry) {
   /**
    * Builds a MessageData from its headers ('object' and 'action' fields) and its json representation
@@ -33,19 +35,19 @@ sealed case class DataBuilder(final val REGISTRY: DataRegistry) {
 
 
   /**
-    * Builds a message payload after passing a schema validation check
-    *
-    * @param payload payload to build
-    * @param validator one of the validators at [[DataSchemaValidator]] to valid the schema of the payload
-    * @param buildFromJson the data builder
-    * @param errMsg error message to include in description in case of error
-    * @return built MessageData or throws an exceptition in case of schema failure
-    */
+   * Builds a message payload after passing a schema validation check
+   *
+   * @param payload       payload to build
+   * @param validator     one of the validators at [[DataSchemaValidator]] to valid the schema of the payload
+   * @param buildFromJson the data builder
+   * @param errMsg        error message to include in description in case of error
+   * @return built MessageData or throws an exceptition in case of schema failure
+   */
   @throws(classOf[ProtocolException])
-  private def buildOrReject(payload: String)(validator: String => Try[Unit])(buildFromJson: String => MessageData )(errMsg: String): MessageData = {
-      validator(payload) match {
-        case Success(_) => buildFromJson(payload)
-        case Failure(e) => throw new ProtocolException(s"$errMsg: ${e.getMessage}")
-      }
+  private def buildOrReject(payload: String)(validator: String => Try[Unit])(buildFromJson: String => MessageData)(errMsg: String): MessageData = {
+    validator(payload) match {
+      case Success(_) => buildFromJson(payload)
+      case Failure(e) => throw new ProtocolException(s"$errMsg: ${e.getMessage}")
+    }
   }
 }

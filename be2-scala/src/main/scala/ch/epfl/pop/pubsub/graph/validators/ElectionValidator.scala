@@ -32,7 +32,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
           Right(validationError(s"'end_time' (${data.end_time}) timestamp is smaller than 'start_time' (${data.start_time})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
-        } else if (!validateOwner(sender, channel)){
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } //note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
         else if (!validateChannelType(ObjectType.LAO, channel)) {
@@ -71,7 +71,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         }*/
         // FIXME: check the actual votes
         // FIXME: for the VoteElection list, we need to check question ids but what do they mean? No info in documentation
-        else if (!validateAttendee(sender, channel)){
+        else if (!validateAttendee(sender, channel)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
@@ -93,7 +93,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
 
-        if (!validateOwner(sender, channel)){
+        if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a ResultElection message on a wrong type of channel $channel"))
@@ -120,7 +120,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
         } else if (laoId != data.lao) {
           Right(validationError("unexpected lao id"))
-        } else if (!validateOwner(sender, channel)){
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a EndElection message on a wrong type of channel $channel"))

@@ -42,9 +42,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
 
   /**
    * checks whether the sender of the JsonRpcRequest is in the attendee list inside the LAO's data
-   * @param sender    the sender we want to verify
-   * @param channel   the channel we want the LaoData for
-   * @param dbActor   the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
+   *
+   * @param sender  the sender we want to verify
+   * @param channel the channel we want the LaoData for
+   * @param dbActor the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
    */
   def validateAttendee(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
@@ -56,9 +57,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
 
   /**
    * checks whether the sender of the JsonRpcRequest is the LAO owner
-   * @param sender    the sender we want to verify
-   * @param channel   the channel we want the LaoData for
-   * @param dbActor   the DbActor we use (by default the main one, obtained through getInstance)
+   *
+   * @param sender  the sender we want to verify
+   * @param channel the channel we want the LaoData for
+   * @param dbActor the DbActor we use (by default the main one, obtained through getInstance)
    */
   def validateOwner(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
@@ -68,11 +70,12 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
     }
   }
 
-/**
+  /**
    * checks whether the channel of the JsonRpcRequest is of the given type
-   * @param channelObjectType  the ObjectType the channel should be
-   * @param channel            the channel we want to check
-   * @param dbActor            the DbActor we use (by default the main one, obtained through getInstance)
+   *
+   * @param channelObjectType the ObjectType the channel should be
+   * @param channel           the channel we want to check
+   * @param dbActor           the DbActor we use (by default the main one, obtained through getInstance)
    */
   def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadChannelData(channel)

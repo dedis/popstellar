@@ -9,7 +9,7 @@ import util.examples.lao.CreateLaoExamples
 
 class CreateLaoContentSuiteSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
-  /**Decodes data before passing it to the test**/
+  /** Decodes data before passing it to the test **/
   def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any) {
     // Raw encoded data data
     val message = Left(CreateLaoExamples.getJsonRequestFromMessage(createLaoData))
@@ -25,16 +25,16 @@ class CreateLaoContentSuiteSuite extends FlatSpec with Matchers with Inside with
   }
 
   behavior.of("A validator when receiving ")
-  "a CreateLao data with valid content" should "be accepted by validator" in withCreateLaoFixture(CreateLaoExamples.createLao){
+  "a CreateLao data with valid content" should "be accepted by validator" in withCreateLaoFixture(CreateLaoExamples.createLao) {
     Given("a valid decoded createLao request")
     (message) => {
       When("validated")
       val validationResult = Validator.validateMessageDataContent(message)
-      inside(validationResult){
+      inside(validationResult) {
         case Left(msg) =>
           Then("the validation succeeds")
-          msg shouldBe a [JsonRpcRequest]
-        case _ @ Right(_) => fail("fails to validate CreateLao data content")
+          msg shouldBe a[JsonRpcRequest]
+        case _@Right(_) => fail("fails to validate CreateLao data content")
         case _ => fail(s"validated message <$validationResult> is of unexpected type")
       }
       And("the message has the same content after validation")

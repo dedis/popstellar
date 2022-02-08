@@ -32,7 +32,7 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
-        } else if (!validateOwner(sender, channel)){
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel"))

@@ -18,60 +18,60 @@ import util.examples.JsonRpcRequestExample._
 import scala.reflect.io.Directory
 
 class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem"))
-    with FunSuiteLike
-    with ImplicitSender
-    with Matchers with BeforeAndAfterAll with AskPatternConstants {
+  with FunSuiteLike
+  with ImplicitSender
+  with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
-    implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
+  implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
 
-    final val DB_TEST_FOLDER: String = "databaseLaoTest"
+  final val DB_TEST_FOLDER: String = "databaseLaoTest"
 
-    val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-    val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, DB_TEST_FOLDER)), "DbActor")
+  val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
+  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, DB_TEST_FOLDER)), "DbActor")
 
-    override def afterAll(): Unit = {
-        // Stops the test actor system
-        TestKit.shutdownActorSystem(system)
+  override def afterAll(): Unit = {
+    // Stops the test actor system
+    TestKit.shutdownActorSystem(system)
 
-        // Deletes the test database
-        val directory = new Directory(new File(DB_TEST_FOLDER))
-        directory.deleteRecursively()
-    }
+    // Deletes the test database
+    val directory = new Directory(new File(DB_TEST_FOLDER))
+    directory.deleteRecursively()
+  }
 
-    test("LAO creation works as intended"){
-        val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_RPC)
-        message should equal(Left(CREATE_LAO_RPC))
-    }
+  test("LAO creation works as intended") {
+    val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_RPC)
+    message should equal(Left(CREATE_LAO_RPC))
+  }
 
-    test("LAO creation fails with wrong channel"){
-        val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_CHANNEL_RPC)
-        message shouldBe a [Right[_,PipelineError]]
-    }
+  test("LAO creation fails with wrong channel") {
+    val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_CHANNEL_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+  }
 
-    test("LAO creation fails with stale Timestamp"){
-        val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_TIMESTAMP_RPC)
-        message shouldBe a [Right[_,PipelineError]]
-    }
+  test("LAO creation fails with stale Timestamp") {
+    val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_TIMESTAMP_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+  }
 
-    test("LAO creation fails with duplicate witnesses"){
-        val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_WITNESSES_RPC)
-        message shouldBe a [Right[_,PipelineError]]
-    }
+  test("LAO creation fails with duplicate witnesses") {
+    val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_WITNESSES_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+  }
 
-    test("LAO creation fails with wrong id"){
-        val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_ID_RPC)
-        message shouldBe a [Right[_,PipelineError]]
-    }
+  test("LAO creation fails with wrong id") {
+    val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_ID_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+  }
 
-    test("LAO creation fails with wrong sender"){
-        val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_SENDER_RPC)
-        message shouldBe a [Right[_,PipelineError]]
-    }
+  test("LAO creation fails with wrong sender") {
+    val message: GraphMessage = LaoValidator.validateCreateLao(CREATE_LAO_WRONG_SENDER_RPC)
+    message shouldBe a[Right[_, PipelineError]]
+  }
 
-    test("LAO creation fails without ParamsWithMessage"){
-        val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
-        message shouldBe a [Right[_,PipelineError]]
-    }
+  test("LAO creation fails without ParamsWithMessage") {
+    val message: GraphMessage = LaoValidator.validateCreateLao(RPC_NO_PARAMS)
+    message shouldBe a[Right[_, PipelineError]]
+  }
 
 
 }

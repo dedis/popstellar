@@ -6,13 +6,13 @@ import ch.epfl.pop.model.objects.{Base64Data, Channel}
 import util.examples.data.traits.{SocialMediaChirpMessagesTrait, SocialMediaReactionMessagesTrait}
 
 /**
-  * Generates high level RollCall Messages from protocol folder
-  * For content validation: all the params are required
-  * For handling: id, message with decoded data, channel are required
-  */
+ * Generates high level RollCall Messages from protocol folder
+ * For content validation: all the params are required
+ * For handling: id, message with decoded data, channel are required
+ */
 object AddReactionMessages extends SocialMediaReactionMessagesTrait {
 
-  override val action  = ActionType.ADD
+  override val action = ActionType.ADD
   override val CHANNEL = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("add_reaction_channel"))
 
   final val addReaction: JsonRpcRequest = getJsonRPCRequestFromFile("reaction_add/reaction_add.json")()
@@ -38,7 +38,7 @@ object AddChirpMessages extends SocialMediaChirpMessagesTrait {
 
   override val CHANNEL = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("add_chirp_channel"))
 
-  final val addChirp: JsonRpcRequest =  getJsonRPCRequestFromFile("chirp_add_publish/chirp_add_publish.json")()
+  final val addChirp: JsonRpcRequest = getJsonRPCRequestFromFile("chirp_add_publish/chirp_add_publish.json")()
 
   //TODO: Generate other messages
 }
@@ -49,7 +49,7 @@ object DeleteChirpMessages extends SocialMediaChirpMessagesTrait {
 
   override val CHANNEL = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("delete_chirp_channel"))
 
-  final val deleteChirp: JsonRpcRequest =  getJsonRPCRequestFromFile("chirp_delete_publish/chirp_delete_publish.json")()
+  final val deleteChirp: JsonRpcRequest = getJsonRPCRequestFromFile("chirp_delete_publish/chirp_delete_publish.json")()
 
   //TODO: Generate other messages
 }

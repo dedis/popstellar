@@ -5,8 +5,8 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
-import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 
 case object RollCallValidator extends MessageDataContentValidator with EventValidator {
@@ -35,7 +35,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           Right(validationError(s"'proposed_end' (${data.proposed_end}) timestamp is smaller than 'proposed_start' (${data.proposed_start})"))
         } else if (expectedRollCallId != data.id) {
           Right(validationError(s"unexpected id"))
-        } else if (!validateOwner(sender, channel)){
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send a CreateRollCall message on a wrong type of channel $channel"))
@@ -48,6 +48,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
 
   /**
    * Validates an rpcMessage for OpenRollCall message
+   *
    * @param rpcMessage
    * @return GraphMessage: passes the rpcMessages to Left if successful
    *         right with pipeline error
@@ -70,7 +71,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
-        } else if (!validateOwner(sender, channel)){
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send a $validatorName message on a wrong type of channel $channel"))
@@ -82,12 +83,13 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
   }
 
   /**
-    * Validates the rpcMessage for a ReOpenRollCall
-    * similar to [[validateOpenRollCall]]
-    * @param rpcMessage
-    * @return GraphMessage: passes the rpcMessages to Left if successful
-    *         right with pipeline error
-    */
+   * Validates the rpcMessage for a ReOpenRollCall
+   * similar to [[validateOpenRollCall]]
+   *
+   * @param rpcMessage
+   * @return GraphMessage: passes the rpcMessages to Left if successful
+   *         right with pipeline error
+   */
   def validateReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     validateOpenRollCall(rpcMessage, "ReopenRollCall")
   }
@@ -113,7 +115,7 @@ case object RollCallValidator extends MessageDataContentValidator with EventVali
           Right(validationError("duplicate attendees keys"))
         } else if (expectedRollCallId != data.update_id) {
           Right(validationError("unexpected id 'update_id'"))
-        } else if (!validateOwner(sender, channel)){
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send a CloseRollCall message on a wrong type of channel $channel"))

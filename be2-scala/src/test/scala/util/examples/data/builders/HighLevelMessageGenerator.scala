@@ -12,18 +12,18 @@ import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 
 /**
-  * Helper object to generate test data
-  */
+ * Helper object to generate test data
+ */
 object HighLevelMessageGenerator {
 
   private val EMPTY_BASE_64 = Base64Data.encode("")
 
   /**
-    * Helper class used to build Mid level protocol Messages
-    *
-    */
+   * Helper class used to build Mid level protocol Messages
+   *
+   */
   sealed class MessageBuilder {
-     /*** Builder params ***/
+    /** * Builder params ***/
     private var data: Base64Data = EMPTY_BASE_64
     private var sender: PublicKey = PublicKey(EMPTY_BASE_64)
     private var signature: Signature = Signature(EMPTY_BASE_64)
@@ -60,21 +60,21 @@ object HighLevelMessageGenerator {
   }
 
   /**
-    * Helper class used to build High Level Messages with decoded and parsed data
-    *
-    * @param message mid-level message builder
-    */
-  sealed class HLMessageBuilder(var message: MessageBuilder){
-    /*** Builder params ***/
+   * Helper class used to build High Level Messages with decoded and parsed data
+   *
+   * @param message mid-level message builder
+   */
+  sealed class HLMessageBuilder(var message: MessageBuilder) {
+    /** * Builder params ***/
     private var id = Some(1)
     private var payload: String = ""
-    private var methodType:  MethodType.MethodType = null
+    private var methodType: MethodType.MethodType = null
     private var paramsChannel: Channel = Channel.ROOT_CHANNEL
-    /**********************/
-    private var messageData : MessageData = null
-    private var params : ParamsWithMessage = null
+    /** ********************/
+    private var messageData: MessageData = null
+    private var params: ParamsWithMessage = null
 
-    def withId(id: Int): HLMessageBuilder =  {
+    def withId(id: Int): HLMessageBuilder = {
       this.id = Some(id)
       this
     }
@@ -95,15 +95,16 @@ object HighLevelMessageGenerator {
     }
 
     /**
-      * This methode must not be called before the payload and methodeType are set
-      * @param objType conversion object type
-      * @param actionType conversion action type
-      * @return Typed High level JsonRpcRequest with decoded and parsed data (MessageData)
-      */
+     * This methode must not be called before the payload and methodeType are set
+     *
+     * @param objType    conversion object type
+     * @param actionType conversion action type
+     * @return Typed High level JsonRpcRequest with decoded and parsed data (MessageData)
+     */
     //TODO : implement other object types and actions
     def generateJsonRpcRequestWith(objType: ObjectType.ObjectType)(actionType: ActionType.ActionType): JsonRpcRequest = {
 
-      assume(payload.trim.length != 0 &&  methodType != null)
+      assume(payload.trim.length != 0 && methodType != null)
 
       (objType, actionType) match {
         //Roll Calls
@@ -112,39 +113,40 @@ object HighLevelMessageGenerator {
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
           JsonRpcRequestCreateRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ROLL_CALL, ActionType.OPEN)   =>
+        case (ObjectType.ROLL_CALL, ActionType.OPEN) =>
           messageData = OpenRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestOpenRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
+          JsonRpcRequestOpenRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.ROLL_CALL, ActionType.CLOSE)  =>
+        case (ObjectType.ROLL_CALL, ActionType.CLOSE) =>
           messageData = CloseRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestCloseRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
+          JsonRpcRequestCloseRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         //Social Media
-        case (ObjectType.REACTION, ActionType.ADD)  =>
+        case (ObjectType.REACTION, ActionType.ADD) =>
           messageData = AddReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestAddReaction(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
+          JsonRpcRequestAddReaction(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.REACTION, ActionType.DELETE)  =>
+        case (ObjectType.REACTION, ActionType.DELETE) =>
           messageData = DeleteReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestDeleteReaction(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
+          JsonRpcRequestDeleteReaction(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.CHIRP, ActionType.ADD)  =>
+        case (ObjectType.CHIRP, ActionType.ADD) =>
           messageData = AddChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestAddChirp(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
+          JsonRpcRequestAddChirp(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case (ObjectType.CHIRP, ActionType.DELETE)  =>
+        case (ObjectType.CHIRP, ActionType.DELETE) =>
           messageData = DeleteChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestDeleteChirp(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
+          JsonRpcRequestDeleteChirp(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
-        case(obj,act) => throw new IllegalStateException(s"HLMessageBuilder failed: ($obj, $act) not implemented yet !!")
+        case (obj, act) => throw new IllegalStateException(s"HLMessageBuilder failed: ($obj, $act) not implemented yet !!")
       }
     }
   }
+
 }

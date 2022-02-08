@@ -13,18 +13,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 /**
-  * Object for AnswerGenerator to keep a compatible interface
-  * Since this is an object only one instance of AnswerGenerator(class) will be created
-  *
-  */
+ * Object for AnswerGenerator to keep a compatible interface
+ * Since this is an object only one instance of AnswerGenerator(class) will be created
+ *
+ */
 object AnswerGenerator extends AskPatternConstants {
   lazy val db = DbActor.getInstance
   val answerGen = new AnswerGenerator(db)
-  def generateAnswer(graphMessage: GraphMessage): GraphMessage  = answerGen.generateAnswer(graphMessage)
+
+  def generateAnswer(graphMessage: GraphMessage): GraphMessage = answerGen.generateAnswer(graphMessage)
+
   val generator: Flow[GraphMessage, GraphMessage, NotUsed] = answerGen.generator
 }
 
-sealed class AnswerGenerator(db : => AskableActorRef) extends AskPatternConstants {
+sealed class AnswerGenerator(db: => AskableActorRef) extends AskPatternConstants {
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer

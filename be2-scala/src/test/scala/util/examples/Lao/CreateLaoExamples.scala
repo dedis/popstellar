@@ -1,15 +1,15 @@
 package util.examples.lao
 
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._
 
 
-object CreateLaoExamples{
+object CreateLaoExamples {
 
   def getJsonRequestFromMessage(msg: Message): JsonRpcRequest = {
-       JsonRpcRequest("2.0",MethodType.PUBLISH, new ParamsWithMessage(Channel.ROOT_CHANNEL,msg), Some(1))
+    JsonRpcRequest("2.0", MethodType.PUBLISH, new ParamsWithMessage(Channel.ROOT_CHANNEL, msg), Some(1))
   }
 
   private final val witnessSigs = WitnessSignaturePair(PublicKey(Base64Data("wit1")), Signature(Base64Data("sig1"))) :: WitnessSignaturePair(PublicKey(Base64Data("wit2")), Signature(Base64Data("sig2"))) :: Nil
@@ -32,7 +32,7 @@ object CreateLaoExamples{
   )
 
   final lazy val laoCreateIdInvalid: Message = Message(
-    data =  Base64Data("ewogICAgIm9iamVjdCI6ICJsYW8iLAogICAgImFjdGlvbiI6ICJjcmVhdGUiLAogICAgImlkIjogIko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09IiwKICAgICJuYW1lIjogIkxBTyIsCiAgICAiY3JlYXRpb24iOiAxNjMzMDk4MjM0LAogICAgIm9yZ2FuaXplciI6ICJKOWZCekpWNzBKazVjLWkzMjc3VXE0Q21lTDR0NTNXRGZVZ2hhSzBIcGVNPSIsCiAgICAid2l0bmVzc2VzIjogW10KfQo="),
+    data = Base64Data("ewogICAgIm9iamVjdCI6ICJsYW8iLAogICAgImFjdGlvbiI6ICJjcmVhdGUiLAogICAgImlkIjogIko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09IiwKICAgICJuYW1lIjogIkxBTyIsCiAgICAiY3JlYXRpb24iOiAxNjMzMDk4MjM0LAogICAgIm9yZ2FuaXplciI6ICJKOWZCekpWNzBKazVjLWkzMjc3VXE0Q21lTDR0NTNXRGZVZ2hhSzBIcGVNPSIsCiAgICAid2l0bmVzc2VzIjogW10KfQo="),
     sender = SENDER,
     signature = Signature(Base64Data("feZQ14nttNzHgJ83WT-mtdBx98Zs3hG9kX2me5eUuDHfWLiLfu4rn5BuJrbuDJ5glZLvqWqiI7M9My-bYIWcDg==")),
     message_id = Hash(Base64Data("-eerbRQOpC9gr2ASi7cQigqa-HJMw3kXjXvGjMHw0DA=")),
@@ -72,8 +72,8 @@ object CreateLaoExamples{
   )
 
   final lazy val allCreateReq: LazyList[Message] = LazyList(createLao, laoCreateIdInvalid,
-                                         laoCreateAdditionalParam,
-                                         laoCreateMissingParams,
-                                         laoCreateOrgNot64)
+    laoCreateAdditionalParam,
+    laoCreateMissingParams,
+    laoCreateOrgNot64)
 
 }

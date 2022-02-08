@@ -181,7 +181,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       jsObjectContent += (PARAM_PARAMS -> obj.params.toJson)
 
       /*Add the id key iff it's non null*/
-      if(obj.id.isDefined){
+      if (obj.id.isDefined) {
         jsObjectContent += (PARAM_ID -> obj.id.get.toJson)
       }
 
