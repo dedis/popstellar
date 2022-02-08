@@ -1,11 +1,11 @@
 package ch.epfl.pop.model.network
 
-import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Timestamp}
-import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType, MessageData}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
+import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
+import ch.epfl.pop.model.objects._
+import org.scalatest.{FunSuite, Matchers}
 import util.examples.MessageExample
 
 

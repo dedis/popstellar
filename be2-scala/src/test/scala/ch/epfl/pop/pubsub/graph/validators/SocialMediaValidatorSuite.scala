@@ -1,28 +1,21 @@
 package ch.epfl.pop.pubsub.graph.validators
 
+import java.io.File
+import java.util.concurrent.TimeUnit
+
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.AskableActorRef
-import akka.testkit.{ImplicitSender,TestKit,TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-
-import ch.epfl.pop.model.objects.{Base64Data, Channel, ChannelData, LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
-
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.JsonRpcRequestExample._
 import util.examples.socialMedia.AddChirpExamples
 
-import org.scalatest.{BeforeAndAfterAll,FunSuiteLike,Matchers}
-
-import scala.concurrent.duration.FiniteDuration
-
 import scala.reflect.io.Directory
-import java.io.File
-
-import java.util.concurrent.TimeUnit
-
-import scala.concurrent.Await
 
 class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidatorTestActorSystem"))
     with FunSuiteLike
@@ -36,7 +29,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
 
     // Implicit for system actors
     implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
-    
+
     override def afterAll(): Unit = {
         // Stops the testKit
         TestKit.shutdownActorSystem(system)
@@ -184,7 +177,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
         message shouldBe a [Right[_,PipelineError]]
         system.stop(dbActorRef.actorRef)
     }
-    
+
     test("Deleting a chirp without valid PoP token fails"){
         val dbActorRef = mockDbWrongToken
         val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteChirp(DELETE_CHIRP_RPC)

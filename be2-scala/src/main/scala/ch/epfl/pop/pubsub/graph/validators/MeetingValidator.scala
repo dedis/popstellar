@@ -5,9 +5,8 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-
-import MessageValidator._
 
 case object MeetingValidator extends MessageDataContentValidator with EventValidator {
   override def EVENT_HASH_PREFIX: String = "M"

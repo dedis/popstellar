@@ -1,7 +1,6 @@
 package ch.epfl.pop.model.objects
 
 import com.google.crypto.tink.subtle.Ed25519Sign
-
 import org.scalatest.{FunSuite, Matchers}
 
 class PrivateKeySuite extends FunSuite with Matchers {
@@ -16,4 +15,4 @@ class PrivateKeySuite extends FunSuite with Matchers {
 
         pk.signData(data) should equal(expected)
     }
-} 
+}

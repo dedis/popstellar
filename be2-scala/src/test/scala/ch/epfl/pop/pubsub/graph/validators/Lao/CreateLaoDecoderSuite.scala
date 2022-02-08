@@ -1,16 +1,10 @@
 package ch.epfl.pop.pubsub.graph.validator.lao
 
-import ch.epfl.pop.model.objects.{Channel, Base64Data, Hash}
-import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao}
-import ch.epfl.pop.pubsub.graph.{ErrorCodes,GraphMessage,MessageDecoder,PipelineError}
-
-import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers}
-
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
+import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, MessageDecoder, PipelineError}
+import org.scalatest.{FlatSpec, GivenWhenThen, Inside, Matchers}
 import util.examples.lao.CreateLaoExamples
 
 
@@ -24,7 +18,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
   def testGoodFormat =
       (gm: GraphMessage, createLaoMessage: Message) => {
         alert("CreateLao message data content maybe invalid but should be correctly decoded")
-        
+
         Given("a correct graph message of JsonRpcRequest")
         And("a createLao message")
         When("the request is parsed")

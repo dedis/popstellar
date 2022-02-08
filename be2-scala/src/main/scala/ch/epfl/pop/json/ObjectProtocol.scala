@@ -1,7 +1,6 @@
 package ch.epfl.pop.json
 
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import spray.json._
 
 object ObjectProtocol extends DefaultJsonProtocol {

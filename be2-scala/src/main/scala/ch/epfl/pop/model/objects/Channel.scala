@@ -1,7 +1,5 @@
 package ch.epfl.pop.model.objects
 
-import java.util.Base64
-
 import scala.util.{Success, Try}
 
 final case class Channel(channel: String) {

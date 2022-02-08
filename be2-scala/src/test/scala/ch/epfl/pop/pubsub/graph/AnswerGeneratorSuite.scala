@@ -1,16 +1,16 @@
 package ch.epfl.pop.pubsub.graph
 
-import akka.actor.{Actor,ActorSystem,Props}
-import akka.actor.typed.ActorRef
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.pattern.AskableActorRef
-import akka.testkit.{ImplicitSender,TestKit,TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.model.network.{JsonRpcRequest,JsonRpcResponse,ResultObject}
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite._
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject}
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import org.scalatest.{BeforeAndAfterAll,FunSuiteLike,Matchers}
+import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite._
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
+
 import scala.concurrent.duration.FiniteDuration
 
 class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll  {
@@ -126,7 +126,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   }
 
   test("Convert Right Pipeline messages into Error Messages test"){
-    
+
     val optid = Option(1)
     val perror = PipelineError(
          ErrorCodes.SERVER_ERROR.id,

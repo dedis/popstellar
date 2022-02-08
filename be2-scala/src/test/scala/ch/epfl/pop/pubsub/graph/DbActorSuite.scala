@@ -1,24 +1,22 @@
 package ch.epfl.pop.pubsub.graph
 
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 import akka.actor.{ActorRef, ActorSystem, Props}
-import akka.pattern.AskableActorRef
+import akka.pattern.{AskableActorRef, ask}
 import akka.testkit.{ImplicitSender, TestActors, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import akka.pattern.ask
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, Signature, WitnessSignaturePair, LaoData, ChannelData}
+import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
 
-import scala.reflect.io.Directory
-import java.io.File
-
 import scala.concurrent.Await
+import scala.reflect.io.Directory
 
 class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   with FunSuiteLike

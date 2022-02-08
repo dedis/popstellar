@@ -1,14 +1,16 @@
 package ch.epfl.pop.pubsub.graph
 
+import java.io.InputStream
+
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.requests.socialMedia._
+import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph.validators.ElectionValidator._
 import ch.epfl.pop.pubsub.graph.validators.LaoValidator._
@@ -17,23 +19,14 @@ import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
 import ch.epfl.pop.pubsub.graph.validators.RollCallValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
-import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
 import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator._
-
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-
-import com.networknt.schema.JsonSchema
-import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.ValidationMessage
-import com.networknt.schema.SpecVersion
-
-import scala.io.{BufferedSource, Source}
-import scala.util.{Failure, Success, Try}
-import scala.collection.JavaConverters._
-
+import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
+import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
+import com.networknt.schema.{JsonSchema, JsonSchemaFactory, SpecVersion, ValidationMessage}
 import spray.json._
-import java.io.InputStream
+
+import scala.collection.JavaConverters._
+import scala.util.{Success, Try}
 
 
 object Validator {

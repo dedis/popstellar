@@ -1,12 +1,11 @@
 package ch.epfl.pop.model.network.method.message.data.socialMedia
 
-import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.Timestamp
 import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirpExample._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.Timestamp
+import org.scalatest.{FunSuite, Matchers}
 import spray.json._
-
-import AddChirpExample._
 
 class AddChirpSuite extends FunSuite with Matchers {
 

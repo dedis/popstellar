@@ -1,9 +1,9 @@
 package ch.epfl.pop.model.network.method.message.data.socialMedia
 
-import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, Timestamp}
-import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, Timestamp}
+import org.scalatest.{FunSuite, Matchers}
 import spray.json._
 
 class NotifyDeleteChirpSuite extends FunSuite with Matchers {

@@ -1,29 +1,21 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import akka.actor.{ActorRef, ActorSystem, Props}
 //import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
-import akka.testkit.{ImplicitSender,TestKit,TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-
-import ch.epfl.pop.model.objects.{Base64Data, Channel, ChannelData, LaoData, PrivateKey, PublicKey}
-import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 //import util.examples.MessageExample._
-import util.examples.JsonRpcRequestExample._
-
-import org.scalatest.{BeforeAndAfterAll,FunSuiteLike,Matchers}
-
-import scala.concurrent.duration.FiniteDuration
-
-import scala.reflect.io.Directory
 import java.io.File
-
 import java.util.concurrent.TimeUnit
 
-import scala.concurrent.Await
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import util.examples.JsonRpcRequestExample._
+
+import scala.reflect.io.Directory
 
 class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem"))
     with FunSuiteLike

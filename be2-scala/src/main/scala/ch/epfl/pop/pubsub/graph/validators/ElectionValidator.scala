@@ -3,11 +3,10 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{EndElection, SetupElection, ResultElection, CastVoteElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-
-import MessageValidator._
 
 object ElectionValidator extends MessageDataContentValidator with EventValidator {
   override def EVENT_HASH_PREFIX: String = "Election"
@@ -88,7 +87,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
     def validationError(reason: String): PipelineError = super.validationError(reason, "ResultElection", rpcMessage.id)
 
     rpcMessage.getParamsMessage match {
-      case Some(message) => 
+      case Some(message) =>
         val data: ResultElection = message.decodedData.get.asInstanceOf[ResultElection]
 
         val sender: PublicKey = message.sender

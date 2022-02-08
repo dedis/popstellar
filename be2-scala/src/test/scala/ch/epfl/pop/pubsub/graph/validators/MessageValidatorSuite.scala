@@ -1,19 +1,16 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.actor.{Actor,ActorSystem,Props}
-import akka.actor.typed.ActorRef
+import akka.actor.{Actor, ActorSystem, Props}
 import akka.pattern.AskableActorRef
-import akka.testkit.{ImplicitSender,TestKit,TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-
-import ch.epfl.pop.model.objects.{Base64Data, Channel, ChannelData, LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.graph.{DbActor, PipelineError}
 
 //import util.examples.MessageExample._
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.JsonRpcRequestExample._
-
-import org.scalatest.{BeforeAndAfterAll,FunSuiteLike,Matchers}
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -37,7 +34,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
     private final val channelData: ChannelData = ChannelData(ObjectType.LAO, List.empty)
 
-    
+
 
 
     private def mockDbNack: AskableActorRef = {
@@ -151,6 +148,6 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
 
     test("validateMessage rejects request with invalid signature"){
         MessageValidator.validateMessage(INVALID_SIGNATURE_RPC) shouldBe a [Right[_,PipelineError]]
-    }    
+    }
 
 }

@@ -3,19 +3,17 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
+import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.requests.socialMedia._
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, Hash, Base64Data, Signature, Timestamp, PublicKey}
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator
-import ch.epfl.pop.json.MessageDataProtocol._
+import spray.json._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-
-import spray.json._
 
 object SocialMediaHandler extends MessageHandler {
   override val handler = new SocialMediaHandler(super.dbActor).handler

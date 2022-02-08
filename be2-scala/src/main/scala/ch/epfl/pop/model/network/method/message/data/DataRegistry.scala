@@ -1,10 +1,10 @@
 package ch.epfl.pop.model.network.method.message.data
 
-import scala.util.Try
+import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 
 import scala.collection.immutable.Map
-import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
+import scala.util.Try
 
 /**
   * Class representing a key entry pair to [[DataRegistry]] mapping

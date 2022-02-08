@@ -1,14 +1,13 @@
 package util.examples
 
-import MessageExample._
-import socialMedia.AddChirpExamples._ 
-import socialMedia.DeleteChirpExamples._
-import socialMedia.AddReactionExamples._
-import socialMedia.DeleteReactionExamples._
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
-import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.{Base64Data, Channel}
+import util.examples.MessageExample._
+import util.examples.socialMedia.AddChirpExamples._
+import util.examples.socialMedia.AddReactionExamples._
+import util.examples.socialMedia.DeleteChirpExamples._
+import util.examples.socialMedia.DeleteReactionExamples._
 
 object JsonRpcRequestExample {
 

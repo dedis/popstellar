@@ -3,16 +3,10 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
-import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
-import ch.epfl.pop.model.network.method.message.data.rollCall.IOpenRollCall
-import ch.epfl.pop.model.network.method.message.data.rollCall.OpenRollCall
-import ch.epfl.pop.model.network.method.message.data.rollCall.ReopenRollCall
+import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, IOpenRollCall}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
-import ch.epfl.pop.pubsub.graph.GraphMessage
-import ch.epfl.pop.pubsub.graph.PipelineError
-
-import MessageValidator._
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 
 
 case object RollCallValidator extends MessageDataContentValidator with EventValidator {

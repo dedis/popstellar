@@ -1,7 +1,6 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.pattern.AskableActorRef
-
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -10,7 +9,6 @@ import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 object MessageValidator extends ContentValidator with AskPatternConstants {

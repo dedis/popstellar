@@ -1,23 +1,20 @@
 package ch.epfl.pop.pubsub.graph
 
-import java.io.File
+import java.io.{File, IOException}
 import java.nio.charset.StandardCharsets
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.{MessageData, ObjectType}
-import ch.epfl.pop.model.objects.{Channel, Hash, Signature, LaoData, ChannelData}
+import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
-import org.iq80.leveldb.{DB, DBIterator, Options, WriteBatch}
-
-import scala.collection.mutable
-import scala.concurrent.{Await, Future}
-import scala.util.{Failure, Success, Try}
+import org.iq80.leveldb.{DB, Options, WriteBatch}
 import org.slf4j.LoggerFactory
-import java.io.IOException
+
+import scala.util.{Failure, Success, Try}
 
 object DbActor extends AskPatternConstants {
 
@@ -464,7 +461,7 @@ object DbActor extends AskPatternConstants {
       case CreateChannel(channel, objectType) =>
         log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
         sender ! createChannel(channel, objectType)
-      
+
       case CreateChannelsFromList(list) =>
         log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
         sender ! createChannelsFromList(list)

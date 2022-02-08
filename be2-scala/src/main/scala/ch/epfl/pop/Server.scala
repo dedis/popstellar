@@ -11,18 +11,13 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
+import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
 import ch.epfl.pop.pubsub.graph.DbActor
 import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
-import scala.io.StdIn
 import scala.util.{Failure, Success}
-import com.typesafe.config.ConfigFactory
-import java.io.File
-import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.config.ServerConf
-import akka.event.LoggingAdapter
 
 object Server {
 

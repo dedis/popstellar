@@ -1,14 +1,10 @@
 package ch.epfl.pop.pubsub.graph.validator.lao
 
-import akka.NotUsed
-import akka.stream.FlowShape
-import akka.stream.scaladsl.{Flow, GraphDSL}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
-import ch.epfl.pop.pubsub.graph.{GraphMessage,MessageDecoder,Validator}
-import org.scalatest.{FlatSpec,GivenWhenThen,Inside,Matchers,Outcome}
-
+import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder, Validator}
+import org.scalatest.{FlatSpec, GivenWhenThen, Inside, Matchers}
 import util.examples.lao.CreateLaoExamples
 
 class CreateLaoContentSuiteSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {

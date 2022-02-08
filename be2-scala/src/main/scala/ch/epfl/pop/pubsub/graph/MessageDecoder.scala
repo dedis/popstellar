@@ -7,12 +7,12 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestCastVoteElection, JsonRpcRequestSetupElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.requests.socialMedia._
+import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import spray.json._
 
@@ -94,7 +94,7 @@ object MessageDecoder {
       case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE) => request.toTypedRequest(JsonRpcRequestNotifyDeleteChirp)
       case (ObjectType.REACTION, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddReaction)
       case (ObjectType.REACTION, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteReaction)
-      
+
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
     }
     case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")

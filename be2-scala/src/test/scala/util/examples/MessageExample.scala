@@ -1,11 +1,11 @@
 package util.examples
 
+import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.network.method.message.data.socialMedia.AddChirp
-import ch.epfl.pop.model.objects.{Base64Data, Hash, PrivateKey, PublicKey, Signature, Timestamp, WitnessSignaturePair}
-import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.model.objects._
 import spray.json._
 
 object MessageExample {

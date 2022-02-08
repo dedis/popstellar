@@ -1,18 +1,9 @@
 package util.examples.data
 
-import ch.epfl.pop.model.network.method.message.data.{ObjectType, ActionType}
 import ch.epfl.pop.model.network.JsonRpcRequest
-import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.network.method.message.Message
-
-import ch.epfl.pop.model.objects.{Channel, Signature, Base64Data, PublicKey, Hash, WitnessSignaturePair}
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import util.examples.data.traits.SocialMediaChirpMessagesTrait
-import util.examples.data.traits.SocialMediaReactionMessagesTrait
-
-
-import java.nio.file.{Files, Path}
+import ch.epfl.pop.model.network.method.message.data.ActionType
+import ch.epfl.pop.model.objects.{Base64Data, Channel}
+import util.examples.data.traits.{SocialMediaChirpMessagesTrait, SocialMediaReactionMessagesTrait}
 
 /**
   * Generates high level RollCall Messages from protocol folder

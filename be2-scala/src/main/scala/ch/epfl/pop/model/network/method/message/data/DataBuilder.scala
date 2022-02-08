@@ -3,8 +3,7 @@ package ch.epfl.pop.model.network.method.message.data
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 
-import spray.json._
-import scala.util.{Try,Success,Failure}
+import scala.util.{Failure, Success, Try}
 
 /**Companion object of DataBuilder that helps building MessageData instances**/
 object DataBuilder {

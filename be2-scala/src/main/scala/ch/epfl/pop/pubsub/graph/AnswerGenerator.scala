@@ -1,15 +1,16 @@
 package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
 import ch.epfl.pop.model.network.{ResultObject, _}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-import akka.pattern.AskableActorRef
 
 /**
   * Object for AnswerGenerator to keep a compatible interface

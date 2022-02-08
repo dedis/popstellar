@@ -2,10 +2,8 @@ package ch.epfl.pop.json
 
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects._
+import org.scalatest.Inspectors.forEvery
 import org.scalatest.{FunSuite, Matchers}
-import org.scalatest.Inspectors.{forAll,forEvery}
-import org.scalatest.Matchers._
-import org.scalactic.Prettifier
 
 class HighLevelProtocolSuite extends FunSuite with Matchers  {
   import MsgField._

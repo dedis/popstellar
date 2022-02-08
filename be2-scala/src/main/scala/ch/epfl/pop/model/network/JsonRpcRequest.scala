@@ -1,12 +1,12 @@
 package ch.epfl.pop.model.network
 
+import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
-import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
 import scala.util.{Success, Try}

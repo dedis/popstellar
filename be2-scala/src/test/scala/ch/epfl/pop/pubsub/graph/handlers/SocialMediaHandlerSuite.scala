@@ -1,23 +1,15 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.{Actor, ActorSystem, Props}
-import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import scala.concurrent.duration.FiniteDuration
-
 import ch.epfl.pop.pubsub.graph.{DbActor, PipelineError}
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.model.network.requests.socialMedia._
-import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.objects.Channel
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import util.examples.LaoDataExample
+import util.examples.data.{AddChirpMessages, AddReactionMessages, DeleteChirpMessages, DeleteReactionMessages}
 
-import util.examples.{JsonRpcRequestExample, LaoDataExample}
-import util.examples.data.{AddReactionMessages, DeleteReactionMessages, AddChirpMessages, DeleteChirpMessages}
+import scala.concurrent.duration.FiniteDuration
 
 
 class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
@@ -25,7 +17,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     implicit val duration = FiniteDuration(5 ,"seconds")
     implicit val timeout  = Timeout(duration)
 
-    
+
 
     override def afterAll(): Unit = {
         // Stops the testKit
@@ -106,7 +98,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
                     system.log.info("Responding with a Ack")
 
                     sender ! DbActor.DbActorWriteAck()
-                
+
                 case m: DbActor.ReadLaoData =>
                     system.log.info("Received {}", m)
                     system.log.info("Responding with a NAck")
@@ -127,7 +119,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
                     system.log.info("Responding with a Ack")
 
                     sender ! DbActor.DbActorWriteAck()
-                
+
                 case m: DbActor.ReadLaoData =>
                     system.log.info("Received {}", m)
                     system.log.info("Responding with a NAck")

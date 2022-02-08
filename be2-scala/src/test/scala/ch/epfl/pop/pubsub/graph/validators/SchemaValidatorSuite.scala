@@ -1,11 +1,10 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import org.scalatest.{Matchers, FunSuite}
-import scala.io.Source
-import ch.epfl.pop.pubsub.graph.Validator._
 import ch.epfl.pop.pubsub.graph.PipelineError
-import ch.epfl.pop.pubsub.graph.ErrorCodes
-import java.io.IOException
+import ch.epfl.pop.pubsub.graph.Validator._
+import org.scalatest.{FunSuite, Matchers}
+
+import scala.io.Source
 
 object SchemaValidatorSuite {
     def getJsonStringFromFile(filePath: String): String = {

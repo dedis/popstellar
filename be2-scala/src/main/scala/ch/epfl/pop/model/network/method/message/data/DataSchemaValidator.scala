@@ -3,13 +3,12 @@ package ch.epfl.pop.model.network.method.message.data
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.pubsub.graph.Validator
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.networknt.schema.JsonSchema
 import org.slf4j.LoggerFactory
 
-import scala.util.{Try, Success, Failure}
 import scala.jdk.CollectionConverters.SetHasAsScala
+import scala.util.{Failure, Success, Try}
 
 
 /** DataSchemaValidator Object, provides a validateSchema method that verifies a certain payload of a certain actionType

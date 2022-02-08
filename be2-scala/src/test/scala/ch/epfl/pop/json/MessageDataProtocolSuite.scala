@@ -1,6 +1,6 @@
 package ch.epfl.pop.json
 
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, EndElection, ResultElection, SetupElection, VoteElection}
+import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.objects._
 import org.scalatest.{FunSuite, Matchers}

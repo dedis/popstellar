@@ -1,8 +1,7 @@
 package ch.epfl.pop.model.objects
 
-import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.{Base64Data, Hash}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
+import org.scalatest.{FunSuite, Matchers}
 
 class ChannelDataSuite extends FunSuite with Matchers {
     test("Apply works with empty/full list for ChannelData"){

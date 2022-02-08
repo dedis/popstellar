@@ -1,22 +1,14 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.actor.{Actor, ActorSystem, Props}
-import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import scala.concurrent.duration.FiniteDuration
-
 import ch.epfl.pop.pubsub.graph.{DbActor, PipelineError}
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCreateRollCall
-import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.objects.Channel
-
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.data.CreateRollCallMessages
+
+import scala.concurrent.duration.FiniteDuration
 
 
 class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {

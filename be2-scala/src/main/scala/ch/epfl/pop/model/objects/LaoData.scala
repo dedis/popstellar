@@ -1,10 +1,7 @@
 package ch.epfl.pop.model.objects
 
-import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.json.MessageDataProtocol._
-import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.Parsable
-import ch.epfl.pop.model.objects._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
@@ -20,12 +17,12 @@ import com.google.crypto.tink.subtle.Ed25519Sign
 * @param attendees: list of the last roll call attendees
 * @param privateKey: the LAO's own private key, used to sign messages
 * @param publicKey: the LAO's own public key, used to sign messages
-* @param witnesses: the LAO's list of witnesses 
+* @param witnesses: the LAO's list of witnesses
 */
 case class LaoData(
     owner: PublicKey,
     attendees: List[PublicKey],
-    privateKey: PrivateKey, 
+    privateKey: PrivateKey,
     publicKey: PublicKey,
     witnesses: List[PublicKey]
 ){

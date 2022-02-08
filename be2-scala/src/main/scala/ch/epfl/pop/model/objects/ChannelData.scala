@@ -1,11 +1,8 @@
 package ch.epfl.pop.model.objects
 
-import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.json.MessageDataProtocol._
-import ch.epfl.pop.json.ObjectProtocol._
 import ch.epfl.pop.model.network.Parsable
-import ch.epfl.pop.model.network.method.message.data.{ObjectType}
-import ch.epfl.pop.model.objects._
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 import spray.json._
 
 
@@ -22,7 +19,7 @@ case class ChannelData(
     def addMessage(messageId: Hash): ChannelData = {
         ChannelData(channelType, messageId :: messages)
     }
-    
+
 }
 
 object ChannelData extends Parsable {

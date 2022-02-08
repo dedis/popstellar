@@ -7,8 +7,8 @@ import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
-import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
+import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import spray.json._

@@ -1,8 +1,8 @@
 package ch.epfl.pop.model.network.method.message.data
-import ch.epfl.pop.model.network.method.message.data.ObjectType._
 import ch.epfl.pop.model.network.method.message.data.ActionType._
+import ch.epfl.pop.model.network.method.message.data.ObjectType._
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.network.method.message.data.rollCall.{CreateRollCall, OpenRollCall, ReopenRollCall, CloseRollCall}
+import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 
 object DataRegistryModule {

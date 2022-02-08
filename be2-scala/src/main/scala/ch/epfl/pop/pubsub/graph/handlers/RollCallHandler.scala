@@ -1,21 +1,19 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, LaoData}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
+import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.DbActor._
+import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-
-import scala.util.Success
-import akka.pattern.AskableActorRef
 
 /**
  * RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)

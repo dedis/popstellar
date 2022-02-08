@@ -1,12 +1,11 @@
 package ch.epfl.pop.model.network.method.message.data.socialMedia
 
-import org.scalatest.{FunSuite, Matchers}
 import ch.epfl.pop.json.MessageDataProtocol._
-import ch.epfl.pop.model.objects.{Base64Data, Hash, Timestamp}
+import ch.epfl.pop.model.network.method.message.data.socialMedia.AddReactionExample._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.objects.{Base64Data, Hash, Timestamp}
+import org.scalatest.{FunSuite, Matchers}
 import spray.json._
-
-import AddReactionExample._
 
 class AddReactionSuite extends FunSuite with Matchers {
     test("Constructor/apply works as intended"){

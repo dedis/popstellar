@@ -1,7 +1,6 @@
 package ch.epfl.pop.model.objects
 
 import org.scalatest.{FunSuite, Matchers}
-import ch.epfl.pop.model.objects.Channel
 
 class ChannelSuite extends FunSuite with Matchers {
   test("Root/Sub channel test (1)") {

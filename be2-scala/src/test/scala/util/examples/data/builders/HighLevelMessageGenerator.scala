@@ -1,14 +1,14 @@
 package util.examples.data.builders
 
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.network.method.ParamsWithMessage
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall}
 import ch.epfl.pop.model.network.requests.socialMedia._
-import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey, Signature, WitnessSignaturePair}
+import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 
 /**

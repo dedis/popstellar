@@ -1,17 +1,14 @@
 package ch.epfl.pop.pubsub.graph.validators
 
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage, PipelineError}
 
-import MessageValidator._
-
-import scala.concurrent.ExecutionContext.Implicits.global
-import akka.pattern.AskableActorRef
-
-// Similarly to the handlers, we create a SocialMediaValidator object which creates a SocialMediaValidator class instance. 
+// Similarly to the handlers, we create a SocialMediaValidator object which creates a SocialMediaValidator class instance.
 // The default dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purposes.
 object SocialMediaValidator extends MessageDataContentValidator with EventValidator {
 

@@ -1,12 +1,10 @@
 package ch.epfl.pop.model.objects
 
-import org.scalatest.{FunSuite, Matchers, BeforeAndAfterAll}
-import com.google.crypto.tink.subtle.Ed25519Sign
 import java.nio.charset.StandardCharsets
-import org.scalatest.Inspectors.{forAll,forEvery}
-import org.scalatest.fixture
-import org.scalatest.Suite
-import org.scalatest.Outcome
+
+import com.google.crypto.tink.subtle.Ed25519Sign
+import org.scalatest.Inspectors.forEvery
+import org.scalatest.{BeforeAndAfterAll, FunSuite, Matchers}
 
 
 /*Helper object for testing*/

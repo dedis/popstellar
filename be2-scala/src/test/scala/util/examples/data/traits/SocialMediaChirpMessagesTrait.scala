@@ -1,13 +1,7 @@
 package util.examples.data.traits
 
-import ch.epfl.pop.model.network.method.message.data.{ObjectType,ActionType}
-
-import ch.epfl.pop.model.network.{JsonRpcRequest,MethodType}
-import util.examples.data.builders.HighLevelMessageGenerator
-import util.examples.data.traits.ExampleMessagesTrait
-
-import java.nio.file.Path
-import java.nio.file.Files
+import ch.epfl.pop.model.network.MethodType
+import ch.epfl.pop.model.network.method.message.data.ObjectType
 
 /**
   * Trait to be implemented by SocialMediaMessages examples (chirps)
