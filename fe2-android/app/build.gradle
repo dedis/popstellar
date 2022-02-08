@@ -16,15 +16,30 @@ android {
 
         testInstrumentationRunner "com.github.dedis.popstellar.HiltTestRunner"
 
+        // The following feature is not working properly with the coverage on the current build version
+        // As it's purpose is to clear physical data between each tests, its is not used yet.
+        // Let's hope the feature will be fixed before we actually need it.
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        // testInstrumentationRunnerArguments clearPackageData: 'true'
+
+        buildTypes {
+            debug {
+                isDefault true
+                testCoverageEnabled true
+            }
+
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            }
+        }
+
         compileOptions {
             sourceCompatibility JavaVersion.VERSION_1_8
             targetCompatibility JavaVersion.VERSION_1_8
-        }
-
-        testOptions {
-            unitTests.returnDefaultValues = true
-            // Improve tests performances by disabling fancy animations
-            animationsDisabled = true
         }
 
         javaCompileOptions {
@@ -32,75 +47,45 @@ android {
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
-    }
 
-    buildTypes {
-        debug {
-            getIsDefault().set(true)  // sets this build type as default
-            testCoverageEnabled true // Enables test coverage
+        // Enable data binding library for the project
+        // For more information : https://developer.android.com/topic/libraries/data-binding
+        buildFeatures {
+            dataBinding true
         }
 
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-        }
-    }
+        testOptions {
+            execution 'ANDROIDX_TEST_ORCHESTRATOR'
+            animationsDisabled true
 
-    // Enable data binding library for the project
-    // For more information : https://developer.android.com/topic/libraries/data-binding
-    dataBinding {
-        enabled = true
-    }
-
-    flavorDimensions "default"
-
-    productFlavors {
-        mock {
-            dimension "default"
-
-            testOptions {
-                execution 'ANDROIDX_TEST_ORCHESTRATOR'
+            unitTests {
+                returnDefaultValues true
+                includeAndroidResources true
             }
-
-            // The following argument makes the Android Test Orchestrator run its
-            // "pm clear" command after each test invocation. This command ensures
-            // that the app's state is completely cleared between tests.
-            testInstrumentationRunnerArguments clearPackageData: 'true'
-        }
-
-        // Flavor used only to compute the coverage of the tests as it cannot be done with
-        // the android orchestrator enabled. More informations :
-        // https://developer.android.com/training/testing/junit-runner#using-android-test-orchestrator
-        cov {
-            dimension "default"
-        }
-
-        prod {
-            getIsDefault().set(true)  // sets this flavor as default
-            dimension "default"
         }
     }
 
     // Add the common test sources to the project
     sourceSets
-        .findAll {it.name.toLowerCase().contains("test") }
+        .findAll { it.name.toLowerCase().contains("test") }
         .forEach {
             it.java.srcDirs += file("$project.projectDir/src/test/common")
         }
+}
 
-    // Make sure the coverage flavor uses the same source set as the mock
-    sourceSets {
-        cov {
-            java.srcDirs += mock.java.srcDirs
-            resources.srcDirs += mock.resources.srcDirs
-        }
-    }
+// Jacoco setup - This handles the code coverage of the tests
+jacoco {
+    toolVersion = "0.8.7"
+}
 
+tasks.withType(Test) {
     jacoco {
-        jacocoVersion = "0.8.7"
+        includeNoLocationClasses = true
+        excludes = ['jdk.internal.*'] // Allows it to run on Java 11
     }
 }
 
+// Sonarqube configuration - used to produce the analysis for SonarCloud
 sonarqube {
     properties {
         property "sonar.projectKey", "dedis_student_21_pop_fe2"
@@ -113,12 +98,6 @@ sonarqube {
         property "sonar.androidLint.reportPaths", "${project.buildDir}/reports/lint-results-prodDebug.xml"
         // Paths to JaCoCo XML coverage report files.
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
-    }
-}
-
-project.gradle.taskGraph.whenReady {
-    connectedCovDebugAndroidTest {
-        ignoreFailures = true
     }
 }
 
@@ -153,7 +132,7 @@ dependencies {
     implementation 'org.glassfish.tyrus:tyrus-client:1.1'
     implementation 'org.glassfish.tyrus:tyrus-container-grizzly:1.1'
 
-    def room_version = "2.4.0-beta01"
+    def room_version = "2.4.1"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
@@ -164,16 +143,14 @@ dependencies {
     implementation 'org.bouncycastle:bcpkix-jdk15on:1.65'
     implementation 'io.github.novacrypto:BIP39:2019.01.27'
 
-    testImplementation 'junit:junit:4.13.1'
-    testImplementation 'net.jodah:concurrentunit:0.4.6'
-    testImplementation 'org.glassfish.tyrus:tyrus-server:1.1'
+    testImplementation 'junit:junit:4.13.2'
 
     testImplementation 'org.slf4j:slf4j-api:1.7.30'
     testImplementation 'org.slf4j:slf4j-simple:1.7.30'
 
     testImplementation 'org.mockito:mockito-core:3.9.0'
 
-    debugImplementation "androidx.fragment:fragment-testing:1.4.0"
+    debugImplementation "androidx.fragment:fragment-testing:1.4.1"
 
     androidTestImplementation 'androidx.test:core:1.4.0'
     androidTestImplementation 'androidx.test:runner:1.4.0'
@@ -188,7 +165,7 @@ dependencies {
     androidTestImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
     androidTestAnnotationProcessor "com.google.dagger:hilt-android-compiler:$hilt_version"
 
-    androidTestUtil 'androidx.test:orchestrator:1.4.0'
+    androidTestUtil 'androidx.test:orchestrator:1.4.1'
 }
 
 delete 'src/main/resources/protocol'
@@ -213,10 +190,10 @@ copy {
     }
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'createCovDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
     reports {
-        xml.enabled = true
-        html.enabled = true
+        xml.required = true
+        html.required = true
     }
 
     def fileFilter = [
@@ -245,13 +222,13 @@ task jacocoTestReport(type: JacocoReport, dependsOn: ['testCovDebugUnitTest', 'c
         'Hilt_*.class',
         '_test_*.class'
     ]
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/covDebug/classes", excludes: fileFilter)
+    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug/classes", excludes: fileFilter)
     def mainSrc = "$project.projectDir/src/main/java"
 
     sourceDirectories.setFrom(files([mainSrc]))
     classDirectories.setFrom(files([debugTree]))
     executionData.setFrom(fileTree(dir: project.buildDir, includes: [
-        'jacoco/*.exec',
-        'outputs/code_coverage/covDebugAndroidTest/connected/**/*.ec',
+        'outputs/unit_test_code_coverage/*/*.exec',
+        'outputs/code_coverage/*/connected/**/*.ec',
     ]))
 }
