@@ -42,7 +42,7 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
         // if we have no one subscribed to said channel
         case _ =>
           log.info(s"Subscribing $clientActorRef to channel '$channel'")
-          channelMap = channelMap + (channel -> mutable.Set(clientActorRef))
+          channelMap = channelMap ++ List(channel -> mutable.Set(clientActorRef))
           SubscribeToAck(channel)
       }
 
@@ -93,12 +93,12 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
   override def receive: Receive = LoggingReceive {
 
     case PubSubMediator.SubscribeTo(channel, clientActorRef) =>
-      val senderRef = sender // since we are asking dbActor, sender (client) could get overwritten!
+      val senderRef = sender() // since we are asking dbActor, sender (client) could get overwritten!
       val ask: Future[PubSubMediatorMessage] = subscribeTo(channel, clientActorRef)
       senderRef ! Await.result(ask, duration)
 
     case PubSubMediator.UnsubscribeFrom(channel, clientActorRef) =>
-      sender ! unsubscribeFrom(channel, clientActorRef)
+      sender() ! unsubscribeFrom(channel, clientActorRef)
 
     case PubSubMediator.Propagate(channel, message) => broadcast(channel, message)
 

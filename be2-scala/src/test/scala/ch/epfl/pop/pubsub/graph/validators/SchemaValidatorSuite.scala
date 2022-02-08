@@ -8,8 +8,8 @@ import scala.io.Source
 
 object SchemaValidatorSuite {
   def getJsonStringFromFile(filePath: String): String = {
-    val source = Source.fromFile(filePath);
-    val jsonStr = source.getLines.mkString
+    val source = Source.fromFile(filePath)
+    val jsonStr = source.getLines().mkString
     source.close
     jsonStr
   }

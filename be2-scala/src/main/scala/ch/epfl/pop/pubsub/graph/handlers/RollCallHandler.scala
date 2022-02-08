@@ -127,5 +127,5 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     }
   }
 
-  private def generateSocialChannel(channel: Channel, pk: PublicKey): Channel = Channel(channel + Channel.SOCIAL_CHANNEL_PREFIX + pk.base64Data)
+  private def generateSocialChannel(channel: Channel, pk: PublicKey): Channel = Channel(s"$channel${Channel.SOCIAL_CHANNEL_PREFIX}${pk.base64Data}")
 }

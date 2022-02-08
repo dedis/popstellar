@@ -29,7 +29,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info("Received {}", m)
           system.log.info("Responding with a Nack")
 
-          sender ! DbActor.DbActorNAck(1, "error")
+          sender() ! DbActor.DbActorNAck(1, "error")
       }
     }
     )
@@ -44,7 +44,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender ! DbActor.DbActorWriteAck()
+          sender() ! DbActor.DbActorWriteAck()
       }
     }
     )

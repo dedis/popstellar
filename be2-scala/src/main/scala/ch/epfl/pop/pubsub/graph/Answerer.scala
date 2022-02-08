@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.TextMessage
-import akka.stream.OverflowStrategy
+import akka.stream.{CompletionStrategy, OverflowStrategy}
 import akka.stream.scaladsl.{Flow, Sink, Source}
 import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse}
@@ -12,6 +12,7 @@ import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import spray.json._
 
 object Answerer {
+  private val CLIENT_BUFFER_SIZE: Int = 256
 
   private def errorResponseString(code: Int, reason: String, rpcId: Option[Int]): String = JsonRpcResponse(
     RpcValidator.JSON_RPC_VERSION, None, Some(ErrorObject(code, reason)), rpcId
@@ -44,12 +45,23 @@ object Answerer {
       // Send the ClientAnswer to clientActorRef. Whenever the stream between the client
       // actor and the actual client (front-end) is broken, the message DisconnectWsHandle
       // is sent to clientActorRef
-      .to(Sink.actorRef(clientActorRef, DisconnectWsHandle))
+      .to(Sink.actorRef(clientActorRef, DisconnectWsHandle, { t: Throwable => print(t); DisconnectWsHandle }))
 
     // Integration point between Akka Streams and above actor
     val source: Source[TextMessage, NotUsed] = Source
       // By using .actorRef, the source emits whatever the actor "wsHandle" sends
-      .actorRef(bufferSize = 128, overflowStrategy = OverflowStrategy.dropBuffer) // OverflowStrategy.backpressure is not allowed!
+      .actorRef(
+        {
+          case akka.actor.Status.Success(s: CompletionStrategy) => s
+          case akka.actor.Status.Success(_) => CompletionStrategy.draining
+          case akka.actor.Status.Success => CompletionStrategy.draining
+        },
+        {
+          case akka.actor.Status.Failure(cause) => cause
+        },
+        bufferSize = CLIENT_BUFFER_SIZE,
+        overflowStrategy = OverflowStrategy.dropBuffer // OverflowStrategy.backpressure is not allowed!
+      )
       // Send an answer back to the client (the one represented by wsHandle == clientActorRef)
       .map((graphMessage: GraphMessage) => sendAnswer(graphMessage))
       .mapMaterializedValue { wsHandle =>

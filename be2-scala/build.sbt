@@ -1,12 +1,16 @@
 import scala.util.{Try, Success, Failure}
 import sbtsonar.SonarPlugin.autoImport.sonarProperties
-import sbt.IO._
 
 name := "pop"
 
 version := "0.1"
 
 scalaVersion := "2.13.7"
+
+scalacOptions ++= Seq(
+    "-deprecation", // deprecation warnings
+    "-feature",     // usage of features that should be imported separately
+)
 
 //Reload changes automatically
 Global / onChangedBuildSource := ReloadOnSourceChanges

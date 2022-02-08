@@ -39,7 +39,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
     val mockedDB = Props(new Actor() {
       override def receive = {
         case DbActor.Catchup(channel) =>
-          sender ! DbActor.DbActorCatchupAck(msgs)
+          sender() ! DbActor.DbActorCatchupAck(msgs)
       }
     }
     )
@@ -57,8 +57,8 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   def mockDbWithNack(code: Int, description: String): AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive = {
-        case DbActor.Catchup(channel) =>
-          sender ! DbActor.DbActorNAck(code, description)
+        case DbActor.Catchup(_) =>
+          sender() ! DbActor.DbActorNAck(code, description)
       }
     }
     )

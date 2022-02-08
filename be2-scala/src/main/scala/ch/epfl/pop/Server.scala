@@ -52,7 +52,7 @@ object Server {
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
       /* Setup http server with bind and route config*/
-      val bindingFuture = Http().bindAndHandle(publishSubscribeRoute, config.interface, config.port)
+      val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(publishSubscribeRoute)
 
       bindingFuture.onComplete {
         case Success(_) => println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")

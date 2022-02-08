@@ -10,7 +10,7 @@ import util.examples.lao.CreateLaoExamples
 
 class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
-  def withCreateLaoFixiture(msg: Message)(testCode: (GraphMessage, Message) => Any) {
+  def withCreateLaoFixiture(msg: Message)(testCode: (GraphMessage, Message) => Any): Unit = {
     val jsonReq = CreateLaoExamples.getJsonRequestFromMessage(msg)
     testCode(Left(jsonReq), msg)
   }

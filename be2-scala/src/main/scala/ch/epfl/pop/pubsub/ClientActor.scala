@@ -36,13 +36,13 @@ case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with 
         val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.SubscribeTo(channel, this.self)).map {
           case m: PubSubMediatorMessage => m
         }
-        sender ! Await.result(ask, duration)
+        sender() ! Await.result(ask, duration)
 
       case ClientActor.UnsubscribeFrom(channel) =>
         val ask: Future[PubSubMediatorMessage] = (mediatorAskable ? PubSubMediator.UnsubscribeFrom(channel, this.self)).map {
           case m: PubSubMediatorMessage => m
         }
-        sender ! Await.result(ask, duration)
+        sender() ! Await.result(ask, duration)
     }
     case message: PubSubMediatorMessage => message match {
       case SubscribeToAck(channel) =>

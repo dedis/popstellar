@@ -91,7 +91,7 @@ object DataSchemaValidator {
     val jsonNode: JsonNode = objectMapper.readTree(payload)
     val errors = schema.validate(jsonNode).asScala
     errors match {
-      case _ if errors.isEmpty => Success()
+      case _ if errors.isEmpty => Success((): Unit)
       case _ => Failure(new Exception(errors.mkString("; ")))
     }
   }

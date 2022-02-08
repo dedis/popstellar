@@ -235,12 +235,12 @@ object DbActor extends AskPatternConstants {
 
 
     //helper functions for the database key generation, could make them public later if needed elsewhere
-    private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
+    private def generateMessageKey(channel: Channel, messageId: Hash): String = s"$channel${Channel.SEPARATOR}${messageId.toString}"
 
     //may return null if the extractLaoId fails
     private def generateLaoDataKey(channel: Channel): String = {
       channel.decodeChannelLaoId match {
-        case Some(data) => data + Channel.LAO_DATA_LOCATION
+        case Some(data) => s"$data${Channel.LAO_DATA_LOCATION}"
         case None =>
           log.info(s"Actor $self (db) encountered a problem while decoding subchannel from '$channel'")
           null
@@ -414,11 +414,12 @@ object DbActor extends AskPatternConstants {
       }
     }
 
+    @scala.annotation.tailrec
     private def createChannelsFromList(li: List[(Channel, ObjectType.ObjectType)]): DbActorMessage = li match {
       case Nil => DbActorAck()
       case head :: tail => createChannel(head._1, head._2) match {
         case DbActorAck() => createChannelsFromList(tail)
-        case nack@DbActorNAck(_, _) => nack
+        case nack => nack
       }
     }
 
@@ -434,54 +435,54 @@ object DbActor extends AskPatternConstants {
     override def receive: Receive = LoggingReceive {
       case Write(channel, message) =>
         log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
-        sender ! write(channel, message)
+        sender() ! write(channel, message)
 
       case Read(channel, messageId) =>
         log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
-        sender ! read(channel, messageId)
+        sender() ! read(channel, messageId)
 
       case ReadChannelData(channel) =>
         log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
-        sender ! readChannelData(channel)
+        sender() ! readChannelData(channel)
 
       case ReadLaoData(channel) =>
         log.info(s"Actor $self (db) received a ReadLaoData request")
-        sender ! readLaoData(channel)
+        sender() ! readLaoData(channel)
 
       case Catchup(channel) =>
         log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
-        sender ! catchup(channel)
+        sender() ! catchup(channel)
 
       case WriteAndPropagate(channel, message) =>
         log.info(s"Actor $self (db) received a WriteAndPropagate request on channel '$channel'")
         val answer: DbActorMessage = write(channel, message)
         mediatorRef ! PubSubMediator.Propagate(channel, message)
-        sender ! answer
+        sender() ! answer
 
       case CreateChannel(channel, objectType) =>
         log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
-        sender ! createChannel(channel, objectType)
+        sender() ! createChannel(channel, objectType)
 
       case CreateChannelsFromList(list) =>
         log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
-        sender ! createChannelsFromList(list)
+        sender() ! createChannelsFromList(list)
 
       case ChannelExists(channel) =>
         log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
-        sender ! channelExists(channel)
+        sender() ! channelExists(channel)
 
       case AddWitnessSignature(messageId, _) =>
         log.info(
           s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'"
         )
-        sender ! DbActorNAck(
+        sender() ! DbActorNAck(
           ErrorCodes.SERVER_ERROR.id,
           s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
         )
 
       case m@_ =>
         log.info(s"Actor $self (db) received an unknown message")
-        sender ! DbActorNAck(
+        sender() ! DbActorNAck(
           ErrorCodes.SERVER_ERROR.id,
           s"database actor received a message '$m' that it could not recognize"
         )

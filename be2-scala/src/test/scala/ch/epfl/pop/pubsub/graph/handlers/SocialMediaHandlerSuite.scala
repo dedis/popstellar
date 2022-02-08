@@ -31,7 +31,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           system.log.info("Received {}", m)
           system.log.info("Responding with a Nack")
 
-          sender ! DbActor.DbActorNAck(1, "error")
+          sender() ! DbActor.DbActorNAck(1, "error")
       }
     }
     )
@@ -46,13 +46,13 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender ! DbActor.DbActorWriteAck()
+          sender() ! DbActor.DbActorWriteAck()
 
         case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
       }
     }
     )
@@ -68,20 +68,20 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
             system.log.info(s"Received WAP on channel $channel")
             system.log.info("Responding with a Ack")
 
-            sender ! DbActor.DbActorWriteAck()
+            sender() ! DbActor.DbActorWriteAck()
           }
           else {
             system.log.info(s"Received WAP on channel $channel")
             system.log.info("Responding with a NAck")
 
-            sender ! DbActor.DbActorNAck(1, "error")
+            sender() ! DbActor.DbActorNAck(1, "error")
           }
 
         case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
       }
     }
     )
@@ -96,13 +96,13 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender ! DbActor.DbActorWriteAck()
+          sender() ! DbActor.DbActorWriteAck()
 
         case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a NAck")
 
-          sender ! DbActor.DbActorReadLaoDataAck(None)
+          sender() ! DbActor.DbActorReadLaoDataAck(None)
       }
     }
     )
@@ -117,13 +117,13 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender ! DbActor.DbActorWriteAck()
+          sender() ! DbActor.DbActorWriteAck()
 
         case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a NAck")
 
-          sender ! DbActor.DbActorNAck(1, "error")
+          sender() ! DbActor.DbActorNAck(1, "error")
       }
     }
     )

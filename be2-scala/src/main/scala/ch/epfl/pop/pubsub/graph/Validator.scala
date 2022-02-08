@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
 import com.networknt.schema.{JsonSchema, JsonSchemaFactory, SpecVersion, ValidationMessage}
 import spray.json._
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters._
 import scala.util.{Success, Try}
 
 
@@ -39,7 +39,7 @@ object Validator {
     //Get input stream of query.json file from resources folder
     def queryFile: InputStream = this.getClass().getClassLoader().getResourceAsStream(jsonPath)
 
-    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
+    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtained from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
     // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
     // Closing the stream is done by readTree
@@ -57,8 +57,7 @@ object Validator {
     val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
     if (errors.isEmpty) {
       Left(jsonString)
-    }
-    else {
+    } else {
       val rpcId = extractRpcId(jsonString)
       // we get and concatenate all of the JsonString messages
       Right(PipelineError(ErrorCodes.INVALID_DATA.id, errors.mkString("; "), rpcId))

@@ -78,7 +78,7 @@ case object DataRegistry {
     /**
      * @return Builds DataRegistry
      */
-    def build: DataRegistry = DataRegistry(builderMapping.result)
+    def build: DataRegistry = DataRegistry(builderMapping.result())
 
   }
 

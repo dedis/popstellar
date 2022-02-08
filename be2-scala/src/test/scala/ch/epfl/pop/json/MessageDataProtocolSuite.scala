@@ -15,10 +15,10 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     def shouldEqualTo(o: CastVoteElection): Unit = {
 
       @scala.annotation.tailrec
-      def checkVoteElectionLists(l1: List[VoteElection], l2: List[VoteElection]) {
+      def checkVoteElectionLists(l1: List[VoteElection], l2: List[VoteElection]): Unit = {
         l1.length should equal(l2.length)
 
-        (l1, l2) match {
+        ((l1, l2): @unchecked) match {
           case _ if l1.isEmpty =>
           case (h1 :: tail1, h2 :: tail2) =>
             h1.id should equal(h2.id)

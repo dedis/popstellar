@@ -40,9 +40,9 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
     val mockedDB = Props(new Actor() {
       override def receive = {
         case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorNAck(0, "error")
+          sender() ! DbActor.DbActorNAck(0, "error")
         case DbActor.ReadChannelData(channel) =>
-          sender ! DbActor.DbActorNAck(0, "error")
+          sender() ! DbActor.DbActorNAck(0, "error")
       }
     }
     )
@@ -53,7 +53,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
     val mockedDB = Props(new Actor() {
       override def receive = {
         case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorReadLaoDataAck(None)
+          sender() ! DbActor.DbActorReadLaoDataAck(None)
       }
     }
     )
@@ -64,7 +64,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
     val mockedDB = Props(new Actor() {
       override def receive = {
         case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorReadLaoDataAck(Some(data))
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(data))
       }
     }
     )
@@ -75,7 +75,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
     val mockedDB = Props(new Actor() {
       override def receive = {
         case DbActor.ReadChannelData(channel) =>
-          sender ! DbActor.DbActorReadChannelDataAck(Some(data))
+          sender() ! DbActor.DbActorReadChannelDataAck(Some(data))
       }
     }
     )

@@ -10,7 +10,7 @@ import util.examples.lao.CreateLaoExamples
 class CreateLaoContentSuiteSuite extends FlatSpec with Matchers with Inside with GivenWhenThen {
 
   /** Decodes data before passing it to the test **/
-  def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any) {
+  def withCreateLaoFixture(createLaoData: Message)(testCode: GraphMessage => Any): Unit = {
     // Raw encoded data data
     val message = Left(CreateLaoExamples.getJsonRequestFromMessage(createLaoData))
     // Decode data

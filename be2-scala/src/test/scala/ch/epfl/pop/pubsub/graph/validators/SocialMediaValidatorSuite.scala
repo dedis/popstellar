@@ -51,10 +51,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWorking: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive = {
-        case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
-        case DbActor.ReadChannelData(channel) =>
-          sender ! DbActor.DbActorReadChannelDataAck(Some(channelDataRight))
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataRight))
       }
     }
     )
@@ -64,10 +64,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWorkingReaction: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive = {
-        case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
-        case DbActor.ReadChannelData(channel) =>
-          sender ! DbActor.DbActorReadChannelDataAck(Some(channelDataReaction))
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataReaction))
       }
     }
     )
@@ -77,10 +77,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWrongTokenReaction: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive = {
-        case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
-        case DbActor.ReadChannelData(channel) =>
-          sender ! DbActor.DbActorReadChannelDataAck(Some(channelDataReaction))
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataReaction))
       }
     }
     )
@@ -90,10 +90,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWrongToken: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive = {
-        case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
-        case DbActor.ReadChannelData(channel) =>
-          sender ! DbActor.DbActorReadChannelDataAck(Some(channelDataRight))
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataRight))
       }
     }
     )
@@ -103,10 +103,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWrongChannel: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive = {
-        case DbActor.ReadLaoData(channel) =>
-          sender ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
-        case DbActor.ReadChannelData(channel) =>
-          sender ! DbActor.DbActorReadChannelDataAck(Some(channelDataWrong))
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataWrong))
       }
     }
     )
@@ -116,49 +116,49 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   //AddChirp
   test("Adding a chirp works as intended") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddChirp(ADD_CHIRP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(ADD_CHIRP_RPC)
     message should equal(Left(ADD_CHIRP_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a chirp with too long text fails") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddChirp(ADD_CHIRP_WRONG_TEXT_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(ADD_CHIRP_WRONG_TEXT_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a chirp with invalid Timestamp fails") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddChirp(ADD_CHIRP_WRONG_TIMESTAMP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(ADD_CHIRP_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a chirp without valid PoP token fails") {
     val dbActorRef = mockDbWrongToken
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddChirp(ADD_CHIRP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(ADD_CHIRP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a chirp on wrong type of channel fails") {
     val dbActorRef = mockDbWrongChannel
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddChirp(ADD_CHIRP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(ADD_CHIRP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a chirp on channel which is not our own social channel fails") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddChirp(ADD_CHIRP_WRONG_CHANNEL_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(ADD_CHIRP_WRONG_CHANNEL_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Validating a RpcMessage without Params does not work in validateAddChirp") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddChirp(RPC_NO_PARAMS)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddChirp(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
@@ -166,42 +166,42 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   //DeleteChirp
   test("Deleting a chirp works as intended") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteChirp(DELETE_CHIRP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteChirp(DELETE_CHIRP_RPC)
     message should equal(Left(DELETE_CHIRP_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Deleting a chirp with invalid Timestamp fails") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteChirp(DELETE_CHIRP_WRONG_TIMESTAMP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteChirp(DELETE_CHIRP_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Deleting a chirp without valid PoP token fails") {
     val dbActorRef = mockDbWrongToken
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteChirp(DELETE_CHIRP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteChirp(DELETE_CHIRP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Deleting a chirp on wrong type of channel fails") {
     val dbActorRef = mockDbWrongChannel
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteChirp(DELETE_CHIRP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteChirp(DELETE_CHIRP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Deleting a chirp on channel which is not our own social channel fails") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteChirp(DELETE_CHIRP_WRONG_CHANNEL_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteChirp(DELETE_CHIRP_WRONG_CHANNEL_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Validating a RpcMessage without Params does not work in validateDeleteChirp") {
     val dbActorRef = mockDbWorking
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteChirp(RPC_NO_PARAMS)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteChirp(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
@@ -209,35 +209,35 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   //AddReaction
   test("Adding a reaction works as intended") {
     val dbActorRef = mockDbWorkingReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddReaction(ADD_REACTION_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddReaction(ADD_REACTION_RPC)
     message should equal(Left(ADD_REACTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a reaction with invalid Timestamp fails") {
     val dbActorRef = mockDbWorkingReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddReaction(ADD_REACTION_WRONG_TIMESTAMP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddReaction(ADD_REACTION_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a reaction without valid PoP token fails") {
     val dbActorRef = mockDbWrongTokenReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddReaction(ADD_REACTION_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddReaction(ADD_REACTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Adding a reaction on wrong type of channel fails") {
     val dbActorRef = mockDbWrongChannel
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddReaction(ADD_REACTION_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddReaction(ADD_REACTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Validating a RpcMessage without Params does not work in validateAddReaction") {
     val dbActorRef = mockDbWorkingReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateAddReaction(RPC_NO_PARAMS)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateAddReaction(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
@@ -245,35 +245,35 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   //DeleteReaction
   test("Deleting a reaction works as intended") {
     val dbActorRef = mockDbWorkingReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteReaction(DELETE_REACTION_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteReaction(DELETE_REACTION_RPC)
     message should equal(Left(DELETE_REACTION_RPC))
     system.stop(dbActorRef.actorRef)
   }
 
   test("Deleting a reaction with invalid Timestamp fails") {
     val dbActorRef = mockDbWorkingReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteReaction(DELETE_REACTION_WRONG_TIMESTAMP_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteReaction(DELETE_REACTION_WRONG_TIMESTAMP_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Deleting a reaction without valid PoP token fails") {
     val dbActorRef = mockDbWrongTokenReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteReaction(DELETE_REACTION_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteReaction(DELETE_REACTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Deleting a reaction on wrong type of channel fails") {
     val dbActorRef = mockDbWrongChannel
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteReaction(DELETE_REACTION_RPC)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteReaction(DELETE_REACTION_RPC)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
 
   test("Validating a RpcMessage without Params does not work in validateDeleteReaction") {
     val dbActorRef = mockDbWorkingReaction
-    val message: GraphMessage = (new SocialMediaValidator(dbActorRef)).validateDeleteReaction(RPC_NO_PARAMS)
+    val message: GraphMessage = new SocialMediaValidator(dbActorRef).validateDeleteReaction(RPC_NO_PARAMS)
     message shouldBe a[Right[_, PipelineError]]
     system.stop(dbActorRef.actorRef)
   }
