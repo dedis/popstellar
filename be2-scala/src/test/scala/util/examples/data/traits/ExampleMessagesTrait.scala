@@ -58,6 +58,9 @@ object ExampleMessages {
   final val DEFAULT_HL_MESSAGE_BUILDER = new HighLevelMessageGenerator.HLMessageBuilder(DEFAULT_MESSAGE_BUILDER).withId(1).withChannel(DEFAULT_CHANNEL)
 
   //Reads and returns payload from .json file
-  final def getPayloadFromFile(fileName: String): String = Files.readString(Path.of(DEFAULT_BASE_PATH,fileName))
+  final def getPayloadFromFile(fileName: String): String = {
+    val source = scala.io.Source.fromFile(s"$DEFAULT_BASE_PATH/$fileName")
+    try source.mkString finally source.close()
+  }
 
 }

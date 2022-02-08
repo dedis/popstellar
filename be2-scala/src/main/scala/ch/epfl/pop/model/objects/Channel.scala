@@ -58,7 +58,7 @@ object Channel {
   final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions"
 
   def apply(channel: String): Channel = {
-    if(channel.isBlank() || !channel.matches(channelRegex)){
+    if(channel.trim.length == 0 || !channel.matches(channelRegex)){
         throw new IllegalArgumentException("The channel name is invalid")
     }
     new Channel(channel)

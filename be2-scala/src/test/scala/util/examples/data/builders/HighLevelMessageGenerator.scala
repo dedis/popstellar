@@ -103,7 +103,7 @@ object HighLevelMessageGenerator {
     //TODO : implement other object types and actions
     def generateJsonRpcRequestWith(objType: ObjectType.ObjectType)(actionType: ActionType.ActionType): JsonRpcRequest = {
 
-      assume(!payload.isBlank() &&  methodType != null)
+      assume(payload.trim.length != 0 &&  methodType != null)
 
       (objType, actionType) match {
         //Roll Calls
@@ -127,7 +127,7 @@ object HighLevelMessageGenerator {
           messageData = AddReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequestAddReaction(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
-        
+
         case (ObjectType.REACTION, ActionType.DELETE)  =>
           messageData = DeleteReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
@@ -137,7 +137,7 @@ object HighLevelMessageGenerator {
           messageData = AddChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
           JsonRpcRequestAddChirp(RpcValidator.JSON_RPC_VERSION, methodType, params,id)
-        
+
         case (ObjectType.CHIRP, ActionType.DELETE)  =>
           messageData = DeleteChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
