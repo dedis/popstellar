@@ -17,7 +17,7 @@ const k = (object: ObjectType, action: ActionType): string => `${object}, ${acti
  * Registry of message data classes and their corresponding properties.
  */
 export class MessageRegistry {
-  private mapping: Map<string, MessageEntry> = new Map<string, MessageEntry>();
+  private readonly mapping: Map<string, MessageEntry> = new Map<string, MessageEntry>();
 
   addHandler(object: ObjectType, action: ActionType, handleFunc: HandleFunction) {
     this.mapping.set(k(object, action), { ingestion: handleFunc });
