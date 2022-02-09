@@ -3,9 +3,9 @@ import {
   getLaoMessagesState, getLaosState, processMessages,
 } from 'store';
 import { ExtendedMessage } from 'model/network/method/message';
-import { messageRegistry } from 'App';
+import { MessageRegistry } from 'model/network/method/message/data';
 
-export function makeMessageStoreWatcher(store: Store) {
+export function makeMessageStoreWatcher(store: Store, messageRegistry: MessageRegistry) {
   let previousValue: string[] | undefined;
   let currentValue: string[] | undefined;
   return () => {
