@@ -72,14 +72,26 @@ export class MessageRegistry {
     entry.handle = handleFunc;
   }
 
+  /**
+   * Adds a signature type to a type of message in the registry.
+   *
+   * @param object - The object of the message
+   * @param action - The action of the message
+   * @param signature - The type of signature of the message
+   */
   addSignature(object: ObjectType, action: ActionType, signature: SignatureType) {
-    this.mapping.set(k(object, action), { signature: signature });
+    const entry = this.mapping.get(k(object, action));
+    if (entry === undefined) {
+      throw new Error(`Message ${object} ${action} has not been initialized in MessageRegistry`);
+    }
+    entry.signature = signature;
   }
 
   /**
    * Handles a message by calling the corresponding function.
    *
    * @param msg - The message to be handled
+   * @returns boolean - Telling if the message has been processed or not
    */
   handleMessage(msg: ExtendedMessage): boolean {
     const data = msg.messageData;
@@ -96,6 +108,12 @@ export class MessageRegistry {
     return handle(msg);
   }
 
+  /**
+   * Gets the signature type of a message data.
+   *
+   * @param data - The message data we want to know how to sign
+   * @returns SignatureType - The type of signature of the message
+   */
   getSignatureType(data: MessageData): SignatureType {
     const messageEntry = this.mapping.get(k(data.object, data.action));
     if (messageEntry === undefined) {
