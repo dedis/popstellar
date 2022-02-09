@@ -10,8 +10,20 @@ import {
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
-import { buildMessageData, encodeMessageData, MessageData, SignatureType } from './data';
-import { messagePropertiesMap } from './data/MessageProperties';
+import {
+  buildMessageData, encodeMessageData, MessageData, MessageRegistry, SignatureType,
+} from './data';
+
+let messageRegistry: MessageRegistry;
+
+/**
+ * Dependency injection of a MessageRegistry to know how messages need to be signed.
+ *
+ * @param registry - The MessageRegistry to be injected
+ */
+export function configureSignatures(registry: MessageRegistry) {
+  messageRegistry = registry;
+}
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -128,14 +140,11 @@ export class Message {
     let privateKey = KeyPairStore.getPrivateKey();
     let signature: Signature;
 
-    // Get the properties of the type of message we want to sign
-    const messagesProperties = messagePropertiesMap.get(data.object)?.get(data.action);
-    if (messagesProperties === undefined) {
-      throw new Error(`Message signature for object ${data.object} and action ${data.action} is unsupported.`);
-    }
+    // Get the signature type of the type of message we want to sign
+    const signatureType = messageRegistry.getSignatureType(data);
 
     // If the message is signed with the pop token, get it from the store and sign the message
-    if (messagesProperties === SignatureType.POP_TOKEN) {
+    if (signatureType === SignatureType.POP_TOKEN) {
       const token = await getCurrentPopTokenFromStore();
       if (token) {
         publicKey = token.publicKey;
@@ -156,7 +165,7 @@ export class Message {
     }
     signature = privateKey.sign(encodedDataJson);
 
-    // Otherwise, simply sign with the public key
+    // Otherwise, simply sign with the general key pair
     return new Message({
       data: encodedDataJson,
       sender: publicKey,

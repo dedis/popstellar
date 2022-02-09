@@ -21,40 +21,42 @@ const k = (object: ObjectType, action: ActionType): string => `${object}, ${acti
 
 /**
  * Registry of message data classes and their corresponding properties. By default, it already
- * contains all types of MessageData as keys.
+ * contains all types of MessageData as keys and their corresponding signature type.
  */
 export class MessageRegistry {
   private readonly mapping = new Map<string, MessageEntry>([
     // Lao
-    [k(ObjectType.LAO, ActionType.CREATE), {}],
-    [k(ObjectType.LAO, ActionType.STATE), {}],
-    [k(ObjectType.LAO, ActionType.UPDATE_PROPERTIES), {}],
+    [k(ObjectType.LAO, ActionType.CREATE), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.LAO, ActionType.STATE), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.LAO, ActionType.UPDATE_PROPERTIES), { signature: SignatureType.KEYPAIR }],
 
     // Meeting
-    [k(ObjectType.MEETING, ActionType.CREATE), {}],
-    [k(ObjectType.MEETING, ActionType.STATE), {}],
+    [k(ObjectType.MEETING, ActionType.CREATE), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.MEETING, ActionType.STATE), { signature: SignatureType.KEYPAIR }],
 
     // Roll call
-    [k(ObjectType.ROLL_CALL, ActionType.CREATE), {}],
-    [k(ObjectType.ROLL_CALL, ActionType.OPEN), {}],
-    [k(ObjectType.ROLL_CALL, ActionType.CLOSE), {}],
-    [k(ObjectType.ROLL_CALL, ActionType.REOPEN), {}],
+    [k(ObjectType.ROLL_CALL, ActionType.CREATE), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.ROLL_CALL, ActionType.OPEN), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.ROLL_CALL, ActionType.CLOSE), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.ROLL_CALL, ActionType.REOPEN), { signature: SignatureType.KEYPAIR }],
 
     // Election
-    [k(ObjectType.ELECTION, ActionType.SETUP), {}],
-    [k(ObjectType.ELECTION, ActionType.CAST_VOTE), {}],
-    [k(ObjectType.ELECTION, ActionType.END), {}],
-    [k(ObjectType.ELECTION, ActionType.RESULT), {}],
+    [k(ObjectType.ELECTION, ActionType.SETUP), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.ELECTION, ActionType.CAST_VOTE), { signature: SignatureType.POP_TOKEN }],
+    [k(ObjectType.ELECTION, ActionType.END), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.ELECTION, ActionType.RESULT), { signature: SignatureType.KEYPAIR }],
 
     // Witness
-    [k(ObjectType.MESSAGE, ActionType.WITNESS), {}],
+    [k(ObjectType.MESSAGE, ActionType.WITNESS), { signature: SignatureType.KEYPAIR }],
 
-    // Chirp
-    [k(ObjectType.CHIRP, ActionType.ADD), {}],
-    [k(ObjectType.CHIRP, ActionType.DELETE), {}],
+    // Chirps
+    [k(ObjectType.CHIRP, ActionType.ADD), { signature: SignatureType.POP_TOKEN }],
+    [k(ObjectType.CHIRP, ActionType.NOTIFY_ADD), { signature: SignatureType.KEYPAIR }],
+    [k(ObjectType.CHIRP, ActionType.DELETE), { signature: SignatureType.POP_TOKEN }],
+    [k(ObjectType.CHIRP, ActionType.NOTIFY_DELETE), { signature: SignatureType.KEYPAIR }],
 
     // Reactions
-    [k(ObjectType.REACTION, ActionType.ADD), {}],
+    [k(ObjectType.REACTION, ActionType.ADD), { signature: SignatureType.POP_TOKEN }],
   ]);
 
   /**
@@ -70,21 +72,6 @@ export class MessageRegistry {
       throw new Error(`Message ${object} ${action} has not been initialized in MessageRegistry`);
     }
     entry.handle = handleFunc;
-  }
-
-  /**
-   * Adds a signature type to a type of message in the registry.
-   *
-   * @param object - The object of the message
-   * @param action - The action of the message
-   * @param signature - The type of signature of the message
-   */
-  addSignature(object: ObjectType, action: ActionType, signature: SignatureType) {
-    const entry = this.mapping.get(k(object, action));
-    if (entry === undefined) {
-      throw new Error(`Message ${object} ${action} has not been initialized in MessageRegistry`);
-    }
-    entry.signature = signature;
   }
 
   /**
