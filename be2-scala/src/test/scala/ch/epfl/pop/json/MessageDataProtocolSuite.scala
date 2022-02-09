@@ -18,8 +18,8 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
       def checkVoteElectionLists(l1: List[VoteElection], l2: List[VoteElection]): Unit = {
         l1.length should equal(l2.length)
 
-        ((l1, l2): @unchecked) match {
-          case _ if l1.isEmpty =>
+        (l1, l2) match {
+          case (Nil, _) | (_, Nil) =>
           case (h1 :: tail1, h2 :: tail2) =>
             h1.id should equal(h2.id)
             h1.question should equal(h2.question)
