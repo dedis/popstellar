@@ -6,7 +6,7 @@ import { Channel } from 'model/objects';
 import {
   addMessages, dispatch, OpenedLaoStore,
 } from 'store';
-import { handleMessage } from './handlers/Default';
+import { messageRegistry } from 'App';
 
 const isLaoCreate = (m: ExtendedMessage) => m.messageData.object === ObjectType.LAO
   && m.messageData.action === ActionType.CREATE;
@@ -19,7 +19,7 @@ function handleLaoCreateMessages(msg: ExtendedMessage) : boolean {
   // processing the lao/create message:
   // - we either connect to the LAO (if there's no active connection) OR
   // - we simply add it to the list of known LAOs
-  handleMessage(msg);
+  messageRegistry.handleMessage(msg);
 
   return true;
 }
