@@ -34,6 +34,12 @@ export enum ActionType {
   NOTIFY_DELETE = 'notify_delete',
 }
 
+/** Enumeration of all possible signatures of a message */
+export enum SignatureType {
+  KEYPAIR,
+  POP_TOKEN,
+}
+
 export interface MessageData {
   readonly object: ObjectType;
   readonly action: ActionType;

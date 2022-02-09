@@ -10,9 +10,7 @@ import {
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
-import {
-  buildMessageData, encodeMessageData, MessageData,
-} from './data';
+import { buildMessageData, encodeMessageData, MessageData, SignatureType } from './data';
 import { messagePropertiesMap } from './data/MessageProperties';
 
 /**
@@ -137,7 +135,7 @@ export class Message {
     }
 
     // If the message is signed with the pop token, get it from the store and sign the message
-    if (messagesProperties.isPopTokenSigned) {
+    if (messagesProperties === SignatureType.POP_TOKEN) {
       const token = await getCurrentPopTokenFromStore();
       if (token) {
         publicKey = token.publicKey;

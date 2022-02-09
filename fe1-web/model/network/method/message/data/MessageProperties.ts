@@ -1,14 +1,4 @@
-import { ActionType, ObjectType } from './MessageData';
-
-/**
- * Interface to describe the properties of a certain type of message.
- *
- * @remarks
- * This has to be updated each time we want to add a new property of the messages.
- */
-export interface MessageProperties {
-  readonly isPopTokenSigned: boolean;
-}
+import { ActionType, ObjectType, SignatureType } from './MessageData';
 
 /**
  * Map to know the properties of the type of message we're going to send, according to the object
@@ -18,38 +8,38 @@ export interface MessageProperties {
  * This map has to be updated for each new kind of message, and each new properties we would like
  * to add.
  */
-export const messagePropertiesMap: Map<ObjectType, Map<ActionType, MessageProperties>> = new Map([
-  [ObjectType.CHIRP, new Map<ActionType, MessageProperties>([
-    [ActionType.ADD, { isPopTokenSigned: true }],
-    [ActionType.NOTIFY_ADD, { isPopTokenSigned: false }],
-    [ActionType.DELETE, { isPopTokenSigned: true }],
-    [ActionType.NOTIFY_DELETE, { isPopTokenSigned: false }],
+export const messagePropertiesMap: Map<ObjectType, Map<ActionType, SignatureType>> = new Map([
+  [ObjectType.CHIRP, new Map<ActionType, SignatureType>([
+    [ActionType.ADD, SignatureType.POP_TOKEN],
+    [ActionType.NOTIFY_ADD, SignatureType.KEYPAIR],
+    [ActionType.DELETE, SignatureType.POP_TOKEN],
+    [ActionType.NOTIFY_DELETE, SignatureType.KEYPAIR],
   ])],
-  [ObjectType.REACTION, new Map<ActionType, MessageProperties>([
-    [ActionType.ADD, { isPopTokenSigned: true }],
+  [ObjectType.REACTION, new Map<ActionType, SignatureType>([
+    [ActionType.ADD, SignatureType.POP_TOKEN],
   ])],
-  [ObjectType.ELECTION, new Map<ActionType, MessageProperties>([
-    [ActionType.CAST_VOTE, { isPopTokenSigned: true }],
-    [ActionType.RESULT, { isPopTokenSigned: false }],
-    [ActionType.END, { isPopTokenSigned: false }],
-    [ActionType.SETUP, { isPopTokenSigned: false }],
+  [ObjectType.ELECTION, new Map<ActionType, SignatureType>([
+    [ActionType.CAST_VOTE, SignatureType.POP_TOKEN],
+    [ActionType.RESULT, SignatureType.KEYPAIR],
+    [ActionType.END, SignatureType.KEYPAIR],
+    [ActionType.SETUP, SignatureType.KEYPAIR],
   ])],
-  [ObjectType.LAO, new Map<ActionType, MessageProperties>([
-    [ActionType.CREATE, { isPopTokenSigned: false }],
-    [ActionType.STATE, { isPopTokenSigned: false }],
-    [ActionType.UPDATE_PROPERTIES, { isPopTokenSigned: false }],
+  [ObjectType.LAO, new Map<ActionType, SignatureType>([
+    [ActionType.CREATE, SignatureType.KEYPAIR],
+    [ActionType.STATE, SignatureType.KEYPAIR],
+    [ActionType.UPDATE_PROPERTIES, SignatureType.KEYPAIR],
   ])],
-  [ObjectType.MEETING, new Map<ActionType, MessageProperties>([
-    [ActionType.CREATE, { isPopTokenSigned: false }],
-    [ActionType.STATE, { isPopTokenSigned: false }],
+  [ObjectType.MEETING, new Map<ActionType, SignatureType>([
+    [ActionType.CREATE, SignatureType.KEYPAIR],
+    [ActionType.STATE, SignatureType.KEYPAIR],
   ])],
-  [ObjectType.ROLL_CALL, new Map<ActionType, MessageProperties>([
-    [ActionType.CLOSE, { isPopTokenSigned: false }],
-    [ActionType.CREATE, { isPopTokenSigned: false }],
-    [ActionType.OPEN, { isPopTokenSigned: false }],
-    [ActionType.REOPEN, { isPopTokenSigned: false }],
+  [ObjectType.ROLL_CALL, new Map<ActionType, SignatureType>([
+    [ActionType.CLOSE, SignatureType.KEYPAIR],
+    [ActionType.CREATE, SignatureType.KEYPAIR],
+    [ActionType.OPEN, SignatureType.KEYPAIR],
+    [ActionType.REOPEN, SignatureType.KEYPAIR],
   ])],
-  [ObjectType.MESSAGE, new Map<ActionType, MessageProperties>([
-    [ActionType.WITNESS, { isPopTokenSigned: false }],
+  [ObjectType.MESSAGE, new Map<ActionType, SignatureType>([
+    [ActionType.WITNESS, SignatureType.KEYPAIR],
   ])],
 ]);
