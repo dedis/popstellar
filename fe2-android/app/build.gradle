@@ -16,14 +16,17 @@ android {
 
         testInstrumentationRunner "com.github.dedis.popstellar.HiltTestRunner"
 
-        // The following feature is not working properly with the coverage on the current build version
-        // As it's purpose is to clear physical data between each tests, its is not used yet.
-        // Let's hope the feature will be fixed before we actually need it.
-
         // The following argument makes the Android Test Orchestrator run its
         // "pm clear" command after each test invocation. This command ensures
         // that the app's state is completely cleared between tests.
-        // testInstrumentationRunnerArguments clearPackageData: 'true'
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+        // These arguments allows the tests to produce coverage data correctly.
+        // As the process to do so is different between Android<30 and Android >=30,
+        // some arguments are only relevant if the tests are running on a specific device.
+        // This setup allows the coverage to be produced on any device.
+        testInstrumentationRunnerArguments useTestStorageService: 'true' // Android>=30
+        testInstrumentationRunnerArguments coverage: 'true' // Android<30
+        testInstrumentationRunnerArguments coverageFilePath: '/sdcard/coverage/' // Android<30
 
         buildTypes {
             debug {
@@ -44,6 +47,8 @@ android {
 
         javaCompileOptions {
             annotationProcessorOptions {
+                // This argument is used by Room, the database library of the project.
+                // It specifies the location where a schema of the database should be exported.
                 arguments += ["room.schemaLocation": "$projectDir/schemas".toString()]
             }
         }
@@ -54,6 +59,7 @@ android {
             dataBinding true
         }
 
+        // Enable the android test orchestrator to isolate the test from one another.
         testOptions {
             execution 'ANDROIDX_TEST_ORCHESTRATOR'
             animationsDisabled true
@@ -62,6 +68,11 @@ android {
                 returnDefaultValues true
                 includeAndroidResources true
             }
+        }
+
+        // Enable coverage with Jacoco for the project
+        testCoverage {
+            jacocoVersion = "0.8.7"
         }
     }
 
@@ -73,11 +84,7 @@ android {
         }
 }
 
-// Jacoco setup - This handles the code coverage of the tests
-jacoco {
-    toolVersion = "0.8.7"
-}
-
+// Jacoco configuration - This configures jacoco for each test task
 tasks.withType(Test) {
     jacoco {
         includeNoLocationClasses = true
