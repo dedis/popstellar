@@ -1,10 +1,10 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ObjectType } from 'model/network/method/message/data';
-import { handleLaoMessage } from './Lao';
-import { handleWitnessMessage } from './Witness';
-import { handleMeetingMessage } from './Meeting';
-import { handleRollCallMessage } from './RollCall';
-import { handleElectionMessage } from './Election';
+import { handleLaoMessage } from './LaoHandler';
+import { handleWitnessMessage } from './WitnessHandler';
+import { handleMeetingMessage } from './MeetingHandler';
+import { handleRollCallMessage } from './RollCallHandler';
+import { handleElectionMessage } from './ElectionHandler';
 import { handleChirpMessage } from './ChirpHandler';
 import { handleReactionMessage } from './ReactionHandler';
 
