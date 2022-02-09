@@ -1,13 +1,13 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import {
-  ActionType, AddChirp, ObjectType, DeleteChirp,
+  ActionType,
+  AddChirp,
+  DeleteChirp,
+  MessageRegistry,
+  ObjectType,
 } from 'model/network/method/message/data';
 import {
-  addChirp,
-  dispatch,
-  getStore,
-  makeCurrentLao,
-  deleteChirp,
+  addChirp, deleteChirp, dispatch, getStore, makeCurrentLao,
 } from 'store';
 import { Chirp } from 'model/objects';
 
@@ -89,25 +89,11 @@ function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles all social media chirp messages by redirecting them to the correct function based on the
- * action.
+ * Configures the ChirpHandler in a MessageRegistry.
  *
- * @param msg - The received extended message
+ * @param registry - The MessageRegistry where we want to add the mappings
  */
-export function handleChirpMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.CHIRP) {
-    console.warn('handleChirpMessage was called to process an unsupported message', msg);
-    return false;
-  }
-
-  switch (msg.messageData.action) {
-    case ActionType.ADD:
-      return handleAddChirpMessage(msg);
-    case ActionType.DELETE:
-      return handleDeleteChirpMessage(msg);
-    default:
-      console.warn('A Social Media chirp message was received but its processing logic is not '
-        + 'yet implemented:', msg);
-      return false;
-  }
+export function configure(registry: MessageRegistry) {
+  registry.addHandler(ObjectType.CHIRP, ActionType.ADD, handleAddChirpMessage);
+  registry.addHandler(ObjectType.CHIRP, ActionType.DELETE, handleDeleteChirpMessage);
 }

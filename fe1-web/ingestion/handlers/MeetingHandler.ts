@@ -1,12 +1,16 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import {
-  ActionType, ObjectType, CreateMeeting, StateMeeting,
+  ActionType,
+  CreateMeeting,
+  MessageRegistry,
+  ObjectType,
+  StateMeeting,
 } from 'model/network/method/message/data';
 import { Meeting } from 'model/objects';
 import {
-  getStore, dispatch, addEvent, updateEvent, makeCurrentLao,
+  addEvent, dispatch, getStore, makeCurrentLao, updateEvent,
 } from 'store';
-import { hasWitnessSignatureQuorum, getEventFromId } from './Utils';
+import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
@@ -86,22 +90,12 @@ function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
-export function handleMeetingMessage(msg: ExtendedMessage) {
-  if (msg.messageData.object !== ObjectType.MEETING) {
-    console.warn('handleMeetingMessage was called to process an unsupported message', msg);
-    return false;
-  }
-
-  switch (msg.messageData.action) {
-    case ActionType.CREATE:
-      return handleMeetingCreateMessage(msg);
-
-    case ActionType.STATE:
-      return handleMeetingStateMessage(msg);
-
-    default:
-      console.warn('A Meeting message was received but'
-        + ' its processing logic is not yet implemented:', msg);
-      return false;
-  }
+/**
+ * Configures the MeetingHandler in a MessageRegistry.
+ *
+ * @param registry - The MessageRegistry where we want to add the mappings
+ */
+export function configure(registry: MessageRegistry) {
+  registry.addHandler(ObjectType.MEETING, ActionType.CREATE, handleMeetingCreateMessage);
+  registry.addHandler(ObjectType.MEETING, ActionType.STATE, handleMeetingStateMessage);
 }
