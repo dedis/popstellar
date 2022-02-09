@@ -24,6 +24,9 @@ android {
         // As the process to do so is different between Android<30 and Android >=30,
         // some arguments are only relevant if the tests are running on a specific device.
         // This setup allows the coverage to be produced on any device.
+        //
+        // An great and updated sample project on coverage can be found here :
+        // https://github.com/growse/Android-Test-Coverage-Sample/
         testInstrumentationRunnerArguments useTestStorageService: 'true' // Android>=30
         testInstrumentationRunnerArguments coverage: 'true' // Android<30
         testInstrumentationRunnerArguments coverageFilePath: '/sdcard/coverage/' // Android<30
