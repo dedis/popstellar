@@ -14,6 +14,7 @@ import AppNavigation from 'navigation/AppNavigation';
 import { navigationRef } from 'navigation/RootNavigation';
 
 import { configureIngestion } from 'ingestion';
+import { MessageRegistry } from 'model/network/method/message/data';
 
 /*
 * The starting point of the app
@@ -45,3 +46,6 @@ export default function App() {
     </Provider>
   );
 }
+
+// Initialize the message registry
+export const messageRegistry = new MessageRegistry();

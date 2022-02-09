@@ -3,7 +3,7 @@ import {
   getLaoMessagesState, getLaosState, processMessages,
 } from 'store';
 import { ExtendedMessage } from 'model/network/method/message';
-import { handleMessage } from './handlers/Default';
+import { messageRegistry } from 'App';
 
 export function makeMessageStoreWatcher(store: Store) {
   let previousValue: string[] | undefined;
@@ -36,7 +36,7 @@ export function makeMessageStoreWatcher(store: Store) {
 
     msgs.forEach((msg) => {
       try {
-        const handled = handleMessage(msg);
+        const handled = messageRegistry.handleMessage(msg);
         if (handled) {
           store.dispatch(processMessages(laoId, msg.message_id));
         }
