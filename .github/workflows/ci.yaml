@@ -197,20 +197,20 @@ jobs:
       run: |
         # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
         # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-        ( set -o pipefail; ./gradlew build --info | grep -vE "^Transforming (.*) with (Jetify|ExtractAar|Aar)Transform" )
+        ( set -o pipefail; ./gradlew build --parallel --info | grep -vE "^Transforming (.*) with (.*)Transform" )
 
     - name: Unit Tests
       uses: reactivecircus/android-emulator-runner@v2
       with:
-        api-level: 30
+        api-level: 29
         arch: x86_64
         profile: pixel_2
         emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         working-directory: ./fe2-android
         script: |
-          ( set -o pipefail; ./gradlew jacocoTestReport --info | grep -vE "^Transforming (.*) with (Jetify|ExtractAar|Aar)Transform" )
-    
+          ( set -o pipefail; ./gradlew testDebugUnitTest createDebugCoverageReport --parallel jacocoTestReport --info | grep -vE "^Transforming (.*) with (.*)Transform" )
+          
     - name: SonarCloud Analysis
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
