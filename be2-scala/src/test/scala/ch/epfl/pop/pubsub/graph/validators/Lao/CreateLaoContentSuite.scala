@@ -3,6 +3,7 @@ package ch.epfl.pop.pubsub.graph.validator.lao
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
+import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder, Validator}
 import org.scalatest.{FlatSpec, GivenWhenThen, Inside, Matchers}
 import util.examples.lao.CreateLaoExamples
@@ -29,16 +30,21 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
     Given("a valid decoded createLao request")
     (message) => {
       When("validated")
-      val validationResult = Validator.validateMessageDataContent(message)
-      inside(validationResult) {
-        case Left(msg) =>
-          Then("the validation succeeds")
-          msg shouldBe a[JsonRpcRequest]
-        case _@Right(_) => fail("fails to validate CreateLao data content")
-        case _ => fail(s"validated message <$validationResult> is of unexpected type")
+      inside(message) {
+        case Left(rpcRequest: JsonRpcRequest) =>
+          val registry: MessageRegistry = MessageRegistry()
+          val validationResult = Validator.validateMessageDataContent(rpcRequest, registry)
+          inside(validationResult) {
+            case Left(msg) =>
+              Then("the validation succeeds")
+              msg shouldBe a[JsonRpcRequest]
+            case _@Right(_) => fail("fails to validate CreateLao data content")
+            case _ => fail(s"validated message <$validationResult> is of unexpected type")
+          }
+          And("the message has the same content after validation")
+          validationResult should equal(message)
+        case _ => fail("fails to contain a JsonRpcRequest")
       }
-      And("the message has the same content after validation")
-      validationResult should equal(message)
     }
   }
   //TODO: add tests for bad create lao data content

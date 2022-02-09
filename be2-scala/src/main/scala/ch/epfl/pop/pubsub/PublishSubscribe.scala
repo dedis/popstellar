@@ -17,7 +17,7 @@ object PublishSubscribe {
 
   def getDbActorRef: AskableActorRef = dbActorRef
 
-  def buildGraph(mediatorActorRef: ActorRef, dbActorRefT: AskableActorRef)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def buildGraph(mediatorActorRef: ActorRef, dbActorRefT: AskableActorRef, messageRegistry: MessageRegistry)(implicit system: ActorSystem): Flow[Message, Message, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {
       import GraphDSL.Implicits._
 
@@ -46,7 +46,7 @@ object PublishSubscribe {
         case _ => portPipelineError // Pipeline error goes directly in merger
       }))
 
-      val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph)
+      val hasMessagePartition = builder.add(ParamsWithMessageHandler.graph(messageRegistry))
       val noMessagePartition = builder.add(ParamsHandler.graph(clientActorRef))
 
       val merger = builder.add(Merge[GraphMessage](totalPorts))

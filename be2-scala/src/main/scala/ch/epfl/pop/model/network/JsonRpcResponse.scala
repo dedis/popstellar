@@ -10,6 +10,7 @@ case class JsonRpcResponse(
                             id: Option[Int]
                           ) extends JsonRpcMessage {
   def isPositive: Boolean = result.isDefined
+  override def getId: Option[Int] = id
 }
 
 object JsonRpcResponse extends Parsable {

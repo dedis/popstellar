@@ -111,7 +111,7 @@ object MessageDecoder {
   def parseData(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getDecodedData match {
       case Some(_) =>
-        println(f"Message was already decode and of type $graphMessage")
+        println(f"Message was already decoded and of type $graphMessage")
         graphMessage // do nothing if 'data' already decoded
       case _ if !jsonRpcRequest.hasParamsMessage => graphMessage // do nothing if rpc-message doesn't contain any message
       case _ =>
@@ -129,7 +129,7 @@ object MessageDecoder {
               val messageData = parseMessageData(jsonString, objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
               jsonRpcRequest.getWithDecodedData(messageData) match {
                 case Some(decodedJsonRequest) => typedRequest = typeCastRequest(decodedJsonRequest)
-                //Should never be thrown since we check if the jsonRpcRequest hasParamMessage before parsing/decoding
+                // Should never be thrown since we check if the jsonRpcRequest hasParamMessage before parsing/decoding
                 case None => throw new IllegalStateException(s"JsonRpcRequest <$jsonRpcRequest> does not contain a message data")
               }
             } match {

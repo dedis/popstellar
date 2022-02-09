@@ -5,10 +5,11 @@ import akka.stream.FlowShape
 import akka.stream.scaladsl.{Flow, GraphDSL, Merge, Partition}
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder, Validator}
 
 object ParamsWithMessageHandler {
-  val graph: Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def graph(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {
       import GraphDSL.Implicits._
 
@@ -24,7 +25,7 @@ object ParamsWithMessageHandler {
 
       /* building blocks */
       val messageDecoder = builder.add(MessageDecoder.dataParser)
-      val messageContentValidator = builder.add(Validator.messageContentValidator)
+      val messageContentValidator = builder.add(Validator.messageContentValidator(messageRegistry))
 
       val handlerPartitioner = builder.add(Partition[GraphMessage](totalPorts, {
         case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getDecodedDataHeader.get match {

@@ -73,6 +73,8 @@ class JsonRpcRequest(
   def toTypedRequest[T](typedConstructor: (String, MethodType.MethodType, Params, Option[Int]) => T): T = {
     typedConstructor(jsonrpc, method, params, id)
   }
+
+  override def getId: Option[Int] = id
 }
 
 object JsonRpcRequest extends Parsable {
