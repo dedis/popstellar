@@ -1,4 +1,6 @@
-import { ActionType, ObjectType } from './MessageData';
+import {
+  ActionType, MessageData, ObjectType, SignatureType,
+} from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
@@ -7,7 +9,11 @@ type HandleFunction = (msg: ExtendedMessage) => boolean;
  * Represents an entry of the MessageRegistry.
  */
 interface MessageEntry {
-  ingestion: HandleFunction; // Function to handle this type of message
+  // Function to handle this type of message
+  ingestion?: HandleFunction;
+
+  // Informs how the message should be signed
+  signature?: SignatureType;
 }
 
 // Generates a string key of the form "object, action" for the MessageRegistry mapping
@@ -23,6 +29,10 @@ export class MessageRegistry {
     this.mapping.set(k(object, action), { ingestion: handleFunc });
   }
 
+  addSignature(object: ObjectType, action: ActionType, signature: SignatureType) {
+    this.mapping.set(k(object, action), { signature: signature });
+  }
+
   handleMessage(msg: ExtendedMessage): boolean {
     const data = msg.messageData;
     const messageEntry = this.mapping.get(k(data.object, data.action));
@@ -30,6 +40,23 @@ export class MessageRegistry {
       console.warn(`Message ${data.object} ${data.action} is not contained in MessageRegistry`);
       return false;
     }
-    return messageEntry.ingestion(msg);
+    const { ingestion } = messageEntry;
+    if (ingestion === undefined) {
+      console.warn(`Message ${data.object} ${data.action} does not have an 'ingestion' property in MessageRegistry`);
+      return false;
+    }
+    return ingestion(msg);
+  }
+
+  getSignatureType(data: MessageData): SignatureType {
+    const messageEntry = this.mapping.get(k(data.object, data.action));
+    if (messageEntry === undefined) {
+      throw new Error(`Message ${data.object} ${data.action} is not contained in MessageRegistry`);
+    }
+    const { signature } = messageEntry;
+    if (signature === undefined) {
+      throw new Error(`Message ${data.object} ${data.action} does not have a 'signature' property in MessageRegistry`);
+    }
+    return signature;
   }
 }
