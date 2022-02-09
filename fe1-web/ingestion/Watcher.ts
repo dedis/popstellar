@@ -3,7 +3,7 @@ import {
   getLaoMessagesState, getLaosState, processMessages,
 } from 'store';
 import { ExtendedMessage } from 'model/network/method/message';
-import { handleMessage } from './handlers';
+import { handleMessage } from './handlers/Default';
 
 export function makeMessageStoreWatcher(store: Store) {
   let previousValue: string[] | undefined;

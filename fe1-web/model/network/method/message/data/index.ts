@@ -8,3 +8,4 @@ export * from './rollCall';
 export * from './election';
 export * from './chirp';
 export * from './reaction';
+export * from './MessageRegistry';
