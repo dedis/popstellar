@@ -40,28 +40,29 @@ scalacOptions ++= Seq(
 )
 
 
-//Reload changes automatically
+// Reload changes automatically
 Global / onChangedBuildSource := ReloadOnSourceChanges
 Global / cancelable := true
 
-//Fork run task in compile scope
+// Fork run task in compile scope
 Compile/ run / fork := true
 Compile/ run / connectInput := true
 Compile/ run / javaOptions += "-Dscala.config=src/main/scala/ch/epfl/pop/config"
 
-//Make test execution synchronized
+// Make test execution synchronized
 Test/ test/ parallelExecution := false
 
-//Create task to copy the protocol folder to resources
+// Create task to copy the protocol folder to resources
 lazy val copyProtocolTask = taskKey[Unit]("Copy protocol to resources")
 copyProtocolTask := {
     val log = streams.value.log
     log.info("Executing Protocol folder copy...")
     val scalaDest = "be2-scala"
     baseDirectory.value.name
-    if(! baseDirectory.value.name.equals(scalaDest)){
+
+    if (!baseDirectory.value.name.equals(scalaDest)) {
         log.error(s"Please make sure you working dir is $scalaDest !")
-    }else{
+    } else {
         val source = new File("../protocol")
         val dest   = new File("./src/main/resources/protocol")
         Try(IO.copyDirectory(source, dest, overwrite = true)) match {
@@ -72,31 +73,33 @@ copyProtocolTask := {
         }
     }
 }
-//Add the copyProtocolTask to compile and test scopes
+
+// Add the copyProtocolTask to compile and test scopes
 (Compile/ compile) := ((Compile/ compile) dependsOn copyProtocolTask).value
 (Test/ test) := ((Test/ test) dependsOn copyProtocolTask).value
 
-//Setup resource directory for jar assembly
+// Setup resource directory for jar assembly
 (Compile /packageBin / resourceDirectory) := file(".") / "./src/main/resources"
 
-//Make resourceDirectory setting global to remove sbt warning
+// Make resourceDirectory setting global to remove sbt warning
 (Global / excludeLintKeys) += resourceDirectory
 
-//Setup main calass task context/confiuration
+// Setup main class task context/configuration
 Compile/ run/ mainClass := Some("ch.epfl.pop.Server")
 Compile/ packageBin/ mainClass := Some("ch.epfl.pop.Server")
 
 lazy val scoverageSettings = Seq(
-  Compile/ coverageEnabled  := true,
-  Test/ coverageEnabled  := true,
-  packageBin/ coverageEnabled  := false,
+  Compile/ coverageEnabled := true,
+  Test/ coverageEnabled := true,
+  packageBin/ coverageEnabled := false,
 )
 
 ThisBuild/ scapegoatVersion := "1.4.11"
 
 scapegoatReports := Seq("xml")
 
-// temporarily report scapegoat errors as warnings, to avoid broken builds
+// Temporarily report scapegoat errors as warnings, to avoid broken builds
+Scapegoat/ scalacOptions -= "-Xfatal-warnings"
 Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
 
 // Configure Sonar
@@ -114,50 +117,43 @@ sonarProperties := Map(
   "sonar.scala.scapegoat.reportPaths" -> "./target/scala-2.13/scapegoat-report/scapegoat.xml"
 )
 
-assembly/ assemblyMergeStrategy  := {
+assembly/ assemblyMergeStrategy := {
     case PathList("module-info.class") => MergeStrategy.discard
     case PathList("reference.conf") => MergeStrategy.concat
     case PathList("META-INF","MANIFEST.MF") => MergeStrategy.discard
     case _ => MergeStrategy.defaultMergeStrategy("")
 }
 
-// For websockets
+// ------------------------ DEPENDENCIES ------------------------ 77
+
 val AkkaVersion = "2.6.8"
 val AkkaHttpVersion = "10.2.0"
+
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion,
-  "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion)
+    "com.typesafe.akka" %% "akka-stream-typed" % AkkaVersion,   // Akka streams (Graph)
+    "com.typesafe.akka" %% "akka-http" % AkkaHttpVersion,       // Akka http (WebSockets)
+    "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion,  // Akka distributed publish/subscribe cluster
 
-// Logging for akka
-libraryDependencies += "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime
+    "ch.qos.logback" % "logback-classic" % "1.1.3" % Runtime,   // Akka logging library
+    "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test, // Akka actor test kit (akka actor testing library)
+)
 
-// distributed pub sub cluster
-libraryDependencies += "com.typesafe.akka" %% "akka-cluster-tools" % AkkaVersion
-
-// Akka actor test kit
-libraryDependencies += "com.typesafe.akka" %% "akka-testkit" % AkkaVersion % Test
-
-// For LevelDB database
+// LevelDB database
 // https://mvnrepository.com/artifact/org.iq80.leveldb/leveldb
 libraryDependencies += "org.iq80.leveldb" % "leveldb" % "0.12"
 libraryDependencies += "org.xerial.snappy" % "snappy-java" % "1.1.7.3"
-// missing binary dependency, leveldbjni
-//libraryDependencies += "com.typesafe.akka" %% "akka-persistence" % AkkaVersion
-
 
 // Json Parser (https://github.com/spray/spray-json)
 libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5"
 
-// Encryption
+// Cryptography
 libraryDependencies += "com.google.crypto.tink" % "tink" % "1.5.0"
 
 // Scala unit tests
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.9" % Test
 
-// Jackson Databind (for Json Schema Validation)
-libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
-
-// Json Schema Validator
+// Json Schema Validator w/ Jackson Databind
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
+libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
 
 conflictManager := ConflictManager.latestCompatible
