@@ -1,2 +1,22 @@
-rootProject.name = 'popstellar'
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://jcenter.bintray.com/" }
+        //Simple library to use QR codes
+        //More info : https://github.com/kenglxn/QRGen
+        maven { url "https://jitpack.io" }
+    }
+}
+
+rootProject.name = "popstellar"
+include ':app'
 include(':app', ':MockServer')
