@@ -45,12 +45,27 @@ case object LaoHandler extends MessageHandler {
         val channel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
         val reactionChannel: Channel = Channel(channel + Channel.REACTIONS_CHANNEL_PREFIX)
+        // We create the two (independent) Futures
         val askCreate = (dbActor ? DbActor.CreateChannelsFromList(List(
           (channel, ObjectType.LAO),
           (socialChannel, ObjectType.CHIRP),
           (reactionChannel, ObjectType.REACTION)
         )))
-        Await.result(askCreate, duration) match {
+        val ask = (dbActor ? DbActor.Write(channel, message))
+
+        val resFuture: Future[GraphMessage] = (for{
+          f1 <- askCreate
+          f2 <- ask
+        } yield(f1, f2)).map{
+          case (DbActorAck(), DbActorWriteAck()) => Left(rpcMessage)
+          case (DbActorNAck(code, description), _) => Right(PipelineError(code, description, rpcMessage.id))
+          case (_, DbActorNAck(code, description)) => Right(PipelineError(code, description, rpcMessage.id))
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
+        }
+
+        Await.result(resFuture, duration)
+
+        /*Await.result(askCreate, duration) match {
           case DbActorAck() =>
             val ask = (dbActor ? DbActor.Write(channel, message))
             Await.result(ask, duration) match {
@@ -60,7 +75,7 @@ case object LaoHandler extends MessageHandler {
             }
           case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
-        }
+        }*/
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",

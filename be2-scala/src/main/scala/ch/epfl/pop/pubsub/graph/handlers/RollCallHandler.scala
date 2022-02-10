@@ -72,8 +72,59 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   }
 
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
+    // We first create the three (independent) futures
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    Await.result(ask, duration) match {
+
+    // Creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a Future[GraphMessage]
+    def createAttendeeChannels(data: CloseRollCall, rpcMessage: JsonRpcRequest): Future[GraphMessage] = {
+      val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map(attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP))
+      val askCreateChannels: Future[GraphMessage] = (dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)).map{
+        case DbActorAck() => Left(rpcMessage)
+        case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+        case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
+      }
+      askCreateChannels
+    }
+
+    val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
+        val askCreateChannels: Future[GraphMessage] = createAttendeeChannels(data, rpcMessage)
+
+        // We create a new Future (tuple of Futures) to remove the obligatory sequential execution
+        // TODO: A possible addition would be to handle the error messages better
+        val resFuture: Future[GraphMessage] = (for{
+          f1 <- ask
+          f2 <- askOldData
+          f3 <- askCreateChannels
+        } yield(f1, f2, f3)).map{
+          case (Left(_), DbActorReadLaoDataAck(Some(_)), Left(_)) => Left(rpcMessage)
+          case (Left(_), DbActorNAck(code, description), Left(_)) => Right(PipelineError(code, description, rpcMessage.id))
+          case (Left(_), _, error@Right(_)) => error
+          case (error@Right(_), _, _) => error
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
+        }
+
+        val laoChannel: Option[Base64Data] = rpcMessage.getParamsChannel.decodeChannelLaoId
+        laoChannel match {
+          case None => Right(PipelineError(
+            ErrorCodes.SERVER_ERROR.id,
+            s"There is an issue with the data of the LAO",
+            rpcMessage.id
+          ))
+          case Some(_) => Await.result(resFuture, duration)
+        }
+      
+      case _ => Right(PipelineError(
+            ErrorCodes.SERVER_ERROR.id,
+            s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",
+            rpcMessage.id
+          ))
+    }
+
+    /*Await.result(ask, duration) match {
       case Left(msg) => {
         rpcMessage.getParamsMessage match {
           case Some(message: Message) =>
@@ -125,7 +176,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
       }
       case error@Right(_) => error
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
-    }
+    }*/
   }
 
   private def generateSocialChannel(channel: Channel, pk: PublicKey): Channel = Channel(channel + Channel.SOCIAL_CHANNEL_PREFIX + pk.base64Data)
