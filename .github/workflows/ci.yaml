@@ -162,9 +162,13 @@ jobs:
       run:
         working-directory: ./fe2-android
 
+    # This CI pipeline is greatly inspired by the sample given by https://github.com/ReactiveCircus/android-emulator-runner
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          submodules: recursive
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
         
       - name: Setup JDK
         uses: actions/setup-java@v2
@@ -172,13 +176,13 @@ jobs:
           distribution: 'zulu'
           java-version: '11'  
 
-      - name: Gradle cache
+      - name: Cache Gradle
         uses: actions/cache@v2
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*') }}-${{ hashFiles('**/gradle/wrapper/gradle-wrapper.properties') }}-${{ hashFiles('**/buildSrc/**/*.kt') }}
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
 
       - name: Grant execute permission for gradlew
         run: |
@@ -191,7 +195,7 @@ jobs:
           # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
           ( set -o pipefail; ./gradlew build --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
 
-      - name: AVD cache
+      - name: Cache AVD
         uses: actions/cache@v2
         id: avd-cache
         with:
