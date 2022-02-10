@@ -40,31 +40,19 @@ object ElectionHandler extends MessageHandler {
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.SEPARATOR}$electionId")
 
-    // We create the two (independent) Futures
-    val ask = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message))
+    val askWrite = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message))
     val askCreateChannel = (dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION))
 
     val resFuture: Future[GraphMessage] = (for{
-      f1 <- ask
-      f2 <- askCreateChannel
-    } yield(f1, f2)).map{
+      resultWrite <- askWrite
+      resultCreateChannel <- askCreateChannel
+    } yield(resultWrite, resultCreateChannel)).map{
       case (DbActor.DbActorWriteAck(), DbActor.DbActorAck()) => Left(rpcMessage)
       case (DbActor.DbActorNAck(code, description), _) => Right(PipelineError(code, description, rpcMessage.id))
       case (_, DbActor.DbActorNAck(code, description)) => Right(PipelineError(code, description, rpcMessage.id))
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
     Await.result(resFuture, duration)
-
-    /*val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
-      case DbActor.DbActorWriteAck() => Await.result((dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)).map {
-        case DbActor.DbActorAck() => Left(rpcMessage)
-        case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-      }, duration)
-      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
-    }
-
-    Await.result(ask, duration)*/
   }
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
