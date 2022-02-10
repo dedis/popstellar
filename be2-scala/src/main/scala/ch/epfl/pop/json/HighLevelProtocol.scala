@@ -140,7 +140,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
     final private val PARAM_ID: String = "id"
 
     override def read(json: JsValue): JsonRpcRequest = json.asJsObject.getFields(PARAM_JSON_RPC, PARAM_METHOD, PARAM_PARAMS, PARAM_ID) match {
-      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_), optId) => {
+      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_), optId) =>
 
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params: Params = method match {
@@ -158,17 +158,15 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         }
 
         JsonRpcRequest(version, method, params, id)
-      }
 
       // Broadcast does not have an Id and should be treated separately
-      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_)) => {
+      case Seq(JsString(version), methodJsString@JsString(_), paramsJsObject@JsObject(_)) =>
         val method: MethodType = methodJsString.convertTo[MethodType]
         val params: Params = method match {
           case MethodType.BROADCAST => paramsJsObject.convertTo[Broadcast]
           case _ => throw new IllegalArgumentException(s"Can't parse json value $json with unknown method ${method.toString}")
         }
         JsonRpcRequest(version, method, params, None)
-      }
       case _ => throw new IllegalArgumentException(s"Can't parse json value $json to a JsonRpcRequest object")
     }
 
@@ -181,7 +179,7 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       jsObjectContent += (PARAM_PARAMS -> obj.params.toJson)
 
       /*Add the id key iff it's non null*/
-      if(obj.id.isDefined){
+      if (obj.id.isDefined) {
         jsObjectContent += (PARAM_ID -> obj.id.get.toJson)
       }
 

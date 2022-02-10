@@ -5,9 +5,8 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-
-import MessageValidator._
 
 case object MeetingValidator extends MessageDataContentValidator with EventValidator {
   override def EVENT_HASH_PREFIX: String = "M"
@@ -33,7 +32,7 @@ case object MeetingValidator extends MessageDataContentValidator with EventValid
           Right(validationError(s"'end' (${data.end.get}) timestamp is smaller than 'creation' (${data.creation})"))
         } else if (expectedHash != data.id) {
           Right(validationError("unexpected id"))
-        } else if (!validateOwner(sender, channel)){
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send an CreateMeeting message on a wrong type of channel $channel"))

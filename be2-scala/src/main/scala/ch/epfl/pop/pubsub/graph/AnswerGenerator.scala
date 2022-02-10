@@ -1,29 +1,32 @@
 package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
 import ch.epfl.pop.model.network.{ResultObject, _}
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
-import akka.pattern.AskableActorRef
 
 /**
-  * Object for AnswerGenerator to keep a compatible interface
-  * Since this is an object only one instance of AnswerGenerator(class) will be created
-  *
-  */
+ * Object for AnswerGenerator to keep a compatible interface
+ * Since this is an object only one instance of AnswerGenerator(class) will be created
+ *
+ */
 object AnswerGenerator extends AskPatternConstants {
-  lazy val db = DbActor.getInstance
+  lazy val db: AskableActorRef = DbActor.getInstance
   val answerGen = new AnswerGenerator(db)
-  def generateAnswer(graphMessage: GraphMessage): GraphMessage  = answerGen.generateAnswer(graphMessage)
+
+  def generateAnswer(graphMessage: GraphMessage): GraphMessage = answerGen.generateAnswer(graphMessage)
+
   val generator: Flow[GraphMessage, GraphMessage, NotUsed] = answerGen.generator
 }
 
-sealed class AnswerGenerator(db : => AskableActorRef) extends AskPatternConstants {
+sealed class AnswerGenerator(db: => AskableActorRef) extends AskPatternConstants {
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer

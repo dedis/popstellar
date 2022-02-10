@@ -5,7 +5,7 @@ import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}

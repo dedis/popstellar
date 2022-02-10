@@ -1,14 +1,16 @@
 package ch.epfl.pop.pubsub.graph
 
+import java.io.InputStream
+
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.requests.socialMedia._
+import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.graph.validators.ElectionValidator._
 import ch.epfl.pop.pubsub.graph.validators.LaoValidator._
@@ -17,23 +19,14 @@ import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
 import ch.epfl.pop.pubsub.graph.validators.RollCallValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
-import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
 import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator._
-
-import com.fasterxml.jackson.databind.JsonNode
-import com.fasterxml.jackson.databind.ObjectMapper
-
-import com.networknt.schema.JsonSchema
-import com.networknt.schema.JsonSchemaFactory
-import com.networknt.schema.ValidationMessage
-import com.networknt.schema.SpecVersion
-
-import scala.io.{BufferedSource, Source}
-import scala.util.{Failure, Success, Try}
-import scala.collection.JavaConverters._
-
+import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
+import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
+import com.networknt.schema.{JsonSchema, JsonSchemaFactory, SpecVersion, ValidationMessage}
 import spray.json._
-import java.io.InputStream
+
+import scala.jdk.CollectionConverters._
+import scala.util.{Success, Try}
 
 
 object Validator {
@@ -44,8 +37,9 @@ object Validator {
 
   def setupSchemaValidation(jsonPath: String, objectMapper: ObjectMapper): JsonSchema = {
     //Get input stream of query.json file from resources folder
-    def queryFile: InputStream = this.getClass().getClassLoader().getResourceAsStream(jsonPath)
-    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtaines from a node created from query.json
+    def queryFile: InputStream = this.getClass.getClassLoader.getResourceAsStream(jsonPath)
+
+    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtained from a node created from query.json
     val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
     // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
     // Closing the stream is done by readTree
@@ -61,10 +55,9 @@ object Validator {
     // Validation of the input, the result is a set of errors (if no errors, the set is empty)
 
     val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
-    if (errors.isEmpty){
+    if (errors.isEmpty) {
       Left(jsonString)
-    }
-    else {
+    } else {
       val rpcId = extractRpcId(jsonString)
       // we get and concatenate all of the JsonString messages
       Right(PipelineError(ErrorCodes.INVALID_DATA.id, errors.mkString("; "), rpcId))
@@ -83,6 +76,7 @@ object Validator {
       case _ => None
     }
   }
+
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
       case message@(_: JsonRpcRequest) => validateRpcRequest(message)

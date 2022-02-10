@@ -14,8 +14,8 @@ import scala.concurrent.Future
 trait MessageHandler extends AskPatternConstants {
 
   /**
-    * May be overriden by the reference of the used DbActor
-    */
+   * May be overridden by the reference of the used DbActor
+   */
   def dbActor: AskableActorRef = DbActor.getInstance
 
   val handler: Flow[GraphMessage, GraphMessage, NotUsed]
@@ -27,7 +27,7 @@ trait MessageHandler extends AskPatternConstants {
    * @return the database answer wrapped in a [[scala.concurrent.Future]]
    */
   def dbAskWrite(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
-    val m: Message =  if (message != null) message else rpcMessage.getParamsMessage.get
+    val m: Message = if (message != null) message else rpcMessage.getParamsMessage.get
     val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, m)).map {
       case DbActor.DbActorWriteAck() => Left(rpcMessage)
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
@@ -42,11 +42,11 @@ trait MessageHandler extends AskPatternConstants {
    * propagate its content to clients subscribed to the rpcMessage's channel
    *
    * @param rpcMessage request containing the message
-   * @param message (optional) message to store
+   * @param message    (optional) message to store
    * @return the database answer wrapped in a [[scala.concurrent.Future]]
    */
   def dbAskWritePropagate(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
-    val m: Message =  if (message != null) message else rpcMessage.getParamsMessage.get
+    val m: Message = if (message != null) message else rpcMessage.getParamsMessage.get
     val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, m)).map {
       case DbActor.DbActorWriteAck() => Left(rpcMessage)
       case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))

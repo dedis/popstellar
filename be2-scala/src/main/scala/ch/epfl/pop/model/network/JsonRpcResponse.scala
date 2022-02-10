@@ -26,7 +26,7 @@ object JsonRpcResponse extends Parsable {
              error: ErrorObject,
              id: Option[Int]
            ): JsonRpcResponse = {
-      new JsonRpcResponse(jsonrpc, None, Some(error), id) 
+    new JsonRpcResponse(jsonrpc, None, Some(error), id)
   }
 
   override def buildFromJson(payload: String): JsonRpcResponse = payload.parseJson.asJsObject.convertTo[JsonRpcResponse]
