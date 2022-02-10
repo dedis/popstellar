@@ -34,7 +34,7 @@ object ElectionHandler extends MessageHandler {
     case graphMessage@_ => graphMessage
   }
 
-  def handleSetupElection(rpcMessage: JsonRpcRequestSetupElection): GraphMessage = {
+  def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id

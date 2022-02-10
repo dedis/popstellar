@@ -16,7 +16,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 object SocialMediaHandler extends MessageHandler {
-  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = new SocialMediaHandler(super.dbActor).handler
+  final lazy val handlerInstance = new SocialMediaHandler(super.dbActor)
+
+  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = handlerInstance.handler
+
+  def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddChirp(rpcMessage)
+  def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteChirp(rpcMessage)
+
+  def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyAddChirp(rpcMessage)
+  def handleNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyDeleteChirp(rpcMessage)
+
+  def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddReaction(rpcMessage)
+  def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteReaction(rpcMessage)
 }
 
 sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
