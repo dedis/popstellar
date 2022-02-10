@@ -7,15 +7,15 @@ import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{GraphMessage, Handler, MessageDecoder, Validator}
 
 object ParamsWithMessageHandler {
-  def graph(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
+  def graph(registry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow.fromGraph(GraphDSL.create() {
     implicit builder: GraphDSL.Builder[NotUsed] => {
       import GraphDSL.Implicits._
 
       /* building blocks */
-      val messageDecoder = builder.add(MessageDecoder.dataParser)
-      val messageContentValidator = builder.add(Validator.messageContentValidator(messageRegistry))
+      val messageDecoder = builder.add(MessageDecoder.dataParser(registry))
+      val messageContentValidator = builder.add(Validator.messageContentValidator(registry))
 
-      val handler = builder.add(Handler.handler(messageRegistry))
+      val handler = builder.add(Handler.handler(registry))
 
       /* glue the components together */
       messageDecoder ~> messageContentValidator ~> handler

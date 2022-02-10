@@ -15,7 +15,7 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
     // Raw encoded data data
     val message = Left(CreateLaoExamples.getJsonRequestFromMessage(createLaoData))
     // Decode data
-    val decoded = MessageDecoder.parseData(message)
+    val decoded = MessageDecoder.parseData(message, MessageRegistry())
     decoded match {
       case Left(_: JsonRpcRequestCreateLao) =>
         testCode(decoded)
