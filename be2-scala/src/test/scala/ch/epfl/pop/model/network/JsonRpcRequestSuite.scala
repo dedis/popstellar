@@ -80,11 +80,11 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
 
   test("getDecodedDataHeader returns right value") {
 
-    rpcReq.getDecodedDataHeader should equal(None)
+    rpcReq.getDecodedDataHeader should equal((ObjectType.INVALID, ActionType.INVALID))
 
-    rpcReq2.getDecodedDataHeader should equal(None)
+    rpcReq2.getDecodedDataHeader should equal((ObjectType.INVALID, ActionType.INVALID))
 
-    rpcReq3.getDecodedDataHeader should equal(Some((ObjectType.LAO, ActionType.CREATE)))
+    rpcReq3.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
   }
 
   test("getWithDecodedData sets data as intended") {

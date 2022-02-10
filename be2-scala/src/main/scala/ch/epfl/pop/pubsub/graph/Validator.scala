@@ -118,8 +118,9 @@ object Validator {
     case graphMessage@_ => graphMessage
   }
 
-  def validateMessageDataContent(rpcRequest: JsonRpcRequest, messageRegistry: MessageRegistry): GraphMessage = {
-    messageRegistry.getDataValidator(rpcRequest) match {
+  def validateMessageDataContent(rpcRequest: JsonRpcRequest, registry: MessageRegistry): GraphMessage = {
+    val (_object, action) = rpcRequest.getDecodedDataHeader
+    registry.getValidator(_object, action) match {
       case Some(validator) => validator(rpcRequest)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,

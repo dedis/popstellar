@@ -3,7 +3,7 @@ package ch.epfl.pop.model.network
 import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
-import ch.epfl.pop.model.network.method.message.data.MessageData
+import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
@@ -40,12 +40,12 @@ class JsonRpcRequest(
     case _ => None
   }
 
-  def getDecodedDataHeader: Option[(ObjectType, ActionType)] = this.getParamsMessage match {
+  def getDecodedDataHeader: (ObjectType, ActionType) = this.getParamsMessage match {
     case Some(message) => message.decodedData match {
-      case Some(messageData) => Some((messageData._object, messageData.action))
-      case _ => None
+      case Some(messageData) => (messageData._object, messageData.action)
+      case _ => (ObjectType.INVALID, ActionType.INVALID)
     }
-    case _ => None
+    case _ => (ObjectType.INVALID, ActionType.INVALID)
   }
 
   /**

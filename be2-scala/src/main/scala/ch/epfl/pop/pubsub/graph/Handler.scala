@@ -7,7 +7,8 @@ import ch.epfl.pop.pubsub.MessageRegistry
 
 object Handler {
   private def handle(rpcRequest: JsonRpcRequest, messageRegistry: MessageRegistry): GraphMessage = {
-    messageRegistry.getHandler(rpcRequest) match {
+    val (_object, action) = rpcRequest.getDecodedDataHeader
+    messageRegistry.getHandler(_object, action) match {
       case Some(handler) => handler(rpcRequest)
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
