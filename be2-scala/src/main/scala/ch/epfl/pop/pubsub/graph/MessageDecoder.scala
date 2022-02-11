@@ -7,12 +7,6 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
-import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
-import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
-import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.network.requests.socialMedia._
-import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.MessageRegistry
 import spray.json._
@@ -52,45 +46,6 @@ object MessageDecoder {
    */
   def dataParser(registry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(parseData(_, registry))
 
-
-  /**
-   * Type casts a general JsonRpcRequest <request> into a typed request (model/network/requests)
-   *
-   * @param request JsonRpcRequest to be type casted
-   * @throws java.lang.IllegalArgumentException if the data header (object and action) is either missing
-   *                                            or is an invalid combination
-   * @return a type casted JsonRpcRequest
-   */
-  @throws(classOf[IllegalArgumentException])
-  private def typeCastRequest(request: JsonRpcRequest): JsonRpcRequest = request.getDecodedData match {
-    case Some(data) => (data._object, data.action) match {
-      case (ObjectType.LAO, ActionType.CREATE) => request.toTypedRequest(JsonRpcRequestCreateLao)
-      case (ObjectType.LAO, ActionType.STATE) => request.toTypedRequest(JsonRpcRequestStateLao)
-      case (ObjectType.LAO, ActionType.UPDATE_PROPERTIES) => request.toTypedRequest(JsonRpcRequestUpdateLao)
-      case (ObjectType.MEETING, ActionType.CREATE) => request.toTypedRequest(JsonRpcRequestCreateMeeting)
-      case (ObjectType.MEETING, ActionType.STATE) => request.toTypedRequest(JsonRpcRequestStateMeeting)
-      case (ObjectType.ROLL_CALL, ActionType.CLOSE) => request.toTypedRequest(JsonRpcRequestCloseRollCall)
-      case (ObjectType.ROLL_CALL, ActionType.CREATE) => request.toTypedRequest(JsonRpcRequestCreateRollCall)
-      case (ObjectType.ROLL_CALL, ActionType.OPEN) => request.toTypedRequest(JsonRpcRequestOpenRollCall)
-      case (ObjectType.ROLL_CALL, ActionType.REOPEN) => request.toTypedRequest(JsonRpcRequestReopenRollCall)
-      case (ObjectType.ELECTION, ActionType.SETUP) => request.toTypedRequest(JsonRpcRequestSetupElection)
-      case (ObjectType.ELECTION, ActionType.CAST_VOTE) => request.toTypedRequest(JsonRpcRequestCastVoteElection)
-      case (ObjectType.ELECTION, ActionType.RESULT) => request.toTypedRequest(JsonRpcRequestResultElection)
-      case (ObjectType.ELECTION, ActionType.END) => request.toTypedRequest(JsonRpcRequestEndElection)
-      case (ObjectType.MESSAGE, ActionType.WITNESS) => request.toTypedRequest(JsonRpcRequestWitnessMessage)
-      case (ObjectType.CHIRP, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddChirp)
-      case (ObjectType.CHIRP, ActionType.NOTIFY_ADD) => request.toTypedRequest(JsonRpcRequestNotifyAddChirp)
-      case (ObjectType.CHIRP, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteChirp)
-      case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE) => request.toTypedRequest(JsonRpcRequestNotifyDeleteChirp)
-      case (ObjectType.REACTION, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddReaction)
-      case (ObjectType.REACTION, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteReaction)
-
-      case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
-    }
-    case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")
-  }
-
-
   /**
    * Decides whether a graph message 'data' field should be decoded or not.
    * If yes, the 'data' field is decoded
@@ -113,20 +68,19 @@ object MessageDecoder {
 
           // if the header is correct (both 'object' and 'action' are present and both strings)
           case Success(Seq(objectString@JsString(_), actionString@JsString(_))) =>
-            var typedRequest = rpcRequest // filler for the typed request
+            var filledRequest = rpcRequest // filler for the typed request
 
             Try {
               val _object: ObjectType = objectString.convertTo[ObjectType]
               val action: ActionType = actionString.convertTo[ActionType]
 
               // TODO [REFACTOR NICOLAS] : add data schema validation once refactored
-              // TODO [REFACTOR NICOLAS] : remove type cast once registry is refactored
               registry.getBuilder(_object, action) match {
                 case Some(builder) =>
                   // decode the JsonRpcRequest's Message 'data' field
                   val messageData: MessageData = builder(jsonString)
                   rpcRequest.getWithDecodedData(messageData) match {
-                    case Some(decodedJsonRequest) => typedRequest = typeCastRequest(decodedJsonRequest)
+                    case Some(decodedJsonRequest) => filledRequest = decodedJsonRequest
                     // Should never be thrown since we check if the jsonRpcRequest hasParamMessage before parsing/decoding
                     case None => throw new IllegalStateException(s"JsonRpcRequest <$rpcRequest> does not contain a message data")
                   }
@@ -134,7 +88,7 @@ object MessageDecoder {
               }
 
             } match {
-              case Success(_) => Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
+              case Success(_) => Left(filledRequest) // everything worked at expected, 'decodedData' field was populated
               case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage}", rpcRequest.id))
             }
 

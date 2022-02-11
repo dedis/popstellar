@@ -31,13 +31,10 @@ class MessageRegistrySuite extends FunSuite with Matchers {
   val registry: MessageRegistry = new MessageRegistry(register)
 
   test("A custom MessageRegistry may be injected in the graph") {
-    //var gm = Left(JsonRpcRequestExample.CREATE_LAO_RPC)
-
     val gm = Left(JsonRpcRequest.buildFromJson("""{"jsonrpc":"2.0","method":"publish","params":{"message":{"message_id":"f1jTxH8TU2UGUBnikGU3wRTHjhOmIEQVmxZBK55QpsE=","sender":"to_klZLtiHV446Fv98OLNdNmi-EP5OaTtbBkotTYLic=","signature":"2VDJCWg11eNPUvZOnvq5YhqqIKLBcik45n-6o87aUKefmiywagivzD4o_YmjWHzYcb9qg-OgDBZbBNWSUgJICA==","data":"eyJjcmVhdGlvbiI6MTYzMTg4NzQ5NiwiaWQiOiJ4aWdzV0ZlUG1veGxkd2txMUt1b0wzT1ZhODl4amdYalRPZEJnSldjR1drPSIsIm5hbWUiOiJoZ2dnZ2dnIiwib3JnYW5pemVyIjoidG9fa2xaTHRpSFY0NDZGdjk4T0xOZE5taS1FUDVPYVR0YkJrb3RUWUxpYz0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ==","witness_signatures":[]},"channel":"/root"},"id":1}"""))
 
     val res = MessageDecoder.parseData(gm, registry)
-    print(res)
-/*
+
     res shouldBe a[GraphMessage]
     res.isLeft should be (true)
 
@@ -49,24 +46,10 @@ class MessageRegistrySuite extends FunSuite with Matchers {
         val rpc = rpcMessage.asInstanceOf[JsonRpcRequest]
         rpc.getDecodedData.isDefined should be (true)
 
-        //print(JsonRpcRequestExample.CREATE_LAO_RPC.params)
-        //print(rpc.params.asInstanceOf[ParamsWithMessage].message)
-
         val messageData = rpc.getDecodedData.get
         messageData._object should equal (MessageDataInstance()._object)
         messageData.action should equal (MessageDataInstance().action)
       case _ => fail("resulting graph message is not 'Left'")
     }
-
-*/
-    // Modified lao state builder
-
-    // Original roll call create builder
-
-    // New header combination
-
-    // New header combination (not in the custom registry)
-
-    // Existing combination (not in the custom registry)
   }
 }

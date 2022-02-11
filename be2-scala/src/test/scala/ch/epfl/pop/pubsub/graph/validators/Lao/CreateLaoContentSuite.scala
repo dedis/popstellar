@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph.validator.lao
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder, Validator}
 import org.scalatest.{FlatSpec, GivenWhenThen, Inside, Matchers}
@@ -17,7 +17,8 @@ class CreateLaoContentSuite extends FlatSpec with Matchers with Inside with Give
     // Decode data
     val decoded = MessageDecoder.parseData(message, MessageRegistry.apply())
     decoded match {
-      case Left(_: JsonRpcRequestCreateLao) =>
+      case Left(r: JsonRpcRequest) =>
+        r.getDecodedDataHeader should equal ((ObjectType.LAO, ActionType.CREATE))
         testCode(decoded)
       case Left(m) => fail(f"Decoder decoded to bad type: <$m> expected type is JsonRpcRequestCreateLao")
       case Right(_) =>
