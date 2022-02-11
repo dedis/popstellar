@@ -18,6 +18,15 @@ import { AddReaction } from './reaction';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
 
+const {
+  LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION,
+} = ObjectType;
+const {
+  CREATE, STATE, UPDATE_PROPERTIES, OPEN, CLOSE, REOPEN, SETUP, CAST_VOTE, END, RESULT, WITNESS,
+  ADD, NOTIFY_ADD, DELETE, NOTIFY_DELETE,
+} = ActionType;
+const { KEYPAIR, POP_TOKEN } = SignatureType;
+
 /**
  * Represents an entry of the MessageRegistry.
  */
@@ -43,113 +52,37 @@ const k = (object: ObjectType, action: ActionType): string => `${object}, ${acti
 export class MessageRegistry {
   private readonly mapping = new Map<string, MessageEntry>([
     // Lao
-    [k(ObjectType.LAO, ActionType.CREATE),
-      {
-        build: CreateLao.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.LAO, ActionType.STATE),
-      {
-        build: StateLao.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.LAO, ActionType.UPDATE_PROPERTIES),
-      {
-        build: UpdateLao.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
+    [k(LAO, CREATE), { build: CreateLao.fromJson, signature: KEYPAIR }],
+    [k(LAO, STATE), { build: StateLao.fromJson, signature: KEYPAIR }],
+    [k(LAO, UPDATE_PROPERTIES), { build: UpdateLao.fromJson, signature: KEYPAIR }],
 
     // Meeting
-    [k(ObjectType.MEETING, ActionType.CREATE),
-      {
-        build: CreateMeeting.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.MEETING, ActionType.STATE),
-      {
-        build: StateMeeting.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
+    [k(MEETING, CREATE), { build: CreateMeeting.fromJson, signature: KEYPAIR }],
+    [k(MEETING, STATE), { build: StateMeeting.fromJson, signature: KEYPAIR }],
 
     // Roll call
-    [k(ObjectType.ROLL_CALL, ActionType.CREATE),
-      {
-        build: CreateRollCall.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.ROLL_CALL, ActionType.OPEN),
-      {
-        build: OpenRollCall.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.ROLL_CALL, ActionType.CLOSE),
-      {
-        build: CloseRollCall.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.ROLL_CALL, ActionType.REOPEN),
-      {
-        build: ReopenRollCall.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
+    [k(ROLL_CALL, CREATE), { build: CreateRollCall.fromJson, signature: KEYPAIR }],
+    [k(ROLL_CALL, OPEN), { build: OpenRollCall.fromJson, signature: KEYPAIR }],
+    [k(ROLL_CALL, CLOSE), { build: CloseRollCall.fromJson, signature: KEYPAIR }],
+    [k(ROLL_CALL, REOPEN), { build: ReopenRollCall.fromJson, signature: KEYPAIR }],
 
     // Election
-    [k(ObjectType.ELECTION, ActionType.SETUP),
-      {
-        build: SetupElection.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.ELECTION, ActionType.CAST_VOTE),
-      {
-        build: CastVote.fromJson,
-        signature: SignatureType.POP_TOKEN,
-      }],
-    [k(ObjectType.ELECTION, ActionType.END),
-      {
-        build: EndElection.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.ELECTION, ActionType.RESULT),
-      {
-        build: ElectionResult.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
+    [k(ELECTION, SETUP), { build: SetupElection.fromJson, signature: KEYPAIR }],
+    [k(ELECTION, CAST_VOTE), { build: CastVote.fromJson, signature: POP_TOKEN }],
+    [k(ELECTION, END), { build: EndElection.fromJson, signature: KEYPAIR }],
+    [k(ELECTION, RESULT), { build: ElectionResult.fromJson, signature: KEYPAIR }],
 
     // Witness
-    [k(ObjectType.MESSAGE, ActionType.WITNESS),
-      {
-        build: WitnessMessage.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
+    [k(MESSAGE, WITNESS), { build: WitnessMessage.fromJson, signature: KEYPAIR }],
 
     // Chirps
-    [k(ObjectType.CHIRP, ActionType.ADD),
-      {
-        build: AddChirp.fromJson,
-        signature: SignatureType.POP_TOKEN,
-      }],
-    [k(ObjectType.CHIRP, ActionType.NOTIFY_ADD),
-      {
-        build: NotifyAddChirp.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
-    [k(ObjectType.CHIRP, ActionType.DELETE),
-      {
-        build: DeleteChirp.fromJson,
-        signature: SignatureType.POP_TOKEN,
-      }],
-    [k(ObjectType.CHIRP, ActionType.NOTIFY_DELETE),
-      {
-        build: NotifyDeleteChirp.fromJson,
-        signature: SignatureType.KEYPAIR,
-      }],
+    [k(CHIRP, ADD), { build: AddChirp.fromJson, signature: POP_TOKEN }],
+    [k(CHIRP, NOTIFY_ADD), { build: NotifyAddChirp.fromJson, signature: KEYPAIR }],
+    [k(CHIRP, DELETE), { build: DeleteChirp.fromJson, signature: POP_TOKEN }],
+    [k(CHIRP, NOTIFY_DELETE), { build: NotifyDeleteChirp.fromJson, signature: KEYPAIR }],
 
     // Reactions
-    [k(ObjectType.REACTION, ActionType.ADD),
-      {
-        build: AddReaction.fromJson,
-        signature: SignatureType.POP_TOKEN,
-      }],
+    [k(REACTION, ADD), { build: AddReaction.fromJson, signature: POP_TOKEN }],
   ]);
 
   /**
