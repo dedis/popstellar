@@ -2,8 +2,8 @@ package com.github.dedis.popstellar.ui.home;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static com.github.dedis.popstellar.pages.qrcode.CameraPermissionPageObject.allowCameraButton;
-import static com.github.dedis.popstellar.pages.qrcode.CameraPermissionPageObject.getRequestKey;
+import static com.github.dedis.popstellar.ui.pages.qrcode.CameraPermissionPageObject.allowCameraButton;
+import static com.github.dedis.popstellar.ui.pages.qrcode.CameraPermissionPageObject.getRequestKey;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.testutils.MockResultRegistry;
 import com.github.dedis.popstellar.testutils.ResultReceiver;
@@ -21,6 +22,7 @@ import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.junit.runner.RunWith;
 
 import java.util.concurrent.TimeoutException;
 
@@ -29,6 +31,7 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 
 /** Test for the CameraPermissionFragment */
 @HiltAndroidTest
+@RunWith(AndroidJUnit4.class)
 public class CameraPermissionFragmentTest {
 
   private final MockResultRegistry mockRegistry = new MockResultRegistry();
