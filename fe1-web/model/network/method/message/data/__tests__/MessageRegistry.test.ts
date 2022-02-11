@@ -52,12 +52,6 @@ describe('MessageRegistry', () => {
     expect(mockHandle).toHaveBeenCalledWith(extMsg);
   });
 
-  it('should return false when handling a message without its handle entry', async () => {
-    const message = await Message.fromData(messageData);
-    const extMsg = ExtendedMessage.fromMessage(message, channel);
-    expect(registry.handleMessage(extMsg)).toBeFalse();
-  });
-
   it('should throw an error when building an unsupported type of message', async () => {
     const buildWrongMessage = () => registry.buildMessageData({ object: CHIRP, action: INVALID });
     expect(buildWrongMessage).toThrow(Error);
@@ -71,5 +65,9 @@ describe('MessageRegistry', () => {
 
   it('should return the correct signature type', () => {
     expect(registry.getSignatureType(messageData)).toStrictEqual(POP_TOKEN);
+  });
+
+  it('verifyEntries should throw an error for undefined handler', () => {
+    expect(registry.verifyEntries).toThrow(Error);
   });
 });
