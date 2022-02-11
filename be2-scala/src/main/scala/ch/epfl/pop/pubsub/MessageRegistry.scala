@@ -24,11 +24,11 @@ final class MessageRegistry(private val register: Map[(ObjectType, ActionType), 
 
 
 object MessageRegistry {
-  private final case class RegisterEntry(
-                                          builder: String => MessageData,
-                                          validator: JsonRpcRequest => GraphMessage,
-                                          handler: JsonRpcRequest => GraphMessage,
-                                        )
+  final case class RegisterEntry(
+                                  builder: String => MessageData,
+                                  validator: JsonRpcRequest => GraphMessage,
+                                  handler: JsonRpcRequest => GraphMessage,
+                                )
 
   private final class Register {
     private val elements = collection.immutable.Map.newBuilder[(ObjectType, ActionType), RegisterEntry]

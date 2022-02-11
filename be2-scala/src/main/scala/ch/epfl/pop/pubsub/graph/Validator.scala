@@ -140,10 +140,10 @@ object Validator {
   // validation from Message layer
   def messageContentValidator(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(rpcRequest: JsonRpcRequest) => validateMessageDataContent(rpcRequest, messageRegistry)
-    case Left(rpcMessage) => Right(PipelineError(
+    case Left(rpcResponse: JsonRpcResponse) => Right(PipelineError(
       ErrorCodes.SERVER_ERROR.id,
       "'messageContentValidator' was called on a JsonRpcResponse, which by definition, does not contain any Message layer'",
-      rpcMessage.getId
+      rpcResponse.getId
     ))
     case graphMessage@_ => graphMessage
   }

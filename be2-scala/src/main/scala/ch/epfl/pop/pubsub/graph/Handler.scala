@@ -2,7 +2,7 @@ package ch.epfl.pop.pubsub.graph
 
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.JsonRpcRequest
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.MessageRegistry
 
 object Handler {
@@ -21,10 +21,10 @@ object Handler {
   // handles messages
   def handler(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(rpcRequest: JsonRpcRequest) => handle(rpcRequest, messageRegistry)
-    case Left(rpcMessage) => Right(PipelineError(
+    case Left(rpcResponse: JsonRpcResponse) => Right(PipelineError(
       ErrorCodes.SERVER_ERROR.id,
-      "'handler' was called on a JsonRpcResponse : server does not support answers handling",
-      rpcMessage.getId
+      "NOT IMPLEMENTED : Server does not allow JsonRpcResponse processing (handling) currently",
+      rpcResponse.getId
     ))
     case graphMessage@_ => graphMessage
   }

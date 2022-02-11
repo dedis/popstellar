@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
 import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
 import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, MessageDecoder, PipelineError}
-import org.scalatest.{Assertion, FlatSpec, GivenWhenThen, Inside, Matchers}
+import org.scalatest._
 import util.examples.lao.CreateLaoExamples
 
 
@@ -23,7 +23,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
       Given("a correct graph message of JsonRpcRequest")
       And("a createLao message")
       When("the request is parsed")
-      val parsed = MessageDecoder.parseData(gm, MessageRegistry())
+      val parsed = MessageDecoder.parseData(gm, MessageRegistry.apply())
 
       Then("it should be of type JsonRpcRequestCreateLao")
       inside(parsed) {
@@ -68,7 +68,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
       Given("a graph message of JsonRpcRequest with bad message data format")
       //gm
       When("the request is parsed")
-      val parsed = MessageDecoder.parseData(gm, MessageRegistry())
+      val parsed = MessageDecoder.parseData(gm, MessageRegistry.apply())
 
       Then("it should fail with the correct type Right[PipelineError]")
       inside(parsed) {
