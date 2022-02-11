@@ -188,12 +188,12 @@ jobs:
         run: |
           chmod +x ./gradlew
 
-      - name: Build
+      - name: Run Unit Tests
         shell: bash
         run: |
           # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
           # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-          ( set -o pipefail; ./gradlew build --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
+          ( set -o pipefail; ./gradlew testDebugUnitTest --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
 
       - name: Cache AVD
         uses: actions/cache@v2
@@ -222,7 +222,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Run Tests
+      - name: Run UI Tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 29
