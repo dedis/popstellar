@@ -36,8 +36,8 @@ export enum ActionType {
 
 /** Enumeration of all possible signatures of a message */
 export enum SignatureType {
-  KEYPAIR,
-  POP_TOKEN,
+  KEYPAIR = 'keypair',
+  POP_TOKEN = 'pop_token',
 }
 
 export interface MessageData {

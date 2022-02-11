@@ -93,10 +93,7 @@ export class MessageRegistry {
    * @param handleFunc - The function that handles this type of message
    */
   addHandler(object: ObjectType, action: ActionType, handleFunc: HandleFunction) {
-    const entry = this.mapping.get(k(object, action));
-    if (entry === undefined) {
-      throw new Error(`Message ${object} ${action} has not been initialized in MessageRegistry`);
-    }
+    const entry = this.getEntry({ object: object, action: action });
     entry.handle = handleFunc;
   }
 
@@ -108,17 +105,8 @@ export class MessageRegistry {
    */
   handleMessage(msg: ExtendedMessage): boolean {
     const data = msg.messageData;
-    const messageEntry = this.mapping.get(k(data.object, data.action));
-    if (messageEntry === undefined) {
-      console.warn(`Message ${data.object} ${data.action} is not contained in MessageRegistry`);
-      return false;
-    }
-    const { handle } = messageEntry;
-    if (handle === undefined) {
-      console.warn(`Message ${data.object} ${data.action} does not have an 'handle' property in MessageRegistry`);
-      return false;
-    }
-    return handle(msg);
+    const messageEntry = this.getEntry(data);
+    return messageEntry.handle!!(msg);
   }
 
   /**
@@ -128,32 +116,56 @@ export class MessageRegistry {
    * @returns MessageData - The built message
    */
   buildMessageData(data: MessageData): MessageData {
-    const messageEntry = this.mapping.get(k(data.object, data.action));
-    if (messageEntry === undefined) {
-      throw new Error(`Message ${data.object} ${data.action} is not contained in MessageRegistry`);
-    }
-    const { build } = messageEntry;
-    if (build === undefined) {
-      throw new Error(`Message ${data.object} ${data.action} does not have an 'build' property in MessageRegistry`);
-    }
-    return build(data);
+    const messageEntry = this.getEntry(data);
+    return messageEntry.build!!(data);
   }
 
   /**
-   * Gets the signature type of a message data.
+   * Gets the signature type of a MessageData.
    *
-   * @param data - The message data we want to know how to sign
+   * @param data - The type of message we want to know how to sign
    * @returns SignatureType - The type of signature of the message
    */
   getSignatureType(data: MessageData): SignatureType {
-    const messageEntry = this.mapping.get(k(data.object, data.action));
+    const messageEntry = this.getEntry(data);
+    return messageEntry.signature!!;
+  }
+
+  /**
+   * Verifies that all properties of the MessageEntries of the registry are defined.
+   *
+   * @throws Error if a property is undefined
+   *
+   * @remarks This must be executed before starting the application.
+   */
+  verifyEntries() {
+    for (const [key, entry] of this.mapping) {
+      if (entry.handle === undefined) {
+        throw new Error(`Message '${key}' does not have a 'handle' property in MessageRegistry`);
+      }
+      if (entry.build === undefined) {
+        throw new Error(`Message '${key}' does not have a 'build' property in MessageRegistry`);
+      }
+      if (entry.signature === undefined) {
+        throw new Error(`Message '${key}' does not have a 'signature' property in MessageRegistry`);
+      }
+    }
+  }
+
+  /**
+   * Gets an entry of the registry.
+   *
+   * @param data - The type of message we want the entry
+   * @throws Error if the message is not in the registry
+   *
+   * @private
+   */
+  private getEntry(data: MessageData): MessageEntry {
+    const key = k(data.object, data.action);
+    const messageEntry = this.mapping.get(key);
     if (messageEntry === undefined) {
-      throw new Error(`Message ${data.object} ${data.action} is not contained in MessageRegistry`);
+      throw new Error(`Message '${key}' is not contained in MessageRegistry`);
     }
-    const { signature } = messageEntry;
-    if (signature === undefined) {
-      throw new Error(`Message ${data.object} ${data.action} does not have a 'signature' property in MessageRegistry`);
-    }
-    return signature;
+    return messageEntry;
   }
 }

@@ -30,6 +30,7 @@ export default function App() {
   const messageRegistry = new MessageRegistry();
   configureIngestion(messageRegistry);
   configureMessages(messageRegistry);
+  messageRegistry.verifyEntries();
 
   useReduxDevToolsExtension(navigationRef);
 
