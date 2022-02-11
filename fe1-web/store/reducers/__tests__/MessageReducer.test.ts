@@ -2,7 +2,7 @@ import 'jest-extended';
 import { AnyAction } from 'redux';
 import { channelFromIds, Timestamp } from 'model/objects';
 import {
-  configureSignatures,
+  configureMessages,
   ExtendedMessage,
   markExtMessageAsProcessed,
   Message,
@@ -23,7 +23,7 @@ jest.mock('model/objects/wallet/Token.ts', () => ({
 }));
 
 const messageRegistry = new MessageRegistry();
-configureSignatures(messageRegistry);
+configureMessages(messageRegistry);
 
 const initialState = {
   byLaoId: {},
