@@ -20,8 +20,8 @@ import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment handling permission granting for the camera */
-@AndroidEntryPoint
-public final class CameraPermissionFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public final class CameraPermissionFragment extends Hilt_CameraPermissionFragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
   public static final String REQUEST_KEY = "PERMISSION_REQUEST";

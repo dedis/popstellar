@@ -27,8 +27,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint
-public class RollCallTokenFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class RollCallTokenFragment extends Hilt_RollCallTokenFragment {
 
   public static final String TAG = RollCallTokenFragment.class.getSimpleName();
   public static final String EXTRA_ID = "rollcall_id";

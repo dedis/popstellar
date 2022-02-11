@@ -19,8 +19,8 @@ import net.glxn.qrgen.android.QRCode;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint
-public class RollCallDetailFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class RollCallDetailFragment extends Hilt_RollCallDetailFragment {
 
   public static final String TAG = RollCallDetailFragment.class.getSimpleName();
   private static final String EXTRA_PK = "pk";
