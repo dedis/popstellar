@@ -1,12 +1,22 @@
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network';
 import { Broadcast } from 'model/network/method';
 import { ExtendedMessage, Message } from 'model/network/method/message';
-import { ActionType, ObjectType } from 'model/network/method/message/data';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { Channel } from 'model/objects';
 import {
   addMessages, dispatch, OpenedLaoStore,
 } from 'store';
-import { handleLaoMessage } from './handlers';
+
+let messageRegistry: MessageRegistry;
+
+/**
+ * Dependency injection of a MessageRegistry to avoid import loops.
+ *
+ * @param registry - The MessageRegistry to be injected
+ */
+export function setMessageRegistry(registry: MessageRegistry) {
+  messageRegistry = registry;
+}
 
 const isLaoCreate = (m: ExtendedMessage) => m.messageData.object === ObjectType.LAO
   && m.messageData.action === ActionType.CREATE;
@@ -19,7 +29,7 @@ function handleLaoCreateMessages(msg: ExtendedMessage) : boolean {
   // processing the lao/create message:
   // - we either connect to the LAO (if there's no active connection) OR
   // - we simply add it to the list of known LAOs
-  handleLaoMessage(msg);
+  messageRegistry.handleMessage(msg);
 
   return true;
 }

@@ -4,11 +4,12 @@ import {
   CastVote,
   ElectionResult,
   EndElection,
+  MessageRegistry,
   ObjectType,
   SetupElection,
 } from 'model/network/method/message/data';
 import {
-  channelFromIds, Election, ElectionStatus, RegisteredVote, getLastPartOfChannel,
+  channelFromIds, Election, ElectionStatus, getLastPartOfChannel, RegisteredVote,
 } from 'model/objects';
 import {
   addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
@@ -166,25 +167,14 @@ function handleElectionResultMessage(msg: ExtendedMessage) {
   return true;
 }
 
-export function handleElectionMessage(msg: ExtendedMessage) {
-  if (msg.messageData.object !== ObjectType.ELECTION) {
-    console.warn('handleElectionMessage was called to process an unsupported message', msg);
-    return false;
-  }
-
-  switch (msg.messageData.action) {
-    case ActionType.SETUP:
-      return handleElectionSetupMessage(msg);
-    case ActionType.CAST_VOTE:
-      return handleCastVoteMessage(msg);
-    case ActionType.END:
-      return handleElectionEndMessage(msg);
-    case ActionType.RESULT:
-      return handleElectionResultMessage(msg);
-
-    default:
-      console.warn('A Election message was received but'
-        + ' its processing logic is not yet implemented:', msg);
-      return false;
-  }
+/**
+ * Configures the ElectionHandler in a MessageRegistry.
+ *
+ * @param registry - The MessageRegistry where we want to add the mappings
+ */
+export function configure(registry: MessageRegistry) {
+  registry.addHandler(ObjectType.ELECTION, ActionType.SETUP, handleElectionSetupMessage);
+  registry.addHandler(ObjectType.ELECTION, ActionType.CAST_VOTE, handleCastVoteMessage);
+  registry.addHandler(ObjectType.ELECTION, ActionType.END, handleElectionEndMessage);
+  registry.addHandler(ObjectType.ELECTION, ActionType.RESULT, handleElectionResultMessage);
 }

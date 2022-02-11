@@ -1,18 +1,18 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import {
   ActionType,
+  MessageRegistry,
   ObjectType,
   WitnessMessage,
 } from 'model/network/method/message/data';
 import { WitnessSignature } from 'model/objects';
 import {
-  dispatch, addMessageWitnessSignature,
-  getStore, makeCurrentLao,
+  addMessageWitnessSignature, dispatch, getStore, makeCurrentLao,
 } from 'store';
 
 const getCurrentLao = makeCurrentLao();
 
-export function handleWitnessMessage(msg: ExtendedMessage): boolean {
+function handleWitnessMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.MESSAGE
     || msg.messageData.action !== ActionType.WITNESS) {
     console.warn('handleWitnessMessage was called to process an unsupported message', msg);
@@ -43,4 +43,13 @@ export function handleWitnessMessage(msg: ExtendedMessage): boolean {
   dispatch(addMessageWitnessSignature(lao.id, msgId, ws.toState()));
 
   return true;
+}
+
+/**
+ * Configures the WitnessHandler in a MessageRegistry.
+ *
+ * @param registry - The MessageRegistry where we want to add the mapping
+ */
+export function configure(registry: MessageRegistry) {
+  registry.addHandler(ObjectType.MESSAGE, ActionType.WITNESS, handleWitnessMessage);
 }

@@ -3,11 +3,16 @@ import {
   ActionType,
   CloseRollCall,
   CreateRollCall,
+  MessageRegistry,
   ObjectType,
   OpenRollCall,
 } from 'model/network/method/message/data';
 import {
-  RollCall, RollCallStatus, Wallet, getUserSocialChannel, getReactionChannel,
+  getReactionChannel,
+  getUserSocialChannel,
+  RollCall,
+  RollCallStatus,
+  Wallet,
 } from 'model/objects';
 import {
   addEvent,
@@ -19,7 +24,7 @@ import {
   updateEvent,
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
+import { getEventFromId } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
@@ -152,34 +157,25 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
-export function handleRollCallMessage(msg: ExtendedMessage) {
-  if (msg.messageData.object !== ObjectType.ROLL_CALL) {
-    console.warn('handleRollCallMessage was called to process an unsupported message', msg);
-    return false;
-  }
+/**
+ * TODO: Handles a reopen roll call message.
+ *
+ * @param msg
+ */
+function handleRollCallReopenMessage(msg: ExtendedMessage) {
+  console.warn('A RollCall reopen message was received but'
+    + ' its processing logic is not yet implemented:', msg);
+  return false;
+}
 
-  if (!hasWitnessSignatureQuorum(msg.witness_signatures)) {
-    console.info('Roll-call operation will not be processed until witness quorum is reached', msg);
-    return false;
-  }
-
-  switch (msg.messageData.action) {
-    case ActionType.CREATE:
-      return handleRollCallCreateMessage(msg);
-
-    case ActionType.OPEN:
-      return handleRollCallOpenMessage(msg);
-
-    case ActionType.CLOSE:
-      return handleRollCallCloseMessage(msg);
-
-    case ActionType.REOPEN:
-      // TODO: currently unsupported
-      // fallthrough
-
-    default:
-      console.warn('A LAO message was received but'
-        + ' its processing logic is not yet implemented:', msg);
-      return false;
-  }
+/**
+ * Configures the RollCallHandler in a MessageRegistry.
+ *
+ * @param registry - The MessageRegistry where we want to add the mappings
+ */
+export function configure(registry: MessageRegistry) {
+  registry.addHandler(ObjectType.ROLL_CALL, ActionType.CREATE, handleRollCallCreateMessage);
+  registry.addHandler(ObjectType.ROLL_CALL, ActionType.OPEN, handleRollCallOpenMessage);
+  registry.addHandler(ObjectType.ROLL_CALL, ActionType.CLOSE, handleRollCallCloseMessage);
+  registry.addHandler(ObjectType.ROLL_CALL, ActionType.REOPEN, handleRollCallReopenMessage);
 }

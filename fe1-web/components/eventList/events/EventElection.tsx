@@ -172,7 +172,8 @@ const EventElection = (props: IPropTypes) => {
   }, []);
 
   // Here we use the election object form the redux store in order to see the electionStatus
-  // update when an  incoming electionEnd or electionResult message comes (in handler/Election.ts)
+  // update when an  incoming electionEnd or electionResult message comes
+  // (in handler/ElectionHandler.ts)
   const getElectionDisplay = (status: ElectionStatus) => {
     switch (status) {
       case ElectionStatus.NOTSTARTED:
