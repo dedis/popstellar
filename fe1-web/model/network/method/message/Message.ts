@@ -11,18 +11,33 @@ import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
 import {
-  buildMessageData, encodeMessageData, MessageData, MessageRegistry, SignatureType,
+  MessageData, MessageRegistry, SignatureType,
 } from './data';
 
 let messageRegistry: MessageRegistry;
 
 /**
- * Dependency injection of a MessageRegistry to know how messages need to be signed.
+ * Dependency injection of a MessageRegistry to know how messages need to be signed and how they
+ * are built.
  *
  * @param registry - The MessageRegistry to be injected
  */
-export function configureSignatures(registry: MessageRegistry) {
+export function configureMessages(registry: MessageRegistry) {
   messageRegistry = registry;
+}
+
+/**
+ * Encodes a MessageData into a Base64Url.
+ *
+ * @param msgData - The MessageData to be encoded
+ * @returns Base64UrlData - The encoded message
+ *
+ * @remarks
+ * This is exported for testing purposes.
+ */
+export function encodeMessageData(msgData: MessageData): Base64UrlData {
+  const data = JSON.stringify(msgData);
+  return Base64UrlData.encode(data);
 }
 
 /**
@@ -107,7 +122,7 @@ export class Message {
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    this.#messageData = buildMessageData(dataObj as MessageData);
+    this.#messageData = messageRegistry.buildMessageData(dataObj as MessageData);
   }
 
   public static fromJson(obj: any): Message {

@@ -12,8 +12,10 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { mockPopToken, mockPrivateKey, mockPublicKey } from '__tests__/utils/TestUtils';
-import { AddChirp, encodeMessageData, EndElection, MessageRegistry } from '../data';
-import { configureSignatures, Message } from '../Message';
+import {
+  AddChirp, EndElection, MessageRegistry,
+} from '../data';
+import { configureMessages, encodeMessageData, Message } from '../Message';
 
 const TIMESTAMP = 1603455600;
 const laoState: LaoState = {
@@ -33,7 +35,7 @@ jest.mock('model/objects/wallet/Token.ts', () => ({
 const pastKeyPairStoreState = KeyPairStore.get();
 
 const messageRegistry = new MessageRegistry();
-configureSignatures(messageRegistry);
+configureMessages(messageRegistry);
 
 beforeAll(() => {
   KeyPairStore.store(KeyPair.fromState({

@@ -15,7 +15,7 @@ import { navigationRef } from 'navigation/RootNavigation';
 
 import { configureIngestion } from 'ingestion';
 import { MessageRegistry } from 'model/network/method/message/data';
-import { configureSignatures } from 'model/network/method/message';
+import { configureMessages } from 'model/network/method/message';
 
 /*
 * The starting point of the app.
@@ -29,7 +29,7 @@ import { configureSignatures } from 'model/network/method/message';
 export default function App() {
   const messageRegistry = new MessageRegistry();
   configureIngestion(messageRegistry);
-  configureSignatures(messageRegistry);
+  configureMessages(messageRegistry);
 
   useReduxDevToolsExtension(navigationRef);
 
