@@ -1,16 +1,15 @@
 package ch.epfl.pop.pubsub
 
-import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.method.message.data.rollCall.CreateRollCall
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry.RegisterEntry
-import ch.epfl.pop.pubsub.graph.{GraphMessage, MessageDecoder}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, JsonString, MessageDecoder}
 import org.scalatest.{FunSuite, Matchers}
-import util.examples.JsonRpcRequestExample
+
+import scala.util.{Success, Try}
 
 class MessageRegistrySuite extends FunSuite with Matchers {
 
@@ -19,14 +18,15 @@ class MessageRegistrySuite extends FunSuite with Matchers {
     override val action: ActionType = ActionType.INVALID
   }
 
-  def unitBuilder(s: String): MessageData = MessageDataInstance()
+  def unitSchemaValidator(s: JsonString): Try[Unit] = Success((): Unit)
+  def unitBuilder(s: JsonString): MessageData = MessageDataInstance()
   def unitValidator(r: JsonRpcRequest): GraphMessage = Left(r)
   def unitHandler(r: JsonRpcRequest): GraphMessage = unitValidator(r)
 
   val register: Map[(ObjectType, ActionType), RegisterEntry] = Map(
-    (ObjectType.LAO, ActionType.CREATE) -> RegisterEntry(unitBuilder, unitValidator, unitHandler),
-    (ObjectType.ROLL_CALL, ActionType.CREATE) -> RegisterEntry(CreateRollCall.buildFromJson, unitValidator, unitHandler),
-    (ObjectType.ROLL_CALL, ActionType.CAST_VOTE) -> RegisterEntry(unitBuilder, unitValidator, unitHandler), // combination does not exist
+    (ObjectType.LAO, ActionType.CREATE) -> RegisterEntry(unitSchemaValidator, unitBuilder, unitValidator, unitHandler),
+    (ObjectType.ROLL_CALL, ActionType.CREATE) -> RegisterEntry(unitSchemaValidator, CreateRollCall.buildFromJson, unitValidator, unitHandler),
+    (ObjectType.ROLL_CALL, ActionType.CAST_VOTE) -> RegisterEntry(unitSchemaValidator, unitBuilder, unitValidator, unitHandler), // combination does not exist
   )
   val registry: MessageRegistry = new MessageRegistry(register)
 

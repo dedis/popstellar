@@ -2,8 +2,8 @@ package ch.epfl.pop.pubsub.graph.validator.lao
 
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, MessageDecoder, PipelineError}
 import org.scalatest._
@@ -98,11 +98,9 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
   "A valid rpc request but non-valid message data format createLao --missing param" should "fail" in
     withCreateLaoFixiture(CreateLaoExamples.laoCreateMissingParams)(testBadFormat)
 
-  // TODO REFACTORING NICOLAS : Add this test back once the schema validator is back online :)
-  /*
   "A valid rpc request but non-valid message data format createLao --additional param" should "fail" in
     withCreateLaoFixiture(CreateLaoExamples.laoCreateAdditionalParam)(testBadFormat)
-  */
+
   "A valid rpc request but non-valid message data format createLao --organizer pk not base64" should "fail" in
     withCreateLaoFixiture(CreateLaoExamples.laoCreateOrgNot64)(testBadFormat)
 

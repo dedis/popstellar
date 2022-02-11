@@ -53,17 +53,27 @@ object MessageDecoder {
       val _object: ObjectType = objectString.convertTo[ObjectType]
       val action: ActionType = actionString.convertTo[ActionType]
 
-      // TODO [REFACTOR NICOLAS] : add data schema validation once refactored
-      registry.getBuilder(_object, action) match {
-        case Some(builder) =>
-          // decode the JsonRpcRequest's Message 'data' field
-          val messageData: MessageData = builder(dataJsonString)
-          rpcRequest.getWithDecodedData(messageData) match {
-            case Some(decodedJsonRequest) => filledRequest = decodedJsonRequest
-            // Should never be thrown since we check if the jsonRpcRequest hasParamMessage before parsing/decoding
-            case None => throw new IllegalStateException(s"JsonRpcRequest <$rpcRequest> does not contain a message data")
-          }
-        case _ => throw new ProtocolException(s"MessageRegistry could not find any builder for JsonRpcRequest : $rpcRequest'")
+      val validated: Try[Unit] = registry.getSchemaValidator(_object, action) match {
+        // validate the data schema if the registry found a mapping
+        case Some(schemaValidator) => schemaValidator(dataJsonString)
+        case _ => throw new ProtocolException(s"MessageRegistry could not find any schema validator for JsonRpcRequest : $rpcRequest'")
+      }
+
+      val builder: JsonString => MessageData = validated match {
+        // build the message if the registry found a mapping
+        case Success(_) => registry.getBuilder(_object, action) match {
+          case Some(b) => b
+          case _ => throw new ProtocolException(s"MessageRegistry could not find any builder for JsonRpcRequest : $rpcRequest'")
+        }
+        case Failure(exception) => throw exception // propagate the exception
+      }
+
+      // decode the JsonRpcRequest's Message 'data' field
+      val messageData: MessageData = builder(dataJsonString)
+      rpcRequest.getWithDecodedData(messageData) match {
+        case Some(decodedJsonRequest) => filledRequest = decodedJsonRequest
+        // Should never be thrown since we check if the jsonRpcRequest hasParamMessage before parsing/decoding
+        case _ => throw new IllegalStateException(s"JsonRpcRequest <$rpcRequest> does not contain a message data")
       }
 
     } match {
