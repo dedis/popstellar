@@ -21,7 +21,6 @@ case object MeetingHandler extends MessageHandler {
   }
 
   def handleStateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
-    // val modificationId: Hash = rpcMessage.getDecodedData.asInstanceOf[StateMeeting].modification_id
     Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED : handleStateMeeting is not implemented", rpcMessage.id))
   }
 }

@@ -46,6 +46,32 @@ object MessageDecoder {
    */
   def dataParser(registry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(parseData(_, registry))
 
+  private def populateDataField(rpcRequest: JsonRpcRequest, objectString: JsString, actionString: JsString, dataJsonString: String, registry: MessageRegistry): GraphMessage = {
+    var filledRequest = rpcRequest // filler for the typed request
+
+    Try {
+      val _object: ObjectType = objectString.convertTo[ObjectType]
+      val action: ActionType = actionString.convertTo[ActionType]
+
+      // TODO [REFACTOR NICOLAS] : add data schema validation once refactored
+      registry.getBuilder(_object, action) match {
+        case Some(builder) =>
+          // decode the JsonRpcRequest's Message 'data' field
+          val messageData: MessageData = builder(dataJsonString)
+          rpcRequest.getWithDecodedData(messageData) match {
+            case Some(decodedJsonRequest) => filledRequest = decodedJsonRequest
+            // Should never be thrown since we check if the jsonRpcRequest hasParamMessage before parsing/decoding
+            case None => throw new IllegalStateException(s"JsonRpcRequest <$rpcRequest> does not contain a message data")
+          }
+        case _ => throw new ProtocolException(s"MessageRegistry could not find any builder for JsonRpcRequest : $rpcRequest'")
+      }
+
+    } match {
+      case Success(_) => Left(filledRequest) // everything worked at expected, 'decodedData' field was populated
+      case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage}", rpcRequest.id))
+    }
+  }
+
   /**
    * Decides whether a graph message 'data' field should be decoded or not.
    * If yes, the 'data' field is decoded
@@ -68,30 +94,7 @@ object MessageDecoder {
 
           // if the header is correct (both 'object' and 'action' are present and both strings)
           case Success(Seq(objectString@JsString(_), actionString@JsString(_))) =>
-            var filledRequest = rpcRequest // filler for the typed request
-
-            Try {
-              val _object: ObjectType = objectString.convertTo[ObjectType]
-              val action: ActionType = actionString.convertTo[ActionType]
-
-              // TODO [REFACTOR NICOLAS] : add data schema validation once refactored
-              registry.getBuilder(_object, action) match {
-                case Some(builder) =>
-                  // decode the JsonRpcRequest's Message 'data' field
-                  val messageData: MessageData = builder(jsonString)
-                  rpcRequest.getWithDecodedData(messageData) match {
-                    case Some(decodedJsonRequest) => filledRequest = decodedJsonRequest
-                    // Should never be thrown since we check if the jsonRpcRequest hasParamMessage before parsing/decoding
-                    case None => throw new IllegalStateException(s"JsonRpcRequest <$rpcRequest> does not contain a message data")
-                  }
-                case _ => throw new ProtocolException(s"MessageRegistry could not find any builder for JsonRpcRequest : $rpcRequest'")
-              }
-
-            } match {
-              case Success(_) => Left(filledRequest) // everything worked at expected, 'decodedData' field was populated
-              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage}", rpcRequest.id))
-            }
-
+            populateDataField(rpcRequest, objectString, actionString, jsonString, registry)
           case Success(_) => Right(PipelineError(
             ErrorCodes.INVALID_DATA.id,
             "Invalid data: Unable to parse 'data' field: 'object' or 'action' field is missing/wrongly formatted",
