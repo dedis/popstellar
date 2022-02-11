@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.utility.security;
 
+import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -49,7 +50,7 @@ public class KeyManagerTest {
 
   @Rule public RuleChain rule = RuleChain.outerRule(hiltRule).around(MockitoJUnit.testRule(this));
 
-  @Inject AndroidKeysetManager androidKeysetManager;
+  @Inject @DeviceKeyset AndroidKeysetManager androidKeysetManager;
   @Mock private Wallet wallet;
 
   @Before
