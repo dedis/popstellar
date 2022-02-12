@@ -1,12 +1,21 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import {
-  ActionType, ObjectType, CreateLao, StateLao, UpdateLao,
+  ActionType,
+  CreateLao,
+  MessageRegistry,
+  ObjectType,
+  StateLao,
+  UpdateLao,
 } from 'model/network/method/message/data';
 import { Lao } from 'model/objects';
 import {
-  dispatch, connectToLao, updateLao,
-  getMessage, getStore,
-  makeCurrentLao, makeLaoMessagesState,
+  connectToLao,
+  dispatch,
+  getMessage,
+  getStore,
+  makeCurrentLao,
+  makeLaoMessagesState,
+  updateLao,
 } from 'store';
 import { hasWitnessSignatureQuorum } from './Utils';
 
@@ -77,26 +86,19 @@ function handleLaoStateMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
-export function handleLaoMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.LAO) {
-    console.warn('handleLaoMessage was called to process an unsupported message', msg);
-    return false;
-  }
+function handleLaoUpdatePropertiesMessage(msg: ExtendedMessage): boolean {
+  console.debug(`lao/update_properties message was archived: no action needs to be taken ${msg}`);
+  return true;
+}
 
-  switch (msg.messageData.action) {
-    case ActionType.CREATE:
-      return handleLaoCreateMessage(msg);
-
-    case ActionType.STATE:
-      return handleLaoStateMessage(msg);
-
-    case ActionType.UPDATE_PROPERTIES:
-      console.debug('lao/update_properties message was archived: no action needs to be taken');
-      return true;
-
-    default:
-      console.warn('A LAO message was received but'
-        + ' its processing logic is not yet implemented:', msg);
-      return false;
-  }
+/**
+ * Configures the LaoHandler in a MessageRegistry.
+ *
+ * @param registry - The MessageRegistry where we want to add the mappings
+ */
+export function configure(registry: MessageRegistry) {
+  registry.addHandler(ObjectType.LAO, ActionType.CREATE, handleLaoCreateMessage);
+  registry.addHandler(ObjectType.LAO, ActionType.STATE, handleLaoStateMessage);
+  registry.addHandler(ObjectType.LAO, ActionType.UPDATE_PROPERTIES,
+    handleLaoUpdatePropertiesMessage);
 }

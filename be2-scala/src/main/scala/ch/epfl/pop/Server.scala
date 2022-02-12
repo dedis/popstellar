@@ -11,23 +11,18 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
+import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
 import ch.epfl.pop.pubsub.graph.DbActor
 import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
-import scala.io.StdIn
 import scala.util.{Failure, Success}
-import com.typesafe.config.ConfigFactory
-import java.io.File
-import ch.epfl.pop.config.RuntimeEnvironment
-import ch.epfl.pop.config.ServerConf
-import akka.event.LoggingAdapter
 
 object Server {
 
   /** Create a WebServer that handles http requests and WebSockets requests.
-    */
+   */
   def main(args: Array[String]): Unit = {
 
     /* Get configuration object for akka actor/http*/
@@ -57,7 +52,7 @@ object Server {
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
       /* Setup http server with bind and route config*/
-      val bindingFuture = Http().bindAndHandle(publishSubscribeRoute, config.interface, config.port)
+      val bindingFuture = Http().newServerAt(config.interface, config.port).bindFlow(publishSubscribeRoute)
 
       bindingFuture.onComplete {
         case Success(_) => println(f"ch.epfl.pop.Server online at ws://${config.interface}:${config.port}/${config.path}")
@@ -73,16 +68,16 @@ object Server {
         override def run(): Unit = {
           try {
             bindingFuture.flatMap(_.unbind()).onComplete(_ => { //trigger unbinding from the port
-                logger.info("Server terminated !")
-                system.terminate()
-                typedSystem.terminate()
-              }) // and shutdown when done
+              logger.info("Server terminated !")
+              system.terminate()
+              typedSystem.terminate()
+            }) // and shutdown when done
           } catch {
-                case  e: InterruptedException =>   logger.warning("Server shutting thread was interrupted !")
+            case _: InterruptedException => logger.warning("Server shutting thread was interrupted !")
           }
         }
       }
-      Runtime.getRuntime.addShutdownHook(shutdownListener);
+      Runtime.getRuntime.addShutdownHook(shutdownListener)
       Behaviors.empty
     }
     //Deploys system actor with root behavior

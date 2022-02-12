@@ -1,12 +1,12 @@
 package ch.epfl.pop.model.network
 
+import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.MessageData
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash}
-import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
 import scala.util.{Success, Try}
@@ -49,16 +49,15 @@ class JsonRpcRequest(
   }
 
   /**
-    * @param decodedData decoded data to set to new JsonRpcRequest
-    * @return a new JsonRpcRequest with decoded message data
-    */
+   * @param decodedData decoded data to set to new JsonRpcRequest
+   * @return a new JsonRpcRequest with decoded message data
+   */
   def getWithDecodedData(decodedData: MessageData): Option[JsonRpcRequest] = this.getParamsMessage match {
-    case Some(message) => {
+    case Some(message) =>
       //Get copy of the message and sets its data to the decoded one
       val decodedMessage = message.copy(decodedData = Some(decodedData))
       //Similar to this but with new decoded message in its params
       Some(JsonRpcRequest(this.jsonrpc, this.method, new ParamsWithMessage(this.params.channel, decodedMessage), this.id))
-    }
     case None => None
   }
 
@@ -85,5 +84,6 @@ object JsonRpcRequest extends Parsable {
            ): JsonRpcRequest = {
     new JsonRpcRequest(jsonrpc, method, params, id)
   }
+
   override def buildFromJson(payload: String): JsonRpcRequest = payload.parseJson.asJsObject.convertTo[JsonRpcRequest]
 }

@@ -10,9 +10,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData}
 import ch.epfl.pop.pubsub.graph.DbActor.{DbActorMessage, DbActorAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Failure
 

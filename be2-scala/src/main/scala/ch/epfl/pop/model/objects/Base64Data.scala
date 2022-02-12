@@ -17,7 +17,7 @@ sealed case class Base64Data(data: String) {
   override def toString: String = data.toString
 
   try {
-    DECODER.decode(data);
+    DECODER.decode(data)
   } catch {
     case _: IllegalArgumentException => throw new IllegalArgumentException(s"String $data is not Base64")
   }

@@ -7,8 +7,8 @@ import ch.epfl.pop.model.network.method.message.data.election._
 import ch.epfl.pop.model.network.method.message.data.lao._
 import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
-import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
+import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import spray.json._
@@ -239,10 +239,10 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val deleteReactionFormat: JsonFormat[DeleteReaction] = jsonFormat[Hash, Timestamp, DeleteReaction](DeleteReaction.apply, "reaction_id", "timestamp")
 
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
-    final private val PARAM_CHANNELTYPE: String = "channelType"
+    final private val PARAM_CHANNEL_TYPE: String = "channelType"
     final private val PARAM_MESSAGES: String = "messages"
 
-    override def read(json: JsValue): ChannelData = json.asJsObject().getFields(PARAM_CHANNELTYPE, PARAM_MESSAGES) match {
+    override def read(json: JsValue): ChannelData = json.asJsObject().getFields(PARAM_CHANNEL_TYPE, PARAM_MESSAGES) match {
       case Seq(channelType@JsString(_), JsArray(messages)) => ChannelData(
         channelType.convertTo[ObjectType],
         messages.map(_.convertTo[Hash]).toList
@@ -251,7 +251,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
 
     override def write(obj: ChannelData): JsValue = JsObject(
-      PARAM_CHANNELTYPE -> obj.channelType.toJson,
+      PARAM_CHANNEL_TYPE -> obj.channelType.toJson,
       PARAM_MESSAGES -> obj.messages.toJson
     )
 
@@ -260,11 +260,11 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit object LaoDataFormat extends JsonFormat[LaoData] {
     final private val PARAM_OWNER: String = "owner"
     final private val PARAM_ATTENDEES: String = "attendees"
-    final private val PARAM_PRIVATEKEY: String = "privateKey"
-    final private val PARAM_PUBLICKEY: String = "publicKey"
+    final private val PARAM_PRIVATE_KEY: String = "privateKey"
+    final private val PARAM_PUBLIC_KEY: String = "publicKey"
     final private val PARAM_WITNESSES: String = "witnesses"
 
-    override def read(json: JsValue): LaoData = json.asJsObject().getFields(PARAM_OWNER, PARAM_ATTENDEES, PARAM_PRIVATEKEY, PARAM_PUBLICKEY, PARAM_WITNESSES) match {
+    override def read(json: JsValue): LaoData = json.asJsObject().getFields(PARAM_OWNER, PARAM_ATTENDEES, PARAM_PRIVATE_KEY, PARAM_PUBLIC_KEY, PARAM_WITNESSES) match {
       case Seq(owner@JsString(_), JsArray(attendees), privateKey@JsString(_), publicKey@JsString(_), JsArray(witnesses)) => LaoData(
         owner.convertTo[PublicKey],
         attendees.map(_.convertTo[PublicKey]).toList,
@@ -278,8 +278,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def write(obj: LaoData): JsValue = JsObject(
       PARAM_OWNER -> obj.owner.toJson,
       PARAM_ATTENDEES -> obj.attendees.toJson,
-      PARAM_PRIVATEKEY -> obj.privateKey.toJson,
-      PARAM_PUBLICKEY -> obj.publicKey.toJson,
+      PARAM_PRIVATE_KEY -> obj.privateKey.toJson,
+      PARAM_PUBLIC_KEY -> obj.publicKey.toJson,
       PARAM_WITNESSES -> obj.witnesses.toJson
     )
 

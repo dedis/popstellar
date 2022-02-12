@@ -57,7 +57,7 @@ object ParamsWithMessageHandler {
       handlerPartitioner.out(portRollCall) ~> rollCallHandler ~> handlerMerger
       handlerPartitioner.out(portElection) ~> electionHandler ~> handlerMerger
       handlerPartitioner.out(portWitness) ~> witnessHandler ~> handlerMerger
-      handlerPartitioner.out(portSocialMedia)~> socialMediaHandler ~> handlerMerger
+      handlerPartitioner.out(portSocialMedia) ~> socialMediaHandler ~> handlerMerger
 
       /* close the shape */
       FlowShape(messageDecoder.in, handlerMerger.out)

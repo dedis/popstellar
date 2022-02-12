@@ -1,5 +1,6 @@
 # scala
 target
+.bsp
 *.class
 
 #scala metals

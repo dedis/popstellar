@@ -1,15 +1,17 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
 import akka.NotUsed
+import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, PublicKey, LaoData}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
+import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.DbActor._
+import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -21,18 +23,19 @@ import akka.pattern.AskableActorRef
  * RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
  */
 object RollCallHandler extends MessageHandler {
-  override val handler = new RollCallHandler(super.dbActor).handler
+  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = new RollCallHandler(super.dbActor).handler
 }
 
 /**
-  * Implementation of the RollCallHandler that provides a testable interface
-  * @param dbRef reference of the db actor
-  */
+ * Implementation of the RollCallHandler that provides a testable interface
+ *
+ * @param dbRef reference of the db actor
+ */
 sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   /**
-    * Overrides default DbActor with provided parameter
-    */
+   * Overrides default DbActor with provided parameter
+   */
   override final val dbActor: AskableActorRef = dbRef
 
   override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {

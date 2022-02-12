@@ -7,12 +7,12 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
 import ch.epfl.pop.model.network.method.message.data._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestCastVoteElection, JsonRpcRequestSetupElection}
+import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.requests.socialMedia._
+import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import spray.json._
 
@@ -94,7 +94,7 @@ object MessageDecoder {
       case (ObjectType.CHIRP, ActionType.NOTIFY_DELETE) => request.toTypedRequest(JsonRpcRequestNotifyDeleteChirp)
       case (ObjectType.REACTION, ActionType.ADD) => request.toTypedRequest(JsonRpcRequestAddReaction)
       case (ObjectType.REACTION, ActionType.DELETE) => request.toTypedRequest(JsonRpcRequestDeleteReaction)
-      
+
       case _ => throw new IllegalArgumentException(s"Illegal ('object'/'action') = (${data._object}/${data.action}) combination")
     }
     case _ => throw new IllegalArgumentException(s"Unable to infer type of JsonRpcRequest (decoded 'data' field is missing)")
@@ -110,10 +110,9 @@ object MessageDecoder {
    */
   def parseData(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcRequest: JsonRpcRequest) => jsonRpcRequest.getDecodedData match {
-      case Some(_) => {
+      case Some(_) =>
         println(f"Message was already decode and of type $graphMessage")
-        graphMessage
-      } // do nothing if 'data' already decoded
+        graphMessage // do nothing if 'data' already decoded
       case _ if !jsonRpcRequest.hasParamsMessage => graphMessage // do nothing if rpc-message doesn't contain any message
       case _ =>
         // json string representation of the 'data' field
@@ -135,7 +134,7 @@ object MessageDecoder {
               }
             } match {
               case Success(_) => Left(typedRequest) // everything worked at expected, 'decodedData' field was populated
-              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage()}", jsonRpcRequest.id))
+              case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage}", jsonRpcRequest.id))
             }
 
           case Success(_) => Right(PipelineError(
