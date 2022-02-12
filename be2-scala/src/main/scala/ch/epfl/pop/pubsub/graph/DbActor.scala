@@ -431,36 +431,36 @@ object DbActor extends AskPatternConstants {
       case Write(channel, message) =>
         log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
         Try(write(channel, message)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
 
       case Read(channel, messageId) =>
         log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
         Try(read(channel, messageId)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
 
       case ReadChannelData(channel) =>
         log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
         Try(readChannelData(channel)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
 
       case ReadLaoData(channel) =>
         log.info(s"Actor $self (db) received a ReadLaoData request")
         Try(readLaoData(channel)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
 
       case Catchup(channel) =>
         log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
         Try(catchup(channel)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
 
       case WriteAndPropagate(channel, message) =>
@@ -468,44 +468,44 @@ object DbActor extends AskPatternConstants {
         Try(write(channel, message)) match{
           case Success(gm) =>
             mediatorRef ! PubSubMediator.Propagate(channel, message)
-            sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+            sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
         
 
       case CreateChannel(channel, objectType) =>
         log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
         Try(createChannel(channel, objectType)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
       
       case CreateChannelsFromList(list) =>
         log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
         Try(createChannelsFromList(list)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
 
       case ChannelExists(channel) =>
         log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
         Try(channelExists(channel)) match {
-          case Success(gm) => sender ! gm
-          case Failure(e) => sender ! Status.Failure(e)
+          case Success(gm) => sender() ! gm
+          case Failure(e) => sender() ! Status.Failure(e)
         }
 
       case AddWitnessSignature(messageId, _) =>
         log.info(
           s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'"
         )
-        sender ! Status.Failure(new DbActorNAckException(
+        sender() ! Status.Failure(new DbActorNAckException(
           ErrorCodes.SERVER_ERROR.id,
           s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
         ))
 
       case m @ _ =>
         log.info(s"Actor $self (db) received an unknown message")
-        sender ! Status.Failure(new DbActorNAckException(
+        sender() ! Status.Failure(new DbActorNAckException(
           ErrorCodes.SERVER_ERROR.id,
           s"database actor received a message '$m' that it could not recognize"
         ))
