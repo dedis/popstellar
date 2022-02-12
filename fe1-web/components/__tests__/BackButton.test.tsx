@@ -1,19 +1,9 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import { mockNavigate } from '__mocks__/useNavigationMock';
 import BackButton from '../BackButton';
 
 const mockHomeTab = 'Home';
-const mockNavigate = jest.fn();
-
-jest.mock('@react-navigation/native', () => {
-  const actualNavigation = jest.requireActual('@react-navigation/native');
-  return {
-    ...actualNavigation,
-    useNavigation: () => ({
-      navigate: mockNavigate,
-    }),
-  };
-});
 
 describe('BackButton', () => {
   it('renders correctly', () => {

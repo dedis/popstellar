@@ -4,22 +4,12 @@ import STRINGS from 'res/strings';
 import { Channel, Hash, PublicKey } from 'model/objects';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import keyPair from 'test_data/keypair.json';
+import { mockNavigate } from '__mocks__/useNavigationMock';
 import UserListItem from '../UserListItem';
 
 const publicKey = new PublicKey('PublicKey');
 const mockPublicKey = new PublicKey(keyPair.publicKey);
 const laoId = new Hash('LaoId');
-const mockNavigate = jest.fn();
-
-jest.mock('@react-navigation/native', () => {
-  const actualNavigation = jest.requireActual('@react-navigation/native');
-  return {
-    ...actualNavigation,
-    useNavigation: () => ({
-      navigate: mockNavigate,
-    }),
-  };
-});
 
 jest.mock('network/CommunicationApi.ts', () => ({
   subscribeToChannel: jest.fn((c: Channel) => Promise.resolve(c)),

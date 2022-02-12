@@ -2,8 +2,8 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 import { Base64UrlData, Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { DeleteChirp } from '../chirp';
-import { ActionType, ObjectType } from '../MessageData';
+import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
+import { DeleteChirp } from '../index';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const mockMessageId = Base64UrlData.encode('message_id');

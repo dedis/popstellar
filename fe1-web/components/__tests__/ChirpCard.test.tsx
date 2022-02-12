@@ -11,7 +11,7 @@ import { OpenedLaoStore } from 'store';
 import STRINGS from 'res/strings';
 import ChirpCard from '../ChirpCard';
 
-const TIMESTAMP = 1609455600;
+const TIMESTAMP = 1609455600; // 31 December 2020
 const laoState: LaoState = {
   id: '1234',
   name: 'MyLao',
@@ -27,7 +27,7 @@ const chirp = new Chirp({
   id: ID,
   text: 'Don\'t panic.',
   sender: sender,
-  time: new Timestamp(1609455600), // 31 December 2020
+  time: new Timestamp(TIMESTAMP),
   isDeleted: false,
 });
 
@@ -35,7 +35,7 @@ const deletedChirp = new Chirp({
   id: new Hash('1234'),
   text: '',
   sender: sender,
-  time: new Timestamp(1609455600), // 31 December 2020
+  time: new Timestamp(TIMESTAMP),
   isDeleted: true,
 });
 
@@ -43,7 +43,7 @@ const chirp1 = new Chirp({
   id: new Hash('5678'),
   text: 'Ignore me',
   sender: new PublicKey('Anonymous'),
-  time: new Timestamp(1609455600), // 31 December 2020
+  time: new Timestamp(TIMESTAMP),
 });
 
 jest.mock('network/MessageApi');
@@ -64,9 +64,10 @@ beforeAll(() => {
 
 describe('ChirpCard', () => {
   describe('for deletion', () => {
+    const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
+    getMockLao.mockImplementation(() => Lao.fromState(laoState));
+
     it('renders correctly for sender', () => {
-      const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
-      getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const obj = render(
         <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
       );
@@ -74,8 +75,6 @@ describe('ChirpCard', () => {
     });
 
     it('renders correctly for non-sender', () => {
-      const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
-      getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const obj = render(
         <ChirpCard chirp={chirp} currentUserPublicKey={new PublicKey('IAmNotTheSender')} />,
       );
@@ -83,8 +82,6 @@ describe('ChirpCard', () => {
     });
 
     it('calls delete correctly', () => {
-      const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
-      getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const { getByLabelText, getByText } = render(
         <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
       );
@@ -94,8 +91,6 @@ describe('ChirpCard', () => {
     });
 
     it('render correct for a deleted chirp', () => {
-      const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
-      getMockLao.mockImplementation(() => Lao.fromState(laoState));
       const obj = render(
         <ChirpCard chirp={deletedChirp} currentUserPublicKey={sender} />,
       );
