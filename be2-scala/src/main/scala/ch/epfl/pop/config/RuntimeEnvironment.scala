@@ -20,7 +20,7 @@ object RuntimeEnvironment {
   private lazy val sp = new SystemProperties()
 
   private def getConfDir: String = {
-    /* Get config directory path form JVM */
+    /* Get config directory path from JVM */
     if (sp("clean") != null) {
       // starting the program with fresh database
       println("Starting the server without any previous persistent state")
