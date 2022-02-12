@@ -4,11 +4,12 @@ import java.io.File
 import java.nio.charset.StandardCharsets
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.Status
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.{MessageData, ObjectType}
-import ch.epfl.pop.model.objects.{Channel, Hash, Signature, LaoData, ChannelData}
+import ch.epfl.pop.model.objects.{Channel, Hash, Signature, LaoData, ChannelData, DbActorNAckException}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, DBIterator, Options, WriteBatch}
@@ -159,15 +160,6 @@ object DbActor extends AskPatternConstants {
     */
   final case class DbActorAck() extends DbActorMessage
 
-  /** Response for a negative db request
-    *
-    * @param code
-    *   error code corresponding to the error encountered
-    * @param description
-    *   description of the error encountered
-    */
-  final case class DbActorNAck(code: Int, description: String)
-      extends DbActorMessage
 
   def getInstance: AskableActorRef = INSTANCE
 
@@ -230,7 +222,7 @@ object DbActor extends AskPatternConstants {
             case DbActorAck() => DbActorAck()
             case _ =>
               log.info(s"Actor $self (db) encountered a problem while creating channel '$channel'")
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Error when creating channel '$channel'")
+              throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Error when creating channel '$channel'")
           }
       }
     }
@@ -258,7 +250,7 @@ object DbActor extends AskPatternConstants {
           DbActorWriteAck()
         case Failure(exception) =>
           log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and batch on channel '$channel' because of the batch write")
-          DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+          throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
       }
     }
 
@@ -284,7 +276,7 @@ object DbActor extends AskPatternConstants {
             writeBatch(channel, messageId, batch)
           case Failure(exception) =>
             log.error(s"Actor $self (db) encountered a problem with the data of the LAO in the database.")
-            DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+            throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
         }
       } else{
         writeBatch(channel, messageId, batch)
@@ -296,9 +288,9 @@ object DbActor extends AskPatternConstants {
 
       val messageId: Hash = message.message_id
 
-      //if needed, it is easy to remove the "write-through" functionality (creating a new channel if it does not exist) by simply returning a DbActorNAck if the channel doesn't exist instead of using this function
-      writeCreateNewChannel(channel, message) match {
-        case nack@DbActorNAck(id, message) => nack
+      //if needed, it is easy to remove the "write-through" functionality (creating a new channel if it does not exist) by simply throwing a DbActorNAckException if the channel doesn't exist instead of using this function
+      Try(writeCreateNewChannel(channel, message)) match {
+        case Failure(e) => throw e
         case _ => Try(db.get(channel.toString.getBytes)) match {
           case Success(bytes) if bytes != null => Try(db.createWriteBatch()) match {
             case Success(batch) => {
@@ -310,14 +302,14 @@ object DbActor extends AskPatternConstants {
             }
             case Failure(exception) =>
               log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and object ${ChannelData.getName} on channel '$channel' because of a batch creation")
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+              throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
           }
           case Failure(exception) =>
             log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
-            DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+            throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
           case _ =>
             log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel', as the channel does not existand wasn't created")
-            DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Channel $channel does not exist and could not be created")
+            throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Channel $channel does not exist and could not be created")
         }
       }
     }
@@ -330,7 +322,7 @@ object DbActor extends AskPatternConstants {
               val json = new String(bytes, StandardCharsets.UTF_8)
               DbActorReadAck(Some(Message.buildFromJson(json)))
             case _ =>
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, "Unknown read database error")
+              throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, "Unknown read database error")
           }
         }
         case _ => DbActorReadAck(None)
@@ -343,7 +335,7 @@ object DbActor extends AskPatternConstants {
           val json = new String(bytes, StandardCharsets.UTF_8)
           DbActorReadChannelDataAck(Some(ChannelData.buildFromJson(json)))
         case _ =>
-          DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Channel data not found for channel $channel")
+          throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Channel data not found for channel $channel")
       }
     }
 
@@ -364,7 +356,7 @@ object DbActor extends AskPatternConstants {
                 laoDataCache.put(dataKey, laoData)
                 DbActorReadLaoDataAck(Some(laoData))
               case _ =>
-                DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Lao data not found for channel $channel")
+                throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Lao data not found for channel $channel")
             }
           }
         }
@@ -391,10 +383,10 @@ object DbActor extends AskPatternConstants {
               val result: List[Message] = buildCatchupList(messageIds, List.empty)
               DbActorCatchupAck(result)
             case _ =>
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, s"Could not access the channel's ($channel) messages")
+              throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not access the channel's ($channel) messages")
           }
         case _ =>
-          DbActorNAck(
+          throw new DbActorNAckException(
             ErrorCodes.INVALID_RESOURCE.id,
             s"Database cannot catchup from a channel $channel that does not exist in db"
           )
@@ -405,23 +397,24 @@ object DbActor extends AskPatternConstants {
       Try(db.get(channel.toString.getBytes)) match {
         case Success(bytes) if bytes != null =>
           log.info(s"Database cannot create an already existing channel $channel with a value")
-          DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Database cannot create an already existing channel ($channel)")
+          throw new DbActorNAckException(ErrorCodes.INVALID_RESOURCE.id, s"Database cannot create an already existing channel ($channel)")
         case _ =>
           val errorMessageCreate: String = s"Error while creating channel $channel in the database"
           Try(db.put(channel.toString.getBytes, ChannelData(objectType, List.empty).toJsonString.getBytes)) match {
             case Success(_) => DbActorAck()
             case _ =>
               log.error(errorMessageCreate)
-              DbActorNAck(ErrorCodes.SERVER_ERROR.id, errorMessageCreate)
+              throw new DbActorNAckException(ErrorCodes.SERVER_ERROR.id, errorMessageCreate)
           }
       }
     }
 
     private def createChannelsFromList(li: List[(Channel, ObjectType.ObjectType)]): DbActorMessage = li match {
       case Nil => DbActorAck()
-      case head::tail => createChannel(head._1, head._2) match {
-        case DbActorAck() => createChannelsFromList(tail)
-        case nack@DbActorNAck(_, _) => nack
+      case head::tail => 
+        Try(createChannel(head._1, head._2)) match {
+        case Success(DbActorAck()) => createChannelsFromList(tail)
+        case Failure(e) => throw e
       }
     }
 
@@ -429,7 +422,7 @@ object DbActor extends AskPatternConstants {
     private def channelExists(channel: Channel): DbActorMessage = {
       Try(db.get(channel.toString.getBytes)) match {
         case Success(bytes) if bytes != null => DbActorAck()
-        case _ => DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
+        case _ => throw new DbActorNAckException(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
       }
     }
 
@@ -437,57 +430,85 @@ object DbActor extends AskPatternConstants {
     override def receive: Receive = LoggingReceive {
       case Write(channel, message) =>
         log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
-        sender ! write(channel, message)
+        Try(write(channel, message)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
 
       case Read(channel, messageId) =>
         log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
-        sender ! read(channel, messageId)
+        Try(read(channel, messageId)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
 
       case ReadChannelData(channel) =>
         log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
-        sender ! readChannelData(channel)
+        Try(readChannelData(channel)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
 
       case ReadLaoData(channel) =>
         log.info(s"Actor $self (db) received a ReadLaoData request")
-        sender ! readLaoData(channel)
+        Try(readLaoData(channel)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
 
       case Catchup(channel) =>
         log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
-        sender ! catchup(channel)
+        Try(catchup(channel)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
 
       case WriteAndPropagate(channel, message) =>
         log.info(s"Actor $self (db) received a WriteAndPropagate request on channel '$channel'")
-        val answer: DbActorMessage = write(channel, message)
-        mediatorRef ! PubSubMediator.Propagate(channel, message)
-        sender ! answer
+        Try(write(channel, message)) match{
+          case Success(gm) =>
+            mediatorRef ! PubSubMediator.Propagate(channel, message)
+            sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
+        
 
       case CreateChannel(channel, objectType) =>
         log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
-        sender ! createChannel(channel, objectType)
+        Try(createChannel(channel, objectType)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
       
       case CreateChannelsFromList(list) =>
         log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
-        sender ! createChannelsFromList(list)
+        Try(createChannelsFromList(list)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
 
       case ChannelExists(channel) =>
         log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
-        sender ! channelExists(channel)
+        Try(channelExists(channel)) match {
+          case Success(gm) => sender ! gm
+          case Failure(e) => sender ! Status.Failure(e)
+        }
 
       case AddWitnessSignature(messageId, _) =>
         log.info(
           s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'"
         )
-        sender ! DbActorNAck(
+        sender ! Status.Failure(new DbActorNAckException(
           ErrorCodes.SERVER_ERROR.id,
           s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
-        )
+        ))
 
       case m @ _ =>
         log.info(s"Actor $self (db) received an unknown message")
-        sender ! DbActorNAck(
+        sender ! Status.Failure(new DbActorNAckException(
           ErrorCodes.SERVER_ERROR.id,
           s"database actor received a message '$m' that it could not recognize"
-        )
+        ))
     }
   }
 

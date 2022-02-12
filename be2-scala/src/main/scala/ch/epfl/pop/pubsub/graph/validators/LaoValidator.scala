@@ -4,13 +4,14 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import MessageValidator._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
+import scala.util.Failure
 
 
 case object LaoValidator extends MessageDataContentValidator {
@@ -100,8 +101,8 @@ case object LaoValidator extends MessageDataContentValidator {
 
           case DbActor.DbActorReadAck(None) =>
             Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "No CreateLao message associated found", rpcMessage.id))
-          case DbActor.DbActorNAck(code, description) =>
-            Right(PipelineError(code, description, rpcMessage.id))
+          case Failure(e: DbActorNAckException) => 
+            Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
           case _ =>
             Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
         }

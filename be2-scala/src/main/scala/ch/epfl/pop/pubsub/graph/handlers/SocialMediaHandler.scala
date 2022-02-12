@@ -7,13 +7,14 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.requests.socialMedia._
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, Hash, Base64Data, Signature, Timestamp, PublicKey}
+import ch.epfl.pop.model.objects.{Channel, Hash, Base64Data, Signature, Timestamp, PublicKey, DbActorNAckException}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator
 import ch.epfl.pop.json.MessageDataProtocol._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.Failure
 
 import spray.json._
 
@@ -60,7 +61,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
    * @param broadcastChannel : the Channel in which we broadcast
    */
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
-    val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
+    val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)).recover{case e: DbActorNAckException => Failure(e)}
     Await.result(askLaoData, duration) match {
       case DbActor.DbActorReadLaoDataAck(Some(laoData)) => {
         val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
@@ -69,13 +70,15 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
         val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
         val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
           case DbActor.DbActorWriteAck() => Left(rpcMessage)
-          case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+        }.recover{
+          case e: DbActorNAckException => Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
         }
         Await.result(ask, duration)
       }
       case DbActor.DbActorReadLaoDataAck(None) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Can't fetch LaoData for channel ${rpcMessage.getParamsChannel}.", rpcMessage.id))
-      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+      case Failure(e: DbActorNAckException) => Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
     }
   }
 

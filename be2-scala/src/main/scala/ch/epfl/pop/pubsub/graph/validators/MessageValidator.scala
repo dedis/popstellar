@@ -11,6 +11,7 @@ import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineErro
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Failure
 
 
 object MessageValidator extends ContentValidator with AskPatternConstants {
@@ -49,7 +50,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    * @param dbActor   the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
    */
   def validateAttendee(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
-    val ask = dbActor ? DbActor.ReadLaoData(channel)
+    val ask = (dbActor ? DbActor.ReadLaoData(channel)).recover{e => Failure(e)}
     Await.result(ask, duration) match {
       case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.attendees.contains(sender)
       case _ => false
@@ -63,7 +64,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    * @param dbActor   the DbActor we use (by default the main one, obtained through getInstance)
    */
   def validateOwner(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
-    val ask = dbActor ? DbActor.ReadLaoData(channel)
+    val ask = (dbActor ? DbActor.ReadLaoData(channel)).recover{e => Failure(e)}
     Await.result(ask, duration) match {
       case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.owner == sender
       case _ => false
@@ -77,7 +78,7 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    * @param dbActor            the DbActor we use (by default the main one, obtained through getInstance)
    */
   def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
-    val ask = dbActor ? DbActor.ReadChannelData(channel)
+    val ask = (dbActor ? DbActor.ReadChannelData(channel)).recover{e => Failure(e)}
     Await.result(ask, duration) match {
       case DbActor.DbActorReadChannelDataAck(Some(channelData)) => channelData.channelType == channelObjectType
       case _ => false

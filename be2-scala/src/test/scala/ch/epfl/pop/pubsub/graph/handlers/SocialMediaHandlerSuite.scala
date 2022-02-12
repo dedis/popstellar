@@ -1,6 +1,6 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit, TestProbe}
@@ -14,7 +14,7 @@ import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.model.network.requests.socialMedia._
 import ch.epfl.pop.model.network.MethodType
 import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.objects.Channel
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException}
 
 import util.examples.{JsonRpcRequestExample, LaoDataExample}
 import util.examples.data.{AddReactionMessages, DeleteReactionMessages, AddChirpMessages, DeleteChirpMessages}
@@ -40,7 +40,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
                     system.log.info("Received {}", m)
                     system.log.info("Responding with a Nack")
 
-                    sender ! DbActor.DbActorNAck(1, "error")
+                    sender ! Status.Failure(new DbActorNAckException(1, "error"))
             }
             }
         )
@@ -83,7 +83,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
                         system.log.info(s"Received WAP on channel $channel")
                         system.log.info("Responding with a NAck")
 
-                        sender ! DbActor.DbActorNAck(1, "error")
+                        sender ! Status.Failure(new DbActorNAckException(1, "error"))
                     }
 
                 case m : DbActor.ReadLaoData =>
@@ -132,7 +132,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
                     system.log.info("Received {}", m)
                     system.log.info("Responding with a NAck")
 
-                    sender ! DbActor.DbActorNAck(1, "error")
+                    sender ! Status.Failure(new DbActorNAckException(1, "error"))
             }
             }
         )

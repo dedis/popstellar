@@ -12,17 +12,20 @@ import akka.pattern.ask
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, Signature, WitnessSignaturePair, LaoData, ChannelData}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, Signature, WitnessSignaturePair, LaoData, ChannelData, DbActorNAckException}
 import util.examples.MessageExample
 
 import scala.reflect.io.Directory
 import java.io.File
 
 import scala.concurrent.Await
+import scala.util.Failure
+import org.scalatest.concurrent.ScalaFutures
 
 class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
   with FunSuiteLike
   with ImplicitSender
+  with ScalaFutures
   with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
@@ -83,9 +86,9 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer shouldBe a [DbActor.DbActorAck]
 
     val ask2 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
-    val answer2 = Await.result(ask2, duration)
-
-    answer2 shouldBe a [DbActor.DbActorNAck]
+    ScalaFutures.whenReady(ask2.failed){
+      e => e shouldBe a [DbActorNAckException]
+    }
   }
 
   test("DbActor succeeds during CreateChannelsFromList with an empty list"){
@@ -108,8 +111,9 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
   test("DbActor fails during CreateChannelsFromList when trying to create twice the same channel (namewise) from a list"){
     val ask = dbActorRef ? DbActor.CreateChannelsFromList(List((TEST_CHANNEL_CREATEMANY_4, ObjectType.LAO), (TEST_CHANNEL_CREATEMANY_4, ObjectType.LAO)))
-    val answer = Await.result(ask, duration)
-    answer shouldBe a [DbActor.DbActorNAck]
+    ScalaFutures.whenReady(ask.failed){
+      e => e shouldBe a [DbActorNAckException]
+    }
   }
 
   test("DbActor knows whether channel exists or not"){
@@ -124,40 +128,45 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     val channel3: Channel = new Channel("channel")
     val ask3 = dbActorRef ? DbActor.ChannelExists(channel3)
-    val answer3 = Await.result(ask3, duration)
 
-    answer3 shouldBe a [DbActor.DbActorNAck]
+    ScalaFutures.whenReady(ask3.failed){
+      e => e shouldBe a [DbActorNAckException]
+    }
   }
 
   test("DbActor creates missing channels during WRITE") {
     val channel: Channel = generateUniqueChannel
     val message: Message = MessageExample.MESSAGE
-    val expected: DbActor.DbActorNAck = DbActor.DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
+    val expected: DbActorNAckException = new DbActorNAckException(ErrorCodes.INVALID_RESOURCE.id, s"Channel '$channel' does not exist in db")
 
     var ask = dbActorRef ? DbActor.ChannelExists(channel)
-    var answer = Await.result(ask, duration)
 
-    answer shouldBe a [DbActor.DbActorNAck]
-    answer.asInstanceOf[DbActor.DbActorNAck] should equal (expected)
+    ScalaFutures.whenReady(ask.failed){
+      e => 
+        e shouldBe a [DbActorNAckException]
+        e.asInstanceOf[DbActorNAckException] should equal (expected)
+    }
 
     ask = dbActorRef ? DbActor.Write(channel, message)
     Await.result(ask, duration)
 
     ask = dbActorRef ? DbActor.ChannelExists(channel)
-    answer = Await.result(ask, duration)
+    val answer = Await.result(ask, duration)
 
     answer shouldBe a [DbActor.DbActorAck]
   }
 
   test("DbActor fails during CATCHUP on a missing channel") {
     val channel: Channel = generateUniqueChannel
-    val expected: DbActor.DbActorNAck = DbActor.DbActorNAck(ErrorCodes.INVALID_RESOURCE.id, s"Database cannot catchup from a channel $channel that does not exist in db")
+    val expected: DbActorNAckException = new DbActorNAckException(ErrorCodes.INVALID_RESOURCE.id, s"Database cannot catchup from a channel $channel that does not exist in db")
 
     val ask = dbActorRef ? DbActor.Catchup(channel)
-    val answer = Await.result(ask, duration)
 
-    answer shouldBe a [DbActor.DbActorNAck]
-    answer.asInstanceOf[DbActor.DbActorNAck] should equal (expected)
+    ScalaFutures.whenReady(ask.failed){
+      e => 
+        e shouldBe a [DbActorNAckException]
+        e.asInstanceOf[DbActorNAckException] should equal (expected)
+    }
   }
 
   test("DbActor succeeds during CATCHUP on a channel with one message") {
@@ -201,7 +210,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     var ask = dbActorRef ? DbActor.Write(channel, message)
     var answer = Await.result(ask, duration)
 
-    answer should not be an [DbActor.DbActorNAck]
+    answer should not be an [Failure[DbActorNAckException]]
 
     ask = dbActorRef ? DbActor.Read(channel, message.message_id)
     answer = Await.result(ask, duration)
@@ -238,9 +247,10 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer1 shouldBe a [DbActor.DbActorAck]
 
     val ask2 = dbActorRef ? DbActor.CreateChannel(channel, ObjectType.LAO)
-    val answer2 = Await.result(ask2, duration)
 
-    answer2 shouldBe a [DbActor.DbActorNAck]
+    ScalaFutures.whenReady(ask2.failed){
+      e => e shouldBe a [DbActorNAckException]
+    }
 
     val ask3 = dbActorRef ? DbActor.Write(channel, message)
     val answer3 = Await.result(ask3, duration)
@@ -369,5 +379,19 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
     answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.attendees should equal (List(PublicKey(Base64Data.encode("key2"))))
     answer5.asInstanceOf[DbActor.DbActorReadLaoDataAck].laoData.get.witnesses should equal (List.empty)
 
+  }
+
+  test("DbActor fails on non-existant ChannelData read"){
+    val ask = dbActorRef ? DbActor.ReadChannelData(Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("wrong").data))
+    ScalaFutures.whenReady(ask.failed){
+      e => e shouldBe a [DbActorNAckException]
+    }
+  }
+
+  test("DbActor fails on non-existant LaoData read"){
+    val ask = dbActorRef ? DbActor.ReadLaoData(Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data.encode("wrong").data))
+    ScalaFutures.whenReady(ask.failed){
+      e => e shouldBe a [DbActorNAckException]
+    }
   }
 }

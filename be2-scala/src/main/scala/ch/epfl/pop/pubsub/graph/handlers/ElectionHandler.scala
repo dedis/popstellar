@@ -7,11 +7,12 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
 import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection, JsonRpcRequestCastVoteElection}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.Failure
 
 object ElectionHandler extends MessageHandler {
 
@@ -48,8 +49,8 @@ object ElectionHandler extends MessageHandler {
       resultCreateChannel <- askCreateChannel
     } yield(resultWrite, resultCreateChannel)).map{
       case (DbActor.DbActorWriteAck(), DbActor.DbActorAck()) => Left(rpcMessage)
-      case (DbActor.DbActorNAck(code, description), _) => Right(PipelineError(code, description, rpcMessage.id))
-      case (_, DbActor.DbActorNAck(code, description)) => Right(PipelineError(code, description, rpcMessage.id))
+      case (Failure(e: DbActorNAckException), _) => Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
+      case (_, Failure(e: DbActorNAckException)) => Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
     }
     Await.result(resFuture, duration)

@@ -7,13 +7,14 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, Hash, LaoData}
-import ch.epfl.pop.pubsub.graph.DbActor.{DbActorMessage, DbActorAck, DbActorNAck, DbActorWriteAck}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData}
+import ch.epfl.pop.pubsub.graph.DbActor.{DbActorMessage, DbActorAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.Failure
 
 case object LaoHandler extends MessageHandler {
 
@@ -57,9 +58,10 @@ case object LaoHandler extends MessageHandler {
           resultCreateChannels <- askCreateChannels
           resultWrite <- askWrite
         } yield(resultWrite, resultCreateChannels)).map{
-          case (DbActorAck(), DbActorWriteAck()) => Left(rpcMessage)
-          case (DbActorNAck(code, description), _) => Right(PipelineError(code, description, rpcMessage.id))
-          case (_, DbActorNAck(code, description)) => Right(PipelineError(code, description, rpcMessage.id))
+          case (DbActorWriteAck(), DbActorAck()) => Left(rpcMessage)
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
+        }.recover{
+          case e: DbActorNAckException => Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
         }
 

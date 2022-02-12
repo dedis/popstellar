@@ -1,12 +1,12 @@
 package ch.epfl.pop.pubsub.graph.validators
 
-import akka.actor.{Actor,ActorSystem,Props}
+import akka.actor.{Actor,ActorSystem,Props, Status}
 import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender,TestKit,TestProbe}
 import akka.util.Timeout
 
-import ch.epfl.pop.model.objects.{Base64Data, Channel, ChannelData, LaoData, PrivateKey, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, ChannelData, DbActorNAckException, LaoData, PrivateKey, PublicKey}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
@@ -44,9 +44,9 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
         val mockedDB = Props(new Actor(){
             override def receive = {
                 case DbActor.ReadLaoData(channel) =>
-                    sender ! DbActor.DbActorNAck(0, "error")
+                    sender ! Status.Failure(new DbActorNAckException(0, "error"))
                 case DbActor.ReadChannelData(channel) =>
-                    sender ! DbActor.DbActorNAck(0, "error")
+                    sender ! Status.Failure(new DbActorNAckException(0, "error"))
             }
         }
         )

@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey, LaoData}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, PublicKey, LaoData}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
@@ -14,7 +14,7 @@ import ch.epfl.pop.pubsub.graph.DbActor._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-import scala.util.Success
+import scala.util.{Failure, Success}
 import akka.pattern.AskableActorRef
 
 /**
@@ -71,7 +71,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
     val askWritePropagate: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
 
-    val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
+    val askLaoData = (dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel))
 
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
@@ -85,9 +85,11 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           resultCreateChannels <- askCreateChannels
         } yield(resultWritePropagate, resultLaoData, resultCreateChannels)).map{
           case (Left(_), DbActorReadLaoDataAck(Some(_)), Left(_)) => Left(rpcMessage)
-          case (Left(_), DbActorNAck(code, description), Left(_)) => Right(PipelineError(code, description, rpcMessage.id))
           case (Left(_), _, error@Right(_)) => error
           case (error@Right(_), _, _) => error
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
+        }.recover{
+          case e: DbActorNAckException => Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
           case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
         }
 
@@ -121,7 +123,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map(attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP))
     val askCreateChannels: Future[GraphMessage] = (dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)).map{
       case DbActorAck() => Left(rpcMessage)
-      case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+      case Failure(e: DbActorNAckException) => Right(PipelineError(e.getCode, e.getMessage, rpcMessage.id))
       case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
     }
     askCreateChannels

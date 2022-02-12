@@ -1,12 +1,13 @@
 package ch.epfl.pop.pubsub.graph
 
-import akka.actor.{Actor,ActorSystem,Props}
+import akka.actor.{Actor,ActorSystem,Props, Status}
 import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender,TestKit,TestProbe}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.{JsonRpcRequest,JsonRpcResponse,ResultObject}
 import ch.epfl.pop.model.network.method.message.Message
+import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import org.scalatest.{BeforeAndAfterAll,FunSuiteLike,Matchers}
@@ -53,7 +54,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
      val mockedDB = Props(new Actor(){
           override def receive = {
               case DbActor.Catchup(channel) =>
-                sender !  DbActor.DbActorNAck(code,description)
+                sender ! Status.Failure(new DbActorNAckException(code, description))
           }
        }
      )
