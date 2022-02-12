@@ -48,7 +48,7 @@ describe('AddReaction', () => {
   it('fromJson should throw an error if the Json has incorrect action', () => {
     const obj = {
       object: ObjectType.REACTION,
-      action: ActionType.ADD_BROADCAST,
+      action: ActionType.NOTIFY_ADD,
       reaction_codepoint: REACTION,
       chirp_id: ID,
       timestamp: TIMESTAMP,
