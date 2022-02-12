@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 import {
-  Hash, LaoState, PublicKey, Timestamp, Lao, Chirp,
+  Hash, PublicKey, Timestamp, Chirp,
 } from 'model/objects';
 import {
   requestAddReaction as mockRequestAddReaction,
@@ -9,47 +9,48 @@ import {
 } from 'network/MessageApi';
 import { OpenedLaoStore } from 'store';
 import STRINGS from 'res/strings';
+import { mockLao, mockLaoState } from '__tests__/utils/TestUtils';
 import ChirpCard from '../ChirpCard';
 
-const TIMESTAMP = 1609455600; // 31 December 2020
-const laoState: LaoState = {
-  id: '1234',
-  name: 'MyLao',
-  creation: TIMESTAMP,
-  last_modified: TIMESTAMP,
-  organizer: '1234',
-  witnesses: [],
+let chirp: Chirp;
+let chirp1: Chirp;
+let deletedChirp: Chirp;
+let sender: PublicKey;
+let ID: Hash;
+
+const initialiseData = () => {
+  const TIMESTAMP = 1609455600; // 31 December 2020
+  sender = new PublicKey('Douglas Adams');
+  ID = new Hash('1234');
+
+  chirp = new Chirp({
+    id: ID,
+    text: 'Don\'t panic.',
+    sender: sender,
+    time: new Timestamp(TIMESTAMP),
+    isDeleted: false,
+  });
+
+  deletedChirp = new Chirp({
+    id: new Hash('1234'),
+    text: '',
+    sender: sender,
+    time: new Timestamp(TIMESTAMP),
+    isDeleted: true,
+  });
+
+  chirp1 = new Chirp({
+    id: new Hash('5678'),
+    text: 'Ignore me',
+    sender: new PublicKey('Anonymous'),
+    time: new Timestamp(TIMESTAMP),
+  });
 };
-
-const sender = new PublicKey('Douglas Adams');
-const ID = new Hash('1234');
-const chirp = new Chirp({
-  id: ID,
-  text: 'Don\'t panic.',
-  sender: sender,
-  time: new Timestamp(TIMESTAMP),
-  isDeleted: false,
-});
-
-const deletedChirp = new Chirp({
-  id: new Hash('1234'),
-  text: '',
-  sender: sender,
-  time: new Timestamp(TIMESTAMP),
-  isDeleted: true,
-});
-
-const chirp1 = new Chirp({
-  id: new Hash('5678'),
-  text: 'Ignore me',
-  sender: new PublicKey('Anonymous'),
-  time: new Timestamp(TIMESTAMP),
-});
 
 jest.mock('network/MessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
-  useSelector: jest.fn().mockImplementation(() => laoState),
+  useSelector: jest.fn().mockImplementation(() => mockLaoState),
 }));
 
 jest.mock('react-redux', () => ({
@@ -58,6 +59,7 @@ jest.mock('react-redux', () => ({
 jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
 
 beforeAll(() => {
+  initialiseData();
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
 });
@@ -65,7 +67,7 @@ beforeAll(() => {
 describe('ChirpCard', () => {
   describe('for deletion', () => {
     const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
-    getMockLao.mockImplementation(() => Lao.fromState(laoState));
+    getMockLao.mockImplementation(() => mockLao);
 
     it('renders correctly for sender', () => {
       const obj = render(
