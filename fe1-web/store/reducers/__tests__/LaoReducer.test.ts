@@ -1,12 +1,13 @@
 import 'jest-extended';
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
-import { Hash, Lao, Timestamp } from 'model/objects';
+import { Hash, Lao, LaoState, Timestamp } from 'model/objects';
 import {
   mockLaoCreationTime,
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
+  mockLaoState,
   org,
 } from '__tests__/utils/TestUtils';
 import {
@@ -25,87 +26,100 @@ import {
   setLaoLastRollCall,
   updateLao,
 } from '../LaoReducer';
-import { rollCallId } from './EventsReducer.test';
 
-const emptyState = {
-  byId: {},
-  allIds: [],
+let emptyState: any;
+let filledState1: any;
+let filledStateAfterRollCall: any;
+let filledStateUpdated: any;
+let filledState2: any;
+let connectedState1: any;
+let laoRecord: any;
+
+let laoAfterRollCall: LaoState;
+let lao2: LaoState;
+let laoUpdated: LaoState;
+
+let rollCallId: Hash;
+let mockLao2IdHash: Hash;
+
+const initialiseData = () => {
+  emptyState = {
+    byId: {},
+    allIds: [],
+  };
+
+  rollCallId = new Hash('1234');
+
+  filledState1 = {
+    byId: { [mockLaoId]: mockLaoState },
+    allIds: [mockLaoId],
+  };
+
+  laoAfterRollCall = new Lao({
+    id: mockLaoIdHash,
+    name: mockLaoName,
+    creation: mockLaoCreationTime,
+    last_modified: mockLaoCreationTime,
+    organizer: org,
+    witnesses: [],
+    last_roll_call_id: rollCallId,
+    last_tokenized_roll_call_id: rollCallId,
+  }).toState();
+
+  filledStateAfterRollCall = {
+    byId: { [mockLaoId]: laoAfterRollCall },
+    allIds: [mockLaoId],
+  };
+
+  const mockLao2Name = 'Second Lao';
+  mockLao2IdHash = Hash.fromStringArray(
+    org.toString(), mockLaoCreationTime.toString(), mockLao2Name,
+  );
+  const mockLao2Id = mockLao2IdHash.toString();
+
+  lao2 = new Lao({
+    id: mockLao2IdHash,
+    name: mockLao2Name,
+    creation: mockLaoCreationTime,
+    last_modified: mockLaoCreationTime,
+    organizer: org,
+    witnesses: [],
+  }).toState();
+
+  laoUpdated = new Lao({
+    id: mockLaoIdHash,
+    name: mockLaoName,
+    creation: mockLaoCreationTime,
+    last_modified: new Timestamp(1606666600),
+    organizer: org,
+    witnesses: [],
+  }).toState();
+
+  filledStateUpdated = {
+    byId: { [mockLaoId]: laoUpdated },
+    allIds: [mockLaoId],
+  };
+
+  filledState2 = {
+    byId: {
+      [mockLaoId]: mockLaoState,
+      [mockLao2Id]: lao2,
+    },
+    allIds: [mockLaoId, mockLao2Id],
+  };
+
+  connectedState1 = {
+    byId: { [mockLaoId]: mockLaoState },
+    allIds: [mockLaoId],
+    currentId: mockLaoId,
+  };
+
+  laoRecord = { [mockLaoId]: mockLaoState };
 };
 
-const lao = new Lao({
-  id: mockLaoIdHash,
-  name: mockLaoName,
-  creation: mockLaoCreationTime,
-  last_modified: mockLaoCreationTime,
-  organizer: org,
-  witnesses: [],
-}).toState();
-
-const filledState1 = {
-  byId: { [mockLaoId]: lao },
-  allIds: [mockLaoId],
-};
-
-const laoAfterRollCall = new Lao({
-  id: mockLaoIdHash,
-  name: mockLaoName,
-  creation: mockLaoCreationTime,
-  last_modified: mockLaoCreationTime,
-  organizer: org,
-  witnesses: [],
-  last_roll_call_id: rollCallId,
-  last_tokenized_roll_call_id: rollCallId,
-}).toState();
-
-const filledStateAfterRollCall = {
-  byId: { [mockLaoId]: laoAfterRollCall },
-  allIds: [mockLaoId],
-};
-
-const mockLao2Name = 'Second Lao';
-const mockLao2IdHash: Hash = Hash.fromStringArray(
-  org.toString(), mockLaoCreationTime.toString(), mockLao2Name,
-);
-const mockLao2Id = mockLao2IdHash.toString();
-
-const lao2 = new Lao({
-  id: mockLao2IdHash,
-  name: mockLao2Name,
-  creation: mockLaoCreationTime,
-  last_modified: mockLaoCreationTime,
-  organizer: org,
-  witnesses: [],
-}).toState();
-
-const laoUpdated = new Lao({
-  id: mockLaoIdHash,
-  name: mockLaoName,
-  creation: mockLaoCreationTime,
-  last_modified: new Timestamp(1606666600),
-  organizer: org,
-  witnesses: [],
-}).toState();
-
-const filledStateUpdated = {
-  byId: { [mockLaoId]: laoUpdated },
-  allIds: [mockLaoId],
-};
-
-const filledState2 = {
-  byId: {
-    [mockLaoId]: lao,
-    [mockLao2Id]: lao2,
-  },
-  allIds: [mockLaoId, mockLao2Id],
-};
-
-const connectedState1 = {
-  byId: { [mockLaoId]: lao },
-  allIds: [mockLaoId],
-  currentId: mockLaoId,
-};
-
-const laoRecord = { [mockLaoId]: lao };
+beforeAll(() => {
+  initialiseData();
+});
 
 describe('LaoReducer', () => {
   it('should return the initial state', () => {
@@ -114,12 +128,12 @@ describe('LaoReducer', () => {
   });
 
   it('should add lao', () => {
-    expect(laoReduce(emptyState, addLao(lao)))
+    expect(laoReduce(emptyState, addLao(mockLaoState)))
       .toEqual(filledState1);
   });
 
   it('should not add a lao twice', () => {
-    expect(laoReduce(filledState1, addLao(lao)))
+    expect(laoReduce(filledState1, addLao(mockLaoState)))
       .toEqual(filledState1);
   });
 
@@ -149,7 +163,7 @@ describe('LaoReducer', () => {
   });
 
   it('should connect to lao', () => {
-    expect(laoReduce(emptyState, connectToLao(lao)))
+    expect(laoReduce(emptyState, connectToLao(mockLaoState)))
       .toEqual(connectedState1);
   });
 
@@ -177,7 +191,7 @@ describe('Lao selector', () => {
 
   it('should return lao for makeCurrentLao', () => {
     expect(makeCurrentLao().resultFunc(laoRecord, mockLaoId))
-      .toEqual(Lao.fromState(lao));
+      .toEqual(Lao.fromState(mockLaoState));
   });
 
   it('should return an empty makeLaoIdsList when there is no lao', () => {
@@ -187,12 +201,12 @@ describe('Lao selector', () => {
 
   it('should return makeLaosList correctly', () => {
     expect(makeLaosList().resultFunc(laoRecord, [mockLaoId]))
-      .toEqual([Lao.fromState(lao)]);
+      .toEqual([Lao.fromState(mockLaoState)]);
   });
 
   it('should return makeLaosMap correctly', () => {
     expect(makeLaosMap().resultFunc(laoRecord))
-      .toEqual({ [mockLaoId]: Lao.fromState(lao) });
+      .toEqual({ [mockLaoId]: Lao.fromState(mockLaoState) });
   });
 
   it('should return true for makeIsLaoOrganizer when it is true', () => {
