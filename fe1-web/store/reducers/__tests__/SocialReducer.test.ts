@@ -42,14 +42,14 @@ let chirpFilledState4: any;
 let chirpFilledState4Chirp1Deleted: any;
 let chirpFilledState4Chirp4Deleted: any;
 
-let reactionFilledState1: any
-let reactionFilledState11: any
-let reactionFilledState2: any
-let reactionFilledState22: any
-let reactionFilledState3: any
-let reactionFilledState33: any
-let reactionFilledState4: any
-let reactionFilledState44: any
+let reactionFilledState1: any;
+let reactionFilledState11: any;
+let reactionFilledState2: any;
+let reactionFilledState22: any;
+let reactionFilledState3: any;
+let reactionFilledState33: any;
+let reactionFilledState4: any;
+let reactionFilledState44: any;
 
 const initialiseData = () => {
   const mockSender1: PublicKey = new PublicKey('Douglas Adams');
@@ -182,7 +182,7 @@ const initialiseData = () => {
       },
       [mockLaoId]: {
         allIdsInOrder: [],
-        byId: {[mockChirpId0.toString()]: chirp0DeletedFake},
+        byId: { [mockChirpId0.toString()]: chirp0DeletedFake },
         byUser: {},
         reactionsByChirp: {},
       },
@@ -199,8 +199,8 @@ const initialiseData = () => {
       },
       [mockLaoId]: {
         allIdsInOrder: [chirp0.id],
-        byId: {[chirp0.id]: chirp0},
-        byUser: {[chirp0.sender]: [chirp0.id]},
+        byId: { [chirp0.id]: chirp0 },
+        byUser: { [chirp0.sender]: [chirp0.id] },
         reactionsByChirp: {},
       },
     },
@@ -216,8 +216,8 @@ const initialiseData = () => {
       },
       [mockLaoId]: {
         allIdsInOrder: [chirp1.id],
-        byId: {[chirp1.id]: chirp1},
-        byUser: {[chirp1.sender]: [chirp1.id]},
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
         reactionsByChirp: {},
       },
     },
@@ -235,11 +235,11 @@ const initialiseData = () => {
         allIdsInOrder: [chirp2.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1,
-          [chirp2.id]: chirp2
+          [chirp2.id]: chirp2,
         },
         byUser: {
           [chirp1.sender]: [chirp1.id],
-          [chirp2.sender]: [chirp2.id]
+          [chirp2.sender]: [chirp2.id],
         },
         reactionsByChirp: {},
       },
@@ -259,11 +259,11 @@ const initialiseData = () => {
         byId: {
           [chirp1.id]: chirp1,
           [chirp2.id]: chirp2,
-          [chirp3.id]: chirp3
+          [chirp3.id]: chirp3,
         },
         byUser: {
           [chirp1.sender]: [chirp3.id, chirp1.id],
-          [chirp2.sender]: [chirp2.id]
+          [chirp2.sender]: [chirp2.id],
         },
         reactionsByChirp: {},
       },
@@ -288,7 +288,7 @@ const initialiseData = () => {
         },
         byUser: {
           [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id],
-          [chirp2.sender]: [chirp2.id]
+          [chirp2.sender]: [chirp2.id],
         },
         reactionsByChirp: {},
       },
@@ -313,7 +313,7 @@ const initialiseData = () => {
         },
         byUser: {
           [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id],
-          [chirp2.sender]: [chirp2.id]
+          [chirp2.sender]: [chirp2.id],
         },
         reactionsByChirp: {},
       },
@@ -338,7 +338,7 @@ const initialiseData = () => {
         },
         byUser: {
           [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id],
-          [chirp2.sender]: [chirp2.id]
+          [chirp2.sender]: [chirp2.id],
         },
         reactionsByChirp: {},
       },
@@ -357,7 +357,7 @@ const initialiseData = () => {
         allIdsInOrder: [],
         byId: {},
         byUser: {},
-        reactionsByChirp: {[mockChirpId1.toString()]: {'👍': [mockSender1.toString()]}},
+        reactionsByChirp: { [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] } },
       },
     },
   };
@@ -372,9 +372,9 @@ const initialiseData = () => {
       },
       [mockLaoId]: {
         allIdsInOrder: [chirp1.id],
-        byId: {[chirp1.id]: chirp1},
-        byUser: {[chirp1.sender]: [chirp1.id]},
-        reactionsByChirp: {[mockChirpId1.toString()]: {'👍': [mockSender1.toString()]}},
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
+        reactionsByChirp: { [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] } },
       },
     },
   };
@@ -411,8 +411,8 @@ const initialiseData = () => {
       },
       [mockLaoId]: {
         allIdsInOrder: [chirp1.id],
-        byId: {[chirp1.id]: chirp1},
-        byUser: {[chirp1.sender]: [chirp1.id]},
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
         reactionsByChirp: {
           [mockChirpId1.toString()]: {
             '👍': [mockSender1.toString()],
@@ -455,8 +455,8 @@ const initialiseData = () => {
       },
       [mockLaoId]: {
         allIdsInOrder: [chirp1.id],
-        byId: {[chirp1.id]: chirp1},
-        byUser: {[chirp1.sender]: [chirp1.id]},
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
         reactionsByChirp: {
           [mockChirpId1.toString()]: {
             '👍': [mockSender1.toString(), mockSender2.toString()],
@@ -480,8 +480,8 @@ const initialiseData = () => {
         byId: {},
         byUser: {},
         reactionsByChirp: {
-          [mockChirpId1.toString()]: {'👍': [mockSender1.toString()]},
-          [mockChirpId2.toString()]: {'👍': [mockSender2.toString()]},
+          [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] },
+          [mockChirpId2.toString()]: { '👍': [mockSender2.toString()] },
         },
       },
     },
@@ -499,15 +499,15 @@ const initialiseData = () => {
         allIdsInOrder: [chirp2.id, chirp1.id],
         byId: {
           [chirp1.id]: chirp1,
-          [chirp2.id]: chirp2
+          [chirp2.id]: chirp2,
         },
         byUser: {
           [chirp1.sender]: [chirp1.id],
-          [chirp2.sender]: [chirp2.id]
+          [chirp2.sender]: [chirp2.id],
         },
         reactionsByChirp: {
-          [mockChirpId1.toString()]: {'👍': [mockSender1.toString()]},
-          [mockChirpId2.toString()]: {'👍': [mockSender2.toString()]},
+          [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] },
+          [mockChirpId2.toString()]: { '👍': [mockSender2.toString()] },
         },
       },
     },
