@@ -11,10 +11,10 @@ class ResultObject(val resultInt: Option[Int], val resultMessages: Option[List[M
   def isIntResult: Boolean = resultInt.isDefined
 
   override def equals(o: Any): Boolean = {
-      o match {
-          case that: ResultObject =>
-            this.resultInt == that.resultInt && that.resultMessages == this.resultMessages
-          case _=> false
-      }
+    o match {
+      case that: ResultObject =>
+        this.resultInt == that.resultInt && that.resultMessages == this.resultMessages
+      case _ => false
     }
+  }
 }

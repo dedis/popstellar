@@ -9,7 +9,6 @@ import ch.epfl.pop.model.objects.Hash
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 case object MeetingHandler extends MessageHandler {
 

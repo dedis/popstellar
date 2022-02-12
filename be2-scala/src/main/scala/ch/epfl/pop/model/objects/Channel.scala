@@ -1,7 +1,5 @@
 package ch.epfl.pop.model.objects
 
-import java.util.Base64
-
 import scala.util.{Success, Try}
 
 final case class Channel(channel: String) {
@@ -27,11 +25,11 @@ final case class Channel(channel: String) {
    * @example extractChannelId(Channel("/root/mEKXWFCMwb") == Hash(Base64Data("mEKXWFCMwb"))
    */
   def extractChildChannel: Hash = {
-      //After successful channel creation
-      //c cannot be empty
-      val c = channel.split(Channel.SEPARATOR)
-      assert(!c.isEmpty)
-      Hash(Base64Data(c.last))
+    //After successful channel creation
+    //c cannot be empty
+    val c = channel.split(Channel.SEPARATOR)
+    assert(!c.isEmpty)
+    Hash(Base64Data(c.last))
   }
 
   def isRootChannel: Boolean = channel == Channel.ROOT_CHANNEL.channel
@@ -49,17 +47,19 @@ final case class Channel(channel: String) {
 object Channel {
   final val SEPARATOR: Char = '/'
   final val ROOT_CHANNEL: Channel = Channel(s"${SEPARATOR}root")
-  final val ROOT_CHANNEL_PREFIX: String = s"${SEPARATOR}root${SEPARATOR}"
+  final val ROOT_CHANNEL_PREFIX: String = s"${SEPARATOR}root$SEPARATOR"
+
   private final def channelRegex: String = "^/root(/[^/]+)*$"
+
   final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
 
-  final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social${SEPARATOR}"
+  final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social$SEPARATOR"
   final val SOCIAL_MEDIA_CHIRPS_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}chirps"
   final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions"
 
   def apply(channel: String): Channel = {
-    if(channel.isBlank() || !channel.matches(channelRegex)){
-        throw new IllegalArgumentException("The channel name is invalid")
+    if (channel.trim.length == 0 || !channel.matches(channelRegex)) {
+      throw new IllegalArgumentException("The channel name is invalid")
     }
     new Channel(channel)
   }

@@ -2,7 +2,12 @@ import { ExtendedMessage } from 'model/network/method/message';
 import {
   addReaction, dispatch, getStore, makeCurrentLao,
 } from 'store';
-import { ActionType, AddReaction, ObjectType } from 'model/network/method/message/data';
+import {
+  ActionType,
+  AddReaction,
+  MessageRegistry,
+  ObjectType,
+} from 'model/network/method/message/data';
 import { Reaction } from 'model/objects';
 
 /**
@@ -48,22 +53,10 @@ function handleAddReactionMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles all social media reaction messages by redirecting them to the correct function based on
- * the action.
+ * Configures the ReactionHandler in a MessageRegistry.
  *
- * @param msg - The received extended message
+ * @param registry - The MessageRegistry where we want to add the mapping
  */
-export function handleReactionMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.REACTION) {
-    console.warn('handleReactionMessage was called to process an unsupported message', msg);
-    return false;
-  }
-
-  if (msg.messageData.action === ActionType.ADD) {
-    return handleAddReactionMessage(msg);
-  }
-
-  console.warn('A Social Media reaction message was received but its processing logic is not '
-    + 'yet implemented:', msg);
-  return false;
+export function configure(registry: MessageRegistry) {
+  registry.addHandler(ObjectType.REACTION, ActionType.ADD, handleAddReactionMessage);
 }

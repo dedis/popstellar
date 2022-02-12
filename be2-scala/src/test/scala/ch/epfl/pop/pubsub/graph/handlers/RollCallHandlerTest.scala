@@ -3,26 +3,20 @@ package ch.epfl.pop.pubsub.graph.handlers
 import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
-import akka.testkit.{ImplicitSender, TestKit, TestProbe}
+import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import scala.concurrent.duration.FiniteDuration
-
 import ch.epfl.pop.pubsub.graph.{DbActor, PipelineError}
-import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.model.network.requests.rollCall.JsonRpcRequestCreateRollCall
-import ch.epfl.pop.model.network.MethodType
-import ch.epfl.pop.model.network.method.ParamsWithMessage
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException}
-
+import ch.epfl.pop.model.objects.DbActorNAckException
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.data.CreateRollCallMessages
+
+import scala.concurrent.duration.FiniteDuration
 
 
 class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
   // Implicites for system actors
-  implicit val duration = FiniteDuration(5 ,"seconds")
-  implicit val timeout  = Timeout(duration)
+  implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
+  implicit val timeout: Timeout = Timeout(duration)
 
   override def afterAll(): Unit = {
     // Stops the testKit
@@ -45,36 +39,36 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
   }
 
   def mockDbWIthAck: AskableActorRef = {
-    val mockedDB = Props(new Actor(){
-          override def receive = {
-              // You can modify the following match case to include more args, names...
-              case m : DbActor.WriteAndPropagate =>
-                system.log.info("Received {}", m)
-                system.log.info("Responding with a Ack")
+    val mockedDB = Props(new Actor() {
+      override def receive: Receive = {
+        // You can modify the following match case to include more args, names...
+        case m: DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
 
-                sender ! DbActor.DbActorWriteAck()
-          }
-        }
-      )
+          sender() ! DbActor.DbActorWriteAck()
+      }
+    }
+    )
     system.actorOf(mockedDB, "MockedDB-ACK")
   }
 
-  test("CreateRollCall fails if the database fails storing the message"){
+  test("CreateRollCall fails if the database fails storing the message") {
     val mockedDB = mockDbWIthNack
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
 
-    rc.handleCreateRollCall(request) shouldBe an [Right[PipelineError,_]]
+    rc.handleCreateRollCall(request) shouldBe an[Right[PipelineError, _]]
 
     system.stop(mockedDB.actorRef)
   }
 
-  test("CreateRollCall succeeds if the database succeeds storing the message"){
+  test("CreateRollCall succeeds if the database succeeds storing the message") {
     val mockedDB = mockDbWIthAck
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
 
-    rc.handleCreateRollCall(request) should equal (Left(request))
+    rc.handleCreateRollCall(request) should equal(Left(request))
 
     system.stop(mockedDB.actorRef)
   }
