@@ -11,6 +11,7 @@ import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData}
 import ch.epfl.pop.pubsub.graph.DbActor.{DbActorMessage, DbActorAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
