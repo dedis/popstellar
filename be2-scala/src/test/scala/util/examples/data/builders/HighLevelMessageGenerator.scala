@@ -5,8 +5,6 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall}
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, ObjectType}
-import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall}
-import ch.epfl.pop.model.network.requests.socialMedia._
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -95,7 +93,7 @@ object HighLevelMessageGenerator {
     }
 
     /**
-     * This methode must not be called before the payload and methodeType are set
+     * This method must not be called before the payload and methodType are set
      *
      * @param objType    conversion object type
      * @param actionType conversion action type
@@ -111,38 +109,38 @@ object HighLevelMessageGenerator {
         case (ObjectType.ROLL_CALL, ActionType.CREATE) =>
           messageData = CreateRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestCreateRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         case (ObjectType.ROLL_CALL, ActionType.OPEN) =>
           messageData = OpenRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestOpenRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         case (ObjectType.ROLL_CALL, ActionType.CLOSE) =>
           messageData = CloseRollCall.buildFromJson(payload)
           params = new ParamsWithMessage(Channel.ROOT_CHANNEL, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestCloseRollCall(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         //Social Media
         case (ObjectType.REACTION, ActionType.ADD) =>
           messageData = AddReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestAddReaction(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         case (ObjectType.REACTION, ActionType.DELETE) =>
           messageData = DeleteReaction.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestDeleteReaction(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         case (ObjectType.CHIRP, ActionType.ADD) =>
           messageData = AddChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestAddChirp(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         case (ObjectType.CHIRP, ActionType.DELETE) =>
           messageData = DeleteChirp.buildFromJson(payload)
           params = new ParamsWithMessage(paramsChannel, message.withDecodedData(messageData).toMessage)
-          JsonRpcRequestDeleteChirp(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
+          JsonRpcRequest(RpcValidator.JSON_RPC_VERSION, methodType, params, id)
 
         case (obj, act) => throw new IllegalStateException(s"HLMessageBuilder failed: ($obj, $act) not implemented yet !!")
       }

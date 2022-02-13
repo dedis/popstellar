@@ -1,12 +1,9 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.NotUsed
-import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
@@ -15,26 +12,7 @@ import scala.concurrent.{Await, Future}
 
 object ElectionHandler extends MessageHandler {
 
-  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestSetupElection) => handleSetupElection(message)
-      case message@(_: JsonRpcRequestResultElection) => handleResultElection(message)
-      case message@(_: JsonRpcRequestEndElection) => handleEndElection(message)
-      case message@(_: JsonRpcRequestCastVoteElection) => handleCastVoteElection(message)
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: ElectionHandler was given a message it could not recognize",
-        jsonRpcMessage match {
-          case r: JsonRpcRequest => r.id
-          case r: JsonRpcResponse => r.id
-          case _ => None
-        }
-      ))
-    }
-    case graphMessage@_ => graphMessage
-  }
-
-  def handleSetupElection(rpcMessage: JsonRpcRequestSetupElection): GraphMessage = {
+  def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id

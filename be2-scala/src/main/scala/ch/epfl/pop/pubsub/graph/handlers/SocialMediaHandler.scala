@@ -1,13 +1,10 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.NotUsed
 import akka.pattern.AskableActorRef
-import akka.stream.scaladsl.Flow
 import ch.epfl.pop.json.MessageDataProtocol._
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
-import ch.epfl.pop.model.network.requests.socialMedia._
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 import spray.json._
@@ -16,7 +13,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 object SocialMediaHandler extends MessageHandler {
-  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = new SocialMediaHandler(super.dbActor).handler
+  final lazy val handlerInstance = new SocialMediaHandler(super.dbActor)
+
+  def handleAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddChirp(rpcMessage)
+  def handleDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteChirp(rpcMessage)
+
+  def handleNotifyAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyAddChirp(rpcMessage)
+  def handleNotifyDeleteChirp(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleNotifyDeleteChirp(rpcMessage)
+
+  def handleAddReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleAddReaction(rpcMessage)
+  def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteReaction(rpcMessage)
 }
 
 sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
@@ -25,27 +31,6 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
    * Overrides default DbActor with provided parameter
    */
   override final val dbActor: AskableActorRef = dbRef
-
-  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestAddChirp) => handleAddChirp(message)
-      case message@(_: JsonRpcRequestDeleteChirp) => handleDeleteChirp(message)
-      case message@(_: JsonRpcRequestNotifyAddChirp) => handleNotifyAddChirp(message)
-      case message@(_: JsonRpcRequestNotifyDeleteChirp) => handleNotifyDeleteChirp(message)
-      case message@(_: JsonRpcRequestAddReaction) => handleAddReaction(message)
-      case message@(_: JsonRpcRequestDeleteReaction) => handleDeleteReaction(message)
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: SocialMediaHandler was given a message it could not recognize",
-        jsonRpcMessage match {
-          case r: JsonRpcRequest => r.id
-          case r: JsonRpcResponse => r.id
-          case _ => None
-        }
-      ))
-    }
-    case graphMessage@_ => graphMessage
-  }
 
   private final val unknownAnswerDatabase: String = "Database actor returned an unknown answer"
 

@@ -12,7 +12,7 @@ import scala.concurrent.duration.FiniteDuration
 
 
 class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
-  // Implicites for system actors
+  // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
   implicit val timeout: Timeout = Timeout(duration)
 
@@ -21,7 +21,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     TestKit.shutdownActorSystem(system)
   }
 
-  def mockDbWIthNack: AskableActorRef = {
+  def mockDbWithNack: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
@@ -36,7 +36,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     system.actorOf(mockedDB, "MockedDB-NACK")
   }
 
-  def mockDbWIthAck: AskableActorRef = {
+  def mockDbWithAck: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
@@ -52,7 +52,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
   }
 
   test("CreateRollCall fails if the database fails storing the message") {
-    val mockedDB = mockDbWIthNack
+    val mockedDB = mockDbWithNack
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
 
@@ -62,7 +62,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
   }
 
   test("CreateRollCall succeeds if the database succeeds storing the message") {
-    val mockedDB = mockDbWIthAck
+    val mockedDB = mockDbWithAck
     val rc = new RollCallHandler(mockedDB)
     val request = CreateRollCallMessages.createRollCall
 

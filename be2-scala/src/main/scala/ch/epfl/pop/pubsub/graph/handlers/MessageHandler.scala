@@ -1,8 +1,6 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.NotUsed
 import akka.pattern.AskableActorRef
-import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.pubsub.AskPatternConstants
@@ -17,8 +15,6 @@ trait MessageHandler extends AskPatternConstants {
    * May be overridden by the reference of the used DbActor
    */
   def dbActor: AskableActorRef = DbActor.getInstance
-
-  val handler: Flow[GraphMessage, GraphMessage, NotUsed]
 
   /**
    * Asks the database to store the message contained in <rpcMessage> (or the provided message)
