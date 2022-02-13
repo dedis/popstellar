@@ -58,7 +58,7 @@ public final class ElectionHandler {
       election.setEventState(OPENED);
 
       // Once the election is created, we subscribe to the election channel
-      laoRepository.sendSubscribe(election.getChannel());
+      context.getMessageSender().subscribe(election.getChannel()).subscribe();
       Log.d(TAG, "election id " + election.getId());
       lao.updateElection(election.getId(), election);
 

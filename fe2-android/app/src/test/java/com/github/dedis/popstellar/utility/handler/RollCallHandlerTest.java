@@ -1,3 +1,4 @@
+/*
 package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
@@ -227,3 +228,4 @@ public class RollCallHandlerTest {
     assertEquals(expectedMessage.getDescription(), witnessMessage.get().getDescription());
   }
 }
+*/

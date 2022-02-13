@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.repository.remote;
 
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 
@@ -31,6 +32,15 @@ public interface MessageSender extends Disposable {
    * @return a {@link Completable} the will complete once the publish is finished
    */
   Completable publish(KeyPair keyPair, String channel, Data data);
+
+  /**
+   * Publish an already created {@link MessageGeneral} on the given channel
+   *
+   * @param channel to send the data on
+   * @param msg to send
+   * @return a {@link Completable} the will complete once the publish is finished
+   */
+  Completable publish(String channel, MessageGeneral msg);
 
   /**
    * Subscribe to given channel

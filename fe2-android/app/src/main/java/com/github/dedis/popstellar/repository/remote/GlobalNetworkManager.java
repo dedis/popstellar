@@ -26,6 +26,7 @@ public class GlobalNetworkManager implements Disposable {
   private final SchedulerProvider schedulerProvider;
 
   @Nullable private MessageSender networkManager;
+  @Nullable private String currentURL;
 
   @Inject
   public GlobalNetworkManager(
@@ -49,10 +50,15 @@ public class GlobalNetworkManager implements Disposable {
     Connection connection = connectionFactory.createConnection(url);
     networkManager =
         new LAONetworkManager(laoRepository, messageHandler, connection, gson, schedulerProvider);
+    currentURL = url;
+  }
+
+  public String getCurrentUrl() {
+    return currentURL;
   }
 
   @NonNull
-  public MessageSender getQuerySender() {
+  public MessageSender getMessageSender() {
     if (networkManager == null)
       throw new IllegalStateException("The connection has not been established.");
     return networkManager;

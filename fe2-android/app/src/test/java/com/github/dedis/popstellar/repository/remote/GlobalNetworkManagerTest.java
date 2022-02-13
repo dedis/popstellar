@@ -39,7 +39,7 @@ public class GlobalNetworkManagerTest {
         new GlobalNetworkManager(repository, handler, factory, gson, new TestSchedulerProvider());
     verify(factory).createConnection(anyString());
 
-    networkManager.getQuerySender().unsubscribe("channel");
+    networkManager.getMessageSender().unsubscribe("channel");
     verify(firstConnection).sendMessage(any());
   }
 

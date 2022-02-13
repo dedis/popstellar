@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.repository;
+/*package com.github.dedis.popstellar.repository;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static org.mockito.ArgumentMatchers.any;
@@ -325,4 +325,4 @@ public class LAORepositoryTest extends TestCase {
     List<Lao> repositoryLaoList = (List<Lao>) valuesObserved.get(0);
     assertEquals(repositoryLaoList.get(0).getChannel(), laoChannel);
   }
-}
+}*/

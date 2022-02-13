@@ -17,8 +17,6 @@ import androidx.lifecycle.Transformations;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
-import com.github.dedis.popstellar.model.network.answer.Error;
-import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElect;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
@@ -47,6 +45,7 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
@@ -66,7 +65,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -196,6 +194,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * Dependencies for this class
    */
   private final LAORepository laoRepository;
+  private final GlobalNetworkManager networkManager;
   private final KeyManager keyManager;
   private final CompositeDisposable disposables;
   private final Gson gson;
@@ -210,11 +209,13 @@ public class LaoDetailViewModel extends AndroidViewModel
   public LaoDetailViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      GlobalNetworkManager networkManager,
       KeyManager keyManager,
       Gson gson,
       Wallet wallet) {
     super(application);
     this.laoRepository = laoRepository;
+    this.networkManager = networkManager;
     this.keyManager = keyManager;
     this.gson = gson;
     this.wallet = wallet;
@@ -236,7 +237,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
       return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
     } catch (KeyGenerationException | UninitializedWalletException e) {
-      Log.d(TAG, "failed to retrieve public key from wallet", e);
+      Log.e(TAG, "failed to retrieve public key from wallet", e);
       return false;
     }
   }
@@ -269,25 +270,17 @@ public class LaoDetailViewModel extends AndroidViewModel
     ElectionEnd electionEnd =
         new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
 
-    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), electionEnd, gson);
-
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, electionEnd)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "ended election successfully");
-                    endElectionEvent();
-                  } else {
-                    Log.d(TAG, "failed to end the election");
-                  }
+                () -> {
+                  Log.d(TAG, "ended election successfully");
+                  endElectionEvent();
                 },
-                throwable -> Log.d(TAG, "timed out waiting for result on election/end", throwable));
+                throwable -> Log.e(TAG, "failed to end election", throwable));
 
     disposables.add(disposable);
   }
@@ -319,39 +312,28 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      String laoChannel = lao.getChannel();
-      String laoId = laoChannel.substring(6);
-      CastVote castVote = new CastVote(votes, election.getId(), laoId);
-      // Is channel set ?
+      CastVote castVote = new CastVote(votes, election.getId(), lao.getId());
       String electionChannel = election.getChannel();
-
-      MessageGeneral msg = new MessageGeneral(token, castVote, gson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
-          laoRepository
-              .sendPublish(electionChannel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
+          networkManager
+              .getMessageSender()
+              .publish(token, electionChannel, castVote)
+              .doFinally(this::openLaoDetail)
               .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "sent a vote successfully");
-                      // Toast ? + send back to election screen or details screen ?
-                      Toast.makeText(
-                              getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
-                          .show();
-                    } else {
-                      Log.d(TAG, "failed to send the vote");
-                      Toast.makeText(
-                              getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
-                          .show();
-                    }
-                    openLaoDetail();
+                  () -> {
+                    Log.d(TAG, "sent a vote successfully");
+                    // Toast ? + send back to election screen or details screen ?
+                    Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
+                        .show();
                   },
-                  throwable -> Log.d(TAG, "timed out waiting for result on cast_vote", throwable));
+                  throwable -> {
+                    Log.e(TAG, "timed out waiting for result on cast_vote", throwable);
 
+                    Toast.makeText(getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
+                        .show();
+                  });
       disposables.add(disposable);
     } catch (KeyException e) {
       Log.i(
@@ -398,39 +380,29 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
 
     String channel = lao.getChannel();
-    ElectionSetup electionSetup;
-    String laoId = channel.substring(6);
-
-    electionSetup =
+    ElectionSetup electionSetup =
         new ElectionSetup(
-            name, creation, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
-
-    // Retrieve identity of who is creating the election
-    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), electionSetup, gson);
+            name,
+            creation,
+            start,
+            end,
+            votingMethod,
+            writeIn,
+            ballotOptions,
+            question,
+            lao.getId());
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, electionSetup)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "setup an election");
-                    mElectionCreatedEvent.postValue(new SingleEvent<>(true));
-                  } else if (answer instanceof Error) {
-                    Log.d(
-                        TAG,
-                        "failed to setup an election because of the following error : "
-                            + ((Error) answer).getError().getDescription());
-                  } else {
-                    Log.d(TAG, "failed to setup an election");
-                  }
+                () -> {
+                  Log.d(TAG, "setup an election");
+                  mElectionCreatedEvent.postValue(new SingleEvent<>(true));
                 },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on election/create", throwable));
+                throwable -> Log.e(TAG, "failed to setup an election", throwable));
 
     disposables.add(disposable);
 
@@ -463,35 +435,26 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     String channel = lao.getChannel();
-    CreateRollCall createRollCall;
-    String laoId = channel.substring(6); // removing /root/ prefix
-    createRollCall =
+    // FIXME Location : Lausanne ?
+    CreateRollCall createRollCall =
         new CreateRollCall(
-            title, creation, proposedStart, proposedEnd, "Lausanne", description, laoId);
+            title, creation, proposedStart, proposedEnd, "Lausanne", description, lao.getId());
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), createRollCall, gson);
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, createRollCall)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
-                    if (open) {
-                      openRollCall(createRollCall.getId());
-                    } else {
-                      mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
-                    }
+                () -> {
+                  Log.d(TAG, "created a roll call with id: " + createRollCall.getId());
+                  if (open) {
+                    openRollCall(createRollCall.getId());
                   } else {
-                    Log.d(TAG, "failed to create a roll call");
+                    mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
                   }
                 },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on roll_call/create", throwable));
+                throwable -> Log.d(TAG, "failed to create a roll call", throwable));
     disposables.add(disposable);
   }
 
@@ -526,21 +489,12 @@ public class LaoDetailViewModel extends AndroidViewModel
     MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), consensusElect, gson);
 
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(channel, msg)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "created a consensus with messageId: " + msg.getMessageId());
-                  } else {
-                    Log.d(TAG, "failed to create a consensus");
-                  }
-                },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on consensus/elect", throwable));
+                () -> Log.d(TAG, "created a consensus with message id : " + msg.getMessageId()),
+                throwable -> Log.e(TAG, "failed to create a consensus", throwable));
     disposables.add(disposable);
   }
 
@@ -570,30 +524,18 @@ public class LaoDetailViewModel extends AndroidViewModel
     ConsensusElectAccept consensusElectAccept =
         new ConsensusElectAccept(electInstance.getInstanceId(), messageId, accept);
 
-    MessageGeneral msg =
-        new MessageGeneral(keyManager.getMainKeyPair(), consensusElectAccept, gson);
-
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
-        laoRepository
-            .sendPublish(electInstance.getChannel(), msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), electInstance.getChannel(), consensusElectAccept)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "sent an elect_accept successfully");
-                  } else {
-                    Log.d(
-                        TAG,
-                        "failed to send the elect_accept for consensus with messageId : "
-                            + messageId);
-                  }
-                },
+                () -> Log.d(TAG, "sent an elect_accept successfully"),
                 throwable ->
-                    Log.d(
-                        TAG, "timed out waiting for result on consensus/elect_accept", throwable));
+                    Log.e(
+                        TAG,
+                        "failed to send the elect_accept for consensus : " + messageId,
+                        throwable));
 
     disposables.add(disposable);
   }
@@ -636,26 +578,18 @@ public class LaoDetailViewModel extends AndroidViewModel
           .show();
     }
 
-    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), openRollCall, gson);
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, openRollCall)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "opened the roll call");
-                    currentRollCallId = openRollCall.getUpdateId();
-                    scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
-                    openScanning();
-                  } else {
-                    Log.d(TAG, "failed to open the roll call");
-                  }
+                () -> {
+                  Log.d(TAG, "opened the roll call");
+                  currentRollCallId = openRollCall.getUpdateId();
+                  scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
+                  openScanning();
                 },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on roll_call/open", throwable));
+                throwable -> Log.e(TAG, "failed to open the roll call", throwable));
     disposables.add(disposable);
   }
 
@@ -673,29 +607,20 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
     long end = Instant.now().getEpochSecond();
     String channel = lao.getChannel();
-    String laoId = channel.substring(6); // removing /root/ prefix
     CloseRollCall closeRollCall =
-        new CloseRollCall(laoId, currentRollCallId, end, new ArrayList<>(attendees));
-    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), closeRollCall, gson);
+        new CloseRollCall(lao.getId(), currentRollCallId, end, new ArrayList<>(attendees));
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, closeRollCall)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "closed the roll call");
-                    currentRollCallId = "";
-                    attendees.clear();
-                    mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
-                  } else {
-                    Log.d(TAG, "failed to close the roll call");
-                  }
+                () -> {
+                  Log.d(TAG, "closed the roll call");
+                  currentRollCallId = "";
+                  attendees.clear();
+                  mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
                 },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on roll_call/open", throwable));
+                throwable -> Log.e(TAG, "failed to close the roll call", throwable));
     disposables.add(disposable);
   }
 
@@ -717,27 +642,17 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, PUBLISH_MESSAGE);
       WitnessMessageSignature signatureMessage =
           new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
-      MessageGeneral msg = new MessageGeneral(mainKey, signatureMessage, gson);
       disposables.add(
-          laoRepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
+          networkManager
+              .getMessageSender()
+              .publish(keyManager.getMainKeyPair(), channel, signatureMessage)
               .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
+                  () ->
                       Log.d(
                           TAG,
                           "Verifying the signature of  message  with id: "
-                              + witnessMessage.getMessageId());
-
-                    } else {
-                      Log.d(TAG, "failed to sign message ");
-                    }
-                  },
-                  throwable ->
-                      Log.d(TAG, "timed out waiting for result on sign message", throwable)));
+                              + witnessMessage.getMessageId()),
+                  throwable -> Log.e(TAG, "failed to sign message", throwable)));
 
     } catch (GeneralSecurityException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -1130,22 +1045,15 @@ public class LaoDetailViewModel extends AndroidViewModel
             lao.getWitnesses());
     MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(channel, msg)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "updated lao name");
-                    dipatchLaoUpdate("lao name", updateLao, lao, channel, msg);
-                  } else {
-                    Log.d(TAG, "failed to update lao name");
-                  }
+                () -> {
+                  Log.d(TAG, "updated lao name");
+                  dispatchLaoUpdate("lao name", updateLao, lao, channel, msg);
                 },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on update lao name", throwable));
+                throwable -> Log.e(TAG, "failed to update lao name", throwable));
     disposables.add(disposable);
   }
 
@@ -1169,27 +1077,20 @@ public class LaoDetailViewModel extends AndroidViewModel
         new UpdateLao(mainKey.getPublicKey(), lao.getCreation(), lao.getName(), now, witnesses);
     MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
     Disposable disposable =
-        laoRepository
-            .sendPublish(channel, msg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(channel, msg)
             .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "updated lao witnesses");
-                    dipatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg);
-                  } else {
-                    Log.d(TAG, "failed to update lao witnesses");
-                  }
+                () -> {
+                  Log.d(TAG, "updated lao witnesses");
+                  dispatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg);
                 },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on update lao witnesses", throwable));
+                throwable -> Log.e(TAG, "failed to update lao witnesses", throwable));
     disposables.add(disposable);
   }
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
-  private void dipatchLaoUpdate(
+  private void dispatchLaoUpdate(
       String desc, UpdateLao updateLao, Lao lao, String channel, MessageGeneral msg) {
     StateLao stateLao =
         new StateLao(
@@ -1202,23 +1103,13 @@ public class LaoDetailViewModel extends AndroidViewModel
             updateLao.getWitnesses(),
             new ArrayList<>());
 
-    MessageGeneral stateMsg = new MessageGeneral(keyManager.getMainKeyPair(), stateLao, gson);
     disposables.add(
-        laoRepository
-            .sendPublish(channel, stateMsg)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(5, TimeUnit.SECONDS)
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, stateLao)
             .subscribe(
-                answer2 -> {
-                  if (answer2 instanceof Result) {
-                    Log.d(TAG, "updated " + desc);
-                  } else {
-                    Log.d(TAG, "failed to update " + desc);
-                  }
-                },
-                throwable ->
-                    Log.d(TAG, "timed out waiting for result on update " + desc, throwable)));
+                () -> Log.d(TAG, "updated " + desc),
+                throwable -> Log.d(TAG, "failed to update " + desc, throwable)));
   }
 
   public void cancelEdit() {

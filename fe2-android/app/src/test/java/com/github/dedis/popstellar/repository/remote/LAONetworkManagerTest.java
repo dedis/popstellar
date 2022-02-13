@@ -119,6 +119,7 @@ public class LAONetworkManagerTest {
     verify(connection).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
     verify(connection).observeWebsocket();
+    verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
 
@@ -153,6 +154,7 @@ public class LAONetworkManagerTest {
     verify(connection).sendMessage(any(Unsubscribe.class));
     verify(connection, atLeastOnce()).observeMessage();
     verify(connection).observeWebsocket();
+    verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
 
@@ -189,6 +191,7 @@ public class LAONetworkManagerTest {
     verify(connection).sendMessage(any(Publish.class));
     verify(connection, atLeastOnce()).observeMessage();
     verify(connection).observeWebsocket();
+    verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
 
@@ -231,6 +234,7 @@ public class LAONetworkManagerTest {
     verify(connection).sendMessage(any(Subscribe.class));
     verify(connection, atLeastOnce()).observeMessage();
     verify(connection).observeWebsocket();
+    verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
 
@@ -246,8 +250,11 @@ public class LAONetworkManagerTest {
             JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
             schedulerProvider);
 
-    networkManager.subscribe(CHANNEL); // First subscribe
+    networkManager.subscribe(CHANNEL).subscribe(); // First subscribe
     testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+
+    verify(connection).sendMessage(any(Subscribe.class));
+    verify(connection).sendMessage(any(Catchup.class));
 
     // Setup mock answer
     Answer<?> answer =
@@ -263,10 +270,13 @@ public class LAONetworkManagerTest {
     events.onNext(new WebSocket.Event.OnConnectionOpened<>(mock(WebSocket.class)));
     testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
+    networkManager.dispose();
+
     verify(connection, times(2)).sendMessage(any(Subscribe.class));
     verify(connection, times(2)).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
     verify(connection).observeWebsocket();
+    verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
 }

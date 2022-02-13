@@ -49,9 +49,9 @@ public final class LaoHandler {
     lao.setId(createLao.getId());
     lao.setWitnesses(new HashSet<>(createLao.getWitnesses()));
 
-    PublicKey publicKey = laoRepository.getPublicKey();
+    PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
-      laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
+      context.getMessageSender().subscribe(lao.getChannel() + "/consensus").subscribe();
     }
     laoRepository.updateNodes(channel);
   }
@@ -136,9 +136,9 @@ public final class LaoHandler {
     lao.setLastModified(stateLao.getLastModified());
     lao.setModificationId(stateLao.getModificationId());
 
-    PublicKey publicKey = laoRepository.getPublicKey();
+    PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
-      laoRepository.sendSubscribe(lao.getChannel() + "/consensus");
+      context.getMessageSender().subscribe(lao.getChannel() + "/consensus").subscribe();
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao

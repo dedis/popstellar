@@ -51,7 +51,7 @@ public class LAONetworkManager implements MessageSender {
   // A subject that represents unprocessed messages
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
   private final List<String> subscribedChannels = new LinkedList<>();
-  private final Disposable disposable;
+  private final CompositeDisposable disposables;
 
   public LAONetworkManager(
       LAORepository repository,
@@ -64,7 +64,7 @@ public class LAONetworkManager implements MessageSender {
     this.connection = connection;
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
-    this.disposable = new CompositeDisposable(subscribeToUpstream(), subscribeToWebsocketEvents());
+    this.disposables = new CompositeDisposable(subscribeToUpstream(), subscribeToWebsocketEvents());
   }
 
   private Disposable subscribeToWebsocketEvents() {
@@ -72,7 +72,10 @@ public class LAONetworkManager implements MessageSender {
         .observeWebsocket()
         .subscribeOn(schedulerProvider.io())
         .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
-        .subscribe(event -> subscribedChannels.forEach(this::subscribe));
+        .subscribe(
+            event ->
+                subscribedChannels.forEach(
+                    channel -> disposables.add(subscribe(channel).subscribe())));
   }
 
   private Disposable subscribeToUpstream() {
@@ -99,9 +102,13 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public Completable publish(KeyPair keyPair, String channel, Data data) {
-    Log.d(TAG, "sending a publish " + data.getClass() + " to the channel " + channel);
-    MessageGeneral message = new MessageGeneral(keyPair, data, gson);
-    Publish publish = new Publish(channel, requestCounter.incrementAndGet(), message);
+    return publish(channel, new MessageGeneral(keyPair, data, gson));
+  }
+
+  @Override
+  public Completable publish(String channel, MessageGeneral msg) {
+    Log.d(TAG, "sending a publish " + msg.getData().getClass() + " to the channel " + channel);
+    Publish publish = new Publish(channel, requestCounter.incrementAndGet(), msg);
     return request(publish).ignoreElement();
   }
 
@@ -132,7 +139,8 @@ public class LAONetworkManager implements MessageSender {
       // We've a Broadcast
       Broadcast broadcast = (Broadcast) genericMessage;
       try {
-        messageHandler.handleMessage(repository, broadcast.getChannel(), broadcast.getMessage());
+        messageHandler.handleMessage(
+            repository, this, broadcast.getChannel(), broadcast.getMessage());
       } catch (DataHandlingException e) {
         Log.e(TAG, "Error while handling received message", e);
         unprocessed.onNext(genericMessage);
@@ -143,7 +151,7 @@ public class LAONetworkManager implements MessageSender {
   private void handleMessages(List<MessageGeneral> messages, String channel) {
     for (MessageGeneral msg : messages) {
       try {
-        messageHandler.handleMessage(repository, channel, msg);
+        messageHandler.handleMessage(repository, this, channel, msg);
       } catch (DataHandlingException e) {
         Log.e(TAG, "Error while handling received catchup message", e);
       }
@@ -175,12 +183,12 @@ public class LAONetworkManager implements MessageSender {
 
   @Override
   public void dispose() {
-    disposable.dispose();
+    disposables.dispose();
     connection.close();
   }
 
   @Override
   public boolean isDisposed() {
-    return disposable.isDisposed();
+    return disposables.isDisposed();
   }
 }
