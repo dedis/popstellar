@@ -2,11 +2,12 @@ import 'jest-extended';
 import { AnyAction } from 'redux';
 import { channelFromIds, Timestamp } from 'model/objects';
 import {
+  configureMessages,
   ExtendedMessage,
   markExtMessageAsProcessed,
   Message,
 } from 'model/network/method/message';
-import { AddChirp } from 'model/network/method/message/data';
+import { AddChirp, MessageRegistry } from 'model/network/method/message/data';
 import { mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import {
   addMessages,
@@ -20,6 +21,9 @@ import {
 jest.mock('model/objects/wallet/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
 }));
+
+const messageRegistry = new MessageRegistry();
+configureMessages(messageRegistry);
 
 const initialState = {
   byLaoId: {},
