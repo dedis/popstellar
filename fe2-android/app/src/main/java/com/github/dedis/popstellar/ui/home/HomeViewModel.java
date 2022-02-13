@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
@@ -146,18 +147,21 @@ public class HomeViewModel extends AndroidViewModel
     disposables.add(
         mLAORepository
             .sendSubscribe(channel)
-            .observeOn(AndroidSchedulers.mainThread())
-            .timeout(3, TimeUnit.SECONDS)
-            .subscribe(
-                answer -> {
-                  if (answer instanceof Result) {
-                    Log.d(TAG, "got success result for subscribe to lao");
-                  } else {
-                    Log.d(
-                        TAG,
-                        "got failure result for subscribe to lao: "
-                            + ((Error) answer).getError().getDescription());
+            .ignoreElement()
+            .doOnComplete(
+                () -> {
+                  if (mLAORepository.isLaoChannel(channel)) {
+                    Log.d(TAG, "subscribing to LAO with id " + channel);
+
+                    // Create the new LAO and add it to the LAORepository LAO lists
+                    Lao lao = new Lao(channel.replace("/root/", ""));
+                    mLAORepository.getLaoById().put(channel, new LAOState(lao));
+                    mLAORepository.setAllLaoSubject();
                   }
+                })
+            .subscribe(
+                () -> {
+                  Log.d(TAG, "got success result for subscribe to lao");
                   openHome();
                 },
                 throwable -> {

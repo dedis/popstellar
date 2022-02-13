@@ -1,8 +1,7 @@
-package com.github.dedis.popstellar.remote;
+package com.github.dedis.popstellar.repository.remote;
 
 import android.app.Application;
 
-import com.github.dedis.popstellar.repository.remote.LAOService;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 import com.google.gson.Gson;
 import com.tinder.scarlet.Lifecycle;

@@ -1,4 +1,4 @@
-package com.github.dedis.popstellar.remote.query;
+package com.github.dedis.popstellar.repository.remote;
 
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -6,7 +6,7 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
 
-public interface QuerySender extends Disposable {
+public interface MessageSender extends Disposable {
 
   Completable catchup(String channel);
 

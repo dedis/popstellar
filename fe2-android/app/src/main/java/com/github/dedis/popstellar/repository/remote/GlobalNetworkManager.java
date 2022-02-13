@@ -1,10 +1,7 @@
-package com.github.dedis.popstellar.remote;
+package com.github.dedis.popstellar.repository.remote;
 
 import androidx.annotation.NonNull;
 
-import com.github.dedis.popstellar.remote.query.QueryManager;
-import com.github.dedis.popstellar.remote.query.QuerySender;
-import com.github.dedis.popstellar.remote.query.SafeQuerySender;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
@@ -17,7 +14,7 @@ import javax.inject.Singleton;
 import io.reactivex.disposables.Disposable;
 
 @Singleton
-public class ConnectionManager implements Disposable {
+public class GlobalNetworkManager implements Disposable {
 
   private static final String DEFAULT_URL = "ws://10.0.2.2:9000/organizer/client";
 
@@ -27,10 +24,10 @@ public class ConnectionManager implements Disposable {
   private final Gson gson;
   private final SchedulerProvider schedulerProvider;
 
-  @Nullable private QuerySender currentQuerySender;
+  @Nullable private MessageSender networkManager;
 
   @Inject
-  public ConnectionManager(
+  public GlobalNetworkManager(
       LAORepository laoRepository,
       MessageHandler messageHandler,
       ConnectionFactory connectionFactory,
@@ -46,29 +43,28 @@ public class ConnectionManager implements Disposable {
   }
 
   public void connect(String url) {
-    if (currentQuerySender != null) currentQuerySender.dispose();
+    if (networkManager != null) networkManager.dispose();
 
     Connection connection = connectionFactory.createConnection(url);
-    QuerySender querySender =
-        new QueryManager(laoRepository, messageHandler, connection, gson, schedulerProvider);
-    currentQuerySender = new SafeQuerySender(querySender, connection, schedulerProvider.io());
+    networkManager =
+        new LAONetworkManager(laoRepository, messageHandler, connection, gson, schedulerProvider);
   }
 
   @NonNull
-  public QuerySender getQuerySender() {
-    if (currentQuerySender == null)
+  public MessageSender getQuerySender() {
+    if (networkManager == null)
       throw new IllegalStateException("The connection has not been established.");
-    return currentQuerySender;
+    return networkManager;
   }
 
   @Override
   public void dispose() {
-    if (currentQuerySender != null) currentQuerySender.dispose();
-    currentQuerySender = null;
+    if (networkManager != null) networkManager.dispose();
+    networkManager = null;
   }
 
   @Override
   public boolean isDisposed() {
-    return currentQuerySender == null;
+    return networkManager == null;
   }
 }
