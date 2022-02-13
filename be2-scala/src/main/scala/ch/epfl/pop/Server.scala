@@ -21,7 +21,8 @@ import scala.util.{Failure, Success}
 
 object Server {
 
-  /** Create a WebServer that handles http requests and WebSockets requests.
+  /*
+   * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
 

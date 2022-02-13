@@ -35,7 +35,7 @@ object PublishSubscribe {
       // input message from the client
       val input = builder.add(Flow[Message].collect { case TextMessage.Strict(s) => println(s">>> Incoming message : $s"); s })
 
-      val schemaValidator = builder.add(Validator.schemaValidator)
+      val schemaValidator = builder.add(SchemaValidator.rpcSchemaValidator)
 
       val jsonRpcDecoder = builder.add(MessageDecoder.jsonRpcParser)
       val jsonRpcContentValidator = builder.add(Validator.jsonRpcContentValidator)
