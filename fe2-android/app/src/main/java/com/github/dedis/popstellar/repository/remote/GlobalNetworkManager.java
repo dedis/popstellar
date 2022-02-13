@@ -13,6 +13,7 @@ import javax.inject.Singleton;
 
 import io.reactivex.disposables.Disposable;
 
+/** Module responsible of managing the connection to the backend server. */
 @Singleton
 public class GlobalNetworkManager implements Disposable {
 

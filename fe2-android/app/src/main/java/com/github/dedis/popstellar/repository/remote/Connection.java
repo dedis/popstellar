@@ -9,7 +9,8 @@ import com.tinder.scarlet.WebSocket;
 import io.reactivex.Observable;
 import io.reactivex.subjects.BehaviorSubject;
 
-public class Connection implements LAOService {
+/** Represents a single websocket connection that can be closed */
+public class Connection {
 
   private final LAOService laoService;
   private final BehaviorSubject<Lifecycle.State> manualState;
@@ -19,17 +20,14 @@ public class Connection implements LAOService {
     this.manualState = manualState;
   }
 
-  @Override
   public void sendMessage(Message msg) {
     laoService.sendMessage(msg);
   }
 
-  @Override
   public Observable<GenericMessage> observeMessage() {
     return laoService.observeMessage();
   }
 
-  @Override
   public Observable<WebSocket.Event> observeWebsocket() {
     return laoService.observeWebsocket();
   }

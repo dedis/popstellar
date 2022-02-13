@@ -18,6 +18,7 @@ import io.reactivex.BackpressureStrategy;
 import io.reactivex.subjects.BehaviorSubject;
 import okhttp3.OkHttpClient;
 
+/** Factory used to produce {@link Connection} to a specified URL */
 public class ConnectionFactory {
 
   private final Application application;
