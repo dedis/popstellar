@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
@@ -169,7 +168,7 @@ public class LAONetworkManager implements MessageSender {
               }
             })
         .subscribeOn(schedulerProvider.io())
-        .observeOn(AndroidSchedulers.mainThread())
+        .observeOn(schedulerProvider.mainThread())
         .timeout(5, TimeUnit.SECONDS)
         .cache();
   }
