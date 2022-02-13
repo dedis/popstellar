@@ -1,0 +1,172 @@
+package com.github.dedis.popstellar.remote.query;
+
+import android.util.Log;
+
+import com.github.dedis.popstellar.model.network.GenericMessage;
+import com.github.dedis.popstellar.model.network.answer.Answer;
+import com.github.dedis.popstellar.model.network.answer.ResultMessages;
+import com.github.dedis.popstellar.model.network.method.Broadcast;
+import com.github.dedis.popstellar.model.network.method.Catchup;
+import com.github.dedis.popstellar.model.network.method.Publish;
+import com.github.dedis.popstellar.model.network.method.Query;
+import com.github.dedis.popstellar.model.network.method.Subscribe;
+import com.github.dedis.popstellar.model.network.method.Unsubscribe;
+import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.objects.Lao;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
+import com.github.dedis.popstellar.remote.Connection;
+import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.handler.MessageHandler;
+import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
+import com.google.gson.Gson;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
+
+public class QueryManager implements QuerySender {
+
+  private static final String TAG = QueryManager.class.getSimpleName();
+
+  private final LAORepository repository;
+  private final MessageHandler messageHandler;
+  private final Connection connection;
+  public final AtomicInteger requestCounter = new AtomicInteger();
+  private final SchedulerProvider schedulerProvider;
+  private final Gson gson;
+
+  // A subject that represents unprocessed messages
+  private final Subject<GenericMessage> unprocessed = PublishSubject.create();
+  private final Disposable disposable;
+
+  public QueryManager(
+      LAORepository repository,
+      MessageHandler messageHandler,
+      Connection connection,
+      Gson gson,
+      SchedulerProvider schedulerProvider) {
+    this.repository = repository;
+    this.messageHandler = messageHandler;
+    this.connection = connection;
+    this.gson = gson;
+    this.schedulerProvider = schedulerProvider;
+
+    // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
+    // higher priority
+    disposable =
+        Observable.merge(
+                connection.observeMessage(),
+                unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
+            .subscribeOn(schedulerProvider.newThread())
+            .subscribe(this::handleGenericMessage);
+  }
+
+  @Override
+  public Completable catchup(String channel) {
+    Log.d(TAG, "sending a catchup to the channel " + channel);
+    Catchup catchup = new Catchup(channel, requestCounter.incrementAndGet());
+    return request(catchup)
+        .map(ResultMessages.class::cast)
+        .map(ResultMessages::getMessages)
+        .doOnSuccess(result -> Log.d(TAG, "Catchup on " + channel + " retrieved : " + result))
+        .doOnSuccess(messages -> handleMessages(messages, channel))
+        .ignoreElement();
+  }
+
+  @Override
+  public Completable publish(KeyPair keyPair, String channel, Data data) {
+    Log.d(TAG, "sending a publish " + data.getClass() + " to the channel " + channel);
+    MessageGeneral message = new MessageGeneral(keyPair, data, gson);
+    Publish publish = new Publish(channel, requestCounter.incrementAndGet(), message);
+    return request(publish).ignoreElement();
+  }
+
+  @Override
+  public Completable subscribe(String channel) {
+    Log.d(TAG, "sending a subscribe on the channel " + channel);
+    Subscribe subscribe = new Subscribe(channel, requestCounter.incrementAndGet());
+    return request(subscribe)
+        // Create LAO if needed
+        .doOnSuccess(
+            answer -> {
+              if (repository.isLaoChannel(channel)) {
+                Log.d(TAG, "subscribing to LAO with id " + channel);
+
+                // Create the new LAO and add it to the LAORepository LAO lists
+                Lao lao = new Lao(channel.replace("/root/", ""));
+                repository.getLaoById().put(channel, new LAOState(lao));
+                repository.setAllLaoSubject();
+              }
+            })
+        .flatMapCompletable(answer -> catchup(channel));
+  }
+
+  @Override
+  public Completable unsubscribe(String channel) {
+    Log.d(TAG, "sending an unsubscribe on the channel " + channel);
+    Unsubscribe unsubscribe = new Unsubscribe(channel, requestCounter.incrementAndGet());
+    return request(unsubscribe).ignoreElement();
+  }
+
+  private void handleGenericMessage(GenericMessage genericMessage) {
+    Log.d(TAG, "handling generic msg : " + genericMessage);
+    if (genericMessage instanceof Broadcast) {
+      // We've a Broadcast
+      Broadcast broadcast = (Broadcast) genericMessage;
+      try {
+        messageHandler.handleMessage(repository, broadcast.getChannel(), broadcast.getMessage());
+      } catch (DataHandlingException e) {
+        Log.e(TAG, "Error while handling received message", e);
+        unprocessed.onNext(genericMessage);
+      }
+    }
+  }
+
+  private void handleMessages(List<MessageGeneral> messages, String channel) {
+    for (MessageGeneral msg : messages) {
+      try {
+        messageHandler.handleMessage(repository, channel, msg);
+      } catch (DataHandlingException e) {
+        Log.e(TAG, "Error while handling received catchup message", e);
+      }
+    }
+  }
+
+  private Single<Answer> request(Query query) {
+    connection.sendMessage(query);
+    return connection
+        .observeMessage()
+        .filter(Answer.class::isInstance)
+        .map(Answer.class::cast)
+        .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
+        .filter(answer -> answer.getId() == query.getRequestId())
+        .firstOrError()
+        // TODO Use JavaRx to convert error response to JavaRx Errors
+        .subscribeOn(schedulerProvider.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .timeout(5, TimeUnit.SECONDS)
+        .cache();
+  }
+
+  @Override
+  public void dispose() {
+    disposable.dispose();
+    connection.close();
+  }
+
+  @Override
+  public boolean isDisposed() {
+    return disposable.isDisposed();
+  }
+}
