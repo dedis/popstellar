@@ -13,7 +13,7 @@ export const mockPopToken = PopToken.fromState({
 
 export const org = new PublicKey(mockPublicKey);
 export const mockLaoName = 'MyLao';
-export const mockLaoCreationTime = new Timestamp(160000000);
+export const mockLaoCreationTime = new Timestamp(1600000000);
 export const mockLaoIdHash: Hash = Hash.fromStringArray(
   org.toString(), mockLaoCreationTime.toString(), mockLaoName,
 );
