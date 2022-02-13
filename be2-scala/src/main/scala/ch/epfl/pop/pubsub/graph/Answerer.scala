@@ -3,8 +3,8 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.actor.{ActorRef, ActorSystem}
 import akka.http.scaladsl.model.ws.TextMessage
-import akka.stream.{CompletionStrategy, OverflowStrategy}
 import akka.stream.scaladsl.{Flow, Sink, Source}
+import akka.stream.{CompletionStrategy, OverflowStrategy}
 import ch.epfl.pop.json.HighLevelProtocol._
 import ch.epfl.pop.model.network.{ErrorObject, JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.pubsub.ClientActor.{ClientAnswer, ConnectWsHandle, DisconnectWsHandle}
@@ -27,7 +27,7 @@ object Answerer {
   private def sendAnswer(graphMessage: GraphMessage): TextMessage = graphMessage match {
     // Note: The encoding of the answer is done here as the ClientActor must always receive a GraphMessage
     case Left(rpcAnswer: JsonRpcResponse) => TextMessage.Strict(rpcAnswer.toJson.toString)
-    case Left(rpcMessage: JsonRpcRequest) => TextMessage.Strict(rpcMessage.toJson.toString) // propagate server
+    case Left(rpcRequest: JsonRpcRequest) => TextMessage.Strict(rpcRequest.toJson.toString) // propagate server
     case Right(pipelineError: PipelineError) =>
       // Convert AnswerGenerator's PipelineErrors into negative JsonRpcResponses and send them back to the client
       TextMessage.Strict(errorResponseString(pipelineError.code, pipelineError.description, pipelineError.rpcId))

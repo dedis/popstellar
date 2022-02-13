@@ -21,6 +21,9 @@ jest.mock('model/objects/wallet/Token.ts', () => ({
 
 const pastKeyPairStoreState = KeyPairStore.get();
 
+const messageRegistry = new MessageRegistry();
+configureMessages(messageRegistry);
+
 beforeAll(() => {
   KeyPairStore.store(KeyPair.fromState({
     publicKey: mockPublicKey,

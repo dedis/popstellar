@@ -32,4 +32,10 @@ class JsonRpcResponseSuite extends FunSuite with Matchers {
     response.isPositive should equal(true)
     response2.isPositive should equal(false)
   }
+
+  test("getId returns the correct rpc id") {
+    JsonRpcResponse("", ErrorObject(-1, ""), Some(0)).getId should equal(Some(0))
+    JsonRpcResponse("", ErrorObject(-1, ""), None).getId should equal(None)
+  }
+
 }

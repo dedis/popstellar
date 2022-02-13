@@ -13,7 +13,7 @@ import akka.pattern.AskableActorRef
 import akka.util.Timeout
 import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
 import ch.epfl.pop.pubsub.graph.DbActor
-import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribe}
+import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -21,7 +21,8 @@ import scala.util.{Failure, Success}
 
 object Server {
 
-  /** Create a WebServer that handles http requests and WebSockets requests.
+  /*
+   * Create a WebServer that handles http requests and WebSockets requests.
    */
   def main(args: Array[String]): Unit = {
 
@@ -45,9 +46,10 @@ object Server {
 
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
       val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef)), "DbActor")
+      val messageRegistry: MessageRegistry = MessageRegistry()
 
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(config.path) {
-        handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef)(system))
+        handleWebSocketMessages(PublishSubscribe.buildGraph(pubSubMediatorRef, dbActorRef, messageRegistry)(system))
       }
 
       implicit val executionContext: ExecutionContextExecutor = typedSystem.executionContext
