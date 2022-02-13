@@ -5,6 +5,7 @@ import testKeyPair from 'test_data/keypair.json';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
+export const mockPublicKey2 = testKeyPair.publicKey2;
 export const mockPopToken = PopToken.fromState({
   publicKey: testKeyPair.publicKey2,
   privateKey: testKeyPair.privateKey2,
