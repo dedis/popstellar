@@ -195,12 +195,12 @@ public class LaoDetailViewModel extends AndroidViewModel
   /*
    * Dependencies for this class
    */
-  private final LAORepository mLAORepository;
-  private final KeyManager mKeyManager;
+  private final LAORepository laoRepository;
+  private final KeyManager keyManager;
   private final CompositeDisposable disposables;
-  private final Gson mGson;
+  private final Gson gson;
   private final Wallet wallet;
-  private String mCurrentRollCallId = ""; // used to know which roll call to close
+  private String currentRollCallId = ""; // used to know which roll call to close
   private Set<PublicKey> attendees = new HashSet<>();
   private Set<PublicKey> witnesses =
       new HashSet<>(); // used to dynamically update the set of witnesses when WR code scanned
@@ -214,9 +214,9 @@ public class LaoDetailViewModel extends AndroidViewModel
       Gson gson,
       Wallet wallet) {
     super(application);
-    mLAORepository = laoRepository;
-    mKeyManager = keyManager;
-    mGson = gson;
+    this.laoRepository = laoRepository;
+    this.keyManager = keyManager;
+    this.gson = gson;
     this.wallet = wallet;
     disposables = new CompositeDisposable();
   }
@@ -247,7 +247,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * @return the public key
    */
   public PublicKey getPublicKey() {
-    return mKeyManager.getMainPublicKey();
+    return keyManager.getMainPublicKey();
   }
 
   @Override
@@ -269,11 +269,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     ElectionEnd electionEnd =
         new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
 
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionEnd, mGson);
+    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), electionEnd, gson);
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -318,18 +318,18 @@ public class LaoDetailViewModel extends AndroidViewModel
     }
 
     try {
-      PoPToken token = mKeyManager.getValidPoPToken(lao);
+      PoPToken token = keyManager.getValidPoPToken(lao);
       String laoChannel = lao.getChannel();
       String laoId = laoChannel.substring(6);
       CastVote castVote = new CastVote(votes, election.getId(), laoId);
       // Is channel set ?
       String electionChannel = election.getChannel();
 
-      MessageGeneral msg = new MessageGeneral(token, castVote, mGson);
+      MessageGeneral msg = new MessageGeneral(token, castVote, gson);
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
-          mLAORepository
+          laoRepository
               .sendPublish(electionChannel, msg)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
@@ -406,11 +406,11 @@ public class LaoDetailViewModel extends AndroidViewModel
             name, creation, start, end, votingMethod, writeIn, ballotOptions, question, laoId);
 
     // Retrieve identity of who is creating the election
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), electionSetup, mGson);
+    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), electionSetup, gson);
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -470,9 +470,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             title, creation, proposedStart, proposedEnd, "Lausanne", description, laoId);
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), createRollCall, mGson);
+    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), createRollCall, gson);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -523,10 +523,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
     Log.d(TAG, PUBLISH_MESSAGE);
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElect, mGson);
+    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), consensusElect, gson);
 
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -571,11 +571,11 @@ public class LaoDetailViewModel extends AndroidViewModel
         new ConsensusElectAccept(electInstance.getInstanceId(), messageId, accept);
 
     MessageGeneral msg =
-        new MessageGeneral(mKeyManager.getMainKeyPair(), consensusElectAccept, mGson);
+        new MessageGeneral(keyManager.getMainKeyPair(), consensusElectAccept, gson);
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(electInstance.getChannel(), msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -626,7 +626,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     attendees = new HashSet<>(rollCall.getAttendees());
 
     try {
-      attendees.add(mKeyManager.getPoPToken(lao, rollCall).getPublicKey());
+      attendees.add(keyManager.getPoPToken(lao, rollCall).getPublicKey());
     } catch (KeyException e) {
       Log.e(TAG, "Could not add the organizer's token to the attendees", e);
       Toast.makeText(
@@ -636,9 +636,9 @@ public class LaoDetailViewModel extends AndroidViewModel
           .show();
     }
 
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), openRollCall, mGson);
+    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), openRollCall, gson);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -647,7 +647,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 answer -> {
                   if (answer instanceof Result) {
                     Log.d(TAG, "opened the roll call");
-                    mCurrentRollCallId = openRollCall.getUpdateId();
+                    currentRollCallId = openRollCall.getUpdateId();
                     scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
                     openScanning();
                   } else {
@@ -675,10 +675,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     String channel = lao.getChannel();
     String laoId = channel.substring(6); // removing /root/ prefix
     CloseRollCall closeRollCall =
-        new CloseRollCall(laoId, mCurrentRollCallId, end, new ArrayList<>(attendees));
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), closeRollCall, mGson);
+        new CloseRollCall(laoId, currentRollCallId, end, new ArrayList<>(attendees));
+    MessageGeneral msg = new MessageGeneral(keyManager.getMainKeyPair(), closeRollCall, gson);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -687,7 +687,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 answer -> {
                   if (answer instanceof Result) {
                     Log.d(TAG, "closed the roll call");
-                    mCurrentRollCallId = "";
+                    currentRollCallId = "";
                     attendees.clear();
                     mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
                   } else {
@@ -710,16 +710,16 @@ public class LaoDetailViewModel extends AndroidViewModel
     String channel = lao.getChannel();
 
     try {
-      KeyPair mainKey = mKeyManager.getMainKeyPair();
+      KeyPair mainKey = keyManager.getMainKeyPair();
       // generate the signature of the message
       Signature signature = mainKey.sign(witnessMessage.getMessageId());
 
       Log.d(TAG, PUBLISH_MESSAGE);
       WitnessMessageSignature signatureMessage =
           new WitnessMessageSignature(witnessMessage.getMessageId(), signature);
-      MessageGeneral msg = new MessageGeneral(mainKey, signatureMessage, mGson);
+      MessageGeneral msg = new MessageGeneral(mainKey, signatureMessage, gson);
       disposables.add(
-          mLAORepository
+          laoRepository
               .sendPublish(channel, msg)
               .subscribeOn(Schedulers.io())
               .observeOn(AndroidSchedulers.mainThread())
@@ -868,15 +868,14 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public LiveData<Boolean> isWitness() {
-    boolean isWitness =
-        getCurrentLaoValue().getWitnesses().contains(mKeyManager.getMainPublicKey());
+    boolean isWitness = getCurrentLaoValue().getWitnesses().contains(keyManager.getMainPublicKey());
     Log.d(TAG, "isWitness: " + isWitness);
     mIsWitness.setValue(isWitness);
     return mIsWitness;
   }
 
   public LiveData<Boolean> isSignedByCurrentWitness(Set<PublicKey> witnesses) {
-    boolean isSignedByCurrentWitness = witnesses.contains(mKeyManager.getMainPublicKey());
+    boolean isSignedByCurrentWitness = witnesses.contains(keyManager.getMainPublicKey());
     Log.d(TAG, "isSignedByCurrentWitness: " + isSignedByCurrentWitness);
     mIsSignedByCurrentWitness.setValue(isSignedByCurrentWitness);
     return mIsSignedByCurrentWitness;
@@ -936,7 +935,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public LiveData<List<ConsensusNode>> getNodes() {
     return LiveDataReactiveStreams.fromPublisher(
-        mLAORepository
+        laoRepository
             .getNodesByChannel(getCurrentLaoValue().getChannel())
             .toFlowable(BackpressureStrategy.LATEST));
   }
@@ -992,7 +991,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    * Methods that modify the state or post an Event to update the UI.
    */
   public void openHome() {
-    if (mCurrentRollCallId.equals("")) {
+    if (currentRollCallId.equals("")) {
       mOpenHomeEvent.setValue(new SingleEvent<>(true));
     } else {
       mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_home));
@@ -1012,8 +1011,8 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void openIdentity() {
-    if (mCurrentRollCallId.equals("")) {
-      mOpenIdentityEvent.setValue(new SingleEvent<>(mKeyManager.getMainPublicKey()));
+    if (currentRollCallId.equals("")) {
+      mOpenIdentityEvent.setValue(new SingleEvent<>(keyManager.getMainPublicKey()));
     } else {
       mAskCloseRollCallEvent.setValue(new SingleEvent<>(R.id.fragment_identity));
     }
@@ -1120,7 +1119,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     Lao lao = getCurrentLaoValue();
     String channel = lao.getChannel();
-    KeyPair mainKey = mKeyManager.getMainKeyPair();
+    KeyPair mainKey = keyManager.getMainKeyPair();
     long now = Instant.now().getEpochSecond();
     UpdateLao updateLao =
         new UpdateLao(
@@ -1129,9 +1128,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             mLaoName.getValue(),
             now,
             lao.getWitnesses());
-    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
+    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -1164,13 +1163,13 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     String channel = lao.getChannel();
-    KeyPair mainKey = mKeyManager.getMainKeyPair();
+    KeyPair mainKey = keyManager.getMainKeyPair();
     long now = Instant.now().getEpochSecond();
     UpdateLao updateLao =
         new UpdateLao(mainKey.getPublicKey(), lao.getCreation(), lao.getName(), now, witnesses);
-    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, mGson);
+    MessageGeneral msg = new MessageGeneral(mainKey, updateLao, gson);
     Disposable disposable =
-        mLAORepository
+        laoRepository
             .sendPublish(channel, msg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -1203,9 +1202,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             updateLao.getWitnesses(),
             new ArrayList<>());
 
-    MessageGeneral stateMsg = new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
+    MessageGeneral stateMsg = new MessageGeneral(keyManager.getMainKeyPair(), stateLao, gson);
     disposables.add(
-        mLAORepository
+        laoRepository
             .sendPublish(channel, stateMsg)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -1229,7 +1228,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void subscribeToLao(String laoId) {
     disposables.add(
-        mLAORepository
+        laoRepository
             .getLaoObservable(laoId)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -1237,7 +1236,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 lao -> {
                   Log.d(TAG, "got an update for lao: " + lao.getName());
                   mCurrentLao.postValue(lao);
-                  boolean isOrganizer = lao.getOrganizer().equals(mKeyManager.getMainPublicKey());
+                  boolean isOrganizer = lao.getOrganizer().equals(keyManager.getMainPublicKey());
                   Log.d(TAG, "isOrganizer: " + isOrganizer);
                   mIsOrganizer.setValue(isOrganizer);
                 }));
