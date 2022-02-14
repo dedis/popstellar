@@ -78,7 +78,7 @@ class HighLevelProtocolSuite extends FunSuite with Matchers {
     val witnessesSigs: String = "[]"
     val source = getFormattedSource(id, sender, signature, data, witnessesSigs)
 
-    var expected: Message = buildExpected(id, sender, signature, data)
+    val expected: Message = buildExpected(id, sender, signature, data)
     val message = Message.buildFromJson(source)
 
     message shouldBe a[Message]

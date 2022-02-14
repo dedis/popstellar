@@ -1,14 +1,11 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.NotUsed
-import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
-import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash, LaoData}
-import ch.epfl.pop.pubsub.graph.DbActor.{DbActorMessage, DbActorAck, DbActorWriteAck}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.pubsub.graph.DbActor.{DbActorAck, DbActorNAck, DbActorWriteAck}
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -16,24 +13,6 @@ import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
 case object LaoHandler extends MessageHandler {
-
-  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestCreateLao) => handleCreateLao(message)
-      case message@(_: JsonRpcRequestStateLao) => handleStateLao(message)
-      case message@(_: JsonRpcRequestUpdateLao) => handleUpdateLao(message)
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: LaoHandler was given a message it could not recognize",
-        jsonRpcMessage match {
-          case r: JsonRpcRequest => r.id
-          case r: JsonRpcResponse => r.id
-          case _ => None
-        }
-      ))
-    }
-    case graphMessage@_ => graphMessage
-  }
 
   private val unknownAnswerDB: String = "Database actor returned an unknown answer"
 

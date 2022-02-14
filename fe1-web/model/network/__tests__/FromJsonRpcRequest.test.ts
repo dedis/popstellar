@@ -11,8 +11,9 @@ import {
 } from 'model/objects';
 import { ROOT_CHANNEL } from 'model/objects/Channel';
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network/index';
-import { CreateLao } from 'model/network/method/message/data';
+import { CreateLao, MessageRegistry } from 'model/network/method/message/data';
 import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
+import { configureMessages } from '../method/message';
 
 const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id', 'jsonrpc'];
 const QUERY_FIELD_COUNT = JSON_RPC_FIELDS.length;
@@ -24,6 +25,9 @@ const METHODS = Object.keys(JsonRpcMethod)
 
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
 export const mockSecretKey = new PrivateKey(keyPair.privateKey);
+
+const messageRegistry = new MessageRegistry();
+configureMessages(messageRegistry);
 
 function checkRpcQuery(obj: any): void {
   expect(obj).toBeObject();
