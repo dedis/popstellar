@@ -43,8 +43,8 @@ case object LaoHandler extends MessageHandler {
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
         // we are using the lao id instead of the message_id at lao creation
         val channel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
-        val socialChannel: Channel = Channel(channel + Channel.SOCIAL_MEDIA_CHIRPS_PREFIX)
-        val reactionChannel: Channel = Channel(channel + Channel.REACTIONS_CHANNEL_PREFIX)
+        val socialChannel: Channel = Channel(s"${channel}${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
+        val reactionChannel: Channel = Channel(s"${channel}${Channel.REACTIONS_CHANNEL_PREFIX}")
 
         val askCreateChannels = (dbActor ? DbActor.CreateChannelsFromList(List(
           (channel, ObjectType.LAO),

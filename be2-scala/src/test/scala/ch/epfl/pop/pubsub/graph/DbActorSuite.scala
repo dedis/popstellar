@@ -15,8 +15,9 @@ import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
 
-import scala.concurrent.Await
-import scala.util.Failure
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
 import org.scalatest.concurrent.ScalaFutures
 import scala.reflect.io.Directory
 
@@ -294,6 +295,7 @@ class DbActorSuite() extends TestKit(ActorSystem("myTestActorSystem"))
 
     val ask2 = dbActorRef ? DbActor.ReadLaoData(channel)
     val answer2 = Await.result(ask2, duration)
+
 
     answer2 shouldBe a[DbActor.DbActorReadLaoDataAck]
 

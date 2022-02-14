@@ -25,18 +25,18 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
   }
 
   def mockDbWithNack: AskableActorRef = {
-      val mockedDB = Props(new Actor(){
-          override def receive = {
-              // You can modify the following match case to include more args, names...
-              case m : DbActor.WriteAndPropagate =>
-                  system.log.info("Received {}", m)
-                  system.log.info("Responding with a Nack")
+    val mockedDB = Props(new Actor(){
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m : DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Nack")
 
-                  sender ! Status.Failure(new DbActorNAckException(1, "error"))
-          }
-          }
-      )
-      system.actorOf(mockedDB, "MockedDB-NACK")
+          sender() ! Status.Failure(new DbActorNAckException(1, "error"))
+      }
+      }
+    )
+    system.actorOf(mockedDB, "MockedDB-NACK")
   }
 
   def mockDbWithAck: AskableActorRef = {
@@ -61,74 +61,74 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
   }
 
   def mockDbWithAckAndNotifyNAck: AskableActorRef = {
-      val mockedDB = Props(new Actor(){
-          override def receive = {
-              // You can modify the following match case to include more args, names...
-              case DbActor.WriteAndPropagate(channel, message) =>
-                  if(channel == AddChirpMessages.CHANNEL){
-                      system.log.info(s"Received WAP on channel $channel")
-                      system.log.info("Responding with a Ack")
+    val mockedDB = Props(new Actor(){
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case DbActor.WriteAndPropagate(channel, message) =>
+          if(channel == AddChirpMessages.CHANNEL){
+            system.log.info(s"Received WAP on channel $channel")
+            system.log.info("Responding with a Ack")
 
-                      sender ! DbActor.DbActorWriteAck()
-                  }
-                  else{
-                      system.log.info(s"Received WAP on channel $channel")
-                      system.log.info("Responding with a NAck")
-
-                      sender ! Status.Failure(new DbActorNAckException(1, "error"))
-                  }
-
-              case m : DbActor.ReadLaoData =>
-                  system.log.info("Received {}", m)
-                  system.log.info("Responding with a Ack")
-
-                  sender ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+            sender() ! DbActor.DbActorWriteAck()
           }
+          else{
+            system.log.info(s"Received WAP on channel $channel")
+            system.log.info("Responding with a NAck")
+
+            sender() ! Status.Failure(new DbActorNAckException(1, "error"))
           }
-      )
-      system.actorOf(mockedDB, "MockedDB-ACK-NAck-on-Notify")
+
+        case m : DbActor.ReadLaoData =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
+
+          sender() ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+      }
+      }
+    )
+    system.actorOf(mockedDB, "MockedDB-ACK-NAck-on-Notify")
   }
 
   def mockDbWithAckButEmptyAckLaoData: AskableActorRef = {
-      val mockedDB = Props(new Actor(){
-          override def receive = {
-              // You can modify the following match case to include more args, names...
-              case m : DbActor.WriteAndPropagate =>
-                  system.log.info("Received {}", m)
-                  system.log.info("Responding with a Ack")
+    val mockedDB = Props(new Actor(){
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m : DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
 
-                  sender ! DbActor.DbActorWriteAck()
+          sender() ! DbActor.DbActorWriteAck()
 
-              case m: DbActor.ReadLaoData =>
-                  system.log.info("Received {}", m)
-                  system.log.info("Responding with a NAck")
+        case m: DbActor.ReadLaoData =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a NAck")
 
-                  sender ! DbActor.DbActorReadLaoDataAck(None)
-          }
-          }
-      )
-      system.actorOf(mockedDB, "MockedDB-ACK-EmptyAckLaoData")
+          sender() ! DbActor.DbActorReadLaoDataAck(None)
+      }
+      }
+    )
+    system.actorOf(mockedDB, "MockedDB-ACK-EmptyAckLaoData")
   }
 
   def mockDbWithAckButNAckLaoData: AskableActorRef = {
-      val mockedDB = Props(new Actor(){
-          override def receive = {
-              // You can modify the following match case to include more args, names...
-              case m : DbActor.WriteAndPropagate =>
-                  system.log.info("Received {}", m)
-                  system.log.info("Responding with a Ack")
+    val mockedDB = Props(new Actor(){
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m : DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Ack")
 
-                  sender ! DbActor.DbActorWriteAck()
+          sender() ! DbActor.DbActorWriteAck()
 
-              case m: DbActor.ReadLaoData =>
-                  system.log.info("Received {}", m)
-                  system.log.info("Responding with a NAck")
+        case m: DbActor.ReadLaoData =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a NAck")
 
-                  sender ! Status.Failure(new DbActorNAckException(1, "error"))
-          }
-          }
-      )
-      system.actorOf(mockedDB, "MockedDB-ACK-NAckLaoData")
+          sender() ! Status.Failure(new DbActorNAckException(1, "error"))
+      }
+      }
+    )
+    system.actorOf(mockedDB, "MockedDB-ACK-NAckLaoData")
   }
     
 

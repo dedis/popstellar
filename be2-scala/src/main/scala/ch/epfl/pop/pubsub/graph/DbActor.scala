@@ -3,8 +3,7 @@ package ch.epfl.pop.pubsub.graph
 import java.io.{File, IOException}
 import java.nio.charset.StandardCharsets
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
-import akka.actor.Status
+import akka.actor.{Actor, ActorLogging, ActorRef, Status}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
@@ -15,6 +14,8 @@ import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, Options, WriteBatch}
 import org.slf4j.LoggerFactory
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 object DbActor extends AskPatternConstants {
@@ -407,6 +408,7 @@ object DbActor extends AskPatternConstants {
         Try(createChannel(head._1, head._2)) match {
         case Success(DbActorAck()) => createChannelsFromList(tail)
         case Failure(e) => throw e
+        case _ => throw new DbActorNAckException(ErrorCodes.INVALID_RESOURCE.id, s"Unknown answer for CreateChannel request")
       }
     }
 

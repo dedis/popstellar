@@ -5,6 +5,7 @@ import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
+import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
@@ -56,13 +57,13 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
    * @return Askable mocked Dbactor
    */
   def mockDbWithNack(code: Int, description: String): AskableActorRef = {
-     val mockedDB = Props(new Actor(){
-          override def receive = {
-              case DbActor.Catchup(channel) =>
-                sender ! Status.Failure(new DbActorNAckException(code, description))
-          }
-       }
-     )
+    val mockedDB = Props(new Actor(){
+      override def receive = {
+        case DbActor.Catchup(channel) =>
+          sender() ! Status.Failure(new DbActorNAckException(code, description))
+      }
+    }
+    )
     system.actorOf(mockedDB)
   }
 

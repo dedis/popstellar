@@ -25,16 +25,16 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
 
   def mockDbWIthNack: AskableActorRef = {
     val mockedDB = Props(new Actor(){
-          override def receive = {
-              // You can modify the following match case to include more args, names...
-              case m : DbActor.WriteAndPropagate =>
-                system.log.info("Received {}", m)
-                system.log.info("Responding with a Nack")
+      override def receive = {
+        // You can modify the following match case to include more args, names...
+        case m : DbActor.WriteAndPropagate =>
+          system.log.info("Received {}", m)
+          system.log.info("Responding with a Nack")
 
-                sender ! Status.Failure(new DbActorNAckException(1, "error"))
-          }
-        }
-      )
+          sender() ! Status.Failure(new DbActorNAckException(1, "error"))
+      }
+    }
+    )
     system.actorOf(mockedDB, "MockedDB-NACK")
   }
 
