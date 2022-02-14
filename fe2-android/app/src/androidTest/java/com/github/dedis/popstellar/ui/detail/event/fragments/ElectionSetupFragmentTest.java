@@ -25,30 +25,24 @@ import static com.github.dedis.popstellar.pages.detail.event.election.ElectionSe
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.when;
 
 import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.filters.LargeTest;
 
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Result;
-import com.github.dedis.popstellar.model.network.method.Message;
-import com.github.dedis.popstellar.model.network.method.Publish;
-import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.repository.LAODataSource;
-import com.github.dedis.popstellar.repository.LAORepository;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.detail.LaoDetailViewModel;
 import com.github.dedis.popstellar.ui.detail.event.election.fragments.ElectionSetupFragment;
-import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
-import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -62,8 +56,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 
-import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.List;
@@ -73,7 +65,7 @@ import javax.inject.Inject;
 import dagger.hilt.android.testing.BindValue;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
-import io.reactivex.Observable;
+import io.reactivex.Completable;
 
 @LargeTest
 @HiltAndroidTest
@@ -101,12 +93,8 @@ public class ElectionSetupFragmentTest {
   @Inject MessageHandler messageHandler;
   @Inject Gson gson;
 
-  @BindValue LAORepository laoRepository;
-
-  @Mock LAODataSource.Remote remoteDataSource;
-  @Mock LAODataSource.Local localDataSource;
-
-  private static final ArgumentCaptor<Message> CAPTOR = ArgumentCaptor.forClass(Message.class);
+  @BindValue @Mock GlobalNetworkManager globalNetworkManager;
+  @Mock MessageSender messageSender;
 
   static {
     // Make sure the date is always in the future
@@ -128,26 +116,15 @@ public class ElectionSetupFragmentTest {
   private final TestRule setupRule =
       new ExternalResource() {
         @Override
-        protected void before()
-            throws IOException, GeneralSecurityException, DataHandlingException {
+        protected void before() {
           // Injection with hilt
           hiltRule.inject();
 
-          when(remoteDataSource.incrementAndGetRequestId()).thenReturn(42);
-          when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
-          Observable<GenericMessage> upstream = Observable.fromArray(new Result(0), new Result(42));
+          when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);
 
-          // Mock the remote data source to receive a response
-          when(remoteDataSource.observeMessage()).thenReturn(upstream);
-
-          laoRepository =
-              new LAORepository(
-                  remoteDataSource,
-                  localDataSource,
-                  keyManager,
-                  messageHandler,
-                  gson,
-                  new ProdSchedulerProvider());
+          when(messageSender.publish(any(), any(), any())).then(args -> Completable.complete());
+          when(messageSender.publish(any(), any())).then(args -> Completable.complete());
+          when(messageSender.subscribe(any())).then(args -> Completable.complete());
         }
       };
 
@@ -159,10 +136,9 @@ public class ElectionSetupFragmentTest {
           .around(fragmentRule);
 
   private ElectionSetup getInterceptedElectionSetupMsg() {
-    Mockito.verify(remoteDataSource, atLeast(1)).sendMessage(CAPTOR.capture());
-    Publish publish = (Publish) CAPTOR.getValue();
-    MessageGeneral electionSetupMsg = publish.getMessage();
-    return (ElectionSetup) electionSetupMsg.getData();
+    ArgumentCaptor<ElectionSetup> captor = ArgumentCaptor.forClass(ElectionSetup.class);
+    Mockito.verify(messageSender, atLeast(1)).publish(any(), any(), captor.capture());
+    return captor.getValue();
   }
 
   private void setupViewModel() {
