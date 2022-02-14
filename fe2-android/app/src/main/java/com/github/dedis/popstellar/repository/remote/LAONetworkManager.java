@@ -36,7 +36,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
-/** This class handles the root layer of the protocol */
+/** This class handles the JSON-RPC layer of the protocol */
 public class LAONetworkManager implements MessageSender {
 
   private static final String TAG = LAONetworkManager.class.getSimpleName();

@@ -8,7 +8,7 @@ import io.reactivex.Completable;
 import io.reactivex.disposables.Disposable;
 
 /**
- * Interface exposing the first layer of the protocol.
+ * Interface exposing the JSON-RPC layer of the protocol.
  *
  * <p>It can be used to send requests to the linked backend and wait for answers. {@link
  * Completable} are used as callbacks to give the result of the request.

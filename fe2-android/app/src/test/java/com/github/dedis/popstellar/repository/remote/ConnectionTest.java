@@ -18,7 +18,7 @@ import io.reactivex.subjects.BehaviorSubject;
 public class ConnectionTest {
 
   @Test
-  public void sendMessageDelegateIsCorrect() {
+  public void sendMessageDelegatesToService() {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
@@ -32,7 +32,7 @@ public class ConnectionTest {
   }
 
   @Test
-  public void observeMessageDelegateIsCorrect() {
+  public void observeMessageDelegatesToService() {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
@@ -45,7 +45,7 @@ public class ConnectionTest {
   }
 
   @Test
-  public void observeWebsocketDelegateIsCorrect() {
+  public void observeWebsocketDelegatesToService() {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
@@ -58,7 +58,7 @@ public class ConnectionTest {
   }
 
   @Test
-  public void closeIsCorrectIsCorrect() {
+  public void connectionClosesGracefully() {
     LAOService service = mock(LAOService.class);
     BehaviorSubject<Lifecycle.State> manualState =
         BehaviorSubject.createDefault(Lifecycle.State.Started.INSTANCE);
