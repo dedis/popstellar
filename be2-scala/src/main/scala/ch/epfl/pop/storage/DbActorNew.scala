@@ -16,14 +16,6 @@ case class DbActorNew(
                        private val storage: Storage = new DiskStorage()
                      ) extends Actor with ActorLogging {
 
-  /**
-   * Response for a negative db request
-   *
-   * @note [[DbActorNAck]] is used to manage the internal state of the actor,
-   * but should not be exposed (e.g. sent back)
-   */
-  private[this] case class DbActorNAck() extends DbActorMessage
-
   override def postStop(): Unit = {
     storage.close()
     super.postStop()
@@ -33,7 +25,8 @@ case class DbActorNew(
 
   /* --------------- Functions handling messages DbActor may receive --------------- */
 
-  private def write(channel: Channel, message: Message): DbActorMessage = {
+  @throws [DbActorNAckException]
+  private def write(channel: Channel, message: Message): Unit = {
     // create channel if missing. If already present => createChannel does nothing
     val _object = message.decodedData match {
       case Some(data) => data._object
@@ -41,41 +34,43 @@ case class DbActorNew(
     }
     createChannel(channel, _object)
 
-    val channelData: ChannelData = readChannelData(channel).channelData
+    val channelData: ChannelData = readChannelData(channel)
     storage.write(
       (channel.toString, channelData.addMessage(message.message_id).toJsonString),
       (s"$channel:${message.message_id}", message.toJsonString)
     )
-
-    DbActorAck()
   }
 
-  private def read(channel: Channel, messageId: Hash): DbActorMessage = ???
+  @throws [DbActorNAckException]
+  private def read(channel: Channel, messageId: Hash): Option[Message] = ???
 
-  private def readChannelData(channel: Channel): DbActorReadChannelDataAck = ???
+  @throws [DbActorNAckException]
+  private def readChannelData(channel: Channel): ChannelData = ???
 
-  private def readLaoData(channel: Channel): DbActorMessage = ???
+  @throws [DbActorNAckException]
+  private def readLaoData(channel: Channel): LaoData = ???
 
-  private def catchupChannel(channel: Channel): DbActorMessage = ???
+  @throws [DbActorNAckException]
+  private def catchupChannel(channel: Channel): List[Message] = ???
 
-  private def writeAndPropagate(channel: Channel, message: Message): DbActorMessage = {
-    val answer: DbActorMessage = write(channel, message)
+  @throws [DbActorNAckException]
+  private def writeAndPropagate(channel: Channel, message: Message): Unit = {
+    write(channel, message)
     mediatorRef ! PubSubMediator.Propagate(channel, message)
-    answer
   }
 
-  private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): DbActorAck = {
-    checkChannelExistence(channel) match {
-      case DbActorAck() => DbActorAck() // do nothing if the channel already exists
-      case _ =>
-        Try(storage.write(channel.toString -> ChannelData(objectType, List.empty).toJsonString)) match {
-          case Success(_) => DbActorAck()
-          case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
-        }
+  @throws [DbActorNAckException]
+  private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): Unit = {
+    if (!checkChannelExistence(channel)) {
+      val pair = channel.toString -> ChannelData(objectType, List.empty).toJsonString
+      Try(storage.write(pair)).recover(
+        ex => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
+      )
     }
   }
 
-  private def createChannels(list: List[(Channel, ObjectType.ObjectType)]): DbActorAck = {
+  @throws [DbActorNAckException]
+  private def createChannels(list: List[(Channel, ObjectType.ObjectType)]): Unit = {
 
     @scala.annotation.tailrec
     def filterExistingChannels(
@@ -84,9 +79,10 @@ case class DbActorNew(
                               ): List[(Channel, ObjectType.ObjectType)] = {
       list match {
         case Nil => acc
-        case head :: tail => checkChannelExistence(head._1) match {
-          case DbActorAck() => filterExistingChannels(tail, acc) // already exists in db
-          case _ => filterExistingChannels(tail, head :: acc) // does not exist in db
+        case head :: tail => if (checkChannelExistence(head._1)) {
+          filterExistingChannels(tail, acc)
+        } else {
+          filterExistingChannels(tail, head :: acc)
         }
       }
     }
@@ -96,24 +92,18 @@ case class DbActorNew(
     // creating ChannelData from the filtered input
     val mapped: List[(String, String)] = filtered.map { case (c, o) => (c.toString, ChannelData(o, List.empty).toJsonString) }
 
-    Try(storage.write(mapped : _*)) match {
-      case Success(_) => DbActorAck()
-      case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
+    Try(storage.write(mapped : _*)).recover(ex => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage))
+  }
+
+  private def checkChannelExistence(channel: Channel): Boolean = {
+    Try(storage.read(channel.toString)) match {
+      case Success(option) => option.isDefined
+      case _ => false
     }
   }
 
-  private def checkChannelExistence(channel: Channel): DbActorMessage = {
-    try {
-      storage.read(channel.toString) match {
-        case Some(_) => DbActorAck()
-        case _ => DbActorNAck()
-      }
-    } catch {
-      case _: Throwable => DbActorNAck() // TODO REFACTORING make the receive throw on DbActorNAck return (waiting for the full actor to be finished)
-    }
-  }
-
-  private def addWitnessSignature(messageId: Hash, signature: Signature): DbActorMessage = {
+  @throws [DbActorNAckException]
+  private def addWitnessSignature(messageId: Hash, signature: Signature): Unit = {
     throw DbActorNAckException(
       ErrorCodes.SERVER_ERROR.id,
       s"NOT IMPLEMENTED: database actor cannot handle AddWitnessSignature requests yet"
@@ -121,48 +111,78 @@ case class DbActorNew(
   }
 
 
-
-
+  // TODO REFACTORING TUOMAS -- the following Failure cases are incomplete! Link them with the failed future once you have finished with Awaits :)
   override def receive: Receive = LoggingReceive {
     case DbActorNew.Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
-      sender() ! write(channel, message)
+      Try(write(channel, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case Failure(_) =>
+      }
 
     case Read(channel, messageId) =>
       log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
-      sender() ! read(channel, messageId)
+      Try(read(channel, messageId)) match {
+        case Success(opt) => sender() ! DbActorReadAck(opt)
+        case Failure(_) =>
+      }
 
     case ReadChannelData(channel) =>
       log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
-      sender() ! readChannelData(channel)
+      Try(readChannelData(channel)) match {
+        case Success(channelData) => sender() ! DbActorReadChannelDataAck(channelData)
+        case Failure(_) =>
+      }
 
     case ReadLaoData(channel) =>
       log.info(s"Actor $self (db) received a ReadLaoData request")
-      sender() ! readLaoData(channel)
+      Try(readLaoData(channel)) match {
+        case Success(laoData) => sender() ! DbActorReadLaoDataAck(laoData)
+        case Failure(_) =>
+      }
 
     case Catchup(channel) =>
       log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
-      sender() ! catchupChannel(channel)
+      Try(catchupChannel(channel)) match {
+        case Success(messages) => sender() ! DbActorCatchupAck(messages)
+        case Failure(_) =>
+      }
 
     case WriteAndPropagate(channel, message) =>
       log.info(s"Actor $self (db) received a WriteAndPropagate request on channel '$channel'")
-      sender() ! writeAndPropagate(channel, message)
+      Try(writeAndPropagate(channel, message)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case Failure(_) =>
+      }
 
     case CreateChannel(channel, objectType) =>
       log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
-      sender() ! createChannel(channel, objectType)
+      Try(createChannel(channel, objectType)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case Failure(_) =>
+      }
 
     case CreateChannelsFromList(list) =>
       log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
-      sender() ! createChannels(list)
+      Try(createChannels(list)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case Failure(_) =>
+      }
 
     case ChannelExists(channel) =>
       log.info(s"Actor $self (db) received an ChannelExists request for channel '$channel'")
-      sender() ! checkChannelExistence(channel)
+      if (checkChannelExistence(channel)) {
+        sender() ! DbActorAck()
+      } else {
+        ()
+      }
 
     case AddWitnessSignature(messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
-      sender() ! addWitnessSignature(messageId, signature)
+      Try(addWitnessSignature(messageId, signature)) match {
+        case Success(_) => sender() ! DbActorAck()
+        case Failure(_) =>
+      }
 
     case m@_ =>
       log.info(s"Actor $self (db) received an unknown message")
@@ -223,7 +243,6 @@ object DbActorNew {
    *
    * @param channel the channel where the message should be published
    * @param message the message to write in db and propagate to clients
-   * @note DbActor will answer with a [[DbActorWriteAck]] if successful since the propagation cannot fail
    */
   final case class WriteAndPropagate(channel: Channel, message: Message) extends Event
 
@@ -260,12 +279,6 @@ object DbActorNew {
 
   // DbActor DbActorMessage correspond to messages the actor may emit
   sealed trait DbActorMessage
-
-  /**
-   * Response for a [[Write]] db request Receiving [[DbActorWriteAck]] works as
-   * an acknowledgement that the write request was successful
-   */
-  final case class DbActorWriteAck() extends DbActorMessage
 
   /**
    * Response for a [[Read]] db request Receiving [[DbActorReadAck]] works as
