@@ -1,10 +1,12 @@
 package ch.epfl.pop.pubsub.graph.validator.lao
 
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.lao.CreateLao
-import ch.epfl.pop.model.network.requests.lao.JsonRpcRequestCreateLao
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, MessageDecoder, PipelineError}
-import org.scalatest.{Assertion, FlatSpec, GivenWhenThen, Inside, Matchers}
+import org.scalatest._
 import util.examples.lao.CreateLaoExamples
 
 
@@ -22,11 +24,14 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
       Given("a correct graph message of JsonRpcRequest")
       And("a createLao message")
       When("the request is parsed")
-      val parsed = MessageDecoder.parseData(gm)
+      val parsed = MessageDecoder.parseData(gm, MessageRegistry.apply())
 
-      Then("it should be of type JsonRpcRequestCreateLao")
+      Then("it should be of type JsonRpcRequest")
       inside(parsed) {
-        case Left(createJsonRpc: JsonRpcRequestCreateLao) =>
+        case Left(createJsonRpc: JsonRpcRequest) =>
+
+          And("it should be of type create lao")
+          createJsonRpc.getDecodedDataHeader should equal ((ObjectType.LAO, ActionType.CREATE))
 
           And("the message params of the JsonRpcRequestCreateLao should not be empty")
           createJsonRpc.getParamsMessage should be(defined)
@@ -67,7 +72,7 @@ class CreateLaoDecoderSuite extends FlatSpec with Matchers with Inside with Give
       Given("a graph message of JsonRpcRequest with bad message data format")
       //gm
       When("the request is parsed")
-      val parsed = MessageDecoder.parseData(gm)
+      val parsed = MessageDecoder.parseData(gm, MessageRegistry.apply())
 
       Then("it should fail with the correct type Right[PipelineError]")
       inside(parsed) {
