@@ -13,10 +13,8 @@ trait Storage {
   /**
    * Adds a single/multiple key-value pairs in the storage
    *
-   * @param key the key value
-   * @param value the value associated with the key
+   * @param keyValues collection of pairs of key and its associated values
    */
-  def write(key: String, value: String): Unit
   def write(keyValues: (String, String)*): Unit
 
   /**

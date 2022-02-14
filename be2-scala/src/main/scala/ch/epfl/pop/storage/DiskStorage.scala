@@ -3,9 +3,13 @@ package ch.epfl.pop.storage
 import java.io.{File, IOException}
 import java.nio.charset.StandardCharsets
 
+import ch.epfl.pop.model.objects.DbActorNAckException
+import ch.epfl.pop.pubsub.graph.ErrorCodes
 import org.iq80.leveldb.impl.Iq80DBFactory.factory
 import org.iq80.leveldb.{DB, Options, WriteBatch}
 import org.slf4j.{Logger, LoggerFactory}
+
+import scala.util.{Failure, Success, Try}
 
 class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) extends Storage {
 
@@ -28,47 +32,51 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
   def close(): Unit = db.close()
 
 
-  @throws [org.iq80.leveldb.DBException]
+  @throws [DbActorNAckException]
   def read(key: String): Option[String] = {
-    db.get(key.getBytes(StandardCharsets.UTF_8)) match {
-      case null => None
-      case bytes => Some(new String(bytes, StandardCharsets.UTF_8))
+    Try(db.get(key.getBytes(StandardCharsets.UTF_8))) match {
+      case Success(null) => None
+      case Success(bytes) => Some(new String(bytes, StandardCharsets.UTF_8))
+      case Failure(ex) => throw DbActorNAckException(
+        ErrorCodes.SERVER_ERROR.id,
+        s"could not read key '$key' from DiskStorage : ${ex.getMessage}"
+      )
     }
   }
 
-  @throws [org.iq80.leveldb.DBException]
-  def write(key: String, value: String): Unit = {
-    db.put(key.getBytes(StandardCharsets.UTF_8), value.getBytes(StandardCharsets.UTF_8))
-  }
-
-  @throws [org.iq80.leveldb.DBException]
-  def write(keyValues: (String, String)*): Unit = keyValues.size match {
-    // return early if nothing is being written
-    case 0 =>
-
-    // write a single (key -> value) pair in the db
-    case 1 => write(keyValues.head._1, keyValues.head._2)
-
+  @throws [DbActorNAckException]
+  def write(keyValues: (String, String)*): Unit = {
     // use a batch to write multiple (key -> value) pairs in the db
-    case _ =>
-      val batch: WriteBatch = db.createWriteBatch()
+    val batch: WriteBatch = db.createWriteBatch()
 
-      try {
-        for (kv <- keyValues) {
-          batch.put(kv._1.getBytes(StandardCharsets.UTF_8), kv._2.getBytes(StandardCharsets.UTF_8))
-        }
-
-        db.write(batch)
-
-      } finally {
-        batch.close()
+    try {
+      for (kv <- keyValues) {
+        batch.put(kv._1.getBytes(StandardCharsets.UTF_8), kv._2.getBytes(StandardCharsets.UTF_8))
       }
+
+      db.write(batch)
+
+    } catch {
+      case ex: Throwable => throw DbActorNAckException(
+        ErrorCodes.SERVER_ERROR.id,
+        s"could not write ${keyValues.size} elements to DiskStorage : ${ex.getMessage}"
+      )
+    } finally {
+      batch.close()
+    }
   }
 
-  @throws [org.iq80.leveldb.DBException]
+  @throws [DbActorNAckException]
   def delete(key: String): Unit = {
-    db.delete(key.getBytes(StandardCharsets.UTF_8))
+    Try(db.delete(key.getBytes(StandardCharsets.UTF_8))) match {
+      case Success(_) => // returns unit
+      case Failure(ex) => throw DbActorNAckException(
+        ErrorCodes.SERVER_ERROR.id,
+        s"could not delete key '$key' from DiskStorage : ${ex.getMessage}"
+      )
+    }
   }
+
 }
 
 object DiskStorage {

@@ -68,7 +68,7 @@ case class DbActorNew(
     checkChannelExistence(channel) match {
       case DbActorAck() => DbActorAck() // do nothing if the channel already exists
       case _ =>
-        Try(storage.write(channel.toString, ChannelData(objectType, List.empty).toJsonString)) match {
+        Try(storage.write(channel.toString -> ChannelData(objectType, List.empty).toJsonString)) match {
           case Success(_) => DbActorAck()
           case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
         }

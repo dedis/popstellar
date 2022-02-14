@@ -25,8 +25,6 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
 
     override def read(key: String): Option[String] = elements.get(key)
 
-    override def write(key: String, value: String): Unit = elements += (key -> value)
-
     // Note: this write does NOT write as batch
     override def write(keyValues: (String, String)*): Unit = {
       for (kv <- keyValues) {
