@@ -130,7 +130,7 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
+          laoRepository.getLaoByChannel().put(LAO_CHANNEL, new LAOState(LAO));
           laoRepository.updateNodes(LAO_CHANNEL);
 
           when(globalNetworkManager.getMessageSender()).thenReturn(messageSender);

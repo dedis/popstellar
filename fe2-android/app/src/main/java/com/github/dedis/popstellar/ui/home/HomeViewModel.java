@@ -150,7 +150,7 @@ public class HomeViewModel extends AndroidViewModel
 
                   // Create the new LAO and add it to the LAORepository LAO lists
                   Lao lao = new Lao(data.lao);
-                  laoRepository.getLaoById().put(channel, new LAOState(lao));
+                  laoRepository.getLaoByChannel().put(channel, new LAOState(lao));
                   laoRepository.setAllLaoSubject();
 
                   Log.d(TAG, "got success result for subscribe to lao");

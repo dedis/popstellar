@@ -197,7 +197,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
     String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = laoRepository.getLaoById().get(laoChannel);
+    LAOState laoState = laoRepository.getLaoByChannel().get(laoChannel);
     if (laoState == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -239,7 +239,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public void deleteChirp(MessageID chirpId, long timestamp) {
     Log.d(TAG, "Deleting the chirp with id: " + chirpId);
     String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = laoRepository.getLaoById().get(laoChannel);
+    LAOState laoState = laoRepository.getLaoByChannel().get(laoChannel);
     if (laoState == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
@@ -299,7 +299,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
     String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = laoRepository.getLaoById().get(laoChannel);
+    LAOState laoState = laoRepository.getLaoByChannel().get(laoChannel);
     if (laoState == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return false;

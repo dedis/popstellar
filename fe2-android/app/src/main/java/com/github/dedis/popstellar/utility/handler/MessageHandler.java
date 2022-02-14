@@ -83,7 +83,7 @@ public final class MessageHandler {
    */
   private void notifyLaoUpdate(LAORepository laoRepository, Data data, String channel) {
     if (!(data instanceof WitnessMessageSignature) && laoRepository.isLaoChannel(channel)) {
-      LAOState laoState = laoRepository.getLaoById().get(channel);
+      LAOState laoState = laoRepository.getLaoByChannel().get(channel);
       laoState.publish(); // Trigger an onNext
       if (data instanceof StateLao || data instanceof CreateLao) {
         laoRepository.setAllLaoSubject();

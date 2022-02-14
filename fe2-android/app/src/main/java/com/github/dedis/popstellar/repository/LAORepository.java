@@ -27,7 +27,7 @@ public class LAORepository {
   private static final String ROOT = "/root/";
 
   // State for LAO
-  private final Map<String, LAOState> laoById;
+  private final Map<String, LAOState> laoByChannel;
 
   // State for Messages
   private final Map<MessageID, MessageGeneral> messageById;
@@ -40,7 +40,7 @@ public class LAORepository {
 
   @Inject
   public LAORepository() {
-    laoById = new HashMap<>();
+    laoByChannel = new HashMap<>();
     messageById = new HashMap<>();
     allLaoSubject = BehaviorSubject.create();
     channelToNodesSubject = new HashMap<>();
@@ -60,7 +60,7 @@ public class LAORepository {
   public void setAllLaoSubject() {
     Log.d(TAG, "posted allLaos to allLaoSubject");
     allLaoSubject.onNext(
-        laoById.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
+        laoByChannel.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
   }
 
   /**
@@ -93,7 +93,7 @@ public class LAORepository {
     Log.d(TAG, "querying lao for channel " + channel);
 
     String[] split = channel.split("/");
-    return laoById.get(ROOT + split[2]).getLao();
+    return laoByChannel.get(ROOT + split[2]).getLao();
   }
 
   public Observable<List<Lao>> getAllLaos() {
@@ -101,12 +101,12 @@ public class LAORepository {
   }
 
   public Observable<Lao> getLaoObservable(String channel) {
-    Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
-    return laoById.get(channel).getObservable();
+    Log.d(TAG, "LaoIds we have are: " + laoByChannel.keySet());
+    return laoByChannel.get(channel).getObservable();
   }
 
-  public Map<String, LAOState> getLaoById() {
-    return laoById;
+  public Map<String, LAOState> getLaoByChannel() {
+    return laoByChannel;
   }
 
   /**
