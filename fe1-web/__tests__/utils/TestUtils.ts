@@ -28,3 +28,5 @@ export const mockLaoState: LaoState = {
   witnesses: [],
 };
 export const mockLao = Lao.fromState(mockLaoState);
+
+export const defaultMessageDataFields = ['object', 'action'];
