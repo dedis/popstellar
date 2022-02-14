@@ -72,9 +72,12 @@ const NAME = 'MyElection';
 const VERSION = 'version';
 
 beforeAll(() => {
-  initialiseData();
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
+});
+
+beforeEach(() => {
+  initialiseData();
 });
 
 describe('Election object', () => {

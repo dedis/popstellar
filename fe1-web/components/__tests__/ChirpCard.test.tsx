@@ -59,9 +59,12 @@ jest.mock('react-redux', () => ({
 jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
 
 beforeAll(() => {
-  initialiseData();
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
+});
+
+beforeEach(() => {
+  initialiseData();
 });
 
 describe('ChirpCard', () => {

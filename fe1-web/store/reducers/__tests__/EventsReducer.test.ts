@@ -138,7 +138,7 @@ const initialiseData = () => {
   };
 };
 
-beforeAll(() => {
+beforeEach(() => {
   initialiseData();
 });
 

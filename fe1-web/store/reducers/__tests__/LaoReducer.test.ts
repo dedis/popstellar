@@ -119,7 +119,7 @@ const initialiseData = () => {
   laoRecord = { [mockLaoId]: mockLaoState };
 };
 
-beforeAll(() => {
+beforeEach(() => {
   initialiseData();
 });
 
