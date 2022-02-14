@@ -11,9 +11,34 @@ import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
 import {
-  buildMessageData, encodeMessageData, MessageData,
+  MessageData, MessageRegistry, SignatureType,
 } from './data';
-import { messagePropertiesMap } from './data/MessageProperties';
+
+let messageRegistry: MessageRegistry;
+
+/**
+ * Dependency injection of a MessageRegistry to know how messages need to be signed and how they
+ * are built.
+ *
+ * @param registry - The MessageRegistry to be injected
+ */
+export function configureMessages(registry: MessageRegistry) {
+  messageRegistry = registry;
+}
+
+/**
+ * Encodes a MessageData into a Base64Url.
+ *
+ * @param msgData - The MessageData to be encoded
+ * @returns Base64UrlData - The encoded message
+ *
+ * @remarks
+ * This is exported for testing purposes.
+ */
+export function encodeMessageData(msgData: MessageData): Base64UrlData {
+  const data = JSON.stringify(msgData);
+  return Base64UrlData.encode(data);
+}
 
 /**
  * MessageState is the interface that should match JSON.stringify(Message)
@@ -97,7 +122,7 @@ export class Message {
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    this.#messageData = buildMessageData(dataObj as MessageData);
+    this.#messageData = messageRegistry.buildMessageData(dataObj as MessageData);
   }
 
   public static fromJson(obj: any): Message {
@@ -130,14 +155,11 @@ export class Message {
     let privateKey = KeyPairStore.getPrivateKey();
     let signature: Signature;
 
-    // Get the properties of the type of message we want to sign
-    const messagesProperties = messagePropertiesMap.get(data.object)?.get(data.action);
-    if (messagesProperties === undefined) {
-      throw new Error(`Message signature for object ${data.object} and action ${data.action} is unsupported.`);
-    }
+    // Get the signature type of the type of message we want to sign
+    const signatureType = messageRegistry.getSignatureType(data);
 
     // If the message is signed with the pop token, get it from the store and sign the message
-    if (messagesProperties.isPopTokenSigned) {
+    if (signatureType === SignatureType.POP_TOKEN) {
       const token = await getCurrentPopTokenFromStore();
       if (token) {
         publicKey = token.publicKey;
@@ -158,7 +180,7 @@ export class Message {
     }
     signature = privateKey.sign(encodedDataJson);
 
-    // Otherwise, simply sign with the public key
+    // Otherwise, simply sign with the general key pair
     return new Message({
       data: encodedDataJson,
       sender: publicKey,

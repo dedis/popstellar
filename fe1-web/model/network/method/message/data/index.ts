@@ -1,4 +1,3 @@
-export * from './Builder';
 export * from './MessageData';
 export * from './Checker';
 export * from './witness';

@@ -1,14 +1,11 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.NotUsed
 import akka.pattern.AskableActorRef
-import akka.stream.scaladsl.Flow
+import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, PublicKey, LaoData}
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
-import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.DbActor._
 import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
@@ -23,7 +20,12 @@ import akka.pattern.AskableActorRef
  * RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
  */
 object RollCallHandler extends MessageHandler {
-  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = new RollCallHandler(super.dbActor).handler
+  final lazy val handlerInstance = new RollCallHandler(super.dbActor)
+
+  def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCreateRollCall(rpcMessage)
+  def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenRollCall(rpcMessage)
+  def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleReopenRollCall(rpcMessage)
+  def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCloseRollCall(rpcMessage)
 }
 
 /**
@@ -37,25 +39,6 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
    * Overrides default DbActor with provided parameter
    */
   override final val dbActor: AskableActorRef = dbRef
-
-  override val handler: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestCreateRollCall) => handleCreateRollCall(message)
-      case message@(_: JsonRpcRequestOpenRollCall) => handleOpenRollCall(message)
-      case message@(_: JsonRpcRequestReopenRollCall) => handleReopenRollCall(message)
-      case message@(_: JsonRpcRequestCloseRollCall) => handleCloseRollCall(message)
-      case _ => Right(PipelineError(
-        ErrorCodes.SERVER_ERROR.id,
-        "Internal server fault: RollCallHandler was given a message it could not recognize",
-        jsonRpcMessage match {
-          case r: JsonRpcRequest => r.id
-          case r: JsonRpcResponse => r.id
-          case _ => None
-        }
-      ))
-    }
-    case graphMessage@_ => graphMessage
-  }
 
   private val unknownAnswer: String = "Database actor returned an unknown answer"
 
