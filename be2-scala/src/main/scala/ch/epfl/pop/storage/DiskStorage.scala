@@ -35,7 +35,7 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
   @throws [DbActorNAckException]
   def read(key: String): Option[String] = {
     Try(db.get(key.getBytes(StandardCharsets.UTF_8))) match {
-      case Success(null) => None
+      case Success(null) => None // if the key does not exist in DiskStorage
       case Success(bytes) => Some(new String(bytes, StandardCharsets.UTF_8))
       case Failure(ex) => throw DbActorNAckException(
         ErrorCodes.SERVER_ERROR.id,
@@ -68,13 +68,14 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
 
   @throws [DbActorNAckException]
   def delete(key: String): Unit = {
-    Try(db.delete(key.getBytes(StandardCharsets.UTF_8))) match {
-      case Success(_) => // returns unit
-      case Failure(ex) => throw DbActorNAckException(
-        ErrorCodes.SERVER_ERROR.id,
-        s"could not delete key '$key' from DiskStorage : ${ex.getMessage}"
-      )
-    }
+    // delete returns Unit if:
+    //  - the key was present in the DiskStorage and deleted, or
+    //  - the key was not in the DiskStorage
+    // An exception is thrown only in the case of a database error
+    Try(db.delete(key.getBytes(StandardCharsets.UTF_8))).recover(ex => throw DbActorNAckException(
+      ErrorCodes.SERVER_ERROR.id,
+      s"could not delete key '$key' from DiskStorage : ${ex.getMessage}"
+    ))
   }
 
 }
