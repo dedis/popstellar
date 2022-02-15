@@ -15,19 +15,22 @@ import { navigationRef } from 'navigation/RootNavigation';
 
 import { configureIngestion } from 'ingestion';
 import { MessageRegistry } from 'model/network/method/message/data';
+import { configureMessages } from 'model/network/method/message';
 
 /*
 * The starting point of the app.
 *
 * It opens the navigation component in a safeAreaProvider to be able use
 * SafeAreaView in order to resolve issue with status bar.
-* It initializes the message registry and configures the ingestion.
+* It initializes the message registry, configures the ingestion and message signatures.
 *
 * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
 */
 export default function App() {
   const messageRegistry = new MessageRegistry();
   configureIngestion(messageRegistry);
+  configureMessages(messageRegistry);
+  messageRegistry.verifyEntries();
 
   useReduxDevToolsExtension(navigationRef);
 

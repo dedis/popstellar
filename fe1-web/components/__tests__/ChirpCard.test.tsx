@@ -18,7 +18,7 @@ let deletedChirp: Chirp;
 let sender: PublicKey;
 let ID: Hash;
 
-const initialiseData = () => {
+const initializeData = () => {
   const TIMESTAMP = 1609455600; // 31 December 2020
   sender = new PublicKey('Douglas Adams');
   ID = new Hash('1234');
@@ -59,9 +59,12 @@ jest.mock('react-redux', () => ({
 jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
 
 beforeAll(() => {
-  initialiseData();
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
+});
+
+beforeEach(() => {
+  initializeData();
 });
 
 describe('ChirpCard', () => {

@@ -44,7 +44,7 @@ let laoUpdated: LaoState;
 let rollCallId: Hash;
 let mockLao2IdHash: Hash;
 
-const initialiseData = () => {
+const initializeData = () => {
   emptyState = {
     byId: {},
     allIds: [],
@@ -119,8 +119,8 @@ const initialiseData = () => {
   laoRecord = { [mockLaoId]: mockLaoState };
 };
 
-beforeAll(() => {
-  initialiseData();
+beforeEach(() => {
+  initializeData();
 });
 
 describe('LaoReducer', () => {

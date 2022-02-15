@@ -17,7 +17,7 @@ let electionState: ElectionState;
 let QUESTIONS: Question[];
 let REGISTERED_VOTES: RegisteredVote[];
 
-const initialiseData = () => {
+const initializeData = () => {
   question1 = {
     id: 'q1',
     question: 'Question1',
@@ -72,9 +72,12 @@ const NAME = 'MyElection';
 const VERSION = 'version';
 
 beforeAll(() => {
-  initialiseData();
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
+});
+
+beforeEach(() => {
+  initializeData();
 });
 
 describe('Election object', () => {

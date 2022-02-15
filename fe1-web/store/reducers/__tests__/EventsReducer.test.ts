@@ -31,7 +31,7 @@ let rollCallCreated: RollCallState;
 let rollCallOpened: RollCallState;
 let meeting: MeetingState;
 
-const initialiseData = () => {
+const initializeData = () => {
   emptyLao = {
     byLaoId: {},
   };
@@ -138,8 +138,8 @@ const initialiseData = () => {
   };
 };
 
-beforeAll(() => {
-  initialiseData();
+beforeEach(() => {
+  initializeData();
 });
 
 describe('EventsReducer', () => {

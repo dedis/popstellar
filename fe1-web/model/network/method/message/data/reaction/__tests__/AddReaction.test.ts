@@ -3,8 +3,8 @@ import '__tests__/utils/matchers';
 
 import { Base64UrlData, Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
+import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { AddReaction } from '../index';
-import { ActionType, ObjectType } from '../../MessageData';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const mockMessageId = Base64UrlData.encode('message_id');

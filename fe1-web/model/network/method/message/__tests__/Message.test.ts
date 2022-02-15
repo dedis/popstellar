@@ -12,14 +12,17 @@ import { KeyPairStore } from 'store';
 import {
   mockLao, mockLaoId, mockPopToken, mockPrivateKey, mockPublicKey,
 } from '__tests__/utils/TestUtils';
-import { AddChirp, encodeMessageData, EndElection } from '../data';
-import { Message } from '../Message';
+import { AddChirp, EndElection, MessageRegistry } from '../data';
+import { configureMessages, encodeMessageData, Message } from '../Message';
 
 jest.mock('model/objects/wallet/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
 }));
 
 const pastKeyPairStoreState = KeyPairStore.get();
+
+const messageRegistry = new MessageRegistry();
+configureMessages(messageRegistry);
 
 beforeAll(() => {
   KeyPairStore.store(KeyPair.fromState({
