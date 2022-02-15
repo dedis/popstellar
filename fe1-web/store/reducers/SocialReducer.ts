@@ -1,3 +1,8 @@
+/**
+ * This error is disabled since reducers use the createSlice function, which requires the user to
+ * param-reassign. Please do not disable other errors.
+ */
+/* eslint-disable no-param-reassign */
 import {
   Chirp, ChirpState, Hash, PublicKey, Timestamp,
 } from 'model/objects';
