@@ -1,1 +1,1 @@
-export * from 'features/social/network/messages/reaction/AddReaction';
+export * from './AddReaction';

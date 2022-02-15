@@ -1,4 +1,8 @@
 import {
+  AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp,
+} from 'features/social/network/messages/chirp';
+import { AddReaction } from 'features/social/network/messages/reaction';
+import {
   ActionType, MessageData, ObjectType, SignatureType,
 } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
@@ -11,10 +15,6 @@ import {
   CastVote, ElectionResult, EndElection, SetupElection,
 } from './election';
 import { WitnessMessage } from './witness';
-import {
-  AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp,
-} from '../../../../../features/social/network/messages/chirp';
-import { AddReaction } from '../../../../../features/social/network/messages/reaction';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
 
