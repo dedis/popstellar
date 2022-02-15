@@ -18,7 +18,7 @@ let deletedChirp: Chirp;
 let sender: PublicKey;
 let ID: Hash;
 
-const initialiseData = () => {
+const initializeData = () => {
   const TIMESTAMP = 1609455600; // 31 December 2020
   sender = new PublicKey('Douglas Adams');
   ID = new Hash('1234');
@@ -64,7 +64,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  initialiseData();
+  initializeData();
 });
 
 describe('ChirpCard', () => {

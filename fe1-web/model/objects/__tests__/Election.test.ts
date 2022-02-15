@@ -17,7 +17,7 @@ let electionState: ElectionState;
 let QUESTIONS: Question[];
 let REGISTERED_VOTES: RegisteredVote[];
 
-const initialiseData = () => {
+const initializeData = () => {
   question1 = {
     id: 'q1',
     question: 'Question1',
@@ -77,7 +77,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  initialiseData();
+  initializeData();
 });
 
 describe('Election object', () => {
