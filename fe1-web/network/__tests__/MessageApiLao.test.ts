@@ -8,8 +8,11 @@ import { Hash } from 'model/objects';
 import {
   defaultMessageDataFields, mockLao, mockLaoId, mockLaoName,
 } from '__tests__/utils/TestUtils';
-import { publishMock } from '__mocks__/publishMock';
+import { publish as mockPublish } from 'network/JsonRpcApi';
 import * as msApi from '../MessageApi';
+
+jest.mock('network/JsonRpcApi');
+const publishMock = mockPublish as jest.Mock;
 
 let checkDataCreateLao: Function;
 let checkDataUpdateLao: Function;

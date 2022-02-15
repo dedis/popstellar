@@ -9,8 +9,11 @@ import {
 import { Hash, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
-import { publishMock } from '__mocks__/publishMock';
+import { publish as mockPublish } from 'network/JsonRpcApi';
 import * as msApi from '../MessageApi';
+
+jest.mock('network/JsonRpcApi');
+const publishMock = mockPublish as jest.Mock;
 
 const mockEventName = 'myMeeting';
 const mockLocation = 'location';

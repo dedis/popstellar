@@ -9,9 +9,12 @@ import {
 } from 'model/network/method/message/data';
 import { Hash, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
-import { publishMock } from '__mocks__/publishMock';
+import { publish as mockPublish } from 'network/JsonRpcApi';
 import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import * as msApi from '../MessageApi';
+
+jest.mock('network/JsonRpcApi');
+const publishMock = mockPublish as jest.Mock;
 
 const mockText = 'text';
 

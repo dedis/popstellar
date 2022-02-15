@@ -8,9 +8,12 @@ import {
 } from 'model/network/method/message/data';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { Base64UrlData } from 'model/objects';
-import { publishMock } from '__mocks__/publishMock';
+import { publish as mockPublish } from 'network/JsonRpcApi';
 import { OpenedLaoStore } from 'store';
 import * as msApi from '../MessageApi';
+
+jest.mock('network/JsonRpcApi');
+const publishMock = mockPublish as jest.Mock;
 
 const checkDataWitnessMessage = (obj: MessageData) => {
   expect(obj.object).toBe(ObjectType.MESSAGE);
