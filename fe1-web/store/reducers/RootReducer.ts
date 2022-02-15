@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { persistCombineReducers } from 'redux-persist';
 
+import socialReducer from 'features/social/reducer/SocialReducer';
 import laoReducer from './LaoReducer';
 import keyPairReducer from './KeyPairReducer';
 import eventsReducer from './EventsReducer';
 import messageReducer from './MessageReducer';
 import walletReducer from './WalletReducer';
-import socialReducer from 'features/social/reducer/SocialReducer';
 
 import { wrapWithClearStorageReducer } from './ClearStorageReducer';
 
