@@ -13,6 +13,8 @@ import {
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
 
+jest.mock('features/social/network/SocialMessageApi.ts');
+
 let chirp: Chirp;
 let chirp1: Chirp;
 let deletedChirp: Chirp;

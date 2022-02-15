@@ -12,7 +12,8 @@ import { KeyPairStore } from 'store';
 import {
   mockLao, mockLaoId, mockPopToken, mockPrivateKey, mockPublicKey,
 } from '__tests__/utils/TestUtils';
-import { AddChirp, EndElection, MessageRegistry } from '../data';
+import { AddChirp } from 'features/social/network/messages/chirp';
+import { EndElection, MessageRegistry } from '../data';
 import { configureMessages, encodeMessageData, Message } from '../Message';
 
 jest.mock('model/objects/wallet/Token.ts', () => ({
