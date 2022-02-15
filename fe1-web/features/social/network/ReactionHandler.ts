@@ -2,13 +2,10 @@ import { ExtendedMessage } from 'model/network/method/message';
 import {
   addReaction, dispatch, getStore, makeCurrentLao,
 } from 'store';
-import {
-  ActionType,
-  AddReaction,
-  MessageRegistry,
-  ObjectType,
-} from 'model/network/method/message/data';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+
 import { Reaction } from '../objects';
+import { AddReaction } from './messages/reaction';
 
 /**
  * Handler for social media chirp's reactions

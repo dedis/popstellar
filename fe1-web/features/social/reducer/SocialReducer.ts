@@ -3,11 +3,12 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ReactionState } from 'features/social/objects/Reaction';
+
+import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { getLaosState } from 'store/reducers/LaoReducer';
-import { Chirp, ChirpState } from '../objects';
+
+import { Chirp, ChirpState, ReactionState } from '../objects';
 
 /**
  * Stores all the Social Media related content

@@ -5,16 +5,18 @@ import {
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
-import { PublicKey } from 'model/objects';
-import { requestDeleteChirp, requestAddReaction } from 'network';
-import STRINGS from 'res/strings';
-import { gray } from 'styles/colors';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+
+import { PublicKey } from 'model/objects';
+import STRINGS from 'res/strings';
+import { gray } from 'styles/colors';
 import { makeReactionsList } from 'store';
 import ProfileIcon from 'components/ProfileIcon';
 import ConfirmModal from 'components/ConfirmModal';
+
 import { Chirp } from '../objects';
+import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
 
 /**
  * Component to display a chirp

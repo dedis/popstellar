@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Text, View } from 'react-native';
+
 import STRINGS from 'res/strings';
 
 const SocialFollows = () => (

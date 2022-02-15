@@ -1,5 +1,9 @@
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 
+/**
+ * Object to represent a Reaction.
+ */
+
 export interface ReactionState {
   id: string;
   sender: string;

@@ -1,8 +1,10 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+
 import STRINGS from 'res/strings';
 import { PublicKey } from 'model/objects';
-import TextInputChirp from 'features/social/components/TextInputChirp';
+
+import TextInputChirp from '../TextInputChirp';
 
 let onChangeText: Function;
 let onPress: Function;

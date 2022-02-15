@@ -1,11 +1,13 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+
 import STRINGS from 'res/strings';
 import { Channel, Hash, PublicKey } from 'model/objects';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import keyPair from 'test_data/keypair.json';
 import { mockNavigate } from '__mocks__/useNavigationMock';
-import UserListItem from 'features/social/components/UserListItem';
+
+import UserListItem from '../UserListItem';
 
 const publicKey = new PublicKey('PublicKey');
 const mockPublicKey = new PublicKey(keyPair.publicKey);

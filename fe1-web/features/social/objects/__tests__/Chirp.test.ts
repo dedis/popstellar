@@ -1,11 +1,11 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
-import {
-  Chirp, ChirpState,
-} from 'features/social/objects/Chirp';
 import { Timestamp } from 'model/objects/Timestamp';
 import { Hash } from 'model/objects/Hash';
 import { PublicKey } from 'model/objects/PublicKey';
+
+import { Chirp, ChirpState } from '../Chirp';
 
 const TIMESTAMP = new Timestamp(12345);
 const HASH_ID = new Hash('id');

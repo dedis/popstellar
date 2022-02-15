@@ -2,14 +2,16 @@ import * as React from 'react';
 import {
   FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle,
 } from 'react-native';
+import { useSelector } from 'react-redux';
+
 import STRINGS from 'res/strings';
 import { makeCurrentLao, makeLastRollCallAttendeesList } from 'store';
-import { useSelector } from 'react-redux';
 import { PublicKey } from 'model/objects';
 import TextBlock from 'components/TextBlock';
-import UserListItem from 'features/social/components/UserListItem';
 import { gray } from 'styles/colors';
 import PropTypes from 'prop-types';
+
+import UserListItem from '../components/UserListItem';
 
 /**
  * Component that will be used to allow users to search for other users or topics.

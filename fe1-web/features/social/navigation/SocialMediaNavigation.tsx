@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
 import STRINGS from 'res/strings';
 import { gray, popBlue } from 'styles/colors';
 import { useEffect, useState } from 'react';
@@ -8,10 +9,11 @@ import { PublicKey, RollCall } from 'model/objects';
 import { generateToken } from 'model/objects/wallet';
 import { makeCurrentLao, makeEventGetter } from 'store';
 import { useSelector } from 'react-redux';
-import SocialProfile from 'features/social/screens/SocialProfile';
-import SocialFollows from 'features/social/screens/SocialFollows';
-import SocialHome from 'features/social/screens/SocialHome';
-import SocialSearchNavigation from 'features/social/navigation/SocialSearchNavigation';
+
+import SocialProfile from '../screens/SocialProfile';
+import SocialFollows from '../screens/SocialFollows';
+import SocialHome from '../screens/SocialHome';
+import SocialSearchNavigation from './SocialSearchNavigation';
 
 /**
  * This class manages the social media navigation and creates the corresponding navigation bar.

@@ -1,9 +1,11 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
-import { Reaction, ReactionState } from 'features/social/objects/Reaction';
 import { Timestamp } from 'model/objects/Timestamp';
 import { PublicKey } from 'model/objects/PublicKey';
 import { Hash } from 'model/objects/Hash';
+
+import { Reaction, ReactionState } from '../Reaction';
 
 const TIMESTAMP = new Timestamp(12345);
 const PK = new PublicKey('publicKey');

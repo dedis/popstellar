@@ -1,16 +1,17 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import {
-  Hash, PublicKey, Timestamp, Chirp,
-} from 'model/objects';
-import {
-  requestAddReaction as mockRequestAddReaction,
-  requestDeleteChirp as mockRequestDeleteChirp,
-} from 'network/MessageApi';
+
+import { Hash, PublicKey, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import STRINGS from 'res/strings';
 import { mockLao, mockLaoState } from '__tests__/utils/TestUtils';
-import ChirpCard from 'features/social/components/ChirpCard';
+
+import {
+  requestAddReaction as mockRequestAddReaction,
+  requestDeleteChirp as mockRequestDeleteChirp,
+} from '../../network/SocialMessageApi';
+import { Chirp } from '../../objects';
+import ChirpCard from '../ChirpCard';
 
 let chirp: Chirp;
 let chirp1: Chirp;

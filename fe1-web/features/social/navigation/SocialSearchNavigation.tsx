@@ -1,10 +1,12 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+
 import STRINGS from 'res/strings';
 import { PublicKey } from 'model/objects';
 import PropTypes from 'prop-types';
-import SocialSearch from 'features/social/screens/SocialSearch';
-import SocialUserProfile from 'features/social/screens/SocialUserProfile';
+
+import SocialSearch from '../screens/SocialSearch';
+import SocialUserProfile from '../screens/SocialUserProfile';
 
 /**
  * Defines the social media search navigation. It goes from the list of attendees to the profile

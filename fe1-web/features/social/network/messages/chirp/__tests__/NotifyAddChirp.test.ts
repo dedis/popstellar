@@ -1,10 +1,11 @@
 import 'jest-extended';
-import '__tests__/utils/matchers';
 
+import '__tests__/utils/matchers';
 import { Base64UrlData, Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { NotifyAddChirp } from 'features/social/network/messages/chirp/index';
+
+import { NotifyAddChirp } from '../NotifyAddChirp';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CHANNEL = '/root/laoID/social/senderPublicKey';

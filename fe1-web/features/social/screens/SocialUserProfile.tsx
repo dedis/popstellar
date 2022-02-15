@@ -2,15 +2,17 @@ import * as React from 'react';
 import {
   FlatList, ListRenderItemInfo, Text, View,
 } from 'react-native';
-import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
-import ChirpCard from 'features/social/components/ChirpCard';
+
 import ProfileIcon from 'components/ProfileIcon';
 import TextBlock from 'components/TextBlock';
 import BackButton from 'components/BackButton';
-import socialMediaProfileStyles from 'styles/stylesheets/socialMediaProfileStyles';
 import STRINGS from 'res/strings';
+
+import ChirpCard from '../components/ChirpCard';
+import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 import { Chirp, ChirpState } from '../objects';
+import { makeChirpsListOfUser } from '../reducer/SocialReducer';
 
 /**
  * UI for the profile of a user.

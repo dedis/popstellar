@@ -1,15 +1,11 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  ActionType,
-  AddChirp,
-  DeleteChirp,
-  MessageRegistry,
-  ObjectType,
-} from 'model/network/method/message/data';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import {
   addChirp, deleteChirp, dispatch, getStore, makeCurrentLao,
 } from 'store';
+
 import { Chirp } from '../objects';
+import { AddChirp, DeleteChirp } from './messages/chirp';
 
 /**
  * Handler for social media chirp

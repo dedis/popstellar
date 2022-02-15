@@ -1,15 +1,12 @@
 import {
-  EventTags, getReactionChannel, Hash, Lao, PublicKey, Timestamp,
+  EventTags, Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import {
-  AddChirp,
-  AddReaction,
   CastVote,
   CloseRollCall,
   CreateLao,
   CreateMeeting,
   CreateRollCall,
-  DeleteChirp,
   EndElection,
   OpenRollCall,
   ReopenRollCall,
@@ -19,7 +16,7 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import {
-  Channel, channelFromIds, ROOT_CHANNEL, getUserSocialChannel,
+  Channel, channelFromIds, ROOT_CHANNEL,
 } from 'model/objects/Channel';
 import {
   OpenedLaoStore, KeyPairStore,
@@ -288,66 +285,4 @@ export function terminateElection(
 
   const elecCh = channelFromIds(currentLao.id, electionId);
   return publish(elecCh, message);
-}
-
-/**
- * Sends a query to the server to add a new chirp.
- *
- * @param publicKey - The public key of the sender
- * @param text - The text contained in the chirp
- * @param parentId - The id of the parent chirp (if it is a reply)
- */
-export function requestAddChirp(
-  publicKey: PublicKey,
-  text: string,
-  parentId?: Hash,
-): Promise<void> {
-  const timestamp = Timestamp.EpochNow();
-  const currentLao: Lao = OpenedLaoStore.get();
-
-  const message = new AddChirp({
-    text: text,
-    parent_id: parentId,
-    timestamp: timestamp,
-  });
-
-  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
-}
-
-/** Sends a server query which delete a chirp */
-export function requestDeleteChirp(
-  publicKey: PublicKey,
-  chirpId: Hash,
-): Promise<void> {
-  const timestamp = Timestamp.EpochNow();
-  const currentLao: Lao = OpenedLaoStore.get();
-
-  const message = new DeleteChirp({
-    chirp_id: chirpId,
-    timestamp: timestamp,
-  });
-
-  return publish(getUserSocialChannel(currentLao.id, publicKey), message);
-}
-
-/**
- * Sends a query to the server to add a new reaction.
- *
- * @param reaction_codepoint
- * @param chirp_id
- */
-export function requestAddReaction(
-  reaction_codepoint: string,
-  chirp_id: Hash,
-): Promise<void> {
-  const timestamp = Timestamp.EpochNow();
-  const currentLao: Lao = OpenedLaoStore.get();
-
-  const message = new AddReaction({
-    reaction_codepoint: reaction_codepoint,
-    chirp_id: chirp_id,
-    timestamp: timestamp,
-  });
-
-  return publish(getReactionChannel(currentLao.id), message);
 }

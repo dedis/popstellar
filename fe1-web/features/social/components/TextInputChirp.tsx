@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import {
   StyleSheet, ViewStyle, TextInput, TextStyle, Button, View,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+
 import STRINGS from 'res/strings';
 import { gray, red } from 'styles/colors';
-import { Ionicons } from '@expo/vector-icons';
 import { PublicKey } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import ProfileIcon from 'components/ProfileIcon';

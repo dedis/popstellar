@@ -1,10 +1,11 @@
 import 'jest-extended';
-import '__tests__/utils/matchers';
 
+import '__tests__/utils/matchers';
 import { Base64UrlData, Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { AddReaction } from 'features/social/network/messages/reaction/index';
+
+import { AddReaction } from '../AddReaction';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const mockMessageId = Base64UrlData.encode('message_id');

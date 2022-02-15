@@ -1,7 +1,9 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
+
 import { PublicKey } from 'model/objects';
-import SocialProfile from 'features/social/screens/SocialProfile';
+
+import SocialProfile from '../SocialProfile';
 
 const mockEmptyPublicKey = new PublicKey('');
 

@@ -7,20 +7,20 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-
-import TextInputChirp from 'features/social/components/TextInputChirp';
-import TextBlock from 'components/TextBlock';
-import STRINGS from 'res/strings';
-
-import { requestAddChirp } from 'network/MessageApi';
-import { makeChirpsList } from 'features/social/reducer/SocialReducer';
 import { useSelector } from 'react-redux';
-import { PublicKey } from 'model/objects';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
+
+import TextBlock from 'components/TextBlock';
+import STRINGS from 'res/strings';
+import { PublicKey } from 'model/objects';
 import { FOUR_SECONDS } from 'res/const';
+
 import ChirpCard from '../components/ChirpCard';
+import TextInputChirp from '../components/TextInputChirp';
 import { Chirp, ChirpState } from '../objects';
+import { requestAddChirp } from '../network/SocialMessageApi';
+import { makeChirpsList } from '../reducer/SocialReducer';
 
 /**
  * UI for the Social Media home screen component

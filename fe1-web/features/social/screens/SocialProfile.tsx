@@ -1,17 +1,19 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { PublicKey } from 'model/objects';
-import TextBlock from 'components/TextBlock';
-import ProfileIcon from 'components/ProfileIcon';
 import {
   FlatList, ListRenderItemInfo, Text, View,
 } from 'react-native';
-import STRINGS from 'res/strings';
-import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
-import socialMediaProfileStyles from 'styles/stylesheets/socialMediaProfileStyles';
+
+import { PublicKey } from 'model/objects';
+import TextBlock from 'components/TextBlock';
+import ProfileIcon from 'components/ProfileIcon';
+import STRINGS from 'res/strings';
+
+import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 import ChirpCard from '../components/ChirpCard';
 import { Chirp, ChirpState } from '../objects';
+import { makeChirpsListOfUser } from '../reducer/SocialReducer';
 
 /**
  * UI for the profile of the current user.

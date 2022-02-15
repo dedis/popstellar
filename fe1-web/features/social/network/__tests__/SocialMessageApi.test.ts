@@ -1,17 +1,15 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
+
 import testKeyPair from 'test_data/keypair.json';
-import {
-  ActionType,
-  AddChirp,
-  MessageData,
-  ObjectType,
-} from 'model/network/method/message/data';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data';
 import { Hash, PublicKey } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { publish as mockPublish } from 'network/JsonRpcApi';
 import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
-import * as msApi from '../MessageApi';
+
+import { AddChirp } from '../messages/chirp';
+import * as msApi from '../SocialMessageApi';
 
 jest.mock('network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;

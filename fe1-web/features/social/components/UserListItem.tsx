@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import {
   View, Text, StyleSheet, ViewStyle, TextStyle,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications';
+
 import { getUserSocialChannel, Hash, PublicKey } from 'model/objects';
 import { gray } from 'styles/colors';
 import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { useNavigation } from '@react-navigation/native';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
 import WideButtonView from 'components/WideButtonView';
 import ProfileIcon from 'components/ProfileIcon';
