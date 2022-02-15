@@ -1,20 +1,19 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 import { ProtocolError } from 'model/network';
+import { mockLaoId } from '__tests__/utils/TestUtils';
 import { ConnectToLao } from '../ConnectToLao';
-import { Base64UrlData } from '../Base64Url';
 
-const laoId = Base64UrlData.encode('lao_id').toString();
 const serverUrl = 'ws://127.0.0.1:9000/organizer/client';
 
 const sampleConnectToLao: Partial<ConnectToLao> = {
   server: serverUrl,
-  lao: laoId,
+  lao: mockLaoId,
 };
 
 const dataConnectToLao = `{
   "server": "${serverUrl}",
-  "lao": "${laoId}"
+  "lao": "${mockLaoId}"
   }`;
 
 describe('ConnectToLao', () => {
@@ -22,7 +21,7 @@ describe('ConnectToLao', () => {
     expect(new ConnectToLao(sampleConnectToLao)).toBeJsonEqual(sampleConnectToLao);
     const temp = {
       server: serverUrl,
-      lao: laoId,
+      lao: mockLaoId,
     };
     expect(new ConnectToLao(temp)).toBeJsonEqual(temp);
   });
@@ -35,7 +34,7 @@ describe('ConnectToLao', () => {
   it('fromJSON should throw an error if the Json has invalid server url', () => {
     const obj = {
       server: '12345678',
-      lao: laoId,
+      lao: mockLaoId,
     };
     const createFromJson = () => ConnectToLao.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);
@@ -44,7 +43,7 @@ describe('ConnectToLao', () => {
   describe('constructor', () => {
     it('should throw an error if server is undefined', () => {
       const wrongObj = () => new ConnectToLao({
-        lao: laoId,
+        lao: mockLaoId,
       });
       expect(wrongObj).toThrow(ProtocolError);
     });

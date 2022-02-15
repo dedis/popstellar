@@ -1,7 +1,7 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
 import {
-  Chirp, Hash, PublicKey, Timestamp, Reaction,
+  Chirp, Hash, PublicKey, Timestamp, Reaction, ChirpState, ReactionState,
 } from 'model/objects';
 import { describe } from '@jest/globals';
 import { mockLaoId } from '__tests__/utils/TestUtils';
@@ -15,438 +15,508 @@ import {
   makeReactionsList,
 } from '../SocialReducer';
 
-const mockSender1: PublicKey = new PublicKey('Douglas Adams');
-const mockSender2: PublicKey = new PublicKey('Gandalf');
-const mockChirpId0: Hash = Hash.fromString('000');
-const mockChirpId1: Hash = Hash.fromString('1234');
-const mockChirpId2: Hash = Hash.fromString('5678');
-const mockChirpId3: Hash = Hash.fromString('123456');
-const mockTimestamp: Timestamp = new Timestamp(1606666600);
+let chirp0DeletedFake: ChirpState;
+let chirp0: ChirpState;
+let chirp1: ChirpState;
+let chirp1Deleted: ChirpState;
+let chirp1DeletedFake: ChirpState;
+let chirp2: ChirpState;
+let chirp3: ChirpState;
+let chirp4: ChirpState;
 
-const chirp0DeletedFake = new Chirp({
-  id: mockChirpId0,
-  sender: new PublicKey('Joker'),
-  text: '',
-  time: mockTimestamp,
-  isDeleted: true,
-}).toState();
+let mockChirpId1: Hash;
+let mockChirpId2: Hash;
 
-const chirp0 = new Chirp({
-  id: mockChirpId0,
-  sender: mockSender1,
-  text: 'Don\'t delete me!',
-  time: mockTimestamp,
-  isDeleted: false,
-}).toState();
+let reaction1: ReactionState;
+let reaction2: ReactionState;
+let reaction3: ReactionState;
+let reaction4: ReactionState;
 
-const chirp1 = new Chirp({
-  id: mockChirpId1,
-  sender: mockSender1,
-  text: 'Don\'t panic.',
-  time: new Timestamp(1605555500),
-  isDeleted: false,
-}).toState();
+let emptyState: any;
+let chirpFilledState0Deleted: any;
+let chirpFilledState0Added: any;
+let chirpFilledState1: any;
+let chirpFilledState2: any;
+let chirpFilledState3: any;
+let chirpFilledState4: any;
+let chirpFilledState4Chirp1Deleted: any;
+let chirpFilledState4Chirp4Deleted: any;
 
-const chirp1Deleted = new Chirp({
-  id: mockChirpId1,
-  sender: mockSender1,
-  text: '',
-  time: new Timestamp(1605555500),
-  isDeleted: true,
-}).toState();
+let reactionFilledState1: any;
+let reactionFilledState11: any;
+let reactionFilledState2: any;
+let reactionFilledState22: any;
+let reactionFilledState3: any;
+let reactionFilledState33: any;
+let reactionFilledState4: any;
+let reactionFilledState44: any;
 
-const chirp1DeletedFake = new Chirp({
-  id: mockChirpId1,
-  sender: mockSender2,
-  text: '',
-  time: new Timestamp(1605555500),
-  isDeleted: true,
-}).toState();
+const initialiseData = () => {
+  const mockSender1: PublicKey = new PublicKey('Douglas Adams');
+  const mockSender2: PublicKey = new PublicKey('Gandalf');
+  const mockChirpId0: Hash = Hash.fromString('000');
+  mockChirpId1 = Hash.fromString('1234');
+  mockChirpId2 = Hash.fromString('5678');
+  const mockChirpId3: Hash = Hash.fromString('123456');
+  const mockTimestamp: Timestamp = new Timestamp(1606666600);
 
-const chirp2 = new Chirp({
-  id: mockChirpId2,
-  sender: mockSender2,
-  text: 'You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass!',
-  time: new Timestamp(1607777700),
-}).toState();
+  chirp0DeletedFake = new Chirp({
+    id: mockChirpId0,
+    sender: new PublicKey('Joker'),
+    text: '',
+    time: mockTimestamp,
+    isDeleted: true,
+  }).toState();
 
-const chirp3 = new Chirp({
-  id: Hash.fromString('12345'),
-  sender: mockSender1,
-  text: 'Time is an illusion',
-  time: mockTimestamp,
-}).toState();
+  chirp0 = new Chirp({
+    id: mockChirpId0,
+    sender: mockSender1,
+    text: 'Don\'t delete me!',
+    time: mockTimestamp,
+    isDeleted: false,
+  }).toState();
 
-const chirp4 = new Chirp({
-  id: mockChirpId3,
-  sender: mockSender1,
-  text: 'The answer is 42',
-  time: new Timestamp(1608888800),
-}).toState();
+  chirp1 = new Chirp({
+    id: mockChirpId1,
+    sender: mockSender1,
+    text: 'Don\'t panic.',
+    time: new Timestamp(1605555500),
+    isDeleted: false,
+  }).toState();
 
-const chirp4Deleted = new Chirp({
-  id: mockChirpId3,
-  sender: mockSender1,
-  text: '',
-  time: new Timestamp(1608888800),
-  isDeleted: true,
-}).toState();
+  chirp1Deleted = new Chirp({
+    id: mockChirpId1,
+    sender: mockSender1,
+    text: '',
+    time: new Timestamp(1605555500),
+    isDeleted: true,
+  }).toState();
 
-const reaction1 = new Reaction({
-  id: Hash.fromString('1111'),
-  sender: mockSender1,
-  codepoint: '👍',
-  chirp_id: mockChirpId1,
-  time: mockTimestamp,
-}).toState();
+  chirp1DeletedFake = new Chirp({
+    id: mockChirpId1,
+    sender: mockSender2,
+    text: '',
+    time: new Timestamp(1605555500),
+    isDeleted: true,
+  }).toState();
 
-const reaction2 = new Reaction({
-  id: Hash.fromString('2222'),
-  sender: mockSender1,
-  codepoint: '❤️',
-  chirp_id: mockChirpId1,
-  time: mockTimestamp,
-}).toState();
+  chirp2 = new Chirp({
+    id: mockChirpId2,
+    sender: mockSender2,
+    text: 'You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass! You shall not pass!',
+    time: new Timestamp(1607777700),
+  }).toState();
 
-const reaction3 = new Reaction({
-  id: Hash.fromString('3333'),
-  sender: mockSender2,
-  codepoint: '👍',
-  chirp_id: mockChirpId1,
-  time: mockTimestamp,
-}).toState();
+  chirp3 = new Chirp({
+    id: Hash.fromString('12345'),
+    sender: mockSender1,
+    text: 'Time is an illusion',
+    time: mockTimestamp,
+  }).toState();
 
-const reaction4 = new Reaction({
-  id: Hash.fromString('4444'),
-  sender: mockSender2,
-  codepoint: '👍',
-  chirp_id: mockChirpId2,
-  time: mockTimestamp,
-}).toState();
+  chirp4 = new Chirp({
+    id: mockChirpId3,
+    sender: mockSender1,
+    text: 'The answer is 42',
+    time: new Timestamp(1608888800),
+  }).toState();
 
-const emptyState = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-  },
-};
+  const chirp4Deleted = new Chirp({
+    id: mockChirpId3,
+    sender: mockSender1,
+    text: '',
+    time: new Timestamp(1608888800),
+    isDeleted: true,
+  }).toState();
 
-const chirpFilledState0Deleted = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [],
-      byId: { [mockChirpId0.toString()]: chirp0DeletedFake },
-      byUser: {},
-      reactionsByChirp: {},
-    },
-  },
-};
+  reaction1 = new Reaction({
+    id: Hash.fromString('1111'),
+    sender: mockSender1,
+    codepoint: '👍',
+    chirp_id: mockChirpId1,
+    time: mockTimestamp,
+  }).toState();
 
-const chirpFilledState0Added = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp0.id],
-      byId: { [chirp0.id]: chirp0 },
-      byUser: { [chirp0.sender]: [chirp0.id] },
-      reactionsByChirp: {},
-    },
-  },
-};
+  reaction2 = new Reaction({
+    id: Hash.fromString('2222'),
+    sender: mockSender1,
+    codepoint: '❤️',
+    chirp_id: mockChirpId1,
+    time: mockTimestamp,
+  }).toState();
 
-const chirpFilledState1 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp1.id],
-      byId: { [chirp1.id]: chirp1 },
-      byUser: { [chirp1.sender]: [chirp1.id] },
-      reactionsByChirp: {},
-    },
-  },
-};
+  reaction3 = new Reaction({
+    id: Hash.fromString('3333'),
+    sender: mockSender2,
+    codepoint: '👍',
+    chirp_id: mockChirpId1,
+    time: mockTimestamp,
+  }).toState();
 
-const chirpFilledState2 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp2.id, chirp1.id],
-      byId: { [chirp1.id]: chirp1, [chirp2.id]: chirp2 },
-      byUser: { [chirp1.sender]: [chirp1.id], [chirp2.sender]: [chirp2.id] },
-      reactionsByChirp: {},
-    },
-  },
-};
+  reaction4 = new Reaction({
+    id: Hash.fromString('4444'),
+    sender: mockSender2,
+    codepoint: '👍',
+    chirp_id: mockChirpId2,
+    time: mockTimestamp,
+  }).toState();
 
-const chirpFilledState3 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp2.id, chirp3.id, chirp1.id],
-      byId: { [chirp1.id]: chirp1, [chirp2.id]: chirp2, [chirp3.id]: chirp3 },
-      byUser: { [chirp1.sender]: [chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
-      reactionsByChirp: {},
-    },
-  },
-};
-
-const chirpFilledState4 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
-      byId: {
-        [chirp1.id]: chirp1,
-        [chirp2.id]: chirp2,
-        [chirp3.id]: chirp3,
-        [chirp4.id]: chirp4,
+  emptyState = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
       },
-      byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
-      reactionsByChirp: {},
     },
-  },
-};
+  };
 
-const chirpFilledState4Chirp1Deleted = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
-      byId: {
-        [chirp1.id]: chirp1Deleted,
-        [chirp2.id]: chirp2,
-        [chirp3.id]: chirp3,
-        [chirp4.id]: chirp4,
+  chirpFilledState0Deleted = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
       },
-      byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
-      reactionsByChirp: {},
-    },
-  },
-};
-
-const chirpFilledState4Chirp4Deleted = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
-      byId: {
-        [chirp1.id]: chirp1,
-        [chirp2.id]: chirp2,
-        [chirp3.id]: chirp3,
-        [chirp4.id]: chirp4Deleted,
+      [mockLaoId]: {
+        allIdsInOrder: [],
+        byId: { [mockChirpId0.toString()]: chirp0DeletedFake },
+        byUser: {},
+        reactionsByChirp: {},
       },
-      byUser: { [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id], [chirp2.sender]: [chirp2.id] },
-      reactionsByChirp: {},
     },
-  },
-};
+  };
 
-const reactionFilledState1 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
+  chirpFilledState0Added = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp0.id],
+        byId: { [chirp0.id]: chirp0 },
+        byUser: { [chirp0.sender]: [chirp0.id] },
+        reactionsByChirp: {},
+      },
     },
-    [mockLaoId]: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: { [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] } },
-    },
-  },
-};
+  };
 
-const reactionFilledState11 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
+  chirpFilledState1 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp1.id],
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
+        reactionsByChirp: {},
+      },
     },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp1.id],
-      byId: { [chirp1.id]: chirp1 },
-      byUser: { [chirp1.sender]: [chirp1.id] },
-      reactionsByChirp: { [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] } },
-    },
-  },
-};
+  };
 
-const reactionFilledState2 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
+  chirpFilledState2 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp2.id, chirp1.id],
+        byId: {
+          [chirp1.id]: chirp1,
+          [chirp2.id]: chirp2,
+        },
+        byUser: {
+          [chirp1.sender]: [chirp1.id],
+          [chirp2.sender]: [chirp2.id],
+        },
+        reactionsByChirp: {},
+      },
     },
-    [mockLaoId]: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1.toString()],
-          '❤️': [mockSender1.toString()],
+  };
+
+  chirpFilledState3 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp2.id, chirp3.id, chirp1.id],
+        byId: {
+          [chirp1.id]: chirp1,
+          [chirp2.id]: chirp2,
+          [chirp3.id]: chirp3,
+        },
+        byUser: {
+          [chirp1.sender]: [chirp3.id, chirp1.id],
+          [chirp2.sender]: [chirp2.id],
+        },
+        reactionsByChirp: {},
+      },
+    },
+  };
+
+  chirpFilledState4 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
+        byId: {
+          [chirp1.id]: chirp1,
+          [chirp2.id]: chirp2,
+          [chirp3.id]: chirp3,
+          [chirp4.id]: chirp4,
+        },
+        byUser: {
+          [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id],
+          [chirp2.sender]: [chirp2.id],
+        },
+        reactionsByChirp: {},
+      },
+    },
+  };
+
+  chirpFilledState4Chirp1Deleted = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
+        byId: {
+          [chirp1.id]: chirp1Deleted,
+          [chirp2.id]: chirp2,
+          [chirp3.id]: chirp3,
+          [chirp4.id]: chirp4,
+        },
+        byUser: {
+          [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id],
+          [chirp2.sender]: [chirp2.id],
+        },
+        reactionsByChirp: {},
+      },
+    },
+  };
+
+  chirpFilledState4Chirp4Deleted = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp4.id, chirp2.id, chirp3.id, chirp1.id],
+        byId: {
+          [chirp1.id]: chirp1,
+          [chirp2.id]: chirp2,
+          [chirp3.id]: chirp3,
+          [chirp4.id]: chirp4Deleted,
+        },
+        byUser: {
+          [chirp1.sender]: [chirp4.id, chirp3.id, chirp1.id],
+          [chirp2.sender]: [chirp2.id],
+        },
+        reactionsByChirp: {},
+      },
+    },
+  };
+
+  reactionFilledState1 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: { [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] } },
+      },
+    },
+  };
+
+  reactionFilledState11 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp1.id],
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
+        reactionsByChirp: { [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] } },
+      },
+    },
+  };
+
+  reactionFilledState2 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {
+          [mockChirpId1.toString()]: {
+            '👍': [mockSender1.toString()],
+            '❤️': [mockSender1.toString()],
+          },
         },
       },
     },
-  },
-};
+  };
 
-const reactionFilledState22 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp1.id],
-      byId: { [chirp1.id]: chirp1 },
-      byUser: { [chirp1.sender]: [chirp1.id] },
-      reactionsByChirp: {
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1.toString()],
-          '❤️': [mockSender1.toString()],
+  reactionFilledState22 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp1.id],
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
+        reactionsByChirp: {
+          [mockChirpId1.toString()]: {
+            '👍': [mockSender1.toString()],
+            '❤️': [mockSender1.toString()],
+          },
         },
       },
     },
-  },
-};
+  };
 
-const reactionFilledState3 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1.toString(), mockSender2.toString()],
-          '❤️': [mockSender1.toString()],
+  reactionFilledState3 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {
+          [mockChirpId1.toString()]: {
+            '👍': [mockSender1.toString(), mockSender2.toString()],
+            '❤️': [mockSender1.toString()],
+          },
         },
       },
     },
-  },
-};
+  };
 
-const reactionFilledState33 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp1.id],
-      byId: { [chirp1.id]: chirp1 },
-      byUser: { [chirp1.sender]: [chirp1.id] },
-      reactionsByChirp: {
-        [mockChirpId1.toString()]: {
-          '👍': [mockSender1.toString(), mockSender2.toString()],
-          '❤️': [mockSender1.toString()],
+  reactionFilledState33 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp1.id],
+        byId: { [chirp1.id]: chirp1 },
+        byUser: { [chirp1.sender]: [chirp1.id] },
+        reactionsByChirp: {
+          [mockChirpId1.toString()]: {
+            '👍': [mockSender1.toString(), mockSender2.toString()],
+            '❤️': [mockSender1.toString()],
+          },
         },
       },
     },
-  },
-};
+  };
 
-const reactionFilledState4 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {
-        [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] },
-        [mockChirpId2.toString()]: { '👍': [mockSender2.toString()] },
+  reactionFilledState4 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {
+          [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] },
+          [mockChirpId2.toString()]: { '👍': [mockSender2.toString()] },
+        },
       },
     },
-  },
-};
+  };
 
-const reactionFilledState44 = {
-  byLaoId: {
-    myLaoId: {
-      allIdsInOrder: [],
-      byId: {},
-      byUser: {},
-      reactionsByChirp: {},
-    },
-    [mockLaoId]: {
-      allIdsInOrder: [chirp2.id, chirp1.id],
-      byId: { [chirp1.id]: chirp1, [chirp2.id]: chirp2 },
-      byUser: { [chirp1.sender]: [chirp1.id], [chirp2.sender]: [chirp2.id] },
-      reactionsByChirp: {
-        [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] },
-        [mockChirpId2.toString()]: { '👍': [mockSender2.toString()] },
+  reactionFilledState44 = {
+    byLaoId: {
+      myLaoId: {
+        allIdsInOrder: [],
+        byId: {},
+        byUser: {},
+        reactionsByChirp: {},
+      },
+      [mockLaoId]: {
+        allIdsInOrder: [chirp2.id, chirp1.id],
+        byId: {
+          [chirp1.id]: chirp1,
+          [chirp2.id]: chirp2,
+        },
+        byUser: {
+          [chirp1.sender]: [chirp1.id],
+          [chirp2.sender]: [chirp2.id],
+        },
+        reactionsByChirp: {
+          [mockChirpId1.toString()]: { '👍': [mockSender1.toString()] },
+          [mockChirpId2.toString()]: { '👍': [mockSender2.toString()] },
+        },
       },
     },
-  },
+  };
 };
+
+beforeEach(() => {
+  initialiseData();
+});
 
 describe('SocialReducer', () => {
   describe('chirp reducer', () => {

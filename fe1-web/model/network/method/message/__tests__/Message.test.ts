@@ -4,29 +4,16 @@ import {
   EventTags,
   Hash,
   KeyPair,
-  Lao,
-  LaoState,
   PrivateKey,
   PublicKey,
   Timestamp,
 } from 'model/objects';
 import { KeyPairStore } from 'store';
-import { mockPopToken, mockPrivateKey, mockPublicKey } from '__tests__/utils/TestUtils';
 import {
-  AddChirp, EndElection, MessageRegistry,
-} from '../data';
+  mockLao, mockLaoId, mockPopToken, mockPrivateKey, mockPublicKey,
+} from '__tests__/utils/TestUtils';
+import { AddChirp, EndElection, MessageRegistry } from '../data';
 import { configureMessages, encodeMessageData, Message } from '../Message';
-
-const TIMESTAMP = 1603455600;
-const laoState: LaoState = {
-  id: 'LaoID',
-  name: 'MyLao',
-  creation: TIMESTAMP,
-  last_modified: TIMESTAMP,
-  organizer: 'organizerPublicKey',
-  witnesses: [],
-};
-const mockLao = Lao.fromState(laoState);
 
 jest.mock('model/objects/wallet/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
@@ -60,7 +47,7 @@ describe('Message', () => {
   it('fromData signs the message correctly when ending an election', async () => {
     const messageData = new EndElection({
       lao: mockLao.id,
-      election: Hash.fromStringArray(EventTags.ELECTION, laoState.id, '5678', '1607277600'),
+      election: Hash.fromStringArray(EventTags.ELECTION, mockLaoId, '5678', '1607277600'),
       created_at: new Timestamp(1607277600),
       registered_votes: new Hash('1234'),
     });

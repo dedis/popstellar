@@ -3,8 +3,8 @@ import '__tests__/utils/matchers';
 
 import { Base64UrlData, Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { AddReaction } from '../reaction';
-import { ActionType, ObjectType } from '../MessageData';
+import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
+import { AddReaction } from '../index';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const mockMessageId = Base64UrlData.encode('message_id');
@@ -48,7 +48,7 @@ describe('AddReaction', () => {
   it('fromJson should throw an error if the Json has incorrect action', () => {
     const obj = {
       object: ObjectType.REACTION,
-      action: ActionType.ADD_BROADCAST,
+      action: ActionType.NOTIFY_ADD,
       reaction_codepoint: REACTION,
       chirp_id: ID,
       timestamp: TIMESTAMP,

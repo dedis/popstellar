@@ -1,5 +1,6 @@
 import 'jest-extended';
 
+import { mockLaoIdHash } from '__tests__/utils/TestUtils';
 import { Hash } from '../Hash';
 import {
   channelFromIds,
@@ -10,28 +11,26 @@ import {
 } from '../Channel';
 import { PublicKey } from '../PublicKey';
 
-const FAKE_ID = Hash.fromStringArray('id');
-
 describe('Channel object', () => {
   it('channelFromIds should should return the correct channel', () => {
     expect(channelFromIds()).toEqual('/root');
-    expect(channelFromIds(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}`);
+    expect(channelFromIds(mockLaoIdHash)).toStrictEqual(`/root/${mockLaoIdHash}`);
   });
 
   it('getUserSocialChannel should return the correct channel', () => {
     const userToken = new PublicKey('userToken');
-    expect(getUserSocialChannel(FAKE_ID, userToken))
-      .toStrictEqual(`/root/${FAKE_ID}/social/${userToken.valueOf()}`);
+    expect(getUserSocialChannel(mockLaoIdHash, userToken))
+      .toStrictEqual(`/root/${mockLaoIdHash}/social/${userToken.valueOf()}`);
   });
 
   it('getGeneralChirpsChannel should return the correct channel', () => {
-    expect(getGeneralChirpsChannel(FAKE_ID))
-      .toStrictEqual(`/root/${FAKE_ID}/social/chirps`);
+    expect(getGeneralChirpsChannel(mockLaoIdHash))
+      .toStrictEqual(`/root/${mockLaoIdHash}/social/chirps`);
   });
 
   it('getReactionChannel should return the correct channel', () => {
-    expect(getReactionChannel(FAKE_ID))
-      .toStrictEqual(`/root/${FAKE_ID}/social/reactions`);
+    expect(getReactionChannel(mockLaoIdHash))
+      .toStrictEqual(`/root/${mockLaoIdHash}/social/reactions`);
   });
 
   it('getLastPartOfChannel works correctly', () => {

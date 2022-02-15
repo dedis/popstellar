@@ -1,20 +1,9 @@
 import 'jest-extended';
 
-import {
-  Lao, LaoState,
-} from '../Lao';
+import { mockLaoState } from '__tests__/utils/TestUtils';
+import { Lao } from '../Lao';
 
 test('Lao can do a state round-trip', () => {
-  const laoState: LaoState = {
-    id: '1234',
-    name: 'MyLao',
-    creation: 123,
-    last_modified: 1234,
-    organizer: '1234',
-    witnesses: [],
-  };
-
-  const lao: Lao = Lao.fromState(laoState);
-
-  expect(lao.toState()).toStrictEqual(laoState);
+  const lao: Lao = Lao.fromState(mockLaoState);
+  expect(lao.toState()).toStrictEqual(mockLaoState);
 });

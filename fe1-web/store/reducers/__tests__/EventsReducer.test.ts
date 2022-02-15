@@ -1,7 +1,7 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
 import {
-  Hash, LaoEventType, Meeting, RollCall, RollCallStatus, Timestamp,
+  Hash, LaoEventType, Meeting, MeetingState, RollCall, RollCallState, RollCallStatus, Timestamp,
 } from 'model/objects';
 import { mockLaoId } from '__tests__/utils/TestUtils';
 import {
@@ -18,110 +18,129 @@ import {
   updateEvent,
 } from '../EventsReducer';
 
-const emptyLao = {
-  byLaoId: {},
-};
+let emptyLao: any;
+let emptyState: any;
+let filledStateWithRollCallCreated: any;
+let filledStateWithRollCallOpened: any;
+let filledStateAfterAddedMeeting: any;
 
-const emptyState = {
-  byLaoId: {
-    myLaoId: {
-      byId: {},
-      allIds: [],
-      idAlias: {},
-    },
-  },
-};
+let rollCallIdString: string;
+let idAliasString: string;
 
-const mockTime1 = new Timestamp(160000000);
-const mockTime2 = new Timestamp(160050000);
+let rollCallCreated: RollCallState;
+let rollCallOpened: RollCallState;
+let meeting: MeetingState;
 
-const rollCallIdString : string = '1234';
-export const rollCallId : Hash = new Hash(rollCallIdString);
+const initializeData = () => {
+  emptyLao = {
+    byLaoId: {},
+  };
 
-const rollCallCreated = new RollCall({
-  id: rollCallId,
-  name: 'roll call',
-  location: 'BC',
-  creation: mockTime1,
-  proposed_start: mockTime1,
-  proposed_end: mockTime1,
-  status: RollCallStatus.CREATED,
-}).toState();
-
-const filledStateWithRollCallCreated = {
-  byLaoId: {
-    myLaoId: {
-      byId: {},
-      allIds: [],
-      idAlias: {},
-    },
-    [mockLaoId]: {
-      byId: { [rollCallCreated.id]: rollCallCreated },
-      allIds: [rollCallCreated.id],
-      idAlias: {},
-    },
-  },
-};
-
-const idAliasString : string = '5678';
-const rollCallOpened = new RollCall({
-  id: rollCallId,
-  name: 'roll call',
-  location: 'BC',
-  creation: mockTime1,
-  proposed_start: mockTime1,
-  proposed_end: mockTime1,
-  idAlias: new Hash(idAliasString),
-  opened_at: mockTime1,
-  status: RollCallStatus.OPENED,
-}).toState();
-
-const filledStateWithRollCallOpened = {
-  byLaoId: {
-    myLaoId: {
-      byId: {},
-      allIds: [],
-      idAlias: {},
-    },
-    [mockLaoId]: {
-      byId: { [rollCallId.toString()]: rollCallOpened },
-      allIds: [rollCallId.toString()],
-      idAlias: {
-        [rollCallOpened.idAlias!]: rollCallOpened.id,
+  emptyState = {
+    byLaoId: {
+      myLaoId: {
+        byId: {},
+        allIds: [],
+        idAlias: {},
       },
     },
-  },
+  };
+
+  const mockTime1 = new Timestamp(160000000);
+  const mockTime2 = new Timestamp(160050000);
+
+  rollCallIdString = '1234';
+  const rollCallId = new Hash(rollCallIdString);
+
+  rollCallCreated = new RollCall({
+    id: rollCallId,
+    name: 'roll call',
+    location: 'BC',
+    creation: mockTime1,
+    proposed_start: mockTime1,
+    proposed_end: mockTime1,
+    status: RollCallStatus.CREATED,
+  }).toState();
+
+  filledStateWithRollCallCreated = {
+    byLaoId: {
+      myLaoId: {
+        byId: {},
+        allIds: [],
+        idAlias: {},
+      },
+      [mockLaoId]: {
+        byId: { [rollCallCreated.id]: rollCallCreated },
+        allIds: [rollCallCreated.id],
+        idAlias: {},
+      },
+    },
+  };
+
+  idAliasString = '5678';
+  rollCallOpened = new RollCall({
+    id: rollCallId,
+    name: 'roll call',
+    location: 'BC',
+    creation: mockTime1,
+    proposed_start: mockTime1,
+    proposed_end: mockTime1,
+    idAlias: new Hash(idAliasString),
+    opened_at: mockTime1,
+    status: RollCallStatus.OPENED,
+  }).toState();
+
+  filledStateWithRollCallOpened = {
+    byLaoId: {
+      myLaoId: {
+        byId: {},
+        allIds: [],
+        idAlias: {},
+      },
+      [mockLaoId]: {
+        byId: { [rollCallId.toString()]: rollCallOpened },
+        allIds: [rollCallId.toString()],
+        idAlias: {
+          [rollCallOpened.idAlias!]: rollCallOpened.id,
+        },
+      },
+    },
+  };
+
+  meeting = new Meeting({
+    id: new Hash('12345'),
+    name: 'meeting',
+    location: 'BC',
+    creation: mockTime2,
+    start: mockTime2,
+    end: undefined,
+    extra: {},
+  }).toState();
+
+  filledStateAfterAddedMeeting = {
+    byLaoId: {
+      myLaoId: {
+        byId: {},
+        allIds: [],
+        idAlias: {},
+      },
+      [mockLaoId]: {
+        byId: {
+          [meeting.id]: meeting,
+          [rollCallId.toString()]: rollCallOpened,
+        },
+        allIds: [meeting.id, rollCallId.toString()],
+        idAlias: {
+          [rollCallOpened.idAlias!]: rollCallOpened.id,
+        },
+      },
+    },
+  };
 };
 
-const meeting = new Meeting({
-  id: new Hash('12345'),
-  name: 'meeting',
-  location: 'BC',
-  creation: mockTime2,
-  start: mockTime2,
-  end: undefined,
-  extra: {},
-}).toState();
-
-const filledStateAfterAddedMeeting = {
-  byLaoId: {
-    myLaoId: {
-      byId: {},
-      allIds: [],
-      idAlias: {},
-    },
-    [mockLaoId]: {
-      byId: {
-        [meeting.id]: meeting,
-        [rollCallId.toString()]: rollCallOpened,
-      },
-      allIds: [meeting.id, rollCallId.toString()],
-      idAlias: {
-        [rollCallOpened.idAlias!]: rollCallOpened.id,
-      },
-    },
-  },
-};
+beforeEach(() => {
+  initializeData();
+});
 
 describe('EventsReducer', () => {
   it('should return the initial state', () => {

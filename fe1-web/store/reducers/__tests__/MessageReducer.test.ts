@@ -41,6 +41,16 @@ const emptyState = {
   unprocessedIds: [],
 };
 
+const createExtendedMessage = async () => {
+  const messageData = new AddChirp({
+    text: 'text',
+    timestamp: new Timestamp(1607277600),
+  });
+  const message = await Message.fromData(messageData);
+  const channel = channelFromIds();
+  return ExtendedMessage.fromMessage(message, channel);
+};
+
 describe('MessageReducer', () => {
   it('should return the initial state', () => {
     expect(messageReduce(undefined, {} as AnyAction))
@@ -48,13 +58,7 @@ describe('MessageReducer', () => {
   });
 
   it('should add the message', async () => {
-    const messageData = new AddChirp({
-      text: 'text',
-      timestamp: new Timestamp(1607277600),
-    });
-    const message = await Message.fromData(messageData);
-    const channel = channelFromIds();
-    const extMsg = ExtendedMessage.fromMessage(message, channel);
+    const extMsg = await createExtendedMessage();
     const msgId = extMsg.message_id.toString();
 
     const filledState = {
@@ -72,13 +76,7 @@ describe('MessageReducer', () => {
   });
 
   it('should process the message', async () => {
-    const messageData = new AddChirp({
-      text: 'text',
-      timestamp: new Timestamp(1607277600),
-    });
-    const message = await Message.fromData(messageData);
-    const channel = channelFromIds();
-    const extMsg = ExtendedMessage.fromMessage(message, channel);
+    const extMsg = await createExtendedMessage();
     const msgId = extMsg.message_id.toString();
 
     const filledState = {
