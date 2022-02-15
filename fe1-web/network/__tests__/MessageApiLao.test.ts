@@ -15,7 +15,7 @@ let checkDataCreateLao: Function;
 let checkDataUpdateLao: Function;
 let checkDataStateLao: Function;
 
-const initialiseChecks = () => {
+const initializeChecks = () => {
   checkDataCreateLao = (obj: MessageData) => {
     expect(obj.object).toBe(ObjectType.LAO);
     expect(obj.action).toBe(ActionType.CREATE);
@@ -103,7 +103,7 @@ const initialiseChecks = () => {
 beforeEach(() => {
   OpenedLaoStore.store(mockLao);
   publishMock.mockClear();
-  initialiseChecks();
+  initializeChecks();
 });
 
 describe('MessageApi', () => {

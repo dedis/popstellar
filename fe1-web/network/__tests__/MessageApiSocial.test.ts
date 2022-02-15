@@ -17,7 +17,7 @@ const mockText = 'text';
 
 let checkDataAddChirp: Function;
 
-const initialiseChecks = () => {
+const initializeChecks = () => {
   checkDataAddChirp = (obj: MessageData) => {
     expect(obj.object).toBe(ObjectType.CHIRP);
     expect(obj.action).toBe(ActionType.ADD);
@@ -35,7 +35,7 @@ const initialiseChecks = () => {
 beforeEach(() => {
   publishMock.mockClear();
   OpenedLaoStore.store(mockLao);
-  initialiseChecks();
+  initializeChecks();
 });
 
 describe('MessageApi', () => {

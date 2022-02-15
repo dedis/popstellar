@@ -29,7 +29,7 @@ let checkDataOpenRollCall: Function;
 let checkDataReopenRollCall: Function;
 let checkDataCloseRollCall: Function;
 
-const initialiseChecks = () => {
+const initializeChecks = () => {
   checkDataCreateRollCall = (obj: MessageData) => {
     expect(obj.object).toBe(ObjectType.ROLL_CALL);
     expect(obj.action).toBe(ActionType.CREATE);
@@ -122,7 +122,7 @@ const initialiseChecks = () => {
 beforeEach(() => {
   OpenedLaoStore.store(mockLao);
   publishMock.mockClear();
-  initialiseChecks();
+  initializeChecks();
 });
 
 describe('MessageApi', () => {

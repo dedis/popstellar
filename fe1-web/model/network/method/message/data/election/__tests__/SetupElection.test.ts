@@ -27,7 +27,7 @@ let mockQuestion1: string;
 let mockQuestionId1: Hash;
 let mockBallotOptions: string[];
 
-const initialiseData = () => {
+const initializeData = () => {
   electionId = Hash.fromStringArray(
     'Election', mockLaoId, TIMESTAMP.toString(), mockLaoName,
   );
@@ -87,7 +87,7 @@ const initialiseData = () => {
 };
 
 beforeAll(() => {
-  initialiseData();
+  initializeData();
   OpenedLaoStore.store(mockLao);
 });
 

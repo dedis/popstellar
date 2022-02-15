@@ -19,7 +19,7 @@ const mockEndTime = new Timestamp(1735686000);
 
 let checkDataCreateMeeting: Function;
 
-const initialiseChecks = () => {
+const initializeChecks = () => {
   checkDataCreateMeeting = (obj: MessageData) => {
     expect(obj.object).toBe(ObjectType.MEETING);
     expect(obj.action).toBe(ActionType.CREATE);
@@ -65,7 +65,7 @@ const initialiseChecks = () => {
 beforeEach(() => {
   OpenedLaoStore.store(mockLao);
   publishMock.mockClear();
-  initialiseChecks();
+  initializeChecks();
 });
 
 describe('MessageApi', () => {
