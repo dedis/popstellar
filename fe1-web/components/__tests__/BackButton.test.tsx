@@ -5,6 +5,10 @@ import BackButton from '../BackButton';
 
 const mockHomeTab = 'Home';
 
+beforeEach(() => {
+  mockNavigate.mockClear();
+});
+
 describe('BackButton', () => {
   it('renders correctly', () => {
     const component = render(<BackButton navigationTabName={mockHomeTab} />).toJSON();

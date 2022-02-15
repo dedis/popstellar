@@ -17,6 +17,10 @@ jest.mock('network/CommunicationApi.ts', () => ({
 
 jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
 
+beforeEach(() => {
+  mockNavigate.mockClear();
+});
+
 describe('UserListItem', () => {
   it('calls subscribeToChannel correctly when clicking on follow', () => {
     const expectedChannel = '/root/LaoId/social/PublicKey';
