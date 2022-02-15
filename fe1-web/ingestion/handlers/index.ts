@@ -1,4 +1,6 @@
 import { MessageRegistry } from 'model/network/method/message/data/MessageRegistry';
+import * as ChirpHandler from 'features/social/network/ChirpHandler';
+import * as ReactionHandler from 'features/social/network/ReactionHandler';
 import * as LaoHandler from './LaoHandler';
 import * as MeetingHandler from './MeetingHandler';
 import * as RollCallHandler from './RollCallHandler';
@@ -15,6 +17,8 @@ const handlers: Array<ConfigurableHandler> = [
   RollCallHandler,
   ElectionHandler,
   WitnessHandler,
+  ChirpHandler,
+  ReactionHandler,
 ];
 
 /**
