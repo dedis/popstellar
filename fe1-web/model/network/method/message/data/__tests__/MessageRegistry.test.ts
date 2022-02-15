@@ -7,7 +7,7 @@ import { configureMessages, Message } from 'model/network/method/message/Message
 import { OpenedLaoStore } from 'store';
 import { MessageRegistry } from '../MessageRegistry';
 import { ActionType, ObjectType, SignatureType } from '../MessageData';
-import { AddChirp } from '../chirp';
+import { AddChirp } from '../../../../../../features/social/network/messages/chirp';
 
 const { CHIRP } = ObjectType;
 const { ADD, INVALID } = ActionType;

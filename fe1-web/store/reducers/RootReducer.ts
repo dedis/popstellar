@@ -6,7 +6,7 @@ import keyPairReducer from './KeyPairReducer';
 import eventsReducer from './EventsReducer';
 import messageReducer from './MessageReducer';
 import walletReducer from './WalletReducer';
-import socialReducer from './SocialReducer';
+import socialReducer from 'features/social/reducer/SocialReducer';
 
 import { wrapWithClearStorageReducer } from './ClearStorageReducer';
 

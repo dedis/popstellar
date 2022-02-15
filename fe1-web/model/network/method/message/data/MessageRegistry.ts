@@ -13,8 +13,8 @@ import {
 import { WitnessMessage } from './witness';
 import {
   AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp,
-} from './chirp';
-import { AddReaction } from './reaction';
+} from '../../../../../features/social/network/messages/chirp';
+import { AddReaction } from '../../../../../features/social/network/messages/reaction';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
 
