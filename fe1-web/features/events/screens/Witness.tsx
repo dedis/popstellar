@@ -1,22 +1,25 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-
-import STRINGS from 'res/strings';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-import LaoProperties from 'components/eventList/LaoProperties';
-import EventListCollapsible from 'components/eventList/EventListCollapsible';
+
+import STRINGS from 'res/strings';
+import LaoProperties from 'components/LaoProperties';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import { makeEventsList } from 'store/reducers';
-import { LaoEvent, Timestamp } from 'model/objects';
+import { Timestamp } from 'model/objects';
+
+import EventListCollapsible from '../components/EventListCollapsible';
+import { LaoEvent } from '../objects';
+import { makeEventsList } from '../reducer/EventsReducer';
 
 /**
  * Witness screen: button to navigate to the witness video screen,
  * a section list of events and lao properties
 */
 const Witness = () => {
-  const navigation = useNavigation();
+  // FIXME: Navigation should use a defined type here (instead of any)
+  const navigation = useNavigation<any>();
 
   const eventList = makeEventsList();
   const events = useSelector(eventList);

@@ -21,7 +21,7 @@ import {
 } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { FOUR_SECONDS } from 'res/const';
-import { onConfirmPress } from 'parts/lao/organizer/eventCreation/CreateEvent';
+import { onConfirmPress } from 'features/events/screens/CreateEvent';
 
 import { requestCreateElection } from '../network/ElectionMessageApi';
 import { Question } from '../objects';

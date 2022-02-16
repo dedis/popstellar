@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
-
-import { makeEventsList } from 'store';
-import { LaoEvent, Timestamp } from 'model/objects';
-
-import EventListCollapsible from 'components/eventList/EventListCollapsible';
-import LaoProperties from 'components/eventList/LaoProperties';
 import { useRoute } from '@react-navigation/core';
+
+import { Timestamp } from 'model/objects';
+import LaoProperties from 'components/LaoProperties';
+
+import EventListCollapsible from '../components/EventListCollapsible';
+import { LaoEvent } from '../objects';
+import { makeEventsList } from '../reducer/EventsReducer';
 
 /**
  * Attendee screen: lists LAO properties and past/ongoing/future events.

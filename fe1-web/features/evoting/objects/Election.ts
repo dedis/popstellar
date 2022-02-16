@@ -1,5 +1,5 @@
 import { Hash, Timestamp } from 'model/objects';
-import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
+import { LaoEvent, LaoEventState, LaoEventType } from 'features/events/objects/LaoEvent';
 
 /**
  * Object to represent an election and all its components.

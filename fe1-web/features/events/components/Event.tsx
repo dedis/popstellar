@@ -2,19 +2,20 @@ import React from 'react';
 import { View } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+
 import { makeIsLaoOrganizer } from 'store';
-
 import { Spacing } from 'styles';
-
 import ParagraphBlock from 'components/ParagraphBlock';
-import eventViewStyles from 'styles/stylesheets/eventViewStyles';
 import TextBlock from 'components/TextBlock';
-import { Hash, RollCall, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'model/objects';
 import EventMeeting from 'features/meeting/components/EventMeeting';
 import EventElection from 'features/evoting/components/EventElection';
+import EventRollCall from 'features/rollCall/components/EventRollCall';
 import { Meeting } from 'features/meeting/objects';
 import { Election } from 'features/evoting/objects';
-import EventRollCall from 'features/rollCall/components/EventRollCall';
+import { RollCall } from 'features/rollCall/objects';
+
+import eventViewStyles from '../styles/eventViewStyles';
 
 /**
  * The Event item component: display the correct representation of the event according to its type,

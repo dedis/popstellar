@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 
-import { LaoEventType } from 'model/objects';
+import { LaoEventType } from 'features/events/objects';
 
 import { Meeting } from '../../objects/Meeting';
 import EventMeeting from '../EventMeeting';

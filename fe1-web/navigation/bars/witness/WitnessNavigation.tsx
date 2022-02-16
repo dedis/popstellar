@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import Witness from 'parts/lao/witness/Witness';
+import Witness from 'features/events/screens/Witness';
 import WitnessCamera from 'parts/lao/witness/WitnessCamera';
 
 /**

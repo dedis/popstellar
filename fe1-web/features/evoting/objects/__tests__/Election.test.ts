@@ -3,7 +3,8 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 import STRINGS from 'res/strings';
 import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
-import { Hash, LaoEventType, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'model/objects';
+import { LaoEventType } from 'features/events/objects';
 
 import {
   Election, ElectionState, ElectionStatus, Question, RegisteredVote, Vote,

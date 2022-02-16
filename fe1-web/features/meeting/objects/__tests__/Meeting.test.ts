@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { LaoEventType } from 'model/objects/LaoEvent';
+import { LaoEventType } from 'features/events/objects/LaoEvent';
 import { Hash } from 'model/objects/Hash';
 import { Timestamp } from 'model/objects/Timestamp';
 

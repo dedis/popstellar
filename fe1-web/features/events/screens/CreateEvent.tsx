@@ -7,7 +7,6 @@ import {
 import { Views } from 'styles';
 import STRINGS from 'res/strings';
 import containerStyles from 'styles/stylesheets/containerStyles';
-
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
@@ -37,7 +36,8 @@ enum EventTypes {
  * Navigation panels to help manoeuvre through events creation
  */
 const CreateEvent = () => {
-  const navigation = useNavigation();
+  // FIXME: Navigation should use a defined type here (instead of any)
+  const navigation = useNavigation<any>();
 
   const navigateToPanel = (type: string) => {
     switch (type) {

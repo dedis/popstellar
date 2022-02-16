@@ -1,6 +1,8 @@
-import { LaoEvent, Hash } from 'model/objects';
-import { getStore } from '../Storage';
-import { makeEventsMap } from '../reducers';
+import { Hash } from 'model/objects';
+import { getStore } from 'store/Storage';
+
+import { LaoEvent } from '../objects';
+import { makeEventsMap } from '../reducer/EventsReducer';
 
 export namespace EventStore {
 

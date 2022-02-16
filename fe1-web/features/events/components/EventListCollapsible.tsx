@@ -3,15 +3,15 @@ import {
   SectionList, StyleSheet, Text, TextStyle, View, ViewStyle,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+
 import PropTypes from 'prop-types';
 import { makeIsLaoOrganizer } from 'store';
-
 import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
-
 import * as RootNavigation from 'navigation/RootNavigation';
 import TextBlock from 'components/TextBlock';
-import Event from './events';
+
+import Event from './index';
 
 const styles = StyleSheet.create({
   flexBox: {

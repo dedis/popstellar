@@ -4,11 +4,12 @@
  */
 /* eslint-disable no-param-reassign */
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
-import {
-  Hash, LaoEvent, LaoEventState, eventFromState, PublicKey,
-} from 'model/objects';
+
+import { Hash, PublicKey } from 'model/objects';
 import { RollCall } from 'features/rollCall/objects';
-import { getLaosState } from './LaoReducer';
+import { getLaosState } from 'store/reducers/LaoReducer';
+
+import { eventFromState, LaoEvent, LaoEventState } from '../objects';
 
 /**
  * The EventReducerState stores all the Event-related information for a given LAO

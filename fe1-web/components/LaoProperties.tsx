@@ -4,15 +4,15 @@ import {
 } from 'react-native';
 import { Spacing } from 'styles';
 import TextBlock from 'components/TextBlock';
-import eventViewStyles from 'styles/stylesheets/eventViewStyles';
-import ListCollapsibleIcon from 'components/eventList/ListCollapsibleIcon';
+import eventViewStyles from 'features/events/styles/eventViewStyles';
+import ListCollapsibleIcon from 'components/ListCollapsibleIcon';
 import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
 import { Lao } from 'model/objects';
 import { makeCurrentLao } from 'store/reducers';
 import PropTypes from 'prop-types';
 import { ConnectToLao } from 'model/objects/ConnectToLao';
-import QRCode from '../QRCode';
+import QRCode from 'components/QRCode';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.toDateString();

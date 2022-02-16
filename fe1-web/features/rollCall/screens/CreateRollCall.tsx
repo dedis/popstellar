@@ -15,7 +15,7 @@ import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
 import { FOUR_SECONDS } from 'res/const';
-import { onConfirmPress } from 'parts/lao/organizer/eventCreation/CreateEvent';
+import { onConfirmPress } from 'features/events/screens/CreateEvent';
 
 import { requestCreateRollCall } from '../network/RollCallMessageApi';
 

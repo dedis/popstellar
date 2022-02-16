@@ -1,5 +1,6 @@
 import React from 'react';
-import Attendee from '../attendee/Attendee';
+
+import Attendee from './Attendee';
 
 /**
  * Organizer screen: lists editable LAO properties and past/ongoing/future events

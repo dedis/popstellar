@@ -1,4 +1,4 @@
-import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
+import { LaoEvent, LaoEventState, LaoEventType } from 'features/events/objects/LaoEvent';
 import { Timestamp } from 'model/objects/Timestamp';
 import { Hash } from 'model/objects/Hash';
 

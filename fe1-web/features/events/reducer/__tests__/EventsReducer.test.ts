@@ -1,9 +1,12 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
-import { Hash, LaoEventType, Timestamp } from 'model/objects';
+
+import { Hash, Timestamp } from 'model/objects';
 import { mockLaoId } from '__tests__/utils/TestUtils';
 import { Meeting, MeetingState } from 'features/meeting/objects';
 import { RollCall, RollCallState, RollCallStatus } from 'features/rollCall/objects';
+
+import { LaoEventType } from '../../objects';
 import {
   addEvent,
   clearAllEvents,

@@ -1,4 +1,4 @@
-import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
+import { LaoEvent, LaoEventState, LaoEventType } from 'features/events/objects/LaoEvent';
 import {
   Hash, PopToken, PublicKey, Timestamp,
 } from 'model/objects';

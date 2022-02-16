@@ -15,26 +15,38 @@ the future.
 
 ## Meeting
 
-- EventMeeting : `components/eventList/events/Event.tsx`
-- Meeting : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`
-`store/reducers/__tests__/EventsReducer.test.ts`
+- EventMeeting : `features/events/components/Event.tsx`
+- Meeting : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`
+`features/events/reducer/__tests__/EventsReducer.test.ts`
 - MeetingHandler : `ingestion/handlers/index.ts`
 - Storage is done in EventsReducer/EventsStore and could be done separately in a MeetingsReducer
 
 ## E-voting (Election)
 
 - EndElection : `model/network/method/message/__tests__/Message.test.ts`
-- EventElection : `components/eventList/events/Event.tsx`
-- Election : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`
+- EventElection : `features/events/components/Event.tsx`
+- Election : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`
 - ElectionHandler : `ingestion/handlers/index.ts`
 - Storage is done in EventsReducer/EventsStore and could be done separately in an ElectionsReducer
 
 ## Roll Call
 
-- EventRollCall : `components/eventList/events/Event.tsx`
-- RollCall : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`,
-`model/objects/wallet/Token.ts`, `model/objects/wallet/Wallet.ts`, `store/reducers/EventsReducer.ts`
-`store/reducers/__tests__/EventsReducer.test.ts`
+- EventRollCall : `features/events/components/Event.tsx`
+- RollCall : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`,
+`model/objects/wallet/Token.ts`, `model/objects/wallet/Wallet.ts`, `features/events/reducer/EventsReducer.ts`
+`features/events/reducer/__tests__/EventsReducer.test.ts`
 - RollCallHandler : `ingestion/handlers/index.ts`
 - CreateRollCall : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - OpenedRollCall : `navigation/bars/organizer/OrganizerNavigation.tsx`
+
+## Events
+
+- Attendee : `navigation/bars/LaoNavigation.tsx`
+- CreateEvent : `navigation/bars/organizer/OrganizerNavigation.tsx`
+- LaoEventType : `model/objects/wallet/Wallet.ts`, `features/evoting/objects/__tests__/Election.test.ts`,
+`features/meeting/components/__tests__/EventMeeting.test.tsx`, `features/rollCall/objects/__tests__/RollCall.test.ts`,
+
+- EventsReducer : `store/reducers/index.ts`, `store/reducers/RootReducer.ts`,
+`features/social/screens/SocialSearch.tsx`
+- Organizer : `navigation/bars/organizer/OrganizerNavigation.tsx`
+- Witness : `navigation/bars/witness/WitnessNavigation.tsx`
