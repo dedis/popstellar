@@ -8,7 +8,7 @@ import CreateEvent from 'parts/lao/organizer/eventCreation/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
 import CreateMeeting from 'features/meeting/screens/CreateMeeting';
 import CreateRollCall from 'parts/lao/organizer/eventCreation/events/CreateRollCall';
-import CreateElection from 'parts/lao/organizer/eventCreation/events/CreateElection';
+import CreateElection from 'features/evoting/screens/CreateElection';
 import RollCallOpened from 'parts/lao/organizer/RollCallOpened';
 
 /**

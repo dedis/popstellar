@@ -13,7 +13,7 @@ import {
   Election, Hash, RollCall, Timestamp,
 } from 'model/objects';
 import EventMeeting from 'features/meeting/components/EventMeeting';
-import EventElection from 'components/eventList/events/EventElection';
+import EventElection from 'features/evoting/components/EventElection';
 import { Meeting } from 'features/meeting/objects';
 import EventRollCall from './EventRollCall';
 

@@ -1,9 +1,8 @@
-import {
-  QuestionResult,
-} from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+
+import { QuestionResult } from '../../objects/Election';
 
 export class ElectionResult implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;

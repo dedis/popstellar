@@ -1,8 +1,7 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
-import {
-  EventTags, Hash, Question, Timestamp,
-} from 'model/objects';
+import { EventTags, Hash, Timestamp } from 'model/objects';
 import STRINGS from 'res/strings';
 import {
   mockLao, mockLaoId, mockLaoIdHash, mockLaoName,
@@ -10,6 +9,8 @@ import {
 import { OpenedLaoStore } from 'store';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { ProtocolError } from 'model/network/ProtocolError';
+
+import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021

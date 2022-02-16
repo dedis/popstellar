@@ -20,3 +20,11 @@ the future.
 `store/reducers/__tests__/EventsReducer.test.ts`
 - MeetingHandler : `ingestion/handlers/index.ts`
 - Storage is done in EventsReducer/EventsStore and could be done separately in a MeetingsReducer
+
+## E-voting (Election)
+
+- EndElection : `model/network/method/message/__tests__/Message.test.ts`
+- EventElection : `components/eventList/events/Event.tsx`
+- Election : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`
+- ElectionHandler : `ingestion/handlers/index.ts`
+- Storage is done in EventsReducer/EventsStore and could be done separately in an ElectionsReducer

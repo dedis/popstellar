@@ -4,9 +4,9 @@ import {
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
-import { Question } from 'model/objects/Election';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness } from '../Checker';
+import { Question } from 'features/evoting/objects/Election';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
 
 /** Data sent to setup an Election event */
 export class SetupElection implements MessageData {

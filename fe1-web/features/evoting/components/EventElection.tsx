@@ -5,18 +5,10 @@ import {
 import { Badge } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { useToast } from 'react-native-toast-notifications';
+
 import { dispatch, getStore, updateEvent } from 'store';
-import { castVote, terminateElection } from 'network';
-import {
-  Election,
-  ElectionStatus,
-  EventTags,
-  Hash,
-  QuestionResult,
-  RegisteredVote,
-  Timestamp,
-  Vote,
-} from 'model/objects';
+import { EventTags, Hash, Timestamp } from 'model/objects';
 import { Spacing, Typography } from 'styles';
 import CheckboxList from 'components/CheckboxList';
 import WideButtonView from 'components/WideButtonView';
@@ -24,8 +16,16 @@ import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
 import BarChartDisplay from 'components/BarChartDisplay';
 import { getEventFromId } from 'ingestion/handlers/Utils';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
+
+import { castVote, terminateElection } from '../network/ElectionMessageApi';
+import {
+  Election,
+  ElectionStatus,
+  QuestionResult,
+  RegisteredVote,
+  Vote,
+} from '../objects/Election';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -133,7 +133,7 @@ const EventElection = (props: IPropTypes) => {
         toast.show(`Could not terminate election, error: ${err}`, {
           type: 'danger',
           placement: 'top',
-          duration: FOUR_SECOND,
+          duration: FOUR_SECONDS,
         });
       });
   };

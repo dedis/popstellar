@@ -1,13 +1,15 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
 import STRINGS from 'res/strings';
 import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
-import { LaoEventType } from '../LaoEvent';
+import { LaoEventType } from 'model/objects/LaoEvent';
+import { Timestamp } from 'model/objects/Timestamp';
+import { Hash } from 'model/objects/Hash';
+
 import {
   Election, ElectionState, ElectionStatus, Question, RegisteredVote, Vote,
 } from '../Election';
-import { Timestamp } from '../Timestamp';
-import { Hash } from '../Hash';
 
 let question1: Question;
 let question2: Question;

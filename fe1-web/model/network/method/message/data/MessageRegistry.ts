@@ -4,6 +4,9 @@ import {
 import { AddReaction } from 'features/social/network/messages/reaction';
 import { CreateMeeting, StateMeeting } from 'features/meeting/network/messages';
 import {
+  CastVote, ElectionResult, EndElection, SetupElection,
+} from 'features/evoting/network/messages';
+import {
   ActionType, MessageData, ObjectType, SignatureType,
 } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
@@ -11,9 +14,6 @@ import { CreateLao, StateLao, UpdateLao } from './lao';
 import {
   CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
 } from './rollCall';
-import {
-  CastVote, ElectionResult, EndElection, SetupElection,
-} from './election';
 import { WitnessMessage } from './witness';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;

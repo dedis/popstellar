@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications';
 
 import STRINGS from 'res/strings';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
@@ -16,13 +17,14 @@ import TextInputLine from 'components/TextInputLine';
 import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
 import {
-  Hash, Lao, Timestamp, Question, EventTags,
+  Hash, Lao, Timestamp, EventTags,
 } from 'model/objects';
-import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
-import { onConfirmPress } from '../CreateEvent';
+import { onConfirmPress } from 'parts/lao/organizer/eventCreation/CreateEvent';
+import { requestCreateElection } from 'features/evoting/network/ElectionMessageApi';
+
+import { Question } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 

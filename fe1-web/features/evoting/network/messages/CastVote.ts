@@ -1,10 +1,10 @@
-import {
-  Hash, Timestamp, Vote,
-} from 'model/objects';
+import { Hash, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness } from '../Checker';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
+
+import { Vote } from '../../objects/Election';
 
 /** Data sent to cast a vote */
 export class CastVote implements MessageData {

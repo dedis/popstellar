@@ -1,21 +1,23 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  ActionType,
-  CastVote,
-  ElectionResult,
-  EndElection,
-  MessageRegistry,
-  ObjectType,
-  SetupElection,
-} from 'model/network/method/message/data';
-import {
-  channelFromIds, Election, ElectionStatus, getLastPartOfChannel, RegisteredVote,
-} from 'model/objects';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+import { channelFromIds, getLastPartOfChannel } from 'model/objects';
 import {
   addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { getEventFromId } from './Utils';
+import { getEventFromId } from 'ingestion/handlers/Utils';
+
+import {
+  CastVote,
+  ElectionResult,
+  EndElection,
+  SetupElection,
+} from './messages';
+import { Election, ElectionStatus, RegisteredVote } from '../objects';
+
+/**
+ * Handles all election related messages coming from the network.
+ */
 
 const getCurrentLao = makeCurrentLao();
 
