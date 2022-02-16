@@ -34,7 +34,8 @@ the future.
 - EventRollCall : `features/events/components/Event.tsx`
 - RollCall : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`,
 `model/objects/wallet/Token.ts`, `model/objects/wallet/Wallet.ts`, `features/events/reducer/EventsReducer.ts`
-`features/events/reducer/__tests__/EventsReducer.test.ts`
+`features/events/reducer/__tests__/EventsReducer.test.ts`, `parts/wallet/WalletSyncedSeed.tsx`,
+`features/social/navigation/SocialMediaNavigation.tsx`
 - RollCallHandler : `ingestion/handlers/index.ts`
 - CreateRollCall : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - OpenedRollCall : `navigation/bars/organizer/OrganizerNavigation.tsx`
@@ -45,8 +46,14 @@ the future.
 - CreateEvent : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - LaoEventType : `model/objects/wallet/Wallet.ts`, `features/evoting/objects/__tests__/Election.test.ts`,
 `features/meeting/components/__tests__/EventMeeting.test.tsx`, `features/rollCall/objects/__tests__/RollCall.test.ts`,
-
+`parts/wallet/WalletSyncedSeed.tsx`
+- EventHandlerUtils : `features/evoting/network/ElectionHandler.ts`, `features/rollCall/network/RollCallHandler.ts`,
+`features/meeting/network/MeetingHandler.ts`, `features/evoting/components/EventElection.tsx`
 - EventsReducer : `store/reducers/index.ts`, `store/reducers/RootReducer.ts`,
-`features/social/screens/SocialSearch.tsx`
+`features/social/screens/SocialSearch.tsx`, `parts/wallet/WalletSyncedSeed.tsx`,
+`features/rollCall/network/RollCallHandler.ts`, `features/meeting/network/MeetingHandler.ts`,
+`features/evoting/network/ElectionHandler.ts`, `features/evoting/components/EventElection.tsx`,
+`model/objects/wallet/Wallet.ts`, `features/social/navigation/SocialMediaNavigation.tsx`
+- EventStore : `model/objects/wallet/Token.ts`,
 - Organizer : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - Witness : `navigation/bars/witness/WitnessNavigation.tsx`

@@ -1,9 +1,9 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import {
-  addEvent, dispatch, getStore, makeCurrentLao, updateEvent,
-} from 'store';
-import { getEventFromId, hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
+import { dispatch, getStore, makeCurrentLao } from 'store';
+import { hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
+import { addEvent, updateEvent } from 'features/events/reducer/EventsReducer';
+import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
 import { CreateMeeting, StateMeeting } from './messages';
 import { Meeting } from '../objects';

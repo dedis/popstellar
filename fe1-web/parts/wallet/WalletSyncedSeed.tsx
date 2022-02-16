@@ -3,19 +3,21 @@ import {
   ScrollView,
   StyleSheet, View, ViewStyle,
 } from 'react-native';
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import {
-  LaoEventType, RollCall, PopToken, Wallet,
-} from 'model/objects';
+import { PopToken, Wallet } from 'model/objects';
 import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
-import PropTypes from 'prop-types';
-import { makeEventByTypeSelector, makeLaosMap } from 'store';
-import { useSelector } from 'react-redux';
+import { makeLaosMap } from 'store';
 import CopiableTextInput from 'components/CopiableTextInput';
+import { makeEventByTypeSelector } from 'features/events/reducer/EventsReducer';
+import { LaoEventType } from 'features/events/objects';
+import { RollCall } from 'features/rollCall/objects';
 
 const styles = StyleSheet.create({
   smallPadding: {

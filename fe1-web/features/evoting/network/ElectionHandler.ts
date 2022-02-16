@@ -2,10 +2,11 @@ import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { channelFromIds, getLastPartOfChannel } from 'model/objects';
 import {
-  addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
+  dispatch, getStore, KeyPairStore, makeCurrentLao,
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { getEventFromId } from 'ingestion/handlers/Utils';
+import { addEvent, updateEvent } from 'features/events/reducer/EventsReducer';
+import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
 import {
   CastVote,

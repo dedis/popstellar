@@ -2,16 +2,15 @@ import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { getReactionChannel, getUserSocialChannel, Wallet } from 'model/objects';
 import {
-  addEvent,
   AsyncDispatch,
   dispatch,
   getStore,
   makeCurrentLao,
   setLaoLastRollCall,
-  updateEvent,
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { getEventFromId } from 'ingestion/handlers/Utils';
+import { addEvent, updateEvent } from 'features/events/reducer/EventsReducer';
+import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
 import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
 import { RollCall, RollCallStatus } from '../objects';

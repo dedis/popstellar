@@ -1,14 +1,16 @@
 import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 
 import STRINGS from 'res/strings';
 import { gray, popBlue } from 'styles/colors';
-import { useEffect, useState } from 'react';
-import { PublicKey, RollCall } from 'model/objects';
+import { PublicKey } from 'model/objects';
 import { generateToken } from 'model/objects/wallet';
-import { makeCurrentLao, makeEventGetter } from 'store';
-import { useSelector } from 'react-redux';
+import { makeCurrentLao } from 'store';
+import { makeEventGetter } from 'features/events/reducer/EventsReducer';
+import { RollCall } from 'features/rollCall/objects';
 
 import SocialProfile from '../screens/SocialProfile';
 import SocialFollows from '../screens/SocialFollows';
