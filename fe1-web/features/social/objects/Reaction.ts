@@ -8,7 +8,7 @@ export interface ReactionState {
   id: string;
   sender: string;
   codepoint: string;
-  chirp_id: string;
+  chirpId: string;
   time: number;
 }
 
@@ -22,7 +22,7 @@ export class Reaction {
   public readonly codepoint: string;
 
   // The chirp_id of the reaction added on
-  public readonly chirp_id: Hash;
+  public readonly chirpId: Hash;
 
   // The time when the reaction was added
   public readonly time: Timestamp;
@@ -42,7 +42,7 @@ export class Reaction {
     if (obj.codepoint === undefined) {
       throw new Error("Undefined 'reaction_codepoint' when creating 'Reaction'");
     }
-    if (obj.chirp_id === undefined) {
+    if (obj.chirpId === undefined) {
       throw new Error("Undefined 'chirp_id' when creating 'Reaction'");
     }
     if (obj.time === undefined) {
@@ -52,7 +52,7 @@ export class Reaction {
     this.id = obj.id;
     this.sender = obj.sender;
     this.codepoint = obj.codepoint;
-    this.chirp_id = obj.chirp_id;
+    this.chirpId = obj.chirpId;
     this.time = obj.time;
   }
 
@@ -66,7 +66,7 @@ export class Reaction {
       id: new Hash(reactionState.id),
       sender: new PublicKey(reactionState.sender),
       codepoint: reactionState.codepoint,
-      chirp_id: new Hash(reactionState.chirp_id),
+      chirpId: new Hash(reactionState.chirpId),
       time: new Timestamp(reactionState.time),
     });
   }

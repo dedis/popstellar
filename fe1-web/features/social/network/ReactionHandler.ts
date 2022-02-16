@@ -40,7 +40,7 @@ function handleAddReactionMessage(msg: ExtendedMessage): boolean {
     id: messageId,
     sender: sender,
     codepoint: reactionMessage.reaction_codepoint,
-    chirp_id: reactionMessage.chirp_id,
+    chirpId: reactionMessage.chirp_id,
     time: reactionMessage.timestamp,
   });
 

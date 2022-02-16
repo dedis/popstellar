@@ -18,7 +18,7 @@ describe('Reaction object', () => {
       id: '1234',
       sender: 'me',
       codepoint: '👍',
-      chirp_id: '5678',
+      chirpId: '5678',
       time: 1234,
     };
     const reaction = Reaction.fromState(reactionState);
@@ -42,7 +42,7 @@ describe('Reaction object', () => {
       const wrongReaction = () => new Reaction({
         sender: PK,
         codepoint: '👍',
-        chirp_id: CHIRP_ID,
+        chirpId: CHIRP_ID,
         time: TIMESTAMP,
       });
       expect(wrongReaction).toThrow(Error);
@@ -52,7 +52,7 @@ describe('Reaction object', () => {
       const wrongReaction = () => new Reaction({
         id: ID,
         codepoint: '👍',
-        chirp_id: CHIRP_ID,
+        chirpId: CHIRP_ID,
         time: TIMESTAMP,
       });
       expect(wrongReaction).toThrow(Error);
@@ -62,7 +62,7 @@ describe('Reaction object', () => {
       const wrongReaction = () => new Reaction({
         id: ID,
         sender: PK,
-        chirp_id: CHIRP_ID,
+        chirpId: CHIRP_ID,
         time: TIMESTAMP,
       });
       expect(wrongReaction).toThrow(Error);
@@ -83,7 +83,7 @@ describe('Reaction object', () => {
         id: ID,
         sender: PK,
         codepoint: '👍',
-        chirp_id: CHIRP_ID,
+        chirpId: CHIRP_ID,
       });
       expect(wrongReaction).toThrow(Error);
     });

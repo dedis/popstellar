@@ -178,13 +178,13 @@ const socialSlice = createSlice({
 
         const store = state.byLaoId[laoId];
 
-        if (!store.reactionsByChirp[reaction.chirp_id]) {
-          store.reactionsByChirp[reaction.chirp_id] = { [reaction.codepoint]: [reaction.sender] };
-        } else if (!store.reactionsByChirp[reaction.chirp_id][reaction.codepoint]) {
-          store.reactionsByChirp[reaction.chirp_id][reaction.codepoint] = [reaction.sender];
-        } else if (!store.reactionsByChirp[reaction.chirp_id][reaction.codepoint]
+        if (!store.reactionsByChirp[reaction.chirpId]) {
+          store.reactionsByChirp[reaction.chirpId] = { [reaction.codepoint]: [reaction.sender] };
+        } else if (!store.reactionsByChirp[reaction.chirpId][reaction.codepoint]) {
+          store.reactionsByChirp[reaction.chirpId][reaction.codepoint] = [reaction.sender];
+        } else if (!store.reactionsByChirp[reaction.chirpId][reaction.codepoint]
           .includes(reaction.sender)) {
-          store.reactionsByChirp[reaction.chirp_id][reaction.codepoint].push(reaction.sender);
+          store.reactionsByChirp[reaction.chirpId][reaction.codepoint].push(reaction.sender);
         } else {
           console.debug('The sender already reacted to this reaction');
         }
