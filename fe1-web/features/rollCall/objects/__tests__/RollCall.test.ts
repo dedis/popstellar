@@ -27,8 +27,8 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
-      proposed_start: TIMESTAMP_START.valueOf(),
-      proposed_end: TIMESTAMP_END.valueOf(),
+      proposedStart: TIMESTAMP_START.valueOf(),
+      proposedEnd: TIMESTAMP_END.valueOf(),
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES,
     };
@@ -39,8 +39,8 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
-      proposed_start: TIMESTAMP_START.valueOf(),
-      proposed_end: TIMESTAMP_END.valueOf(),
+      proposedStart: TIMESTAMP_START.valueOf(),
+      proposedEnd: TIMESTAMP_END.valueOf(),
       status: RollCallStatus.CLOSED,
       end: TIMESTAMP_END.valueOf(),
       attendees: ATTENDEES,
@@ -58,10 +58,10 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
-      proposed_start: TIMESTAMP_START.valueOf(),
-      opened_at: TIMESTAMP_START.valueOf(),
-      proposed_end: TIMESTAMP_END.valueOf(),
-      closed_at: TIMESTAMP_END.valueOf(),
+      proposedStart: TIMESTAMP_START.valueOf(),
+      openedAt: TIMESTAMP_START.valueOf(),
+      proposedEnd: TIMESTAMP_END.valueOf(),
+      closedAt: TIMESTAMP_END.valueOf(),
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES,
     };
@@ -73,8 +73,8 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START.valueOf(),
-      proposed_start: TIMESTAMP_START.valueOf(),
-      proposed_end: TIMESTAMP_END.valueOf(),
+      proposedStart: TIMESTAMP_START.valueOf(),
+      proposedEnd: TIMESTAMP_END.valueOf(),
       status: RollCallStatus.CLOSED,
       end: TIMESTAMP_END.valueOf(),
       attendees: ATTENDEES,
@@ -89,8 +89,8 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START,
-      proposed_start: TIMESTAMP_START,
-      proposed_end: TIMESTAMP_END,
+      proposedStart: TIMESTAMP_START,
+      proposedEnd: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
     });
     expect(rollCall.containsToken(token)).toBeFalse();
@@ -102,8 +102,8 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START,
-      proposed_start: TIMESTAMP_START,
-      proposed_end: TIMESTAMP_END,
+      proposedStart: TIMESTAMP_START,
+      proposedEnd: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES.map((s: string) => new PublicKey(s)),
     });
@@ -116,8 +116,8 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START,
-      proposed_start: TIMESTAMP_START,
-      proposed_end: TIMESTAMP_END,
+      proposedStart: TIMESTAMP_START,
+      proposedEnd: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES.map((s: string) => new PublicKey(s)),
     });
@@ -130,8 +130,8 @@ describe('RollCall object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP_START,
-      proposed_start: TIMESTAMP_START,
-      proposed_end: TIMESTAMP_END,
+      proposedStart: TIMESTAMP_START,
+      proposedEnd: TIMESTAMP_END,
       status: RollCallStatus.CLOSED,
       attendees: ATTENDEES.map((s: string) => new PublicKey(s)),
     });
@@ -156,8 +156,8 @@ describe('RollCall object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
+        proposedStart: TIMESTAMP_START,
+        proposedEnd: TIMESTAMP_END,
         status: RollCallStatus.CLOSED,
       });
       expect(createWrongRollCall).toThrow(Error);
@@ -168,8 +168,8 @@ describe('RollCall object', () => {
         id: ID,
         location: LOCATION,
         creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
+        proposedStart: TIMESTAMP_START,
+        proposedEnd: TIMESTAMP_END,
         status: RollCallStatus.CLOSED,
       });
       expect(createWrongRollCall).toThrow(Error);
@@ -181,8 +181,8 @@ describe('RollCall object', () => {
         start: TIMESTAMP_START,
         name: NAME,
         creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
+        proposedStart: TIMESTAMP_START,
+        proposedEnd: TIMESTAMP_END,
         status: RollCallStatus.CLOSED,
       });
       expect(createWrongRollCall).toThrow(Error);
@@ -194,8 +194,8 @@ describe('RollCall object', () => {
         start: TIMESTAMP_START,
         name: NAME,
         location: LOCATION,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
+        proposedStart: TIMESTAMP_START,
+        proposedEnd: TIMESTAMP_END,
         status: RollCallStatus.CLOSED,
       });
       expect(createWrongRollCall).toThrow(Error);
@@ -208,7 +208,7 @@ describe('RollCall object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
+        proposedEnd: TIMESTAMP_END,
         status: RollCallStatus.CLOSED,
       });
       expect(createWrongRollCall).toThrow(Error);
@@ -221,7 +221,7 @@ describe('RollCall object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
+        proposedStart: TIMESTAMP_START,
         status: RollCallStatus.CLOSED,
       });
       expect(createWrongRollCall).toThrow(Error);
@@ -234,8 +234,8 @@ describe('RollCall object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
+        proposedStart: TIMESTAMP_START,
+        proposedEnd: TIMESTAMP_END,
       });
       expect(createWrongRollCall).toThrow(Error);
     });

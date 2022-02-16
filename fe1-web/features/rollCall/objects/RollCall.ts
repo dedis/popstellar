@@ -19,10 +19,10 @@ export interface RollCallState extends LaoEventState {
   location: string;
   description?: string;
   creation: number;
-  proposed_start: number;
-  proposed_end: number;
-  opened_at?: number;
-  closed_at?: number;
+  proposedStart: number;
+  proposedEnd: number;
+  openedAt?: number;
+  closedAt?: number;
   status: number;
   attendees?: string[];
 }
@@ -40,24 +40,24 @@ export class RollCall implements LaoEvent {
 
   public readonly creation: Timestamp;
 
-  public readonly proposed_start: Timestamp;
+  public readonly proposedStart: Timestamp;
 
-  public readonly proposed_end: Timestamp;
+  public readonly proposedEnd: Timestamp;
 
-  public readonly opened_at?: Timestamp;
+  public readonly openedAt?: Timestamp;
 
-  public readonly closed_at?: Timestamp;
+  public readonly closedAt?: Timestamp;
 
   public readonly status: RollCallStatus;
 
   public readonly attendees?: PublicKey[];
 
   public get start() {
-    return this.opened_at ?? this.proposed_start;
+    return this.openedAt ?? this.proposedStart;
   }
 
   public get end() {
-    return this.closed_at ?? this.proposed_end;
+    return this.closedAt ?? this.proposedEnd;
   }
 
   /* Not yet implemented:
@@ -83,10 +83,10 @@ export class RollCall implements LaoEvent {
     if (obj.creation === undefined) {
       throw new Error("Undefined 'creation' when creating 'RollCall'");
     }
-    if (obj.proposed_start === undefined) {
+    if (obj.proposedStart === undefined) {
       throw new Error("Undefined 'proposed_start' when creating 'RollCall'");
     }
-    if (obj.proposed_end === undefined) {
+    if (obj.proposedEnd === undefined) {
       throw new Error("Undefined 'proposed_end' when creating 'RollCall'");
     }
     if (obj.status === undefined) {
@@ -99,8 +99,8 @@ export class RollCall implements LaoEvent {
     this.location = obj.location;
     this.description = obj.description;
     this.creation = obj.creation;
-    this.proposed_start = obj.proposed_start;
-    this.proposed_end = obj.proposed_end;
+    this.proposedStart = obj.proposedStart;
+    this.proposedEnd = obj.proposedEnd;
     this.status = obj.status;
     this.attendees = obj.attendees;
   }
@@ -118,11 +118,11 @@ export class RollCall implements LaoEvent {
       location: rollCallState.location,
       description: rollCallState.description,
       creation: new Timestamp(rollCallState.creation),
-      proposed_start: new Timestamp(rollCallState.proposed_start),
-      proposed_end: new Timestamp(rollCallState.proposed_end),
-      opened_at: (rollCallState.opened_at !== undefined) ? new Timestamp(rollCallState.opened_at)
+      proposedStart: new Timestamp(rollCallState.proposedStart),
+      proposedEnd: new Timestamp(rollCallState.proposedEnd),
+      openedAt: (rollCallState.openedAt !== undefined) ? new Timestamp(rollCallState.openedAt)
         : undefined,
-      closed_at: (rollCallState.closed_at !== undefined) ? new Timestamp(rollCallState.closed_at)
+      closedAt: (rollCallState.closedAt !== undefined) ? new Timestamp(rollCallState.closedAt)
         : undefined,
       status: rollCallState.status,
       attendees: rollCallState.attendees?.map((a) => new PublicKey(a)),

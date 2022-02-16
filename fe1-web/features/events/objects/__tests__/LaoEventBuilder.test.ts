@@ -33,8 +33,8 @@ describe('LaoEventBuilder', () => {
       name: 'myRollCall',
       location: 'location',
       creation: 12345,
-      proposed_start: 12345,
-      proposed_end: 14345,
+      proposedStart: 12345,
+      proposedEnd: 14345,
       status: RollCallStatus.CLOSED,
     };
     expect(eventFromState(rollCall)).toBeInstanceOf(RollCall);

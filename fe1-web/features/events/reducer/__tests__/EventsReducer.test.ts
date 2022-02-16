@@ -60,8 +60,8 @@ const initializeData = () => {
     name: 'roll call',
     location: 'BC',
     creation: mockTime1,
-    proposed_start: mockTime1,
-    proposed_end: mockTime1,
+    proposedStart: mockTime1,
+    proposedEnd: mockTime1,
     status: RollCallStatus.CREATED,
   }).toState();
 
@@ -86,10 +86,10 @@ const initializeData = () => {
     name: 'roll call',
     location: 'BC',
     creation: mockTime1,
-    proposed_start: mockTime1,
-    proposed_end: mockTime1,
+    proposedStart: mockTime1,
+    proposedEnd: mockTime1,
     idAlias: new Hash(idAliasString),
-    opened_at: mockTime1,
+    openedAt: mockTime1,
     status: RollCallStatus.OPENED,
   }).toState();
 
