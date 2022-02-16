@@ -4,12 +4,12 @@ import {
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
 import {
   checkModificationId,
   checkTimestampStaleness,
   checkWitnessSignatures,
-} from '../Checker';
+} from 'model/network/method/message/data/Checker';
 
 /** Data received to track the state of a Meeting */
 export class StateMeeting implements MessageData {

@@ -5,7 +5,6 @@ import {
   CastVote,
   CloseRollCall,
   CreateLao,
-  CreateMeeting,
   CreateRollCall,
   EndElection,
   OpenRollCall,
@@ -80,30 +79,6 @@ export function requestStateLao(): Promise<void> {
     witnesses: currentLao.witnesses,
     modification_id: Hash.fromStringArray(), // FIXME need modification_id from storage
     modification_signatures: [], // FIXME need modification_signatures from storage
-  });
-
-  return publish(channelFromIds(currentLao.id), message);
-}
-
-/** Send a server query asking for the creation of a meeting given a certain name (String),
- *  startTime (Timestamp), optional location (String), optional end time (Timestamp) and optional
- *  extra information (Json object) */
-export function requestCreateMeeting(
-  name: string, startTime: Timestamp, location: string, endTime: Timestamp, extra?: {},
-): Promise<void> {
-  const time = Timestamp.EpochNow();
-  const currentLao: Lao = OpenedLaoStore.get();
-
-  const message = new CreateMeeting({
-    id: Hash.fromStringArray(
-      EventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name,
-    ),
-    name,
-    start: adaptStartTime(time, startTime),
-    creation: time,
-    location,
-    end: endTime,
-    extra,
   });
 
   return publish(channelFromIds(currentLao.id), message);

@@ -1,6 +1,10 @@
-import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
-import { Timestamp } from './Timestamp';
-import { Hash } from './Hash';
+import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
+import { Timestamp } from 'model/objects/Timestamp';
+import { Hash } from 'model/objects/Hash';
+
+/**
+ * Object to represent a meeting.
+ */
 
 export interface MeetingState extends LaoEventState {
   name: string;

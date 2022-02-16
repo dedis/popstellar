@@ -11,7 +11,6 @@ export * from './KeyPair';
 export * from './Lao';
 export * from './LaoEvent';
 export * from './LaoEventBuilder';
-export * from './Meeting';
 export * from './PopToken';
 export * from './PrivateKey';
 export * from './PublicKey';

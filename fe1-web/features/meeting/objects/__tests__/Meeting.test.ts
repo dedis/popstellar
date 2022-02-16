@@ -1,8 +1,10 @@
 import 'jest-extended';
+
+import { LaoEventType } from 'model/objects/LaoEvent';
+import { Hash } from 'model/objects/Hash';
+import { Timestamp } from 'model/objects/Timestamp';
+
 import { Meeting, MeetingState } from '../Meeting';
-import { LaoEventType } from '../LaoEvent';
-import { Hash } from '../Hash';
-import { Timestamp } from '../Timestamp';
 
 const ID = new Hash('meetingId');
 const TIMESTAMP = new Timestamp(1620255600);

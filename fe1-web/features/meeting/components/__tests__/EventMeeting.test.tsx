@@ -1,6 +1,9 @@
 import React from 'react';
-import { LaoEventType, Meeting } from 'model/objects';
 import { render } from '@testing-library/react-native';
+
+import { LaoEventType } from 'model/objects';
+
+import { Meeting } from '../../objects/Meeting';
 import EventMeeting from '../EventMeeting';
 
 const meeting = Meeting.fromState({

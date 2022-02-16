@@ -2,12 +2,12 @@ import {
   AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp,
 } from 'features/social/network/messages/chirp';
 import { AddReaction } from 'features/social/network/messages/reaction';
+import { CreateMeeting, StateMeeting } from 'features/meeting/network/messages';
 import {
   ActionType, MessageData, ObjectType, SignatureType,
 } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
 import { CreateLao, StateLao, UpdateLao } from './lao';
-import { CreateMeeting, StateMeeting } from './meeting';
 import {
   CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
 } from './rollCall';

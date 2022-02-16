@@ -10,11 +10,12 @@ import ParagraphBlock from 'components/ParagraphBlock';
 import eventViewStyles from 'styles/stylesheets/eventViewStyles';
 import TextBlock from 'components/TextBlock';
 import {
-  Election, Hash, RollCall, Timestamp, Meeting,
+  Election, Hash, RollCall, Timestamp,
 } from 'model/objects';
-import EventMeeting from './EventMeeting';
+import EventMeeting from 'features/meeting/components/EventMeeting';
+import EventElection from 'components/eventList/events/EventElection';
+import { Meeting } from 'features/meeting/objects';
 import EventRollCall from './EventRollCall';
-import EventElection from './EventElection';
 
 /**
  * The Event item component: display the correct representation of the event according to its type,

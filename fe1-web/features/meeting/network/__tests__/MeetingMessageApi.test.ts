@@ -1,8 +1,8 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
 import {
   ActionType,
-  CreateMeeting,
   MessageData,
   ObjectType,
 } from 'model/network/method/message/data';
@@ -10,7 +10,9 @@ import { Hash, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'network/JsonRpcApi';
-import * as msApi from '../MessageApi';
+
+import { CreateMeeting } from '../messages';
+import * as msApi from '../MeetingMessageApi';
 
 jest.mock('network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;

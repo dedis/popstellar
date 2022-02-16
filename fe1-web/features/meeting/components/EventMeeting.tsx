@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import ParagraphBlock from 'components/ParagraphBlock';
 import TimeDisplay from 'components/TimeDisplay';
-import PropTypes from 'prop-types';
-import { Meeting } from 'model/objects';
+
+import { Meeting } from '../objects/Meeting';
 
 /**
  * Component used to display a Meeting event in the LAO event list

@@ -1,8 +1,8 @@
 import { MessageRegistry } from 'model/network/method/message/data/MessageRegistry';
 import * as ChirpHandler from 'features/social/network/ChirpHandler';
 import * as ReactionHandler from 'features/social/network/ReactionHandler';
+import * as MeetingHandler from 'features/meeting/network/MeetingHandler';
 import * as LaoHandler from './LaoHandler';
-import * as MeetingHandler from './MeetingHandler';
 import * as RollCallHandler from './RollCallHandler';
 import * as ElectionHandler from './ElectionHandler';
 import * as WitnessHandler from './WitnessHandler';

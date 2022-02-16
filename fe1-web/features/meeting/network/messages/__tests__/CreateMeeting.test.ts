@@ -1,10 +1,12 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
 import { Hash, Timestamp } from 'model/objects';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { mockLao, mockLaoCreationTime, mockLaoId } from '__tests__/utils/TestUtils';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { OpenedLaoStore } from 'store';
+
 import { CreateMeeting } from '../CreateMeeting';
 
 const NAME = 'myMeeting';

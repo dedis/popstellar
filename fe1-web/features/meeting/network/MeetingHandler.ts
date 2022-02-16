@@ -1,16 +1,16 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  ActionType,
-  CreateMeeting,
-  MessageRegistry,
-  ObjectType,
-  StateMeeting,
-} from 'model/network/method/message/data';
-import { Meeting } from 'model/objects';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import {
   addEvent, dispatch, getStore, makeCurrentLao, updateEvent,
 } from 'store';
-import { getEventFromId, hasWitnessSignatureQuorum } from './Utils';
+import { getEventFromId, hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
+
+import { CreateMeeting, StateMeeting } from './messages';
+import { Meeting } from '../objects';
+
+/**
+ * Handles all meeting related messages that are received.
+ */
 
 const getCurrentLao = makeCurrentLao();
 

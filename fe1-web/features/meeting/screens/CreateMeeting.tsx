@@ -3,21 +3,22 @@ import {
   View, Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { useToast } from 'react-native-toast-notifications';
 
 import STRINGS from 'res/strings';
-import { requestCreateMeeting } from 'network/MessageApi';
 import TextBlock from 'components/TextBlock';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
 import TextInputLine from 'components/TextInputLine';
 import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
+import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import { Timestamp } from 'model/objects';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
-import { onConfirmPress } from '../CreateEvent';
+import { onConfirmPress } from 'parts/lao/organizer/eventCreation/CreateEvent';
+
+import { requestCreateMeeting } from '../network/MeetingMessageApi';
 
 const DEFAULT_MEETING_DURATION = 3600;
 
@@ -29,7 +30,7 @@ const DEFAULT_MEETING_DURATION = 3600;
 const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const toast = useToast();
 
   const [meetingName, setMeetingName] = useState('');
