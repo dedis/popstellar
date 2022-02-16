@@ -14,6 +14,11 @@ import { Meeting } from '../objects';
 
 const getCurrentLao = makeCurrentLao();
 
+/**
+ * Handles a MeetingCreate message by creating a meeting in the current Lao.
+ *
+ * @param msg - The extended message for creating a meeting
+ */
 function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.MEETING
     || msg.messageData.action !== ActionType.CREATE) {
@@ -46,6 +51,11 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
+/**
+ * Handles a MeetingState message by updating the state of the meeting.
+ *
+ * @param msg - The extended message for getting the meeting's state
+ */
 function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.MEETING
     || msg.messageData.action !== ActionType.STATE) {

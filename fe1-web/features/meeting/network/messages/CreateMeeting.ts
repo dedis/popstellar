@@ -71,7 +71,8 @@ export class CreateMeeting implements MessageData {
   }
 
   /**
-   * Creates a CreateMeeting object from a given object
+   * Creates a CreateMeeting object from a given object.
+   *
    * @param obj
    */
   public static fromJson(obj: any): CreateMeeting {

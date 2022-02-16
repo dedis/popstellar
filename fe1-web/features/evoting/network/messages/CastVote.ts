@@ -47,6 +47,11 @@ export class CastVote implements MessageData {
     this.election = msg.election;
   }
 
+  /**
+   * Checks the validity of an array of votes.
+   *
+   * @param votes - The array of votes to be checked
+   */
   public static validateVotes(votes: Vote[]) {
     votes.forEach((vote) => {
       if (!vote.id) {

@@ -60,19 +60,28 @@ export class Meeting implements LaoEvent {
     this.extra = obj.extra || {};
   }
 
-  public static fromState(m: MeetingState): Meeting {
+  /**
+   * Creates a Meeting object from a MeetingState object.
+   *
+   * @param meetingState
+   */
+  public static fromState(meetingState: MeetingState): Meeting {
     return new Meeting({
-      id: new Hash(m.id),
-      name: m.name,
-      location: m.location,
-      creation: new Timestamp(m.creation),
-      last_modified: new Timestamp((m.last_modified) ? m.last_modified : m.creation),
-      start: new Timestamp(m.start),
-      end: (m.end) ? new Timestamp(m.end) : undefined,
-      extra: (m.extra) ? { ...m.extra } : {},
+      id: new Hash(meetingState.id),
+      name: meetingState.name,
+      location: meetingState.location,
+      creation: new Timestamp(meetingState.creation),
+      last_modified: new Timestamp((meetingState.last_modified) ? meetingState.last_modified
+        : meetingState.creation),
+      start: new Timestamp(meetingState.start),
+      end: (meetingState.end) ? new Timestamp(meetingState.end) : undefined,
+      extra: (meetingState.extra) ? { ...meetingState.extra } : {},
     });
   }
 
+  /**
+   * Creates a MeetingState from the current Meeting object.
+   */
   public toState(): MeetingState {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {

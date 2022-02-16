@@ -90,6 +90,12 @@ export class SetupElection implements MessageData {
     this.id = msg.id;
   }
 
+  /**
+   * Checks that an array of questions is valid.
+   *
+   * @param questions - The array of questions to be checked
+   * @param electID- The id of the election
+   */
   public static validateQuestions(questions: Question[], electID: string) {
     questions.forEach((question) => {
       const expectedHash = Hash.fromStringArray(
@@ -116,7 +122,8 @@ export class SetupElection implements MessageData {
   }
 
   /**
-   * Creates a SetupElection object from a given object
+   * Creates a SetupElection object from a given object.
+   *
    * @param obj
    */
   public static fromJson(obj: any): SetupElection {

@@ -128,20 +128,28 @@ export class Election implements LaoEvent {
     this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
   }
 
-  public static fromState(e: ElectionState): Election {
+  /**
+   * Creates an Election from an ElectionState.
+   *
+   * @param electionState
+   */
+  public static fromState(electionState: ElectionState): Election {
     return new Election({
-      lao: new Hash(e.lao),
-      id: new Hash(e.id),
-      name: e.name,
-      version: e.version,
-      created_at: new Timestamp(e.created_at),
-      start: new Timestamp(e.start),
-      end: new Timestamp(e.end),
-      questions: e.questions,
-      registered_votes: e.registered_votes,
+      lao: new Hash(electionState.lao),
+      id: new Hash(electionState.id),
+      name: electionState.name,
+      version: electionState.version,
+      created_at: new Timestamp(electionState.created_at),
+      start: new Timestamp(electionState.start),
+      end: new Timestamp(electionState.end),
+      questions: electionState.questions,
+      registered_votes: electionState.registered_votes,
     });
   }
 
+  /**
+   * Creates an ElectionState from the current Election object.
+   */
   public toState(): ElectionState {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
@@ -150,6 +158,13 @@ export class Election implements LaoEvent {
     };
   }
 
+  /**
+   * Gets the status of an election by knowing its start and end times.
+   *
+   * @param start - The start time of the election
+   * @param end - The end time of the election
+   * @private
+   */
   private static getElectionStatus(start: Timestamp, end: Timestamp): ElectionStatus {
     const now = Timestamp.EpochNow();
     if (now.before(start)) {

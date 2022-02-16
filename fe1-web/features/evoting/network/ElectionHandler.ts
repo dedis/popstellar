@@ -21,6 +21,11 @@ import { Election, ElectionStatus, RegisteredVote } from '../objects';
 
 const getCurrentLao = makeCurrentLao();
 
+/**
+ * Handles an ElectionSetup message by setting up the election in the current Lao.
+ *
+ * @param msg - The extended message for setting up an election
+ */
 function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.SETUP) {
@@ -61,6 +66,11 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
+/**
+ * Handles a CastVote message being sent during an election.
+ *
+ * @param msg - The extended message to cast a vote
+ */
 function handleCastVoteMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.CAST_VOTE) {
@@ -110,6 +120,11 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
+/**
+ * Handles an ElectionEnd message by ending the election.
+ *
+ * @param msg - The extended message for ending an election
+ */
 function handleElectionEndMessage(msg: ExtendedMessage) {
   console.log('Handling Election end message');
   if (msg.messageData.object !== ObjectType.ELECTION
@@ -137,6 +152,11 @@ function handleElectionEndMessage(msg: ExtendedMessage) {
   return true;
 }
 
+/**
+ * Handles an ElectionResult message by updating the election's state with its results.
+ *
+ * @param msg - The extended message for getting the election's results.
+ */
 function handleElectionResultMessage(msg: ExtendedMessage) {
   if (msg.messageData.object !== ObjectType.ELECTION
     || msg.messageData.action !== ActionType.RESULT) {

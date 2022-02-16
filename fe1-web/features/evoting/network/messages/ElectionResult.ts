@@ -4,6 +4,7 @@ import { ActionType, MessageData, ObjectType } from 'model/network/method/messag
 
 import { QuestionResult } from '../../objects/Election';
 
+/** Data sent to ask for the result of an election */
 export class ElectionResult implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;
 
@@ -18,6 +19,11 @@ export class ElectionResult implements MessageData {
     this.questions = msg.questions;
   }
 
+  /**
+   * Created an ElectionResult object from a given object.
+   *
+   * @param obj
+   */
   public static fromJson(obj: any): ElectionResult {
     const { errors } = validateDataObject(ObjectType.ELECTION, ActionType.RESULT, obj);
 

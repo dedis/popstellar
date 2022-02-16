@@ -108,7 +108,8 @@ export class StateMeeting implements MessageData {
   }
 
   /**
-   * Creates a StateMeeting object from a given object
+   * Creates a StateMeeting object from a given object.
+   *
    * @param obj
    */
   public static fromJson(obj: any): StateMeeting {

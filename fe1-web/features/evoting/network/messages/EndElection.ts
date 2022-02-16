@@ -46,7 +46,8 @@ export class EndElection implements MessageData {
   }
 
   /**
-   * Creates an EndElection object from a given object
+   * Creates an EndElection object from a given object.
+   *
    * @param obj
    */
   public static fromJson(obj: any): EndElection {
