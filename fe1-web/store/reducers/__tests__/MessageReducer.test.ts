@@ -7,8 +7,9 @@ import {
   markExtMessageAsProcessed,
   Message,
 } from 'model/network/method/message';
-import { AddChirp, MessageRegistry } from 'model/network/method/message/data';
+import { MessageRegistry } from 'model/network/method/message/data';
 import { mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
+import { AddChirp } from 'features/social/network/messages/chirp';
 import {
   addMessages,
   getLaoMessagesState,
