@@ -10,7 +10,7 @@ export interface MeetingState extends LaoEventState {
   name: string;
   location: string;
   creation: number;
-  last_modified: number;
+  lastModified: number;
   extra: object;
 }
 
@@ -71,7 +71,7 @@ export class Meeting implements LaoEvent {
       name: meetingState.name,
       location: meetingState.location,
       creation: new Timestamp(meetingState.creation),
-      lastModified: new Timestamp((meetingState.last_modified) ? meetingState.last_modified
+      lastModified: new Timestamp((meetingState.lastModified) ? meetingState.lastModified
         : meetingState.creation),
       start: new Timestamp(meetingState.start),
       end: (meetingState.end) ? new Timestamp(meetingState.end) : undefined,

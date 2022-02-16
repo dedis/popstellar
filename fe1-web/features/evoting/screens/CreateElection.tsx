@@ -84,11 +84,11 @@ const CreateElection = ({ route }: any) => {
       id: Hash.fromStringArray(
         EventTags.QUESTION, electionId.toString(), item.question,
       ).toString(),
-      writeIn: false,
+      write_in: false,
     }));
 
   const isInvalid = (obj: Question): boolean => (obj.question === ''
-    || obj.ballotOptions.length < minBallotOptions);
+    || obj.ballot_options.length < minBallotOptions);
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
   const buttonsVisibility: boolean = (electionName !== ''

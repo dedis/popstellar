@@ -23,17 +23,17 @@ const initializeData = () => {
   question1 = {
     id: 'q1',
     question: 'Question1',
-    votingMethod: STRINGS.election_method_Plurality,
-    ballotOptions: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
-    writeIn: false,
+    voting_method: STRINGS.election_method_Plurality,
+    ballot_options: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
+    write_in: false,
   };
 
   question2 = {
     id: 'q2',
     question: 'Question2',
-    votingMethod: STRINGS.election_method_Plurality,
-    ballotOptions: ['Answer2.1', 'Answer2.2'],
-    writeIn: false,
+    voting_method: STRINGS.election_method_Plurality,
+    ballot_options: ['Answer2.1', 'Answer2.2'],
+    write_in: false,
   };
 
   vote1 = {
@@ -91,11 +91,11 @@ describe('Election object', () => {
       lao: mockLaoName,
       name: NAME,
       version: VERSION,
-      created_at: TIMESTAMP_PAST1.valueOf(),
+      createdAt: TIMESTAMP_PAST1.valueOf(),
       start: TIMESTAMP_PAST1.valueOf(),
       end: TIMESTAMP_PAST2.valueOf(),
       questions: [question1, question2],
-      registered_votes: [registeredVotes],
+      registeredVotes: [registeredVotes],
       electionStatus: ElectionStatus.FINISHED,
     };
     expect(election.toState()).toStrictEqual(expectedState);

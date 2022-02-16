@@ -20,7 +20,7 @@ describe('Meeting object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),
-      last_modified: TIMESTAMP.valueOf(),
+      lastModified: TIMESTAMP.valueOf(),
       extra: {},
     };
     const meeting = Meeting.fromState(meetingState);
@@ -43,7 +43,7 @@ describe('Meeting object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),
-      last_modified: TIMESTAMP.valueOf(),
+      lastModified: TIMESTAMP.valueOf(),
       extra: {},
     };
     const meeting = Meeting.fromState(meetingState as MeetingState);
@@ -58,7 +58,7 @@ describe('Meeting object', () => {
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),
-      last_modified: TIMESTAMP.valueOf(),
+      lastModified: TIMESTAMP.valueOf(),
       extra: {},
       end: TIMESTAMP.valueOf() + 500,
     };

@@ -12,7 +12,7 @@ const meeting = Meeting.fromState({
   name: 'MyMeeting',
   location: 'Lausanne',
   creation: 1620255600,
-  last_modified: 1620255600,
+  lastModified: 1620255600,
   start: 1620255600,
   end: 1620255800,
   extra: {},

@@ -50,7 +50,7 @@ const EventElection = (props: IPropTypes) => {
   const { election } = props;
   const { isOrganizer } = props;
   const toast = useToast();
-  const questions = election.questions.map((q) => ({ title: q.question, data: q.ballotOptions }));
+  const questions = election.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
   const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
   const [hasVoted, setHasVoted] = useState(0);
   const untilStart = (election.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
