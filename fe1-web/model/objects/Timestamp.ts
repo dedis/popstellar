@@ -54,7 +54,7 @@ export class Timestamp extends Number implements Number {
   }
 
   /**
-   * Converts the current Timestamp object to a human-readable string.
+   * Converts the current Timestamp object to a human-readable string of a date.
    */
   public toDateString(): string {
     return this.toDate().toLocaleString();
