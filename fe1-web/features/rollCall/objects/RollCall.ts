@@ -3,6 +3,10 @@ import {
   Hash, PopToken, PublicKey, Timestamp,
 } from 'model/objects';
 
+/**
+ * Object to represent a roll call.
+ */
+
 export enum RollCallStatus {
   CREATED,
   OPENED,
@@ -101,23 +105,33 @@ export class RollCall implements LaoEvent {
     this.attendees = obj.attendees;
   }
 
-  public static fromState(rc: RollCallState): RollCall {
+  /**
+   * Creates a RollCall object from a RollCallState object.
+   *
+   * @param rollCallState
+   */
+  public static fromState(rollCallState: RollCallState): RollCall {
     return new RollCall({
-      id: new Hash(rc.id),
-      idAlias: (rc.idAlias) ? new Hash(rc.idAlias) : undefined,
-      name: rc.name,
-      location: rc.location,
-      description: rc.description,
-      creation: new Timestamp(rc.creation),
-      proposed_start: new Timestamp(rc.proposed_start),
-      proposed_end: new Timestamp(rc.proposed_end),
-      opened_at: (rc.opened_at !== undefined) ? new Timestamp(rc.opened_at) : undefined,
-      closed_at: (rc.closed_at !== undefined) ? new Timestamp(rc.closed_at) : undefined,
-      status: rc.status,
-      attendees: rc.attendees?.map((a) => new PublicKey(a)),
+      id: new Hash(rollCallState.id),
+      idAlias: (rollCallState.idAlias) ? new Hash(rollCallState.idAlias) : undefined,
+      name: rollCallState.name,
+      location: rollCallState.location,
+      description: rollCallState.description,
+      creation: new Timestamp(rollCallState.creation),
+      proposed_start: new Timestamp(rollCallState.proposed_start),
+      proposed_end: new Timestamp(rollCallState.proposed_end),
+      opened_at: (rollCallState.opened_at !== undefined) ? new Timestamp(rollCallState.opened_at)
+        : undefined,
+      closed_at: (rollCallState.closed_at !== undefined) ? new Timestamp(rollCallState.closed_at)
+        : undefined,
+      status: rollCallState.status,
+      attendees: rollCallState.attendees?.map((a) => new PublicKey(a)),
     });
   }
 
+  /**
+   * Creates a RollCallState object from the current RollCall object.
+   */
   public toState(): RollCallState {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
@@ -128,6 +142,12 @@ export class RollCall implements LaoEvent {
     };
   }
 
+  /**
+   * Checks if a pop token is contained in the current roll call.
+   *
+   * @param token - The pop token to search for
+   * @returns A boolean telling if the token is there or not
+   */
   public containsToken(token: PopToken | undefined): boolean {
     if (this.attendees === undefined || token === undefined) {
       return false;

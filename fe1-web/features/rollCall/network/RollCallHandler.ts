@@ -12,11 +12,21 @@ import {
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId } from 'ingestion/handlers/Utils';
-import { CloseRollCall, CreateRollCall, OpenRollCall } from 'features/rollCall/network/messages';
-import { RollCall, RollCallStatus } from 'features/rollCall/objects';
+
+import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
+import { RollCall, RollCallStatus } from '../objects';
+
+/**
+ * Handles all incoming roll call messages.
+ */
 
 const getCurrentLao = makeCurrentLao();
 
+/**
+ * Handles a RollCallCreate message by creating a roll call in the current Lao.
+ *
+ * @param msg - The extended message for creating a roll call
+ */
 function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ROLL_CALL
     || msg.messageData.action !== ActionType.CREATE) {
@@ -50,6 +60,11 @@ function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
+/**
+ * Handle a RollCallOpen message by opening the corresponding roll call.
+ *
+ * @param msg - The extended message for opening a roll call
+ */
 function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ROLL_CALL
     || msg.messageData.action !== ActionType.OPEN) {
@@ -84,6 +99,11 @@ function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
+/**
+ * Handles a RollCallClose message by closing the corresponding roll call.
+ *
+ * @param msg - The extended message for closing a roll call
+ */
 function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.ROLL_CALL
     || msg.messageData.action !== ActionType.CLOSE) {

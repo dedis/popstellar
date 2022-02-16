@@ -11,7 +11,8 @@ export class ReopenRollCall extends OpenRollCall {
   public readonly action: ActionType = ActionType.REOPEN;
 
   /**
-   * Creates a ReopenRollCall object from a given object
+   * Creates a ReopenRollCall object from a given object.
+   *
    * @param obj
    */
   public static fromJson(obj: any): ReopenRollCall {

@@ -54,7 +54,8 @@ export class CloseRollCall implements MessageData {
   }
 
   /**
-   * Creates a CloseRollCall object from a given object
+   * Creates a CloseRollCall object from a given object.
+   *
    * @param obj
    */
   public static fromJson(obj: any): CloseRollCall {
