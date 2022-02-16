@@ -13,6 +13,13 @@ import TextBlock from 'components/TextBlock';
 
 import Event from './index';
 
+/**
+ * Collapsible list of events: list with 3 sections corresponding
+ * to 'past', 'present' and 'future' events.
+ *
+ * Nested events should be in the children value of the parent event.
+ */
+
 const styles = StyleSheet.create({
   flexBox: {
     flex: 1,
@@ -50,12 +57,6 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
     : sectionTitle;
 }
 
-/**
- * Collapsible list of events: list with 3 sections corresponding
- * to 'past', 'present' and 'future' events
- *
- * Nested events should be in the children value of the parent event
-*/
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
 

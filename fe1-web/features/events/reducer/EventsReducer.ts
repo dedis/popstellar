@@ -163,6 +163,9 @@ export const {
 
 export const getEventsState = (state: any): EventLaoReducerState => state[eventReducerPath];
 
+/**
+ * Creates a list of all events.
+ */
 export const makeEventsList = () => createSelector(
   // First input: Get all events across all LAOs
   (state) => getEventsState(state),
@@ -183,6 +186,9 @@ export const makeEventsList = () => createSelector(
   },
 );
 
+/**
+ * Creates a map from event id to event id alias.
+ */
 export const makeEventsAliasMap = () => createSelector(
   // First input: Get all events across all LAOs
   (state) => getEventsState(state),
@@ -199,6 +205,11 @@ export const makeEventsAliasMap = () => createSelector(
   },
 );
 
+/**
+ * Returns a map from event id to LaoEvent within a Lao.
+ *
+ * @param laoId - The id of the Lao
+ */
 export const makeEventsMap = (laoId: string | undefined = undefined) => createSelector(
   // First input: Get all events across all LAOs
   (state) => getEventsState(state),
@@ -224,6 +235,12 @@ export const makeEventsMap = (laoId: string | undefined = undefined) => createSe
   },
 );
 
+/**
+ * Gets a specific event within a Lao.
+ *
+ * @param laoId - The id of the Lao
+ * @param eventId - The id of the event
+ */
 export const makeEventGetter = (laoId: Hash | string, eventId: Hash | string | undefined) => {
   const id = laoId.valueOf();
   const evtId = eventId?.valueOf();
@@ -247,6 +264,11 @@ export const makeEventGetter = (laoId: Hash | string, eventId: Hash | string | u
   );
 };
 
+/**
+ * Returns all events of a certain type.
+ *
+ * @param eventType
+ */
 export const makeEventByTypeSelector = <T extends LaoEvent>(eventType: string) => createSelector(
   // First input: Get all events across all LAOs
   (state) => getEventsState(state),
@@ -274,7 +296,13 @@ export const makeEventByTypeSelector = <T extends LaoEvent>(eventType: string) =
   },
 );
 
-export const makeLastRollCallAttendeesList = (laoId: Hash | string,
+/**
+ * Returns the list of attendees of a roll call.
+ *
+ * @param laoId - The id of the Lao
+ * @param rollCallId - The id of the roll call
+ */
+export const makeRollCallAttendeesList = (laoId: Hash | string,
   rollCallId: Hash | string | undefined) => {
   const id = laoId.valueOf();
   const evtId = rollCallId?.valueOf();

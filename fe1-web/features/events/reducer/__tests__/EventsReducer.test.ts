@@ -16,7 +16,7 @@ import {
   makeEventsAliasMap,
   makeEventsList,
   makeEventsMap,
-  makeLastRollCallAttendeesList,
+  makeRollCallAttendeesList,
   removeEvent,
   updateEvent,
 } from '../EventsReducer';
@@ -233,7 +233,7 @@ describe('event selector', () => {
   });
 
   it('should return an empty list for lastRollCallAttendeesList if the state is empty', () => {
-    expect(makeLastRollCallAttendeesList(mockLaoId, '1234').resultFunc(emptyState))
+    expect(makeRollCallAttendeesList(mockLaoId, '1234').resultFunc(emptyState))
       .toEqual([]);
   });
 });

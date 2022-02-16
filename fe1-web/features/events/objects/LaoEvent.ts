@@ -1,12 +1,17 @@
 import { Hash, Timestamp } from 'model/objects';
 
+/**
+ * Interface to represent an event within a LAO.
+ */
+
+// Represents all types of events
 export enum LaoEventType {
   MEETING = 'MEETING',
   ROLL_CALL = 'ROLL_CALL',
   ELECTION = 'ELECTION',
-  // Election, Poll, etc.
 }
 
+// Serializable LaoEvent (using primitive types)
 export interface LaoEventState {
   readonly eventType: LaoEventType;
 

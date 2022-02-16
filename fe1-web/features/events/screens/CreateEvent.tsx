@@ -11,6 +11,12 @@ import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 
+import { LaoEventType } from '../objects';
+
+/**
+ * Navigation panels to help manoeuvre through events creation.
+ */
+
 const FIVE_MINUTES_IN_SECONDS = 300;
 
 const styleEvents = StyleSheet.create({
@@ -26,30 +32,21 @@ const styleEvents = StyleSheet.create({
   } as ViewStyle,
 });
 
-enum EventTypes {
-  MEETING = 'Meeting',
-  ROLL_CALL = 'Roll-Call',
-  ELECTION = 'Election',
-}
-
-/**
- * Navigation panels to help manoeuvre through events creation
- */
 const CreateEvent = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
 
   const navigateToPanel = (type: string) => {
     switch (type) {
-      case EventTypes.MEETING:
+      case LaoEventType.MEETING:
         navigation.navigate(STRINGS.organizer_navigation_creation_meeting, styleEvents);
         break;
 
-      case EventTypes.ROLL_CALL:
+      case LaoEventType.ROLL_CALL:
         navigation.navigate(STRINGS.organizer_navigation_creation_roll_call, styleEvents);
         break;
 
-      case EventTypes.ELECTION:
+      case LaoEventType.ELECTION:
         navigation.navigate(STRINGS.organizer_navigation_creation_election, styleEvents);
         break;
 
@@ -62,7 +59,7 @@ const CreateEvent = () => {
     <View style={containerStyles.flex}>
       <TextBlock text={STRINGS.create_description} />
 
-      { Object.values(EventTypes).map(
+      { Object.values(LaoEventType).map(
         (type: string) => (
           <WideButtonView title={type} key={`wide-btn-view-${type}`} onPress={() => navigateToPanel(type)} />
         ),
