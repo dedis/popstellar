@@ -22,8 +22,8 @@ import {
 import { OpenedLaoStore } from 'store';
 import { FOUR_SECONDS } from 'res/const';
 import { onConfirmPress } from 'parts/lao/organizer/eventCreation/CreateEvent';
-import { requestCreateElection } from 'features/evoting/network/ElectionMessageApi';
 
+import { requestCreateElection } from '../network/ElectionMessageApi';
 import { Question } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
@@ -51,8 +51,8 @@ const CreateElection = ({ route }: any) => {
   const time = Timestamp.EpochNow();
 
   const buildDatePickerWeb = () => {
-    const startDate = startTime.timestampToDate();
-    const endDate = endTime.timestampToDate();
+    const startDate = startTime.toDate();
+    const endDate = endTime.toDate();
 
     return (
       <View style={styles.viewVertical}>

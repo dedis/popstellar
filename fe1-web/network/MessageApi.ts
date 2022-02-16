@@ -19,15 +19,6 @@ import {
 } from 'store';
 import { publish } from './JsonRpcApi';
 
-/**
- * Adapts the starting time if start < creation.
- *
- * @param start
- * @param creation
- */
-const adaptStartTime = (creation: Timestamp, start: Timestamp) => ((start.before(creation))
-  ? creation : start);
-
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {
   const time = Timestamp.EpochNow();
@@ -114,7 +105,7 @@ export function requestCreateRollCall(
     name: name,
     creation: time,
     location: location,
-    proposed_start: adaptStartTime(time, proposedStart),
+    proposed_start: Timestamp.max(time, proposedStart),
     proposed_end: proposedEnd,
     description: description,
   });

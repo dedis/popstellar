@@ -11,15 +11,6 @@ import { CreateMeeting } from './messages';
  */
 
 /**
- * Adapts the starting time if start < creation.
- *
- * @param start - The start time of the event
- * @param creation - The creation time of the event
- */
-const adaptStartTime = (creation: Timestamp, start: Timestamp) => ((start.before(creation))
-  ? creation : start);
-
-/**
  * Sends a server query asking for the creation of a meeting.
  *
  * @param name - The name of the meeting
@@ -39,7 +30,7 @@ export function requestCreateMeeting(
       EventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name,
     ),
     name,
-    start: adaptStartTime(time, startTime),
+    start: Timestamp.max(time, startTime),
     creation: time,
     location,
     end: endTime,

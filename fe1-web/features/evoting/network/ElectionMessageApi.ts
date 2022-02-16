@@ -1,24 +1,15 @@
 import {
   channelFromIds, EventTags, Hash, Lao, Timestamp,
 } from 'model/objects';
-import { Question, Vote } from 'features/evoting/objects/Election';
 import { OpenedLaoStore } from 'store';
 import { publish } from 'network/JsonRpcApi';
 
 import { CastVote, EndElection, SetupElection } from './messages';
+import { Question, Vote } from '../objects';
 
 /**
  * Contains all functions to send election related messages.
  */
-
-/**
- * Adapts the starting time if start < creation.
- *
- * @param start - The start time of the event
- * @param creation - The creation time of the event
- */
-const adaptStartTime = (creation: Timestamp, start: Timestamp) => ((start.before(creation))
-  ? creation : start);
 
 /**
  * Sends a query asking for the creation of an election.
@@ -48,7 +39,7 @@ export function requestCreateElection(
     name: name,
     version: version,
     created_at: time,
-    start_time: adaptStartTime(time, start),
+    start_time: Timestamp.max(time, start),
     end_time: end,
     questions: questions,
   });

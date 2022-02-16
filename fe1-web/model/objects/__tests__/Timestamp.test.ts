@@ -16,12 +16,12 @@ describe('Timestamp object', () => {
 
   it('dateToTimestamp function works', () => {
     const date = new Date(TIMESTAMP * 1000);
-    expect(Timestamp.dateToTimestamp(date).valueOf()).toStrictEqual(TIMESTAMP);
+    expect(Timestamp.fromDate(date).valueOf()).toStrictEqual(TIMESTAMP);
   });
 
   it('timestampToDate function works', () => {
     const timestamp = new Timestamp(TIMESTAMP);
-    expect(timestamp.timestampToDate().valueOf()).toStrictEqual(TIMESTAMP * 1000);
+    expect(timestamp.toDate().valueOf()).toStrictEqual(TIMESTAMP * 1000);
   });
 
   it('before function works', () => {

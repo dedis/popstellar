@@ -42,8 +42,8 @@ const CreateRollCall = ({ route }: any) => {
   const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
 
   const buildDatePickerWeb = () => {
-    const startDate = proposedStartTime.timestampToDate();
-    const endDate = proposedEndTime.timestampToDate();
+    const startDate = proposedStartTime.toDate();
+    const endDate = proposedEndTime.toDate();
 
     return (
       <View style={styles.viewVertical}>

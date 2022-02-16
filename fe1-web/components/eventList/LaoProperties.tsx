@@ -15,7 +15,7 @@ import { ConnectToLao } from 'model/objects/ConnectToLao';
 import QRCode from '../QRCode';
 
 function renderProperties(lao: Lao, url: string) {
-  const creationDateString = lao.creation.timestampToString();
+  const creationDateString = lao.creation.toString();
   const connectToLao = new ConnectToLao({
     server: url,
     lao: lao.id.toString(),

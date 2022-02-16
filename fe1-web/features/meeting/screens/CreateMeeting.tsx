@@ -30,6 +30,7 @@ const DEFAULT_MEETING_DURATION = 3600;
 const CreateMeeting = ({ route }: any) => {
   const styles = route.params;
 
+  // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
   const toast = useToast();
 
@@ -61,8 +62,8 @@ const CreateMeeting = ({ route }: any) => {
   };
 
   const buildDatePickerWeb = () => {
-    const startDate = startTime.timestampToDate();
-    const endDate = endTime.timestampToDate();
+    const startDate = startTime.toDate();
+    const endDate = endTime.toDate();
 
     return (
       <View style={styles.viewVertical}>
