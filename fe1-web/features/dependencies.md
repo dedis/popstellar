@@ -16,6 +16,7 @@ the future.
 ## Meeting
 
 - EventMeeting : `components/eventList/events/Event.tsx`
-- Meeting : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`
+- Meeting : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`,
+`store/reducers/__tests__/EventsReducer.test.ts`
 - MeetingHandler : `ingestion/handlers/index.ts`
 - Storage is done in EventsReducer/EventsStore and could be done separately in a MeetingsReducer
