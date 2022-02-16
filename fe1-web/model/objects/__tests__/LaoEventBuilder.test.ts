@@ -1,12 +1,12 @@
 import 'jest-extended';
 import STRINGS from 'res/strings';
-import { Meeting, MeetingState } from 'features/meeting/objects/Meeting';
+import { Meeting, MeetingState } from 'features/meeting/objects';
 import {
   Election, ElectionState, Question, RegisteredVote,
-} from 'features/evoting/objects/Election';
+} from 'features/evoting/objects';
+import { RollCall, RollCallState, RollCallStatus } from 'features/rollCall/objects';
 import { LaoEventState, LaoEventType } from '../LaoEvent';
 import { eventFromState } from '../LaoEventBuilder';
-import { RollCall, RollCallState, RollCallStatus } from '../RollCall';
 
 describe('LaoEventBuilder', () => {
   it('builds a meeting with a MeetingState', () => {

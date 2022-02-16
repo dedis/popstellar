@@ -1,19 +1,6 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  ActionType,
-  CloseRollCall,
-  CreateRollCall,
-  MessageRegistry,
-  ObjectType,
-  OpenRollCall,
-} from 'model/network/method/message/data';
-import {
-  getReactionChannel,
-  getUserSocialChannel,
-  RollCall,
-  RollCallStatus,
-  Wallet,
-} from 'model/objects';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+import { getReactionChannel, getUserSocialChannel, Wallet } from 'model/objects';
 import {
   addEvent,
   AsyncDispatch,
@@ -24,7 +11,9 @@ import {
   updateEvent,
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { getEventFromId } from './Utils';
+import { getEventFromId } from 'ingestion/handlers/Utils';
+import { CloseRollCall, CreateRollCall, OpenRollCall } from 'features/rollCall/network/messages';
+import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 
 const getCurrentLao = makeCurrentLao();
 

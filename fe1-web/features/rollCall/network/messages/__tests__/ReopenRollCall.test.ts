@@ -1,10 +1,12 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
 import { Hash, Timestamp } from 'model/objects';
 import { mockLao, mockLaoId, mockLaoName } from '__tests__/utils/TestUtils';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { OpenedLaoStore } from 'store';
+
 import { ReopenRollCall } from '../ReopenRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021

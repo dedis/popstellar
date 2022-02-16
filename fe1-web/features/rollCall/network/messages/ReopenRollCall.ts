@@ -1,8 +1,8 @@
 import { ProtocolError } from 'model/network';
 import { validateDataObject } from 'model/network/validation';
 import { Hash, Timestamp } from 'model/objects';
-import { OpenRollCall } from './OpenRollCall';
-import { ActionType, ObjectType } from '../MessageData';
+import { OpenRollCall } from 'features/rollCall/network/messages/OpenRollCall';
+import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 
 /** Data sent to reopen a Roll-Call event */
 export class ReopenRollCall extends OpenRollCall {

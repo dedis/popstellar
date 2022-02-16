@@ -5,8 +5,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 import {
-  Hash, LaoEvent, LaoEventState, eventFromState, RollCall, PublicKey,
+  Hash, LaoEvent, LaoEventState, eventFromState, PublicKey,
 } from 'model/objects';
+import { RollCall } from 'features/rollCall/objects';
 import { getLaosState } from './LaoReducer';
 
 /**

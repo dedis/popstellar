@@ -3,8 +3,8 @@ import * as ChirpHandler from 'features/social/network/ChirpHandler';
 import * as ReactionHandler from 'features/social/network/ReactionHandler';
 import * as MeetingHandler from 'features/meeting/network/MeetingHandler';
 import * as ElectionHandler from 'features/evoting/network/ElectionHandler';
+import * as RollCallHandler from 'features/rollCall/network/RollCallHandler';
 import * as LaoHandler from './LaoHandler';
-import * as RollCallHandler from './RollCallHandler';
 import * as WitnessHandler from './WitnessHandler';
 
 type ConfigurableHandler = {

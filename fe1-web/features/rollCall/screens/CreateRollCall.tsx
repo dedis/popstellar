@@ -4,9 +4,9 @@ import {
 } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications';
 
 import STRINGS from 'res/strings';
-import { requestCreateRollCall } from 'network/MessageApi';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import ParagraphBlock from 'components/ParagraphBlock';
 import WideButtonView from 'components/WideButtonView';
@@ -14,9 +14,10 @@ import TextInputLine from 'components/TextInputLine';
 import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
 import { Timestamp } from 'model/objects';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
-import { onConfirmPress } from '../CreateEvent';
+import { onConfirmPress } from 'parts/lao/organizer/eventCreation/CreateEvent';
+
+import { requestCreateRollCall } from '../network/RollCallMessageApi';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 

@@ -4,8 +4,8 @@ import {
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness, checkAttendees } from '../Checker';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { checkTimestampStaleness, checkAttendees } from 'model/network/method/message/data/Checker';
 
 /** Data sent to close a Roll-Call event */
 export class CloseRollCall implements MessageData {

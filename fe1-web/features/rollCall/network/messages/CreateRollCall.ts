@@ -4,8 +4,8 @@ import {
 } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness } from '../Checker';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
 
 /** Data sent to create a Roll-Call event */
 export class CreateRollCall implements MessageData {

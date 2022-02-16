@@ -3,19 +3,21 @@ import { useRoute } from '@react-navigation/core';
 import {
   act, fireEvent, render, waitFor,
 } from '@testing-library/react-native';
+import * as reactRedux from 'react-redux';
+// @ts-ignore
+import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
+
 import {
   Hash, Lao, PublicKey, Timestamp,
 } from 'model/objects';
 import STRINGS from 'res/strings';
 import keyPair from 'test_data/keypair.json';
-import { requestCloseRollCall as mockRequestCloseRollCall } from 'network/MessageApi';
 import { OpenedLaoStore } from 'store';
-import * as reactRedux from 'react-redux';
-// @ts-ignore
-import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 import {
   mockLao, mockLaoId, mockLaoName, mockLaoState, mockPopToken,
 } from '__tests__/utils/TestUtils';
+
+import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
 import RollCallOpened from '../RollCallOpened';
 
 const mockPublicKey2 = new PublicKey(keyPair.publicKey2);
@@ -26,7 +28,7 @@ const rollCallId = Hash.fromStringArray('R', mockLaoId, time, mockLaoName).toStr
 
 jest.mock('@react-navigation/core');
 jest.mock('react-qr-reader');
-jest.mock('network/MessageApi');
+jest.mock('features/rollCall/network/RollCallMessageApi.ts');
 
 let mockToastShow = jest.fn();
 jest.mock('react-native-toast-notifications', () => ({

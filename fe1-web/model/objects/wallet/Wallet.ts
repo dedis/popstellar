@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 import { makeEventByTypeSelector } from 'store';
+import { RollCall } from 'features/rollCall/objects';
 import { Hash } from '../Hash';
 import { generateToken } from './Token';
 import { LaoEventType } from '../LaoEvent';
 import { PopToken } from '../PopToken';
-import { RollCall } from '../RollCall';
 
 /**
  * Recovers all PoP tokens associated with this wallet

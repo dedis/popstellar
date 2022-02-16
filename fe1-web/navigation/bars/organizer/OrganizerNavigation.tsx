@@ -7,9 +7,9 @@ import Organizer from 'parts/lao/organizer/Organizer';
 import CreateEvent from 'parts/lao/organizer/eventCreation/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
 import CreateMeeting from 'features/meeting/screens/CreateMeeting';
-import CreateRollCall from 'parts/lao/organizer/eventCreation/events/CreateRollCall';
+import CreateRollCall from 'features/rollCall/screens/CreateRollCall';
 import CreateElection from 'features/evoting/screens/CreateElection';
-import RollCallOpened from 'parts/lao/organizer/RollCallOpened';
+import RollCallOpened from 'features/rollCall/screens/RollCallOpened';
 
 /**
  * Define the Organizer stack navigation

@@ -1,7 +1,7 @@
-import { Meeting, MeetingState } from 'features/meeting/objects/Meeting';
-import { Election, ElectionState } from 'features/evoting/objects/Election';
+import { Meeting, MeetingState } from 'features/meeting/objects';
+import { Election, ElectionState } from 'features/evoting/objects';
+import { RollCall, RollCallState } from 'features/rollCall/objects';
 import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
-import { RollCall, RollCallState } from './RollCall';
 
 export function eventFromState(evtState: LaoEventState): LaoEvent | undefined {
   switch (evtState.eventType) {

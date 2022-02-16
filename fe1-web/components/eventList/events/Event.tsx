@@ -14,7 +14,7 @@ import EventMeeting from 'features/meeting/components/EventMeeting';
 import EventElection from 'features/evoting/components/EventElection';
 import { Meeting } from 'features/meeting/objects';
 import { Election } from 'features/evoting/objects';
-import EventRollCall from './EventRollCall';
+import EventRollCall from 'features/rollCall/components/EventRollCall';
 
 /**
  * The Event item component: display the correct representation of the event according to its type,

@@ -1,11 +1,10 @@
 import 'jest-extended';
+
+import {
+  Hash, LaoEventType, PopToken, PrivateKey, PublicKey, Timestamp,
+} from 'model/objects';
+
 import { RollCall, RollCallState, RollCallStatus } from '../RollCall';
-import { Hash } from '../Hash';
-import { Timestamp } from '../Timestamp';
-import { LaoEventType } from '../LaoEvent';
-import { PopToken } from '../PopToken';
-import { PrivateKey } from '../PrivateKey';
-import { PublicKey } from '../PublicKey';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';

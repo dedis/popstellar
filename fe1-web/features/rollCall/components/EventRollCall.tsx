@@ -2,15 +2,16 @@ import React, { useState } from 'react';
 import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+
 import { makeCurrentLao } from 'store';
-import { requestOpenRollCall } from 'network';
-import {
-  RollCall, RollCallStatus, Timestamp, Wallet,
-} from 'model/objects';
+import { Timestamp, Wallet } from 'model/objects';
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
 import STRINGS from 'res/strings';
-import { useNavigation } from '@react-navigation/native';
+
+import { requestOpenRollCall } from '../network/RollCallMessageApi';
+import { RollCall, RollCallStatus } from '../objects';
 
 /**
  * Component used to display a RollCall event in the LAO event list

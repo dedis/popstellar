@@ -10,13 +10,13 @@ the future.
 `model/network/method/message/__tests__/Message.test.ts` (only tests)
 - ChirpHandler : `ingestion/handlers/index.ts`
 - SocialHandler : `ingestion/handlers/index.ts`
-- SocialNavigation : `navigation/bars/LaoNavigation.tsx`,
+- SocialNavigation : `navigation/bars/LaoNavigation.tsx`
 - SocialReducer : `store/reducers/index.ts`, `store/reducers/RootReducer.ts`
 
 ## Meeting
 
 - EventMeeting : `components/eventList/events/Event.tsx`
-- Meeting : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`,
+- Meeting : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`
 `store/reducers/__tests__/EventsReducer.test.ts`
 - MeetingHandler : `ingestion/handlers/index.ts`
 - Storage is done in EventsReducer/EventsStore and could be done separately in a MeetingsReducer
@@ -28,3 +28,13 @@ the future.
 - Election : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`
 - ElectionHandler : `ingestion/handlers/index.ts`
 - Storage is done in EventsReducer/EventsStore and could be done separately in an ElectionsReducer
+
+## Roll Call
+
+- EventRollCall : `components/eventList/events/Event.tsx`
+- RollCall : `model/objects/LaoEventBuilder.ts`, `model/objects/__tests__/LaoEventBuilder.test.ts`,
+`model/objects/wallet/Token.ts`, `model/objects/wallet/Wallet.ts`, `store/reducers/EventsReducer.ts`
+`store/reducers/__tests__/EventsReducer.test.ts`
+- RollCallHandler : `ingestion/handlers/index.ts`
+- CreateRollCall : `navigation/bars/organizer/OrganizerNavigation.tsx`
+- OpenedRollCall : `navigation/bars/organizer/OrganizerNavigation.tsx`

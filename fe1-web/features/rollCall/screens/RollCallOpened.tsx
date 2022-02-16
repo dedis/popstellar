@@ -2,25 +2,26 @@ import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, View, ViewStyle,
 } from 'react-native';
+import QrReader from 'react-qr-reader';
+import { Badge } from 'react-native-elements';
+import { useNavigation } from '@react-navigation/native';
+import { useRoute } from '@react-navigation/core';
+import { useToast } from 'react-native-toast-notifications';
+import { useSelector } from 'react-redux';
+
 import { Spacing } from 'styles';
 import containerStyles from 'styles/stylesheets/containerStyles';
-
-import QrReader from 'react-qr-reader';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import ConfirmModal from 'components/ConfirmModal';
-import { Badge } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/core';
-import { requestCloseRollCall } from 'network';
 import {
   EventTags, Hash, PublicKey, Wallet,
 } from 'model/objects';
 import { makeCurrentLao, OpenedLaoStore } from 'store';
-import { useToast } from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
 import { FOUR_SECONDS } from 'res/const';
+
+import { requestCloseRollCall } from '../network/RollCallMessageApi';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them

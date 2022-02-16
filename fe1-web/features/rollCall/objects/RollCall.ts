@@ -1,8 +1,7 @@
-import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
-import { Hash } from './Hash';
-import { Timestamp } from './Timestamp';
-import { PublicKey } from './PublicKey';
-import { PopToken } from './PopToken';
+import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
+import {
+  Hash, PopToken, PublicKey, Timestamp,
+} from 'model/objects';
 
 export enum RollCallStatus {
   CREATED,

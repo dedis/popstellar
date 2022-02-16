@@ -4,8 +4,8 @@ import {
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { OpenedLaoStore } from 'store';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness } from '../Checker';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
 
 const paramError = (o: OpenRollCall) => `parameter encountered during roll call ${o.action}`;
 

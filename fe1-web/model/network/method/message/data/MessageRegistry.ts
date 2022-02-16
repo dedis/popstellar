@@ -7,13 +7,13 @@ import {
   CastVote, ElectionResult, EndElection, SetupElection,
 } from 'features/evoting/network/messages';
 import {
+  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
+} from 'features/rollCall/network/messages';
+import {
   ActionType, MessageData, ObjectType, SignatureType,
 } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
 import { CreateLao, StateLao, UpdateLao } from './lao';
-import {
-  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
-} from './rollCall';
 import { WitnessMessage } from './witness';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;

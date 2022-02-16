@@ -1,4 +1,5 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 import {
@@ -7,6 +8,7 @@ import {
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { OpenedLaoStore } from 'store';
+
 import { CloseRollCall } from '../CloseRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021

@@ -13,7 +13,6 @@ export * from './LaoEventBuilder';
 export * from './PopToken';
 export * from './PrivateKey';
 export * from './PublicKey';
-export * from './RollCall';
 export * from './Signature';
 export * from './Timestamp';
 export * from './WitnessSignature';
