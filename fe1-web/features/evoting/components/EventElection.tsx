@@ -50,7 +50,7 @@ const EventElection = (props: IPropTypes) => {
   const { election } = props;
   const { isOrganizer } = props;
   const toast = useToast();
-  const questions = election.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
+  const questions = election.questions.map((q) => ({ title: q.question, data: q.ballotOptions }));
   const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
   const [hasVoted, setHasVoted] = useState(0);
   const untilStart = (election.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
@@ -176,7 +176,7 @@ const EventElection = (props: IPropTypes) => {
   // (in handler/ElectionHandler.ts)
   const getElectionDisplay = (status: ElectionStatus) => {
     switch (status) {
-      case ElectionStatus.NOTSTARTED:
+      case ElectionStatus.NOT_STARTED:
         return (
           <SectionList
             sections={questions}

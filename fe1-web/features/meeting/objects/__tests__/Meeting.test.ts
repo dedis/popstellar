@@ -85,7 +85,7 @@ describe('Meeting object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
+        lastModified: TIMESTAMP,
         extra: {},
       });
       expect(createWrongMeeting).toThrow(Error);
@@ -97,7 +97,7 @@ describe('Meeting object', () => {
         start: TIMESTAMP,
         location: LOCATION,
         creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
+        lastModified: TIMESTAMP,
         extra: {},
       });
       expect(createWrongMeeting).toThrow(Error);
@@ -109,7 +109,7 @@ describe('Meeting object', () => {
         start: TIMESTAMP,
         name: NAME,
         location: LOCATION,
-        last_modified: TIMESTAMP,
+        lastModified: TIMESTAMP,
         extra: {},
       });
       expect(createWrongMeeting).toThrow(Error);
@@ -121,7 +121,7 @@ describe('Meeting object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
+        lastModified: TIMESTAMP,
         extra: {},
       });
       expect(createWrongMeeting).toThrow(Error);
@@ -143,7 +143,7 @@ describe('Meeting object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
+        lastModified: TIMESTAMP,
         extra: {},
       });
       expect(meeting).toStrictEqual(expected);
@@ -164,7 +164,7 @@ describe('Meeting object', () => {
         name: NAME,
         location: LOCATION,
         creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
+        lastModified: TIMESTAMP,
         extra: {},
       });
       expect(meeting).toStrictEqual(expected);

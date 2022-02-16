@@ -86,7 +86,7 @@ function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
 
   const meeting = new Meeting({
     ...oldMeeting,
-    last_modified: mtgMsg.last_modified,
+    lastModified: mtgMsg.last_modified,
     location: mtgMsg.location,
     start: mtgMsg.start,
     end: mtgMsg.end,

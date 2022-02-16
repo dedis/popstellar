@@ -9,27 +9,27 @@ export interface ElectionState extends LaoEventState {
   lao: string;
   name: string;
   version: string;
-  created_at: number;
+  createdAt: number;
   start: number;
   end: number;
   questions: Question[];
-  registered_votes: RegisteredVote[];
+  registeredVotes: RegisteredVote[];
   questionResult?: QuestionResult[];
 }
 
 export interface Question {
   id: string,
   question: string,
-  voting_method: string,
-  ballot_options: string[],
-  write_in: boolean,
+  votingMethod: string,
+  ballotOptions: string[],
+  writeIn: boolean,
 }
 
 export interface Vote {
   id: string,
   question: string,
   vote?: number[],
-  write_in?: string,
+  writeIn?: string,
 }
 
 export interface RegisteredVote {
@@ -40,7 +40,7 @@ export interface RegisteredVote {
 }
 
 export interface MajorityResult {
-  ballot_option: string,
+  ballotOption: string,
   count: number,
 }
 
@@ -50,7 +50,7 @@ export interface QuestionResult {
 }
 
 export enum ElectionStatus {
-  NOTSTARTED = 'not started',
+  NOT_STARTED = 'not started',
   RUNNING = 'running',
   FINISHED = 'finished', // When the time is over
   TERMINATED = 'terminated', // When manually terminated by organizer
@@ -66,7 +66,7 @@ export class Election implements LaoEvent {
 
   public readonly version: string;
 
-  public readonly created_at: Timestamp;
+  public readonly createdAt: Timestamp;
 
   public readonly start: Timestamp;
 
@@ -76,7 +76,7 @@ export class Election implements LaoEvent {
 
   public electionStatus: ElectionStatus;
 
-  public registered_votes: RegisteredVote[];
+  public registeredVotes: RegisteredVote[];
 
   public questionResult?: QuestionResult[];
 
@@ -97,7 +97,7 @@ export class Election implements LaoEvent {
     if (obj.version === undefined) {
       throw new Error("Undefined 'version' when creating 'Election'");
     }
-    if (obj.created_at === undefined) {
+    if (obj.createdAt === undefined) {
       throw new Error("Undefined 'creation' when creating 'Election'");
     }
     if (obj.start === undefined) {
@@ -109,17 +109,17 @@ export class Election implements LaoEvent {
     if (obj.questions === undefined) {
       throw new Error("Undefined 'questions' when creating 'Election'");
     }
-    if (obj.registered_votes === undefined) {
-      this.registered_votes = [];
+    if (obj.registeredVotes === undefined) {
+      this.registeredVotes = [];
     } else {
-      this.registered_votes = obj.registered_votes;
+      this.registeredVotes = obj.registeredVotes;
     }
 
     this.lao = obj.lao;
     this.id = obj.id;
     this.name = obj.name;
     this.version = obj.version;
-    this.created_at = obj.created_at;
+    this.createdAt = obj.createdAt;
     this.start = obj.start;
     this.end = obj.end;
     this.questions = obj.questions;
@@ -139,11 +139,11 @@ export class Election implements LaoEvent {
       id: new Hash(electionState.id),
       name: electionState.name,
       version: electionState.version,
-      created_at: new Timestamp(electionState.created_at),
+      createdAt: new Timestamp(electionState.createdAt),
       start: new Timestamp(electionState.start),
       end: new Timestamp(electionState.end),
       questions: electionState.questions,
-      registered_votes: electionState.registered_votes,
+      registeredVotes: electionState.registeredVotes,
     });
   }
 
@@ -168,7 +168,7 @@ export class Election implements LaoEvent {
   private static getElectionStatus(start: Timestamp, end: Timestamp): ElectionStatus {
     const now = Timestamp.EpochNow();
     if (now.before(start)) {
-      return ElectionStatus.NOTSTARTED;
+      return ElectionStatus.NOT_STARTED;
     }
     if (now.before(end)) {
       return ElectionStatus.RUNNING;

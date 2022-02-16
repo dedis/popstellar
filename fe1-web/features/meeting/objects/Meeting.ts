@@ -23,7 +23,7 @@ export class Meeting implements LaoEvent {
 
   public readonly creation: Timestamp;
 
-  public readonly last_modified: Timestamp;
+  public readonly lastModified: Timestamp;
 
   public readonly start: Timestamp;
 
@@ -54,7 +54,7 @@ export class Meeting implements LaoEvent {
     this.name = obj.name;
     this.location = obj.location;
     this.creation = obj.creation;
-    this.last_modified = obj.last_modified || obj.creation;
+    this.lastModified = obj.lastModified || obj.creation;
     this.start = obj.start;
     this.end = obj.end;
     this.extra = obj.extra || {};
@@ -71,7 +71,7 @@ export class Meeting implements LaoEvent {
       name: meetingState.name,
       location: meetingState.location,
       creation: new Timestamp(meetingState.creation),
-      last_modified: new Timestamp((meetingState.last_modified) ? meetingState.last_modified
+      lastModified: new Timestamp((meetingState.last_modified) ? meetingState.last_modified
         : meetingState.creation),
       start: new Timestamp(meetingState.start),
       end: (meetingState.end) ? new Timestamp(meetingState.end) : undefined,

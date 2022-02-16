@@ -45,17 +45,17 @@ const initializeData = () => {
   mockQuestionObject1 = {
     id: mockQuestionId1.toString(),
     question: mockQuestion1,
-    voting_method: STRINGS.election_method_Plurality,
-    ballot_options: mockBallotOptions,
-    write_in: false,
+    votingMethod: STRINGS.election_method_Plurality,
+    ballotOptions: mockBallotOptions,
+    writeIn: false,
   };
 
   mockQuestionObject2 = {
     id: mockQuestionId2.toString(),
     question: mockQuestion2,
-    voting_method: STRINGS.election_method_Approval,
-    ballot_options: mockBallotOptions,
-    write_in: true,
+    votingMethod: STRINGS.election_method_Approval,
+    ballotOptions: mockBallotOptions,
+    writeIn: true,
   };
 
   const mockQuestions = [mockQuestionObject1];
@@ -306,9 +306,9 @@ describe('SetupElection', () => {
       const wrongQuestion: Question = {
         id: 'id',
         question: mockQuestion1,
-        voting_method: STRINGS.election_method_Plurality,
-        ballot_options: mockBallotOptions,
-        write_in: false,
+        votingMethod: STRINGS.election_method_Plurality,
+        ballotOptions: mockBallotOptions,
+        writeIn: false,
       };
       const wrongValidate = () => {
         SetupElection.validateQuestions([wrongQuestion], electionId.valueOf());

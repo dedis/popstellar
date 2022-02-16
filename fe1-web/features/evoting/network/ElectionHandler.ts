@@ -49,11 +49,11 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
     id: elecMsg.id,
     name: elecMsg.name,
     version: elecMsg.version,
-    created_at: elecMsg.created_at,
+    createdAt: elecMsg.created_at,
     start: elecMsg.start_time,
     end: elecMsg.end_time,
     questions: elecMsg.questions,
-    registered_votes: [],
+    registeredVotes: [],
   });
 
   // Subscribing to the election channel corresponding to that election
@@ -105,16 +105,16 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
-  if (election.registered_votes.some(
+  if (election.registeredVotes.some(
     (votes) => votes.sender.toString() === currentVote.sender.toString(),
   )) { // Update the vote if the person has already voted before
-    election.registered_votes = election.registered_votes.map(
+    election.registeredVotes = election.registeredVotes.map(
       (prevVote) => (
         prevVote.sender.toString() === currentVote.sender.toString()
         && prevVote.createdAt.valueOf() < currentVote.createdAt.valueOf() ? currentVote : prevVote),
     );
   } else {
-    election.registered_votes = [...election.registered_votes, currentVote];
+    election.registeredVotes = [...election.registeredVotes, currentVote];
   }
   dispatch(updateEvent(lao.id, election.toState()));
   return true;

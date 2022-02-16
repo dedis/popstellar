@@ -39,7 +39,9 @@ export class CreateMeeting implements MessageData {
     checkTimestampStaleness(msg.creation);
     this.creation = msg.creation;
 
-    if (msg.location) this.location = msg.location;
+    if (msg.location) {
+      this.location = msg.location;
+    }
 
     if (!msg.start) {
       throw new ProtocolError('Undefined \'start\' parameter encountered during \'CreateMeeting\'');
@@ -54,7 +56,9 @@ export class CreateMeeting implements MessageData {
       this.end = msg.end;
     }
 
-    if (msg.extra) this.extra = JSON.parse(JSON.stringify(msg.extra)); // clone JS object extra
+    if (msg.extra) {
+      this.extra = JSON.parse(JSON.stringify(msg.extra));
+    } // clone JS object extra
 
     if (!msg.id) {
       throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateMeeting\'');

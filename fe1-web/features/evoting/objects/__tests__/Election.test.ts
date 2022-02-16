@@ -23,17 +23,17 @@ const initializeData = () => {
   question1 = {
     id: 'q1',
     question: 'Question1',
-    voting_method: STRINGS.election_method_Plurality,
-    ballot_options: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
-    write_in: false,
+    votingMethod: STRINGS.election_method_Plurality,
+    ballotOptions: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
+    writeIn: false,
   };
 
   question2 = {
     id: 'q2',
     question: 'Question2',
-    voting_method: STRINGS.election_method_Plurality,
-    ballot_options: ['Answer2.1', 'Answer2.2'],
-    write_in: false,
+    votingMethod: STRINGS.election_method_Plurality,
+    ballotOptions: ['Answer2.1', 'Answer2.2'],
+    writeIn: false,
   };
 
   vote1 = {
@@ -54,11 +54,11 @@ const initializeData = () => {
     lao: 'MyLao',
     name: 'MyElection',
     version: 'version',
-    created_at: 1520255600,
+    createdAt: 1520255600,
     start: 1520255600,
     end: 1520275600,
     questions: [question1, question2],
-    registered_votes: [registeredVotes],
+    registeredVotes: [registeredVotes],
   };
 
   QUESTIONS = [question1, question2];
@@ -119,11 +119,11 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -133,11 +133,11 @@ describe('Election object', () => {
         id: ELECTION_ID,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -147,11 +147,11 @@ describe('Election object', () => {
         id: ELECTION_ID,
         lao: mockLaoIdHash,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -161,11 +161,11 @@ describe('Election object', () => {
         id: ELECTION_ID,
         lao: mockLaoIdHash,
         name: NAME,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -179,7 +179,7 @@ describe('Election object', () => {
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -190,10 +190,10 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -204,10 +204,10 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -218,10 +218,10 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
-        registered_votes: REGISTERED_VOTES,
+        registeredVotes: REGISTERED_VOTES,
       });
       expect(createWrongElection).toThrow(Error);
     });
@@ -232,7 +232,7 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
@@ -242,11 +242,11 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST1,
+        createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
-        registered_votes: [],
+        registeredVotes: [],
       });
       expect(election).toStrictEqual(expected);
     });
@@ -257,7 +257,7 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST2,
+        createdAt: TIMESTAMP_PAST2,
         start: TIMESTAMP_PAST2,
         end: TIMESTAMP_FUTURE1,
         questions: QUESTIONS,
@@ -267,11 +267,11 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_PAST2,
+        createdAt: TIMESTAMP_PAST2,
         start: TIMESTAMP_PAST2,
         end: TIMESTAMP_FUTURE1,
         questions: QUESTIONS,
-        registered_votes: [],
+        registeredVotes: [],
         electionStatus: ElectionStatus.RUNNING,
       });
       expect(election).toStrictEqual(expected);
@@ -283,7 +283,7 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_FUTURE1,
+        createdAt: TIMESTAMP_FUTURE1,
         start: TIMESTAMP_FUTURE1,
         end: TIMESTAMP_FUTURE2,
         questions: QUESTIONS,
@@ -293,12 +293,12 @@ describe('Election object', () => {
         lao: mockLaoIdHash,
         name: NAME,
         version: VERSION,
-        created_at: TIMESTAMP_FUTURE1,
+        createdAt: TIMESTAMP_FUTURE1,
         start: TIMESTAMP_FUTURE1,
         end: TIMESTAMP_FUTURE2,
         questions: QUESTIONS,
-        registered_votes: [],
-        electionStatus: ElectionStatus.NOTSTARTED,
+        registeredVotes: [],
+        electionStatus: ElectionStatus.NOT_STARTED,
       });
       expect(election).toStrictEqual(expected);
     });

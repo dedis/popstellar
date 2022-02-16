@@ -42,9 +42,9 @@ describe('LaoEventBuilder', () => {
     const question1: Question = {
       id: 'q1',
       question: 'Question1',
-      voting_method: STRINGS.election_method_Plurality,
-      ballot_options: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
-      write_in: false,
+      votingMethod: STRINGS.election_method_Plurality,
+      ballotOptions: ['Answer1.1', 'Answer1.2', 'Answer 1.3'],
+      writeIn: false,
     };
     const registeredVotes: RegisteredVote = {
       createdAt: 1520255700,
@@ -58,11 +58,11 @@ describe('LaoEventBuilder', () => {
       lao: 'MyLao',
       name: 'MyElection',
       version: 'version',
-      created_at: 12345,
+      createdAt: 12345,
       start: 12345,
       end: 16345,
       questions: [question1],
-      registered_votes: [registeredVotes],
+      registeredVotes: [registeredVotes],
     };
     expect(eventFromState(election)).toBeInstanceOf(Election);
   });

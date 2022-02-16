@@ -112,10 +112,10 @@ export class SetupElection implements MessageData {
       if (!question.question) {
         throw new ProtocolError('Undefined \'question\' parameter encountered during \'SetupElection\'');
       }
-      if (!question.voting_method) {
+      if (!question.votingMethod) {
         throw new ProtocolError('Undefined \'voting method\' parameter encountered during \'SetupElection\'');
       }
-      if (!question.ballot_options) {
+      if (!question.ballotOptions) {
         throw new ProtocolError('Undefined \'ballot_options\' parameter encountered during \'SetupElection\'');
       }
     });

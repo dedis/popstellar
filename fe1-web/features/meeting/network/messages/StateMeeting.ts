@@ -1,7 +1,6 @@
 import {
-  Hash, Lao, PublicKey, Signature, Timestamp, WitnessSignature,
+  Hash, PublicKey, Signature, Timestamp, WitnessSignature,
 } from 'model/objects';
-import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
@@ -57,7 +56,9 @@ export class StateMeeting implements MessageData {
     }
     this.last_modified = msg.last_modified;
 
-    if (msg.location) this.location = msg.location;
+    if (msg.location) {
+      this.location = msg.location;
+    }
 
     if (!msg.start) {
       throw new ProtocolError('Undefined \'start\' parameter encountered during \'StateMeeting\'');
@@ -75,7 +76,9 @@ export class StateMeeting implements MessageData {
       this.end = msg.end;
     }
 
-    if (msg.extra) this.extra = JSON.parse(JSON.stringify(msg.extra)); // clone JS object extra
+    if (msg.extra) {
+      this.extra = JSON.parse(JSON.stringify(msg.extra));
+    } // clone JS object extra
 
     if (!msg.modification_id) {
       throw new ProtocolError('Undefined \'modification_id\' parameter encountered during \'StateMeeting\'');
@@ -94,9 +97,8 @@ export class StateMeeting implements MessageData {
     }
 
     // FIXME: implementation not finished, get event from storage,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const lao: Lao = OpenedLaoStore.get();
     /*
+    const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
       EventTags.MEETING, lao.id.toString(), lao.creation.toString(), MEETING_NAME,
     );
