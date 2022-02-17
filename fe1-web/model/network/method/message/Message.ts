@@ -9,7 +9,7 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
-import { getCurrentPopTokenFromStore } from 'model/objects/wallet/Token';
+import { getCurrentPopTokenFromStore } from 'features/wallet/objects';
 import {
   MessageData, MessageRegistry, SignatureType,
 } from './data';

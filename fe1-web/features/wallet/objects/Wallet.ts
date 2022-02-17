@@ -1,11 +1,11 @@
 import { useSelector } from 'react-redux';
+
 import { RollCall } from 'features/rollCall/objects';
 import { LaoEventType } from 'features/events/objects/LaoEvent';
 import { makeEventByTypeSelector } from 'features/events/reducer/EventsReducer';
+import { Hash, PopToken } from 'model/objects';
 
-import { Hash } from '../Hash';
 import { generateToken } from './Token';
-import { PopToken } from '../PopToken';
 
 /**
  * Recovers all PoP tokens associated with this wallet
@@ -28,7 +28,7 @@ export async function recoverWalletPoPTokens(): Promise<Record<string, Record<st
       // generate a token
       (rc) => generateToken(new Hash(laoId), rc.id).then((token) => {
         // if it's present in the roll call, add it
-        if (rc.containsToken(token)) {
+        if (token && rc.containsToken(token)) {
           tokens[laoId][rc.id.valueOf()] = token;
         }
       }),

@@ -5,10 +5,11 @@ import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
 import { makeCurrentLao } from 'store';
-import { Timestamp, Wallet } from 'model/objects';
+import { Timestamp } from 'model/objects';
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
 import STRINGS from 'res/strings';
+import * as Wallet from 'features/wallet/objects';
 
 import { requestOpenRollCall } from '../network/RollCallMessageApi';
 import { RollCall, RollCallStatus } from '../objects';

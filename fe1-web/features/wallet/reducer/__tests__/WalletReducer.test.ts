@@ -1,5 +1,6 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
+
 import { walletReduce, clearWallet, setWallet } from '../WalletReducer';
 
 const emptyState = {

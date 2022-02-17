@@ -15,11 +15,10 @@ import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import ConfirmModal from 'components/ConfirmModal';
-import {
-  EventTags, Hash, PublicKey, Wallet,
-} from 'model/objects';
+import { EventTags, Hash, PublicKey } from 'model/objects';
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { FOUR_SECONDS } from 'res/const';
+import * as Wallet from 'features/wallet/objects';
 
 import { requestCloseRollCall } from '../network/RollCallMessageApi';
 

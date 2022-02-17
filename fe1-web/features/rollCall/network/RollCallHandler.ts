@@ -1,6 +1,6 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { getReactionChannel, getUserSocialChannel, Wallet } from 'model/objects';
+import { getReactionChannel, getUserSocialChannel } from 'model/objects';
 import {
   AsyncDispatch,
   dispatch,
@@ -11,6 +11,7 @@ import {
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer/EventsReducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
+import * as Wallet from 'features/wallet/objects';
 
 import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
 import { RollCall, RollCallStatus } from '../objects';

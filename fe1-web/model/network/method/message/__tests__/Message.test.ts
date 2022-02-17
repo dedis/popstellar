@@ -17,7 +17,7 @@ import { EndElection } from 'features/evoting/network/messages';
 import { MessageRegistry } from '../data';
 import { configureMessages, encodeMessageData, Message } from '../Message';
 
-jest.mock('model/objects/wallet/Token.ts', () => ({
+jest.mock('features/wallet/objects/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
 }));
 

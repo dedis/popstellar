@@ -1,4 +1,4 @@
-import { WalletStore } from 'store';
+import { WalletStore } from '../../store';
 import * as Seed from '../Seed';
 
 jest.mock('platform/Storage');

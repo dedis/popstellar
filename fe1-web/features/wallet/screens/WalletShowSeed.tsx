@@ -1,15 +1,15 @@
 import React from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import PropTypes from 'prop-types';
+
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import PROPS_TYPE from 'res/Props';
-import PropTypes from 'prop-types';
-import { Wallet } from 'model/objects';
 import CopiableTextInput from 'components/CopiableTextInput';
+
+import * as Wallet from '../objects';
 
 const styles = StyleSheet.create({
   smallPadding: {

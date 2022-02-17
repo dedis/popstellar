@@ -55,6 +55,16 @@ the future.
 - EventStore : `model/objects/wallet/Token.ts`,
 
 ## Lao
+
 - Attendee : `navigation/bars/LaoNavigation.tsx`
 - Organizer : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - Witness : `navigation/bars/witness/WitnessNavigation.tsx`
+
+## Wallet
+
+- generateToken : `features/social/navigation/SocialMediaNavigation.tsx`
+- Token : `model/network/method/message/Message.ts`
+- Wallet objects : `features/rollCall/components/EventRollCall.tsx`, `features/rollCall/network/RollCallHandler.ts`,
+`features/rollCall/screens/RollCallOpened.tsx`
+- WalletNavigation : `navigation/bars/LaoNavigation.tsx`, `navigation/bars/MainNavigation.tsx`
+- WalletReducer : `store/reducers/RootReducer.ts`

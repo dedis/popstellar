@@ -13,9 +13,9 @@ import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
 import Attendee from 'features/lao/screens/Attendee';
 import SocialMediaNavigation from 'features/social/navigation/SocialMediaNavigation';
+import WalletNavigation from 'features/wallet/navigation/WalletNavigation';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';
-import WalletNavigation from './wallet/WalletNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 

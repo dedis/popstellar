@@ -1,7 +1,9 @@
 import base64url from 'base64url';
 import platformCrypto from 'platform/crypto';
-import { getWalletState, setWallet, clearWallet } from 'store/reducers';
-import { AsyncDispatch, getStore } from '../Storage';
+
+import { AsyncDispatch, getStore } from 'store/Storage';
+
+import { clearWallet, getWalletState, setWallet } from '../reducer/WalletReducer';
 
 /**
  * Encrypt Uint8Array plaintext into a ciphertext (string)

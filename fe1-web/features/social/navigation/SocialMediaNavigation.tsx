@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import STRINGS from 'res/strings';
 import { gray, popBlue } from 'styles/colors';
 import { PublicKey } from 'model/objects';
-import { generateToken } from 'model/objects/wallet';
+import { generateToken } from 'features/wallet/objects';
 import { makeCurrentLao } from 'store';
 import { makeEventGetter } from 'features/events/reducer/EventsReducer';
 import { RollCall } from 'features/rollCall/objects';

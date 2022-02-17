@@ -1,5 +1,6 @@
 import * as bip39 from 'bip39';
-import { WalletStore } from 'store';
+
+import { WalletStore } from '../store';
 
 /**
  * Generates a new BIP-39 mnemonic

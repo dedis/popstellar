@@ -1,5 +1,6 @@
+import { Hash } from 'model/objects/Hash';
+
 import * as Bip39Path from '../Bip32Path';
-import { Hash } from '../../Hash';
 
 test('Bip39Path produces the known outputs - test vector 0', async () => {
   const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');

@@ -1,5 +1,7 @@
 import 'jest-extended';
+
 import * as store from 'store/Storage';
+
 import { WalletStore } from '../WalletStore';
 
 jest.mock('platform/Storage');

@@ -1,9 +1,9 @@
-import { WalletStore } from 'store';
+import { Base64UrlData, Hash } from 'model/objects';
+
+import { WalletStore } from '../../store';
 import * as Seed from '../Seed';
-import * as Token from '../Token';
-import { Hash } from '../../Hash';
-import { Base64UrlData } from '../../Base64Url';
 import * as Wallet from '../index';
+import * as Token from '../Token';
 
 jest.mock('platform/Storage');
 jest.mock('platform/crypto/browser');
@@ -52,9 +52,9 @@ test('LAO/RollCall produces correct signature', async () => {
 
   // sign some data with token
   const data = Base64UrlData.encode('this is my super secure data');
-  const signature = token.privateKey.sign(data);
+  const signature = token!.privateKey.sign(data);
   // verify signature with token public key
-  expect(signature.verify(token.publicKey, data)).toBeTrue();
+  expect(signature.verify(token!.publicKey, data)).toBeTrue();
 });
 
 test('Path produces known token - test vector 0', async () => {

@@ -1,13 +1,13 @@
 import React from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import { WalletStore } from 'store/stores/WalletStore';
-import { useNavigation } from '@react-navigation/native';
+
+import { WalletStore } from '../store/WalletStore';
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
  * @constructor
  */
 const WalletHome = () => {
-  const navigation = useNavigation();
+  // FIXME: Navigation should use a defined type here (instead of any)
+  const navigation = useNavigation<any>();
 
   function importSeed() {
     if (WalletStore.hasSeed()) {

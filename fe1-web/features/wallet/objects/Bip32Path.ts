@@ -1,4 +1,4 @@
-import { Hash } from '../Hash';
+import { Hash } from 'model/objects/Hash';
 
 /* The following constants are used (and common) in all derivation paths
  * example path: m / 888 / 0' / LAO_id' / roll_call_id */
