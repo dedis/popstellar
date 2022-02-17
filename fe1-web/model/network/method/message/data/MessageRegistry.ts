@@ -106,7 +106,7 @@ export class MessageRegistry {
   handleMessage(msg: ExtendedMessage): boolean {
     const data = msg.messageData;
     const messageEntry = this.getEntry(data);
-    return messageEntry.handle!!(msg);
+    return messageEntry.handle!(msg);
   }
 
   /**
@@ -117,7 +117,7 @@ export class MessageRegistry {
    */
   buildMessageData(data: MessageData): MessageData {
     const messageEntry = this.getEntry(data);
-    return messageEntry.build!!(data);
+    return messageEntry.build!(data);
   }
 
   /**
@@ -128,7 +128,7 @@ export class MessageRegistry {
    */
   getSignatureType(data: MessageData): SignatureType {
     const messageEntry = this.getEntry(data);
-    return messageEntry.signature!!;
+    return messageEntry.signature!;
   }
 
   /**

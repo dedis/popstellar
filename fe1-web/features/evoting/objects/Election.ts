@@ -1,9 +1,11 @@
 import { Hash, Timestamp } from 'model/objects';
-import { LaoEvent, LaoEventState, LaoEventType } from 'features/events/objects/LaoEvent';
+import { LaoEventState } from 'features/events/objects/LaoEvent';
 
 /**
  * Object to represent an election and all its components.
  */
+
+export const EventTypeElection = 'ELECTION';
 
 export interface ElectionState extends LaoEventState {
   lao: string;
@@ -57,7 +59,7 @@ export enum ElectionStatus {
   RESULT = 'result', // When result is available
 }
 
-export class Election implements LaoEvent {
+export class Election {
   public readonly lao: Hash;
 
   public readonly id: Hash;
@@ -154,7 +156,7 @@ export class Election implements LaoEvent {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
-      eventType: LaoEventType.ELECTION,
+      eventType: EventTypeElection,
     };
   }
 

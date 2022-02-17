@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import Organizer from 'features/events/screens/Organizer';
+import Organizer from 'features/lao/screens/Organizer';
 import CreateEvent from 'features/events/screens/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
 import CreateMeeting from 'features/meeting/screens/CreateMeeting';

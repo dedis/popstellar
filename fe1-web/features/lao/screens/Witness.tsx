@@ -4,14 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 
 import STRINGS from 'res/strings';
-import LaoProperties from 'components/LaoProperties';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
+import EventListCollapsible from 'features/events/components/EventListCollapsible';
+import { LaoEvent } from 'features/events/objects';
+import { makeEventsList } from 'features/events/reducer/EventsReducer';
 
-import EventListCollapsible from '../components/EventListCollapsible';
-import { LaoEvent } from '../objects';
-import { makeEventsList } from '../reducer/EventsReducer';
+import LaoProperties from 'components/LaoProperties';
 
 /**
  * Witness screen: button to navigate to the witness video screen,

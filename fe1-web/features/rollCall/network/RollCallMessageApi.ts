@@ -3,12 +3,13 @@ import {
 } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { publish } from 'network/JsonRpcApi';
+
 import {
   CloseRollCall,
   CreateRollCall,
   OpenRollCall,
   ReopenRollCall,
-} from 'features/rollCall/network/messages';
+} from './messages';
 
 /**
  * Contains all functions to send roll call related messages.

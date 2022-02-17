@@ -3,9 +3,8 @@ import 'jest-extended';
 import {
   Hash, PopToken, PrivateKey, PublicKey, Timestamp,
 } from 'model/objects';
-import { LaoEventType } from 'features/events/objects';
 
-import { RollCall, RollCallState, RollCallStatus } from '../RollCall';
+import { EventTypeRollCall, RollCall, RollCallStatus } from '../RollCall';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
@@ -20,9 +19,9 @@ const token = new PopToken({
 
 describe('RollCall object', () => {
   it('can do a state round trip correctly 1', () => {
-    const rollCallState: RollCallState = {
+    const rollCallState: any = {
       id: ID.valueOf(),
-      eventType: LaoEventType.ROLL_CALL,
+      eventType: EventTypeRollCall,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -34,7 +33,7 @@ describe('RollCall object', () => {
     };
     const expected = {
       id: ID.valueOf(),
-      eventType: LaoEventType.ROLL_CALL,
+      eventType: EventTypeRollCall,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -50,10 +49,10 @@ describe('RollCall object', () => {
   });
 
   it('can do a state round trip correctly 2', () => {
-    const rollCallState: RollCallState = {
+    const rollCallState: any = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      eventType: LaoEventType.ROLL_CALL,
+      eventType: EventTypeRollCall,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -68,7 +67,7 @@ describe('RollCall object', () => {
     const expected = {
       id: ID.valueOf(),
       idAlias: 'idAlias',
-      eventType: LaoEventType.ROLL_CALL,
+      eventType: EventTypeRollCall,
       start: TIMESTAMP_START.valueOf(),
       name: NAME,
       location: LOCATION,

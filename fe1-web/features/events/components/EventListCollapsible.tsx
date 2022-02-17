@@ -11,14 +11,7 @@ import STRINGS from 'res/strings';
 import * as RootNavigation from 'navigation/RootNavigation';
 import TextBlock from 'components/TextBlock';
 
-import Event from './index';
-
-/**
- * Collapsible list of events: list with 3 sections corresponding
- * to 'past', 'present' and 'future' events.
- *
- * Nested events should be in the children value of the parent event.
- */
+import { Event } from './index';
 
 const styles = StyleSheet.create({
   flexBox: {
@@ -57,6 +50,12 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
     : sectionTitle;
 }
 
+/**
+ * Collapsible list of events: list with 3 sections corresponding
+ * to 'past', 'present' and 'future' events.
+ *
+ * Nested events should be in the children value of the parent event.
+ */
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
 
@@ -72,7 +71,7 @@ const EventListCollapsible = (props: IPropTypes) => {
       sections={data}
       keyExtractor={(item) => `${item.id}`}
       renderItem={renderItemFn}
-      renderSectionHeader={({ section: { title } }) => renderSectionHeader(title, !!isOrganizer)}
+      renderSectionHeader={({ section: { title } }) => renderSectionHeader(title, isOrganizer)}
     />
   );
 };

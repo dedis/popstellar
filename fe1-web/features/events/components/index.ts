@@ -1,3 +1,1 @@
-import Event from 'features/events/components/Event';
-
-export default Event;
+export { default as Event } from './Event';

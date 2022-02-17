@@ -4,11 +4,11 @@ import { ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/core';
 
 import { Timestamp } from 'model/objects';
-import LaoProperties from 'components/LaoProperties';
+import EventListCollapsible from 'features/events/components/EventListCollapsible';
+import { LaoEvent } from 'features/events/objects';
+import { makeEventsList } from 'features/events/reducer/EventsReducer';
 
-import EventListCollapsible from '../components/EventListCollapsible';
-import { LaoEvent } from '../objects';
-import { makeEventsList } from '../reducer/EventsReducer';
+import LaoProperties from 'components/LaoProperties';
 
 /**
  * Attendee screen: lists LAO properties and past/ongoing/future events.

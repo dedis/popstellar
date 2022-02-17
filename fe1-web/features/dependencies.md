@@ -42,11 +42,9 @@ the future.
 
 ## Events
 
-- Attendee : `navigation/bars/LaoNavigation.tsx`
 - CreateEvent : `navigation/bars/organizer/OrganizerNavigation.tsx`
-- LaoEventType : `model/objects/wallet/Wallet.ts`, `features/evoting/objects/__tests__/Election.test.ts`,
-`features/meeting/components/__tests__/EventMeeting.test.tsx`, `features/rollCall/objects/__tests__/RollCall.test.ts`,
-`parts/wallet/WalletSyncedSeed.tsx`
+- LaoEvent : `model/objects/wallet/Wallet.ts`, `parts/wallet/WalletSyncedSeed.tsx`,
+`features/evoting/objects/Election.ts`, `features/meeting/objects/Meeting.ts`, `features/rollCall/objects/RollCall.ts`
 - EventHandlerUtils : `features/evoting/network/ElectionHandler.ts`, `features/rollCall/network/RollCallHandler.ts`,
 `features/meeting/network/MeetingHandler.ts`, `features/evoting/components/EventElection.tsx`
 - EventsReducer : `store/reducers/index.ts`, `store/reducers/RootReducer.ts`,
@@ -55,5 +53,8 @@ the future.
 `features/evoting/network/ElectionHandler.ts`, `features/evoting/components/EventElection.tsx`,
 `model/objects/wallet/Wallet.ts`, `features/social/navigation/SocialMediaNavigation.tsx`
 - EventStore : `model/objects/wallet/Token.ts`,
+
+## Lao
+- Attendee : `navigation/bars/LaoNavigation.tsx`
 - Organizer : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - Witness : `navigation/bars/witness/WitnessNavigation.tsx`

@@ -16,7 +16,6 @@ import { RollCall, RollCallStatus } from '../objects';
 /**
  * Component used to display a RollCall event in the LAO event list
  */
-
 const EventRollCall = (props: IPropTypes) => {
   const { event } = props;
   const { isOrganizer } = props;

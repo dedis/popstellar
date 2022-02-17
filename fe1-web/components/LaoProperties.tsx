@@ -4,7 +4,6 @@ import {
 } from 'react-native';
 import { Spacing } from 'styles';
 import TextBlock from 'components/TextBlock';
-import eventViewStyles from 'features/events/styles/eventViewStyles';
 import ListCollapsibleIcon from 'components/ListCollapsibleIcon';
 import { useSelector } from 'react-redux';
 import ParagraphBlock from 'components/ParagraphBlock';
@@ -13,6 +12,7 @@ import { makeCurrentLao } from 'store/reducers';
 import PropTypes from 'prop-types';
 import { ConnectToLao } from 'model/objects/ConnectToLao';
 import QRCode from 'components/QRCode';
+import laoPropertiesStyles from 'styles/stylesheets/laoPropertiesStyles';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.toDateString();
@@ -41,7 +41,7 @@ const LaoProperties = ({ url }: IPropTypes) => {
   return (
     <>
       <TextBlock bold text="Lao Properties" />
-      <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
+      <View style={[laoPropertiesStyles.default, { marginTop: Spacing.s }]}>
         <TouchableOpacity onPress={toggleChildren} style={{ textAlign: 'right' } as ViewStyle}>
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>

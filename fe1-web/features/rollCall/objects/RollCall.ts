@@ -1,4 +1,4 @@
-import { LaoEvent, LaoEventState, LaoEventType } from 'features/events/objects/LaoEvent';
+import { LaoEventState } from 'features/events/objects/LaoEvent';
 import {
   Hash, PopToken, PublicKey, Timestamp,
 } from 'model/objects';
@@ -6,6 +6,8 @@ import {
 /**
  * Object to represent a roll call.
  */
+
+export const EventTypeRollCall = 'ROLL_CALL';
 
 export enum RollCallStatus {
   CREATED,
@@ -27,7 +29,7 @@ export interface RollCallState extends LaoEventState {
   attendees?: string[];
 }
 
-export class RollCall implements LaoEvent {
+export class RollCall {
   public readonly id: Hash;
 
   public readonly idAlias?: Hash;
@@ -138,7 +140,7 @@ export class RollCall implements LaoEvent {
       ...obj,
       start: this.start.valueOf(),
       end: this.end.valueOf(),
-      eventType: LaoEventType.ROLL_CALL,
+      eventType: EventTypeRollCall,
     };
   }
 
