@@ -9,12 +9,12 @@ import { Spacing } from 'styles';
 import ParagraphBlock from 'components/ParagraphBlock';
 import eventViewStyles from 'styles/stylesheets/eventViewStyles';
 import TextBlock from 'components/TextBlock';
-import {
-  Election, Hash, RollCall, Timestamp, Meeting,
-} from 'model/objects';
-import EventMeeting from './EventMeeting';
+import { Hash, RollCall, Timestamp } from 'model/objects';
+import EventMeeting from 'features/meeting/components/EventMeeting';
+import EventElection from 'features/evoting/components/EventElection';
+import { Meeting } from 'features/meeting/objects';
+import { Election } from 'features/evoting/objects';
 import EventRollCall from './EventRollCall';
-import EventElection from './EventElection';
 
 /**
  * The Event item component: display the correct representation of the event according to its type,

@@ -13,7 +13,8 @@ import {
   mockLao, mockLaoId, mockPopToken, mockPrivateKey, mockPublicKey,
 } from '__tests__/utils/TestUtils';
 import { AddChirp } from 'features/social/network/messages/chirp';
-import { EndElection, MessageRegistry } from '../data';
+import { EndElection } from 'features/evoting/network/messages';
+import { MessageRegistry } from '../data';
 import { configureMessages, encodeMessageData, Message } from '../Message';
 
 jest.mock('model/objects/wallet/Token.ts', () => ({

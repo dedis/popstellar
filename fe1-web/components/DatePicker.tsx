@@ -56,7 +56,7 @@ export function onChangeStartTime(
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
   defaultDurationSeconds: number,
 ) {
-  const newStart = Timestamp.dateToTimestamp(newStartDate);
+  const newStart = Timestamp.fromDate(newStartDate);
   const now = Timestamp.EpochNow();
   let actualStartDate: Date;
 
@@ -69,7 +69,7 @@ export function onChangeStartTime(
   }
 
   const newEndDate = new Date(actualStartDate.getTime());
-  const newEndTimestamp = Timestamp.dateToTimestamp(newEndDate).addSeconds(defaultDurationSeconds);
+  const newEndTimestamp = Timestamp.fromDate(newEndDate).addSeconds(defaultDurationSeconds);
   setEndDate(newEndTimestamp);
 }
 
@@ -86,7 +86,7 @@ export function onChangeEndTime(
   startTime: Timestamp,
   setEndDate: React.Dispatch<React.SetStateAction<Timestamp>>,
 ) {
-  const newEnd = Timestamp.dateToTimestamp(newEndDate);
+  const newEnd = Timestamp.fromDate(newEndDate);
   if (newEnd.before(startTime)) {
     setEndDate(startTime.addSeconds(ONE_MINUTE_IN_SECONDS));
   } else {

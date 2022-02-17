@@ -1,12 +1,12 @@
 import 'jest-extended';
 import STRINGS from 'res/strings';
-import { LaoEventState, LaoEventType } from '../LaoEvent';
-import { eventFromState } from '../LaoEventBuilder';
-import { Meeting, MeetingState } from '../Meeting';
-import { RollCall, RollCallState, RollCallStatus } from '../RollCall';
+import { Meeting, MeetingState } from 'features/meeting/objects/Meeting';
 import {
   Election, ElectionState, Question, RegisteredVote,
-} from '../Election';
+} from 'features/evoting/objects/Election';
+import { LaoEventState, LaoEventType } from '../LaoEvent';
+import { eventFromState } from '../LaoEventBuilder';
+import { RollCall, RollCallState, RollCallStatus } from '../RollCall';
 
 describe('LaoEventBuilder', () => {
   it('builds a meeting with a MeetingState', () => {
@@ -17,7 +17,7 @@ describe('LaoEventBuilder', () => {
       name: 'myMeeting',
       location: 'location',
       creation: 12345,
-      last_modified: 12345,
+      lastModified: 12345,
       extra: {},
     };
     expect(eventFromState(meeting)).toBeInstanceOf(Meeting);
@@ -58,11 +58,11 @@ describe('LaoEventBuilder', () => {
       lao: 'MyLao',
       name: 'MyElection',
       version: 'version',
-      created_at: 12345,
+      createdAt: 12345,
       start: 12345,
       end: 16345,
       questions: [question1],
-      registered_votes: [registeredVotes],
+      registeredVotes: [registeredVotes],
     };
     expect(eventFromState(election)).toBeInstanceOf(Election);
   });
