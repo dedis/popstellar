@@ -21,6 +21,7 @@
     },
     "web": {
       "favicon": "./src/res/assets/favicon.png"
-    }
+    },
+    "entryPoint": "./src/App.tsx"
   }
 }

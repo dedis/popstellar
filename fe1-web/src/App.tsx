@@ -1,3 +1,4 @@
+import { registerRootComponent } from 'expo';
 import 'react-native-gesture-handler';
 import React from 'react';
 import { StatusBar, Platform } from 'react-native';
@@ -24,7 +25,7 @@ import { configureIngestion } from 'ingestion';
  *  The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */
 
-export default function App() {
+function App() {
   configureIngestion();
 
   useReduxDevToolsExtension(navigationRef);
@@ -44,3 +45,5 @@ export default function App() {
     </Provider>
   );
 }
+
+export default registerRootComponent(App);
