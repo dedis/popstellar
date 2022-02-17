@@ -29,9 +29,9 @@ const propTypes = {
 };
 
 type IPropTypes = {
-  navigationTabName: string,
-  size: number,
-  testID: string,
+  navigationTabName: string;
+  size: number;
+  testID: string;
 };
 
 BackButton.defaultProps = {

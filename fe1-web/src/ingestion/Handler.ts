@@ -3,15 +3,13 @@ import { Broadcast } from 'model/network/method';
 import { ExtendedMessage, Message } from 'model/network/method/message';
 import { ActionType, ObjectType } from 'model/network/method/message/data';
 import { Channel } from 'model/objects';
-import {
-  addMessages, dispatch, OpenedLaoStore,
-} from 'store';
+import { addMessages, dispatch, OpenedLaoStore } from 'store';
 import { handleLaoMessage } from './handlers';
 
-const isLaoCreate = (m: ExtendedMessage) => m.messageData.object === ObjectType.LAO
-  && m.messageData.action === ActionType.CREATE;
+const isLaoCreate = (m: ExtendedMessage) =>
+  m.messageData.object === ObjectType.LAO && m.messageData.action === ActionType.CREATE;
 
-function handleLaoCreateMessages(msg: ExtendedMessage) : boolean {
+function handleLaoCreateMessages(msg: ExtendedMessage): boolean {
   if (!isLaoCreate(msg)) {
     return false;
   }
@@ -46,7 +44,7 @@ export function storeMessage(msg: Message, ch: Channel) {
 
 export function handleRpcRequests(req: JsonRpcRequest) {
   if (req.method === JsonRpcMethod.BROADCAST) {
-    const broadcastParams = (req.params as Broadcast);
+    const broadcastParams = req.params as Broadcast;
     storeMessage(broadcastParams.message, broadcastParams.channel);
   } else {
     console.warn('A request was received but it is currently unsupported:', req);

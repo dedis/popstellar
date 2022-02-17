@@ -1,14 +1,6 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  ActionType, AddChirp, ObjectType, DeleteChirp,
-} from 'model/network/method/message/data';
-import {
-  addChirp,
-  dispatch,
-  getStore,
-  makeCurrentLao,
-  deleteChirp,
-} from 'store';
+import { ActionType, AddChirp, ObjectType, DeleteChirp } from 'model/network/method/message/data';
+import { addChirp, dispatch, getStore, makeCurrentLao, deleteChirp } from 'store';
 import { Chirp } from 'model/objects';
 
 /**
@@ -22,8 +14,7 @@ const getCurrentLao = makeCurrentLao();
  * @param msg - The extended message for adding a chirp
  */
 function handleAddChirpMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.CHIRP
-    || msg.messageData.action !== ActionType.ADD) {
+  if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.ADD) {
     console.warn('handleAddChirp was called to process an unsupported message');
     return false;
   }
@@ -59,8 +50,7 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
  * @param msg - The extended message for deleting a chirp
  */
 function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.CHIRP
-    || msg.messageData.action !== ActionType.DELETE) {
+  if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.DELETE) {
     console.warn('handleDeleteChirp was called to process an unsupported message');
     return false;
   }
@@ -106,8 +96,11 @@ export function handleChirpMessage(msg: ExtendedMessage): boolean {
     case ActionType.DELETE:
       return handleDeleteChirpMessage(msg);
     default:
-      console.warn('A Social Media chirp message was received but its processing logic is not '
-        + 'yet implemented:', msg);
+      console.warn(
+        'A Social Media chirp message was received but its processing logic is not ' +
+          'yet implemented:',
+        msg,
+      );
       return false;
   }
 }

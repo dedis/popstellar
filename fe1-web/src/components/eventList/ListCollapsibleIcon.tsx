@@ -7,10 +7,10 @@ const ListCollapsibleIcon = (props: IPropTypes) => {
   const { isVisible } = props;
   const { isOpen } = props;
 
-  const symbol: string = (isOpen) ? 'v' : '<';
-  return (isVisible)
-    ? <Text style={[{ ...Typography.base } as TextStyle, { textAlign: 'right' }]}>{symbol}</Text>
-    : null;
+  const symbol: string = isOpen ? 'v' : '<';
+  return isVisible ? (
+    <Text style={[{ ...Typography.base } as TextStyle, { textAlign: 'right' }]}>{symbol}</Text>
+  ) : null;
 };
 
 const propTypes = {

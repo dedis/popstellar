@@ -32,8 +32,11 @@ export function handleMessage(msg: ExtendedMessage) {
     case ObjectType.REACTION:
       return handleReactionMessage(msg);
     default:
-      console.warn('A message was received and ignored because'
-        + ' its processing logic is not yet implemented:', msg);
+      console.warn(
+        'A message was received and ignored because' +
+          ' its processing logic is not yet implemented:',
+        msg,
+      );
       return true; // pretend it's been handled
   }
 }

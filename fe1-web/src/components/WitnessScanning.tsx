@@ -12,7 +12,7 @@ import CameraButton from './CameraButton';
  * The camera button do a goBack
  *
  * TODO press on the button will scan a QR code and add a witness
-*/
+ */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -27,7 +27,11 @@ const styles = StyleSheet.create({
 const WitnessScanning = ({ navigation }) => (
   <View style={styles.container}>
     <Text style={styles.text}>{STRINGS.witness_scan}</Text>
-    <CameraButton action={() => { navigation.goBack(); }} />
+    <CameraButton
+      action={() => {
+        navigation.goBack();
+      }}
+    />
   </View>
 );
 

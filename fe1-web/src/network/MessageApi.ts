@@ -1,6 +1,4 @@
-import {
-  EventTags, getReactionChannel, Hash, Lao, PublicKey, Timestamp,
-} from 'model/objects';
+import { EventTags, getReactionChannel, Hash, Lao, PublicKey, Timestamp } from 'model/objects';
 import {
   AddChirp,
   AddReaction,
@@ -18,12 +16,8 @@ import {
   UpdateLao,
   WitnessMessage,
 } from 'model/network/method/message/data';
-import {
-  Channel, channelFromIds, ROOT_CHANNEL, getUserSocialChannel,
-} from 'model/objects/Channel';
-import {
-  OpenedLaoStore, KeyPairStore,
-} from 'store';
+import { Channel, channelFromIds, ROOT_CHANNEL, getUserSocialChannel } from 'model/objects/Channel';
+import { OpenedLaoStore, KeyPairStore } from 'store';
 import { Question, Vote } from 'model/objects/Election';
 import { publish } from './JsonRpcApi';
 
@@ -33,8 +27,8 @@ import { publish } from './JsonRpcApi';
  * @param start
  * @param creation
  */
-const adaptStartTime = (creation: Timestamp, start: Timestamp) => ((start.before(creation))
-  ? creation : start);
+const adaptStartTime = (creation: Timestamp, start: Timestamp) =>
+  start.before(creation) ? creation : start;
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
 export function requestCreateLao(laoName: string): Promise<Channel> {
@@ -49,8 +43,7 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
     witnesses: [],
   });
 
-  return publish(ROOT_CHANNEL, message)
-    .then(() => channelFromIds(message.id));
+  return publish(ROOT_CHANNEL, message).then(() => channelFromIds(message.id));
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
@@ -62,7 +55,7 @@ export function requestUpdateLao(name: string, witnesses?: PublicKey[]): Promise
     id: Hash.fromStringArray(currentLao.organizer.toString(), currentLao.creation.toString(), name),
     name,
     last_modified: time,
-    witnesses: (witnesses === undefined) ? currentLao.witnesses : witnesses,
+    witnesses: witnesses === undefined ? currentLao.witnesses : witnesses,
   });
 
   return publish(channelFromIds(currentLao.id), message);
@@ -74,7 +67,9 @@ export function requestStateLao(): Promise<void> {
 
   const message = new StateLao({
     id: Hash.fromStringArray(
-      currentLao.organizer.toString(), currentLao.creation.toString(), currentLao.name,
+      currentLao.organizer.toString(),
+      currentLao.creation.toString(),
+      currentLao.name,
     ),
     name: currentLao.name,
     creation: currentLao.creation,
@@ -92,14 +87,21 @@ export function requestStateLao(): Promise<void> {
  *  startTime (Timestamp), optional location (String), optional end time (Timestamp) and optional
  *  extra information (Json object) */
 export function requestCreateMeeting(
-  name: string, startTime: Timestamp, location: string, endTime: Timestamp, extra?: {},
+  name: string,
+  startTime: Timestamp,
+  location: string,
+  endTime: Timestamp,
+  extra?: {},
 ): Promise<void> {
   const time = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new CreateMeeting({
     id: Hash.fromStringArray(
-      EventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.MEETING,
+      currentLao.id.toString(),
+      currentLao.creation.toString(),
+      name,
     ),
     name,
     start: adaptStartTime(time, startTime),
@@ -132,17 +134,17 @@ export function requestWitnessMessage(channel: Channel, messageId: Hash): Promis
  * @return A Promise resolving when the operation is completed
  */
 export function requestCreateRollCall(
-  name: string, location: string,
-  proposedStart: Timestamp, proposedEnd: Timestamp,
+  name: string,
+  location: string,
+  proposedStart: Timestamp,
+  proposedEnd: Timestamp,
   description?: string,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new CreateRollCall({
-    id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, currentLao.id.toString(), time.toString(), name,
-    ),
+    id: Hash.fromStringArray(EventTags.ROLL_CALL, currentLao.id.toString(), time.toString(), name),
     name: name,
     creation: time,
     location: location,
@@ -163,11 +165,14 @@ export function requestCreateRollCall(
  */
 export function requestOpenRollCall(rollCallId: Hash, start?: Timestamp): Promise<void> {
   const lao: Lao = OpenedLaoStore.get();
-  const time = (start === undefined) ? Timestamp.EpochNow() : start;
+  const time = start === undefined ? Timestamp.EpochNow() : start;
 
   const message = new OpenRollCall({
     update_id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      rollCallId.toString(),
+      time.toString(),
     ),
     opens: rollCallId,
     opened_at: time,
@@ -184,11 +189,14 @@ export function requestOpenRollCall(rollCallId: Hash, start?: Timestamp): Promis
  */
 export function requestReopenRollCall(rollCallId: Hash, start?: Timestamp): Promise<void> {
   const lao: Lao = OpenedLaoStore.get();
-  const time = (start === undefined) ? Timestamp.EpochNow() : start;
+  const time = start === undefined ? Timestamp.EpochNow() : start;
 
   const message = new ReopenRollCall({
     update_id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      rollCallId.toString(),
+      time.toString(),
     ),
     opens: rollCallId,
     opened_at: time,
@@ -210,11 +218,14 @@ export function requestCloseRollCall(
   close?: Timestamp,
 ): Promise<void> {
   const lao: Lao = OpenedLaoStore.get();
-  const time = (close === undefined) ? Timestamp.EpochNow() : close;
+  const time = close === undefined ? Timestamp.EpochNow() : close;
 
   const message = new CloseRollCall({
     update_id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      rollCallId.toString(),
+      time.toString(),
     ),
     closes: rollCallId,
     closed_at: time,
@@ -239,9 +250,7 @@ export function requestCreateElection(
 
   const message = new SetupElection({
     lao: currentLao.id,
-    id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), time.toString(), name,
-    ),
+    id: Hash.fromStringArray(EventTags.ELECTION, currentLao.id.toString(), time.toString(), name),
     name: name,
     version: version,
     created_at: time,
@@ -255,10 +264,7 @@ export function requestCreateElection(
 }
 
 /** Sends a server query which creates a Vote in an ongoing election */
-export function castVote(
-  election_id: Hash,
-  votes: Vote[],
-): Promise<void> {
+export function castVote(election_id: Hash, votes: Vote[]): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const message = new CastVote({
@@ -273,10 +279,7 @@ export function castVote(
 }
 
 /** Sends a server query which creates a Vote in an ongoing election */
-export function terminateElection(
-  electionId: Hash,
-  registeredVotes: Hash,
-): Promise<void> {
+export function terminateElection(electionId: Hash, registeredVotes: Hash): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const message = new EndElection({
@@ -315,10 +318,7 @@ export function requestAddChirp(
 }
 
 /** Sends a server query which delete a chirp */
-export function requestDeleteChirp(
-  publicKey: PublicKey,
-  chirpId: Hash,
-): Promise<void> {
+export function requestDeleteChirp(publicKey: PublicKey, chirpId: Hash): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
@@ -336,10 +336,7 @@ export function requestDeleteChirp(
  * @param reaction_codepoint
  * @param chirp_id
  */
-export function requestAddReaction(
-  reaction_codepoint: string,
-  chirp_id: Hash,
-): Promise<void> {
+export function requestAddReaction(reaction_codepoint: string, chirp_id: Hash): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 

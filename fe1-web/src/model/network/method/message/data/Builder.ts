@@ -2,22 +2,10 @@ import { Base64UrlData } from 'model/objects';
 import { ActionType, MessageData, ObjectType } from './MessageData';
 import { CreateLao, StateLao, UpdateLao } from './lao';
 import { CreateMeeting, StateMeeting } from './meeting';
-import {
-  CloseRollCall,
-  CreateRollCall,
-  OpenRollCall,
-  ReopenRollCall,
-} from './rollCall';
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './rollCall';
 import { WitnessMessage } from './witness';
-import {
-  CastVote,
-  ElectionResult,
-  EndElection,
-  SetupElection,
-} from './election';
-import {
-  AddChirp, NotifyAddChirp, DeleteChirp, NotifyDeleteChirp,
-} from './chirp';
+import { CastVote, ElectionResult, EndElection, SetupElection } from './election';
+import { AddChirp, NotifyAddChirp, DeleteChirp, NotifyDeleteChirp } from './chirp';
 import { AddReaction } from './reaction';
 
 export function encodeMessageData(msgData: MessageData): Base64UrlData {
@@ -34,7 +22,9 @@ function buildLaoMessage(msgData: MessageData): MessageData {
     case ActionType.STATE:
       return StateLao.fromJson(msgData);
     default:
-      throw new Error(`Unknown action '${msgData.action}' encountered while creating a LAO MessageData`);
+      throw new Error(
+        `Unknown action '${msgData.action}' encountered while creating a LAO MessageData`,
+      );
   }
 }
 
@@ -45,7 +35,9 @@ function buildMeetingMessage(msgData: MessageData): MessageData {
     case ActionType.STATE:
       return StateMeeting.fromJson(msgData);
     default:
-      throw new Error(`Unknown action '${msgData.action}' encountered while creating a meeting MessageData`);
+      throw new Error(
+        `Unknown action '${msgData.action}' encountered while creating a meeting MessageData`,
+      );
   }
 }
 
@@ -60,7 +52,9 @@ function buildElectionMessage(msgData: MessageData): MessageData {
     case ActionType.RESULT:
       return ElectionResult.fromJson(msgData);
     default:
-      throw new Error(`Unknown action '${msgData.action}' encountered while creating a election MessageData`);
+      throw new Error(
+        `Unknown action '${msgData.action}' encountered while creating a election MessageData`,
+      );
   }
 }
 
@@ -75,7 +69,9 @@ function buildRollCallMessage(msgData: MessageData): MessageData {
     case ActionType.CLOSE:
       return CloseRollCall.fromJson(msgData);
     default:
-      throw new Error(`Unknown action '${msgData.action}' encountered while creating a roll call MessageData`);
+      throw new Error(
+        `Unknown action '${msgData.action}' encountered while creating a roll call MessageData`,
+      );
   }
 }
 
@@ -90,7 +86,9 @@ function buildChirpMessage(msgData: MessageData): MessageData {
     case ActionType.NOTIFY_DELETE:
       return NotifyDeleteChirp.fromJson(msgData);
     default:
-      throw new Error(`Unknown action '${msgData.action}' encountered while adding a chirp MessageData`);
+      throw new Error(
+        `Unknown action '${msgData.action}' encountered while adding a chirp MessageData`,
+      );
   }
 }
 
@@ -98,7 +96,9 @@ function buildReactionMessage(msgData: MessageData): MessageData {
   if (msgData.action === ActionType.ADD) {
     return AddReaction.fromJson(msgData);
   }
-  throw new Error(`Unknown action '${msgData.action}' encountered while adding a reaction MessageData`);
+  throw new Error(
+    `Unknown action '${msgData.action}' encountered while adding a reaction MessageData`,
+  );
 }
 
 function buildWitnessMessage(msgData: MessageData): MessageData {
@@ -129,6 +129,8 @@ export function buildMessageData(msgData: MessageData): MessageData {
       return buildReactionMessage(msgData);
 
     default:
-      throw new Error(`Unknown object '${msgData.object}' encountered while creating a MessageData`);
+      throw new Error(
+        `Unknown object '${msgData.object}' encountered while creating a MessageData`,
+      );
   }
 }

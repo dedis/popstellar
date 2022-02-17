@@ -1,11 +1,7 @@
 import React from 'react';
 import { useRoute } from '@react-navigation/core';
-import {
-  act, fireEvent, render, waitFor,
-} from '@testing-library/react-native';
-import {
-  Hash, Lao, LaoState, PopToken, PrivateKey, PublicKey, Timestamp,
-} from 'model/objects';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { Hash, Lao, LaoState, PopToken, PrivateKey, PublicKey, Timestamp } from 'model/objects';
 import STRINGS from 'res/strings';
 import keyPair from 'test_data/keypair.json';
 import { requestCloseRollCall as mockRequestCloseRollCall } from 'network/MessageApi';
@@ -80,9 +76,7 @@ describe('RollCallOpened', () => {
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },
     });
-    const { toJSON } = render(
-      <RollCallOpened />,
-    );
+    const { toJSON } = render(<RollCallOpened />);
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
     });
@@ -93,9 +87,7 @@ describe('RollCallOpened', () => {
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },
     });
-    render(
-      <RollCallOpened />,
-    );
+    render(<RollCallOpened />);
     act(() => {
       fakeQrReaderScan('123');
       fakeQrReaderScan('456');
@@ -110,9 +102,7 @@ describe('RollCallOpened', () => {
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },
     });
-    const { getByText, getByPlaceholderText } = render(
-      <RollCallOpened />,
-    );
+    const { getByText, getByPlaceholderText } = render(<RollCallOpened />);
     const addAttendeeButton = getByText(STRINGS.roll_call_add_attendee_manually);
     fireEvent.press(addAttendeeButton);
     const textInput = getByPlaceholderText(STRINGS.roll_call_attendee_token_placeholder);
@@ -129,9 +119,7 @@ describe('RollCallOpened', () => {
       name: STRINGS.roll_call_open,
       params: { rollCallID: rollCallId, time: time },
     });
-    const { getByText, getByPlaceholderText } = render(
-      <RollCallOpened />,
-    );
+    const { getByText, getByPlaceholderText } = render(<RollCallOpened />);
     const addAttendeeButton = getByText(STRINGS.roll_call_add_attendee_manually);
     fireEvent.press(addAttendeeButton);
     const textInput = getByPlaceholderText(STRINGS.roll_call_attendee_token_placeholder);
@@ -150,13 +138,12 @@ describe('RollCallOpened', () => {
     });
     const getMock = jest.spyOn(OpenedLaoStore, 'get');
     getMock.mockImplementation(() => Lao.fromState(laoState));
-    const button = render(
-      <RollCallOpened />,
-    ).getByText(STRINGS.roll_call_scan_close);
+    const button = render(<RollCallOpened />).getByText(STRINGS.roll_call_scan_close);
     await waitFor(() => {
       fireEvent.press(button);
-      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(),
-        [mockTokenPublicKey]);
+      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
+        mockTokenPublicKey,
+      ]);
     });
   });
 
@@ -167,17 +154,18 @@ describe('RollCallOpened', () => {
     });
     const getMock = jest.spyOn(OpenedLaoStore, 'get');
     getMock.mockImplementation(() => Lao.fromState(laoState));
-    const button = render(
-      <RollCallOpened />,
-    ).getByText(STRINGS.roll_call_scan_close);
+    const button = render(<RollCallOpened />).getByText(STRINGS.roll_call_scan_close);
     await waitFor(() => {
       act(() => {
         fakeQrReaderScan('123');
         fakeQrReaderScan('456');
       });
       fireEvent.press(button);
-      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(),
-        [new PublicKey('123'), new PublicKey('456'), mockTokenPublicKey]);
+      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
+        new PublicKey('123'),
+        new PublicKey('456'),
+        mockTokenPublicKey,
+      ]);
     });
   });
 });

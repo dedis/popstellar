@@ -59,32 +59,35 @@ describe('NotifyAddChirp', () => {
 
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
-      const createWrongObj = () => new NotifyAddChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.NOTIFY_ADD,
-        channel: CHANNEL,
-        timestamp: TIMESTAMP,
-      });
+      const createWrongObj = () =>
+        new NotifyAddChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.NOTIFY_ADD,
+          channel: CHANNEL,
+          timestamp: TIMESTAMP,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if timestamp is undefined', () => {
-      const createWrongObj = () => new NotifyAddChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.NOTIFY_ADD,
-        chirp_id: ID,
-        channel: CHANNEL,
-      });
+      const createWrongObj = () =>
+        new NotifyAddChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.NOTIFY_ADD,
+          chirp_id: ID,
+          channel: CHANNEL,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if channel is undefined', () => {
-      const createWrongObj = () => new NotifyAddChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.NOTIFY_ADD,
-        chirp_id: ID,
-        timestamp: TIMESTAMP,
-      });
+      const createWrongObj = () =>
+        new NotifyAddChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.NOTIFY_ADD,
+          chirp_id: ID,
+          timestamp: TIMESTAMP,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

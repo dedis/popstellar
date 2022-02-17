@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { makeCurrentLao } from 'store';
 import { requestOpenRollCall } from 'network';
-import {
-  RollCall, RollCallStatus, Timestamp, Wallet,
-} from 'model/objects';
+import { RollCall, RollCallStatus, Timestamp, Wallet } from 'model/objects';
 import QRCode from 'components/QRCode';
 import WideButtonView from 'components/WideButtonView';
 import STRINGS from 'res/strings';
@@ -30,9 +28,11 @@ const EventRollCall = (props: IPropTypes) => {
   }
   const [popToken, setPopToken] = useState('');
 
-  const rollCallFromStore = useSelector((state) => (
-    // @ts-ignore
-    state.events.byLaoId[lao.id].byId[event.id]));
+  const rollCallFromStore = useSelector(
+    (state) =>
+      // @ts-ignore
+      state.events.byLaoId[lao.id].byId[event.id],
+  );
   if (!rollCallFromStore) {
     console.debug('Error in Roll Call display: Roll Call doesnt exist in store');
     return null;
@@ -41,27 +41,30 @@ const EventRollCall = (props: IPropTypes) => {
   const onOpenRollCall = (reopen: boolean) => {
     if (reopen) {
       if (!event.idAlias) {
-        console.debug('Unable to send roll call re-open request, the event does not have an idAlias');
+        console.debug(
+          'Unable to send roll call re-open request, the event does not have an idAlias',
+        );
         return;
       }
-      requestOpenRollCall(event.idAlias).then().catch(
-        (e) => console.debug('Unable to send Roll call re-open request', e),
-      );
+      requestOpenRollCall(event.idAlias)
+        .then()
+        .catch((e) => console.debug('Unable to send Roll call re-open request', e));
     } else {
       const time = Timestamp.EpochNow();
-      requestOpenRollCall(event.id, time).then(() => {
-        // @ts-ignore
-        navigation.navigate(STRINGS.roll_call_open,
-          { rollCallID: event.id.toString(), time: time.toString() });
-      }).catch(
-        (e) => console.debug('Unable to send Roll call open request', e),
-      );
+      requestOpenRollCall(event.id, time)
+        .then(() => {
+          // @ts-ignore
+          navigation.navigate(STRINGS.roll_call_open, {
+            rollCallID: event.id.toString(),
+            time: time.toString(),
+          });
+        })
+        .catch((e) => console.debug('Unable to send Roll call open request', e));
     }
   };
 
   // Here we get the pop-token to display in the QR code
-  Wallet.generateToken(lao.id, event.id)
-    .then((token) => setPopToken(token.publicKey.valueOf()));
+  Wallet.generateToken(lao.id, event.id).then((token) => setPopToken(token.publicKey.valueOf()));
 
   const getRollCallDisplay = (status: RollCallStatus) => {
     switch (status) {

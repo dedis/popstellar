@@ -6,7 +6,7 @@ jest.mock('platform/Storage');
 jest.mock('platform/crypto/browser');
 jest.mock('store/Storage');
 
-const seed = new Uint8Array([0x1, 0x8, 0xF, 0x22, 0xFF, 0x33, 0x99]);
+const seed = new Uint8Array([0x1, 0x8, 0xf, 0x22, 0xff, 0x33, 0x99]);
 const mnemonic = 'probably insecure definitely memorable';
 
 test('should report no seed at startup', () => {

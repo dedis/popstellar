@@ -23,7 +23,7 @@ export class AddChirp implements MessageData {
 
   constructor(msg: Partial<AddChirp>) {
     if (!msg.text) {
-      throw new ProtocolError('Undefined \'text\' parameter encountered during \'AddChirp\'');
+      throw new ProtocolError("Undefined 'text' parameter encountered during 'AddChirp'");
     }
     if (msg.text.length > MAX_CHIRP_CHARS) {
       throw new ProtocolError('exceed maximum characters');
@@ -31,7 +31,7 @@ export class AddChirp implements MessageData {
     this.text = msg.text;
 
     if (!msg.timestamp) {
-      throw new ProtocolError('Undefined \'timestamp\' parameter encountered during \'AddChirp\'');
+      throw new ProtocolError("Undefined 'timestamp' parameter encountered during 'AddChirp'");
     }
     checkTimestampStaleness(msg.timestamp);
     this.timestamp = msg.timestamp;
@@ -55,7 +55,7 @@ export class AddChirp implements MessageData {
     return new AddChirp({
       ...obj,
       timestamp: new Timestamp(obj.timestamp),
-      parent_id: (obj.parent_id !== undefined) ? new Hash(obj.parent_id) : undefined,
+      parent_id: obj.parent_id !== undefined ? new Hash(obj.parent_id) : undefined,
     });
   }
 }

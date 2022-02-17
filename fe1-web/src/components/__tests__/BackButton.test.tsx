@@ -22,8 +22,7 @@ describe('BackButton', () => {
   });
 
   it('navigates correctly', () => {
-    const button = render(<BackButton navigationTabName={mockHomeTab} />)
-      .getByTestId('backButton');
+    const button = render(<BackButton navigationTabName={mockHomeTab} />).getByTestId('backButton');
     fireEvent.press(button);
     expect(mockNavigate).toHaveBeenCalledWith(mockHomeTab);
     expect(mockNavigate).toHaveBeenCalledTimes(1);

@@ -18,12 +18,16 @@ export class WitnessSignature {
   public signature: Signature;
 
   constructor(witnessSignature: Partial<WitnessSignature>) {
-    this.witness = witnessSignature.witness || (() => {
-      throw new Error('WitnessSignature creation failed : missing witness');
-    })();
-    this.signature = witnessSignature.signature || (() => {
-      throw new Error('WitnessSignature creation failed : missing signature');
-    })();
+    this.witness =
+      witnessSignature.witness ||
+      (() => {
+        throw new Error('WitnessSignature creation failed : missing witness');
+      })();
+    this.signature =
+      witnessSignature.signature ||
+      (() => {
+        throw new Error('WitnessSignature creation failed : missing signature');
+      })();
   }
 
   /**
@@ -31,7 +35,7 @@ export class WitnessSignature {
    *
    * @param message_id to be verified
    */
-  public verify(message_id: Hash) : boolean {
+  public verify(message_id: Hash): boolean {
     return this.signature.verify(this.witness, message_id);
   }
 

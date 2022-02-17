@@ -27,7 +27,7 @@ const Identity = () => {
     <TextInput
       style={[
         { ...Typography.base, marginBottom: Spacing.xs } as TextStyle,
-        { color: (toggleAnonymity) ? Colors.gray : Colors.black },
+        { color: toggleAnonymity ? Colors.gray : Colors.black },
       ]}
       key={`input-${placeholder}`}
       placeholder={placeholder}
@@ -35,15 +35,18 @@ const Identity = () => {
     />
   );
 
-  const buildEmailTextInput = (placeholder: string): JSX.Element => React.cloneElement(
-    buildBasicTextInput(placeholder),
-    { autoCompleteType: 'email', keyboardType: 'email-address' },
-  );
+  const buildEmailTextInput = (placeholder: string): JSX.Element =>
+    React.cloneElement(buildBasicTextInput(placeholder), {
+      autoCompleteType: 'email',
+      keyboardType: 'email-address',
+    });
 
-  const buildPhoneTextInput = (placeholder: string): JSX.Element => React.cloneElement(
-    buildBasicTextInput(placeholder),
-    { autoCompleteType: 'tel', dataDetectorTypes: 'phoneNumber', keyboardType: 'phone-pad' },
-  );
+  const buildPhoneTextInput = (placeholder: string): JSX.Element =>
+    React.cloneElement(buildBasicTextInput(placeholder), {
+      autoCompleteType: 'tel',
+      dataDetectorTypes: 'phoneNumber',
+      keyboardType: 'phone-pad',
+    });
 
   return (
     <>
@@ -53,9 +56,9 @@ const Identity = () => {
         title={STRINGS.identity_check_box_anonymous}
       />
       <TextBlock text={STRINGS.identity_check_box_anonymous_description} />
-      { placeholderBasic.map((p: string) => buildBasicTextInput(p)) }
-      { buildEmailTextInput(STRINGS.identity_email_placeholder) }
-      { buildPhoneTextInput(STRINGS.identity_phone_placeholder) }
+      {placeholderBasic.map((p: string) => buildBasicTextInput(p))}
+      {buildEmailTextInput(STRINGS.identity_email_placeholder)}
+      {buildPhoneTextInput(STRINGS.identity_phone_placeholder)}
       <TextBlock text={STRINGS.identity_qrcode_description} visibility={!toggleAnonymity} />
       <QRCode value={KeyPairStore.getPublicKey().toString()} visibility={!toggleAnonymity} />
     </>

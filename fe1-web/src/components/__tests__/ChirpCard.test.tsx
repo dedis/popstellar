@@ -1,8 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import {
-  Hash, LaoState, PublicKey, Timestamp, Lao, Chirp,
-} from 'model/objects';
+import { Hash, LaoState, PublicKey, Timestamp, Lao, Chirp } from 'model/objects';
 import {
   requestAddReaction as mockRequestAddReaction,
   requestDeleteChirp as mockRequestDeleteChirp,
@@ -25,7 +23,7 @@ const sender = new PublicKey('Douglas Adams');
 const ID = new Hash('1234');
 const chirp = new Chirp({
   id: ID,
-  text: 'Don\'t panic.',
+  text: "Don't panic.",
   sender: sender,
   time: new Timestamp(1609455600), // 31 December 2020
   isDeleted: false,
@@ -67,9 +65,7 @@ describe('ChirpCard', () => {
     it('renders correctly for sender', () => {
       const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
       getMockLao.mockImplementation(() => Lao.fromState(laoState));
-      const obj = render(
-        <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
-      );
+      const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
@@ -96,9 +92,7 @@ describe('ChirpCard', () => {
     it('render correct for a deleted chirp', () => {
       const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
       getMockLao.mockImplementation(() => Lao.fromState(laoState));
-      const obj = render(
-        <ChirpCard chirp={deletedChirp} currentUserPublicKey={sender} />,
-      );
+      const obj = render(<ChirpCard chirp={deletedChirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
   });
@@ -106,8 +100,7 @@ describe('ChirpCard', () => {
   describe('for reaction', () => {
     it('renders correctly with reaction', () => {
       const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
-      expect(obj.toJSON())
-        .toMatchSnapshot();
+      expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly without reaction', () => {

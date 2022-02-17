@@ -5,19 +5,20 @@ const mockPublicKey = '__MY_PUBLIC_KEY__' as unknown as CryptoKey;
 
 export const cipherMap = new Map<string, ArrayBuffer>();
 
-export const generateKeyMock = jest.fn(
-  (): Promise<CryptoKey | CryptoKeyPair> => {
-    cipherMap.clear();
-    return Promise.resolve({
-      publicKey: mockPublicKey,
-      privateKey: mockPrivateKey,
-    } as CryptoKeyPair);
-  },
-);
+export const generateKeyMock = jest.fn((): Promise<CryptoKey | CryptoKeyPair> => {
+  cipherMap.clear();
+  return Promise.resolve({
+    publicKey: mockPublicKey,
+    privateKey: mockPrivateKey,
+  } as CryptoKeyPair);
+});
 
 export const encryptMock = jest.fn(
-  (s: Algorithm, publicKey: CryptoKey,
-    plaintext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> => {
+  (
+    s: Algorithm,
+    publicKey: CryptoKey,
+    plaintext: Uint8Array | ArrayBuffer,
+  ): Promise<ArrayBuffer> => {
     // TODO: verify algorithm
 
     // Verify key
@@ -33,8 +34,11 @@ export const encryptMock = jest.fn(
 );
 
 export const decryptMock = jest.fn(
-  (s: Algorithm, privateKey: CryptoKey,
-    ciphertext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> => {
+  (
+    s: Algorithm,
+    privateKey: CryptoKey,
+    ciphertext: Uint8Array | ArrayBuffer,
+  ): Promise<ArrayBuffer> => {
     // TODO: verify algorithm
 
     // Verify key

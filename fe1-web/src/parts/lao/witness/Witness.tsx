@@ -14,7 +14,7 @@ import { LaoEvent, Timestamp } from 'model/objects';
 /**
  * Witness screen: button to navigate to the witness video screen,
  * a section list of events and lao properties
-*/
+ */
 const Witness = () => {
   const navigation = useNavigation();
 

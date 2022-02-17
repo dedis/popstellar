@@ -1,6 +1,4 @@
-import {
-  Hash, Timestamp, PublicKey, Lao, EventTags,
-} from 'model/objects';
+import { Hash, Timestamp, PublicKey, Lao, EventTags } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
@@ -44,11 +42,16 @@ export class CloseRollCall implements MessageData {
     }
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), this.closes.toString(), this.closed_at.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      this.closes.toString(),
+      this.closed_at.toString(),
     );
     if (!expectedHash.equals(msg.update_id)) {
-      throw new ProtocolError("Invalid 'update_id' parameter encountered during 'CloseRollCall':"
-        + ' re-computing the value yields a different result');
+      throw new ProtocolError(
+        "Invalid 'update_id' parameter encountered during 'CloseRollCall':" +
+          ' re-computing the value yields a different result',
+      );
     }
     this.update_id = msg.update_id;
   }

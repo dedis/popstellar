@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  View, Modal, Text,
-} from 'react-native';
+import { View, Modal, Text } from 'react-native';
 import STRINGS from 'res/strings';
 import modalStyles from 'styles/stylesheets/modalStyles';
 import WideButtonView from './WideButtonView';
@@ -19,20 +17,14 @@ const DismissModal = (props: IPropTypes) => {
   const { buttonText } = props;
 
   return (
-    <Modal
-      visible={visibility}
-      transparent
-    >
+    <Modal visible={visibility} transparent>
       <View style={modalStyles.modalView}>
         <View style={modalStyles.titleView}>
           <Text style={modalStyles.modalTitle}>{title}</Text>
         </View>
         <Text style={modalStyles.modalDescription}>{description}</Text>
         <View style={modalStyles.buttonView}>
-          <WideButtonView
-            title={buttonText}
-            onPress={() => setVisibility(!visibility)}
-          />
+          <WideButtonView title={buttonText} onPress={() => setVisibility(!visibility)} />
         </View>
       </View>
     </Modal>
@@ -54,11 +46,11 @@ DismissModal.defaultProps = {
 };
 
 type IPropTypes = {
-  visibility: boolean,
-  setVisibility: Function,
-  title: string,
-  description: string,
-  buttonText: string,
+  visibility: boolean;
+  setVisibility: Function;
+  title: string;
+  description: string;
+  buttonText: string;
 };
 
 export default DismissModal;

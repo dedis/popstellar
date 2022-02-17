@@ -1,18 +1,21 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import {
-  ActionType, ObjectType, CreateMeeting, StateMeeting,
+  ActionType,
+  ObjectType,
+  CreateMeeting,
+  StateMeeting,
 } from 'model/network/method/message/data';
 import { Meeting } from 'model/objects';
-import {
-  getStore, dispatch, addEvent, updateEvent, makeCurrentLao,
-} from 'store';
+import { getStore, dispatch, addEvent, updateEvent, makeCurrentLao } from 'store';
 import { hasWitnessSignatureQuorum, getEventFromId } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
 function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.MEETING
-    || msg.messageData.action !== ActionType.CREATE) {
+  if (
+    msg.messageData.object !== ObjectType.MEETING ||
+    msg.messageData.action !== ActionType.CREATE
+  ) {
     console.warn('handleMeetingCreateMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -35,7 +38,7 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
     creation: mtgMsg.creation,
     start: mtgMsg.start,
     end: mtgMsg.end ? mtgMsg.end : undefined,
-    extra: (mtgMsg.extra) ? { ...mtgMsg.extra } : {},
+    extra: mtgMsg.extra ? { ...mtgMsg.extra } : {},
   });
 
   dispatch(addEvent(lao.id, meeting.toState()));
@@ -43,8 +46,10 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
 }
 
 function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.MEETING
-    || msg.messageData.action !== ActionType.STATE) {
+  if (
+    msg.messageData.object !== ObjectType.MEETING ||
+    msg.messageData.action !== ActionType.STATE
+  ) {
     console.warn('handleMeetingStateMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -100,8 +105,10 @@ export function handleMeetingMessage(msg: ExtendedMessage) {
       return handleMeetingStateMessage(msg);
 
     default:
-      console.warn('A Meeting message was received but'
-        + ' its processing logic is not yet implemented:', msg);
+      console.warn(
+        'A Meeting message was received but' + ' its processing logic is not yet implemented:',
+        msg,
+      );
       return false;
   }
 }

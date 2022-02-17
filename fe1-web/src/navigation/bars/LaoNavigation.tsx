@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  Platform, StyleSheet,
-} from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
@@ -65,12 +63,7 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
     component = Attendee;
   }
 
-  return (
-    <OrganizationTopTabNavigator.Screen
-      name={tabName}
-      component={component}
-    />
-  );
+  return <OrganizationTopTabNavigator.Screen name={tabName} component={component} />;
 }
 
 // Cannot omit the "component" attribute in Screen
@@ -84,11 +77,11 @@ function LaoNavigation() {
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
 
-  const isOrganizer = !!(lao && publicKey && (publicKey.equals(lao.organizer)));
+  const isOrganizer = !!(lao && publicKey && publicKey.equals(lao.organizer));
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
 
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  const laoName: string = (lao) ? lao.name : STRINGS.unused;
+  const laoName: string = lao ? lao.name : STRINGS.unused;
 
   return (
     <OrganizationTopTabNavigator.Navigator
@@ -96,20 +89,15 @@ function LaoNavigation() {
       initialRouteName={tabName}
       screenOptions={{
         swipeEnabled: false,
-      }}
-    >
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_home}
-        component={Home}
-      />
+      }}>
+      <OrganizationTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
 
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.navigation_tab_social_media}
         component={SocialMediaNavigation}
       />
 
-      { buildTabComponent(isOrganizer, isWitness) }
+      {buildTabComponent(isOrganizer, isWitness)}
 
       <OrganizationTopTabNavigator.Screen
         name={STRINGS.organization_navigation_tab_identity}

@@ -33,20 +33,13 @@ export default function MainNavigation() {
       initialRouteName={STRINGS.navigation_tab_home}
       screenOptions={{
         swipeEnabled: false,
-      }}
-    >
-      <HomeTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_home}
-        component={Home}
-      />
+      }}>
+      <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_connect}
         component={ConnectNavigation}
       />
-      <HomeTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_launch}
-        component={Launch}
-      />
+      <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
       <HomeTopTabNavigator.Screen
         name={STRINGS.navigation_tab_wallet}
         component={WalletNavigation}

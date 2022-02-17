@@ -11,7 +11,7 @@ import MainNavigation from 'navigation/bars/MainNavigation';
 /**
  * Define the App stack navigation
  * Contains to navigation: the home navigation and the organization navigation
-*/
+ */
 
 const Stack = createStackNavigator();
 
@@ -27,16 +27,9 @@ function AppNavigation() {
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
-        }}
-      >
-        <Stack.Screen
-          name={STRINGS.app_navigation_tab_home}
-          component={MainNavigation}
-        />
-        <Stack.Screen
-          name={STRINGS.app_navigation_tab_organizer}
-          component={LaoNavigation}
-        />
+        }}>
+        <Stack.Screen name={STRINGS.app_navigation_tab_home} component={MainNavigation} />
+        <Stack.Screen name={STRINGS.app_navigation_tab_organizer} component={LaoNavigation} />
       </Stack.Navigator>
     </SafeAreaView>
   );

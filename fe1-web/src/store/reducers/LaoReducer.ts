@@ -1,6 +1,4 @@
-import {
-  createSlice, createSelector, PayloadAction, Draft,
-} from '@reduxjs/toolkit';
+import { createSlice, createSelector, PayloadAction, Draft } from '@reduxjs/toolkit';
 import { REHYDRATE } from 'redux-persist';
 
 import { Hash, Lao, LaoState } from 'model/objects';
@@ -12,9 +10,9 @@ import { getKeyPairState } from './KeyPairReducer';
  */
 
 interface LaoReducerState {
-  byId: Record<string, LaoState>,
-  allIds: string[],
-  currentId?: string,
+  byId: Record<string, LaoState>;
+  allIds: string[];
+  currentId?: string;
 }
 
 const initialState: LaoReducerState = {
@@ -95,11 +93,14 @@ const laosSlice = createSlice({
           },
         };
       },
-      reducer(state, action: PayloadAction<{
-        laoId: string;
-        rollCallId: string;
-        hasToken: boolean;
-      }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          rollCallId: string;
+          hasToken: boolean;
+        }>,
+      ) {
         const { laoId, rollCallId, hasToken } = action.payload;
 
         // Lao not initialized, return
@@ -113,7 +114,6 @@ const laosSlice = createSlice({
         }
       },
     },
-
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
@@ -126,7 +126,13 @@ const laosSlice = createSlice({
 });
 
 export const {
-  addLao, updateLao, removeLao, clearAllLaos, connectToLao, disconnectFromLao, setLaoLastRollCall,
+  addLao,
+  updateLao,
+  removeLao,
+  clearAllLaos,
+  connectToLao,
+  disconnectFromLao,
+  setLaoLastRollCall,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[laoReducerPath];
@@ -138,7 +144,7 @@ export function makeLao(id: string | undefined = undefined) {
     // Second input: current LAO id
     (state) => id || getLaosState(state).currentId,
     // Selector: returns a LaoState -- should it return a Lao object?
-    (laoMap: Record<string, LaoState>, currentId: string | undefined) : Lao | undefined => {
+    (laoMap: Record<string, LaoState>, currentId: string | undefined): Lao | undefined => {
       if (currentId === undefined || !(currentId in laoMap)) {
         return undefined;
       }
@@ -150,48 +156,52 @@ export function makeLao(id: string | undefined = undefined) {
 
 export const makeCurrentLao = () => makeLao();
 
-export const makeLaoIdsList = () => createSelector(
-  // Input: sorted LAO ids list
-  (state) => getLaosState(state).allIds,
-  // Selector: returns an array of LaoIDs
-  (laoIds: string[]) : string[] => laoIds,
-);
+export const makeLaoIdsList = () =>
+  createSelector(
+    // Input: sorted LAO ids list
+    (state) => getLaosState(state).allIds,
+    // Selector: returns an array of LaoIDs
+    (laoIds: string[]): string[] => laoIds,
+  );
 
-export const makeLaosList = () => createSelector(
-  // First input: all LAOs map
-  (state) => getLaosState(state).byId,
-  // Second input: sorted LAO ids list
-  (state) => getLaosState(state).allIds,
-  // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
-  (laoMap: Record<string, LaoState>, laoIds: string[]) : Lao[] => laoIds
-    .map((id) => Lao.fromState(laoMap[id])),
-);
+export const makeLaosList = () =>
+  createSelector(
+    // First input: all LAOs map
+    (state) => getLaosState(state).byId,
+    // Second input: sorted LAO ids list
+    (state) => getLaosState(state).allIds,
+    // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+    (laoMap: Record<string, LaoState>, laoIds: string[]): Lao[] =>
+      laoIds.map((id) => Lao.fromState(laoMap[id])),
+  );
 
-export const makeLaosMap = () => createSelector(
-  // First input: all LAOs map
-  (state) => getLaosState(state).byId,
-  // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
-  (laoMap: Record<string, LaoState>)
-  : Record<string, Lao> => Object.keys(laoMap).reduce(
-    (acc, id) => {
-      acc[id] = Lao.fromState(laoMap[id]);
-      return acc;
-    }, {} as Record<string, Lao>,
-  ),
-);
+export const makeLaosMap = () =>
+  createSelector(
+    // First input: all LAOs map
+    (state) => getLaosState(state).byId,
+    // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+    (laoMap: Record<string, LaoState>): Record<string, Lao> =>
+      Object.keys(laoMap).reduce((acc, id) => {
+        acc[id] = Lao.fromState(laoMap[id]);
+        return acc;
+      }, {} as Record<string, Lao>),
+  );
 
-export const makeIsLaoOrganizer = () => createSelector(
-  // First input: all LAOs map
-  (state) => getLaosState(state).byId,
-  // Second input: current LAO id
-  (state) => getLaosState(state)?.currentId,
-  // Second input: sorted LAO ids list
-  (state) => getKeyPairState(state)?.keyPair?.publicKey,
-  // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
-  (laoMap: Record<string, LaoState>,
-    laoId: string | undefined,
-    pKey: string | undefined) : boolean => !!laoId && laoMap[laoId]?.organizer === pKey,
-);
+export const makeIsLaoOrganizer = () =>
+  createSelector(
+    // First input: all LAOs map
+    (state) => getLaosState(state).byId,
+    // Second input: current LAO id
+    (state) => getLaosState(state)?.currentId,
+    // Second input: sorted LAO ids list
+    (state) => getKeyPairState(state)?.keyPair?.publicKey,
+    // Selector: returns an array of LaoStates -- should it return an array of Lao objects?
+    (
+      laoMap: Record<string, LaoState>,
+      laoId: string | undefined,
+      pKey: string | undefined,
+    ): boolean => !!laoId && laoMap[laoId]?.organizer === pKey,
+  );
 
 export const laoReduce = laosSlice.reducer;
 

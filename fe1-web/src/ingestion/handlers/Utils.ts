@@ -1,9 +1,5 @@
-import {
-  makeEventsAliasMap, makeEventsMap, OpenedLaoStore,
-} from 'store';
-import {
-  Hash, LaoEvent, WitnessSignature,
-} from 'model/objects';
+import { makeEventsAliasMap, makeEventsMap, OpenedLaoStore } from 'store';
+import { Hash, LaoEvent, WitnessSignature } from 'model/objects';
 
 const MIN_WITNESS_FACTOR_N = 3; // numerator
 const MIN_WITNESS_FACTOR_D = 5; // denominator, = three fifths = 60%
@@ -14,9 +10,9 @@ export function hasWitnessSignatureQuorum(witSigs: WitnessSignature[]): boolean 
     return false;
   }
 
-  const signaturesCount = witSigs
-    .filter((witSig: WitnessSignature) => lao.witnesses.includes(witSig.witness))
-    .length;
+  const signaturesCount = witSigs.filter((witSig: WitnessSignature) =>
+    lao.witnesses.includes(witSig.witness),
+  ).length;
 
   return signaturesCount * MIN_WITNESS_FACTOR_D >= lao.witnesses.length * MIN_WITNESS_FACTOR_N;
 }
@@ -38,11 +34,7 @@ export function getEventFromId(state: any, id: Hash): LaoEvent | undefined {
   const eventMap = getEventMap(state);
 
   const idStr = id.valueOf();
-  const evtId = (idStr in eventAlias)
-    ? eventAlias[idStr]
-    : idStr;
+  const evtId = idStr in eventAlias ? eventAlias[idStr] : idStr;
 
-  return (evtId in eventMap)
-    ? eventMap[evtId]
-    : undefined;
+  return evtId in eventMap ? eventMap[evtId] : undefined;
 }

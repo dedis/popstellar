@@ -16,7 +16,7 @@ import RollCallOpened from 'parts/lao/organizer/RollCallOpened';
  * four different screen (Organizer, CreateEvent, WitnessScanning, RollCallScanning)
  *
  * The app are not use in the stack order, only organizer to one of the other screen
-*/
+ */
 
 const Stack = createStackNavigator();
 
@@ -25,16 +25,9 @@ export default function OrganizerNavigation() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}
-    >
-      <Stack.Screen
-        name={STRINGS.organizer_navigation_tab_home}
-        component={Organizer}
-      />
-      <Stack.Screen
-        name={STRINGS.organizer_navigation_tab_create_event}
-        component={CreateEvent}
-      />
+      }}>
+      <Stack.Screen name={STRINGS.organizer_navigation_tab_home} component={Organizer} />
+      <Stack.Screen name={STRINGS.organizer_navigation_tab_create_event} component={CreateEvent} />
       <Stack.Screen
         name={STRINGS.organizer_navigation_tab_add_witness}
         component={WitnessScanning}
@@ -51,10 +44,7 @@ export default function OrganizerNavigation() {
         name={STRINGS.organizer_navigation_creation_election}
         component={CreateElection}
       />
-      <Stack.Screen
-        name={STRINGS.roll_call_open}
-        component={RollCallOpened}
-      />
+      <Stack.Screen name={STRINGS.roll_call_open} component={RollCallOpened} />
     </Stack.Navigator>
   );
 }

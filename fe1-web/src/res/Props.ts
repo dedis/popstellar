@@ -1,10 +1,7 @@
-import {
-  shape, func, number, arrayOf, string, oneOf, object,
-} from 'prop-types';
+import { shape, func, number, arrayOf, string, oneOf, object } from 'prop-types';
 import { Action } from '@react-navigation/routers/src/CommonActions';
 
 const PROPS_TYPE = {
-
   // --- LAO type ---
   LAO: shape({
     object: oneOf(['lao']).isRequired,
@@ -16,10 +13,12 @@ const PROPS_TYPE = {
     organizer: string.isRequired,
     witnesses: arrayOf(string).isRequired,
     modification_id: string,
-    modification_signatures: arrayOf(shape({
-      witness: string.isRequired,
-      signature: string.isRequired,
-    })),
+    modification_signatures: arrayOf(
+      shape({
+        witness: string.isRequired,
+        signature: string.isRequired,
+      }),
+    ),
   }),
 
   // --- event type ---
@@ -78,7 +77,7 @@ const PROPS_TYPE = {
 
 export interface INavigation {
   navigate: (...args: any) => Action;
-  addListener: (type: any, callback: any) => (() => void);
+  addListener: (type: any, callback: any) => () => void;
 }
 
 export default PROPS_TYPE;

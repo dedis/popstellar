@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
@@ -44,10 +42,7 @@ const WalletHome = () => {
         title={STRINGS.create_new_wallet_button}
         onPress={() => navigation.navigate(STRINGS.navigation_show_seed_wallet)}
       />
-      <WideButtonView
-        title={STRINGS.import_seed_button}
-        onPress={() => importSeed()}
-      />
+      <WideButtonView title={STRINGS.import_seed_button} onPress={() => importSeed()} />
     </View>
   );
 };

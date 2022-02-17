@@ -1,6 +1,4 @@
-import {
-  Base64UrlData, Hash, PublicKey, Timestamp, WitnessSignature,
-} from 'model/objects';
+import { Base64UrlData, Hash, PublicKey, Timestamp, WitnessSignature } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 
 export function checkTimestampStaleness(timestamp: Timestamp) {

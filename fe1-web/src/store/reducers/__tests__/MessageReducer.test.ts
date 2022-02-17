@@ -1,11 +1,7 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
 import { channelFromIds, Timestamp } from 'model/objects';
-import {
-  ExtendedMessage,
-  markExtMessageAsProcessed,
-  Message,
-} from 'model/network/method/message';
+import { ExtendedMessage, markExtMessageAsProcessed, Message } from 'model/network/method/message';
 import { AddChirp } from 'model/network/method/message/data';
 import { mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import {
@@ -39,8 +35,7 @@ const emptyState = {
 
 describe('MessageReducer', () => {
   it('should return the initial state', () => {
-    expect(messageReduce(undefined, {} as AnyAction))
-      .toEqual(initialState);
+    expect(messageReduce(undefined, {} as AnyAction)).toEqual(initialState);
   });
 
   it('should add the message', async () => {
@@ -63,8 +58,9 @@ describe('MessageReducer', () => {
       },
     };
 
-    expect(messageReduce(initialState, addMessages(mockLaoId, extMsg.toState())))
-      .toEqual(filledState);
+    expect(messageReduce(initialState, addMessages(mockLaoId, extMsg.toState()))).toEqual(
+      filledState,
+    );
   });
 
   it('should process the message', async () => {
@@ -98,24 +94,22 @@ describe('MessageReducer', () => {
       },
     };
 
-    expect(messageReduce(filledState, processMessages(mockLaoId, [msgId])))
-      .toEqual(processedState);
+    expect(messageReduce(filledState, processMessages(mockLaoId, [msgId]))).toEqual(processedState);
   });
 });
 
 describe('message selectors', () => {
   it('should return undefined if lao id is undefined', () => {
-    expect(makeLaoMessagesState().resultFunc({ [mockLaoId]: randomState }, undefined))
-      .toEqual(undefined);
+    expect(makeLaoMessagesState().resultFunc({ [mockLaoId]: randomState }, undefined)).toEqual(
+      undefined,
+    );
   });
 
   it('should return empty state when byId is empty', () => {
-    expect(getLaoMessagesState(mockLaoId, randomState))
-      .toEqual(emptyState);
+    expect(getLaoMessagesState(mockLaoId, randomState)).toEqual(emptyState);
   });
 
   it('should return undefined if the message id is not in store', () => {
-    expect(getMessage(randomState, '1234'))
-      .toEqual(undefined);
+    expect(getMessage(randomState, '1234')).toEqual(undefined);
   });
 });

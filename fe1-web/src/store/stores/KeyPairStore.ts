@@ -1,7 +1,4 @@
-import {
-  Base64UrlData,
-  KeyPair, KeyPairState, PrivateKey, PublicKey,
-} from 'model/objects';
+import { Base64UrlData, KeyPair, KeyPairState, PrivateKey, PublicKey } from 'model/objects';
 import { sign } from 'tweetnacl';
 import { dispatch, getStore } from '../Storage';
 import { getKeyPairState, setKeyPair } from '../reducers';
@@ -39,9 +36,7 @@ export namespace KeyPairStore {
 
       const keyPair: KeyPair = new KeyPair({
         publicKey: new PublicKey(Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf()),
-        privateKey: new PrivateKey(
-          Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf(),
-        ),
+        privateKey: new PrivateKey(Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf()),
       });
 
       store(keyPair);

@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  SectionList, StyleSheet, Text, TextStyle, View, ViewStyle,
-} from 'react-native';
+import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { makeIsLaoOrganizer } from 'store';
@@ -34,20 +32,19 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
   const sectionTitle = <TextBlock bold text={title} />;
   const expandSign: string = '+';
 
-  return (isOrganizer && title === 'Future')
-    ? (
-      <View style={styles.flexBox}>
-        <Text style={styles.buttonMatcher}>{expandSign}</Text>
-        { sectionTitle }
-        <Text
-          style={styles.expandButton}
-          onPress={() => RootNavigation.navigate(STRINGS.organizer_navigation_tab_create_event, {})}
-        >
-          {expandSign}
-        </Text>
-      </View>
-    )
-    : sectionTitle;
+  return isOrganizer && title === 'Future' ? (
+    <View style={styles.flexBox}>
+      <Text style={styles.buttonMatcher}>{expandSign}</Text>
+      {sectionTitle}
+      <Text
+        style={styles.expandButton}
+        onPress={() => RootNavigation.navigate(STRINGS.organizer_navigation_tab_create_event, {})}>
+        {expandSign}
+      </Text>
+    </View>
+  ) : (
+    sectionTitle
+  );
 }
 
 /**
@@ -55,15 +52,15 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
  * to 'past', 'present' and 'future' events
  *
  * Nested events should be in the children value of the parent event
-*/
+ */
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
 
   const isOrganizerSelect = makeIsLaoOrganizer();
   const isOrganizer = useSelector(isOrganizerSelect);
 
-  const renderItemFn = (
-    ({ item }: any) => <Event event={item} isOrganizer={isOrganizer} renderItemFn={renderItemFn} />
+  const renderItemFn = ({ item }: any) => (
+    <Event event={item} isOrganizer={isOrganizer} renderItemFn={renderItemFn} />
   );
 
   return (
@@ -77,15 +74,16 @@ const EventListCollapsible = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  data: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    data: PropTypes.arrayOf(PropTypes.shape({})),
-  }).isRequired).isRequired,
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      data: PropTypes.arrayOf(PropTypes.shape({})),
+    }).isRequired,
+  ).isRequired,
 };
 EventListCollapsible.propTypes = propTypes;
 
-EventListCollapsible.defaultProps = {
-};
+EventListCollapsible.defaultProps = {};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

@@ -1,6 +1,4 @@
-import {
-  createSlice, PayloadAction,
-} from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 /**
  * This file represents the reducer for the wallet.
@@ -46,10 +44,7 @@ const walletSlice = createSlice({
   },
 });
 
-export const {
-  setWallet,
-  clearWallet,
-} = walletSlice.actions;
+export const { setWallet, clearWallet } = walletSlice.actions;
 
 export const walletReduce = walletSlice.reducer;
 

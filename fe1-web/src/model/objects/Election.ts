@@ -1,6 +1,4 @@
-import {
-  Hash, Timestamp,
-} from 'model/objects';
+import { Hash, Timestamp } from 'model/objects';
 import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';
 
 export interface ElectionState extends LaoEventState {
@@ -16,35 +14,35 @@ export interface ElectionState extends LaoEventState {
 }
 
 export interface Question {
-  id: string,
-  question: string,
-  voting_method: string,
-  ballot_options: string[],
-  write_in: boolean,
+  id: string;
+  question: string;
+  voting_method: string;
+  ballot_options: string[];
+  write_in: boolean;
 }
 
 export interface Vote {
-  id: string,
-  question: string,
-  vote?: number[],
-  write_in?: string,
+  id: string;
+  question: string;
+  vote?: number[];
+  write_in?: string;
 }
 
 export interface RegisteredVote {
   createdAt: number;
-  sender: string,
-  votes: Vote[],
-  messageId: string,
+  sender: string;
+  votes: Vote[];
+  messageId: string;
 }
 
 export interface MajorityResult {
-  ballot_option: string,
-  count: number,
+  ballot_option: string;
+  count: number;
 }
 
 export interface QuestionResult {
-  id: string,
-  result: MajorityResult[]
+  id: string;
+  result: MajorityResult[];
 }
 
 export enum ElectionStatus {
@@ -80,8 +78,9 @@ export class Election implements LaoEvent {
 
   constructor(obj: Partial<Election>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a Election object: '
-        + 'undefined/null parameters');
+      throw new Error(
+        'Error encountered while creating a Election object: ' + 'undefined/null parameters',
+      );
     }
     if (obj.lao === undefined) {
       throw new Error("Undefined 'lao' when creating 'Election'");

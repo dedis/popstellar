@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View, Platform, ScrollView,
-} from 'react-native';
+import { View, Platform, ScrollView } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
@@ -15,9 +13,7 @@ import TextInputList from 'components/TextInputList';
 import TextInputLine from 'components/TextInputLine';
 import DismissModal from 'components/DismissModal';
 import ConfirmModal from 'components/ConfirmModal';
-import {
-  Hash, Lao, Timestamp, Question, EventTags,
-} from 'model/objects';
+import { Hash, Lao, Timestamp, Question, EventTags } from 'model/objects';
 import { requestCreateElection } from 'network';
 import { OpenedLaoStore } from 'store';
 import { useToast } from 'react-native-toast-notifications';
@@ -36,8 +32,9 @@ const CreateElection = ({ route }: any) => {
   const toast = useToast();
 
   const [startTime, setStartTime] = useState(Timestamp.EpochNow());
-  const [endTime, setEndTime] = useState(Timestamp.EpochNow()
-    .addSeconds(DEFAULT_ELECTION_DURATION));
+  const [endTime, setEndTime] = useState(
+    Timestamp.EpochNow().addSeconds(DEFAULT_ELECTION_DURATION),
+  );
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
@@ -58,8 +55,9 @@ const CreateElection = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.election_create_start_time} />
           <DatePicker
             selected={startDate}
-            onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
-              DEFAULT_ELECTION_DURATION)}
+            onChange={(date: Date) =>
+              onChangeStartTime(date, setStartTime, setEndTime, DEFAULT_ELECTION_DURATION)
+            }
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
@@ -74,23 +72,23 @@ const CreateElection = ({ route }: any) => {
   };
 
   const electionId = Hash.fromStringArray(
-    EventTags.ELECTION, currentLao.id.toString(), time.toString(), electionName,
+    EventTags.ELECTION,
+    currentLao.id.toString(),
+    time.toString(),
+    electionName,
   );
-  const getQuestionObjects = (): Question[] => questions.map((item) => (
-    {
+  const getQuestionObjects = (): Question[] =>
+    questions.map((item) => ({
       ...item,
-      id: Hash.fromStringArray(
-        EventTags.QUESTION, electionId.toString(), item.question,
-      ).toString(),
+      id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
       write_in: false,
     }));
 
-  const isInvalid = (obj: Question): boolean => (obj.question === ''
-    || obj.ballot_options.length < minBallotOptions);
+  const isInvalid = (obj: Question): boolean =>
+    obj.question === '' || obj.ballot_options.length < minBallotOptions;
 
   // Confirm button only clickable when the Name, Question and 2 Ballot options have values
-  const buttonsVisibility: boolean = (electionName !== ''
-    && !getQuestionObjects().some(isInvalid));
+  const buttonsVisibility: boolean = electionName !== '' && !getQuestionObjects().some(isInvalid);
 
   const createElection = () => {
     console.log(getQuestionObjects());
@@ -121,33 +119,41 @@ const CreateElection = ({ route }: any) => {
       <TextBlock text={STRINGS.election_create_setup} bold />
       <TextInputLine
         placeholder={STRINGS.election_create_name}
-        onChangeText={(text: string) => { setElectionName(text); }}
+        onChangeText={(text: string) => {
+          setElectionName(text);
+        }}
       />
-      { /* see archive branches for date picker used for native apps */ }
-      { Platform.OS === 'web' && buildDatePickerWeb() }
-      { questions.map((value, idx) => (
+      {/* see archive branches for date picker used for native apps */}
+      {Platform.OS === 'web' && buildDatePickerWeb()}
+      {questions.map((value, idx) => (
         <View key={idx.toString()}>
           <TextInputLine
             placeholder={STRINGS.election_create_question}
-            onChangeText={(text: string) => setQuestions(
-              (prev) => prev.map((item, id) => (
-                (id === idx) ? { ...item, question: text } : item)),
-            )}
+            onChangeText={(text: string) =>
+              setQuestions((prev) =>
+                prev.map((item, id) => (id === idx ? { ...item, question: text } : item)),
+              )
+            }
           />
           <View style={[styles.view, { marginHorizontal: 150 }]}>
             <ParagraphBlock text={STRINGS.election_voting_method} />
             <DropdownSelector
               values={votingMethods}
-              onChange={(method: string) => setQuestions(
-                (prev) => prev.map((item, id) => (
-                  (id === idx) ? { ...item, voting_method: method } : item)),
-              )}
+              onChange={(method: string) =>
+                setQuestions((prev) =>
+                  prev.map((item, id) => (id === idx ? { ...item, voting_method: method } : item)),
+                )
+              }
             />
           </View>
-          <TextInputList onChange={(ballot_options: string[]) => setQuestions(
-            (prev) => prev.map((item, id) => (
-              (id === idx) ? { ...item, ballot_options: ballot_options } : item)),
-          )}
+          <TextInputList
+            onChange={(ballot_options: string[]) =>
+              setQuestions((prev) =>
+                prev.map((item, id) =>
+                  id === idx ? { ...item, ballot_options: ballot_options } : item,
+                ),
+              )
+            }
           />
         </View>
       ))}
@@ -157,14 +163,18 @@ const CreateElection = ({ route }: any) => {
           title="Add Question"
           onPress={() => setQuestions((prev) => [...prev, emptyQuestion])}
         />
-        <WideButtonView
-          title={STRINGS.general_button_cancel}
-          onPress={navigation.goBack}
-        />
+        <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
         <WideButtonView
           title={STRINGS.general_button_confirm}
-          onPress={() => onConfirmPress(startTime, endTime, createElection, setModalStartIsVisible,
-            setModalEndIsVisible)}
+          onPress={() =>
+            onConfirmPress(
+              startTime,
+              endTime,
+              createElection,
+              setModalStartIsVisible,
+              setModalEndIsVisible,
+            )
+          }
           disabled={!buttonsVisibility}
         />
       </View>

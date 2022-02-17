@@ -4,6 +4,4 @@ import * as Typography from './typography';
 import * as Views from './views';
 import * as Buttons from './buttons';
 
-export {
-  Colors, Spacing, Typography, Views, Buttons,
-};
+export { Colors, Spacing, Typography, Views, Buttons };

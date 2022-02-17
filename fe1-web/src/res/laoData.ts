@@ -31,8 +31,10 @@ const laoData: Lao[] = [
     creation: TIMESTAMP,
     last_modified: TIMESTAMP,
     organizer: ORGANIZER,
-    witnesses: [new PublicKey('i7NMjdW2tkBj4uMCM15rlckmQCdR0anffOTD+MQg3XQ='),
-      new PublicKey('DEADBEA7')],
+    witnesses: [
+      new PublicKey('i7NMjdW2tkBj4uMCM15rlckmQCdR0anffOTD+MQg3XQ='),
+      new PublicKey('DEADBEA7'),
+    ],
   }),
   new Lao({
     id: Hash.fromString('34'),

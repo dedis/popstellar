@@ -21,17 +21,19 @@ export class AddReaction implements MessageData {
 
   constructor(msg: Partial<AddReaction>) {
     if (!msg.reaction_codepoint) {
-      throw new ProtocolError('Undefined \'reaction_codepoint\' parameter encountered during \'AddReaction\'');
+      throw new ProtocolError(
+        "Undefined 'reaction_codepoint' parameter encountered during 'AddReaction'",
+      );
     }
     this.reaction_codepoint = msg.reaction_codepoint;
 
     if (!msg.chirp_id) {
-      throw new ProtocolError('Undefined \'chirp_id\' parameter encountered during \'AddReaction\'');
+      throw new ProtocolError("Undefined 'chirp_id' parameter encountered during 'AddReaction'");
     }
     this.chirp_id = msg.chirp_id;
 
     if (!msg.timestamp) {
-      throw new ProtocolError('Undefined \'timestamp\' parameter encountered during \'AddReaction\'');
+      throw new ProtocolError("Undefined 'timestamp' parameter encountered during 'AddReaction'");
     }
     checkTimestampStaleness(msg.timestamp);
     this.timestamp = msg.timestamp;

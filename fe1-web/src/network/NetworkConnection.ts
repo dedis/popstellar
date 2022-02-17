@@ -1,10 +1,5 @@
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
-import {
-  JsonRpcRequest,
-  JsonRpcResponse,
-  ProtocolError,
-  UNDEFINED_ID,
-} from 'model/network';
+import { JsonRpcRequest, JsonRpcResponse, ProtocolError, UNDEFINED_ID } from 'model/network';
 import { RpcOperationError } from './RpcOperationError';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
@@ -17,10 +12,10 @@ const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
 const JSON_RPC_ID_WRAP_AROUND = 10000;
 
 interface PendingResponse {
-  promise: Promise<JsonRpcResponse>,
-  resolvePromise: (value: JsonRpcResponse) => void,
-  rejectPromise: (error: RpcOperationError) => void,
-  timeoutId: ReturnType<typeof setTimeout>,
+  promise: Promise<JsonRpcResponse>;
+  resolvePromise: (value: JsonRpcResponse) => void;
+  rejectPromise: (error: RpcOperationError) => void;
+  timeoutId: ReturnType<typeof setTimeout>;
 }
 
 export class NetworkConnection {
@@ -37,7 +32,7 @@ export class NetworkConnection {
   constructor(address: string, handler?: JsonRpcHandler) {
     this.ws = this.establishConnection(address);
     this.address = this.ws.url;
-    this.onRpcHandler = (handler !== undefined) ? handler : defaultRpcHandler;
+    this.onRpcHandler = handler !== undefined ? handler : defaultRpcHandler;
   }
 
   private establishConnection(address: string): W3CWebSocket {
@@ -63,12 +58,13 @@ export class NetworkConnection {
     console.debug(`Received a new message from '${this.address}' : `, message.data);
 
     try {
-      const parsedMessage: JsonRpcResponse | JsonRpcRequest = NetworkConnection
-        .parseIncomingData(message.data);
+      const parsedMessage: JsonRpcResponse | JsonRpcRequest = NetworkConnection.parseIncomingData(
+        message.data,
+      );
 
       if (parsedMessage instanceof JsonRpcResponse) {
         this.processResponse(parsedMessage);
-      } else /* instanceof JsonRpcRequest */ {
+      } /* instanceof JsonRpcRequest */ else {
         this.processRequest(parsedMessage);
       }
     } catch (e) {
@@ -102,8 +98,10 @@ export class NetworkConnection {
       errReq = e;
     }
 
-    throw new ProtocolError('Failed to parse incoming data as valid JSON based on protocol.'
-      + ` Errors:\n\n${errResp}\n\n${errReq}`);
+    throw new ProtocolError(
+      'Failed to parse incoming data as valid JSON based on protocol.' +
+        ` Errors:\n\n${errResp}\n\n${errReq}`,
+    );
   }
 
   private processRequest(request: JsonRpcRequest): void {
@@ -118,8 +116,10 @@ export class NetworkConnection {
     if (parsedMessage.id !== UNDEFINED_ID) {
       const pendingResponse = this.payloadPending.get(parsedMessage.id);
       if (pendingResponse === undefined) {
-        throw new NetworkError(`Received a response whose id = ${parsedMessage.id}`
-          + ' does not match any pending requests');
+        throw new NetworkError(
+          `Received a response whose id = ${parsedMessage.id}` +
+            ' does not match any pending requests',
+        );
       }
 
       // a response was received, clear the timeout and the pending query from the pending map
@@ -163,11 +163,12 @@ export class NetworkConnection {
     const promise = new Promise<JsonRpcResponse>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         this.payloadPending.delete(query.id as number);
-        reject(new NetworkError(
-          `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
-        ));
-      },
-      WEBSOCKET_MESSAGE_TIMEOUT_MS);
+        reject(
+          new NetworkError(
+            `Maximum waiting time of ${WEBSOCKET_MESSAGE_TIMEOUT_MS} [ms] reached, dropping query`,
+          ),
+        );
+      }, WEBSOCKET_MESSAGE_TIMEOUT_MS);
 
       const pendingResponse: PendingResponse = {
         promise: promise,
@@ -213,11 +214,13 @@ export class NetworkConnection {
         } else {
           // abandon if we reached too many attempts
           clearInterval(id);
-          reject(new NetworkError(
-            `Maximum waiting time for websocket to be ready reached :
+          reject(
+            new NetworkError(
+              `Maximum waiting time for websocket to be ready reached :
             ${WEBSOCKET_READYSTATE_MAX_ATTEMPTS * WEBSOCKET_READYSTATE_INTERVAL_MS}
             [ms] (_waitWebsocketReady)`,
-          ));
+            ),
+          );
         }
       }, WEBSOCKET_READYSTATE_INTERVAL_MS);
     });

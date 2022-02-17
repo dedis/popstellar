@@ -1,6 +1,8 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import {
-  ExtendedMessage, ExtendedMessageState, markExtMessageAsProcessed,
+  ExtendedMessage,
+  ExtendedMessageState,
+  markExtMessageAsProcessed,
 } from 'model/network/method/message';
 import { Hash, WitnessSignatureState } from 'model/objects';
 import { getLaosState } from './LaoReducer';
@@ -10,13 +12,13 @@ import { getLaosState } from './LaoReducer';
  */
 
 interface MessageReducerState {
-  byId: Record<string, ExtendedMessageState>,
-  allIds: string[],
-  unprocessedIds: string[],
+  byId: Record<string, ExtendedMessageState>;
+  allIds: string[];
+  unprocessedIds: string[];
 }
 
 interface MessageLaoReducerState {
-  byLaoId: Record<string, MessageReducerState>,
+  byLaoId: Record<string, MessageReducerState>;
 }
 
 const initialState: MessageLaoReducerState = {
@@ -28,17 +30,19 @@ const messagesSlice = createSlice({
   name: messageReducerPath,
   initialState,
   reducers: {
-
     // Add a Message to the list of known Messages
     addMessages: {
       prepare(laoId: Hash | string, messages: ExtendedMessageState | ExtendedMessageState[]): any {
         const msgs = Array.isArray(messages) ? messages : [messages];
         return { payload: { laoId: laoId.valueOf(), messages: msgs } };
       },
-      reducer(state, action: PayloadAction<{
-        laoId: string;
-        messages: ExtendedMessageState[];
-      }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          messages: ExtendedMessageState[];
+        }>,
+      ) {
         const { laoId, messages } = action.payload;
 
         // Lao not initialized, create it in the message state tree
@@ -75,10 +79,13 @@ const messagesSlice = createSlice({
           },
         };
       },
-      reducer(state, action: PayloadAction<{
-        laoId: string;
-        messageIds: string[];
-      }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          messageIds: string[];
+        }>,
+      ) {
         const { laoId, messageIds } = action.payload;
         if (!(laoId in state.byLaoId)) {
           return;
@@ -87,8 +94,9 @@ const messagesSlice = createSlice({
           state.byLaoId[laoId].byId[messageId] = markExtMessageAsProcessed(
             state.byLaoId[laoId].byId[messageId],
           );
-          state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds
-            .filter((e) => e !== messageId);
+          state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds.filter(
+            (e) => e !== messageId,
+          );
         });
       },
     },
@@ -109,11 +117,14 @@ const messagesSlice = createSlice({
           },
         };
       },
-      reducer(state, action: PayloadAction<{
-        laoId: string;
-        messageId: string;
-        witnessSignature: WitnessSignatureState;
-      }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          messageId: string;
+          witnessSignature: WitnessSignatureState;
+        }>,
+      ) {
         const { laoId, messageId, witnessSignature } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
@@ -132,20 +143,19 @@ const messagesSlice = createSlice({
   },
 });
 
-export const {
-  addMessages, processMessages, addMessageWitnessSignature, clearAllMessages,
-} = messagesSlice.actions;
+export const { addMessages, processMessages, addMessageWitnessSignature, clearAllMessages } =
+  messagesSlice.actions;
 
 export function getMessagesState(state: any): MessageLaoReducerState {
   return state[messageReducerPath];
 }
 
-export function getMessage(state: MessageReducerState, messageId: Hash | string)
-  : ExtendedMessage | undefined {
+export function getMessage(
+  state: MessageReducerState,
+  messageId: Hash | string,
+): ExtendedMessage | undefined {
   const id = messageId.valueOf();
-  return id in state.byId
-    ? ExtendedMessage.fromState(state.byId[id])
-    : undefined;
+  return id in state.byId ? ExtendedMessage.fromState(state.byId[id]) : undefined;
 }
 
 export function makeLaoMessagesState() {
@@ -155,8 +165,10 @@ export function makeLaoMessagesState() {
     // Second input: current LAO id
     (state) => getLaosState(state).currentId,
     // Selector: returns a LaoState -- should it return a Lao object?
-    (msgMap: Record<string, MessageReducerState>, laoId: string | undefined)
-    : MessageReducerState | undefined => {
+    (
+      msgMap: Record<string, MessageReducerState>,
+      laoId: string | undefined,
+    ): MessageReducerState | undefined => {
       if (laoId === undefined || !(laoId in msgMap)) {
         return undefined;
       }

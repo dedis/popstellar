@@ -1,7 +1,5 @@
 import * as React from 'react';
-import {
-  FlatList, ListRenderItemInfo, Text, View,
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
 import ChirpCard from 'components/ChirpCard';
@@ -40,10 +38,7 @@ const SocialUserProfile = ({ route }: any) => {
   const userChirpList = useSelector(userChirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard
-      chirp={Chirp.fromState(item)}
-      currentUserPublicKey={currentUserPublicKey}
-    />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
   );
 
   return (
@@ -55,14 +50,12 @@ const SocialUserProfile = ({ route }: any) => {
             testID="backButtonUserProfile"
           />
         </View>
-        <ProfileIcon
-          publicKey={userPublicKey}
-          size={8}
-          scale={10}
-        />
+        <ProfileIcon publicKey={userPublicKey} size={8} scale={10} />
         <View style={styles.textView}>
           <Text style={styles.profileText}>{userPublicKey.valueOf()}</Text>
-          <Text>{`${userChirpList.length} ${userChirpList.length === 1 ? 'chirp' : 'chirps'}`}</Text>
+          <Text>{`${userChirpList.length} ${
+            userChirpList.length === 1 ? 'chirp' : 'chirps'
+          }`}</Text>
         </View>
       </View>
       <View style={styles.userFeed}>

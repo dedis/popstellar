@@ -6,8 +6,6 @@ import Attendee from '../attendee/Attendee';
  *
  * Currently just a simple clone of the Attendee screen
  */
-const Organizer = () => (
-  <Attendee />
-);
+const Organizer = () => <Attendee />;
 
 export default Organizer;

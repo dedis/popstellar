@@ -22,9 +22,8 @@ const DropdownSelector = (props: IPropTypes) => {
     <Picker
       selectedValue={selected}
       onValueChange={(val: any) => onChange(val)}
-      style={containerStyles.centerWithMargin}
-    >
-      { options }
+      style={containerStyles.centerWithMargin}>
+      {options}
     </Picker>
   );
 };

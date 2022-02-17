@@ -1,6 +1,4 @@
-import {
-  QuestionResult,
-} from 'model/objects';
+import { QuestionResult } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
@@ -14,7 +12,9 @@ export class ElectionResult implements MessageData {
 
   constructor(msg: Partial<ElectionResult>) {
     if (!msg.questions) {
-      throw new ProtocolError('Undefined \'questions\' parameter encountered during \'ElectionResult\'');
+      throw new ProtocolError(
+        "Undefined 'questions' parameter encountered during 'ElectionResult'",
+      );
     }
     this.questions = msg.questions;
   }

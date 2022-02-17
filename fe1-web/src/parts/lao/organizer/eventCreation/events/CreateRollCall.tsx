@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View, Platform, ScrollView,
-} from 'react-native';
+import { View, Platform, ScrollView } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 
@@ -32,8 +30,9 @@ const CreateRollCall = ({ route }: any) => {
   const toast = useToast();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
-  const [proposedEndTime, setProposedEndTime] = useState(Timestamp.EpochNow()
-    .addSeconds(DEFAULT_ROLL_CALL_DURATION));
+  const [proposedEndTime, setProposedEndTime] = useState(
+    Timestamp.EpochNow().addSeconds(DEFAULT_ROLL_CALL_DURATION),
+  );
 
   const [rollCallName, setRollCallName] = useState('');
   const [rollCallLocation, setRollCallLocation] = useState('');
@@ -51,8 +50,14 @@ const CreateRollCall = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.roll_call_create_proposed_start} />
           <DatePicker
             selected={startDate}
-            onChange={(date: Date) => onChangeStartTime(date, setProposedStartTime,
-              setProposedEndTime, DEFAULT_ROLL_CALL_DURATION)}
+            onChange={(date: Date) =>
+              onChangeStartTime(
+                date,
+                setProposedStartTime,
+                setProposedEndTime,
+                DEFAULT_ROLL_CALL_DURATION,
+              )
+            }
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
@@ -66,12 +71,15 @@ const CreateRollCall = ({ route }: any) => {
     );
   };
 
-  const buttonsVisibility: boolean = (rollCallName !== '' && rollCallLocation !== '');
+  const buttonsVisibility: boolean = rollCallName !== '' && rollCallLocation !== '';
 
   const createRollCall = () => {
-    const description = (rollCallDescription === '') ? undefined : rollCallDescription;
+    const description = rollCallDescription === '' ? undefined : rollCallDescription;
     requestCreateRollCall(
-      rollCallName, rollCallLocation, proposedStartTime, proposedEndTime,
+      rollCallName,
+      rollCallLocation,
+      proposedStartTime,
+      proposedEndTime,
       description,
     )
       .then(() => {
@@ -89,32 +97,42 @@ const CreateRollCall = ({ route }: any) => {
 
   return (
     <ScrollView>
-      { /* see archive branches for date picker used for native apps */ }
-      { Platform.OS === 'web' && buildDatePickerWeb() }
+      {/* see archive branches for date picker used for native apps */}
+      {Platform.OS === 'web' && buildDatePickerWeb()}
 
       <TextInputLine
         placeholder={STRINGS.roll_call_create_name}
-        onChangeText={(text: string) => { setRollCallName(text); }}
+        onChangeText={(text: string) => {
+          setRollCallName(text);
+        }}
       />
       <TextInputLine
         placeholder={STRINGS.roll_call_create_location}
-        onChangeText={(text: string) => { setRollCallLocation(text); }}
+        onChangeText={(text: string) => {
+          setRollCallLocation(text);
+        }}
       />
       <TextInputLine
         placeholder={STRINGS.roll_call_create_description}
-        onChangeText={(text: string) => { setRollCallDescription(text); }}
+        onChangeText={(text: string) => {
+          setRollCallDescription(text);
+        }}
       />
 
       <WideButtonView
         title={STRINGS.general_button_confirm}
-        onPress={() => onConfirmPress(proposedStartTime, proposedEndTime, createRollCall,
-          setModalStartIsVisible, setModalEndIsVisible)}
+        onPress={() =>
+          onConfirmPress(
+            proposedStartTime,
+            proposedEndTime,
+            createRollCall,
+            setModalStartIsVisible,
+            setModalEndIsVisible,
+          )
+        }
         disabled={!buttonsVisibility}
       />
-      <WideButtonView
-        title={STRINGS.general_button_cancel}
-        onPress={navigation.goBack}
-      />
+      <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
 
       <DismissModal
         visibility={modalEndIsVisible}

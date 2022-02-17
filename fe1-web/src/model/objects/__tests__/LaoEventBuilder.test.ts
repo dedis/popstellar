@@ -4,9 +4,7 @@ import { LaoEventState, LaoEventType } from '../LaoEvent';
 import { eventFromState } from '../LaoEventBuilder';
 import { Meeting, MeetingState } from '../Meeting';
 import { RollCall, RollCallState, RollCallStatus } from '../RollCall';
-import {
-  Election, ElectionState, Question, RegisteredVote,
-} from '../Election';
+import { Election, ElectionState, Question, RegisteredVote } from '../Election';
 
 describe('LaoEventBuilder', () => {
   it('builds a meeting with a MeetingState', () => {

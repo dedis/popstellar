@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  View, Text, StyleSheet, ViewStyle, TextStyle,
-} from 'react-native';
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { getUserSocialChannel, Hash, PublicKey } from 'model/objects';
 import { gray } from 'styles/colors';
 import STRINGS from 'res/strings';
@@ -57,21 +55,24 @@ const UserListItem = (props: IPropTypes) => {
   const toast = useToast();
 
   const followUser = () => {
-    subscribeToChannel(getUserSocialChannel(laoId, publicKey))
-      .catch((error) => {
-        console.error(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`);
-        toast.show(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
+    subscribeToChannel(getUserSocialChannel(laoId, publicKey)).catch((error) => {
+      console.error(
+        `Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`,
+      );
+      toast.show(`Could not subscribe to channel of user ${publicKey.valueOf()}, error: ${error}`, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
       });
+    });
     setIsFollowing(true);
   };
 
   const goToUserProfile = () => {
-    navigation.navigate(STRINGS.social_media_navigation_tab_user_profile,
-      { currentUserPublicKey: currentUserPublicKey, userPublicKey: publicKey });
+    navigation.navigate(STRINGS.social_media_navigation_tab_user_profile, {
+      currentUserPublicKey: currentUserPublicKey,
+      userPublicKey: publicKey,
+    });
   };
 
   return (
@@ -111,9 +112,9 @@ const propTypes = {
 UserListItem.prototype = propTypes;
 
 type IPropTypes = {
-  laoId: Hash,
-  publicKey: PublicKey,
-  currentUserPublicKey: PublicKey
+  laoId: Hash;
+  publicKey: PublicKey;
+  currentUserPublicKey: PublicKey;
 };
 
 export default UserListItem;

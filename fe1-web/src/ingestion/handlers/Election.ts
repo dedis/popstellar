@@ -8,19 +8,23 @@ import {
   SetupElection,
 } from 'model/network/method/message/data';
 import {
-  channelFromIds, Election, ElectionStatus, RegisteredVote, getLastPartOfChannel,
+  channelFromIds,
+  Election,
+  ElectionStatus,
+  RegisteredVote,
+  getLastPartOfChannel,
 } from 'model/objects';
-import {
-  addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent,
-} from 'store';
+import { addEvent, dispatch, getStore, KeyPairStore, makeCurrentLao, updateEvent } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { getEventFromId } from './Utils';
 
 const getCurrentLao = makeCurrentLao();
 
 function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.SETUP) {
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.SETUP
+  ) {
     console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -59,8 +63,10 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
 }
 
 function handleCastVoteMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.CAST_VOTE) {
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.CAST_VOTE
+  ) {
     console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -92,13 +98,17 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
-  if (election.registered_votes.some(
-    (votes) => votes.sender.toString() === currentVote.sender.toString(),
-  )) { // Update the vote if the person has already voted before
-    election.registered_votes = election.registered_votes.map(
-      (prevVote) => (
-        prevVote.sender.toString() === currentVote.sender.toString()
-        && prevVote.createdAt.valueOf() < currentVote.createdAt.valueOf() ? currentVote : prevVote),
+  if (
+    election.registered_votes.some(
+      (votes) => votes.sender.toString() === currentVote.sender.toString(),
+    )
+  ) {
+    // Update the vote if the person has already voted before
+    election.registered_votes = election.registered_votes.map((prevVote) =>
+      prevVote.sender.toString() === currentVote.sender.toString() &&
+      prevVote.createdAt.valueOf() < currentVote.createdAt.valueOf()
+        ? currentVote
+        : prevVote,
     );
   } else {
     election.registered_votes = [...election.registered_votes, currentVote];
@@ -109,8 +119,7 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
 
 function handleElectionEndMessage(msg: ExtendedMessage) {
   console.log('Handling Election end message');
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.END) {
+  if (msg.messageData.object !== ObjectType.ELECTION || msg.messageData.action !== ActionType.END) {
     console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -135,8 +144,10 @@ function handleElectionEndMessage(msg: ExtendedMessage) {
 }
 
 function handleElectionResultMessage(msg: ExtendedMessage) {
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.RESULT) {
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.RESULT
+  ) {
     console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -183,8 +194,10 @@ export function handleElectionMessage(msg: ExtendedMessage) {
       return handleElectionResultMessage(msg);
 
     default:
-      console.warn('A Election message was received but'
-        + ' its processing logic is not yet implemented:', msg);
+      console.warn(
+        'A Election message was received but' + ' its processing logic is not yet implemented:',
+        msg,
+      );
       return false;
   }
 }

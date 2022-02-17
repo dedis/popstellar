@@ -152,91 +152,98 @@ describe('RollCall object', () => {
     });
 
     it('throws an error when id is undefined', () => {
-      const createWrongRollCall = () => new RollCall({
-        name: NAME,
-        location: LOCATION,
-        creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
-        status: RollCallStatus.CLOSED,
-      });
+      const createWrongRollCall = () =>
+        new RollCall({
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposed_start: TIMESTAMP_START,
+          proposed_end: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+        });
       expect(createWrongRollCall).toThrow(Error);
     });
 
     it('throws an error when name is undefined', () => {
-      const createWrongRollCall = () => new RollCall({
-        id: ID,
-        location: LOCATION,
-        creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
-        status: RollCallStatus.CLOSED,
-      });
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposed_start: TIMESTAMP_START,
+          proposed_end: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+        });
       expect(createWrongRollCall).toThrow(Error);
     });
 
     it('throws an error when location is undefined', () => {
-      const createWrongRollCall = () => new RollCall({
-        id: ID,
-        start: TIMESTAMP_START,
-        name: NAME,
-        creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
-        status: RollCallStatus.CLOSED,
-      });
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          creation: TIMESTAMP_START,
+          proposed_start: TIMESTAMP_START,
+          proposed_end: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+        });
       expect(createWrongRollCall).toThrow(Error);
     });
 
     it('throws an error when creation is undefined', () => {
-      const createWrongRollCall = () => new RollCall({
-        id: ID,
-        start: TIMESTAMP_START,
-        name: NAME,
-        location: LOCATION,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
-        status: RollCallStatus.CLOSED,
-      });
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          proposed_start: TIMESTAMP_START,
+          proposed_end: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+        });
       expect(createWrongRollCall).toThrow(Error);
     });
 
     it('throws an error when proposed_start is undefined', () => {
-      const createWrongRollCall = () => new RollCall({
-        id: ID,
-        start: TIMESTAMP_START,
-        name: NAME,
-        location: LOCATION,
-        creation: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
-        status: RollCallStatus.CLOSED,
-      });
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposed_end: TIMESTAMP_END,
+          status: RollCallStatus.CLOSED,
+        });
       expect(createWrongRollCall).toThrow(Error);
     });
 
     it('throws an error when proposed_end is undefined', () => {
-      const createWrongRollCall = () => new RollCall({
-        id: ID,
-        start: TIMESTAMP_START,
-        name: NAME,
-        location: LOCATION,
-        creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        status: RollCallStatus.CLOSED,
-      });
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposed_start: TIMESTAMP_START,
+          status: RollCallStatus.CLOSED,
+        });
       expect(createWrongRollCall).toThrow(Error);
     });
 
     it('throws an error when status is undefined', () => {
-      const createWrongRollCall = () => new RollCall({
-        id: ID,
-        start: TIMESTAMP_START,
-        name: NAME,
-        location: LOCATION,
-        creation: TIMESTAMP_START,
-        proposed_start: TIMESTAMP_START,
-        proposed_end: TIMESTAMP_END,
-      });
+      const createWrongRollCall = () =>
+        new RollCall({
+          id: ID,
+          start: TIMESTAMP_START,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP_START,
+          proposed_start: TIMESTAMP_START,
+          proposed_end: TIMESTAMP_END,
+        });
       expect(createWrongRollCall).toThrow(Error);
     });
   });

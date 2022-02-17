@@ -27,14 +27,14 @@ const keyPairsSlice = createSlice({
       }
 
       state.keyPair = action.payload;
-      console.log(`KeyPair storage was updated with public key: ${state.keyPair.publicKey.toString()}`);
+      console.log(
+        `KeyPair storage was updated with public key: ${state.keyPair.publicKey.toString()}`,
+      );
     },
   },
 });
 
-export const {
-  setKeyPair,
-} = keyPairsSlice.actions;
+export const { setKeyPair } = keyPairsSlice.actions;
 
 export const keyPairReduce = keyPairsSlice.reducer;
 

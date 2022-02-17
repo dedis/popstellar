@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  StyleSheet, View, ViewStyle, Text, TextStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { Views, Typography } from 'styles';
 import { CheckBox } from 'react-native-elements';
 
@@ -43,12 +41,16 @@ const CheckboxList = (props: IPropTypes) => {
    */
   const handleMultipleOptionsPress = (idx: number) => {
     setChecked((prev) => prev.map((item, id) => (idx === id ? !item : item)));
-    onChange(values.map((val, id) => {
-      if ((checked[id] && id !== idx) || (id === idx && !checked[id])) {
-        return idx;
-      }
-      return -1;
-    }).filter((prev) => prev !== -1));
+    onChange(
+      values
+        .map((val, id) => {
+          if ((checked[id] && id !== idx) || (id === idx && !checked[id])) {
+            return idx;
+          }
+          return -1;
+        })
+        .filter((prev) => prev !== -1),
+    );
   };
 
   /**
@@ -59,9 +61,8 @@ const CheckboxList = (props: IPropTypes) => {
    * @param idx - The index of the pressed CheckBox.
    */
   const handleOneOptionPress = (idx: number) => {
-    setChecked((prev) => prev.map((item, id) => (idx === id)));
-    onChange(values.map((val, id) => ((id === idx) ? id : -1))
-      .filter((prev) => prev !== -1));
+    setChecked((prev) => prev.map((item, id) => idx === id));
+    onChange(values.map((val, id) => (id === idx ? id : -1)).filter((prev) => prev !== -1));
   };
 
   /**
@@ -114,11 +115,11 @@ CheckboxList.defaultProps = {
 };
 
 type IPropTypes = {
-  clickableOptions: number,
-  values: string[],
-  onChange: Function,
-  title: string,
-  disabled: boolean,
+  clickableOptions: number;
+  values: string[];
+  onChange: Function;
+  title: string;
+  disabled: boolean;
 };
 
 export default CheckboxList;

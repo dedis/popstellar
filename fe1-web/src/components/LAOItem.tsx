@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet, View, Text, TouchableOpacity, TextStyle, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, TextStyle, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
@@ -14,10 +12,10 @@ import STRINGS from 'res/strings';
 import { Spacing, Typography } from 'styles';
 
 /**
-  * The LAO item component: name of LAO
-  *
-  * On click go to the organization screen and store the ID of the LAO for the organization screen
-*/
+ * The LAO item component: name of LAO
+ *
+ * On click go to the organization screen and store the ID of the LAO for the organization screen
+ */
 const styles = StyleSheet.create({
   view: {
     marginBottom: Spacing.xs,

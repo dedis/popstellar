@@ -1,8 +1,6 @@
 import 'jest-extended';
 
-import {
-  Lao, LaoState,
-} from '../Lao';
+import { Lao, LaoState } from '../Lao';
 
 test('Lao can do a state round-trip', () => {
   const laoState: LaoState = {

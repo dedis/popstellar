@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
@@ -45,10 +43,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
           onChangeText={(input: string) => setSeed(input)}
         />
         <View style={styles.smallPadding} />
-        <WideButtonView
-          title={STRINGS.setup_wallet}
-          onPress={() => initWallet()}
-        />
+        <WideButtonView title={STRINGS.setup_wallet} onPress={() => initWallet()} />
         <WideButtonView
           title={STRINGS.back_to_wallet_home}
           onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}

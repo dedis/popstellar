@@ -42,15 +42,17 @@ const BarChartDisplay = (props: IPropTypes) => {
 };
 
 const propTypes = {
-  data: PropTypes.arrayOf(shape({
-    ballot_option: PropTypes.string.isRequired,
-    count: PropTypes.number.isRequired,
-  })).isRequired,
+  data: PropTypes.arrayOf(
+    shape({
+      ballot_option: PropTypes.string.isRequired,
+      count: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
 };
 BarChartDisplay.propTypes = propTypes;
 
 type IPropTypes = {
-  data: MajorityResult[],
+  data: MajorityResult[];
 };
 
 export default BarChartDisplay;

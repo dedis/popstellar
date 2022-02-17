@@ -20,18 +20,17 @@ describe('Channel object', () => {
 
   it('getUserSocialChannel should return the correct channel', () => {
     const userToken = new PublicKey('userToken');
-    expect(getUserSocialChannel(FAKE_ID, userToken))
-      .toStrictEqual(`/root/${FAKE_ID}/social/${userToken.valueOf()}`);
+    expect(getUserSocialChannel(FAKE_ID, userToken)).toStrictEqual(
+      `/root/${FAKE_ID}/social/${userToken.valueOf()}`,
+    );
   });
 
   it('getGeneralChirpsChannel should return the correct channel', () => {
-    expect(getGeneralChirpsChannel(FAKE_ID))
-      .toStrictEqual(`/root/${FAKE_ID}/social/chirps`);
+    expect(getGeneralChirpsChannel(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}/social/chirps`);
   });
 
   it('getReactionChannel should return the correct channel', () => {
-    expect(getReactionChannel(FAKE_ID))
-      .toStrictEqual(`/root/${FAKE_ID}/social/reactions`);
+    expect(getReactionChannel(FAKE_ID)).toStrictEqual(`/root/${FAKE_ID}/social/reactions`);
   });
 
   it('getLastPartOfChannel works correctly', () => {

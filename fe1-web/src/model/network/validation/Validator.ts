@@ -122,8 +122,11 @@ export function validateJsonRpcResponse(data: any): ValidationResult {
   return validate(schemaId, data);
 }
 
-export function validateDataObject(obj: ObjectType, action: ActionType, data: any)
-  : ValidationResult {
+export function validateDataObject(
+  obj: ObjectType,
+  action: ActionType,
+  data: any,
+): ValidationResult {
   const schemaId = getSchema(obj, action);
   return schemaId !== null
     ? validate(schemaId, data)

@@ -1,7 +1,5 @@
 // fake Event to show how the app works
-import {
-  Hash, LaoEventState, LaoEventType, MeetingState, RollCallState,
-} from 'model/objects';
+import { Hash, LaoEventState, LaoEventType, MeetingState, RollCallState } from 'model/objects';
 
 const LOCATION_TEST = 'A location, test.com';
 const LOCATION_EPFL = 'EPFL INF';

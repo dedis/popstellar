@@ -19,22 +19,18 @@ const wrongState = {
 
 describe('wallet reducer', () => {
   test('should return the initial state', () => {
-    expect(walletReduce(undefined, {} as AnyAction))
-      .toEqual(emptyState);
+    expect(walletReduce(undefined, {} as AnyAction)).toEqual(emptyState);
   });
 
   test('should handle the wallet being set', () => {
-    expect(walletReduce({}, setWallet(filledState)))
-      .toEqual(filledState);
+    expect(walletReduce({}, setWallet(filledState))).toEqual(filledState);
   });
 
   test('should return the empty set', () => {
-    expect(walletReduce({}, setWallet(wrongState)))
-      .toEqual(emptyState);
+    expect(walletReduce({}, setWallet(wrongState))).toEqual(emptyState);
   });
 
   test('should handle the wallet being set', () => {
-    expect(walletReduce(filledState, clearWallet()))
-      .toEqual(emptyState);
+    expect(walletReduce(filledState, clearWallet())).toEqual(emptyState);
   });
 });

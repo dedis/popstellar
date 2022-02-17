@@ -9,10 +9,7 @@ export class PrivateKey extends Base64UrlData {
    * @param data the data to be signed with the private key
    */
   public sign(data: Base64UrlData): Signature {
-    const signature = sign.detached(
-      data.toBuffer(),
-      this.toBuffer(),
-    );
+    const signature = sign.detached(data.toBuffer(), this.toBuffer());
     return new Signature(Base64UrlData.fromBuffer(Buffer.from(signature)).valueOf());
   }
 }

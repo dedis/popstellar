@@ -1,7 +1,5 @@
 import * as React from 'react';
-import {
-  FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import STRINGS from 'res/strings';
 import { makeCurrentLao, makeLastRollCallAttendeesList } from 'store';
 import { useSelector } from 'react-redux';
@@ -83,7 +81,7 @@ const propTypes = {
 SocialSearch.prototype = propTypes;
 
 type IPropTypes = {
-  currentUserPublicKey: PublicKey,
+  currentUserPublicKey: PublicKey;
 };
 
 export default SocialSearch;

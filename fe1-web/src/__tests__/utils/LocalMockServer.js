@@ -24,7 +24,10 @@ const laoMessageIds = []; // Note: only handles single lao scenarios
 
 // This code generates unique user id for every user.
 const getUniqueID = () => {
-  const s4 = () => Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  const s4 = () =>
+    Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
   return `${s4() + s4()}-${s4()}`;
 };
 
@@ -68,13 +71,16 @@ wsServer.on('request', (request) => {
         id: JSON.parse(message.utf8Data).id,
       };
 
-      answers = [{
-        success: 'true',
-        error: 'null',
-      }, {
-        success: 'false',
-        error: '[test] I could not accept your request :( (from server LocalMockServer.js)',
-      }];
+      answers = [
+        {
+          success: 'true',
+          error: 'null',
+        },
+        {
+          success: 'false',
+          error: '[test] I could not accept your request :( (from server LocalMockServer.js)',
+        },
+      ];
 
       if (JSON.parse(message.utf8Data).method === 'catchup') {
         answers = [generalCatchupAnswerPositive];
@@ -84,7 +90,7 @@ wsServer.on('request', (request) => {
       }
 
       // choose a random index of the array answers
-      const idx = (Math.floor(Math.random() * (1000000))) % answers.length;
+      const idx = Math.floor(Math.random() * 1000000) % answers.length;
 
       // broadcasting message to all connected clients
       Object.keys(clients).forEach((key) => {

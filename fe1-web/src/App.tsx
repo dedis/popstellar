@@ -16,13 +16,13 @@ import { navigationRef } from 'navigation/RootNavigation';
 import { configureIngestion } from 'ingestion';
 
 /*
-* The starting point of the app
-*
-* It opens the navigation component in a safeAreaProvider to be able use
-* SafeAreaView in order to resolve issue with status bar
-*
-*  The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
-*/
+ * The starting point of the app
+ *
+ * It opens the navigation component in a safeAreaProvider to be able use
+ * SafeAreaView in order to resolve issue with status bar
+ *
+ *  The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
+ */
 
 export default function App() {
   configureIngestion();
@@ -34,8 +34,7 @@ export default function App() {
       <PersistGate loading={null} persistor={persist}>
         <NavigationContainer ref={navigationRef}>
           <SafeAreaProvider>
-            {Platform.OS === 'ios'
-            && <StatusBar barStyle="dark-content" backgroundColor="white" />}
+            {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" backgroundColor="white" />}
             <ToastProvider>
               <AppNavigation />
             </ToastProvider>

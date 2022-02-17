@@ -59,32 +59,35 @@ describe('AddReaction', () => {
 
   describe('constructor', () => {
     it('should throw an error if reaction_codepoint is undefined', () => {
-      const wrongObj = () => new AddReaction({
-        object: ObjectType.REACTION,
-        action: ActionType.ADD,
-        chirp_id: ID,
-        timestamp: TIMESTAMP,
-      });
+      const wrongObj = () =>
+        new AddReaction({
+          object: ObjectType.REACTION,
+          action: ActionType.ADD,
+          chirp_id: ID,
+          timestamp: TIMESTAMP,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is undefined', () => {
-      const wrongObj = () => new AddReaction({
-        object: ObjectType.REACTION,
-        action: ActionType.ADD,
-        reaction_codepoint: REACTION,
-        timestamp: TIMESTAMP,
-      });
+      const wrongObj = () =>
+        new AddReaction({
+          object: ObjectType.REACTION,
+          action: ActionType.ADD,
+          reaction_codepoint: REACTION,
+          timestamp: TIMESTAMP,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error is timestamp is undefined', () => {
-      const wrongObj = () => new AddReaction({
-        object: ObjectType.REACTION,
-        action: ActionType.ADD,
-        reaction_codepoint: REACTION,
-        chirp_id: ID,
-      });
+      const wrongObj = () =>
+        new AddReaction({
+          object: ObjectType.REACTION,
+          action: ActionType.ADD,
+          reaction_codepoint: REACTION,
+          chirp_id: ID,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
   });

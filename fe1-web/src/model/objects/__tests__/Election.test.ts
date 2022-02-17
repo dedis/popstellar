@@ -3,7 +3,12 @@ import '__tests__/utils/matchers';
 import STRINGS from 'res/strings';
 import { LaoEventType } from '../LaoEvent';
 import {
-  Election, ElectionState, ElectionStatus, Question, RegisteredVote, Vote,
+  Election,
+  ElectionState,
+  ElectionStatus,
+  Question,
+  RegisteredVote,
+  Vote,
 } from '../Election';
 import { Timestamp } from '../Timestamp';
 import { Hash } from '../Hash';
@@ -98,114 +103,122 @@ describe('Election object', () => {
     });
 
     it('throws an error when id is undefined', () => {
-      const createWrongElection = () => new Election({
-        lao: LAO_ID,
-        name: NAME,
-        version: VERSION,
-        created_at: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          lao: LAO_ID,
+          name: NAME,
+          version: VERSION,
+          created_at: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when lao is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        name: NAME,
-        version: VERSION,
-        created_at: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          name: NAME,
+          version: VERSION,
+          created_at: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when name is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: LAO_ID,
-        version: VERSION,
-        created_at: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: LAO_ID,
+          version: VERSION,
+          created_at: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when version is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: LAO_ID,
-        name: NAME,
-        created_at: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: LAO_ID,
+          name: NAME,
+          created_at: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when created_at is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: LAO_ID,
-        name: NAME,
-        version: VERSION,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: LAO_ID,
+          name: NAME,
+          version: VERSION,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when start is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: LAO_ID,
-        name: NAME,
-        version: VERSION,
-        created_at: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: LAO_ID,
+          name: NAME,
+          version: VERSION,
+          created_at: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when end is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: LAO_ID,
-        name: NAME,
-        version: VERSION,
-        created_at: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        questions: QUESTIONS,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: LAO_ID,
+          name: NAME,
+          version: VERSION,
+          created_at: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          questions: QUESTIONS,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when questions is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: LAO_ID,
-        name: NAME,
-        version: VERSION,
-        created_at: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        registered_votes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: LAO_ID,
+          name: NAME,
+          version: VERSION,
+          created_at: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          registered_votes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 

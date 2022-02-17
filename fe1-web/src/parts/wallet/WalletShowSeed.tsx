@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';

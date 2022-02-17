@@ -19,8 +19,7 @@ const SocialSearchNavigation = (props: IPropTypes) => {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}
-    >
+      }}>
       <Stack.Screen name={STRINGS.social_media_navigation_tab_attendee_list}>
         {() => <SocialSearch currentUserPublicKey={currentUserPublicKey} />}
       </Stack.Screen>
@@ -43,7 +42,7 @@ const propTypes = {
 SocialSearchNavigation.prototype = propTypes;
 
 type IPropTypes = {
-  currentUserPublicKey: PublicKey,
+  currentUserPublicKey: PublicKey;
 };
 
 export default SocialSearchNavigation;

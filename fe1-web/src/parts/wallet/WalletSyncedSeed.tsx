@@ -1,15 +1,10 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import {
-  ScrollView,
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
-import {
-  LaoEventType, RollCall, PopToken, Wallet,
-} from 'model/objects';
+import { LaoEventType, RollCall, PopToken, Wallet } from 'model/objects';
 import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
@@ -102,10 +97,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       <View>
         <TextBlock text={STRINGS.no_tokens_in_wallet} />
         <View style={styles.largePadding} />
-        <WideButtonView
-          title={STRINGS.back_to_wallet_home}
-          onPress={() => setShowTokens(false)}
-        />
+        <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
         <WideButtonView
           title={STRINGS.logout_from_wallet}
           onPress={() => {
@@ -152,22 +144,15 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         <TextBlock bold text={STRINGS.your_tokens_title} />
         <View style={styles.smallPadding} />
         <View>
-          {
-            Object.keys(tokensByLao).map(
-              (laoId) => Object.keys(tokensByLao[laoId]).map(
-                (rollCallId) => displayOneToken(laoId, rollCallId),
-              ),
-            )
-          }
+          {Object.keys(tokensByLao).map((laoId) =>
+            Object.keys(tokensByLao[laoId]).map((rollCallId) => displayOneToken(laoId, rollCallId)),
+          )}
         </View>
         {!showPublicKey && showPublicKeyButton()}
         {showPublicKey && hidePublicKeyButton()}
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
-        <WideButtonView
-          title={STRINGS.back_to_wallet_home}
-          onPress={() => setShowTokens(false)}
-        />
+        <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
         <View style={styles.largePadding} />
       </ScrollView>
     );

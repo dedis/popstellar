@@ -11,7 +11,9 @@ export class Timestamp extends Number implements Number {
     } else if (value instanceof Number) {
       parsedValue = value.valueOf();
     } else {
-      throw new Error('Timestamp constructor requires a number, a timestamp or its string representation.');
+      throw new Error(
+        'Timestamp constructor requires a number, a timestamp or its string representation.',
+      );
     }
 
     super(parsedValue);

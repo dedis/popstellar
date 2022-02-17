@@ -74,10 +74,8 @@ export class Lao {
       last_modified: new Timestamp(lao.last_modified),
       organizer: new PublicKey(lao.organizer),
       witnesses: lao.witnesses.map((w) => new PublicKey(w)),
-      last_roll_call_id: (lao.last_roll_call_id)
-        ? new Hash(lao.last_roll_call_id)
-        : undefined,
-      last_tokenized_roll_call_id: (lao.last_tokenized_roll_call_id)
+      last_roll_call_id: lao.last_roll_call_id ? new Hash(lao.last_roll_call_id) : undefined,
+      last_tokenized_roll_call_id: lao.last_tokenized_roll_call_id
         ? new Hash(lao.last_tokenized_roll_call_id)
         : undefined,
     });

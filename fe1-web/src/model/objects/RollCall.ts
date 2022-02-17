@@ -64,8 +64,9 @@ export class RollCall implements LaoEvent {
 
   constructor(obj: Partial<RollCall>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a RollCall object: '
-      + 'undefined/null parameters');
+      throw new Error(
+        'Error encountered while creating a RollCall object: ' + 'undefined/null parameters',
+      );
     }
 
     if (obj.id === undefined) {
@@ -105,15 +106,15 @@ export class RollCall implements LaoEvent {
   public static fromState(rc: RollCallState): RollCall {
     return new RollCall({
       id: new Hash(rc.id),
-      idAlias: (rc.idAlias) ? new Hash(rc.idAlias) : undefined,
+      idAlias: rc.idAlias ? new Hash(rc.idAlias) : undefined,
       name: rc.name,
       location: rc.location,
       description: rc.description,
       creation: new Timestamp(rc.creation),
       proposed_start: new Timestamp(rc.proposed_start),
       proposed_end: new Timestamp(rc.proposed_end),
-      opened_at: (rc.opened_at !== undefined) ? new Timestamp(rc.opened_at) : undefined,
-      closed_at: (rc.closed_at !== undefined) ? new Timestamp(rc.closed_at) : undefined,
+      opened_at: rc.opened_at !== undefined ? new Timestamp(rc.opened_at) : undefined,
+      closed_at: rc.closed_at !== undefined ? new Timestamp(rc.closed_at) : undefined,
       status: rc.status,
       attendees: rc.attendees?.map((a) => new PublicKey(a)),
     });
@@ -134,8 +135,6 @@ export class RollCall implements LaoEvent {
       return false;
     }
 
-    return this.attendees.some(
-      (attendee: PublicKey) => attendee.equals(token.publicKey),
-    );
+    return this.attendees.some((attendee: PublicKey) => attendee.equals(token.publicKey));
   }
 }

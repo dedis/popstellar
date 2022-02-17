@@ -33,10 +33,12 @@ jest.mock('model/objects/wallet/Token.ts', () => ({
 const pastKeyPairStoreState = KeyPairStore.get();
 
 beforeAll(() => {
-  KeyPairStore.store(KeyPair.fromState({
-    publicKey: mockPublicKey,
-    privateKey: mockPrivateKey,
-  }));
+  KeyPairStore.store(
+    KeyPair.fromState({
+      publicKey: mockPublicKey,
+      privateKey: mockPrivateKey,
+    }),
+  );
 });
 
 describe('Message', () => {

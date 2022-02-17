@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  TouchableOpacity, View, ViewStyle,
-} from 'react-native';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { Spacing } from 'styles';
 import TextBlock from 'components/TextBlock';
 import eventViewStyles from 'styles/stylesheets/eventViewStyles';
@@ -36,7 +34,7 @@ const LaoProperties = ({ url }: IPropTypes) => {
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 
-  const toggleChildren = () => (setToggleChildrenVisible(!toggleChildrenVisible));
+  const toggleChildren = () => setToggleChildrenVisible(!toggleChildrenVisible);
 
   return (
     <>
@@ -46,7 +44,7 @@ const LaoProperties = ({ url }: IPropTypes) => {
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
 
-        { toggleChildrenVisible && lao && renderProperties(lao, url) }
+        {toggleChildrenVisible && lao && renderProperties(lao, url)}
       </View>
     </>
   );

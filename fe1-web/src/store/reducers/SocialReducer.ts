@@ -1,6 +1,4 @@
-import {
-  Chirp, ChirpState, Hash, PublicKey, Timestamp,
-} from 'model/objects';
+import { Chirp, ChirpState, Hash, PublicKey, Timestamp } from 'model/objects';
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { ReactionState } from 'model/objects/Reaction';
 import { getLaosState } from './LaoReducer';
@@ -11,22 +9,20 @@ import { getLaosState } from './LaoReducer';
 
 // Stores all Social Media related information for a given LAO
 interface SocialReducerState {
-
   // stores all chirps id in order from the newest to the oldest
-  allIdsInOrder: string[],
+  allIdsInOrder: string[];
   // maps a chirpId to its ChirpState
-  byId: Record<string, ChirpState>,
+  byId: Record<string, ChirpState>;
   // maps a sender to the list of ChirpIds he sent
-  byUser: Record<string, string[]>,
+  byUser: Record<string, string[]>;
   // maps a chirpId to the pair of the reaction_codepoint and the list of userPublicKeys
-  reactionsByChirp: Record<string, Record<string, string[]>>,
+  reactionsByChirp: Record<string, Record<string, string[]>>;
 }
 
 // Root state for the Social Reducer
 interface SocialLaoReducerState {
-
   // Associates a given LAO ID with the whole representation of its social media
-  byLaoId: Record<string, SocialReducerState>
+  byLaoId: Record<string, SocialReducerState>;
 }
 
 const initialState: SocialLaoReducerState = {
@@ -43,9 +39,7 @@ const initialState: SocialLaoReducerState = {
 const socialReducerPath = 'social';
 
 // helper function to find where to insert the new chirp in ascending time order
-function findInsertIdx(
-  array: string[], byId: Record<string, ChirpState>, element: number,
-): number {
+function findInsertIdx(array: string[], byId: Record<string, ChirpState>, element: number): number {
   let left: number = 0;
   let right: number = array.length;
 
@@ -64,16 +58,18 @@ const socialSlice = createSlice({
   name: socialReducerPath,
   initialState,
   reducers: {
-
     // Add a chirp to the list of chirps
     addChirp: {
       prepare(laoId: Hash | string, chirp: ChirpState): any {
         return { payload: { laoId: laoId.valueOf(), chirp: chirp } };
       },
-      reducer(state, action: PayloadAction<{
-        laoId: string,
-        chirp: ChirpState,
-      }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          chirp: ChirpState;
+        }>,
+      ) {
         const { laoId, chirp } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
@@ -91,15 +87,12 @@ const socialSlice = createSlice({
         // if the chirp has not been added (didn't receive a delete request before)
         // or if the addChirp and deleteChirp of this chirp.id are sent by different sender
         // in this case we trust the sender of addChirp and keep the chirp as not deleted
-        if (!(store.byId[chirp.id]
-          && store.byId[chirp.id].sender === chirp.sender)) {
+        if (!(store.byId[chirp.id] && store.byId[chirp.id].sender === chirp.sender)) {
           store.byId[chirp.id] = chirp;
         }
 
         // even the chirp is deleted, we add it to allIdsInOrder to display the message
-        const insertIdxInAll = findInsertIdx(
-          store.allIdsInOrder, store.byId, chirp.time,
-        );
+        const insertIdxInAll = findInsertIdx(store.allIdsInOrder, store.byId, chirp.time);
         store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
 
         if (!state.byLaoId[laoId].byUser[chirp.sender]) {
@@ -117,10 +110,13 @@ const socialSlice = createSlice({
       prepare(laoId: Hash | string, chirp: ChirpState): any {
         return { payload: { laoId: laoId.valueOf(), chirp: chirp } };
       },
-      reducer(state, action: PayloadAction<{
-        laoId: string,
-        chirp: ChirpState,
-      }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          chirp: ChirpState;
+        }>,
+      ) {
         const { laoId, chirp } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
@@ -143,8 +139,10 @@ const socialSlice = createSlice({
           text: '',
           isDeleted: true,
         }).toState();
-        if ((!store.byId[chirp.id])
-          || (store.byId[chirp.id] && store.byId[chirp.id].sender === deletedChirp.sender)) {
+        if (
+          !store.byId[chirp.id] ||
+          (store.byId[chirp.id] && store.byId[chirp.id].sender === deletedChirp.sender)
+        ) {
           store.byId[chirp.id] = deletedChirp;
         }
         // we ignore the case if the delete request is not sent by the original sender
@@ -156,10 +154,13 @@ const socialSlice = createSlice({
       prepare(laoId: Hash | string, reaction: ReactionState): any {
         return { payload: { laoId: laoId.valueOf(), reaction: reaction } };
       },
-      reducer(state, action: PayloadAction<{
-        laoId: string,
-        reaction: ReactionState,
-      }>) {
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          reaction: ReactionState;
+        }>,
+      ) {
         const { laoId, reaction } = action.payload;
 
         if (!(laoId in state.byLaoId)) {
@@ -177,8 +178,9 @@ const socialSlice = createSlice({
           store.reactionsByChirp[reaction.chirp_id] = { [reaction.codepoint]: [reaction.sender] };
         } else if (!store.reactionsByChirp[reaction.chirp_id][reaction.codepoint]) {
           store.reactionsByChirp[reaction.chirp_id][reaction.codepoint] = [reaction.sender];
-        } else if (!store.reactionsByChirp[reaction.chirp_id][reaction.codepoint]
-          .includes(reaction.sender)) {
+        } else if (
+          !store.reactionsByChirp[reaction.chirp_id][reaction.codepoint].includes(reaction.sender)
+        ) {
           store.reactionsByChirp[reaction.chirp_id][reaction.codepoint].push(reaction.sender);
         } else {
           console.debug('The sender already reacted to this reaction');
@@ -188,9 +190,7 @@ const socialSlice = createSlice({
   },
 });
 
-export const {
-  addChirp, deleteChirp, addReaction,
-} = socialSlice.actions;
+export const { addChirp, deleteChirp, addReaction } = socialSlice.actions;
 
 export const socialReduce = socialSlice.reducer;
 
@@ -200,26 +200,25 @@ export default {
 
 export const getSocialState = (state: any): SocialLaoReducerState => state[socialReducerPath];
 
-export const makeChirpsList = () => createSelector(
-  // First input: Get all chirps across all LAOs
-  (state) => getSocialState(state),
-  // Second input: Get the current LAO id,
-  (state) => getLaosState(state).currentId,
-  (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
-    if (!laoId) {
+export const makeChirpsList = () =>
+  createSelector(
+    // First input: Get all chirps across all LAOs
+    (state) => getSocialState(state),
+    // Second input: Get the current LAO id,
+    (state) => getLaosState(state).currentId,
+    (chirpList: SocialLaoReducerState, laoId: string | undefined): ChirpState[] => {
+      if (!laoId) {
+        return [];
+      }
+      if (chirpList.byLaoId[laoId]) {
+        const store = chirpList.byLaoId[laoId];
+        const allChirps: ChirpState[] = [];
+        store.allIdsInOrder.forEach((id) => allChirps.push(store.byId[id]));
+        return allChirps;
+      }
       return [];
-    }
-    if (chirpList.byLaoId[laoId]) {
-      const store = chirpList.byLaoId[laoId];
-      const allChirps: ChirpState[] = [];
-      store.allIdsInOrder.forEach(
-        (id) => allChirps.push(store.byId[id]),
-      );
-      return allChirps;
-    }
-    return [];
-  },
-);
+    },
+  );
 
 export const makeChirpsListOfUser = (user: PublicKey | string) => {
   const userPublicKey = user.valueOf();
@@ -237,9 +236,7 @@ export const makeChirpsListOfUser = (user: PublicKey | string) => {
         const allUserChirps: ChirpState[] = [];
         const userChirps = laoChirps.byUser[userPublicKey];
         if (userChirps) {
-          userChirps.forEach(
-            (id: string) => allUserChirps.push(chirpList.byLaoId[laoId].byId[id]),
-          );
+          userChirps.forEach((id: string) => allUserChirps.push(chirpList.byLaoId[laoId].byId[id]));
           return allUserChirps;
         }
       }
@@ -254,27 +251,28 @@ const createReactionsEntry = (reactionByUser: Record<string, string[]>) => ({
   '❤️': reactionByUser['❤️'] ? reactionByUser['❤️'].length : 0,
 });
 
-export const makeReactionsList = () => createSelector(
-  (state) => getSocialState(state),
-  (state) => getLaosState(state).currentId,
-  (list: SocialLaoReducerState, laoId: string | undefined):
-  Record<string, Record<string, number>> => {
-    if (!laoId) {
-      return {};
-    }
-    if (list.byLaoId[laoId]) {
-      const store = list.byLaoId[laoId];
-      const reactions: Record<string, Record<string, number>> = {};
-      store.allIdsInOrder.forEach(
-        (id) => {
+export const makeReactionsList = () =>
+  createSelector(
+    (state) => getSocialState(state),
+    (state) => getLaosState(state).currentId,
+    (
+      list: SocialLaoReducerState,
+      laoId: string | undefined,
+    ): Record<string, Record<string, number>> => {
+      if (!laoId) {
+        return {};
+      }
+      if (list.byLaoId[laoId]) {
+        const store = list.byLaoId[laoId];
+        const reactions: Record<string, Record<string, number>> = {};
+        store.allIdsInOrder.forEach((id) => {
           const chirpReactions = store.reactionsByChirp[id];
           if (chirpReactions) {
             reactions[id] = createReactionsEntry(chirpReactions);
           }
-        },
-      );
-      return reactions;
-    }
-    return {};
-  },
-);
+        });
+        return reactions;
+      }
+      return {};
+    },
+  );

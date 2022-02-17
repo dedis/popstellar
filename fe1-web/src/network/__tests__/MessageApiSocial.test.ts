@@ -2,19 +2,8 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import testKeyPair from 'test_data/keypair.json';
-import {
-  ActionType,
-  AddChirp,
-  MessageData,
-  ObjectType,
-} from 'model/network/method/message/data';
-import {
-  Hash,
-  KeyPair,
-  Lao,
-  PublicKey,
-  Timestamp,
-} from 'model/objects';
+import { ActionType, AddChirp, MessageData, ObjectType } from 'model/network/method/message/data';
+import { Hash, KeyPair, Lao, PublicKey, Timestamp } from 'model/objects';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import * as msApi from '../MessageApi';
 import { publish } from '../JsonRpcApi';
@@ -27,10 +16,12 @@ const publishMock = publish as jest.MockedFunction<typeof publish>;
 let sampleLao: Lao;
 
 beforeAll(() => {
-  KeyPairStore.store(KeyPair.fromState({
-    publicKey: testKeyPair.publicKey,
-    privateKey: testKeyPair.privateKey,
-  }));
+  KeyPairStore.store(
+    KeyPair.fromState({
+      publicKey: testKeyPair.publicKey,
+      privateKey: testKeyPair.privateKey,
+    }),
+  );
 });
 
 afterAll(() => {
@@ -42,7 +33,7 @@ beforeEach(() => {
 
   const org = KeyPairStore.getPublicKey();
   const time = Timestamp.EpochNow();
-  const name: string = 'Pop\'s LAO';
+  const name: string = "Pop's LAO";
   sampleLao = new Lao({
     name,
     id: Hash.fromStringArray(org.toString(), time.toString(), name),

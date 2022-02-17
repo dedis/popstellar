@@ -35,8 +35,9 @@ export class Chirp {
 
   constructor(obj: Partial<Chirp>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a Chirp object: '
-        + 'undefined/null parameters');
+      throw new Error(
+        'Error encountered while creating a Chirp object: ' + 'undefined/null parameters',
+      );
     }
 
     if (obj.id === undefined) {

@@ -64,7 +64,9 @@ const filledStateAfterRollCall = {
 
 const mockLao2Name = 'Second Lao';
 const mockLao2IdHash: Hash = Hash.fromStringArray(
-  org.toString(), mockLaoCreationTime.toString(), mockLao2Name,
+  org.toString(),
+  mockLaoCreationTime.toString(),
+  mockLao2Name,
 );
 const mockLao2Id = mockLao2IdHash.toString();
 
@@ -109,94 +111,80 @@ const laoRecord = { [mockLaoId]: lao };
 
 describe('LaoReducer', () => {
   it('should return the initial state', () => {
-    expect(laoReduce(undefined, {} as AnyAction))
-      .toEqual(emptyState);
+    expect(laoReduce(undefined, {} as AnyAction)).toEqual(emptyState);
   });
 
   it('should add lao', () => {
-    expect(laoReduce(emptyState, addLao(lao)))
-      .toEqual(filledState1);
+    expect(laoReduce(emptyState, addLao(lao))).toEqual(filledState1);
   });
 
   it('should not add a lao twice', () => {
-    expect(laoReduce(filledState1, addLao(lao)))
-      .toEqual(filledState1);
+    expect(laoReduce(filledState1, addLao(lao))).toEqual(filledState1);
   });
 
   it('should not update lao if it is not in store', () => {
-    expect(laoReduce(filledState1, updateLao(lao2)))
-      .toEqual(filledState1);
+    expect(laoReduce(filledState1, updateLao(lao2))).toEqual(filledState1);
   });
 
   it('should update lao if its id is in store', () => {
-    expect(laoReduce(filledState1, updateLao(laoUpdated)))
-      .toEqual(filledStateUpdated);
+    expect(laoReduce(filledState1, updateLao(laoUpdated))).toEqual(filledStateUpdated);
   });
 
   it('should remove a lao', () => {
-    expect(laoReduce(filledState1, removeLao(mockLaoIdHash)))
-      .toEqual(emptyState);
+    expect(laoReduce(filledState1, removeLao(mockLaoIdHash))).toEqual(emptyState);
   });
 
   it('should not remove a non-stored lao', () => {
-    expect(laoReduce(filledState1, removeLao(mockLao2IdHash)))
-      .toEqual(filledState1);
+    expect(laoReduce(filledState1, removeLao(mockLao2IdHash))).toEqual(filledState1);
   });
 
   it('should clear all Laos', () => {
-    expect(laoReduce(filledState2, clearAllLaos()))
-      .toEqual(emptyState);
+    expect(laoReduce(filledState2, clearAllLaos())).toEqual(emptyState);
   });
 
   it('should connect to lao', () => {
-    expect(laoReduce(emptyState, connectToLao(lao)))
-      .toEqual(connectedState1);
+    expect(laoReduce(emptyState, connectToLao(lao))).toEqual(connectedState1);
   });
 
   it('should disconnect from lao', () => {
-    expect(laoReduce(connectedState1, disconnectFromLao()))
-      .toEqual(filledState1);
+    expect(laoReduce(connectedState1, disconnectFromLao())).toEqual(filledState1);
   });
 
   it('set last roll call for a non-stored lao does not do anything', () => {
-    expect(laoReduce(emptyState, setLaoLastRollCall(mockLaoId, rollCallId, false)))
-      .toEqual(emptyState);
+    expect(laoReduce(emptyState, setLaoLastRollCall(mockLaoId, rollCallId, false))).toEqual(
+      emptyState,
+    );
   });
 
   it('set last roll call for lao', () => {
-    expect(laoReduce(filledState1, setLaoLastRollCall(mockLaoId, rollCallId, true)))
-      .toEqual(filledStateAfterRollCall);
+    expect(laoReduce(filledState1, setLaoLastRollCall(mockLaoId, rollCallId, true))).toEqual(
+      filledStateAfterRollCall,
+    );
   });
 });
 
 describe('Lao selector', () => {
   it('should return undefined for makeLao when the currentId is undefined', () => {
-    expect(makeLao().resultFunc(laoRecord, undefined))
-      .toEqual(undefined);
+    expect(makeLao().resultFunc(laoRecord, undefined)).toEqual(undefined);
   });
 
   it('should return lao for makeCurrentLao', () => {
-    expect(makeCurrentLao().resultFunc(laoRecord, mockLaoId))
-      .toEqual(Lao.fromState(lao));
+    expect(makeCurrentLao().resultFunc(laoRecord, mockLaoId)).toEqual(Lao.fromState(lao));
   });
 
   it('should return an empty makeLaoIdsList when there is no lao', () => {
-    expect(makeLaoIdsList().resultFunc([]))
-      .toEqual([]);
+    expect(makeLaoIdsList().resultFunc([])).toEqual([]);
   });
 
   it('should return makeLaosList correctly', () => {
-    expect(makeLaosList().resultFunc(laoRecord, [mockLaoId]))
-      .toEqual([Lao.fromState(lao)]);
+    expect(makeLaosList().resultFunc(laoRecord, [mockLaoId])).toEqual([Lao.fromState(lao)]);
   });
 
   it('should return makeLaosMap correctly', () => {
-    expect(makeLaosMap().resultFunc(laoRecord))
-      .toEqual({ [mockLaoId]: Lao.fromState(lao) });
+    expect(makeLaosMap().resultFunc(laoRecord)).toEqual({ [mockLaoId]: Lao.fromState(lao) });
   });
 
   it('should return true for makeIsLaoOrganizer when it is true', () => {
-    expect(makeIsLaoOrganizer().resultFunc(laoRecord, mockLaoId, org.toString()))
-      .toEqual(true);
+    expect(makeIsLaoOrganizer().resultFunc(laoRecord, mockLaoId, org.toString())).toEqual(true);
   });
 });

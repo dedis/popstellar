@@ -4,9 +4,7 @@ import { Chirp, ChirpState, PublicKey } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import ChirpCard from 'components/ChirpCard';
 import ProfileIcon from 'components/ProfileIcon';
-import {
-  FlatList, ListRenderItemInfo, Text, View,
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import STRINGS from 'res/strings';
 import { makeChirpsListOfUser } from 'store';
 import { useSelector } from 'react-redux';
@@ -32,23 +30,18 @@ const SocialProfile = (props: IPropTypes) => {
   }
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard
-      chirp={Chirp.fromState(item)}
-      currentUserPublicKey={currentUserPublicKey}
-    />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
   );
 
   return (
     <View style={styles.viewCenter}>
       <View style={styles.topView}>
-        <ProfileIcon
-          publicKey={currentUserPublicKey}
-          size={8}
-          scale={10}
-        />
+        <ProfileIcon publicKey={currentUserPublicKey} size={8} scale={10} />
         <View style={styles.textView}>
           <Text style={styles.profileText}>{currentUserPublicKey.valueOf()}</Text>
-          <Text>{`${userChirpList.length} ${userChirpList.length === 1 ? 'chirp' : 'chirps'}`}</Text>
+          <Text>{`${userChirpList.length} ${
+            userChirpList.length === 1 ? 'chirp' : 'chirps'
+          }`}</Text>
         </View>
       </View>
       <View style={styles.userFeed}>
@@ -69,7 +62,7 @@ const propTypes = {
 SocialProfile.prototype = propTypes;
 
 type IPropTypes = {
-  currentUserPublicKey: PublicKey,
+  currentUserPublicKey: PublicKey;
 };
 
 export default SocialProfile;

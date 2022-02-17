@@ -53,20 +53,22 @@ describe('DeleteChirp', () => {
 
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
-      const wrongObj = () => new DeleteChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.DELETE,
-        timestamp: TIMESTAMP,
-      });
+      const wrongObj = () =>
+        new DeleteChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.DELETE,
+          timestamp: TIMESTAMP,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if timestamp is undefined', () => {
-      const wrongObj = () => new DeleteChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.DELETE,
-        chirp_id: ID,
-      });
+      const wrongObj = () =>
+        new DeleteChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.DELETE,
+          chirp_id: ID,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
   });

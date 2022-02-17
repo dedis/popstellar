@@ -1,7 +1,5 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  addReaction, dispatch, getStore, makeCurrentLao,
-} from 'store';
+import { addReaction, dispatch, getStore, makeCurrentLao } from 'store';
 import { ActionType, AddReaction, ObjectType } from 'model/network/method/message/data';
 import { Reaction } from 'model/objects';
 
@@ -16,8 +14,7 @@ const getCurrentLao = makeCurrentLao();
  * @param msg - The extended message for adding a reaction
  */
 function handleAddReactionMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.REACTION
-    || msg.messageData.action !== ActionType.ADD) {
+  if (msg.messageData.object !== ObjectType.REACTION || msg.messageData.action !== ActionType.ADD) {
     console.warn('handleAddReaction was called to process an unsupported message');
     return false;
   }
@@ -63,7 +60,10 @@ export function handleReactionMessage(msg: ExtendedMessage): boolean {
     return handleAddReactionMessage(msg);
   }
 
-  console.warn('A Social Media reaction message was received but its processing logic is not '
-    + 'yet implemented:', msg);
+  console.warn(
+    'A Social Media reaction message was received but its processing logic is not ' +
+      'yet implemented:',
+    msg,
+  );
   return false;
 }

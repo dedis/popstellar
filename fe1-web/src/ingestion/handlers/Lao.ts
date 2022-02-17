@@ -1,12 +1,20 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import {
-  ActionType, ObjectType, CreateLao, StateLao, UpdateLao,
+  ActionType,
+  ObjectType,
+  CreateLao,
+  StateLao,
+  UpdateLao,
 } from 'model/network/method/message/data';
 import { Lao } from 'model/objects';
 import {
-  dispatch, connectToLao, updateLao,
-  getMessage, getStore,
-  makeCurrentLao, makeLaoMessagesState,
+  dispatch,
+  connectToLao,
+  updateLao,
+  getMessage,
+  getStore,
+  makeCurrentLao,
+  makeLaoMessagesState,
 } from 'store';
 import { hasWitnessSignatureQuorum } from './Utils';
 
@@ -95,8 +103,10 @@ export function handleLaoMessage(msg: ExtendedMessage): boolean {
       return true;
 
     default:
-      console.warn('A LAO message was received but'
-        + ' its processing logic is not yet implemented:', msg);
+      console.warn(
+        'A LAO message was received but' + ' its processing logic is not yet implemented:',
+        msg,
+      );
       return false;
   }
 }

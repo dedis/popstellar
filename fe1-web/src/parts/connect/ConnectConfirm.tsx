@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import PropTypes from 'prop-types';
 
@@ -119,10 +117,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
           defaultValue={laoId}
         />
       </View>
-      <WideButtonView
-        title={STRINGS.general_button_confirm}
-        onPress={() => onButtonConfirm()}
-      />
+      <WideButtonView title={STRINGS.general_button_confirm} onPress={() => onButtonConfirm()} />
       <WideButtonView
         title={STRINGS.general_button_cancel}
         onPress={() => navigation.navigate(STRINGS.connect_unapproved_title)}

@@ -38,8 +38,10 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
       try {
         const obj = JSON.parse(data);
         const connectToLao = ConnectToLao.fromJson(obj);
-        navigation.navigate(STRINGS.connect_confirm_title,
-          { laoIdIn: connectToLao.lao, url: connectToLao.server });
+        navigation.navigate(STRINGS.connect_confirm_title, {
+          laoIdIn: connectToLao.lao,
+          url: connectToLao.server,
+        });
       } catch (error) {
         toast.show(STRINGS.connect_scanning_fail, {
           type: 'danger',
@@ -50,27 +52,21 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     }
   };
 
-  return QrWasScanned
-    ? (
-      <View style={containerStyles.centered} />
-    ) : (
-      <View style={containerStyles.centered}>
-        <QrReader
-          delay={300}
-          onError={handleError}
-          onScan={handleScan}
-          style={{ width: '30%' }}
-        />
-        <ActivityIndicator size="large" color={Colors.blue} />
-        <WideButtonView
-          title={STRINGS.general_button_cancel}
-          onPress={() => {
-            setQrWasScanned(true);
-            navigation.navigate(STRINGS.connect_unapproved_title);
-          }}
-        />
-      </View>
-    );
+  return QrWasScanned ? (
+    <View style={containerStyles.centered} />
+  ) : (
+    <View style={containerStyles.centered}>
+      <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '30%' }} />
+      <ActivityIndicator size="large" color={Colors.blue} />
+      <WideButtonView
+        title={STRINGS.general_button_cancel}
+        onPress={() => {
+          setQrWasScanned(true);
+          navigation.navigate(STRINGS.connect_unapproved_title);
+        }}
+      />
+    </View>
+  );
 };
 
 const propTypes = {

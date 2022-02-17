@@ -8,7 +8,7 @@ describe('BarChartDisplay', () => {
     const data: MajorityResult[] = [
       { ballot_option: 'Yes', count: 10 },
       { ballot_option: 'No', count: 5 },
-      { ballot_option: 'I don\'t know', count: 4 },
+      { ballot_option: "I don't know", count: 4 },
     ];
     const component = render(<BarChartDisplay data={data} />).toJSON();
     expect(component).toMatchSnapshot();

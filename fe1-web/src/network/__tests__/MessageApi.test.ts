@@ -17,9 +17,7 @@ import {
   UpdateLao,
   WitnessMessage,
 } from 'model/network/method/message/data';
-import {
-  Hash, Lao, Timestamp, KeyPair, Base64UrlData, PublicKey, PopToken,
-} from 'model/objects';
+import { Hash, Lao, Timestamp, KeyPair, Base64UrlData, PublicKey, PopToken } from 'model/objects';
 
 // @ts-ignore
 import testKeyPair from 'test_data/keypair.json';
@@ -56,8 +54,14 @@ function checkDataCreateLao(obj: MessageData) {
   const data: CreateLao = obj as CreateLao;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation',
-    'organizer', 'witnesses']);
+  expect(data).toContainKeys([
+    ...defaultDataFields,
+    'id',
+    'name',
+    'creation',
+    'organizer',
+    'witnesses',
+  ]);
 
   expect(data.id).toBeBase64Url();
 
@@ -75,7 +79,9 @@ function checkDataCreateLao(obj: MessageData) {
 
   // check id
   const expected: Hash = Hash.fromStringArray(
-    data.organizer.toString(), data.creation.toString(), data.name,
+    data.organizer.toString(),
+    data.creation.toString(),
+    data.name,
   );
   expect(data.id).toBeJsonEqual(expected);
 }
@@ -119,8 +125,17 @@ function checkDataStateLao(obj: MessageData) {
   const data: StateLao = obj as StateLao;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation',
-    'last_modified', 'organizer', 'witnesses', 'modification_id', 'modification_signatures']);
+  expect(data).toContainKeys([
+    ...defaultDataFields,
+    'id',
+    'name',
+    'creation',
+    'last_modified',
+    'organizer',
+    'witnesses',
+    'modification_id',
+    'modification_signatures',
+  ]);
 
   expect(data.id).toBeBase64Url();
 
@@ -146,7 +161,9 @@ function checkDataStateLao(obj: MessageData) {
 
   // check id
   const expected = Hash.fromStringArray(
-    data.organizer.toString(), OpenedLaoStore.get().creation.toString(), data.name,
+    data.organizer.toString(),
+    OpenedLaoStore.get().creation.toString(),
+    data.name,
   );
   expect(data.id).toBeJsonEqual(expected);
 }
@@ -191,7 +208,12 @@ function checkDataCreateMeeting(obj: MessageData) {
   }
 
   // check id
-  const expected = Hash.fromStringArray('M', OpenedLaoStore.get().id.toString(), OpenedLaoStore.get().creation.toString(), data.name);
+  const expected = Hash.fromStringArray(
+    'M',
+    OpenedLaoStore.get().id.toString(),
+    OpenedLaoStore.get().creation.toString(),
+    data.name,
+  );
   expect(data.id).toEqual(expected);
 }
 
@@ -213,7 +235,15 @@ function checkDataCreateRollCall(obj: MessageData) {
   const data: CreateRollCall = obj as CreateRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'id', 'name', 'creation', 'location', 'proposed_start', 'proposed_end']);
+  expect(data).toContainKeys([
+    ...defaultDataFields,
+    'id',
+    'name',
+    'creation',
+    'location',
+    'proposed_start',
+    'proposed_end',
+  ]);
 
   expect(data.id).toBeBase64Url();
 
@@ -243,7 +273,12 @@ function checkDataCreateRollCall(obj: MessageData) {
   }
 
   // check id
-  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(), data.creation.toString(), data.name);
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.creation.toString(),
+    data.name,
+  );
   expect(data.id).toEqual(expected);
 }
 
@@ -263,8 +298,12 @@ function checkDataOpenRollCall(obj: MessageData) {
   expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
-  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(),
-    data.opens.toString(), data.opened_at.toString());
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.opens.toString(),
+    data.opened_at.toString(),
+  );
   expect(data.update_id).toEqual(expected);
 }
 
@@ -282,8 +321,12 @@ function checkDataReopenRollCall(obj: MessageData): ReopenRollCall {
   expect(data.opened_at.valueOf()).toBeGreaterThan(0);
 
   // check id
-  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(),
-    data.opens.toString(), data.opened_at.toString());
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.opens.toString(),
+    data.opened_at.toString(),
+  );
   expect(data.update_id).toEqual(expected);
 
   return data;
@@ -296,7 +339,13 @@ function checkDataCloseRollCall(obj: MessageData): CloseRollCall {
   const data: CloseRollCall = obj as CloseRollCall;
 
   expect(data).toBeObject();
-  expect(data).toContainKeys([...defaultDataFields, 'update_id', 'closes', 'closed_at', 'attendees']);
+  expect(data).toContainKeys([
+    ...defaultDataFields,
+    'update_id',
+    'closes',
+    'closed_at',
+    'attendees',
+  ]);
 
   expect(data.update_id).toBeBase64Url();
 
@@ -307,8 +356,12 @@ function checkDataCloseRollCall(obj: MessageData): CloseRollCall {
   expect(data.attendees).toBeDistinctArray();
 
   // check id
-  const expected = Hash.fromStringArray('R', OpenedLaoStore.get().id.toString(),
-    data.closes.toString(), data.closed_at.toString());
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.closes.toString(),
+    data.closed_at.toString(),
+  );
   expect(data.update_id).toEqual(expected);
 
   return data;
@@ -317,13 +370,16 @@ function checkDataCloseRollCall(obj: MessageData): CloseRollCall {
 describe('=== WebsocketApi tests ===', () => {
   let dateNowSpy: jest.SpyInstance<number>;
   beforeAll(() => {
-    dateNowSpy = jest.spyOn(Date, 'now')
+    dateNowSpy = jest
+      .spyOn(Date, 'now')
       .mockImplementation(() => mockCreationTime.valueOf() * 1000);
 
-    KeyPairStore.store(KeyPair.fromState({
-      publicKey: testKeyPair.publicKey,
-      privateKey: testKeyPair.privateKey,
-    }));
+    KeyPairStore.store(
+      KeyPair.fromState({
+        publicKey: testKeyPair.publicKey,
+        privateKey: testKeyPair.privateKey,
+      }),
+    );
   });
   afterAll(() => {
     dateNowSpy.mockRestore();
@@ -335,7 +391,7 @@ describe('=== WebsocketApi tests ===', () => {
 
     const org = KeyPairStore.getPublicKey();
     const time = Timestamp.EpochNow();
-    const name: string = 'Pop\'s LAO';
+    const name: string = "Pop's LAO";
     sampleLao = new Lao({
       name,
       id: Hash.fromStringArray(org.toString(), time.toString(), name),
@@ -408,7 +464,11 @@ describe('=== WebsocketApi tests ===', () => {
     it('should create the correct request for requestCreateMeeting 4', async () => {
       const mockExtra = { numberParticipants: 12, minAge: 18 };
       await msApi.requestCreateMeeting(
-        mockEventName, mockStartTime, mockLocation, mockEndTime, mockExtra,
+        mockEventName,
+        mockStartTime,
+        mockLocation,
+        mockEndTime,
+        mockExtra,
       );
 
       expect(publishMock.mock.calls.length).toBe(1);
@@ -418,8 +478,10 @@ describe('=== WebsocketApi tests ===', () => {
     });
 
     it('should create the correct request for requestWitnessMessage', async () => {
-      await msApi.requestWitnessMessage(`/root/${sampleLao.id}`,
-        Base64UrlData.encode('randomMessageId'));
+      await msApi.requestWitnessMessage(
+        `/root/${sampleLao.id}`,
+        Base64UrlData.encode('randomMessageId'),
+      );
 
       expect(publishMock.mock.calls.length).toBe(1);
       const [channel, msgData] = publishMock.mock.calls[0];
@@ -439,7 +501,11 @@ describe('=== WebsocketApi tests ===', () => {
     it('should create the correct request for requestCreateRollCall 2', async () => {
       const mockDescription = 'random description';
       await msApi.requestCreateRollCall(
-        mockEventName, mockLocation, mockStartTime, mockEndTime, mockDescription,
+        mockEventName,
+        mockLocation,
+        mockStartTime,
+        mockEndTime,
+        mockDescription,
       );
 
       expect(publishMock.mock.calls.length).toBe(1);

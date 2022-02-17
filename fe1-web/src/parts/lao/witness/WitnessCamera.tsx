@@ -11,7 +11,7 @@ import RecorderButton from 'components/RecorderButton';
  *
  * TODO store photo and video to the device
  * TODO later share the video to everyone
-*/
+ */
 
 const styles = StyleSheet.create({
   flexBoxContainer: {

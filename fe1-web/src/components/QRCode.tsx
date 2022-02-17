@@ -13,13 +13,11 @@ const QRCode = (props: IPropTypes) => {
   const { size } = props;
 
   // Displays a QR code with the Public key of the current user
-  return (visibility)
-    ? (
-      <View style={[containerStyles.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
-        <QRCodeDisplay value={value} size={size} />
-      </View>
-    )
-    : null;
+  return visibility ? (
+    <View style={[containerStyles.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
+      <QRCodeDisplay value={value} size={size} />
+    </View>
+  ) : null;
 };
 
 const propTypes = {
@@ -35,9 +33,9 @@ QRCode.defaultProps = {
 };
 
 type IPropTypes = {
-  visibility: boolean,
-  size: number,
-  value: string,
+  visibility: boolean;
+  size: number;
+  value: string;
 };
 
 export default QRCode;

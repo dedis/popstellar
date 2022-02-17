@@ -49,12 +49,8 @@ export const mockSecretKey = new PrivateKey(keyPair.privateKey);
 const generateKeyPair = () => {
   const pair = sign.keyPair();
   return new KeyPair({
-    publicKey: new PublicKey(
-      Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf(),
-    ),
-    privateKey: new PrivateKey(
-      Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf(),
-    ),
+    publicKey: new PublicKey(Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf()),
+    privateKey: new PrivateKey(Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf()),
   });
 };
 
@@ -134,7 +130,12 @@ describe('=== fromJsonData checks ===', () => {
     modification_signatures: [],
   };
 
-  const rollCallId = Hash.fromStringArray('R', mockLaoId.toString(), time.toString(), name.toString());
+  const rollCallId = Hash.fromStringArray(
+    'R',
+    mockLaoId.toString(),
+    time.toString(),
+    name.toString(),
+  );
 
   const sampleCreateRollCall: Partial<CreateRollCall> = {
     object: ObjectType.ROLL_CALL,
@@ -148,7 +149,12 @@ describe('=== fromJsonData checks ===', () => {
     description: 'Roll Call description',
   };
 
-  const rollCallUpdateId = Hash.fromStringArray('R', mockLaoId.toString(), rollCallId.toString(), time.toString());
+  const rollCallUpdateId = Hash.fromStringArray(
+    'R',
+    mockLaoId.toString(),
+    rollCallId.toString(),
+    time.toString(),
+  );
 
   const sampleOpenRollCall: Partial<OpenRollCall> = {
     object: ObjectType.ROLL_CALL,
@@ -166,7 +172,12 @@ describe('=== fromJsonData checks ===', () => {
     opened_at: time,
   };
 
-  const rollCallCloseId = Hash.fromStringArray('R', mockLaoId.toString(), rollCallId.toString(), CLOSE_TIMESTAMP.toString());
+  const rollCallCloseId = Hash.fromStringArray(
+    'R',
+    mockLaoId.toString(),
+    rollCallId.toString(),
+    CLOSE_TIMESTAMP.toString(),
+  );
   const sampleCloseRollCall: Partial<CloseRollCall> = {
     object: ObjectType.ROLL_CALL,
     action: ActionType.CLOSE,
@@ -191,15 +202,22 @@ describe('=== fromJsonData checks ===', () => {
   };
 
   const electionId: Hash = Hash.fromStringArray(
-    'Election', mockLaoId.toString(), time.toString(), name.toString(),
+    'Election',
+    mockLaoId.toString(),
+    time.toString(),
+    name.toString(),
   );
   const mockQuestion1 = 'Mock Question 1';
   const mockQuestion2 = 'Mock Question 2';
   const mockQuestionId1 = Hash.fromStringArray(
-    EventTags.QUESTION, electionId.toString(), mockQuestion1,
+    EventTags.QUESTION,
+    electionId.toString(),
+    mockQuestion1,
   );
   const mockQuestionId2 = Hash.fromStringArray(
-    EventTags.QUESTION, electionId.toString(), mockQuestion2,
+    EventTags.QUESTION,
+    electionId.toString(),
+    mockQuestion2,
   );
   const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
   const mockQuestionObject1: Question = {
@@ -231,11 +249,21 @@ describe('=== fromJsonData checks ===', () => {
     questions: mockQuestions,
   };
 
-  const dataLao: string = `{"object": "${ObjectType.LAO}","action": "F_ACTION",FF_MODIFICATION"id": "${mockLaoId.toString()}","name": "${name}","creation": ${time.toString()},"last_modified": ${CLOSE_TIMESTAMP.toString()},"organizer": "${org.toString()}","witnesses": []}`;
-  const dataMeeting: string = `{"object": "${ObjectType.MEETING}","action": "F_ACTION",FF_MODIFICATION"id": "${meetingId.toString()}","name": "${name}","creation": ${time},"last_modified": ${time},"location": "${location}","start": ${time},"end": ${FUTURE_TIMESTAMP.toString()},"extra": { "extra": "extra info" }}`;
+  const dataLao: string = `{"object": "${
+    ObjectType.LAO
+  }","action": "F_ACTION",FF_MODIFICATION"id": "${mockLaoId.toString()}","name": "${name}","creation": ${time.toString()},"last_modified": ${CLOSE_TIMESTAMP.toString()},"organizer": "${org.toString()}","witnesses": []}`;
+  const dataMeeting: string = `{"object": "${
+    ObjectType.MEETING
+  }","action": "F_ACTION",FF_MODIFICATION"id": "${meetingId.toString()}","name": "${name}","creation": ${time},"last_modified": ${time},"location": "${location}","start": ${time},"end": ${FUTURE_TIMESTAMP.toString()},"extra": { "extra": "extra info" }}`;
   const dataRollCall: string = `{"object": "${ObjectType.ROLL_CALL}","action":"F_ACTION",FF_MODIFICATION}`;
-  const dataUpdateLao: string = `{"object": "${ObjectType.LAO}","action": "${ActionType.UPDATE_PROPERTIES}","name": "${name}","id": "${mockLaoId.toString()}","last_modified": ${CLOSE_TIMESTAMP.toString()},"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]}`;
-  const dataWitnessMessage: string = `{"object": "${ObjectType.MESSAGE}","action": "${ActionType.WITNESS}","message_id": "${mockMessageId.toString()}","signature": "${mockSecretKey.sign(mockMessageId).toString()}"}`;
+  const dataUpdateLao: string = `{"object": "${ObjectType.LAO}","action": "${
+    ActionType.UPDATE_PROPERTIES
+  }","name": "${name}","id": "${mockLaoId.toString()}","last_modified": ${CLOSE_TIMESTAMP.toString()},"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]}`;
+  const dataWitnessMessage: string = `{"object": "${ObjectType.MESSAGE}","action": "${
+    ActionType.WITNESS
+  }","message_id": "${mockMessageId.toString()}","signature": "${mockSecretKey
+    .sign(mockMessageId)
+    .toString()}"}`;
   const dataElection: string = `{"object": "${ObjectType.ELECTION}","action":"F_ACTION",FF_MODIFICATION}`;
   const dataChirp: string = `{"object": "${ObjectType.CHIRP}", "action": "F_ACTION", "text": "${chirpText}", "timestamp": ${time}}`;
 
@@ -247,8 +275,14 @@ describe('=== fromJsonData checks ===', () => {
     .replace('F_ACTION', ActionType.STATE)
     .replace(
       'FF_MODIFICATION',
-      `"modification_id":"${Hash.fromStringArray(mockMessageId.toString()).toString()}","modification_signatures":[],`,
-    ).replace('"witnesses": []', `"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]`);
+      `"modification_id":"${Hash.fromStringArray(
+        mockMessageId.toString(),
+      ).toString()}","modification_signatures":[],`,
+    )
+    .replace(
+      '"witnesses": []',
+      `"witnesses": ["${sampleKey1.toString()}", "${sampleKey2.toString()}"]`,
+    );
   const dataCreateMeeting: string = dataMeeting
     .replace('F_ACTION', ActionType.CREATE)
     .replace('FF_MODIFICATION', '')
@@ -257,30 +291,42 @@ describe('=== fromJsonData checks ===', () => {
     .replace('F_ACTION', ActionType.STATE)
     .replace(
       'FF_MODIFICATION',
-      `"modification_id":"${Hash.fromStringArray(mockMessageId.toString()).toString()}","modification_signatures":[],`,
+      `"modification_id":"${Hash.fromStringArray(
+        mockMessageId.toString(),
+      ).toString()}","modification_signatures":[],`,
     );
-  const dataCreateRollCall: string = dataRollCall
-    .replace('F_ACTION', ActionType.CREATE)
-    .replace('FF_MODIFICATION', `"id": "${rollCallId.toString()}","name":"${name}","creation":${time},
-    "proposed_start":${time},"proposed_end":${CLOSE_TIMESTAMP},"location":"${location}","description":"Roll Call description"`);
+  const dataCreateRollCall: string = dataRollCall.replace('F_ACTION', ActionType.CREATE).replace(
+    'FF_MODIFICATION',
+    `"id": "${rollCallId.toString()}","name":"${name}","creation":${time},
+    "proposed_start":${time},"proposed_end":${CLOSE_TIMESTAMP},"location":"${location}","description":"Roll Call description"`,
+  );
   const dataOpenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.OPEN)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallUpdateId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
+    .replace(
+      'FF_MODIFICATION',
+      `"update_id":"${rollCallUpdateId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`,
+    );
   const dataReopenRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.REOPEN)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallUpdateId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`);
+    .replace(
+      'FF_MODIFICATION',
+      `"update_id":"${rollCallUpdateId.toString()}","opens":"${rollCallId.toString()}","opened_at":${time}`,
+    );
   const dataCloseRollCall: string = dataRollCall
     .replace('F_ACTION', ActionType.CLOSE)
-    .replace('FF_MODIFICATION', `"update_id":"${rollCallCloseId.toString()}","closes":"${rollCallId.toString()}","closed_at":${CLOSE_TIMESTAMP},"attendees":[]`);
+    .replace(
+      'FF_MODIFICATION',
+      `"update_id":"${rollCallCloseId.toString()}","closes":"${rollCallId.toString()}","closed_at":${CLOSE_TIMESTAMP},"attendees":[]`,
+    );
 
-  const dataSetupElection: string = dataElection
-    .replace('F_ACTION', ActionType.SETUP)
-    .replace('FF_MODIFICATION', `"lao":"${mockLaoId.toString()}","id":
+  const dataSetupElection: string = dataElection.replace('F_ACTION', ActionType.SETUP).replace(
+    'FF_MODIFICATION',
+    `"lao":"${mockLaoId.toString()}","id":
     "${electionId.toString()}","name":"${name}","version":"${mockVersion}","created_at":${time},
-    "start_time":${time},"end_time":${CLOSE_TIMESTAMP},"questions":${JSON.stringify(mockQuestions)}`);
+    "start_time":${time},"end_time":${CLOSE_TIMESTAMP},"questions":${JSON.stringify(mockQuestions)}`,
+  );
 
-  const dataAddChirp: string = dataChirp
-    .replace('F_ACTION', ActionType.ADD);
+  const dataAddChirp: string = dataChirp.replace('F_ACTION', ActionType.ADD);
 
   beforeAll(() => {
     const sampleLao: Lao = new Lao({
@@ -298,31 +344,37 @@ describe('=== fromJsonData checks ===', () => {
   describe('should successfully create objects', () => {
     describe('from JS objects', () => {
       // Create LAO
-      it('\'CreateLao\'', () => {
+      it("'CreateLao'", () => {
         expect(new CreateLao(sampleCreateLao)).toBeJsonEqual(sampleCreateLao);
-        expect(new CreateLao({
-          id: Hash.fromStringArray(org.toString(), time.toString(), name),
-          name: name,
-          creation: time,
-          organizer: org,
-          witnesses: [],
-        })).toBeJsonEqual(sampleCreateLao);
+        expect(
+          new CreateLao({
+            id: Hash.fromStringArray(org.toString(), time.toString(), name),
+            name: name,
+            creation: time,
+            organizer: org,
+            witnesses: [],
+          }),
+        ).toBeJsonEqual(sampleCreateLao);
       });
 
       // Update LAO
-      it('\'UpdateLao\'', () => {
+      it("'UpdateLao'", () => {
         expect(new UpdateLao(sampleUpdateLao)).toBeJsonEqual(sampleUpdateLao);
       });
 
       // State LAO
-      it('\'StateLao\'', () => {
+      it("'StateLao'", () => {
         expect(new StateLao(sampleStateLao)).toBeJsonEqual(sampleStateLao);
       });
 
       // Create Meeting
-      it('\'CreateMeeting\'', () => {
-        const calcId = Hash.fromStringArray(EventTags.MEETING,
-          mockLaoId.toString(), time.toString(), name);
+      it("'CreateMeeting'", () => {
+        const calcId = Hash.fromStringArray(
+          EventTags.MEETING,
+          mockLaoId.toString(),
+          time.toString(),
+          name,
+        );
         expect(new CreateMeeting(sampleCreateMeeting)).toBeJsonEqual(sampleCreateMeeting);
         temp = {
           object: ObjectType.MEETING,
@@ -360,9 +412,13 @@ describe('=== fromJsonData checks ===', () => {
       });
 
       // State Meeting
-      it('\'StateMeeting\'', () => {
-        const calcId = Hash.fromStringArray(EventTags.MEETING,
-          mockLaoId.toString(), time.toString(), name);
+      it("'StateMeeting'", () => {
+        const calcId = Hash.fromStringArray(
+          EventTags.MEETING,
+          mockLaoId.toString(),
+          time.toString(),
+          name,
+        );
         expect(new StateMeeting(sampleStateMeeting)).toBeJsonEqual(sampleStateMeeting);
         temp = {
           object: ObjectType.MEETING,
@@ -409,7 +465,7 @@ describe('=== fromJsonData checks ===', () => {
       });
 
       // Create RollCall
-      it('\'CreateRollCall\'', () => {
+      it("'CreateRollCall'", () => {
         expect(new CreateRollCall(sampleCreateRollCall)).toBeJsonEqual(sampleCreateRollCall);
         temp = {
           object: ObjectType.ROLL_CALL,
@@ -437,17 +493,17 @@ describe('=== fromJsonData checks ===', () => {
       });
 
       // Open RollCall
-      it('\'OpenRollCall\'', () => {
+      it("'OpenRollCall'", () => {
         expect(new OpenRollCall(sampleOpenRollCall)).toBeJsonEqual(sampleOpenRollCall);
       });
 
       // Reopen RollCall
-      it('\'ReopenRollCall\'', () => {
+      it("'ReopenRollCall'", () => {
         expect(new ReopenRollCall(sampleReopenRollCall)).toBeJsonEqual(sampleReopenRollCall);
       });
 
       // Close RollCall
-      it('\'CloseRollCall\'', () => {
+      it("'CloseRollCall'", () => {
         expect(new CloseRollCall(sampleCloseRollCall)).toBeJsonEqual(sampleCloseRollCall);
         temp = {
           object: ObjectType.ROLL_CALL,
@@ -461,12 +517,12 @@ describe('=== fromJsonData checks ===', () => {
       });
 
       // Witness Message
-      it('\'WitnessMessage\'', () => {
+      it("'WitnessMessage'", () => {
         expect(new WitnessMessage(sampleWitnessMessage)).toBeJsonEqual(sampleWitnessMessage);
       });
 
       // Setup Election
-      it('\'SetupElection\'', () => {
+      it("'SetupElection'", () => {
         expect(new SetupElection(sampleSetupElection)).toBeJsonEqual(sampleSetupElection);
         temp = {
           object: ObjectType.ELECTION,
@@ -484,7 +540,7 @@ describe('=== fromJsonData checks ===', () => {
       });
 
       // Add Chirp
-      it('\'AddChirp\'', () => {
+      it("'AddChirp'", () => {
         expect(new AddChirp(sampleAddChirp)).toBeJsonEqual(sampleAddChirp);
         temp = {
           object: ObjectType.CHIRP,
@@ -500,31 +556,31 @@ describe('=== fromJsonData checks ===', () => {
       /* Note : edge cases testing in "using JS objects" test case */
 
       // Create LAO
-      it('\'CreateLao\'', () => {
+      it("'CreateLao'", () => {
         const obj = JSON.parse(dataCreateLao);
         expect(CreateLao.fromJson(obj)).toBeJsonEqual(sampleCreateLao);
       });
 
       // Update LAO
-      it('\'UpdateLao\'', () => {
+      it("'UpdateLao'", () => {
         const obj = JSON.parse(dataUpdateLao);
         expect(UpdateLao.fromJson(obj)).toBeJsonEqual(sampleUpdateLao);
       });
 
       // State LAO
-      it('\'StateLao\'', () => {
+      it("'StateLao'", () => {
         const obj = JSON.parse(dataBroadcastLao);
         expect(StateLao.fromJson(obj)).toBeJsonEqual(sampleStateLao);
       });
 
       // Create Meeting
-      it('\'CreateMeeting\'', () => {
+      it("'CreateMeeting'", () => {
         const obj = JSON.parse(dataCreateMeeting);
         expect(CreateMeeting.fromJson(obj)).toBeJsonEqual(sampleCreateMeeting);
       });
 
       // State Meeting
-      it('\'StateMeeting\'', () => {
+      it("'StateMeeting'", () => {
         // console.log("CREATED ", StateMeeting.fromJson(obj);
         // console.log("EXPECTED ", sampleStateMeeting);
         const obj = JSON.parse(dataBroadcastMeeting);
@@ -532,43 +588,43 @@ describe('=== fromJsonData checks ===', () => {
       });
 
       // Create RollCall
-      it('\'CreateRollCall\'', () => {
+      it("'CreateRollCall'", () => {
         const obj = JSON.parse(dataCreateRollCall);
         expect(CreateRollCall.fromJson(obj)).toBeJsonEqual(sampleCreateRollCall);
       });
 
       // Open RollCall
-      it('\'OpenRollCall\'', () => {
+      it("'OpenRollCall'", () => {
         const obj = JSON.parse(dataOpenRollCall);
         expect(OpenRollCall.fromJson(obj)).toBeJsonEqual(sampleOpenRollCall);
       });
 
       // Reopen RollCall
-      it('\'ReopenRollCall\'', () => {
+      it("'ReopenRollCall'", () => {
         const obj = JSON.parse(dataReopenRollCall);
         expect(ReopenRollCall.fromJson(obj)).toBeJsonEqual(sampleReopenRollCall);
       });
 
       // Close RollCall
-      it('\'CloseRollCall\'', () => {
+      it("'CloseRollCall'", () => {
         const obj = JSON.parse(dataCloseRollCall);
         expect(CloseRollCall.fromJson(obj)).toBeJsonEqual(sampleCloseRollCall);
       });
 
       // Witness Message
-      it('\'WitnessMessage\'', () => {
+      it("'WitnessMessage'", () => {
         const obj = JSON.parse(dataWitnessMessage);
         expect(WitnessMessage.fromJson(obj)).toBeJsonEqual(sampleWitnessMessage);
       });
 
       // Setup Election
-      it('\'SetupElection\'', () => {
+      it("'SetupElection'", () => {
         const obj = JSON.parse(dataSetupElection);
         expect(SetupElection.fromJson(obj)).toBeJsonEqual(sampleSetupElection);
       });
 
       // Add Chirp
-      it('\'AddChirp\'', () => {
+      it("'AddChirp'", () => {
         const obj = JSON.parse(dataAddChirp);
         expect(AddChirp.fromJson(obj)).toBeJsonEqual(sampleAddChirp);
       });
@@ -578,7 +634,9 @@ describe('=== fromJsonData checks ===', () => {
   describe('should fail (throw) during object creation', () => {
     it('should fail when using incomplete object', () => {
       // empty partial object
-      const event = () => { CreateLao.fromJson({}); };
+      const event = () => {
+        CreateLao.fromJson({});
+      };
       expect(event).toThrow(ProtocolError);
       expect(event).toThrow('should have required property');
     });
@@ -597,7 +655,7 @@ describe('=== fromJsonData checks ===', () => {
       };
 
       expect(event).toThrow(ProtocolError);
-      expect(event).toThrow('should have required property \'name\'');
+      expect(event).toThrow("should have required property 'name'");
 
       event = () => {
         SetupElection.fromJson({
@@ -613,7 +671,7 @@ describe('=== fromJsonData checks ===', () => {
         });
       };
       expect(event).toThrow(ProtocolError);
-      expect(event).toThrow('should have required property \'questions\'');
+      expect(event).toThrow("should have required property 'questions'");
     });
 
     it('should fail when using garbage types', () => {
@@ -707,7 +765,9 @@ describe('=== fromJsonData checks ===', () => {
         });
       };
       expect(event).toThrow(ProtocolError);
-      expect(event).toThrow("Invalid timestamp encountered: 'last_modified' parameter smaller than 'creation'");
+      expect(event).toThrow(
+        "Invalid timestamp encountered: 'last_modified' parameter smaller than 'creation'",
+      );
 
       // end before start (end)
       event = () => {
@@ -724,7 +784,9 @@ describe('=== fromJsonData checks ===', () => {
         });
       };
       expect(event).toThrow(ProtocolError);
-      expect(event).toThrow("Invalid timestamp encountered: 'end' parameter smaller than 'creation'"); // also caught by this test
+      expect(event).toThrow(
+        "Invalid timestamp encountered: 'end' parameter smaller than 'creation'",
+      ); // also caught by this test
     });
 
     it('should fail when using garbage types for optional parameters', () => {

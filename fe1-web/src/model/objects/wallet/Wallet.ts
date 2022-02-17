@@ -25,12 +25,13 @@ export async function recoverWalletPoPTokens(): Promise<Record<string, Record<st
     // for each roll call
     const newOps = Object.values(laoRollCalls).map(
       // generate a token
-      (rc) => generateToken(new Hash(laoId), rc.id).then((token) => {
-        // if it's present in the roll call, add it
-        if (rc.containsToken(token)) {
-          tokens[laoId][rc.id.valueOf()] = token;
-        }
-      }),
+      (rc) =>
+        generateToken(new Hash(laoId), rc.id).then((token) => {
+          // if it's present in the roll call, add it
+          if (rc.containsToken(token)) {
+            tokens[laoId][rc.id.valueOf()] = token;
+          }
+        }),
     );
 
     ops = ops.concat(newOps);

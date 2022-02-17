@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  StyleSheet, View, ViewStyle, TextInput, TextStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, TextInput, TextStyle } from 'react-native';
 import CopyButton from 'components/CopyButton';
 import { Typography, Views } from '../styles';
 
@@ -49,7 +47,7 @@ CopiableTextInput.defaultProps = {
 };
 
 type IPropTypes = {
-  text: string,
+  text: string;
 };
 
 export default CopiableTextInput;
