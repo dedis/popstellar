@@ -46,12 +46,13 @@ final case class Channel(channel: String) {
 
 object Channel {
   final val SEPARATOR: Char = '/'
+  final val SPECIAL_SEPARATOR: Char = ':'
   final val ROOT_CHANNEL: Channel = Channel(s"${SEPARATOR}root")
   final val ROOT_CHANNEL_PREFIX: String = s"${SEPARATOR}root$SEPARATOR"
 
   private final def channelRegex: String = "^/root(/[^/]+)*$"
 
-  final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
+  final val LAO_DATA_LOCATION: String = s"${SPECIAL_SEPARATOR}laodata"
 
   final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social$SEPARATOR"
   final val SOCIAL_MEDIA_CHIRPS_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}chirps"

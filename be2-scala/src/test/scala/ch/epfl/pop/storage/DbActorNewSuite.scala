@@ -1,15 +1,18 @@
 package ch.epfl.pop.storage
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.PubSubMediator
+import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import scala.concurrent.Await
+import util.examples.MessageExample
 
 
-class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
+class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll with AskPatternConstants {
 
   final val mediatorRef: ActorRef = system.actorOf(PubSubMediator.props)
 
@@ -49,8 +52,7 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
   }
 
 
-  // TODO REFACTORING TUOMAS - replace "ignore" by "test" once the READ functions are implemented (readChannelData in particular)
-  ignore("write can WRITE in an existing channel") {
+  test("write can WRITE in an existing channel") {
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, storage)))
 
@@ -70,8 +72,7 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     storage.elements(s"$CHANNEL_NAME:${MESSAGE.message_id}") should equal (MESSAGE.toJsonString)
   }
 
-  // TODO REFACTORING TUOMAS - replace "ignore" by "test" once the READ functions are implemented (readChannelData in particular)
-  ignore("write can WRITE in a non-existing channel") {
+  test("write can WRITE in a non-existing channel") {
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, storage)))
 
@@ -86,8 +87,7 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     storage.elements(s"$CHANNEL_NAME:${MESSAGE.message_id}") should equal (MESSAGE.toJsonString)
   }
 
-  // TODO REFACTORING TUOMAS - replace "ignore" by "test" once the READ functions are implemented (readChannelData in particular)
-  ignore("write behaves normally for multiple WRITE requests") {
+  test("write behaves normally for multiple WRITE requests") {
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, storage)))
 
@@ -272,6 +272,161 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     expectMsg(DbActorNew.DbActorAck())
     storage.size should equal (1)
     storage.elements(CHANNEL_NAME) should equal (ChannelData(ObjectType.LAO, Nil).toJsonString)
+  }
+
+  test("writeLaoData succeeds for both new and updated data"){
+    val storage: InMemoryStorage = InMemoryStorage()
+    val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, storage)))
+    val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
+    val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+
+
+    storage.size should equal (0)
+
+    dbActor ! DbActorNew.WriteLaoData(channelName1, messageLao); sleep()
+
+    expectMsg(DbActorNew.DbActorAck())
+    storage.size should equal (1)
+    val actualLaoData1: LaoData = LaoData.buildFromJson(storage.elements(s"$CHANNEL_NAME${Channel.SPECIAL_SEPARATOR}laodata"))
+    actualLaoData1.owner should equal(PublicKey(Base64Data.encode("key")))
+    actualLaoData1.attendees should equal(List(PublicKey(Base64Data.encode("key"))))
+    actualLaoData1.witnesses should equal(List.empty)
+
+    // checking the existence of an existing channel
+    dbActor ! DbActorNew.WriteLaoData(channelName1, messageRollCall); sleep()
+
+    expectMsg(DbActorNew.DbActorAck())
+    storage.size should equal (1)
+    val actualLaoData2: LaoData = LaoData.buildFromJson(storage.elements(s"$CHANNEL_NAME${Channel.SPECIAL_SEPARATOR}laodata"))
+    actualLaoData2.owner should equal(PublicKey(Base64Data.encode("key")))
+    actualLaoData2.attendees should equal(List(PublicKey(Base64Data.encode("keyAttendee"))))
+    actualLaoData2.witnesses should equal(List.empty)
+
+  }
+
+  test("readLaoData succeeds for existing LaoData"){
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val publicKey: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
+    val privateKey: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
+    val laoData: LaoData = LaoData(PublicKey(Base64Data.encode("key")), List(PublicKey(Base64Data.encode("key"))), privateKey, publicKey, List.empty)
+    val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    initialStorage.write((laoDataKey, laoData.toJsonString))
+
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+
+    val ask = dbActor ? DbActorNew.ReadLaoData(channelName1)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a[DbActorNew.DbActorReadLaoDataAck]
+
+    val readLaoData: LaoData = answer.asInstanceOf[DbActorNew.DbActorReadLaoDataAck].laoData
+
+    readLaoData.owner should equal(PublicKey(Base64Data.encode("key")))
+    readLaoData.attendees should equal(List(PublicKey(Base64Data.encode("key"))))
+    readLaoData.witnesses should equal(List.empty)
+  }
+
+  test("read succeeds for existing message"){
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    initialStorage.write((s"$CHANNEL_NAME:${MESSAGE.message_id}", MESSAGE.toJsonString))
+
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+
+    val ask = dbActor ? DbActorNew.Read(channelName1, MESSAGE.message_id)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a[DbActorNew.DbActorReadAck]
+
+    val readMessage: Message = answer.asInstanceOf[DbActorNew.DbActorReadAck].message.get
+
+    readMessage should equal(MESSAGE)
+  }
+
+  test("read does not fail for non-existing message (returns None)"){
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+
+    val ask = dbActor ? DbActorNew.Read(channelName1, MESSAGE.message_id)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a[DbActorNew.DbActorReadAck]
+
+    answer.asInstanceOf[DbActorNew.DbActorReadAck].message should equal(None)
+  }
+
+  test("readChannelData succeeds for existing ChannelData"){
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val channelData: ChannelData = ChannelData(ObjectType.LAO, Nil)
+    initialStorage.write((CHANNEL_NAME, channelData.toJsonString))
+
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+
+    val ask = dbActor ? DbActorNew.ReadChannelData(channelName1)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a[DbActorNew.DbActorReadChannelDataAck]
+
+    val readChannelData: ChannelData = answer.asInstanceOf[DbActorNew.DbActorReadChannelDataAck].channelData
+
+    readChannelData should equal(channelData)
+  }
+
+  test("catchup works on a channel with valid ChannelData and messages"){
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message2 = MESSAGE.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = MESSAGE.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.LAO, listIds)
+    initialStorage.write(
+      (CHANNEL_NAME, channelData.toJsonString), 
+      (s"$CHANNEL_NAME${Channel.SPECIAL_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString),
+      (s"$CHANNEL_NAME${Channel.SPECIAL_SEPARATOR}${message2.message_id}", message2.toJsonString),
+    )
+
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+
+    val ask = dbActor ? DbActorNew.Catchup(channelName1)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a[DbActorNew.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActorNew.DbActorCatchupAck].messages
+
+    list.size should equal(2)
+    list should contain(MESSAGE)
+    list should contain(message2)
+
+  }
+
+  test("catchup should not fail on a channel with ChannelData containing missing message_ids (and only return valid messages)"){
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    val message2 = MESSAGE.copy(message_id = Hash(Base64Data("RmFrZSBtZXNzYWdlX2lkIDopIE5vIGVhc3RlciBlZ2cgcmlnaHQgdGhlcmUhIC0tIE5pY29sYXMgUmF1bGlu")))
+    val listIds: List[Hash] = MESSAGE.message_id :: message2.message_id :: Nil
+    val channelData: ChannelData = ChannelData(ObjectType.LAO, listIds)
+    initialStorage.write(
+      (CHANNEL_NAME, channelData.toJsonString), 
+      (s"$CHANNEL_NAME${Channel.SPECIAL_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString),
+    )
+
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+
+    val ask = dbActor ? DbActorNew.Catchup(channelName1)
+    val answer = Await.result(ask, duration)
+
+    answer shouldBe a[DbActorNew.DbActorCatchupAck]
+
+    val list: List[Message] = answer.asInstanceOf[DbActorNew.DbActorCatchupAck].messages
+
+    list.size should equal(1)
+    list should contain(MESSAGE)
+
   }
 
 }

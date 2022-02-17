@@ -32,7 +32,7 @@ case class LaoData(
   }
 
   def updateWith(message: Message): LaoData = {
-    if (message.decodedData.isEmpty) {
+    if (message.decodedData.isEmpty || !LaoData.isAffectedBy(message)) {
       this
     } else message.decodedData.get match {
       case call: CloseRollCall =>
