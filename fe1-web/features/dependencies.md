@@ -11,7 +11,7 @@ the future.
 - ChirpHandler : `ingestion/handlers/index.ts`
 - SocialHandler : `ingestion/handlers/index.ts`
 - SocialNavigation : `navigation/bars/LaoNavigation.tsx`
-- SocialReducer : `store/reducers/index.ts`, `store/reducers/RootReducer.ts`
+- SocialReducer : `store/reducers/RootReducer.ts`
 
 ## Meeting
 
@@ -19,6 +19,7 @@ the future.
 - Meeting : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`
 `features/events/reducer/__tests__/EventsReducer.test.ts`
 - MeetingHandler : `ingestion/handlers/index.ts`
+- CreateMeeting : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - Storage is done in EventsReducer/EventsStore and could be done separately in a MeetingsReducer
 
 ## E-voting (Election)
@@ -27,6 +28,7 @@ the future.
 - EventElection : `features/events/components/Event.tsx`
 - Election : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`
 - ElectionHandler : `ingestion/handlers/index.ts`
+- CreateElection : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - Storage is done in EventsReducer/EventsStore and could be done separately in an ElectionsReducer
 
 ## Roll Call

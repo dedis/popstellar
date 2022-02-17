@@ -6,7 +6,7 @@ import STRINGS from 'res/strings';
 import Organizer from 'features/lao/screens/Organizer';
 import CreateEvent from 'features/events/screens/CreateEvent';
 import WitnessScanning from 'components/WitnessScanning';
-import CreateMeeting from 'features/meeting/screens/CreateMeeting';
+import { CreateMeeting } from 'features/meeting/screens';
 import CreateRollCall from 'features/rollCall/screens/CreateRollCall';
 import CreateElection from 'features/evoting/screens/CreateElection';
 import RollCallOpened from 'features/rollCall/screens/RollCallOpened';

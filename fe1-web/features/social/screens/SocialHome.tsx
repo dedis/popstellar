@@ -16,8 +16,7 @@ import STRINGS from 'res/strings';
 import { PublicKey } from 'model/objects';
 import { FOUR_SECONDS } from 'res/const';
 
-import ChirpCard from '../components/ChirpCard';
-import TextInputChirp from '../components/TextInputChirp';
+import { ChirpCard, TextInputChirp } from '../components';
 import { Chirp, ChirpState } from '../objects';
 import { requestAddChirp } from '../network/SocialMessageApi';
 import { makeChirpsList } from '../reducer/SocialReducer';

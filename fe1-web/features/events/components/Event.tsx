@@ -8,7 +8,7 @@ import { Spacing } from 'styles';
 import ParagraphBlock from 'components/ParagraphBlock';
 import TextBlock from 'components/TextBlock';
 import { Hash, Timestamp } from 'model/objects';
-import EventMeeting from 'features/meeting/components/EventMeeting';
+import { EventMeeting } from 'features/meeting/components';
 import EventElection from 'features/evoting/components/EventElection';
 import EventRollCall from 'features/rollCall/components/EventRollCall';
 import { Meeting } from 'features/meeting/objects';

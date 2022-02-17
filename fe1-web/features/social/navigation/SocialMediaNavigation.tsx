@@ -12,10 +12,8 @@ import { makeCurrentLao } from 'store';
 import { makeEventGetter } from 'features/events/reducer/EventsReducer';
 import { RollCall } from 'features/rollCall/objects';
 
-import SocialProfile from '../screens/SocialProfile';
-import SocialFollows from '../screens/SocialFollows';
-import SocialHome from '../screens/SocialHome';
-import SocialSearchNavigation from './SocialSearchNavigation';
+import { SocialFollows, SocialHome, SocialProfile } from '../screens';
+import { SocialSearchNavigation } from './index';
 
 /**
  * This class manages the social media navigation and creates the corresponding navigation bar.

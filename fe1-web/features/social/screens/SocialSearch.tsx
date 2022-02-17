@@ -12,7 +12,7 @@ import TextBlock from 'components/TextBlock';
 import { gray } from 'styles/colors';
 import { makeRollCallAttendeesList } from 'features/events/reducer/EventsReducer';
 
-import UserListItem from '../components/UserListItem';
+import { UserListItem } from '../components';
 
 /**
  * Component that will be used to allow users to search for other users or topics.
