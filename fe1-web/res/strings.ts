@@ -27,11 +27,11 @@ const STRINGS = {
   organization_navigation_tab_witness: 'Witness',
   organization_navigation_tab_identity: 'My identity',
 
-  /* --- WitnessScreen Navigation Strings --- */
+  /* --- Witness Navigation Strings --- */
   witness_navigation_tab_home: 'Witness',
   witness_navigation_tab_video: 'WitnessScreen Video',
 
-  /* --- OrganizerScreen Navigation Strings --- */
+  /* --- Organizer Navigation Strings --- */
   organizer_navigation_tab_home: 'Organizer Home',
   organizer_navigation_tab_create_event: 'Create Event',
   organizer_navigation_tab_add_witness: 'Add witness',
