@@ -15,9 +15,7 @@ import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 
-import TextBlock from 'components/TextBlock';
-import WideButtonView from 'components/WideButtonView';
-import TextInputLine from 'components/TextInputLine';
+import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { useRoute } from '@react-navigation/core';
 import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';

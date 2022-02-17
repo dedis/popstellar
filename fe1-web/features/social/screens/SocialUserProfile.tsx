@@ -4,9 +4,7 @@ import {
 } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import ProfileIcon from 'components/ProfileIcon';
-import TextBlock from 'components/TextBlock';
-import BackButton from 'components/BackButton';
+import { BackButton, ProfileIcon, TextBlock } from 'core/components';
 import STRINGS from 'res/strings';
 
 import { ChirpCard } from '../components';

@@ -8,7 +8,7 @@ import EventListCollapsible from 'features/events/components/EventListCollapsibl
 import { LaoEvent } from 'features/events/objects';
 import { makeEventsList } from 'features/events/reducer';
 
-import LaoProperties from 'components/LaoProperties';
+import { LaoProperties } from '../components';
 
 /**
  * AttendeeScreen: lists LAO properties and past/ongoing/future events.

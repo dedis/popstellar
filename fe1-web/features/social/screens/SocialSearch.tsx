@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 import STRINGS from 'res/strings';
 import { makeCurrentLao } from 'store';
 import { PublicKey } from 'model/objects';
-import TextBlock from 'components/TextBlock';
+import { TextBlock } from 'core/components';
 import { gray } from 'styles/colors';
 import { makeRollCallAttendeesList } from 'features/events/reducer';
 

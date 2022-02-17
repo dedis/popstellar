@@ -7,15 +7,18 @@ import { useNavigation } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 
 import STRINGS from 'res/strings';
-import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
-import ParagraphBlock from 'components/ParagraphBlock';
-import WideButtonView from 'components/WideButtonView';
-import TextBlock from 'components/TextBlock';
-import DropdownSelector from 'components/DropdownSelector';
-import TextInputList from 'components/TextInputList';
-import TextInputLine from 'components/TextInputLine';
-import DismissModal from 'components/DismissModal';
-import ConfirmModal from 'components/ConfirmModal';
+import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
+import {
+  ConfirmModal,
+  DatePicker,
+  DismissModal,
+  DropdownSelector,
+  TextBlock,
+  TextInputLine,
+  TextInputList,
+  ParagraphBlock,
+  WideButtonView,
+} from 'core/components';
 import {
   Hash, Lao, Timestamp, EventTags,
 } from 'model/objects';

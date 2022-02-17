@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import STRINGS from 'res/strings';
-import TextBlock from 'components/TextBlock';
-import CameraButton from 'components/CameraButton';
-import RecorderButton from 'components/RecorderButton';
+import TextBlock from 'core/components/TextBlock';
+import CameraButton from 'core/components/CameraButton';
+import RecorderButton from 'core/components/RecorderButton';
 
 /**
  * The witness video component: camera button and a record button

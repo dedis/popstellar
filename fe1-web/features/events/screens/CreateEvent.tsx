@@ -7,8 +7,7 @@ import {
 import { Views } from 'styles';
 import STRINGS from 'res/strings';
 import containerStyles from 'styles/stylesheets/containerStyles';
-import TextBlock from 'components/TextBlock';
-import WideButtonView from 'components/WideButtonView';
+import { TextBlock, WideButtonView } from 'core/components';
 import { Timestamp } from 'model/objects';
 
 import { LaoEventType } from '../objects';

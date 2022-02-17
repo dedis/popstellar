@@ -4,10 +4,10 @@ import PropTypes from 'prop-types';
 
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
-import TextBlock from 'components/TextBlock';
-import WideButtonView from 'components/WideButtonView';
+import TextBlock from 'core/components/TextBlock';
+import WideButtonView from 'core/components/WideButtonView';
 import PROPS_TYPE from 'res/Props';
-import TextInputLine from 'components/TextInputLine';
+import TextInputLine from 'core/components/TextInputLine';
 
 import * as Wallet from '../objects';
 

@@ -11,8 +11,7 @@ import { gray } from 'styles/colors';
 import STRINGS from 'res/strings';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { FOUR_SECONDS } from 'res/const';
-import WideButtonView from 'components/WideButtonView';
-import ProfileIcon from 'components/ProfileIcon';
+import { ProfileIcon, WideButtonView } from 'core/components';
 
 /**
  * Component that shows a user's profile picture, his public key and two buttons:

@@ -8,7 +8,7 @@ import PROPS_TYPE from 'res/Props';
 import PropTypes from 'prop-types';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import { Colors } from 'styles';
-import WideButtonView from 'components/WideButtonView';
+import { WideButtonView } from 'core/components';
 import { ConnectToLao } from 'model/objects';
 import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';

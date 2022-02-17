@@ -9,8 +9,8 @@ import { Spacing } from 'styles';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 
-import LAOItem from 'components/LAOItem';
-import TextBlock from 'components/TextBlock';
+import LAOItem from 'features/lao/components/LAOItem';
+import { TextBlock } from 'core/components';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message

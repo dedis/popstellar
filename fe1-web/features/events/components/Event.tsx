@@ -5,8 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { makeIsLaoOrganizer } from 'store';
 import { Spacing } from 'styles';
-import ParagraphBlock from 'components/ParagraphBlock';
-import TextBlock from 'components/TextBlock';
+import { ParagraphBlock, TextBlock } from 'core/components';
 import { Hash, Timestamp } from 'model/objects';
 import { EventMeeting } from 'features/meeting/components';
 import { EventElection } from 'features/evoting/components';

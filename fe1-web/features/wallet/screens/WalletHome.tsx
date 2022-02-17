@@ -4,8 +4,8 @@ import { useNavigation } from '@react-navigation/native';
 
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
-import TextBlock from 'components/TextBlock';
-import WideButtonView from 'components/WideButtonView';
+import TextBlock from 'core/components/TextBlock';
+import WideButtonView from 'core/components/WideButtonView';
 
 import { WalletStore } from '../store/WalletStore';
 

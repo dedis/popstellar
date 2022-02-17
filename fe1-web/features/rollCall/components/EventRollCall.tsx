@@ -6,8 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import { makeCurrentLao } from 'store';
 import { Timestamp } from 'model/objects';
-import QRCode from 'components/QRCode';
-import WideButtonView from 'components/WideButtonView';
+import { QRCode, WideButtonView } from 'core/components';
 import STRINGS from 'res/strings';
 import * as Wallet from 'features/wallet/objects';
 

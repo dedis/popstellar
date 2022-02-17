@@ -7,13 +7,16 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useToast } from 'react-native-toast-notifications';
 
 import STRINGS from 'res/strings';
-import TextBlock from 'components/TextBlock';
-import ParagraphBlock from 'components/ParagraphBlock';
-import WideButtonView from 'components/WideButtonView';
-import TextInputLine from 'components/TextInputLine';
-import DismissModal from 'components/DismissModal';
-import ConfirmModal from 'components/ConfirmModal';
-import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
+import {
+  ConfirmModal,
+  DatePicker,
+  DismissModal,
+  ParagraphBlock,
+  TextBlock,
+  TextInputLine,
+  WideButtonView,
+} from 'core/components';
+import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
 import { Timestamp } from 'model/objects';
 import { FOUR_SECONDS } from 'res/const';
 import { onConfirmPress } from 'features/events/screens/CreateEvent';

@@ -9,7 +9,7 @@ import { makeIsLaoOrganizer } from 'store';
 import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import * as RootNavigation from 'navigation/RootNavigation';
-import TextBlock from 'components/TextBlock';
+import { TextBlock } from 'core/components';
 
 import { Event } from './index';
 

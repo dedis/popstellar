@@ -6,8 +6,7 @@ import {
 import { useSelector } from 'react-redux';
 
 import { PublicKey } from 'model/objects';
-import TextBlock from 'components/TextBlock';
-import ProfileIcon from 'components/ProfileIcon';
+import { ProfileIcon, TextBlock } from 'core/components';
 import STRINGS from 'res/strings';
 
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';

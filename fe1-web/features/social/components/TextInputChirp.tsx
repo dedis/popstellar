@@ -8,8 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import STRINGS from 'res/strings';
 import { gray, red } from 'styles/colors';
 import { PublicKey } from 'model/objects';
-import TextBlock from 'components/TextBlock';
-import ProfileIcon from 'components/ProfileIcon';
+import { ProfileIcon, TextBlock } from 'core/components';
 
 const MAX_CHIRP_CHARS = 300;
 

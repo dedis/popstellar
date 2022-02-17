@@ -11,14 +11,12 @@ import {
   Channel, Hash, Lao, Timestamp,
 } from 'model/objects';
 
-import WideButtonView from 'components/WideButtonView';
-import TextBlock from 'components/TextBlock';
+import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import TextInputLine from 'components/TextInputLine';
 
 /**
  * Manages the Launch screen, where the user enters a name and an address to launch and connect

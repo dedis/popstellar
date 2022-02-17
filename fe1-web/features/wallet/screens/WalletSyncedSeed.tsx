@@ -7,13 +7,13 @@ import { useSelector } from 'react-redux';
 
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
-import TextBlock from 'components/TextBlock';
-import WideButtonView from 'components/WideButtonView';
+import TextBlock from 'core/components/TextBlock';
+import WideButtonView from 'core/components/WideButtonView';
 import { PopToken } from 'model/objects';
-import QRCode from 'components/QRCode';
+import QRCode from 'core/components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import { makeLaosMap } from 'store';
-import CopiableTextInput from 'components/CopiableTextInput';
+import CopiableTextInput from 'core/components/CopiableTextInput';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';
 import { RollCall } from 'features/rollCall/objects';

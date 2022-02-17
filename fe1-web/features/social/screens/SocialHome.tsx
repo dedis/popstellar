@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 
-import TextBlock from 'components/TextBlock';
+import { TextBlock } from 'core/components';
 import STRINGS from 'res/strings';
 import { PublicKey } from 'model/objects';
 import { FOUR_SECONDS } from 'res/const';
