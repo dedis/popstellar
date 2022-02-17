@@ -3,11 +3,12 @@ import platformCrypto from 'platform/crypto';
 
 import { AsyncDispatch, getStore } from 'store/Storage';
 
-import { clearWallet, getWalletState, setWallet } from '../reducer/WalletReducer';
+import { clearWallet, getWalletState, setWallet } from '../reducer';
 
 /**
- * Encrypt Uint8Array plaintext into a ciphertext (string)
- * @param plaintext
+ * Encrypts Uint8Array plaintext into a ciphertext (string).
+ *
+ * @param plaintext - The plaintext to encrypt
  * @private
  */
 async function encrypt(plaintext: Uint8Array): Promise<string> {
@@ -16,8 +17,9 @@ async function encrypt(plaintext: Uint8Array): Promise<string> {
 }
 
 /**
- * Decrypt ciphertext (string) into a Uint8Array plaintext
- * @param cipher
+ * Decrypts ciphertext (string) into a Uint8Array plaintext.
+ *
+ * @param cipher - The ciphertext to decrypt
  * @private
  */
 async function decrypt(cipher: string): Promise<Uint8Array> {
@@ -28,10 +30,11 @@ async function decrypt(cipher: string): Promise<Uint8Array> {
 
 export namespace WalletStore {
   /**
-   * Stores wallet seed & associated mnemonic
-   * @param mnemonic the 12-word mnemonic to be saved
-   * @param seed the unencrypted seed
-   * @returns a promise which completes after storage
+   * Stores wallet seed & associated mnemonic.
+   *
+   * @param mnemonic - The 12-word mnemonic to be saved
+   * @param seed - The unencrypted seed
+   * @returns a Promise which completes after storage
    */
   export async function store(mnemonic: string, seed: Uint8Array) {
     const binaryMnemonic: Uint8Array = new TextEncoder().encode(mnemonic);
@@ -39,7 +42,7 @@ export namespace WalletStore {
     await getStore().dispatch(async (dispatch: AsyncDispatch): Promise<void> => {
       const encryptedSeed = await encrypt(seed);
       const encryptedMnemonic = await encrypt(binaryMnemonic);
-      await dispatch(setWallet({
+      dispatch(setWallet({
         seed: encryptedSeed,
         mnemonic: encryptedMnemonic,
       }));
@@ -47,7 +50,8 @@ export namespace WalletStore {
   }
 
   /**
-   * Retrieve the wallet seed mnemonic from the store
+   * Retrieves the wallet seed mnemonic from the store.
+   *
    * @returns the mnemonic
    * @throws an error if the seed was never initialized
    */
@@ -62,7 +66,8 @@ export namespace WalletStore {
   }
 
   /**
-   * Retrieve the wallet seed from the store
+   * Retrieves the wallet seed from the store.
+   *
    * @returns the wallet seed
    * @throws an error if the seed was never initialized
    */
@@ -76,7 +81,8 @@ export namespace WalletStore {
   }
 
   /**
-   * Indicates whether a seed is present in the store
+   * Indicates whether a seed is present in the store.
+   *
    * @returns true if a seed exists, false otherwise
    */
   export function hasSeed(): boolean {

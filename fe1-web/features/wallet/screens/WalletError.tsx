@@ -15,8 +15,7 @@ const styles = StyleSheet.create({
 });
 
 /**
- * wallet synchronization error screen
- * @constructor
+ * Wallet synchronization error screen
  */
 const WalletError = ({ navigation }: IPropTypes) => {
   function getWalletErrorDisplay() {

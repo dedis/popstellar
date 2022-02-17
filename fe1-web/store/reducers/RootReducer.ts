@@ -3,7 +3,7 @@ import { persistCombineReducers } from 'redux-persist';
 
 import socialReducer from 'features/social/reducer/SocialReducer';
 import eventsReducer from 'features/events/reducer/EventsReducer';
-import walletReducer from 'features/wallet/reducer/WalletReducer';
+import { walletReducer } from 'features/wallet/reducer';
 import laoReducer from './LaoReducer';
 import keyPairReducer from './KeyPairReducer';
 import messageReducer from './MessageReducer';

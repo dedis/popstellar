@@ -21,8 +21,7 @@ const styles = StyleSheet.create({
 });
 
 /**
- * wallet screen to obtain a new mnemonic seed
- * @constructor
+ * Wallet screen to obtain a new mnemonic seed
  */
 const WalletShowSeed = ({ navigation }: IPropTypes) => {
   /* used to set the mnemonic seed inserted by the user */

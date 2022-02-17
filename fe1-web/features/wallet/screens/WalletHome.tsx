@@ -19,8 +19,7 @@ const styles = StyleSheet.create({
 });
 
 /**
- * wallet home screen
- * @constructor
+ * Wallet home screen
  */
 const WalletHome = () => {
   // FIXME: Navigation should use a defined type here (instead of any)

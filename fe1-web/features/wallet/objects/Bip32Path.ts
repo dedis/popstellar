@@ -10,10 +10,9 @@ const HARDENED_SYMBOL: string = "'";
 
 /**
  * Transforms a Hash into BIP-32 derivation path/segments.
- * @param hash to be used for derivation
+ * @param hash - To be used for derivation
  *
  * @remarks
- *
  * The generated path is inefficient as it only stores 24 bits per segment, instead of 31 bits.
  * However, the path is mutually compatible with the (similarly-inefficient) Java implementation
  */
@@ -29,9 +28,10 @@ function segmentsFromHash(hash: Hash): string {
 }
 
 /**
- * Transform a LAO id and RollCall id into a BIP-32 derivation path.
- * @param laoId the id of the LAO
- * @param rollCallId the id of the Roll Call
+ * Transforms a LAO id and RollCall id into a BIP-32 derivation path.
+ *
+ * @param laoId - The id of the LAO
+ * @param rollCallId - The id of the Roll Call
  */
 export function fromLaoRollCall(laoId: Hash, rollCallId:Hash): string {
   return [

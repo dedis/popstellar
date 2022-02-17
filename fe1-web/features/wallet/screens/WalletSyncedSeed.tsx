@@ -31,8 +31,7 @@ const styles = StyleSheet.create({
 });
 
 /**
- * wallet UI once the wallet is synced
- * @constructor
+ * Wallet UI once the wallet is synced
  */
 const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   /* boolean set to true if the token recover process is finished */

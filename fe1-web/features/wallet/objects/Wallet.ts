@@ -8,7 +8,7 @@ import { Hash, PopToken } from 'model/objects';
 import { generateToken } from './Token';
 
 /**
- * Recovers all PoP tokens associated with this wallet
+ * Recovers all PoP tokens associated with this wallet.
  *
  * @remarks
  * This is implemented by checking through all known Roll Calls of all known LAOs,

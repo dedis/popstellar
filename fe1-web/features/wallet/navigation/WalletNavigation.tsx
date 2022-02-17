@@ -11,13 +11,12 @@ import {
   WalletSyncedSeed,
 } from '../screens';
 
-/**
- * Define the Wallet stack navigation
- * Allows to navigate between the wallet screens
- */
-
 const Stack = createStackNavigator();
 
+/**
+ * Defines the Wallet stack navigation.
+ * Allows to navigate between the wallet screens.
+ */
 export default function WalletNavigation() {
   return (
     <Stack.Navigator

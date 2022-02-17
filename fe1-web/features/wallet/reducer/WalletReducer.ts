@@ -9,8 +9,7 @@ import {
 
 /**
  * This file represents the reducer for the wallet.
- * Its job is to store the wallet state.
- * The wallet state is represented by the wallet's encrypted seed.
+ * Its job is to store the wallet state, which is represented by the wallet's encrypted seed.
  */
 interface WalletReducerState {
   seed?: string;
@@ -22,10 +21,10 @@ const initialState: WalletReducerState = {
   mnemonic: undefined,
 };
 
-/* name of wallet slice in storage */
+/* Name of wallet slice in storage */
 const walletReducerPath = 'wallet';
 
-/* the store slice in charge of the wallet state */
+/* The store slice in charge of the wallet state */
 const walletSlice = createSlice({
   name: walletReducerPath,
   initialState,

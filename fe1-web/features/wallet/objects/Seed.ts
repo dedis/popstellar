@@ -3,7 +3,8 @@ import * as bip39 from 'bip39';
 import { WalletStore } from '../store';
 
 /**
- * Generates a new BIP-39 mnemonic
+ * Generates a new BIP-39 mnemonic.
+ *
  * @returns a string containing a new generated 12-word mnemonic
  */
 export function generateMnemonicSeed() {
@@ -11,8 +12,9 @@ export function generateMnemonicSeed() {
 }
 
 /**
- * Initialize the wallet with the given BIP-39 mnemonic
- * @param mnemonic the 12-word representation of the wallet seed
+ * Initializes the wallet with the given BIP-39 mnemonic.
+ *
+ * @param mnemonic - The 12-word representation of the wallet seed
  * @return a Promise that completes when the wallet seed has been stored
  * @throws an Error if the mnemonic is invalid
  */
@@ -31,7 +33,8 @@ export async function importMnemonic(mnemonic: string): Promise<void> {
 }
 
 /**
- * Exports the wallet's mnemonic
+ * Exports the wallet's mnemonic.
+ *
  * @return a Promise<string> that resolves to the mnemonic
  * @throws an Error if no mnemonic has been saved in the store
  */
