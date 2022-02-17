@@ -32,7 +32,7 @@ const STRINGS = {
   witness_navigation_tab_video: 'WitnessScreen Video',
 
   /* --- OrganizerScreen Navigation Strings --- */
-  organizer_navigation_tab_home: 'OrganizerScreen Home',
+  organizer_navigation_tab_home: 'Organizer Home',
   organizer_navigation_tab_create_event: 'Create Event',
   organizer_navigation_tab_add_witness: 'Add witness',
   organizer_navigation_tab_roll_call: 'Roll-Call',
@@ -109,7 +109,7 @@ const STRINGS = {
   identity_check_box_anonymous_description: 'You can participate in organizations and meetings anonymously by leaving '
     + 'this box checked. If you wish to reveal your identity to other participants in the organization, you may '
     + 'un-check this box and enter the information you wish to reaveal below. You must enter identity information in '
-    + 'order to play an OrganizerScreen or WitnessScreen role in an organization.',
+    + 'order to play an Organizer or Witness role in an organization.',
   identity_name_placeholder: 'Name',
   identity_title_placeholder: 'Title',
   identity_organization_placeholder: 'Organization',
@@ -118,7 +118,7 @@ const STRINGS = {
   identity_qrcode_description: 'ID (Public Key):',
 
   /* --- WitnessScreen Strings --- */
-  witness_description: 'WitnessScreen screen',
+  witness_description: 'Witness screen',
   witness_video_button: 'Go to the video screen',
   witness_name: 'Witnesses',
   witness_scan: 'Please scan the personal QR code of the witness to add',
@@ -173,7 +173,7 @@ const STRINGS = {
   roll_call_modal_enter_token: 'Enter token:',
   roll_call_participant_added: 'participant added',
   roll_call_invalid_token: 'invalid participant token',
-  roll_call_attendee_token_placeholder: 'AttendeeScreen token',
+  roll_call_attendee_token_placeholder: 'Attendee token',
 
   /* --- Poll creation Strings --- */
   poll_create_question: 'Question*',

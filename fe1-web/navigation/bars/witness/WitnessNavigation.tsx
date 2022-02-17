@@ -7,7 +7,7 @@ import { Witness } from 'features/lao/screens';
 import WitnessCamera from 'parts/lao/witness/WitnessCamera';
 
 /**
- * Define the WitnessScreen stack navigation
+ * Define the Witness stack navigation
  * Allows to navigate to the WitnessScreen and the WitnessCamera screen
 */
 

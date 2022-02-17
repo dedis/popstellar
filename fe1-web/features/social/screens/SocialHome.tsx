@@ -19,7 +19,7 @@ import { FOUR_SECONDS } from 'res/const';
 import { ChirpCard, TextInputChirp } from '../components';
 import { Chirp, ChirpState } from '../objects';
 import { requestAddChirp } from '../network/SocialMessageApi';
-import { makeChirpsList } from '../reducer/SocialReducer';
+import { makeChirpsList } from '../reducer';
 
 /**
  * UI for the Social Media home screen component

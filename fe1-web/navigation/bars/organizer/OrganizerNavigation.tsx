@@ -11,7 +11,7 @@ import { CreateRollCall, RollCallOpened } from 'features/rollCall/screens';
 import { CreateElection } from 'features/evoting/screens';
 
 /**
- * Define the OrganizerScreen stack navigation
+ * Define the Organizer stack navigation
  * four different screen (OrganizerScreen, CreateEvent, WitnessScanning, RollCallScanning)
  *
  * The app are not use in the stack order, only organizer to one of the other screen

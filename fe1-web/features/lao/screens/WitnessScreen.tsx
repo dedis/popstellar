@@ -59,7 +59,7 @@ const WitnessScreen = () => {
 
   return (
     <ScrollView>
-      <TextBlock bold text="WitnessScreen Panel" />
+      <TextBlock bold text="Witness Panel" />
       <WideButtonView
         title={STRINGS.witness_video_button}
         onPress={() => navigation.navigate(STRINGS.witness_navigation_tab_video)}

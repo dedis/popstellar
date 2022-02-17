@@ -29,7 +29,8 @@ const DEFAULT_ROLL_CALL_DURATION = 3600;
  */
 const CreateRollCall = ({ route }: any) => {
   const styles = route.params;
-  const navigation = useNavigation();
+  // FIXME: Navigation should use a defined type here (instead of any)
+  const navigation = useNavigation<any>();
   const toast = useToast();
 
   const [proposedStartTime, setProposedStartTime] = useState(Timestamp.EpochNow());
