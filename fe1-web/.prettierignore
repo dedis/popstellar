@@ -1,4 +1,6 @@
-tailwind.config.js
+babel.config.js
 package.json
+package-lock.json
 .eslintrc
 tsconfig.json
+webpack.config.js
