@@ -9,10 +9,10 @@ import TextBlock from 'components/TextBlock';
 import BackButton from 'components/BackButton';
 import STRINGS from 'res/strings';
 
-import ChirpCard from '../components/ChirpCard';
+import { ChirpCard } from '../components';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 import { Chirp, ChirpState } from '../objects';
-import { makeChirpsListOfUser } from '../reducer/SocialReducer';
+import { makeChirpsListOfUser } from '../reducer';
 
 /**
  * UI for the profile of a user.

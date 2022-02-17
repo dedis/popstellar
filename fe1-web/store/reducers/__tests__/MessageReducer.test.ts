@@ -19,7 +19,7 @@ import {
   processMessages,
 } from '../MessageReducer';
 
-jest.mock('model/objects/wallet/Token.ts', () => ({
+jest.mock('features/wallet/objects/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
 }));
 

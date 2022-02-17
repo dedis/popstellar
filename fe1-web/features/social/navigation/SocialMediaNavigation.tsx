@@ -7,14 +7,12 @@ import { useEffect, useState } from 'react';
 import STRINGS from 'res/strings';
 import { gray, popBlue } from 'styles/colors';
 import { PublicKey } from 'model/objects';
-import { generateToken } from 'model/objects/wallet';
+import { generateToken } from 'features/wallet/objects';
 import { makeCurrentLao } from 'store';
-import { makeEventGetter } from 'features/events/reducer/EventsReducer';
+import { makeEventGetter } from 'features/events/reducer';
 import { RollCall } from 'features/rollCall/objects';
 
-import SocialProfile from '../screens/SocialProfile';
-import SocialFollows from '../screens/SocialFollows';
-import SocialHome from '../screens/SocialHome';
+import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
 /**

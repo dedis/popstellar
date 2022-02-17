@@ -15,11 +15,10 @@ import STRINGS from 'res/strings';
 import TextBlock from 'components/TextBlock';
 import WideButtonView from 'components/WideButtonView';
 import ConfirmModal from 'components/ConfirmModal';
-import {
-  EventTags, Hash, PublicKey, Wallet,
-} from 'model/objects';
+import { EventTags, Hash, PublicKey } from 'model/objects';
 import { makeCurrentLao, OpenedLaoStore } from 'store';
 import { FOUR_SECONDS } from 'res/const';
+import * as Wallet from 'features/wallet/objects';
 
 import { requestCloseRollCall } from '../network/RollCallMessageApi';
 
@@ -42,7 +41,8 @@ const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 const RollCallOpened = () => {
   const route = useRoute();
   const { rollCallID, time } = route.params;
-  const navigation = useNavigation();
+  // FIXME: Navigation should use a defined type here (instead of any)
+  const navigation = useNavigation<any>();
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -101,7 +101,6 @@ const RollCallOpened = () => {
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
 
     return requestCloseRollCall(updateId, attendeesList).then(() => {
-      // @ts-ignore
       navigation.navigate(STRINGS.organizer_navigation_tab_home);
     }).catch((err) => {
       toast.show(`Could not close roll call, error: ${err}`, {

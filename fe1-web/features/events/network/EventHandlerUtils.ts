@@ -1,7 +1,7 @@
 import { Hash } from 'model/objects';
 
 import { LaoEvent } from '../objects';
-import { makeEventsAliasMap, makeEventsMap } from '../reducer/EventsReducer';
+import { makeEventsAliasMap, makeEventsMap } from '../reducer';
 
 const getEventMap = makeEventsMap();
 const getEventAliases = makeEventsAliasMap();

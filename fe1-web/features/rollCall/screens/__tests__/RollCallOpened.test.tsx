@@ -37,7 +37,7 @@ jest.mock('react-native-toast-notifications', () => ({
   }),
 }));
 
-jest.mock('model/objects/wallet/Token.ts', () => ({
+jest.mock('features/wallet/objects/Token.ts', () => ({
   generateToken: jest.fn(() => Promise.resolve(mockPopToken)),
 }));
 

@@ -11,9 +11,9 @@ import ProfileIcon from 'components/ProfileIcon';
 import STRINGS from 'res/strings';
 
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
-import ChirpCard from '../components/ChirpCard';
+import { ChirpCard } from '../components';
 import { Chirp, ChirpState } from '../objects';
-import { makeChirpsListOfUser } from '../reducer/SocialReducer';
+import { makeChirpsListOfUser } from '../reducer';
 
 /**
  * UI for the profile of the current user.

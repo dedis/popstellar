@@ -29,7 +29,7 @@ const STRINGS = {
 
   /* --- Witness Navigation Strings --- */
   witness_navigation_tab_home: 'Witness',
-  witness_navigation_tab_video: 'Witness Video',
+  witness_navigation_tab_video: 'WitnessScreen Video',
 
   /* --- Organizer Navigation Strings --- */
   organizer_navigation_tab_home: 'Organizer Home',
@@ -100,7 +100,7 @@ const STRINGS = {
   launch_address: 'Address',
   launch_button_launch: 'Launch',
 
-  /* --- Organizer Strings --- */
+  /* --- OrganizerScreen Strings --- */
   organization_name: 'Organization name',
 
   /* --- Identity Strings --- */
@@ -117,7 +117,7 @@ const STRINGS = {
   identity_phone_placeholder: 'Phone number',
   identity_qrcode_description: 'ID (Public Key):',
 
-  /* --- Witness Strings --- */
+  /* --- WitnessScreen Strings --- */
   witness_description: 'Witness screen',
   witness_video_button: 'Go to the video screen',
   witness_name: 'Witnesses',

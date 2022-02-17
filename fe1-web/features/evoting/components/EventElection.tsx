@@ -17,7 +17,7 @@ import STRINGS from 'res/strings';
 import BarChartDisplay from 'components/BarChartDisplay';
 import { FOUR_SECONDS } from 'res/const';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
-import { updateEvent } from 'features/events/reducer/EventsReducer';
+import { updateEvent } from 'features/events/reducer';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
 import {

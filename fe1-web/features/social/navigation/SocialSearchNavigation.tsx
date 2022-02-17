@@ -5,8 +5,7 @@ import STRINGS from 'res/strings';
 import { PublicKey } from 'model/objects';
 import PropTypes from 'prop-types';
 
-import SocialSearch from '../screens/SocialSearch';
-import SocialUserProfile from '../screens/SocialUserProfile';
+import { SocialSearch, SocialUserProfile } from '../screens';
 
 /**
  * Defines the social media search navigation. It goes from the list of attendees to the profile

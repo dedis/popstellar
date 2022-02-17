@@ -3,17 +3,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import Organizer from 'features/lao/screens/Organizer';
-import CreateEvent from 'features/events/screens/CreateEvent';
+import { Organizer } from 'features/lao/screens';
+import { CreateEvent } from 'features/events/screens';
 import WitnessScanning from 'components/WitnessScanning';
-import CreateMeeting from 'features/meeting/screens/CreateMeeting';
-import CreateRollCall from 'features/rollCall/screens/CreateRollCall';
-import CreateElection from 'features/evoting/screens/CreateElection';
-import RollCallOpened from 'features/rollCall/screens/RollCallOpened';
+import { CreateMeeting } from 'features/meeting/screens';
+import { CreateRollCall, RollCallOpened } from 'features/rollCall/screens';
+import { CreateElection } from 'features/evoting/screens';
 
 /**
  * Define the Organizer stack navigation
- * four different screen (Organizer, CreateEvent, WitnessScanning, RollCallScanning)
+ * four different screen (OrganizerScreen, CreateEvent, WitnessScanning, RollCallScanning)
  *
  * The app are not use in the stack order, only organizer to one of the other screen
 */

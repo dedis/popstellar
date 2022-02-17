@@ -5,7 +5,7 @@ import {
   dispatch, getStore, KeyPairStore, makeCurrentLao,
 } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
-import { addEvent, updateEvent } from 'features/events/reducer/EventsReducer';
+import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
 import {
