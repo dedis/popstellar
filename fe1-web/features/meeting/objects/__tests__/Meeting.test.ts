@@ -1,10 +1,8 @@
 import 'jest-extended';
 
-import { LaoEventType } from 'model/objects/LaoEvent';
-import { Hash } from 'model/objects/Hash';
-import { Timestamp } from 'model/objects/Timestamp';
+import { Hash, Timestamp } from 'model/objects';
 
-import { Meeting, MeetingState } from '../Meeting';
+import { EventTypeMeeting, Meeting } from '../Meeting';
 
 const ID = new Hash('meetingId');
 const TIMESTAMP = new Timestamp(1620255600);
@@ -13,9 +11,9 @@ const LOCATION = 'location';
 
 describe('Meeting object', () => {
   it('does a state round trip correctly with extra and last_modified', () => {
-    const meetingState: MeetingState = {
+    const meetingState: any = {
       id: ID.valueOf(),
-      eventType: LaoEventType.MEETING,
+      eventType: EventTypeMeeting,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -28,17 +26,17 @@ describe('Meeting object', () => {
   });
 
   it('does a state round trip correctly without extra and last_modified', () => {
-    const meetingState = {
+    const meetingState: any = {
       id: ID.valueOf(),
-      eventType: LaoEventType.MEETING,
+      eventType: EventTypeMeeting,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
       creation: TIMESTAMP.valueOf(),
     };
-    const expected: MeetingState = {
+    const expected = {
       id: ID.valueOf(),
-      eventType: LaoEventType.MEETING,
+      eventType: EventTypeMeeting,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,
@@ -46,14 +44,14 @@ describe('Meeting object', () => {
       lastModified: TIMESTAMP.valueOf(),
       extra: {},
     };
-    const meeting = Meeting.fromState(meetingState as MeetingState);
+    const meeting = Meeting.fromState(meetingState);
     expect(meeting.toState()).toStrictEqual(expected);
   });
 
   it('does a state round trip correctly with end', () => {
-    const meetingState: MeetingState = {
+    const meetingState: any = {
       id: ID.valueOf(),
-      eventType: LaoEventType.MEETING,
+      eventType: EventTypeMeeting,
       start: TIMESTAMP.valueOf(),
       name: NAME,
       location: LOCATION,

@@ -1,9 +1,7 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { Timestamp } from 'model/objects/Timestamp';
-import { Hash } from 'model/objects/Hash';
-import { PublicKey } from 'model/objects/PublicKey';
+import { Hash, PublicKey, Timestamp } from 'model/objects';
 
 import { Chirp, ChirpState } from '../Chirp';
 

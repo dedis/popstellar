@@ -1,12 +1,13 @@
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
-import { EventStore, OpenedLaoStore, WalletStore } from 'store';
+import { OpenedLaoStore, WalletStore } from 'store';
+import { RollCall } from 'features/rollCall/objects';
+import { EventStore } from 'features/events/store';
 import { Hash } from '../Hash';
 import { PopToken } from '../PopToken';
 import { Base64UrlData } from '../Base64Url';
 import { PublicKey } from '../PublicKey';
 import { PrivateKey } from '../PrivateKey';
 import * as bip39path from './Bip32Path';
-import { RollCall } from '../RollCall';
 
 /**
  * Generates a token for an arbitrary derivation path.

@@ -1,11 +1,10 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  addReaction, dispatch, getStore, makeCurrentLao,
-} from 'store';
+import { dispatch, getStore, makeCurrentLao } from 'store';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 
 import { Reaction } from '../objects';
 import { AddReaction } from './messages/reaction';
+import { addReaction } from '../reducer/SocialReducer';
 
 /**
  * Handler for social media chirp's reactions
@@ -41,7 +40,7 @@ function handleAddReactionMessage(msg: ExtendedMessage): boolean {
     id: messageId,
     sender: sender,
     codepoint: reactionMessage.reaction_codepoint,
-    chirp_id: reactionMessage.chirp_id,
+    chirpId: reactionMessage.chirp_id,
     time: reactionMessage.timestamp,
   });
 

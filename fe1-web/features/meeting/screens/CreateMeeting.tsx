@@ -16,7 +16,7 @@ import ConfirmModal from 'components/ConfirmModal';
 import DatePicker, { onChangeStartTime, onChangeEndTime } from 'components/DatePicker';
 import { Timestamp } from 'model/objects';
 import { FOUR_SECONDS } from 'res/const';
-import { onConfirmPress } from 'parts/lao/organizer/eventCreation/CreateEvent';
+import { onConfirmPress } from 'features/events/screens/CreateEvent';
 
 import { requestCreateMeeting } from '../network/MeetingMessageApi';
 

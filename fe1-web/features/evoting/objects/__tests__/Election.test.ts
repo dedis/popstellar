@@ -3,17 +3,17 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 import STRINGS from 'res/strings';
 import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
-import { Hash, LaoEventType, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'model/objects';
 
 import {
-  Election, ElectionState, ElectionStatus, Question, RegisteredVote, Vote,
+  Election, ElectionStatus, EventTypeElection, Question, RegisteredVote, Vote,
 } from '../Election';
 
 let question1: Question;
 let question2: Question;
 let vote1: Vote;
 let registeredVotes: RegisteredVote;
-let electionState: ElectionState;
+let electionState: any;
 let QUESTIONS: Question[];
 let REGISTERED_VOTES: RegisteredVote[];
 
@@ -48,7 +48,7 @@ const initializeData = () => {
 
   electionState = {
     id: 'electionId',
-    eventType: LaoEventType.ELECTION,
+    eventType: EventTypeElection,
     lao: 'MyLao',
     name: 'MyElection',
     version: 'version',
@@ -85,7 +85,7 @@ describe('Election object', () => {
     const election = Election.fromState(electionState);
     const expectedState = {
       id: ELECTION_ID.valueOf(),
-      eventType: LaoEventType.ELECTION,
+      eventType: EventTypeElection,
       lao: mockLaoName,
       name: NAME,
       version: VERSION,

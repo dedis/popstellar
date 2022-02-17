@@ -11,7 +11,7 @@ import { PublicKey } from 'model/objects';
 import STRINGS from 'res/strings';
 import Home from 'parts/Home';
 import Identity from 'parts/lao/Identity';
-import Attendee from 'parts/lao/attendee/Attendee';
+import Attendee from 'features/lao/screens/Attendee';
 import SocialMediaNavigation from 'features/social/navigation/SocialMediaNavigation';
 import OrganizerNavigation from './organizer/OrganizerNavigation';
 import WitnessNavigation from './witness/WitnessNavigation';

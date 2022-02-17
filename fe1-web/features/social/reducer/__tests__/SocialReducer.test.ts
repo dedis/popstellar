@@ -136,7 +136,7 @@ const initialiseData = () => {
     id: Hash.fromString('1111'),
     sender: mockSender1,
     codepoint: '👍',
-    chirp_id: mockChirpId1,
+    chirpId: mockChirpId1,
     time: mockTimestamp,
   }).toState();
 
@@ -144,7 +144,7 @@ const initialiseData = () => {
     id: Hash.fromString('2222'),
     sender: mockSender1,
     codepoint: '❤️',
-    chirp_id: mockChirpId1,
+    chirpId: mockChirpId1,
     time: mockTimestamp,
   }).toState();
 
@@ -152,7 +152,7 @@ const initialiseData = () => {
     id: Hash.fromString('3333'),
     sender: mockSender2,
     codepoint: '👍',
-    chirp_id: mockChirpId1,
+    chirpId: mockChirpId1,
     time: mockTimestamp,
   }).toState();
 
@@ -160,7 +160,7 @@ const initialiseData = () => {
     id: Hash.fromString('4444'),
     sender: mockSender2,
     codepoint: '👍',
-    chirp_id: mockChirpId2,
+    chirpId: mockChirpId2,
     time: mockTimestamp,
   }).toState();
 

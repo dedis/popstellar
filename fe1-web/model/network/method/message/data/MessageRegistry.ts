@@ -7,13 +7,13 @@ import {
   CastVote, ElectionResult, EndElection, SetupElection,
 } from 'features/evoting/network/messages';
 import {
+  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
+} from 'features/rollCall/network/messages';
+import {
   ActionType, MessageData, ObjectType, SignatureType,
 } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
 import { CreateLao, StateLao, UpdateLao } from './lao';
-import {
-  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
-} from './rollCall';
 import { WitnessMessage } from './witness';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
@@ -106,7 +106,7 @@ export class MessageRegistry {
   handleMessage(msg: ExtendedMessage): boolean {
     const data = msg.messageData;
     const messageEntry = this.getEntry(data);
-    return messageEntry.handle!!(msg);
+    return messageEntry.handle!(msg);
   }
 
   /**
@@ -117,7 +117,7 @@ export class MessageRegistry {
    */
   buildMessageData(data: MessageData): MessageData {
     const messageEntry = this.getEntry(data);
-    return messageEntry.build!!(data);
+    return messageEntry.build!(data);
   }
 
   /**
@@ -128,7 +128,7 @@ export class MessageRegistry {
    */
   getSignatureType(data: MessageData): SignatureType {
     const messageEntry = this.getEntry(data);
-    return messageEntry.signature!!;
+    return messageEntry.signature!;
   }
 
   /**

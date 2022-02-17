@@ -11,12 +11,12 @@ import { useSelector } from 'react-redux';
 import { PublicKey } from 'model/objects';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
-import { makeReactionsList } from 'store';
 import ProfileIcon from 'components/ProfileIcon';
 import ConfirmModal from 'components/ConfirmModal';
 
 import { Chirp } from '../objects';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
+import { makeReactionsList } from '../reducer/SocialReducer';
 
 /**
  * Component to display a chirp

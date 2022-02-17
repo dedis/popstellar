@@ -1,10 +1,11 @@
-import { LaoEvent, LaoEventState, LaoEventType } from 'model/objects/LaoEvent';
-import { Timestamp } from 'model/objects/Timestamp';
-import { Hash } from 'model/objects/Hash';
+import { LaoEventState } from 'features/events/objects/LaoEvent';
+import { Hash, Timestamp } from 'model/objects';
 
 /**
  * Object to represent a meeting.
  */
+
+export const EventTypeMeeting = 'MEETING';
 
 export interface MeetingState extends LaoEventState {
   name: string;
@@ -14,7 +15,7 @@ export interface MeetingState extends LaoEventState {
   extra: object;
 }
 
-export class Meeting implements LaoEvent {
+export class Meeting {
   public readonly id: Hash;
 
   public readonly name: string;
@@ -86,7 +87,7 @@ export class Meeting implements LaoEvent {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
-      eventType: LaoEventType.MEETING,
+      eventType: EventTypeMeeting,
     };
   }
 }

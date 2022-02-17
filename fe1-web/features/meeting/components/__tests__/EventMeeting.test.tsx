@@ -1,13 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
 
-import { LaoEventType } from 'model/objects';
-
-import { Meeting } from '../../objects/Meeting';
+import { EventTypeMeeting, Meeting } from '../../objects/Meeting';
 import EventMeeting from '../EventMeeting';
 
 const meeting = Meeting.fromState({
-  eventType: LaoEventType.MEETING,
+  eventType: EventTypeMeeting,
   id: '1234',
   name: 'MyMeeting',
   location: 'Lausanne',
@@ -16,7 +14,7 @@ const meeting = Meeting.fromState({
   start: 1620255600,
   end: 1620255800,
   extra: {},
-});
+} as any);
 
 beforeAll(() => {
   jest.useFakeTimers('modern');

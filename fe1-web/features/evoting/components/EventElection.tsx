@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
 
-import { dispatch, getStore, updateEvent } from 'store';
+import { dispatch, getStore } from 'store';
 import { EventTags, Hash, Timestamp } from 'model/objects';
 import { Spacing, Typography } from 'styles';
 import CheckboxList from 'components/CheckboxList';
@@ -15,8 +15,9 @@ import WideButtonView from 'components/WideButtonView';
 import TimeDisplay from 'components/TimeDisplay';
 import STRINGS from 'res/strings';
 import BarChartDisplay from 'components/BarChartDisplay';
-import { getEventFromId } from 'ingestion/handlers/Utils';
 import { FOUR_SECONDS } from 'res/const';
+import { getEventFromId } from 'features/events/network/EventHandlerUtils';
+import { updateEvent } from 'features/events/reducer/EventsReducer';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
 import {

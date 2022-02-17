@@ -3,13 +3,14 @@ import {
   FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle,
 } from 'react-native';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
 
 import STRINGS from 'res/strings';
-import { makeCurrentLao, makeLastRollCallAttendeesList } from 'store';
+import { makeCurrentLao } from 'store';
 import { PublicKey } from 'model/objects';
 import TextBlock from 'components/TextBlock';
 import { gray } from 'styles/colors';
-import PropTypes from 'prop-types';
+import { makeRollCallAttendeesList } from 'features/events/reducer/EventsReducer';
 
 import UserListItem from '../components/UserListItem';
 
@@ -45,7 +46,7 @@ const SocialSearch = (props: IPropTypes) => {
   }
 
   const rollCallId = currentLao.last_tokenized_roll_call_id;
-  const attendeesSelect = makeLastRollCallAttendeesList(currentLao.id, rollCallId);
+  const attendeesSelect = makeRollCallAttendeesList(currentLao.id, rollCallId);
   const attendees = useSelector(attendeesSelect);
 
   const renderItem = ({ item }: ListRenderItemInfo<PublicKey>) => {
