@@ -1,40 +1,39 @@
-import React from 'react';
-import { ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ScrollView } from 'react-native';
+import { useRoute } from '@react-navigation/core';
 
-import STRINGS from 'res/strings';
-import TextBlock from 'components/TextBlock';
-import WideButtonView from 'components/WideButtonView';
 import { Timestamp } from 'model/objects';
 import EventListCollapsible from 'features/events/components/EventListCollapsible';
 import { LaoEvent } from 'features/events/objects';
-import { makeEventsList } from 'features/events/reducer/EventsReducer';
+import { makeEventsList } from 'features/events/reducer';
 
 import LaoProperties from 'components/LaoProperties';
 
 /**
- * Witness screen: button to navigate to the witness video screen,
- * a section list of events and lao properties
-*/
-const Witness = () => {
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
-
+ * AttendeeScreen: lists LAO properties and past/ongoing/future events.
+ * By default, only the past and present section are open.
+ *
+ * TODO: use the data receive by the organization server
+ */
+const AttendeeScreen = () => {
   const eventList = makeEventsList();
   const events = useSelector(eventList);
-
   const now = Timestamp.EpochNow();
   const pastEvents: LaoEvent[] = [];
   const currentEvents: LaoEvent[] = [];
   const futureEvents: LaoEvent[] = [];
+  const route = useRoute();
+  const { url } = route.params || '';
+  const [serverUrl] = useState(url);
 
   events.forEach((e: LaoEvent) => {
-    if (new Timestamp(e.end).before(now)) {
+    if ((e.end && e.end.before(now))
+      || (!e.end && e.start.before(now))) {
       pastEvents.push(e);
       return;
     }
-    if (new Timestamp(e.start).after(now)) {
+    if (e.start.after(now)) {
       futureEvents.push(e);
       return;
     }
@@ -59,15 +58,10 @@ const Witness = () => {
 
   return (
     <ScrollView>
-      <TextBlock bold text="Witness Panel" />
-      <WideButtonView
-        title={STRINGS.witness_video_button}
-        onPress={() => navigation.navigate(STRINGS.witness_navigation_tab_video)}
-      />
-      <LaoProperties />
+      <LaoProperties url={serverUrl} />
       <EventListCollapsible data={DATA_EXAMPLE} />
     </ScrollView>
   );
 };
 
-export default Witness;
+export default AttendeeScreen;

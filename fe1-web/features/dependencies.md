@@ -49,18 +49,19 @@ the future.
 `features/evoting/objects/Election.ts`, `features/meeting/objects/Meeting.ts`, `features/rollCall/objects/RollCall.ts`
 - EventHandlerUtils : `features/evoting/network/ElectionHandler.ts`, `features/rollCall/network/RollCallHandler.ts`,
 `features/meeting/network/MeetingHandler.ts`, `features/evoting/components/EventElection.tsx`
-- EventsReducer : `store/reducers/index.ts`, `store/reducers/RootReducer.ts`,
+- EventsReducer : `store/reducers/RootReducer.ts`, `features/lao/screens/AttendeeScreen.tsx`
 `features/social/screens/SocialSearch.tsx`, `parts/wallet/WalletSyncedSeed.tsx`,
 `features/rollCall/network/RollCallHandler.ts`, `features/meeting/network/MeetingHandler.ts`,
 `features/evoting/network/ElectionHandler.ts`, `features/evoting/components/EventElection.tsx`,
-`model/objects/wallet/Wallet.ts`, `features/social/navigation/SocialMediaNavigation.tsx`
+`model/objects/wallet/Wallet.ts`, `features/social/navigation/SocialMediaNavigation.tsx`,
+`features/lao/screens/WitnessScreen.tsx`
 - EventStore : `model/objects/wallet/Token.ts`,
 
 ## Lao
 
-- Attendee : `navigation/bars/LaoNavigation.tsx`
-- Organizer : `navigation/bars/organizer/OrganizerNavigation.tsx`
-- Witness : `navigation/bars/witness/WitnessNavigation.tsx`
+- AttendeeScreen : `navigation/bars/LaoNavigation.tsx`
+- OrganizerScreen : `navigation/bars/organizer/OrganizerNavigation.tsx`
+- WitnessScreen : `navigation/bars/witness/WitnessNavigation.tsx`
 
 ## Wallet
 

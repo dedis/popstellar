@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 import { RollCall } from 'features/rollCall/objects';
 import { LaoEventType } from 'features/events/objects/LaoEvent';
-import { makeEventByTypeSelector } from 'features/events/reducer/EventsReducer';
+import { makeEventByTypeSelector } from 'features/events/reducer';
 import { Hash, PopToken } from 'model/objects';
 
 import { generateToken } from './Token';

@@ -11,7 +11,7 @@ const kp = KeyPair.fromState({
 
 const messageId: Hash = Hash.fromStringArray('messageId');
 
-test('Witness signature verify works correctly', () => {
+test('WitnessScreen signature verify works correctly', () => {
   const witnessSignature: WitnessSignature = new WitnessSignature({
     witness: kp.publicKey,
     signature: kp.privateKey.sign(messageId),
@@ -20,7 +20,7 @@ test('Witness signature verify works correctly', () => {
   expect(witnessSignature.verify(messageId)).toBeTrue();
 });
 
-test('Witness signature verify fails correctly', () => {
+test('WitnessScreen signature verify fails correctly', () => {
   const witnessSignature: WitnessSignature = new WitnessSignature({
     witness: kp.publicKey,
     signature: kp.privateKey.sign(messageId),
@@ -31,7 +31,7 @@ test('Witness signature verify fails correctly', () => {
   expect(witnessSignature.verify(otherId)).toBeFalse();
 });
 
-test('Witness signature should encode and decode properly', () => {
+test('WitnessScreen signature should encode and decode properly', () => {
   const witSigState: WitnessSignatureState = {
     witness: kp.publicKey.valueOf(),
     signature: kp.privateKey.sign(messageId).valueOf(),

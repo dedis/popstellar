@@ -72,7 +72,7 @@ export class MessageRegistry {
     [k(ELECTION, END), { build: EndElection.fromJson, signature: KEYPAIR }],
     [k(ELECTION, RESULT), { build: ElectionResult.fromJson, signature: KEYPAIR }],
 
-    // Witness
+    // WitnessScreen
     [k(MESSAGE, WITNESS), { build: WitnessMessage.fromJson, signature: KEYPAIR }],
 
     // Chirps

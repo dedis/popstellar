@@ -9,11 +9,11 @@ import { gray, popBlue } from 'styles/colors';
 import { PublicKey } from 'model/objects';
 import { generateToken } from 'features/wallet/objects';
 import { makeCurrentLao } from 'store';
-import { makeEventGetter } from 'features/events/reducer/EventsReducer';
+import { makeEventGetter } from 'features/events/reducer';
 import { RollCall } from 'features/rollCall/objects';
 
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
-import { SocialSearchNavigation } from './index';
+import SocialSearchNavigation from './SocialSearchNavigation';
 
 /**
  * This class manages the social media navigation and creates the corresponding navigation bar.

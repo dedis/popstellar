@@ -14,7 +14,7 @@ import QRCode from 'components/QRCode';
 import PROPS_TYPE from 'res/Props';
 import { makeLaosMap } from 'store';
 import CopiableTextInput from 'components/CopiableTextInput';
-import { makeEventByTypeSelector } from 'features/events/reducer/EventsReducer';
+import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';
 import { RollCall } from 'features/rollCall/objects';
 
