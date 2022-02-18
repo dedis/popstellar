@@ -2,7 +2,6 @@ import {
   Hash,
   PublicKey,
   Timestamp,
-  WitnessSignature,
   Signature,
   ProtocolError,
 } from 'model/objects';
@@ -13,6 +12,7 @@ import {
   checkWitnesses,
   checkWitnessSignatures,
 } from 'model/network/method/message/data/Checker';
+import { WitnessSignature } from 'features/witness/objects';
 
 /** Data received to track the state of a lao */
 export class StateLao implements MessageData {

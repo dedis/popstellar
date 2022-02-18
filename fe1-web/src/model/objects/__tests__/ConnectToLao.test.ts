@@ -1,7 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { ProtocolError } from 'model/network';
 import { mockLaoId } from '__tests__/utils/TestUtils';
+import { ProtocolError } from 'model/objects/ProtocolError';
 import { ConnectToLao } from '../ConnectToLao';
 
 const serverUrl = 'ws://127.0.0.1:9000/organizer/client';

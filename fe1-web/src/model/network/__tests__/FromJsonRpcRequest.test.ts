@@ -5,11 +5,13 @@ import '__tests__/utils/matchers';
 
 import keyPair from 'test_data/keypair.json';
 
-import { OpenedLaoStore } from 'store';
-import { Base64UrlData, Hash, Lao, PrivateKey, PublicKey } from 'model/objects';
+import { OpenedLaoStore } from 'features/lao/store';
+import { CreateLao } from 'features/lao/network/messages';
+import { Lao } from 'features/lao/objects';
+import { Base64UrlData, Hash, PrivateKey, PublicKey } from 'model/objects';
 import { ROOT_CHANNEL } from 'model/objects/Channel';
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network/index';
-import { CreateLao, MessageRegistry } from 'model/network/method/message/data';
+import { MessageRegistry } from 'model/network/method/message/data';
 import { JsonRpcParamsWithMessage } from 'model/network/method/JsonRpcParamsWithMessage';
 import { configureMessages } from '../method/message';
 

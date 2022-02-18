@@ -1,9 +1,10 @@
 import 'jest-extended';
-import { channelFromIds, Lao, LaoState, Timestamp } from 'model/objects';
+import { channelFromIds, Timestamp } from 'model/objects';
 import { ExtendedMessage } from 'model/network/method/message/ExtendedMessage';
 import { configureMessages, Message } from 'model/network/method/message/Message';
 import { AddChirp } from 'features/social/network/messages/chirp';
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
+import { Lao, LaoState } from 'features/lao/objects';
 import { MessageRegistry } from '../MessageRegistry';
 import { ActionType, ObjectType, SignatureType } from '../MessageData';
 

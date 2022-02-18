@@ -1,14 +1,10 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  ActionType,
-  MessageRegistry,
-  ObjectType,
-  WitnessMessage,
-} from 'model/network/method/message/data';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { addMessageWitnessSignature, dispatch, getStore } from 'store';
 import { makeCurrentLao } from 'features/lao/reducer';
 
 import { WitnessSignature } from '../objects';
+import { WitnessMessage } from './messages';
 
 const getCurrentLao = makeCurrentLao();
 

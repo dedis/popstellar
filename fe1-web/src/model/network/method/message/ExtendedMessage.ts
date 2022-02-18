@@ -1,13 +1,6 @@
-import {
-  Hash,
-  PublicKey,
-  Base64UrlData,
-  WitnessSignature,
-  Signature,
-  Timestamp,
-  Channel,
-} from 'model/objects';
+import { Hash, PublicKey, Base64UrlData, Signature, Timestamp, Channel } from 'model/objects';
 import { Message, MessageState } from 'model/network/method/message/Message';
+import { WitnessSignature } from 'features/witness/objects';
 
 export interface ExtendedMessageState extends MessageState {
   receivedAt: number;

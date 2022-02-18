@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { PublicKey } from 'model/objects';
 import STRINGS from 'res/strings';
 import { gray } from 'styles/colors';
-import { ConfirmModal, ProfileIcon } from 'core/components/ProfileIcon';
+import { ConfirmModal, ProfileIcon } from 'core/components';
 
 import { Chirp } from '../objects';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';

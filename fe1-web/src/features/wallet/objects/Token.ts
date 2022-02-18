@@ -1,6 +1,6 @@
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
 
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 import { RollCall } from 'features/rollCall/objects';
 import { EventStore } from 'features/events/store';
 import { Base64UrlData, Hash, PopToken, PrivateKey, PublicKey } from 'model/objects';

@@ -1,17 +1,13 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import {
-  ActionType,
-  MessageData,
-  ObjectType,
-  WitnessMessage,
-} from 'model/network/method/message/data';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { Base64UrlData } from 'model/objects';
 import { publish as mockPublish } from 'network/JsonRpcApi';
 import { OpenedLaoStore } from 'features/lao/store';
 
+import { WitnessMessage } from '../messages';
 import * as msApi from '../WitnessMessageApi';
 
 jest.mock('network/JsonRpcApi');

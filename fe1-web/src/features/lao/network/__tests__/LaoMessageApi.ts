@@ -1,13 +1,6 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import {
-  ActionType,
-  CreateLao,
-  MessageData,
-  ObjectType,
-  StateLao,
-  UpdateLao,
-} from 'model/network/method/message/data';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data';
 import { KeyPairStore } from 'store';
 import { Hash } from 'model/objects';
 import {
@@ -18,6 +11,7 @@ import {
 } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'network/JsonRpcApi';
 
+import { CreateLao, StateLao, UpdateLao } from '../messages';
 import { OpenedLaoStore } from '../../store';
 import * as msApi from '../LaoMessageApi';
 

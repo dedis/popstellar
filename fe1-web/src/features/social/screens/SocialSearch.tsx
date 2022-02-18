@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import STRINGS from 'res/strings';
-import { makeCurrentLao } from 'store';
+import { makeCurrentLao } from 'features/lao/reducer';
 import { PublicKey } from 'model/objects';
 import { TextBlock } from 'core/components';
 import { gray } from 'styles/colors';

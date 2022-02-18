@@ -1,17 +1,11 @@
 import { ExtendedMessage } from 'model/network/method/message';
-import {
-  ActionType,
-  CreateLao,
-  MessageRegistry,
-  ObjectType,
-  StateLao,
-  UpdateLao,
-} from 'model/network/method/message/data';
+import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { dispatch, getMessage, getStore, makeLaoMessagesState } from 'store';
 import { hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
 
 import { Lao } from '../objects';
 import { connectToLao, makeCurrentLao, updateLao } from '../reducer';
+import { CreateLao, StateLao, UpdateLao } from './messages';
 
 const getCurrentLao = makeCurrentLao();
 const getMessageState = makeLaoMessagesState();

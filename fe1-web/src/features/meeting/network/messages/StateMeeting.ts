@@ -1,11 +1,4 @@
-import {
-  Hash,
-  PublicKey,
-  Signature,
-  Timestamp,
-  WitnessSignature,
-  ProtocolError,
-} from 'model/objects';
+import { Hash, PublicKey, Signature, Timestamp, ProtocolError } from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
 import {
@@ -13,6 +6,7 @@ import {
   checkTimestampStaleness,
   checkWitnessSignatures,
 } from 'model/network/method/message/data/Checker';
+import { WitnessSignature } from 'features/witness/objects';
 
 /** Data received to track the state of a Meeting */
 export class StateMeeting implements MessageData {
