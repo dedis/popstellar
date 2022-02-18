@@ -1,7 +1,8 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { addMessageWitnessSignature, dispatch, getStore } from 'store';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { dispatch, getStore } from 'core/redux';
 import { makeCurrentLao } from 'features/lao/reducer';
+import { addMessageWitnessSignature } from 'core/reducers';
 
 import { WitnessSignature } from '../objects';
 import { WitnessMessage } from './messages';

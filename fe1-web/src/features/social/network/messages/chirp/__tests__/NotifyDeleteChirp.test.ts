@@ -1,8 +1,8 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'model/objects';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
+import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'core/objects';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 
 import { NotifyDeleteChirp } from '../NotifyDeleteChirp';
 

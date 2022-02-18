@@ -1,7 +1,8 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { dispatch, getMessage, getStore, makeLaoMessagesState } from 'store';
-import { hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/validation/Validator';
+import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
+import { getMessage, makeLaoMessagesState } from 'core/reducers';
+import { dispatch, getStore } from 'core/redux';
 
 import { Lao } from '../objects';
 import { connectToLao, makeCurrentLao, updateLao } from '../reducer';
@@ -38,16 +39,16 @@ function handleLaoStateMessage(msg: ExtendedMessage): boolean {
 
   const makeErr = (err: string) => `lao/state was not processed: ${err}`;
 
-  const stateLaoData = msg.messageData as StateLao;
-  if (!hasWitnessSignatureQuorum(stateLaoData.modification_signatures)) {
-    console.warn(makeErr('witness quorum was not reached'));
-    return false;
-  }
-
   const storeState = getStore().getState();
   const oldLao = getCurrentLao(storeState);
   if (!oldLao) {
     console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+
+  const stateLaoData = msg.messageData as StateLao;
+  if (!hasWitnessSignatureQuorum(stateLaoData.modification_signatures, oldLao)) {
+    console.warn(makeErr('witness quorum was not reached'));
     return false;
   }
 

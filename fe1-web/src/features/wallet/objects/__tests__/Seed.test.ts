@@ -1,8 +1,8 @@
 import { WalletStore } from '../../store';
 import * as Seed from '../Seed';
 
-jest.mock('platform/Storage');
-jest.mock('platform/crypto/browser');
+jest.mock('core/platform/Storage');
+jest.mock('core/platform/crypto/browser');
 
 const mnemonic: string =
   'garbage effort river orphan negative kind outside quit hat camera approve first';

@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-import { Spacing } from 'styles';
+import { Spacing } from 'core/styles';
 
 const laoPropertiesStyles = StyleSheet.create({
   default: {

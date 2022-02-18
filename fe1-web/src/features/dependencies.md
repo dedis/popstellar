@@ -1,7 +1,7 @@
 # Feature dependencies
 
 Here is the list of dependency between features that will need to be resolved in
-the future.
+the future. Files might have moved since, but their name should be identical
 
 ## Social media
 
@@ -26,7 +26,8 @@ the future.
 
 - EndElection : `model/network/method/message/__tests__/Message.test.ts`
 - EventElection : `features/events/components/Event.tsx`
-- Election : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`
+- Election : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`,
+`src/core/components/BarChartDisplay.tsx`
 - ElectionHandler : `ingestion/handlers/index.ts`
 - CreateElection : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - Storage is done in EventsReducer/EventsStore and could be done separately in an ElectionsReducer
@@ -110,3 +111,8 @@ the future.
 - WitnessSignature : `src/model/network/method/message/Message.ts`, `src/store/reducers/MessageReducer.ts`,
 `src/features/lao/network/messages/StateLao.ts`, `src/features/meeting/network/messages/StateMeeting.ts`,
 `src/model/network/method/message/ExtendedMessage.ts`
+
+## Connect
+
+- ConnectNavigation : `src/navigation/bars/MainNavigation.tsx`
+- ConnectToLao : `src/features/lao/components/LaoProperties.tsx`

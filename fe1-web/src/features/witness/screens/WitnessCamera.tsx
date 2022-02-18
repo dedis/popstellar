@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import { CameraButton, RecorderButton, TextBlock } from 'core/components';
 
 /**

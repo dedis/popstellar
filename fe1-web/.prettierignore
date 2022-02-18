@@ -1,4 +1,6 @@
+.eslint.react-native-config.js
 .eslintrc
+.depcruise.js
 app.json
 babel.config.js
 jest.config.js

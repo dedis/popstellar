@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { PublicKey } from 'model/objects';
+import { PublicKey } from 'core/objects';
 import { ProfileIcon, TextBlock } from 'core/components';
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 import { ChirpCard } from '../components';

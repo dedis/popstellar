@@ -1,7 +1,7 @@
-import { Hash, PublicKey, Timestamp, ProtocolError } from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
-import { checkTimestampStaleness, checkWitnesses } from 'model/network/method/message/data/Checker';
+import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { checkTimestampStaleness, checkWitnesses } from 'core/network/validation/Checker';
 
 import { OpenedLaoStore } from '../../store';
 import { Lao } from '../../objects';

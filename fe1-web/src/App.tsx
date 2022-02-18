@@ -7,16 +7,14 @@ import { NavigationContainer } from '@react-navigation/native';
 import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ToastProvider } from 'react-native-toast-notifications';
-
 import { Provider } from 'react-redux';
-import { store, persist } from 'store/Storage';
+import { store, persist } from 'core/redux/ReduxSetUp';
 
-import AppNavigation from 'navigation/AppNavigation';
-import { navigationRef } from 'navigation/RootNavigation';
-
-import { configureIngestion } from 'ingestion';
-import { MessageRegistry } from 'model/network/method/message/data';
-import { configureMessages } from 'model/network/method/message';
+import AppNavigation from 'core/navigation/AppNavigation';
+import { navigationRef } from 'core/navigation/RootNavigation';
+import { configureIngestion } from 'core/network/ingestion';
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { configureMessages } from 'core/network/jsonrpc/messages/Message';
 
 /*
  * The starting point of the app.

@@ -3,7 +3,7 @@ import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { BackButton, ProfileIcon, TextBlock } from 'core/components';
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';

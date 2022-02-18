@@ -1,0 +1,31 @@
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+
+import STRINGS from 'resources/strings';
+
+import { ConnectConfirm, ConnectEnableCamera, ConnectOpenScan } from 'features/connect/screens';
+
+/**
+ * Define the connect panel stack navigation
+ *
+ * Contains four components:
+ *  - The ConnectEnableCamera
+ *  - The ConnectOpenScan
+ *  - The ConnectConnecting
+ *  - The ConnectConfirm
+ */
+
+const Stack = createStackNavigator();
+
+export default function ConnectNavigation() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <Stack.Screen name={STRINGS.connect_unapproved_title} component={ConnectEnableCamera} />
+      <Stack.Screen name={STRINGS.connect_scanning_title} component={ConnectOpenScan} />
+      <Stack.Screen name={STRINGS.connect_confirm_title} component={ConnectConfirm} />
+    </Stack.Navigator>
+  );
+}

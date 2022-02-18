@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 
 import { TextBlock } from 'core/components';
-import STRINGS from 'res/strings';
-import { PublicKey } from 'model/objects';
-import { FOUR_SECONDS } from 'res/const';
+import STRINGS from 'resources/strings';
+import { PublicKey } from 'core/objects';
+import { FOUR_SECONDS } from 'resources/const';
 
 import { ChirpCard, TextInputChirp } from '../components';
 import { Chirp, ChirpState } from '../objects';

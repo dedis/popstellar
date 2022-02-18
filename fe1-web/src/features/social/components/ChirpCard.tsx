@@ -6,9 +6,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { PublicKey } from 'model/objects';
-import STRINGS from 'res/strings';
-import { gray } from 'styles/colors';
+import { PublicKey } from 'core/objects';
+import STRINGS from 'resources/strings';
+import { gray } from 'core/styles/colors';
 import { ConfirmModal, ProfileIcon } from 'core/components';
 
 import { Chirp } from '../objects';

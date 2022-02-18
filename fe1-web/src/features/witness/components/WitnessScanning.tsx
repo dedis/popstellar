@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
-import STRINGS from 'res/strings';
-import { Typography } from 'styles';
-import PROPS_TYPE from 'res/Props';
+import STRINGS from 'resources/strings';
+import { Typography } from 'core/styles';
+import PROPS_TYPE from 'resources/Props';
 import { CameraButton } from 'core/components';
 
 /**

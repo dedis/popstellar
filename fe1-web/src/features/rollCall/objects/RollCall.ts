@@ -1,5 +1,5 @@
 import { LaoEventState } from 'features/events/objects/LaoEvent';
-import { Hash, PopToken, PublicKey, Timestamp } from 'model/objects';
+import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
 
 /**
  * Object to represent a roll call.

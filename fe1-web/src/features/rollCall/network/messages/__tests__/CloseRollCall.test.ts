@@ -1,7 +1,7 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { Hash, PublicKey, Timestamp, ProtocolError } from 'model/objects';
+import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
 import {
   mockLao,
   mockLaoId,
@@ -9,7 +9,7 @@ import {
   mockPublicKey,
   mockPublicKey2,
 } from '__tests__/utils/TestUtils';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { CloseRollCall } from '../CloseRollCall';

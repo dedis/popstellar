@@ -4,14 +4,14 @@ import {
   Timestamp,
   Signature,
   ProtocolError,
-} from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+} from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import {
   checkTimestampStaleness,
   checkWitnesses,
   checkWitnessSignatures,
-} from 'model/network/method/message/data/Checker';
+} from 'core/network/validation/Checker';
 import { WitnessSignature } from 'features/witness/objects';
 
 /** Data received to track the state of a lao */

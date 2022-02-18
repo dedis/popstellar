@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { View, Modal, Text } from 'react-native';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 
-import modalStyles from 'styles/stylesheets/modalStyles';
+import modalStyles from '../styles/stylesheets/modalStyles';
 import WideButtonView from './WideButtonView';
 
 /**

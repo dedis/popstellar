@@ -1,7 +1,7 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import {
   mockLao,
   mockLaoIdHash,
@@ -9,7 +9,7 @@ import {
   mockPublicKey,
   mockPublicKey2,
 } from '__tests__/utils/TestUtils';
-import { Hash, PublicKey, ProtocolError, Timestamp } from 'model/objects';
+import { Hash, PublicKey, ProtocolError, Timestamp } from 'core/objects';
 
 import { OpenedLaoStore } from '../../../store';
 import { UpdateLao } from '../UpdateLao';

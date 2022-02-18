@@ -1,4 +1,4 @@
-import { Hash } from 'model/objects/Hash';
+import { Hash } from 'core/objects/Hash';
 
 import * as Bip39Path from '../Bip32Path';
 

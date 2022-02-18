@@ -2,11 +2,11 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
-import containerStyles from 'styles/stylesheets/containerStyles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import TextBlock from 'core/components/TextBlock';
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import WideButtonView from 'core/components/WideButtonView';
-import PROPS_TYPE from 'res/Props';
+import PROPS_TYPE from 'resources/Props';
 
 const styles = StyleSheet.create({
   largePadding: {

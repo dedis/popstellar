@@ -1,6 +1,6 @@
-import { Hash, Signature, ProtocolError } from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { Hash, Signature, ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 
 export class WitnessMessage implements MessageData {
   public readonly object: ObjectType = ObjectType.MESSAGE;

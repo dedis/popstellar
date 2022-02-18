@@ -1,4 +1,4 @@
-import { Hash, PopToken, PublicKey, Timestamp } from 'model/objects';
+import { Hash, PopToken, PublicKey, Timestamp } from 'core/objects';
 import testKeyPair from 'test_data/keypair.json';
 import { Lao, LaoState } from 'features/lao/objects';
 

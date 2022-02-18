@@ -5,7 +5,6 @@
  * this is the module in which the user interface component should be defined.
  */
 export { default as BackButton } from './BackButton';
-export { default as BarChartDisplay } from './BarChartDisplay';
 export { default as CameraButton } from './CameraButton';
 export { default as CheckboxList } from './CheckboxList';
 export { default as ConfirmModal } from './ConfirmModal';

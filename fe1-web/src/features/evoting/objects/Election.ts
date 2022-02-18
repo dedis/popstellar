@@ -1,4 +1,4 @@
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { LaoEventState } from 'features/events/objects/LaoEvent';
 
 /**

@@ -2,11 +2,11 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
-import { Views } from 'styles';
-import STRINGS from 'res/strings';
-import containerStyles from 'styles/stylesheets/containerStyles';
+import { Views } from 'core/styles';
+import STRINGS from 'resources/strings';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { TextBlock, WideButtonView } from 'core/components';
-import { Timestamp } from 'model/objects';
+import { Timestamp } from 'core/objects';
 
 import { LaoEventType } from '../objects';
 

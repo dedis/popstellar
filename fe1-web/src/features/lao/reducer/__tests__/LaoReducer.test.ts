@@ -2,7 +2,7 @@ import 'jest-extended';
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
 
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 import {
   mockLaoCreationTime,
   mockLaoId,

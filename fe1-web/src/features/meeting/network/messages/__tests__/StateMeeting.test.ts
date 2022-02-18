@@ -1,8 +1,8 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'model/objects';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'core/objects';
 import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { OpenedLaoStore } from 'features/lao/store';
 

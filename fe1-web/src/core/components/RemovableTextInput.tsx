@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 
-import { Spacing, Typography, Views } from 'styles';
+import { Spacing, Typography, Views } from '../styles';
 import DeleteButton from './DeleteButton';
 
 /**

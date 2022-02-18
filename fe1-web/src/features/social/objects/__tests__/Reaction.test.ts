@@ -1,7 +1,7 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { Hash, PublicKey, Timestamp } from 'model/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { Reaction, ReactionState } from '../Reaction';
 

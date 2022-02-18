@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { StyleSheet, TextStyle, View, Text } from 'react-native';
 import TimeAgo from 'react-timeago';
 
-import STRINGS from 'res/strings';
-import * as Spacing from 'styles/spacing';
+import STRINGS from 'resources/strings';
+
+import { Spacing } from '../styles';
 
 /**
  * Displays a time in easily human readable format

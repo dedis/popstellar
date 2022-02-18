@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-import containerStyles from 'styles/stylesheets/containerStyles';
-import STRINGS from 'res/strings';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import STRINGS from 'resources/strings';
 import TextBlock from 'core/components/TextBlock';
 import WideButtonView from 'core/components/WideButtonView';
 

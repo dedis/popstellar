@@ -5,12 +5,12 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
 
-import { dispatch, getStore } from 'store';
-import { EventTags, Hash, Timestamp } from 'model/objects';
-import { Spacing, Typography } from 'styles';
+import { dispatch, getStore } from 'core/redux';
+import { EventTags, Hash, Timestamp } from 'core/objects';
+import { Spacing, Typography } from 'core/styles';
 import { BarChartDisplay, CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
-import STRINGS from 'res/strings';
-import { FOUR_SECONDS } from 'res/const';
+import STRINGS from 'resources/strings';
+import { FOUR_SECONDS } from 'resources/const';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { updateEvent } from 'features/events/reducer';
 

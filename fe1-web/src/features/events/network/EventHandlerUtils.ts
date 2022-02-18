@@ -1,4 +1,4 @@
-import { Hash } from 'model/objects';
+import { Hash } from 'core/objects';
 
 import { LaoEvent } from '../objects';
 import { makeEventsAliasMap, makeEventsMap } from '../reducer';

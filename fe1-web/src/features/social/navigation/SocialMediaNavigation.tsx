@@ -4,9 +4,9 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 
-import STRINGS from 'res/strings';
-import { gray, popBlue } from 'styles/colors';
-import { PublicKey } from 'model/objects';
+import STRINGS from 'resources/strings';
+import { gray, popBlue } from 'core/styles/colors';
+import { PublicKey } from 'core/objects';
 import { generateToken } from 'features/wallet/objects';
 import { makeCurrentLao } from 'features/lao/reducer';
 import { makeEventGetter } from 'features/events/reducer';

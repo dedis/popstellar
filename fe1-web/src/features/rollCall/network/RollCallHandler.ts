@@ -1,8 +1,8 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { getReactionChannel, getUserSocialChannel } from 'model/objects';
-import { AsyncDispatch, dispatch, getStore } from 'store';
-import { subscribeToChannel } from 'network/CommunicationApi';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { getReactionChannel, getUserSocialChannel } from 'core/objects';
+import { AsyncDispatch, dispatch, getStore } from 'core/redux';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import * as Wallet from 'features/wallet/objects';
@@ -174,7 +174,7 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
  */
 function handleRollCallReopenMessage(msg: ExtendedMessage) {
   console.warn(
-    'A RollCall reopen message was received but' + ' its processing logic is not yet implemented:',
+    'A RollCall reopen message was received but its processing logic is not yet implemented:',
     msg,
   );
   return false;
