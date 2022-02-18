@@ -1,7 +1,8 @@
-import { ExtendedMessage } from 'core/network/jsonrpc/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
-import { dispatch, getMessage, getStore, makeLaoMessagesState } from 'store';
-import { hasWitnessSignatureQuorum } from 'core/network/ingestion/Utils';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/validation/Validator';
+import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
+import { getMessage, makeLaoMessagesState } from 'core/reducers';
+import { dispatch, getStore } from 'core/redux';
 
 import { Lao } from '../objects';
 import { connectToLao, makeCurrentLao, updateLao } from '../reducer';

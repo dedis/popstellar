@@ -1,11 +1,12 @@
-import { ExtendedMessage } from 'core/network/jsonrpc/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { channelFromIds, getLastPartOfChannel } from 'core/objects';
-import { dispatch, getStore, KeyPairStore } from 'store';
 import { subscribeToChannel } from 'core/network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { makeCurrentLao } from 'features/lao/reducer';
+import { dispatch, getStore } from 'core/redux';
+import { KeyPairStore } from 'core/store';
 
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, RegisteredVote } from '../objects';

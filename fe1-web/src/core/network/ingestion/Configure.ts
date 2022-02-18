@@ -1,4 +1,4 @@
-import { getStore } from 'core/store';
+import { getStore } from 'core/redux';
 import { handleRpcRequests, setMessageRegistry } from './Handler';
 import { makeMessageStoreWatcher } from './Watcher';
 import { getNetworkManager } from '../index';

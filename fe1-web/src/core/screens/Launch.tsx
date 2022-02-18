@@ -13,7 +13,8 @@ import { Channel, Hash, Timestamp } from '../objects';
 import { TextBlock, TextInputLine, WideButtonView } from '../components';
 import containerStyles from '../styles/stylesheets/containerStyles';
 import { subscribeToChannel } from '../network/CommunicationApi';
-import { dispatch, KeyPairStore } from '../store';
+import { KeyPairStore } from '../store';
+import { dispatch } from '../redux';
 
 /**
  * Manages the Launch screen, where the user enters a name and an address to launch and connect

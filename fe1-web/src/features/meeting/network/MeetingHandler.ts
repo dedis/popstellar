@@ -1,8 +1,8 @@
-import { ExtendedMessage } from 'core/network/jsonrpc/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
-import { dispatch, getStore } from 'store';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { dispatch, getStore } from 'core/redux';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { makeCurrentLao } from 'features/lao/reducer';
-import { hasWitnessSignatureQuorum } from 'core/network/ingestion/Utils';
+import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 

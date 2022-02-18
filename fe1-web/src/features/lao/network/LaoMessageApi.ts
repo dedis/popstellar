@@ -1,5 +1,5 @@
 import { Channel, channelFromIds, Hash, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
-import { KeyPairStore } from 'store';
+import { KeyPairStore } from 'core/store';
 import { publish } from 'core/network/JsonRpcApi';
 
 import { CreateLao, StateLao, UpdateLao } from './messages';

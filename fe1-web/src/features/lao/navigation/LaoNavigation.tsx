@@ -3,7 +3,8 @@ import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import { getStore, getKeyPairState } from 'store';
+import { getKeyPairState } from 'core/reducers';
+import { getStore } from 'core/redux';
 import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 import Home from 'core/screens/Home';

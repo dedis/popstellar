@@ -1,6 +1,6 @@
-import { ExtendedMessage } from 'core/network/jsonrpc/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
-import { dispatch, getStore } from 'store';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { dispatch, getStore } from 'core/redux';
 import { makeCurrentLao } from 'features/lao/reducer';
 
 import { Chirp } from '../objects';

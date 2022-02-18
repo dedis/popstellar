@@ -1,11 +1,11 @@
-import { ExtendedMessage } from 'core/network/jsonrpc/messages';
-import { dispatch, getStore } from 'store';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { dispatch, getStore } from 'core/redux';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { makeCurrentLao } from 'features/lao/reducer';
 
 import { Reaction } from '../objects';
 import { AddReaction } from './messages/reaction';
 import { addReaction } from '../reducer';
-import { makeCurrentLao } from 'features/lao/reducer';
 
 /**
  * Handler for social media chirp's reactions

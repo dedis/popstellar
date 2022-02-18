@@ -1,7 +1,7 @@
-import { ExtendedMessage } from 'core/network/jsonrpc/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { getReactionChannel, getUserSocialChannel } from 'core/objects';
-import { AsyncDispatch, dispatch, getStore } from 'store';
+import { AsyncDispatch, dispatch, getStore } from 'core/redux';
 import { subscribeToChannel } from 'core/network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
