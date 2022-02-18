@@ -19,8 +19,7 @@ import {
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { EndElection } from 'features/evoting/network/messages';
 
-import { MessageRegistry } from '../index';
-import { configureMessages, encodeMessageData, Message } from '../Message';
+import { configureMessages, encodeMessageData, Message, MessageRegistry } from '..';
 
 jest.mock('features/wallet/objects/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),

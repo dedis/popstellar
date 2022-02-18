@@ -123,7 +123,7 @@ export class Message {
 
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    this.#messageData = messageRegistry.buildMessageData(dataObj as MessageData);
+    this.#messageData = messageRegistry.buildMessageData(dataObj);
   }
 
   public static fromJson(obj: any): Message {
