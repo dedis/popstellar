@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, TextStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Typography } from 'core/styles';
+import { Typography } from '../styles';
 
 const ListCollapsibleIcon = (props: IPropTypes) => {
   const { isVisible } = props;

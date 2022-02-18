@@ -1,4 +1,4 @@
-import { JsonRpcRequest } from 'core/network/jsonrpc/index';
+import { JsonRpcRequest } from 'core/network/jsonrpc';
 
 export type JsonRpcHandler = (message: JsonRpcRequest) => void;
 

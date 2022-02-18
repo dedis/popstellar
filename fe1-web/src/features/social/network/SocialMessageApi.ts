@@ -7,7 +7,7 @@ import {
 } from 'core/objects';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { publish } from 'core/network/jsonrpc/JsonRpcApi';
+import { publish } from 'core/network/JsonRpcApi';
 
 import { AddChirp, DeleteChirp } from './messages/chirp';
 import { AddReaction } from './messages/reaction';

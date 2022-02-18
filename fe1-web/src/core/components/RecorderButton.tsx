@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Colors } from 'core/styles';
-import circularButtonStyles from 'core/styles/stylesheets/circularButtonStyles';
+import { Colors } from '../styles';
+import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
 
 /**
  * Recorder button that executes an onPress action given in props

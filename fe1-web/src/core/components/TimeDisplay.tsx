@@ -4,7 +4,8 @@ import { StyleSheet, TextStyle, View, Text } from 'react-native';
 import TimeAgo from 'react-timeago';
 
 import STRINGS from 'resources/strings';
-import * as Spacing from 'core/styles/spacing';
+
+import { Spacing } from '../styles';
 
 /**
  * Displays a time in easily human readable format

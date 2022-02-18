@@ -70,16 +70,16 @@ function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
 
   const makeErr = (err: string) => `meeting/state was not processed: ${err}`;
 
-  const mtgMsg = msg.messageData as StateMeeting;
-  if (!hasWitnessSignatureQuorum(mtgMsg.modification_signatures)) {
-    console.warn(makeErr('witness quorum was not reached'));
-    return false;
-  }
-
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+
+  const mtgMsg = msg.messageData as StateMeeting;
+  if (!hasWitnessSignatureQuorum(mtgMsg.modification_signatures, lao)) {
+    console.warn(makeErr('witness quorum was not reached'));
     return false;
   }
 

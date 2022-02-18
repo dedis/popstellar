@@ -1,10 +1,13 @@
 import { JsonRpcMethod, JsonRpcRequest } from 'core/network/jsonrpc';
-import { Broadcast } from 'model/network/method';
-import { ExtendedMessage, Message } from 'core/network/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
+import { MessageRegistry } from 'core/network/messages';
 import { Channel } from 'core/objects';
-import { addMessages, dispatch } from 'store';
 import { OpenedLaoStore } from 'features/lao/store';
+import { dispatch } from 'core/store';
+import { addMessages } from 'core/reducers';
+import { Broadcast } from 'core/network/jsonrpc/Broadcast';
+import { ActionType, ObjectType } from 'core/network/messages/MessageData';
+import { ExtendedMessage, Message } from '../messages';
+
 
 let messageRegistry: MessageRegistry;
 

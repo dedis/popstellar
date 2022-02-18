@@ -1,11 +1,6 @@
-import {
-  Base64UrlData,
-  Hash,
-  PublicKey,
-  Timestamp,
-  WitnessSignature,
-  ProtocolError,
-} from 'core/objects';
+import { Base64UrlData, Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
+import { Lao } from 'features/lao/objects';
+import { WitnessSignature } from 'features/witness/objects';
 
 export function checkTimestampStaleness(timestamp: Timestamp) {
   const TIMESTAMP_BASE_TIME = new Timestamp(1577833200); // 1st january 2020
@@ -35,4 +30,19 @@ export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64U
 export function checkModificationId(id: Hash) {
   // FIXME check modification id
   return id; // simply to remove eslint warning
+}
+
+const MIN_WITNESS_FACTOR_N = 3; // numerator
+const MIN_WITNESS_FACTOR_D = 5; // denominator, = three fifths = 60%
+
+export function hasWitnessSignatureQuorum(witSigs: WitnessSignature[], lao: Lao): boolean {
+  if (!lao) {
+    return false;
+  }
+
+  const signaturesCount = witSigs.filter((witSig: WitnessSignature) =>
+    lao.witnesses.includes(witSig.witness),
+  ).length;
+
+  return signaturesCount * MIN_WITNESS_FACTOR_D >= lao.witnesses.length * MIN_WITNESS_FACTOR_N;
 }

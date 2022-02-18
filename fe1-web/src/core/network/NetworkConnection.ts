@@ -1,9 +1,9 @@
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
 import { ProtocolError } from 'core/objects';
 import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from 'core/network/jsonrpc';
-import { RpcOperationError } from 'core/network/jsonrpc/RpcOperationError';
+import { RpcOperationError } from 'core/network/RpcOperationError';
 import { NetworkError } from 'core/network/NetworkError';
-import { defaultRpcHandler, JsonRpcHandler } from 'core/network/jsonrpc/RpcHandler';
+import { defaultRpcHandler, JsonRpcHandler } from 'core/network/RpcHandler';
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;

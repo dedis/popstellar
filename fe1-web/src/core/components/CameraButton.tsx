@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, ImageStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
-import circularButtonStyles from 'core/styles/stylesheets/circularButtonStyles';
+import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
 
 const cameraImage = require('resources/img/ic_camera.png');
 

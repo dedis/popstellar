@@ -3,11 +3,10 @@ import { Platform, StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import STRINGS from 'resources/strings';
-
-import Home from 'core/screens/Home';
-import Launch from 'core/screens/Launch';
 import { ConnectNavigation } from 'features/connect/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
+
+import { Home, Launch } from '../screens';
 
 /**
  * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch

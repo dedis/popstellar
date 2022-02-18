@@ -10,4 +10,4 @@
  */
 
 export * from './KeyPairStore';
-export * from './Storage';
+export * from 'core/redux/Storage';

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import QRCodeDisplay from 'react-qr-code';
 import { View } from 'react-native';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
+import containerStyles from '../styles/stylesheets/containerStyles';
 
 /**
  * Creates and displays a QR code with the public key of the current user

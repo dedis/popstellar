@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, View, ViewStyle, TextInput, TextStyle } from 'react-native';
 
-import { Typography, Views } from 'core/styles';
+import { Typography, Views } from '../styles';
 import CopyButton from './CopyButton';
 
 /**

@@ -4,7 +4,7 @@ import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native'
 
 import STRINGS from 'resources/strings';
 
-import { Spacing, Typography, Views } from 'core/styles';
+import { Spacing, Typography, Views } from '../styles';
 import DeleteButton from './DeleteButton';
 
 /**

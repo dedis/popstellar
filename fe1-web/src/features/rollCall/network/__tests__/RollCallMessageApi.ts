@@ -6,7 +6,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/messages';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
-import { publish as mockPublish } from 'core/network/jsonrpc/JsonRpcApi';
+import { publish as mockPublish } from 'core/network/JsonRpcApi';
 
 import * as msApi from '../RollCallMessageApi';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';

@@ -1,4 +1,4 @@
-import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc/index';
+import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
 import { Publish, Subscribe } from 'model/network/method';
 import { Message } from 'core/network/messages';
 import { MessageData } from 'core/network/messages';

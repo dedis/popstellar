@@ -38,16 +38,16 @@ function handleLaoStateMessage(msg: ExtendedMessage): boolean {
 
   const makeErr = (err: string) => `lao/state was not processed: ${err}`;
 
-  const stateLaoData = msg.messageData as StateLao;
-  if (!hasWitnessSignatureQuorum(stateLaoData.modification_signatures)) {
-    console.warn(makeErr('witness quorum was not reached'));
-    return false;
-  }
-
   const storeState = getStore().getState();
   const oldLao = getCurrentLao(storeState);
   if (!oldLao) {
     console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+
+  const stateLaoData = msg.messageData as StateLao;
+  if (!hasWitnessSignatureQuorum(stateLaoData.modification_signatures, oldLao)) {
+    console.warn(makeErr('witness quorum was not reached'));
     return false;
   }
 

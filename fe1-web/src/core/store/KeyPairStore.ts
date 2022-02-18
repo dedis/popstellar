@@ -1,6 +1,6 @@
 import { Base64UrlData, KeyPair, KeyPairState, PrivateKey, PublicKey } from 'core/objects';
 import { sign } from 'tweetnacl';
-import { dispatch, getStore } from 'core/store/Storage';
+import { dispatch, getStore } from 'core/redux/Storage';
 import { getKeyPairState, setKeyPair } from 'core/reducers';
 
 /**

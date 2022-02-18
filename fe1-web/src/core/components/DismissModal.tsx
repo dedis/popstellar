@@ -4,7 +4,7 @@ import { View, Modal, Text } from 'react-native';
 
 import STRINGS from 'resources/strings';
 
-import modalStyles from 'core/styles/stylesheets/modalStyles';
+import modalStyles from '../styles/stylesheets/modalStyles';
 import WideButtonView from './WideButtonView';
 
 /**

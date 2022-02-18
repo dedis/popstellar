@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DatePickerElement from 'react-datepicker';
 
-import { Timestamp } from 'core/objects';
+import { Timestamp } from '../objects';
 
 const ONE_MINUTE_IN_SECONDS = 60;
 

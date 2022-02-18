@@ -9,4 +9,4 @@
 
 export { getNetworkManager } from './NetworkManager';
 export * from './NetworkError';
-export * from 'core/network/jsonrpc/RpcOperationError';
+export * from 'core/network/RpcOperationError';

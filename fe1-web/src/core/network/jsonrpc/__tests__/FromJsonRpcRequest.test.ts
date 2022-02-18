@@ -1,5 +1,3 @@
-// this file should be heavily refactored to improve clarity and maintainability
-
 import 'jest-extended';
 import '__tests__/utils/matchers';
 

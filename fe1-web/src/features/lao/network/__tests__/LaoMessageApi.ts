@@ -9,7 +9,7 @@ import {
   mockLaoId,
   mockLaoName,
 } from '__tests__/utils/TestUtils';
-import { publish as mockPublish } from 'core/network/jsonrpc/JsonRpcApi';
+import { publish as mockPublish } from 'core/network/JsonRpcApi';
 
 import { CreateLao, StateLao, UpdateLao } from '../messages';
 import { OpenedLaoStore } from '../../store';

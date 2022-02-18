@@ -4,9 +4,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import STRINGS from 'resources/strings';
-
 import { LaoNavigation } from 'features/lao/navigation';
-import MainNavigation from 'core/navigation/MainNavigation';
+
+import MainNavigation from './MainNavigation';
 
 /**
  * Define the App stack navigation

@@ -9,7 +9,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { ToastProvider } from 'react-native-toast-notifications';
 
 import { Provider } from 'react-redux';
-import { store, persist } from 'core/store/Storage';
+import { store, persist } from 'core/redux/Storage';
 
 import AppNavigation from 'core/navigation/AppNavigation';
 import { navigationRef } from 'core/navigation/RootNavigation';

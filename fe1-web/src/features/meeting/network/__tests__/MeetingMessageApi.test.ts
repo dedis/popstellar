@@ -5,7 +5,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/messages';
 import { Hash, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
-import { publish as mockPublish } from 'core/network/jsonrpc/JsonRpcApi';
+import { publish as mockPublish } from 'core/network/JsonRpcApi';
 
 import { CreateMeeting } from '../messages';
 import * as msApi from '../MeetingMessageApi';

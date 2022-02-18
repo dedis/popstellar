@@ -26,7 +26,8 @@ the future. Files might have moved since, but their name should be identical
 
 - EndElection : `model/network/method/message/__tests__/Message.test.ts`
 - EventElection : `features/events/components/Event.tsx`
-- Election : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`
+- Election : `features/events/objects/LaoEventBuilder.ts`, `features/events/objects/__tests__/LaoEventBuilder.test.ts`,
+`src/core/components/BarChartDisplay.tsx`
 - ElectionHandler : `ingestion/handlers/index.ts`
 - CreateElection : `navigation/bars/organizer/OrganizerNavigation.tsx`
 - Storage is done in EventsReducer/EventsStore and could be done separately in an ElectionsReducer

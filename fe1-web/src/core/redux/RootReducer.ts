@@ -8,7 +8,7 @@ import { laoReducer } from 'features/lao/reducer';
 import keyPairReducer from 'core/reducers/KeyPairReducer';
 import messageReducer from 'core/reducers/MessageReducer';
 
-import { wrapWithClearStorageReducer } from 'core/reducers/ClearStorageReducer';
+import { wrapWithClearStorageReducer } from 'core/redux/ClearStorageReducer';
 
 const persistConfig = {
   key: 'root',

@@ -1,9 +1,9 @@
-import { getStore } from 'store';
-import { getNetworkManager } from 'core/network/index';
-import { MessageRegistry } from 'core/network/messages';
-import { handleRpcRequests, setMessageRegistry } from 'core/network/ingestion/Handler';
-import { makeMessageStoreWatcher } from 'core/network/ingestion/Watcher';
-import { configure } from '../../../ingestion/handlers';
+import { getStore } from 'core/store';
+import { handleRpcRequests, setMessageRegistry } from './Handler';
+import { makeMessageStoreWatcher } from './Watcher';
+import { getNetworkManager } from '../index';
+import { MessageRegistry } from '../messages';
+import { configure } from './index';
 
 export function configureIngestion(messageRegistry: MessageRegistry) {
   // configure the messages handlers

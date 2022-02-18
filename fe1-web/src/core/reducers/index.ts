@@ -15,9 +15,5 @@
  * Reducers can be combined in a "tree"-like way.
  * The RootReducer sits at the top, combining all the reducers.
  */
-import { rootReducer } from 'core/reducers/RootReducer';
-
-export default rootReducer;
-
 export * from 'core/reducers/KeyPairReducer';
 export * from 'core/reducers/MessageReducer';
