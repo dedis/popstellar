@@ -2,11 +2,12 @@ node_modules
 dist
 coverage
 web-build
+.eslint.react-native-config.js
+.eslintrc.js
 .expo
 .expo-shared
 babel.config.js
 metro.config.js
 jest.config.js
+tsconfig.json
 webpack.config.js
-.eslintrc.js
-.eslint.react-native-config.js

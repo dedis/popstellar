@@ -1,14 +1,14 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { MajorityResult } from 'core/objects';
-import BarChartDisplay from 'core/components/BarChartDisplay';
+import { MajorityResult } from '../../objects';
+import BarChartDisplay from '../BarChartDisplay';
 
 describe('BarChartDisplay', () => {
   it('renders correctly', () => {
     const data: MajorityResult[] = [
-      { ballot_option: 'Yes', count: 10 },
-      { ballot_option: 'No', count: 5 },
-      { ballot_option: "I don't know", count: 4 },
+      { ballotOption: 'Yes', count: 10 },
+      { ballotOption: 'No', count: 5 },
+      { ballotOption: "I don't know", count: 4 },
     ];
     const component = render(<BarChartDisplay data={data} />).toJSON();
     expect(component).toMatchSnapshot();
