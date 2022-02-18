@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-
 import PropTypes from 'prop-types';
+import { useToast } from 'react-native-toast-notifications';
+import { useRoute } from '@react-navigation/core';
 
 import { getNetworkManager } from 'network';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { Channel, channelFromIds, Hash } from 'model/objects';
-
 import { Spacing } from 'styles';
 import containerStyles from 'styles/stylesheets/containerStyles';
-
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
-
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
-import { useRoute } from '@react-navigation/core';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
 
 /**

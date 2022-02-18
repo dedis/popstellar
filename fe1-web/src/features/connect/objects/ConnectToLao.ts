@@ -1,5 +1,5 @@
-import { validateConnectToLao } from '../network/validation';
-import { ProtocolError } from './ProtocolError';
+import { validateConnectToLao } from 'model/network/validation';
+import { ProtocolError } from 'model/objects/ProtocolError';
 
 /**
  * Object containing the server url and Lao id to generate the QR code of a Lao.

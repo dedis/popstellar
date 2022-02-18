@@ -6,7 +6,7 @@ import STRINGS from 'res/strings';
 
 import Home from 'parts/Home';
 import Launch from 'parts/Launch';
-import ConnectNavigation from 'navigation/bars/ConnectNavigation';
+import { ConnectNavigation } from 'features/connect/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
 
 /**

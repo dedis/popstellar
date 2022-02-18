@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
-
-// @ts-ignore
 import QrReader from 'react-qr-reader';
+import PropTypes from 'prop-types';
+import { useToast } from 'react-native-toast-notifications';
+
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
-import PropTypes from 'prop-types';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import { Colors } from 'styles';
 import { WideButtonView } from 'core/components';
-import { ConnectToLao } from 'model/objects';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'res/const';
+
+import { ConnectToLao } from '../objects';
 
 /**
  * Starts a QR code scan

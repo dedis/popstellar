@@ -110,3 +110,8 @@ the future.
 - WitnessSignature : `src/model/network/method/message/Message.ts`, `src/store/reducers/MessageReducer.ts`,
 `src/features/lao/network/messages/StateLao.ts`, `src/features/meeting/network/messages/StateMeeting.ts`,
 `src/model/network/method/message/ExtendedMessage.ts`
+
+## Connect
+
+- ConnectNavigation : `src/navigation/bars/MainNavigation.tsx`
+- ConnectToLao : `src/features/lao/components/LaoProperties.tsx`

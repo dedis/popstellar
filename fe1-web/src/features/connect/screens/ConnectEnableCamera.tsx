@@ -1,9 +1,10 @@
 import React from 'react';
 import { View } from 'react-native';
+import PropTypes from 'prop-types';
+
 import STRINGS from 'res/strings';
 import PROPS_TYPE from 'res/Props';
 import { TextBlock, WideButtonView } from 'core/components';
-import PropTypes from 'prop-types';
 import containerStyles from 'styles/stylesheets/containerStyles';
 
 /**

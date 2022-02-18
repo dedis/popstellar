@@ -3,9 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import ConnectEnableCamera from 'parts/connect/ConnectEnableCamera';
-import ConnectOpenScan from 'parts/connect/ConnectOpenScan';
-import ConnectConfirm from 'parts/connect/ConnectConfirm';
+import { ConnectConfirm, ConnectEnableCamera, ConnectOpenScan } from 'features/connect/screens';
 
 /**
  * Define the connect panel stack navigation
