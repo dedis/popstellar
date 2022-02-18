@@ -14,7 +14,12 @@
     "startServer": "node __tests__/utils/LocalMockServer.js",
     "startMonitorServer": "nodemon __tests__/utils/LocalMockServer.js",
     "test": "jest",
-    "eslint": "node_modules/.bin/eslint .",
+    "eslint": "eslint .",
+    "prettier": "prettier --check .",
+    "prettier-format": "prettier --write .",
+    "depcruise": "depcruise --config .depcruise.js -- src",
+    "depcruise-graph": "depcruise --config .depcruise.js --output-type dot -- src | dot -T svg > dist/graph.svg",
+    "depcruise-graph-archi": "depcruise --config .depcruise.js --output-type cdot -- src | dot -T svg > dist/archi.svg",
     "docs": "typedoc"
   },
   "dependencies": {
@@ -100,6 +105,7 @@
     "babel-jest": "^26.6.3",
     "babel-plugin-module-resolver": "^4.1.0",
     "chai": "^4.2.0",
+    "dependency-cruiser": "^11.3.1",
     "eslint": "^7.11.0",
     "eslint-config-airbnb-typescript": "^12.3.1",
     "eslint-config-prettier": "^8.3.0",
