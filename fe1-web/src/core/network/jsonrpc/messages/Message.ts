@@ -1,7 +1,6 @@
-import { Base64UrlData, Channel, Hash, PublicKey, Signature, ProtocolError } from 'core/objects';
+import { Base64UrlData, Channel, Hash, PublicKey, Signature, ProtocolError, WitnessSignature, WitnessSignatureState } from 'core/objects';
 import { KeyPairStore } from 'core/store';
 import { getCurrentPopTokenFromStore } from 'features/wallet/objects';
-import { WitnessSignature, WitnessSignatureState } from 'features/witness/objects';
 
 import { MessageRegistry } from './MessageRegistry';
 import { MessageData, SignatureType } from './MessageData';

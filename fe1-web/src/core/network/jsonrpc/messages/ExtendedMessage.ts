@@ -1,5 +1,4 @@
-import { Hash, PublicKey, Base64UrlData, Signature, Timestamp, Channel } from 'core/objects';
-import { WitnessSignature } from 'features/witness/objects';
+import { Hash, PublicKey, Base64UrlData, Signature, Timestamp, Channel, WitnessSignature } from 'core/objects';
 
 import { Message, MessageState } from './Message';
 

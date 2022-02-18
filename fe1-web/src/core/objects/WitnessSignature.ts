@@ -1,4 +1,6 @@
-import { Hash, PublicKey, Signature } from 'core/objects';
+import { Hash } from './Hash';
+import { PublicKey } from './PublicKey';
+import { Signature } from './Signature';
 
 /**
  * WitnessSignatureState is the interface that should match JSON.stringify(WitnessSignature)

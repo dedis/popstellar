@@ -3,8 +3,8 @@ import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageDat
 import { dispatch, getStore } from 'core/redux';
 import { makeCurrentLao } from 'features/lao/reducer';
 import { addMessageWitnessSignature } from 'core/reducers';
+import { WitnessSignature } from 'core/objects';
 
-import { WitnessSignature } from '../objects';
 import { WitnessMessage } from './messages';
 
 const getCurrentLao = makeCurrentLao();

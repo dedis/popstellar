@@ -1,4 +1,4 @@
-import { Hash, PublicKey, Signature, Timestamp, ProtocolError } from 'core/objects';
+import { Hash, PublicKey, Signature, Timestamp, ProtocolError, WitnessSignature } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import {
@@ -6,7 +6,6 @@ import {
   checkTimestampStaleness,
   checkWitnessSignatures,
 } from 'core/network/validation/Checker';
-import { WitnessSignature } from 'features/witness/objects';
 
 /** Data received to track the state of a Meeting */
 export class StateMeeting implements MessageData {
