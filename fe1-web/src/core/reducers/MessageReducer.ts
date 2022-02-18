@@ -51,7 +51,7 @@ const messagesSlice = createSlice({
       ) {
         const { laoId, messages } = action.payload;
 
-        // Lao not initialized, create it in the messages state tree
+        // Lao not initialized, create it in the message state tree
         if (!(laoId in state.byLaoId)) {
           state.byLaoId[laoId] = {
             byId: {},
@@ -62,7 +62,7 @@ const messagesSlice = createSlice({
 
         messages.forEach((msg: ExtendedMessageState) => {
           if (msg.message_id in state.byLaoId[laoId].byId) {
-            // don't add again a messages we have already received
+            // don't add again a message we have already received
             // TODO: we might want to merge the witness signatures here
             return;
           }
@@ -112,7 +112,7 @@ const messagesSlice = createSlice({
       state.byLaoId = {};
     },
 
-    // Add witness signatures to a messages
+    // Add witness signatures to a message
     addMessageWitnessSignature: {
       prepare(laoId: Hash | string, messageId: Hash | string, witSig: WitnessSignatureState): any {
         return {

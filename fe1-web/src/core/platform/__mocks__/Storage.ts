@@ -1,14 +1,14 @@
-const cryptoStorage = new Map();
+const storage = new Map();
 
 type Key = string | number;
 type Updater<T> = (oldValue: T | undefined) => T;
 
 export function get(key: Key): Promise<any> {
-  return Promise.resolve(cryptoStorage.get(key));
+  return Promise.resolve(storage.get(key));
 }
 
 export function set(key: Key, value: any): Promise<void> {
-  cryptoStorage.set(key, value);
+  storage.set(key, value);
   return Promise.resolve();
 }
 
@@ -19,5 +19,5 @@ export async function update<T>(key: Key, updater: Updater<T>): Promise<void> {
 }
 
 export function getMockStorage(): Map<any, any> {
-  return cryptoStorage;
+  return storage;
 }

@@ -98,7 +98,7 @@ const socialSlice = createSlice({
           store.byId[chirp.id] = chirp;
         }
 
-        // even the chirp is deleted, we add it to allIdsInOrder to display the messages
+        // even the chirp is deleted, we add it to allIdsInOrder to display the message
         const insertIdxInAll = findInsertIdx(store.allIdsInOrder, store.byId, chirp.time);
         store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
 

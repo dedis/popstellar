@@ -25,7 +25,7 @@ interface EventReducerState {
    *
    * @remarks
    *
-   * If a new messages (with a new_id) changes the state of an event (with old_id),
+   * If a new message (with a new_id) changes the state of an event (with old_id),
    * this map associates new_id -> old_id.
    * This ensures that we can keep only one event in memory, with its up-to-date state,
    * but future messages can refer to new_id as needed.

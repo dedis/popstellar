@@ -28,7 +28,7 @@ function handleLaoCreateMessages(msg: ExtendedMessage): boolean {
     return false;
   }
 
-  // processing the lao/create messages:
+  // processing the lao/create message:
   // - we either connect to the LAO (if there's no active connection) OR
   // - we simply add it to the list of known LAOs
   messageRegistry.handleMessage(msg);
@@ -38,10 +38,10 @@ function handleLaoCreateMessages(msg: ExtendedMessage): boolean {
 
 export function storeMessage(msg: Message, ch: Channel) {
   try {
-    // create extended messages
+    // create extended message
     const extMsg = ExtendedMessage.fromMessage(msg, ch);
 
-    // process LAO/create messages
+    // process LAO/create message
     const isLao = handleLaoCreateMessages(extMsg);
 
     if (!isLao) {

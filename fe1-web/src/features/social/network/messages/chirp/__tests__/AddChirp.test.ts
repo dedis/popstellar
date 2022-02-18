@@ -69,10 +69,10 @@ describe('AddChirp', () => {
 
     it('should throw an error if text is too long', () => {
       const bigMessage =
-        "It seems that this messages won't fit. It seems that this messages won't fit. " +
-        "It seems that this messages won't fit. It seems that this messages won't fit. It seems that " +
-        "this messages won't fit. It seems that this messages won't fit. It seems that this messages " +
-        "won't fit. It seems that this messages won't fit.";
+        "It seems that this message won't fit. It seems that this message won't fit. " +
+        "It seems that this message won't fit. It seems that this message won't fit. It seems that " +
+        "this message won't fit. It seems that this message won't fit. It seems that this message " +
+        "won't fit. It seems that this message won't fit.";
       const createWrongObj = () =>
         new AddChirp({
           object: ObjectType.CHIRP,

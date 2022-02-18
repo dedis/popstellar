@@ -12,7 +12,7 @@ export class AddReaction implements MessageData {
   // Emoji indicating the added reaction
   public readonly reaction_codepoint: string;
 
-  // id of the chirp messages
+  // id of the chirp message
   public readonly chirp_id: Hash;
 
   // timestamp of this add reaction request

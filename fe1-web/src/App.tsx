@@ -23,7 +23,7 @@ import { configureMessages } from 'core/network/messages';
  *
  * It opens the navigation component in a safeAreaProvider to be able use
  * SafeAreaView in order to resolve issue with status bar.
- * It initializes the messages registry, configures the ingestion and messages signatures.
+ * It initializes the message registry, configures the ingestion and message signatures.
  *
  * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */

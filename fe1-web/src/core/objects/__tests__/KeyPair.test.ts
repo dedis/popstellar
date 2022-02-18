@@ -24,7 +24,7 @@ test('KeyPair can sign and verify', () => {
 test('Invalid signature gets rejected', () => {
   const kp: KeyPair = KeyPair.fromState(kpState);
   const message: Base64UrlData = Base64UrlData.encode('message');
-  const other: Base64UrlData = Base64UrlData.encode('other messages');
+  const other: Base64UrlData = Base64UrlData.encode('other message');
   const signature = kp.privateKey.sign(message);
   expect(signature.verify(kp.publicKey, other)).toBeFalse();
 });

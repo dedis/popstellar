@@ -12,7 +12,7 @@ const getMessageState = makeLaoMessagesState();
 
 function handleLaoCreateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.CREATE) {
-    console.warn('handleLaoCreateMessage was called to process an unsupported messages', msg);
+    console.warn('handleLaoCreateMessage was called to process an unsupported message', msg);
     return false;
   }
 
@@ -32,7 +32,7 @@ function handleLaoCreateMessage(msg: ExtendedMessage): boolean {
 
 function handleLaoStateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.STATE) {
-    console.warn('handleLaoStateMessage was called to process an unsupported messages', msg);
+    console.warn('handleLaoStateMessage was called to process an unsupported message', msg);
     return false;
   }
 
@@ -59,7 +59,7 @@ function handleLaoStateMessage(msg: ExtendedMessage): boolean {
 
   const updateMessage = getMessage(msgState, stateLaoData.modification_id);
   if (!updateMessage) {
-    console.warn(makeErr("'modification_id' references unknown messages"));
+    console.warn(makeErr("'modification_id' references unknown message"));
     return false;
   }
   const updateLaoData = updateMessage.messageData as UpdateLao;

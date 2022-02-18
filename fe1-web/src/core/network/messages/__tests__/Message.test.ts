@@ -40,7 +40,7 @@ beforeAll(() => {
 });
 
 describe('Message', () => {
-  it('fromData signs the messages correctly when adding a chirp', async () => {
+  it('fromData signs the message correctly when adding a chirp', async () => {
     const messageData = new AddChirp({
       text: 'text',
       timestamp: new Timestamp(1607277600),
@@ -52,7 +52,7 @@ describe('Message', () => {
     expect(m.signature).toEqual(signature);
   });
 
-  it('fromData signs the messages correctly when ending an election', async () => {
+  it('fromData signs the message correctly when ending an election', async () => {
     const messageData = new EndElection({
       lao: mockLao.id,
       election: Hash.fromStringArray(EventTags.ELECTION, mockLaoId, '5678', '1607277600'),

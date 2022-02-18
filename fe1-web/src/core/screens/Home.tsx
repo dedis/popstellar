@@ -13,7 +13,7 @@ import { LAOItem } from 'features/lao/components';
 import { TextBlock } from 'core/components';
 
 /**
- * Manage the Home screen component: if the user is not connected to any LAO, a welcome messages
+ * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
  * is displayed, otherwise a list available previously connected LAOs is displayed instead
  *
  * TODO use the list that the user have already connect to, and ask data to

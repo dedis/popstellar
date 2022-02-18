@@ -75,7 +75,7 @@ const Launch = ({ navigation }: IPropTypes) => {
     });
 
     OpenedLaoStore.store(sampleLao);
-    console.info('Stored test lao in cryptoStorage : ', sampleLao);
+    console.info('Stored test lao in storage : ', sampleLao);
   };
 
   const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
@@ -104,7 +104,7 @@ const Launch = ({ navigation }: IPropTypes) => {
           title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
           onPress={onTestOpenConnection}
         />
-        <WideButtonView title="[TEST] Clear (persistent) cryptoStorage" onPress={onTestClearStorage} />
+        <WideButtonView title="[TEST] Clear (persistent) storage" onPress={onTestClearStorage} />
       </View>
     </View>
   );

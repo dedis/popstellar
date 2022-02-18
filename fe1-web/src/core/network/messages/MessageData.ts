@@ -34,7 +34,7 @@ export enum ActionType {
   NOTIFY_DELETE = 'notify_delete',
 }
 
-/** Enumeration of all possible signatures of a messages */
+/** Enumeration of all possible signatures of a message */
 export enum SignatureType {
   KEYPAIR = 'keypair',
   POP_TOKEN = 'pop_token',

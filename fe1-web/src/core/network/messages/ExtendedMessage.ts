@@ -47,7 +47,7 @@ export class ExtendedMessage extends Message {
 
   public static fromState(state: ExtendedMessageState): ExtendedMessage {
     return new ExtendedMessage({
-      // messages fields:
+      // message fields:
       data: new Base64UrlData(state.data),
       sender: new PublicKey(state.sender),
       signature: new Signature(state.signature),

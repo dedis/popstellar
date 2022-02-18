@@ -49,13 +49,13 @@ const { KEYPAIR, POP_TOKEN } = SignatureType;
  * Represents an entry of the MessageRegistry.
  */
 interface MessageEntry {
-  // Function to handle this type of messages
+  // Function to handle this type of message
   handle?: HandleFunction;
 
-  // Function to build this type of messages from Json
+  // Function to build this type of message from Json
   build?: Function;
 
-  // Informs how the messages should be signed
+  // Informs how the message should be signed
   signature?: SignatureType;
 }
 
@@ -63,7 +63,7 @@ interface MessageEntry {
 const k = (object: ObjectType, action: ActionType): string => `${object}, ${action}`;
 
 /**
- * Registry of messages data classes and their corresponding properties. By default, it already
+ * Registry of message data classes and their corresponding properties. By default, it already
  * contains all types of MessageData as keys and their corresponding signature type and build
  * function.
  */
@@ -104,11 +104,11 @@ export class MessageRegistry {
   ]);
 
   /**
-   * Adds a handle function to a type of messages in the registry.
+   * Adds a handle function to a type of message in the registry.
    *
-   * @param object - The object of the messages
-   * @param action - The action of the messages
-   * @param handleFunc - The function that handles this type of messages
+   * @param object - The object of the message
+   * @param action - The action of the message
+   * @param handleFunc - The function that handles this type of message
    */
   addHandler(object: ObjectType, action: ActionType, handleFunc: HandleFunction) {
     const entry = this.getEntry({ object: object, action: action });
@@ -116,10 +116,10 @@ export class MessageRegistry {
   }
 
   /**
-   * Handles a messages by calling the corresponding function.
+   * Handles a message by calling the corresponding function.
    *
-   * @param msg - The messages to be handled
-   * @returns boolean - Telling if the messages has been processed or not
+   * @param msg - The message to be handled
+   * @returns boolean - Telling if the message has been processed or not
    */
   handleMessage(msg: ExtendedMessage): boolean {
     const data = msg.messageData;
@@ -128,10 +128,10 @@ export class MessageRegistry {
   }
 
   /**
-   * Builds a messages from a MessageData by calling the corresponding function.
+   * Builds a message from a MessageData by calling the corresponding function.
    *
-   * @param data -The type of messages to be built
-   * @returns MessageData - The built messages
+   * @param data -The type of message to be built
+   * @returns MessageData - The built message
    */
   buildMessageData(data: MessageData): MessageData {
     const messageEntry = this.getEntry(data);
@@ -141,8 +141,8 @@ export class MessageRegistry {
   /**
    * Gets the signature type of a MessageData.
    *
-   * @param data - The type of messages we want to know how to sign
-   * @returns SignatureType - The type of signature of the messages
+   * @param data - The type of message we want to know how to sign
+   * @returns SignatureType - The type of signature of the message
    */
   getSignatureType(data: MessageData): SignatureType {
     const messageEntry = this.getEntry(data);

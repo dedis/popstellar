@@ -152,7 +152,7 @@ export class NetworkConnection {
       return this.waitWebsocketReady().then(() => this.sendPayload(payload));
     }
 
-    // websocket ready to be used, messages can be sent
+    // websocket ready to be used, message can be sent
     let query: JsonRpcRequest = payload;
 
     // Note: this only works because react/Js is single threaded

@@ -1,4 +1,4 @@
-import { get, set } from 'core/platform/crypto/CryptoStorage';
+import { get, set } from 'core/platform/crypto/Storage';
 import { getSubtleCrypto } from 'core/platform/crypto/browser';
 
 const algorithm: RsaHashedKeyAlgorithm = {

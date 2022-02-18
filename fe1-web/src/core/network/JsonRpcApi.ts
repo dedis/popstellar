@@ -35,7 +35,7 @@ export function subscribe(channel: Channel): Promise<void> {
     .then(() => {
       /* discard JsonRpcResponse, as subscribe only returns an ack */
     });
-  // propagate the catch() with the full error messages, as it needs to be handled on a higher level
+  // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
 
 function* messageGenerator(msgs: any[]) {

@@ -4,10 +4,10 @@ import { Base64UrlData } from 'core/objects/Base64Url';
 
 export class Signature extends Base64UrlData {
   /**
-   * Verify the signature for the messages data and return true iff verification succeeded
+   * Verify the signature for the message data and return true iff verification succeeded
    *
    * @param key public key of the presumed sender
-   * @param data base64Url signed messages
+   * @param data base64Url signed message
    * @return true iff the signature verification succeeded
    */
   public verify(key: PublicKey, data: Base64UrlData): boolean {

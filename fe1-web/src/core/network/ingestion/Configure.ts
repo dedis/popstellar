@@ -6,7 +6,7 @@ import { MessageRegistry } from '../messages';
 import { configure } from './index';
 
 export function configureIngestion(messageRegistry: MessageRegistry) {
-  // configure the messages handlers
+  // configure the message handlers
   configure(messageRegistry);
   setMessageRegistry(messageRegistry);
 

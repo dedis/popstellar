@@ -34,13 +34,13 @@ beforeEach(() => {
 });
 
 describe('MessageRegistry', () => {
-  it('should throw an error when adding a handler to an unsupported type of messages', async () => {
+  it('should throw an error when adding a handler to an unsupported type of message', async () => {
     const mockHandle = jest.fn();
     const addWrongHandler = () => registry.addHandler(CHIRP, INVALID, mockHandle);
     expect(addWrongHandler).toThrow(Error);
   });
 
-  it('should work correctly for handling messages', async () => {
+  it('should work correctly for handling message', async () => {
     const mockHandle = jest.fn();
     registry.addHandler(CHIRP, ADD, mockHandle);
     const message = await Message.fromData(messageData);
@@ -50,12 +50,12 @@ describe('MessageRegistry', () => {
     expect(mockHandle).toHaveBeenCalledWith(extMsg);
   });
 
-  it('should throw an error when building an unsupported type of messages', async () => {
+  it('should throw an error when building an unsupported type of message', async () => {
     const buildWrongMessage = () => registry.buildMessageData({ object: CHIRP, action: INVALID });
     expect(buildWrongMessage).toThrow(Error);
   });
 
-  it('should throw an error when getting the signature of an unsupported type of messages', () => {
+  it('should throw an error when getting the signature of an unsupported type of message', () => {
     const wrongSignature = () => registry.getSignatureType({ object: CHIRP, action: INVALID });
     expect(wrongSignature).toThrow(Error);
   });

@@ -109,7 +109,7 @@ const EventElection = (props: IPropTypes) => {
         voteIDs: registeredVote.votes.map((vote) => vote.id),
       }),
     );
-    // Sort by messages ID
+    // Sort by message ID
     votes.sort((a, b) => (a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
     const arrayToHash: Hash[] = [];
     votes.forEach((registeredVote) => {
@@ -167,7 +167,7 @@ const EventElection = (props: IPropTypes) => {
   }, []);
 
   // Here we use the election object form the redux store in order to see the electionStatus
-  // update when an  incoming electionEnd or electionResult messages comes
+  // update when an  incoming electionEnd or electionResult message comes
   // (in handler/ElectionHandler.ts)
   const getElectionDisplay = (status: ElectionStatus) => {
     switch (status) {

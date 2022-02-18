@@ -57,7 +57,7 @@ describe('MessageReducer', () => {
     expect(messageReduce(undefined, {} as AnyAction)).toEqual(initialState);
   });
 
-  it('should add the messages', async () => {
+  it('should add the message', async () => {
     const extMsg = await createExtendedMessage();
     const msgId = extMsg.message_id.toString();
 
@@ -76,7 +76,7 @@ describe('MessageReducer', () => {
     );
   });
 
-  it('should process the messages', async () => {
+  it('should process the message', async () => {
     const extMsg = await createExtendedMessage();
     const msgId = extMsg.message_id.toString();
 
@@ -105,7 +105,7 @@ describe('MessageReducer', () => {
   });
 });
 
-describe('messages selectors', () => {
+describe('message selectors', () => {
   it('should return undefined if lao id is undefined', () => {
     expect(makeLaoMessagesState().resultFunc({ [mockLaoId]: randomState }, undefined)).toEqual(
       undefined,
@@ -116,7 +116,7 @@ describe('messages selectors', () => {
     expect(getLaoMessagesState(mockLaoId, randomState)).toEqual(emptyState);
   });
 
-  it('should return undefined if the messages id is not in store', () => {
+  it('should return undefined if the message id is not in store', () => {
     expect(getMessage(randomState, '1234')).toEqual(undefined);
   });
 });

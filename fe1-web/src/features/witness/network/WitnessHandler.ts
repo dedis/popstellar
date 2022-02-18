@@ -13,14 +13,14 @@ function handleWitnessMessage(msg: ExtendedMessage): boolean {
     msg.messageData.object !== ObjectType.MESSAGE ||
     msg.messageData.action !== ActionType.WITNESS
   ) {
-    console.warn('handleWitnessMessage was called to process an unsupported messages', msg);
+    console.warn('handleWitnessMessage was called to process an unsupported message', msg);
     return false;
   }
 
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn('messages/witness was not processed: no LAO is currently active');
+    console.warn('message/witness was not processed: no LAO is currently active');
     return false;
   }
 
@@ -34,7 +34,7 @@ function handleWitnessMessage(msg: ExtendedMessage): boolean {
 
   if (!ws.verify(msgId)) {
     console.warn(
-      'Definitively ignoring witness messages because ' +
+      'Definitively ignoring witness message because ' +
         `signature by ${ws.witness} doesn't match message ${msgId}`,
       msg,
     );

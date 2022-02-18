@@ -20,7 +20,7 @@ export function configureMessages(registry: MessageRegistry) {
  * Encodes a MessageData into a Base64Url.
  *
  * @param msgData - The MessageData to be encoded
- * @returns Base64UrlData - The encoded messages
+ * @returns Base64UrlData - The encoded message
  *
  * @remarks
  * This is exported for testing purposes.
@@ -141,11 +141,11 @@ export class Message {
    * Creates a Message object from a given MessageData and signatures.
    * We don't add the channel property here as we don't want to send that over the network.
    * It signs the messages with the key pair of the user, or the pop token's key pair
-   * according to the type of messages.
+   * according to the type of message.
    *
    * @param data - The MessageData to be signed and hashed
    * @param witnessSignatures- The signatures of the witnesses
-   * @returns - The created messages
+   * @returns - The created message
    */
   public static async fromData(
     data: MessageData,
@@ -156,10 +156,10 @@ export class Message {
     let privateKey = KeyPairStore.getPrivateKey();
     let signature: Signature;
 
-    // Get the signature type of the type of messages we want to sign
+    // Get the signature type of the type of message we want to sign
     const signatureType = messageRegistry.getSignatureType(data);
 
-    // If the messages is signed with the pop token, get it from the store and sign the messages
+    // If the messages is signed with the pop token, get it from the store and sign the message
     if (signatureType === SignatureType.POP_TOKEN) {
       const token = await getCurrentPopTokenFromStore();
       if (token) {
@@ -167,7 +167,7 @@ export class Message {
         privateKey = token.privateKey;
       } else {
         console.error(
-          'Impossible to sign the messages with a pop token: no token found for ' +
+          'Impossible to sign the message with a pop token: no token found for ' +
             'current user in this LAO',
         );
       }
@@ -194,7 +194,7 @@ export class Message {
   }
 
   // This function disables the checks of signature and messageID for eleciton result messages
-  // Because the messages comes from the back-end and it can't sign the messages since it hasn't
+  // Because the message comes from the back-end and it can't sign the messages since it hasn't
   // access to the private key
   // This method is only a temporary solution for the demo and should be removed once a better
   // solution is found

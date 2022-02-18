@@ -101,7 +101,7 @@ the future. Files might have moved since, but their name should be identical
 - Wallet objects : `features/rollCall/components/EventRollCall.tsx`, `features/rollCall/network/RollCallHandler.ts`,
 `features/rollCall/screens/RollCallOpened.tsx`
 - WalletNavigation : `navigation/bars/LaoNavigation.tsx`, `navigation/bars/MainNavigation.tsx`
-- WalletReducer : `store/reducers/RootReducer.ts`, `store/__mocks__/CryptoStorage.ts`
+- WalletReducer : `store/reducers/RootReducer.ts`, `store/__mocks__/Storage.ts`
 
 ## Witness
 
