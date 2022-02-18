@@ -1,7 +1,7 @@
 export * from 'core/network/ingestion/Configure';
 export { storeMessage } from 'core/network/ingestion/Handler';
 
-import { MessageRegistry } from 'core/network/messages/MessageRegistry';
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import * as ChirpHandler from 'features/social/network/ChirpHandler';
 import * as ReactionHandler from 'features/social/network/ReactionHandler';
 import * as MeetingHandler from 'features/meeting/network/MeetingHandler';

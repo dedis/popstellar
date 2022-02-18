@@ -1,6 +1,6 @@
 import { validateDataObject } from 'core/network/validation';
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
-import { ActionType, ObjectType } from 'core/network/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 
 import { OpenRollCall } from './OpenRollCall';
 

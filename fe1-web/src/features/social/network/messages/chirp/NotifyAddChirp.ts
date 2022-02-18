@@ -1,6 +1,6 @@
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 /** Data sent to broadcast a chirp to the general social channel */

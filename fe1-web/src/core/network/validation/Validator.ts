@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+
 import jsonRPC from 'protocol/jsonRPC.json';
 import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
 import querySchema from 'core/network/validation/schemas/querySchemas';

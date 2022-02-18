@@ -3,7 +3,7 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { mockLao, mockLaoId, mockLaoName } from '__tests__/utils/TestUtils';
-import { ActionType, ObjectType } from 'core/network/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { ReopenRollCall } from '../ReopenRollCall';

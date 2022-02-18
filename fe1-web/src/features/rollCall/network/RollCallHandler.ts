@@ -1,5 +1,5 @@
-import { ExtendedMessage } from 'core/network/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
+import { ExtendedMessage } from 'core/network/jsonrpc/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'store';
 import { subscribeToChannel } from 'core/network/CommunicationApi';

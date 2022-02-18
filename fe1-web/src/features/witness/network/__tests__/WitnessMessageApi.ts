@@ -1,7 +1,7 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { ActionType, MessageData, ObjectType } from 'core/network/messages';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { Base64UrlData } from 'core/objects';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';

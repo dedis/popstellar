@@ -1,5 +1,5 @@
-import { get, set } from 'core/platform/crypto/Storage';
-import { getSubtleCrypto } from 'core/platform/crypto/browser';
+import { get, set } from './Storage';
+import { getSubtleCrypto } from './browser';
 
 const algorithm: RsaHashedKeyAlgorithm = {
   name: 'RSA-OAEP',

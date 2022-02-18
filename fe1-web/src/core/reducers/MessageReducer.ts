@@ -8,7 +8,7 @@ import {
   ExtendedMessage,
   ExtendedMessageState,
   markExtMessageAsProcessed,
-} from 'core/network/messages';
+} from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import { getLaosState } from 'features/lao/reducer/LaoReducer';
 import { WitnessSignatureState } from 'features/witness/objects';

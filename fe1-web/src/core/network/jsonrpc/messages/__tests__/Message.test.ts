@@ -8,7 +8,7 @@ import {
   PublicKey,
   Timestamp,
 } from 'core/objects';
-import { KeyPairStore } from 'store';
+import { KeyPairStore } from 'core/store';
 import {
   mockLao,
   mockLaoId,
@@ -18,8 +18,9 @@ import {
 } from '__tests__/utils/TestUtils';
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { EndElection } from 'features/evoting/network/messages';
-import { MessageRegistry } from 'core/network/messages/index';
-import { configureMessages, encodeMessageData, Message } from 'core/network/messages/Message';
+
+import { MessageRegistry } from '../index';
+import { configureMessages, encodeMessageData, Message } from '../Message';
 
 jest.mock('features/wallet/objects/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),

@@ -2,7 +2,7 @@ import { getStore } from 'core/store';
 import { handleRpcRequests, setMessageRegistry } from './Handler';
 import { makeMessageStoreWatcher } from './Watcher';
 import { getNetworkManager } from '../index';
-import { MessageRegistry } from '../messages';
+import { MessageRegistry } from '../jsonrpc/messages';
 import { configure } from './index';
 
 export function configureIngestion(messageRegistry: MessageRegistry) {

@@ -1,15 +1,16 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
+
 import { channelFromIds, Timestamp } from 'core/objects';
 import {
-  configureMessages,
   ExtendedMessage,
   markExtMessageAsProcessed,
-  Message,
-} from 'core/network/messages';
-import { MessageRegistry } from 'core/network/messages';
+  MessageRegistry,
+} from 'core/network/jsonrpc/messages';
 import { mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 import { AddChirp } from 'features/social/network/messages/chirp';
+import { configureMessages, Message } from 'core/network/jsonrpc/messages/Message';
+
 import {
   addMessages,
   getLaoMessagesState,
@@ -17,7 +18,7 @@ import {
   makeLaoMessagesState,
   messageReduce,
   processMessages,
-} from 'core/reducers/MessageReducer';
+} from '../MessageReducer';
 
 jest.mock('features/wallet/objects/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),

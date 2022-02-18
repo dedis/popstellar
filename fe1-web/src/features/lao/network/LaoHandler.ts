@@ -1,5 +1,5 @@
-import { ExtendedMessage } from 'core/network/messages';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
+import { ExtendedMessage } from 'core/network/jsonrpc/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 import { dispatch, getMessage, getStore, makeLaoMessagesState } from 'store';
 import { hasWitnessSignatureQuorum } from 'core/network/ingestion/Utils';
 

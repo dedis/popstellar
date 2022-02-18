@@ -5,8 +5,7 @@ import { socialReducer } from 'features/social/reducer';
 import { eventsReducer } from 'features/events/reducer';
 import { walletReducer } from 'features/wallet/reducer';
 import { laoReducer } from 'features/lao/reducer';
-import keyPairReducer from 'core/reducers/KeyPairReducer';
-import messageReducer from 'core/reducers/MessageReducer';
+import { keyPairReducer, messageReducer } from 'core/reducers';
 
 import { wrapWithClearStorageReducer } from 'core/redux/ClearStorageReducer';
 

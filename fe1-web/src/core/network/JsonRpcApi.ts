@@ -1,9 +1,9 @@
-import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
-import { Publish, Subscribe } from 'model/network/method';
-import { Message } from 'core/network/messages';
-import { MessageData } from 'core/network/messages';
 import { Channel } from 'core/objects/Channel';
 import { getNetworkManager } from 'core/network/NetworkManager';
+
+import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
+import { Message } from './jsonrpc/messages/Message';
+import { MessageData } from './jsonrpc/messages/MessageData';
 
 export const AUTO_ASSIGN_ID = -1;
 

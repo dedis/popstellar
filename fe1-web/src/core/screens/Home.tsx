@@ -4,13 +4,12 @@ import { useSelector } from 'react-redux';
 
 import { makeLaosList } from 'features/lao/reducer';
 import { Lao } from 'features/lao/objects';
-
-import { Spacing } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-
 import { LAOItem } from 'features/lao/components';
-import { TextBlock } from 'core/components';
+
+import { Spacing } from '../styles';
+import containerStyles from '../styles/stylesheets/containerStyles';
+import { TextBlock } from '../components';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message

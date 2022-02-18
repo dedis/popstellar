@@ -4,7 +4,8 @@
  */
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { KeyPairState } from 'core/objects';
+
+import { KeyPairState } from '../objects';
 
 /**
  * Reducer to store a set of public/private key

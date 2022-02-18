@@ -1,6 +1,6 @@
-import { ExtendedMessage } from 'core/network/messages';
+import { ExtendedMessage } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'store';
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { Reaction } from '../objects';
 import { AddReaction } from './messages/reaction';

@@ -1,6 +1,7 @@
 import { ProtocolError } from 'core/objects/ProtocolError';
-import { Message } from 'core/network/messages';
-import { JsonRpcParams } from 'core/network/jsonrpc/JsonRpcParams';
+
+import { Message } from './messages/Message';
+import { JsonRpcParams } from './JsonRpcParams';
 
 /**
  * JSON-RPC Params containing:

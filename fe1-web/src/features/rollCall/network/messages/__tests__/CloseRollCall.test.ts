@@ -9,7 +9,7 @@ import {
   mockPublicKey,
   mockPublicKey2,
 } from '__tests__/utils/TestUtils';
-import { ActionType, ObjectType } from 'core/network/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { CloseRollCall } from '../CloseRollCall';

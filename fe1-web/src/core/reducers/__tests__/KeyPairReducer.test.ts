@@ -1,8 +1,10 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
+
 import { KeyPair, PrivateKey, PublicKey } from 'core/objects';
 import { mockPrivateKey, mockPublicKey } from '__tests__/utils/TestUtils';
-import { keyPairReduce, setKeyPair } from 'core/reducers/KeyPairReducer';
+
+import { keyPairReduce, setKeyPair } from '../KeyPairReducer';
 
 const emptyState = {
   keyPair: undefined,

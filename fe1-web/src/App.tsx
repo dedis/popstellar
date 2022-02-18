@@ -9,14 +9,14 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { ToastProvider } from 'react-native-toast-notifications';
 
 import { Provider } from 'react-redux';
-import { store, persist } from 'core/redux/Storage';
+import { store, persist } from 'core/redux/ReduxSetUp';
 
 import AppNavigation from 'core/navigation/AppNavigation';
 import { navigationRef } from 'core/navigation/RootNavigation';
 
 import { configureIngestion } from 'core/network/ingestion';
-import { MessageRegistry } from 'core/network/messages';
-import { configureMessages } from 'core/network/messages';
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { configureMessages } from 'core/network/jsonrpc/messages';
 
 /*
  * The starting point of the app.

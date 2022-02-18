@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import * as store from 'core/redux/Storage';
+import * as store from 'core/redux/ReduxSetUp';
 
 import { WalletStore } from '../WalletStore';
 

@@ -1,7 +1,7 @@
-import { JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
-import { NetworkConnection } from 'core/network/NetworkConnection';
-import { NetworkError } from 'core/network/NetworkError';
-import { defaultRpcHandler, JsonRpcHandler } from 'core/network/RpcHandler';
+import { JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
+import { NetworkConnection } from './NetworkConnection';
+import { NetworkError } from './NetworkError';
+import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 

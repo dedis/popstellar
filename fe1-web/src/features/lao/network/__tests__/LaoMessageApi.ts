@@ -1,6 +1,6 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { ActionType, MessageData, ObjectType } from 'core/network/messages';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { KeyPairStore } from 'store';
 import { Hash } from 'core/objects';
 import {

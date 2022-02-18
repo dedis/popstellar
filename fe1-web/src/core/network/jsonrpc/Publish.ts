@@ -1,3 +1,3 @@
-import { JsonRpcParamsWithMessage } from 'core/network/jsonrpc/JsonRpcParamsWithMessage';
+import { JsonRpcParamsWithMessage } from './JsonRpcParamsWithMessage';
 
 export class Publish extends JsonRpcParamsWithMessage {}

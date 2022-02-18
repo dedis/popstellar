@@ -4,7 +4,7 @@ import { sign } from 'tweetnacl';
 import '__tests__/utils/matchers';
 import { Base64UrlData, KeyPair, PrivateKey, PublicKey, ProtocolError } from 'core/objects';
 import { mockPrivateKey } from '__tests__/utils/TestUtils';
-import { ActionType, ObjectType } from 'core/network/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 
 import { WitnessMessage } from '../WitnessMessage';
 

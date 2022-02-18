@@ -1,6 +1,6 @@
 import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { checkTimestampStaleness, checkWitnesses } from 'core/network/validation/Checker';
 
 import { OpenedLaoStore } from '../../store';

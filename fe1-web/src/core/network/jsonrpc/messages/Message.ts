@@ -1,8 +1,10 @@
 import { Base64UrlData, Channel, Hash, PublicKey, Signature, ProtocolError } from 'core/objects';
-import { KeyPairStore } from 'store';
+import { KeyPairStore } from 'core/store';
 import { getCurrentPopTokenFromStore } from 'features/wallet/objects';
 import { WitnessSignature, WitnessSignatureState } from 'features/witness/objects';
-import { MessageData, MessageRegistry, SignatureType } from 'core/network/messages/index';
+
+import { MessageRegistry } from './MessageRegistry';
+import { MessageData, SignatureType } from './MessageData';
 
 let messageRegistry: MessageRegistry;
 

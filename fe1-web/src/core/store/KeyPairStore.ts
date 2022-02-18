@@ -1,7 +1,8 @@
-import { Base64UrlData, KeyPair, KeyPairState, PrivateKey, PublicKey } from 'core/objects';
 import { sign } from 'tweetnacl';
-import { dispatch, getStore } from 'core/redux/Storage';
-import { getKeyPairState, setKeyPair } from 'core/reducers';
+
+import { Base64UrlData, KeyPair, KeyPairState, PrivateKey, PublicKey } from '../objects';
+import { getKeyPairState, setKeyPair } from '../reducers';
+import { dispatch, getStore } from '../redux';
 
 /**
  * The KeyPairStore stores the unique public/private key pair

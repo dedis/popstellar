@@ -5,7 +5,7 @@ import { EventTags, Hash, Timestamp, ProtocolError } from 'core/objects';
 import STRINGS from 'resources/strings';
 import { mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { OpenedLaoStore } from 'features/lao/store';
-import { ActionType, ObjectType } from 'core/network/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';

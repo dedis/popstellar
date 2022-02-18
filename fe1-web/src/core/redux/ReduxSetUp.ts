@@ -6,7 +6,7 @@ import { ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 // Import all the reducers, defining how storage is organized and accessed
-import rootReducer from 'core/reducers';
+import rootReducer from './index';
 
 // Extend redux dispatch definition to support ThunkActions
 // as per https://stackoverflow.com/a/67634381

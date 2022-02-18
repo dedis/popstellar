@@ -1,17 +1,17 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
-
 import keyPair from 'test_data/keypair.json';
-
 import { OpenedLaoStore } from 'features/lao/store';
 import { CreateLao } from 'features/lao/network/messages';
 import { Lao } from 'features/lao/objects';
 import { Base64UrlData, Hash, PrivateKey, PublicKey } from 'core/objects';
 import { ROOT_CHANNEL } from 'core/objects/Channel';
-import { JsonRpcMethod, JsonRpcRequest } from 'core/network/jsonrpc/index';
-import { MessageRegistry } from 'core/network/messages';
-import { JsonRpcParamsWithMessage } from 'core/network/jsonrpc/JsonRpcParamsWithMessage';
-import { configureMessages } from 'core/network/messages';
+
+import { JsonRpcMethod, JsonRpcRequest } from '../index';
+import { MessageRegistry } from '../messages';
+import { configureMessages } from '../messages/Message';
+import { JsonRpcParamsWithMessage } from '../JsonRpcParamsWithMessage';
 
 const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id', 'jsonrpc'];
 const QUERY_FIELD_COUNT = JSON_RPC_FIELDS.length;

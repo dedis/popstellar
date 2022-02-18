@@ -1,12 +1,13 @@
 import 'jest-extended';
+
 import { channelFromIds, Timestamp } from 'core/objects';
-import { ExtendedMessage } from 'core/network/messages/ExtendedMessage';
-import { configureMessages, Message } from 'core/network/messages/Message';
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Lao, LaoState } from 'features/lao/objects';
-import { MessageRegistry } from 'core/network/messages/MessageRegistry';
-import { ActionType, ObjectType, SignatureType } from 'core/network/messages/MessageData';
+
+import { ExtendedMessage, MessageRegistry } from '../index';
+import { ActionType, ObjectType, SignatureType } from '../MessageData';
+import { configureMessages, Message } from '../Message';
 
 const { CHIRP } = ObjectType;
 const { ADD, INVALID } = ActionType;

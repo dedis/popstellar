@@ -18,10 +18,16 @@ import {
   OpenRollCall,
   ReopenRollCall,
 } from 'features/rollCall/network/messages';
-import { ActionType, MessageData, ObjectType, SignatureType } from 'core/network/messages/MessageData';
-import { ExtendedMessage } from 'core/network/messages/ExtendedMessage';
+import {
+  ActionType,
+  MessageData,
+  ObjectType,
+  SignatureType,
+} from 'core/network/jsonrpc/messages/MessageData';
 import { CreateLao, StateLao, UpdateLao } from 'features/lao/network/messages';
 import { WitnessMessage } from 'features/witness/network/messages';
+
+import { ExtendedMessage } from './ExtendedMessage';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
 
