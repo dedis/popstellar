@@ -1,5 +1,6 @@
-import { OpenedLaoStore } from 'store';
-import { Hash, Timestamp, Lao, EventTags, ProtocolError } from 'model/objects';
+import { Lao } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
+import { Hash, Timestamp, EventTags, ProtocolError } from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
 import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';

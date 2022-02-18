@@ -7,17 +7,11 @@ import {
   StateLao,
   UpdateLao,
 } from 'model/network/method/message/data';
-import { Lao } from 'model/objects';
-import {
-  connectToLao,
-  dispatch,
-  getMessage,
-  getStore,
-  makeCurrentLao,
-  makeLaoMessagesState,
-  updateLao,
-} from 'store';
-import { hasWitnessSignatureQuorum } from './Utils';
+import { dispatch, getMessage, getStore, makeLaoMessagesState } from 'store';
+import { hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
+
+import { Lao } from '../objects';
+import { connectToLao, makeCurrentLao, updateLao } from '../reducer';
 
 const getCurrentLao = makeCurrentLao();
 const getMessageState = makeLaoMessagesState();

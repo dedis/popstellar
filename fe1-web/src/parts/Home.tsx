@@ -2,14 +2,14 @@ import React from 'react';
 import { StyleSheet, View, FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { makeLaosList } from 'store';
-import { Lao } from 'model/objects';
+import { makeLaosList } from 'features/lao/reducer';
+import { Lao } from 'features/lao/objects';
 
 import { Spacing } from 'styles';
 import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 
-import LAOItem from 'features/lao/components/LAOItem';
+import { LAOItem } from 'features/lao/components';
 import { TextBlock } from 'core/components';
 
 /**

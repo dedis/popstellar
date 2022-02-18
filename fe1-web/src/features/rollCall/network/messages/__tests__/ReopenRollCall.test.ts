@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import { Hash, Timestamp, ProtocolError } from 'model/objects';
 import { mockLao, mockLaoId, mockLaoName } from '__tests__/utils/TestUtils';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 
 import { ReopenRollCall } from '../ReopenRollCall';
 

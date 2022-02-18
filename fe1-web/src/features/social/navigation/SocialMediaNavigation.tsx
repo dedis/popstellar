@@ -8,7 +8,7 @@ import STRINGS from 'res/strings';
 import { gray, popBlue } from 'styles/colors';
 import { PublicKey } from 'model/objects';
 import { generateToken } from 'features/wallet/objects';
-import { makeCurrentLao } from 'store';
+import { makeCurrentLao } from 'features/lao/reducer';
 import { makeEventGetter } from 'features/events/reducer';
 import { RollCall } from 'features/rollCall/objects';
 

@@ -1,4 +1,5 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { Base64UrlData, Hash, PublicKey, Timestamp, ProtocolError } from 'model/objects';
@@ -10,6 +11,7 @@ import {
   mockPublicKey2,
   org,
 } from '__tests__/utils/TestUtils';
+
 import { StateLao } from '../StateLao';
 
 const TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021

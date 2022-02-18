@@ -4,7 +4,7 @@ import { beforeEach } from '@jest/globals';
 import '__tests__/utils/matchers';
 import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data';
 import { Hash, PublicKey, Timestamp } from 'model/objects';
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'network/JsonRpcApi';
 

@@ -1,6 +1,7 @@
-import { Lao } from 'model/objects';
-import { dispatch, getStore } from '../Storage';
-import { connectToLao, makeCurrentLao } from '../reducers';
+import { dispatch, getStore } from 'store/Storage';
+
+import { Lao } from '../objects';
+import { connectToLao, makeCurrentLao } from '../reducer';
 
 /**
  * Access to the currently opened LAO from store.

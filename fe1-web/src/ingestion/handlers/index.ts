@@ -4,7 +4,7 @@ import * as ReactionHandler from 'features/social/network/ReactionHandler';
 import * as MeetingHandler from 'features/meeting/network/MeetingHandler';
 import * as ElectionHandler from 'features/evoting/network/ElectionHandler';
 import * as RollCallHandler from 'features/rollCall/network/RollCallHandler';
-import * as LaoHandler from './LaoHandler';
+import * as LaoHandler from 'features/lao/network/LaoHandler';
 import * as WitnessHandler from './WitnessHandler';
 
 type ConfigurableHandler = {

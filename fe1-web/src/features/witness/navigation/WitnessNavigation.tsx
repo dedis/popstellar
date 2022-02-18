@@ -3,7 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import { Witness } from 'features/lao/screens';
+import { WitnessScreen } from 'features/witness/screens';
 import WitnessCamera from 'parts/lao/witness/WitnessCamera';
 
 /**
@@ -19,7 +19,7 @@ export default function WitnessNavigation() {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name={STRINGS.witness_navigation_tab_home} component={Witness} />
+      <Stack.Screen name={STRINGS.witness_navigation_tab_home} component={WitnessScreen} />
       <Stack.Screen name={STRINGS.witness_navigation_tab_video} component={WitnessCamera} />
     </Stack.Navigator>
   );

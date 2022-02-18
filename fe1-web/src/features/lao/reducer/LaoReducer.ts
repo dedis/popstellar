@@ -6,8 +6,10 @@
 import { createSlice, createSelector, PayloadAction, Draft } from '@reduxjs/toolkit';
 import { REHYDRATE } from 'redux-persist';
 
-import { Hash, Lao, LaoState } from 'model/objects';
-import { getKeyPairState } from './KeyPairReducer';
+import { Hash } from 'model/objects';
+import { getKeyPairState } from 'store/reducers/KeyPairReducer';
+
+import { Lao, LaoState } from '../objects';
 
 /**
  * Reducer & associated function implementation to store all known LAOs

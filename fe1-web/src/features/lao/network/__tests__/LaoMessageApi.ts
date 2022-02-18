@@ -8,7 +8,7 @@ import {
   StateLao,
   UpdateLao,
 } from 'model/network/method/message/data';
-import { KeyPairStore, OpenedLaoStore } from 'store';
+import { KeyPairStore } from 'store';
 import { Hash } from 'model/objects';
 import {
   defaultMessageDataFields,
@@ -17,7 +17,9 @@ import {
   mockLaoName,
 } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'network/JsonRpcApi';
-import * as msApi from '../MessageApi';
+import * as msApi from 'network/MessageApi';
+
+import { OpenedLaoStore } from '../../store';
 
 jest.mock('network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;

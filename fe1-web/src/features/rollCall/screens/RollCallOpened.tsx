@@ -12,7 +12,8 @@ import containerStyles from 'styles/stylesheets/containerStyles';
 import STRINGS from 'res/strings';
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { EventTags, Hash, PublicKey } from 'model/objects';
-import { makeCurrentLao, OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
+import { makeCurrentLao } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'res/const';
 import * as Wallet from 'features/wallet/objects';
 

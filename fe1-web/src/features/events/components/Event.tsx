@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import { makeIsLaoOrganizer } from 'store';
+import { makeIsLaoOrganizer } from 'features/lao/reducer';
 import { Spacing } from 'styles';
 import { ParagraphBlock, TextBlock } from 'core/components';
 import { Hash, Timestamp } from 'model/objects';

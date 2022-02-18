@@ -6,7 +6,8 @@ import {
   WitnessMessage,
 } from 'model/network/method/message/data';
 import { WitnessSignature } from 'model/objects';
-import { addMessageWitnessSignature, dispatch, getStore, makeCurrentLao } from 'store';
+import { addMessageWitnessSignature, dispatch, getStore } from 'store';
+import { makeCurrentLao } from 'features/lao/reducer';
 
 const getCurrentLao = makeCurrentLao();
 

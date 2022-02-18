@@ -3,17 +3,17 @@ import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import { getStore, getKeyPairState, makeCurrentLao } from 'store';
+import { getStore, getKeyPairState } from 'store';
 import { PublicKey } from 'model/objects';
-
 import STRINGS from 'res/strings';
 import Home from 'parts/Home';
-import Identity from 'parts/lao/Identity';
-import { Attendee } from 'features/lao/screens';
-import SocialMediaNavigation from 'features/social/navigation/SocialMediaNavigation';
-import WalletNavigation from 'features/wallet/navigation/WalletNavigation';
-import OrganizerNavigation from './organizer/OrganizerNavigation';
-import WitnessNavigation from './witness/WitnessNavigation';
+import { SocialMediaNavigation } from 'features/social/navigation';
+import { WalletNavigation } from 'features/wallet/navigation';
+import { WitnessNavigation } from 'features/witness/navigation';
+
+import { makeCurrentLao } from '../reducer';
+import { AttendeeScreen, Identity } from '../screens';
+import OrganizerNavigation from './OrganizerNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -60,7 +60,7 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
   } else if (isWitness) {
     component = WitnessNavigation;
   } else {
-    component = Attendee;
+    component = AttendeeScreen;
   }
 
   return <OrganizationTopTabNavigator.Screen name={tabName} component={component} />;

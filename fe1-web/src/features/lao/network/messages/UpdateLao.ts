@@ -1,8 +1,10 @@
-import { Hash, PublicKey, Timestamp, Lao, ProtocolError } from 'model/objects';
-import { OpenedLaoStore } from 'store';
+import { Hash, PublicKey, Timestamp, ProtocolError } from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness, checkWitnesses } from '../Checker';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { checkTimestampStaleness, checkWitnesses } from 'model/network/method/message/data/Checker';
+
+import { OpenedLaoStore } from '../../store';
+import { Lao } from '../../objects';
 
 /** Data sent to update a Lao */
 export class UpdateLao implements MessageData {

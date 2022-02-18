@@ -6,7 +6,7 @@
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey, Timestamp } from 'model/objects';
-import { getLaosState } from 'store/reducers/LaoReducer';
+import { getLaosState } from 'features/lao/reducer/LaoReducer';
 
 import { Chirp, ChirpState, ReactionState } from '../objects';
 

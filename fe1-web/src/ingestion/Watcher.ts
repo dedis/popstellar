@@ -1,5 +1,6 @@
 import { Store } from 'redux';
-import { getLaoMessagesState, getLaosState, processMessages } from 'store';
+import { getLaoMessagesState, processMessages } from 'store';
+import { getLaosState } from 'features/lao/reducer';
 import { ExtendedMessage } from 'model/network/method/message';
 import { MessageRegistry } from 'model/network/method/message/data';
 

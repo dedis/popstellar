@@ -10,7 +10,7 @@ import {
   markExtMessageAsProcessed,
 } from 'model/network/method/message';
 import { Hash, WitnessSignatureState } from 'model/objects';
-import { getLaosState } from './LaoReducer';
+import { getLaosState } from 'features/lao/reducer/LaoReducer';
 
 /**
  * Reducer & associated function implementation to store all known Messages

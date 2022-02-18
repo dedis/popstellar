@@ -1,5 +1,6 @@
-import { channelFromIds, EventTags, Hash, Lao, PublicKey, Timestamp } from 'model/objects';
-import { OpenedLaoStore } from 'store';
+import { channelFromIds, EventTags, Hash, PublicKey, Timestamp } from 'model/objects';
+import { Lao } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
 import { publish } from 'network/JsonRpcApi';
 
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';

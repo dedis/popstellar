@@ -10,7 +10,7 @@ import {
   mockPublicKey2,
 } from '__tests__/utils/TestUtils';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 
 import { CloseRollCall } from '../CloseRollCall';
 

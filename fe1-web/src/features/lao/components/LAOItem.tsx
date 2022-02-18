@@ -5,11 +5,11 @@ import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import { connectToLao as connectToLaoAction } from 'store';
 import STRINGS from 'res/strings';
 import { Spacing, Typography } from 'styles';
 
-import { Lao } from 'model/objects';
+import { Lao } from '../objects';
+import { connectToLao as connectToLaoAction } from '../reducer';
 
 /**
  * The LAO item component: name of LAO

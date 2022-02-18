@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import STRINGS from 'res/strings';
 
-import LaoNavigation from 'navigation/bars/LaoNavigation';
+import { LaoNavigation } from 'features/lao/navigation';
 import MainNavigation from 'navigation/bars/MainNavigation';
 
 /**

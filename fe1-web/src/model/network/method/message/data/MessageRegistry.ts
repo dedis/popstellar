@@ -20,7 +20,7 @@ import {
 } from 'features/rollCall/network/messages';
 import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
-import { CreateLao, StateLao, UpdateLao } from './lao';
+import { CreateLao, StateLao, UpdateLao } from 'features/lao/network/messages';
 import { WitnessMessage } from './witness';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;

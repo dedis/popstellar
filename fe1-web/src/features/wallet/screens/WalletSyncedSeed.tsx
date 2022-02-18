@@ -10,7 +10,7 @@ import WideButtonView from 'core/components/WideButtonView';
 import { PopToken } from 'model/objects';
 import QRCode from 'core/components/QRCode';
 import PROPS_TYPE from 'res/Props';
-import { makeLaosMap } from 'store';
+import { makeLaosMap } from 'features/lao/reducer';
 import CopiableTextInput from 'core/components/CopiableTextInput';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';

@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import { Hash, Timestamp, ProtocolError } from 'model/objects';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { mockLao, mockLaoCreationTime, mockLaoId } from '__tests__/utils/TestUtils';
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 
 import { CreateMeeting } from '../CreateMeeting';
 

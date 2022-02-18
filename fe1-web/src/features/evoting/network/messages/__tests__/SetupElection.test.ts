@@ -4,7 +4,7 @@ import '__tests__/utils/matchers';
 import { EventTags, Hash, Timestamp, ProtocolError } from 'model/objects';
 import STRINGS from 'res/strings';
 import { mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 
 import { Question } from '../../../objects';

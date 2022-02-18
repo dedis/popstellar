@@ -1,6 +1,4 @@
-import { Timestamp } from './Timestamp';
-import { Hash } from './Hash';
-import { PublicKey } from './PublicKey';
+import { Hash, PublicKey, Timestamp } from 'model/objects';
 
 export interface LaoState {
   name: string;

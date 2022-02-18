@@ -1,6 +1,7 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { dispatch, getStore, makeCurrentLao } from 'store';
+import { dispatch, getStore } from 'store';
+import { makeCurrentLao } from 'features/lao/reducer';
 import { hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';

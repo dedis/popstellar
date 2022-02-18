@@ -3,7 +3,7 @@ import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react
 import { useSelector } from 'react-redux';
 
 import PropTypes from 'prop-types';
-import { makeIsLaoOrganizer } from 'store';
+import { makeIsLaoOrganizer } from 'features/lao/reducer';
 import { Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
 import * as RootNavigation from 'navigation/RootNavigation';

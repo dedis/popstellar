@@ -3,7 +3,8 @@ import { Broadcast } from 'model/network/method';
 import { ExtendedMessage, Message } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { Channel } from 'model/objects';
-import { addMessages, dispatch, OpenedLaoStore } from 'store';
+import { addMessages, dispatch } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 
 let messageRegistry: MessageRegistry;
 

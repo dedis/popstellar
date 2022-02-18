@@ -7,8 +7,12 @@ import {
   ProtocolError,
 } from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness, checkWitnesses, checkWitnessSignatures } from '../Checker';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import {
+  checkTimestampStaleness,
+  checkWitnesses,
+  checkWitnessSignatures,
+} from 'model/network/method/message/data/Checker';
 
 /** Data received to track the state of a lao */
 export class StateLao implements MessageData {

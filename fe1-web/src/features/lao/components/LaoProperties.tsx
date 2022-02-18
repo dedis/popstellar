@@ -4,15 +4,12 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { Spacing } from 'styles';
-import laoPropertiesStyles from 'styles/stylesheets/laoPropertiesStyles';
-import { Lao } from 'model/objects';
-import { makeCurrentLao } from 'store/reducers';
 import { ConnectToLao } from 'model/objects/ConnectToLao';
+import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 
-import TextBlock from 'core/components/TextBlock';
-import ListCollapsibleIcon from 'core/components/ListCollapsibleIcon';
-import ParagraphBlock from 'core/components/ParagraphBlock';
-import QRCode from 'core/components/QRCode';
+import laoPropertiesStyles from '../styles/laoPropertiesStyles';
+import { Lao } from '../objects';
+import { makeCurrentLao } from '../reducer';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.toDateString();

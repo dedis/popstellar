@@ -17,8 +17,9 @@ import {
   ParagraphBlock,
   WideButtonView,
 } from 'core/components';
-import { Hash, Lao, Timestamp, EventTags } from 'model/objects';
-import { OpenedLaoStore } from 'store';
+import { Hash, Timestamp, EventTags } from 'model/objects';
+import { Lao } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
 import { FOUR_SECONDS } from 'res/const';
 import { onConfirmPress } from 'features/events/screens/CreateEvent';
 

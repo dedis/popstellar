@@ -2,13 +2,13 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
-
-import { Organizer } from 'features/lao/screens';
 import { CreateEvent } from 'features/events/screens';
-import WitnessScanning from 'features/witness/components/WitnessScanning';
+import { WitnessScanning } from 'features/witness/components';
 import { CreateMeeting } from 'features/meeting/screens';
 import { CreateRollCall, RollCallOpened } from 'features/rollCall/screens';
 import { CreateElection } from 'features/evoting/screens';
+
+import { OrganizerScreen } from '../screens';
 
 /**
  * Define the Organizer stack navigation
@@ -25,7 +25,7 @@ export default function OrganizerNavigation() {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name={STRINGS.organizer_navigation_tab_home} component={Organizer} />
+      <Stack.Screen name={STRINGS.organizer_navigation_tab_home} component={OrganizerScreen} />
       <Stack.Screen name={STRINGS.organizer_navigation_tab_create_event} component={CreateEvent} />
       <Stack.Screen
         name={STRINGS.organizer_navigation_tab_add_witness}

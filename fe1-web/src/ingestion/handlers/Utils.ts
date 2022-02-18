@@ -1,4 +1,4 @@
-import { OpenedLaoStore } from 'store';
+import { OpenedLaoStore } from 'features/lao/store';
 import { WitnessSignature } from 'model/objects';
 
 const MIN_WITNESS_FACTOR_N = 3; // numerator

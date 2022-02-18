@@ -1,7 +1,7 @@
 import { Hash, PublicKey, Timestamp, ProtocolError } from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from '../MessageData';
-import { checkTimestampStaleness, checkWitnesses } from '../Checker';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { checkTimestampStaleness, checkWitnesses } from 'model/network/method/message/data/Checker';
 
 /** Data sent to create a Lao */
 export class CreateLao implements MessageData {

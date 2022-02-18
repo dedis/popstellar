@@ -4,8 +4,7 @@ import { CheckBox } from 'react-native-elements';
 
 import { Colors, Spacing, Typography } from 'styles';
 import STRINGS from 'res/strings';
-import QRCode from 'core/components/QRCode';
-import TextBlock from 'core/components/TextBlock';
+import { QRCode, TextBlock } from 'core/components';
 import { KeyPairStore } from 'store/stores';
 
 /**

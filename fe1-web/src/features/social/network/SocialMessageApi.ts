@@ -2,11 +2,11 @@ import {
   getReactionChannel,
   getUserSocialChannel,
   Hash,
-  Lao,
   PublicKey,
   Timestamp,
 } from 'model/objects';
-import { OpenedLaoStore } from 'store';
+import { Lao } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
 import { publish } from 'network/JsonRpcApi';
 
 import { AddChirp, DeleteChirp } from './messages/chirp';

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-import { makeCurrentLao } from 'store';
+import { makeCurrentLao } from 'features/lao/reducer';
 import { Timestamp } from 'model/objects';
 import { QRCode, WideButtonView } from 'core/components';
 import STRINGS from 'res/strings';

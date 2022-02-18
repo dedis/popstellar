@@ -61,7 +61,33 @@ the future.
 
 - AttendeeScreen : `navigation/bars/LaoNavigation.tsx`
 - OrganizerScreen : `navigation/bars/organizer/OrganizerNavigation.tsx`
-- WitnessScreen : `navigation/bars/witness/WitnessNavigation.tsx`
+- LaoHandler : `ingestion/handlers/index.ts`
+- LaoNavigation : `src/navigation/AppNavigation.tsx`
+- LAOItem : `src/parts/Home.tsx`
+- LaoReducer : `src/features/events/reducer/EventsReducer.ts`, `src/features/social/reducer/SocialReducer.ts`,
+`src/store/reducers/MessageReducer.ts`, `src/features/events/components/Event.tsx`,
+`src/features/evoting/network/ElectionHandler.ts`, `src/features/meeting/network/MeetingHandler.ts`,
+`src/features/rollCall/network/RollCallHandler.ts`, `src/features/rollCall/components/EventRollCall.tsx`,
+`src/features/rollCall/screens/RollCallOpened.tsx`, `src/features/social/navigation/SocialMediaNavigation.tsx`,
+`src/features/social/network/ChirpHandler.ts`, `src/features/social/network/ReactionHandler.ts`,
+`src/features/social/reducer/SocialReducer.ts`, `src/features/wallet/screens/WalletSyncedSeed.tsx`,
+`src/features/witness/screens/WitnessScreen.tsx`, `src/ingestion/Watcher.ts`, `src/parts/Home.tsx`,
+`src/parts/Launch.tsx`
+- OpenedLaoStore : `src/features/evoting/network/messages/__tests__/SetupElection.test.ts`,
+`src/features/evoting/network/messages/SetupElection.ts`, `src/features/evoting/network/ElectionMessageApi.ts`,
+`src/features/evoting/screens/CreateElection.tsx`, `src/features/meeting/network/__tests__/MeetingMessageApi.test.ts`,
+`src/features/meeting/network/messages/__tests__/CreateMeeting.test.ts`,
+`src/features/meeting/network/messages/__tests__/StateMeeting.test.ts`,
+`src/features/meeting/network/messages/CreateMeeting.ts`, `src/features/meeting/network/MeetingMessageApi.t`,
+`src/features/rollCall/network/__tests__/RollCallMessageApi.ts`, `src/features/rollCall/network/messages`,
+`src/features/rollCall/network/RollCallMessageApi.ts`, `src/features/rollCall/screens/RollCallOpened.tsx`,
+`src/features/social/network/__tests__/SocialMessageApi.test.ts`, `src/features/social/network/SocialMessageApi.ts`,
+`src/ingestion/handlers/Utils.ts`, `src/ingestion/Handler.ts`, `src/parts/Launch.tsx`
+- Lao : `src/features/evoting/network/messages/SetupElection.ts`, `src/features/evoting/network/ElectionMessageApi.ts`,
+`src/features/evoting/screens/CreateElection.tsx`, `src/features/meeting/network/messages/CreateMeeting.ts`,
+`src/features/meeting/network/MeetingMessageApi.ts`, `src/features/rollCall/network/messages/__tests_`,
+`src/features/rollCall/network/RollCallMessageApi.ts`, `src/features/social/network/SocialMessageApi.ts`,
+`src/parts/Home.tsx`, `src/parts/Launch.tsx`
 
 ## Wallet
 
