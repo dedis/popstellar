@@ -1,5 +1,6 @@
 import { w3cwebsocket as W3CWebSocket } from 'websocket';
-import { JsonRpcRequest, JsonRpcResponse, ProtocolError, UNDEFINED_ID } from 'model/network';
+import { ProtocolError } from 'model/objects';
+import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from 'model/network';
 import { RpcOperationError } from './RpcOperationError';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';

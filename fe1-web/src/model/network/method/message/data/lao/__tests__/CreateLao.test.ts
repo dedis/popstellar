@@ -9,8 +9,7 @@ import {
   mockPublicKey2,
   org,
 } from '__tests__/utils/TestUtils';
-import { ProtocolError } from 'model/network/ProtocolError';
-import { Hash, PublicKey } from 'model/objects';
+import { Hash, PublicKey, ProtocolError } from 'model/objects';
 import { CreateLao } from '../CreateLao';
 
 const mockWitnesses = [new PublicKey(mockPublicKey), new PublicKey(mockPublicKey2)];

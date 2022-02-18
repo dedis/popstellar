@@ -1,6 +1,5 @@
-import { ProtocolError } from 'model/network';
 import { validateDataObject } from 'model/network/validation';
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp, ProtocolError } from 'model/objects';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 
 import { OpenRollCall } from './OpenRollCall';

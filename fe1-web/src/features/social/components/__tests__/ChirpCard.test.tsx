@@ -13,7 +13,7 @@ import {
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
 
-jest.mock('features/social/network/SocialMessageApi.ts');
+jest.mock('features/social/network/SocialMessageApi');
 
 let chirp: Chirp;
 let chirp1: Chirp;
@@ -57,9 +57,9 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('react-redux', () => ({
-  useSelector: () => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } }),
+  useSelector: () => ({ 1234: { '👍': 1, '👎': 0, '❤': 0 } }),
 }));
-jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
+jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
 
 beforeAll(() => {
   jest.useFakeTimers('modern');

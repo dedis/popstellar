@@ -1,5 +1,4 @@
-import { Hash, PublicKey, Timestamp } from 'model/objects';
-import { ProtocolError } from 'model/network/ProtocolError';
+import { Hash, PublicKey, Timestamp, ProtocolError } from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 import { checkTimestampStaleness, checkWitnesses } from '../Checker';

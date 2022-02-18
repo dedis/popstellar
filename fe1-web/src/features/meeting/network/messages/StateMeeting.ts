@@ -1,5 +1,11 @@
-import { Hash, PublicKey, Signature, Timestamp, WitnessSignature } from 'model/objects';
-import { ProtocolError } from 'model/network/ProtocolError';
+import {
+  Hash,
+  PublicKey,
+  Signature,
+  Timestamp,
+  WitnessSignature,
+  ProtocolError,
+} from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
 import {

@@ -1,12 +1,11 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { EventTags, Hash, Timestamp } from 'model/objects';
+import { EventTags, Hash, Timestamp, ProtocolError } from 'model/objects';
 import STRINGS from 'res/strings';
 import { mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { OpenedLaoStore } from 'store';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { ProtocolError } from 'model/network/ProtocolError';
 
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';

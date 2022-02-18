@@ -2,9 +2,8 @@ import 'jest-extended';
 
 import '__tests__/utils/matchers';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp, ProtocolError } from 'model/objects';
 import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
-import { ProtocolError } from 'model/network/ProtocolError';
 import { OpenedLaoStore } from 'store';
 
 import { CreateRollCall } from '../CreateRollCall';

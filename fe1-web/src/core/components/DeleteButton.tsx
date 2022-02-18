@@ -7,13 +7,12 @@ const trashcan = require('res/img/delete.svg');
 /**
  * Delete button that displays a little trashcan and executes an onPress action given in props
  */
-
 const styles = StyleSheet.create({
   icon: {
     width: 26,
     height: 26,
+    // we comment cursor to pass the test because this property does not exist for ImageStyle
     // cursor: 'pointer',
-    // we comment it to pass the test because this property does not exist for ImageStyle
   } as ImageStyle,
 });
 

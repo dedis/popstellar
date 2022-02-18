@@ -1,5 +1,5 @@
+import { ProtocolError } from 'model/objects/ProtocolError';
 import { Message } from './message';
-import { ProtocolError } from '../ProtocolError';
 import { JsonRpcParams } from './JsonRpcParams';
 
 /**

@@ -80,7 +80,7 @@ class NetworkManager {
 
     if (this.connections.length === 0) {
       return Promise.reject(
-        new NetworkError('Cannot send payload:' + ' no websocket connection available'),
+        new NetworkError('Cannot send payload: no websocket connection available'),
       );
     }
 

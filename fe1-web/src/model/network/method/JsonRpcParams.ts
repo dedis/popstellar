@@ -1,5 +1,4 @@
-import { Channel } from 'model/objects/Channel';
-import { ProtocolError } from '../ProtocolError';
+import { Channel, ProtocolError } from 'model/objects';
 
 /**
  * JSON-RPC Params containing:

@@ -1,7 +1,7 @@
+import { ProtocolError } from 'model/objects/ProtocolError';
 import { JsonRpcParams } from './method/JsonRpcParams';
 import { JsonRpcMethod } from './JsonRpcMethods';
 import { Broadcast, Catchup, Publish, Subscribe, Unsubscribe } from './method';
-import { ProtocolError } from './ProtocolError';
 import { validateJsonRpcRequest } from './validation';
 
 /**
