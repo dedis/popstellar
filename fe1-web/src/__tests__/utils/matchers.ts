@@ -10,7 +10,7 @@ declare global {
     interface Matchers<R> {
       toBeBase64Url(received: R): CustomMatcherResult;
 
-      toBeJsonEqual(received: any, expected: R): CustomMatcherResult;
+      toBeJsonEqual(received: unknown, expected: R): CustomMatcherResult;
 
       toBeDistinctArray(received: R): jest.CustomMatcherResult;
 
@@ -28,14 +28,14 @@ declare global {
 }
 
 expect.extend({
-  toBeNumberObject(received: any): jest.CustomMatcherResult {
+  toBeNumberObject(received: unknown): jest.CustomMatcherResult {
     return {
       pass: typeof received === 'number' || received instanceof Number,
       message: () => `Expected '${received}' to be a number or number object`,
     };
   },
 
-  toBeJsonEqual(received: any, expected: any): jest.CustomMatcherResult {
+  toBeJsonEqual(received: unknown, expected: unknown): jest.CustomMatcherResult {
     if (this.isNot) {
       throw new Error('Unsupported negation on toBeJsonEqual matcher');
     }
@@ -82,13 +82,13 @@ expect.extend({
     };
   },
 
-  toBeBase64UrlArray(value: any): jest.CustomMatcherResult {
+  toBeBase64UrlArray(value: unknown): jest.CustomMatcherResult {
     if (this.isNot) {
       throw new Error('Unsupported negation on toBeBase64Array matcher');
     }
 
     expect(value).toBeArray();
-    value.forEach((item: any) => {
+    (value as unknown[]).forEach((item: unknown) => {
       expect(item).toBeBase64Url();
     });
 
