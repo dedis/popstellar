@@ -34,7 +34,7 @@ class ChannelSuite extends FunSuite with Matchers {
   }
 
   test("Slash empty child channel test") {
-    def channel = Channel("" + Channel.SEPARATOR)
+    def channel = Channel("" + Channel.CHANNEL_SEPARATOR)
 
     an[IllegalArgumentException] shouldBe thrownBy(channel)
   }
@@ -90,7 +90,7 @@ class ChannelSuite extends FunSuite with Matchers {
   test("Real LaoId extraction from the middle of a channel test") {
     val laoId = "mEKXWFCMwb"
 
-    def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data(laoId) + Channel.SEPARATOR + Base64Data.encode("social"))
+    def channel = Channel(Channel.ROOT_CHANNEL_PREFIX + Base64Data(laoId) + Channel.CHANNEL_SEPARATOR + Base64Data.encode("social"))
 
     val expected = Base64Data(laoId)
 

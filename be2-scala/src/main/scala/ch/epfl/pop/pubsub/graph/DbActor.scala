@@ -234,7 +234,7 @@ object DbActor extends AskPatternConstants {
 
 
     //helper functions for the database key generation, could make them public later if needed elsewhere
-    private def generateMessageKey(channel: Channel, messageId: Hash): String = s"$channel${Channel.SEPARATOR}${messageId.toString}"
+    private def generateMessageKey(channel: Channel, messageId: Hash): String = s"$channel${Channel.CHANNEL_SEPARATOR}${messageId.toString}"
 
     //may return null if the extractLaoId fails
     private def generateLaoDataKey(channel: Channel): String = {

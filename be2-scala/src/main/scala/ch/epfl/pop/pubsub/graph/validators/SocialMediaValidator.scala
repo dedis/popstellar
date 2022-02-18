@@ -31,7 +31,7 @@ object SocialMediaValidator extends MessageDataContentValidator with EventValida
 
 sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
-  override def EVENT_HASH_PREFIX: String = s"${Channel.SEPARATOR}posts"
+  override def EVENT_HASH_PREFIX: String = s"${Channel.CHANNEL_SEPARATOR}posts"
 
   private val CHIRP_TEXT_LENGTH = 300
 

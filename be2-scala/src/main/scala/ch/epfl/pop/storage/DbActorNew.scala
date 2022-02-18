@@ -34,16 +34,18 @@ case class DbActorNew(
     }
     createChannel(channel, _object)
 
-    val channelData: ChannelData = readChannelData(channel)
-    storage.write(
-      (channel.toString, channelData.addMessage(message.message_id).toJsonString),
-      (s"$channel${Channel.SPECIAL_SEPARATOR}${message.message_id}", message.toJsonString)
-    )
+    this.synchronized{
+      val channelData: ChannelData = readChannelData(channel)
+      storage.write(
+        (channel.toString, channelData.addMessage(message.message_id).toJsonString),
+        (s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
+      )
+    }
   }
 
   @throws [DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
-    Try(storage.read(s"$channel${Channel.SPECIAL_SEPARATOR}$messageId")) match {
+    Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) => Some(Message.buildFromJson(json))
       case Success(None) => None
       case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
@@ -70,17 +72,19 @@ case class DbActorNew(
 
   @throws [DbActorNAckException]
   private def writeLaoData(channel: Channel, message: Message): Unit = {
-    val laoData: LaoData = Try(readLaoData(channel)) match {
-      case Success(data) => data
-      case Failure(_) => LaoData.emptyLaoData
-    }
-    val laoDataKey: String = generateLaoDataKey(channel)
+    this.synchronized{
+      val laoData: LaoData = Try(readLaoData(channel)) match {
+        case Success(data) => data
+        case Failure(_) => LaoData.emptyLaoData
+      }
+      val laoDataKey: String = generateLaoDataKey(channel)
 
-    Try(storage.write(
-      (laoDataKey, laoData.updateWith(message).toJsonString)
-    )).recover(
-      ex => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
-    )
+      Try(storage.write(
+        (laoDataKey, laoData.updateWith(message).toJsonString)
+      )).recover(
+        ex => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
+      )
+    }
   }
 
   @throws [DbActorNAckException]
@@ -91,15 +95,11 @@ case class DbActorNew(
       msgIds match {
         case Nil => acc
         case head :: tail =>
-          val optMessage: Option[Message] = Try(read(channel, head)).recover(
+          Try(read(channel, head)).recover(
             ex => None
           ) match {
-            case Success(o) => o
-            case Failure(_) => None
-          }
-          optMessage match {
-            case Some(msg) => buildCatchupList(tail, msg :: acc)
-            case None => 
+            case Success(Some(msg)) => buildCatchupList(tail, msg :: acc)
+            case _ => 
               log.error(s"Problem encountered while catching up message with id $head")
               buildCatchupList(tail, acc)
           }
@@ -179,7 +179,7 @@ case class DbActorNew(
     channel.decodeChannelLaoId match {
       case Some(data) => s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
       case None =>
-        log.error(s"Actor $self (db) encountered a problem while decoding sub-channel from '$channel'")
+        log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
         throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
     }
   }

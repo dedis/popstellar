@@ -16,7 +16,7 @@ object ElectionHandler extends MessageHandler {
     //FIXME: add election info to election channel/electionData
     val message: Message = rpcMessage.getParamsMessage.get
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
-    val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.SEPARATOR}$electionId")
+    val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
       case DbActor.DbActorWriteAck() => Await.result((dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)).map {
