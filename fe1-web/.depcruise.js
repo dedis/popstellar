@@ -7,7 +7,7 @@ module.exports = {
     /* rules from the 'recommended' preset: */
     {
       name: 'no-circular',
-      severity: 'warn',
+      severity: 'error',
       comment:
         'This dependency is part of a circular relationship. You might want to revise ' +
         'your solution (i.e. use dependency inversion, make sure the modules have a single responsibility) ',
@@ -196,7 +196,7 @@ module.exports = {
         "`core` and on the APIs it requires for its initialization. If there's something '" +
         'it needs from another feature, factor it out and integrate it in the feature API, ' +
         'using dependency injection to initialize the feature with the required external callbacks',
-      severity: 'error',
+      severity: 'warn',
       from: {
         path: '^src/features/([^/]+)/.+'
       },
@@ -213,7 +213,7 @@ module.exports = {
         'module is to provide the foundations on which the features can be built. ' +
         "If there's something in a feature that you need to access as part of the app's core, " +
         'e.g. for initialization, consider using dependency injection instead.',
-      severity: 'error',
+      severity: 'warn',
       from: {
         path: '^src/core/([^/]+)/.+'
       },
