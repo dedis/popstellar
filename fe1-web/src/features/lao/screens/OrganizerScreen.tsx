@@ -7,8 +7,6 @@ import AttendeeScreen from './AttendeeScreen';
  *
  * Currently just a simple clone of the AttendeeScreen screen
  */
-const OrganizerScreen = () => (
-  <AttendeeScreen />
-);
+const OrganizerScreen = () => <AttendeeScreen />;
 
 export default OrganizerScreen;

@@ -33,7 +33,7 @@ function segmentsFromHash(hash: Hash): string {
  * @param laoId - The id of the LAO
  * @param rollCallId - The id of the Roll Call
  */
-export function fromLaoRollCall(laoId: Hash, rollCallId:Hash): string {
+export function fromLaoRollCall(laoId: Hash, rollCallId: Hash): string {
   return [
     PREFIX,
     PURPOSE.concat(HARDENED_SYMBOL),

@@ -28,8 +28,7 @@ const AttendeeScreen = () => {
   const [serverUrl] = useState(url);
 
   events.forEach((e: LaoEvent) => {
-    if ((e.end && e.end.before(now))
-      || (!e.end && e.start.before(now))) {
+    if ((e.end && e.end.before(now)) || (!e.end && e.start.before(now))) {
       pastEvents.push(e);
       return;
     }

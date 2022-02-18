@@ -19,12 +19,10 @@ const filledState = {
 
 describe('KeyPairReducer', () => {
   it('should return the initial state', () => {
-    expect(keyPairReduce(undefined, {} as AnyAction))
-      .toEqual(emptyState);
+    expect(keyPairReduce(undefined, {} as AnyAction)).toEqual(emptyState);
   });
 
   it('should handle the keyPair being set', () => {
-    expect(keyPairReduce({}, setKeyPair(mockKeyPair)))
-      .toEqual(filledState);
+    expect(keyPairReduce({}, setKeyPair(mockKeyPair))).toEqual(filledState);
   });
 });

@@ -74,18 +74,14 @@ const SocialMediaNavigation = () => {
         tabBarActiveTintColor: popBlue,
         tabBarInactiveTintColor: gray,
         swipeEnabled: false,
-      })}
-    >
+      })}>
       <Tab.Screen name={STRINGS.social_media_navigation_tab_home}>
         {() => <SocialHome currentUserPublicKey={currentUserPublicKey} />}
       </Tab.Screen>
       <Tab.Screen name={STRINGS.social_media_navigation_tab_search}>
         {() => <SocialSearchNavigation currentUserPublicKey={currentUserPublicKey} />}
       </Tab.Screen>
-      <Tab.Screen
-        name={STRINGS.social_media_navigation_tab_follows}
-        component={SocialFollows}
-      />
+      <Tab.Screen name={STRINGS.social_media_navigation_tab_follows} component={SocialFollows} />
       <Tab.Screen name={STRINGS.social_media_navigation_tab_profile}>
         {() => <SocialProfile currentUserPublicKey={currentUserPublicKey} />}
       </Tab.Screen>

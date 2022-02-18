@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  StyleSheet,
-  TextStyle,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { FlatList, ListRenderItemInfo, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
@@ -51,25 +44,21 @@ const SocialHome = (props: IPropTypes) => {
   const toast = useToast();
 
   const publishChirp = () => {
-    requestAddChirp(currentUserPublicKey, inputChirp)
-      .catch((err) => {
-        console.error('Failed to post chirp, error:', err);
-        toast.show(`Failed to post chirp, error: ${err}`, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
+    requestAddChirp(currentUserPublicKey, inputChirp).catch((err) => {
+      console.error('Failed to post chirp, error:', err);
+      toast.show(`Failed to post chirp, error: ${err}`, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
       });
+    });
   };
 
   const chirps = makeChirpsList();
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (
-    <ChirpCard
-      chirp={Chirp.fromState(item)}
-      currentUserPublicKey={currentUserPublicKey}
-    />
+    <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
   );
 
   return (
@@ -102,7 +91,7 @@ const propTypes = {
 SocialHome.prototype = propTypes;
 
 type IPropTypes = {
-  currentUserPublicKey: PublicKey,
+  currentUserPublicKey: PublicKey;
 };
 
 export default SocialHome;

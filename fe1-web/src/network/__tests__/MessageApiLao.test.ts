@@ -1,12 +1,20 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 import {
-  ActionType, CreateLao, MessageData, ObjectType, StateLao, UpdateLao,
+  ActionType,
+  CreateLao,
+  MessageData,
+  ObjectType,
+  StateLao,
+  UpdateLao,
 } from 'model/network/method/message/data';
 import { KeyPairStore, OpenedLaoStore } from 'store';
 import { Hash } from 'model/objects';
 import {
-  defaultMessageDataFields, mockLao, mockLaoId, mockLaoName,
+  defaultMessageDataFields,
+  mockLao,
+  mockLaoId,
+  mockLaoName,
 } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'network/JsonRpcApi';
 import * as msApi from '../MessageApi';
@@ -25,8 +33,14 @@ const initializeChecks = () => {
 
     const data: CreateLao = obj as CreateLao;
     expect(data).toBeObject();
-    expect(data).toContainKeys([...defaultMessageDataFields, 'id', 'name', 'creation',
-      'organizer', 'witnesses']);
+    expect(data).toContainKeys([
+      ...defaultMessageDataFields,
+      'id',
+      'name',
+      'creation',
+      'organizer',
+      'witnesses',
+    ]);
     expect(data.id).toBeBase64Url();
     expect(data.name).toBeString();
     expect(data.name).toBe(mockLaoName);
@@ -39,7 +53,9 @@ const initializeChecks = () => {
 
     // check id
     const expected: Hash = Hash.fromStringArray(
-      data.organizer.toString(), data.creation.toString(), data.name,
+      data.organizer.toString(),
+      data.creation.toString(),
+      data.name,
     );
     expect(data.id).toBeJsonEqual(expected);
   };
@@ -50,8 +66,13 @@ const initializeChecks = () => {
 
     const data: UpdateLao = obj as UpdateLao;
     expect(data).toBeObject();
-    expect(data).toContainKeys([...defaultMessageDataFields, 'id', 'name', 'last_modified',
-      'witnesses']);
+    expect(data).toContainKeys([
+      ...defaultMessageDataFields,
+      'id',
+      'name',
+      'last_modified',
+      'witnesses',
+    ]);
     expect(data.id).toBeBase64Url();
     expect(data.name).toBeString();
     expect(data.name).toBe(mockLaoName);
@@ -78,8 +99,17 @@ const initializeChecks = () => {
 
     const data: StateLao = obj as StateLao;
     expect(data).toBeObject();
-    expect(data).toContainKeys([...defaultMessageDataFields, 'id', 'name', 'creation',
-      'last_modified', 'organizer', 'witnesses', 'modification_id', 'modification_signatures']);
+    expect(data).toContainKeys([
+      ...defaultMessageDataFields,
+      'id',
+      'name',
+      'creation',
+      'last_modified',
+      'organizer',
+      'witnesses',
+      'modification_id',
+      'modification_signatures',
+    ]);
     expect(data.id).toBeBase64Url();
     expect(data.name).toBeString();
     expect(data.name).toBe(OpenedLaoStore.get().name);
@@ -97,7 +127,9 @@ const initializeChecks = () => {
 
     // check id
     const expected = Hash.fromStringArray(
-      data.organizer.toString(), OpenedLaoStore.get().creation.toString(), data.name,
+      data.organizer.toString(),
+      OpenedLaoStore.get().creation.toString(),
+      data.name,
     );
     expect(data.id).toBeJsonEqual(expected);
   };

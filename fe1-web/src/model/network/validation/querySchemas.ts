@@ -6,13 +6,6 @@ import publish from 'protocol/query/method/publish.json';
 import subscribe from 'protocol/query/method/subscribe.json';
 import unsubscribe from 'protocol/query/method/unsubscribe.json';
 
-const querySchemas = [
-  query,
-  broadcast,
-  catchup,
-  publish,
-  subscribe,
-  unsubscribe,
-];
+const querySchemas = [query, broadcast, catchup, publish, subscribe, unsubscribe];
 
 export default querySchemas;

@@ -1,9 +1,7 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import {
-  Base64UrlData, Hash, PublicKey, Timestamp,
-} from 'model/objects';
+import { Base64UrlData, Hash, PublicKey, Timestamp } from 'model/objects';
 import {
   mockLaoCreationTime,
   mockLaoIdHash,
@@ -87,155 +85,165 @@ describe('StateLao', () => {
 
   describe('constructor', () => {
     it('should throw an error if name is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if creation is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        last_modified: TIMESTAMP,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          last_modified: TIMESTAMP,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if last_modified is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if organizer is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if witnesses is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP,
-        organizer: org,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP,
+          organizer: org,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if modification_id is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if modification_signatures is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is undefined', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is incorrect', () => {
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: new Hash('id'),
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: new Hash('id'),
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if last_modified is before creation', () => {
       const TIMESTAMP_BEFORE = new Timestamp(1599999900);
-      const createWrongObj = () => new StateLao({
-        object: ObjectType.LAO,
-        action: ActionType.STATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        last_modified: TIMESTAMP_BEFORE,
-        organizer: org,
-        witnesses: mockWitnesses,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateLao({
+          object: ObjectType.LAO,
+          action: ActionType.STATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          last_modified: TIMESTAMP_BEFORE,
+          organizer: org,
+          witnesses: mockWitnesses,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

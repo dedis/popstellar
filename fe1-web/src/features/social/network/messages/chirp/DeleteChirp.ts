@@ -20,12 +20,12 @@ export class DeleteChirp implements MessageData {
 
   constructor(msg: Partial<DeleteChirp>) {
     if (!msg.chirp_id) {
-      throw new ProtocolError('Undefined \'chirp_id\' parameter encountered during \'RemoveChirp\'');
+      throw new ProtocolError("Undefined 'chirp_id' parameter encountered during 'RemoveChirp'");
     }
     this.chirp_id = msg.chirp_id;
 
     if (!msg.timestamp) {
-      throw new ProtocolError('Undefined \'timestamp\' parameter encountered during \'RemoveChirp\'');
+      throw new ProtocolError("Undefined 'timestamp' parameter encountered during 'RemoveChirp'");
     }
     checkTimestampStaleness(msg.timestamp);
     this.timestamp = msg.timestamp;

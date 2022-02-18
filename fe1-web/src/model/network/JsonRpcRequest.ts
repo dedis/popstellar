@@ -1,8 +1,6 @@
 import { JsonRpcParams } from './method/JsonRpcParams';
 import { JsonRpcMethod } from './JsonRpcMethods';
-import {
-  Broadcast, Catchup, Publish, Subscribe, Unsubscribe,
-} from './method';
+import { Broadcast, Catchup, Publish, Subscribe, Unsubscribe } from './method';
 import { ProtocolError } from './ProtocolError';
 import { validateJsonRpcRequest } from './validation';
 
@@ -46,11 +44,13 @@ export class JsonRpcRequest {
 
       // Unsupported methods
       default:
-        throw new ProtocolError(`Unrecognized method '${req.method}' encountered in JSON-RPC request`);
+        throw new ProtocolError(
+          `Unrecognized method '${req.method}' encountered in JSON-RPC request`,
+        );
     }
 
     this.method = req.method;
-    this.id = (req.id === undefined || req.id === null) ? undefined : req.id;
+    this.id = req.id === undefined || req.id === null ? undefined : req.id;
     this.params = req.params;
     this.jsonrpc = '2.0';
   }
@@ -69,7 +69,7 @@ export class JsonRpcRequest {
     });
   }
 
-  private static parseParams(method: JsonRpcMethod, params: any) : JsonRpcParams {
+  private static parseParams(method: JsonRpcMethod, params: any): JsonRpcParams {
     switch (method) {
       case JsonRpcMethod.BROADCAST:
         return Broadcast.fromJson(params);

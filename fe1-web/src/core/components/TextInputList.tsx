@@ -17,9 +17,11 @@ const TextInputList = (props: IPropTypes) => {
   const [idCount, setIdCount] = useState(1);
   const [userInputs, setUserInputs] = useState([{ id: 0, value: '' }]);
 
-  const updateParent = (options: { id: number, value: string }[]) => {
+  const updateParent = (options: { id: number; value: string }[]) => {
     // Gets the distinct options which are not empty ('')
-    const distinctValues = [...new Set(options.map((option) => option.value))].filter((value) => value !== '');
+    const distinctValues = [...new Set(options.map((option) => option.value))].filter(
+      (value) => value !== '',
+    );
     // Updates the values in the parent component
     onChange(distinctValues);
   };

@@ -17,8 +17,7 @@ const getCurrentLao = makeCurrentLao();
  * @param msg - The extended message for adding a reaction
  */
 function handleAddReactionMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.REACTION
-    || msg.messageData.action !== ActionType.ADD) {
+  if (msg.messageData.object !== ObjectType.REACTION || msg.messageData.action !== ActionType.ADD) {
     console.warn('handleAddReaction was called to process an unsupported message');
     return false;
   }

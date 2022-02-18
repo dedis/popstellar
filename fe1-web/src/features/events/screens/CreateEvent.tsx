@@ -1,8 +1,6 @@
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { Views } from 'styles';
 import STRINGS from 'res/strings';
@@ -58,16 +56,15 @@ const CreateEvent = () => {
     <View style={containerStyles.flex}>
       <TextBlock text={STRINGS.create_description} />
 
-      { Object.values(LaoEventType).map(
-        (type: string) => (
-          <WideButtonView title={type} key={`wide-btn-view-${type}`} onPress={() => navigateToPanel(type)} />
-        ),
-      )}
+      {Object.values(LaoEventType).map((type: string) => (
+        <WideButtonView
+          title={type}
+          key={`wide-btn-view-${type}`}
+          onPress={() => navigateToPanel(type)}
+        />
+      ))}
 
-      <WideButtonView
-        title={STRINGS.general_button_cancel}
-        onPress={navigation.goBack}
-      />
+      <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
     </View>
   );
 };
@@ -85,8 +82,13 @@ const CreateEvent = () => {
  * @param setEndModalIsVisible - The function which sets the visibility of the modal on ending time
  * being in past
  */
-export const onConfirmPress = (start: Timestamp, end: Timestamp, createEvent: Function,
-  setStartModalIsVisible: Function, setEndModalIsVisible: Function) => {
+export const onConfirmPress = (
+  start: Timestamp,
+  end: Timestamp,
+  createEvent: Function,
+  setStartModalIsVisible: Function,
+  setEndModalIsVisible: Function,
+) => {
   const now = Timestamp.EpochNow();
 
   if (end.before(now)) {

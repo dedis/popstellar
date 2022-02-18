@@ -97,131 +97,140 @@ describe('CreateRollCall', () => {
 
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        name: NAME,
-        creation: TIMESTAMP,
-        proposed_start: TIMESTAMP,
-        proposed_end: CLOSE_TIMESTAMP,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          name: NAME,
+          creation: TIMESTAMP,
+          proposed_start: TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if name is undefined', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: rollCallId,
-        creation: TIMESTAMP,
-        proposed_start: TIMESTAMP,
-        proposed_end: CLOSE_TIMESTAMP,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: rollCallId,
+          creation: TIMESTAMP,
+          proposed_start: TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if create is undefined', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: rollCallId,
-        name: NAME,
-        proposed_start: TIMESTAMP,
-        proposed_end: CLOSE_TIMESTAMP,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: rollCallId,
+          name: NAME,
+          proposed_start: TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_start is undefined', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: rollCallId,
-        name: NAME,
-        creation: TIMESTAMP,
-        proposed_end: CLOSE_TIMESTAMP,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: rollCallId,
+          name: NAME,
+          creation: TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_end is undefined', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: rollCallId,
-        name: NAME,
-        creation: TIMESTAMP,
-        proposed_start: TIMESTAMP,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: rollCallId,
+          name: NAME,
+          creation: TIMESTAMP,
+          proposed_start: TIMESTAMP,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if location is undefined', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: rollCallId,
-        name: NAME,
-        creation: TIMESTAMP,
-        proposed_start: TIMESTAMP,
-        proposed_end: CLOSE_TIMESTAMP,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: rollCallId,
+          name: NAME,
+          creation: TIMESTAMP,
+          proposed_start: TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is incorrect', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: new Hash('id'),
-        name: NAME,
-        creation: TIMESTAMP,
-        proposed_start: TIMESTAMP,
-        proposed_end: CLOSE_TIMESTAMP,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: new Hash('id'),
+          name: NAME,
+          creation: TIMESTAMP,
+          proposed_start: TIMESTAMP,
+          proposed_end: CLOSE_TIMESTAMP,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_start is before creation', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: rollCallId,
-        name: NAME,
-        creation: TIMESTAMP,
-        proposed_start: TIMESTAMP_BEFORE,
-        proposed_end: CLOSE_TIMESTAMP,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: rollCallId,
+          name: NAME,
+          creation: TIMESTAMP,
+          proposed_start: TIMESTAMP_BEFORE,
+          proposed_end: CLOSE_TIMESTAMP,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if proposed_end is before proposed_start', () => {
-      const createWrongObj = () => new CreateRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        id: rollCallId,
-        name: NAME,
-        creation: TIMESTAMP_BEFORE,
-        proposed_start: TIMESTAMP,
-        proposed_end: TIMESTAMP_BEFORE,
-        location: LOCATION,
-        description: DESCRIPTION,
-      });
+      const createWrongObj = () =>
+        new CreateRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          id: rollCallId,
+          name: NAME,
+          creation: TIMESTAMP_BEFORE,
+          proposed_start: TIMESTAMP,
+          proposed_end: TIMESTAMP_BEFORE,
+          location: LOCATION,
+          description: DESCRIPTION,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

@@ -15,8 +15,8 @@ const EventMeeting = (props: IPropTypes) => {
   return (
     <>
       <TimeDisplay start={event.start.valueOf()} />
-      { event.end && <TimeDisplay end={event.end.valueOf()} /> }
-      { event.location && <ParagraphBlock text={event.location} /> }
+      {event.end && <TimeDisplay end={event.end.valueOf()} />}
+      {event.location && <ParagraphBlock text={event.location} />}
     </>
   );
 };

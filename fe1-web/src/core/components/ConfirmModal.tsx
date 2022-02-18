@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  View, Modal, Text,
-} from 'react-native';
+import { View, Modal, Text } from 'react-native';
 
 import STRINGS from 'res/strings';
 import modalStyles from 'styles/stylesheets/modalStyles';
@@ -28,27 +26,20 @@ const ConfirmModal = (props: IPropTypes) => {
   const [textInput, setTextInput] = useState('');
 
   return (
-    <Modal
-      visible={visibility}
-      transparent
-    >
+    <Modal visible={visibility} transparent>
       <View style={modalStyles.modalView}>
         <View style={modalStyles.titleView}>
           <Text style={modalStyles.modalTitle}>{title}</Text>
         </View>
         <Text style={modalStyles.modalDescription}>{description}</Text>
-        { hasTextInput
-          ? (
-            <TextInputLine
-              onChangeText={(input) => setTextInput(input)}
-              placeholder={textInputPlaceholder}
-            />
-          ) : null }
-        <View style={modalStyles.buttonView}>
-          <WideButtonView
-            title={buttonConfirmText}
-            onPress={() => onConfirmPress(textInput)}
+        {hasTextInput ? (
+          <TextInputLine
+            onChangeText={(input) => setTextInput(input)}
+            placeholder={textInputPlaceholder}
           />
+        ) : null}
+        <View style={modalStyles.buttonView}>
+          <WideButtonView title={buttonConfirmText} onPress={() => onConfirmPress(textInput)} />
           <WideButtonView
             title={buttonCancelText}
             onPress={() => {
@@ -84,15 +75,15 @@ ConfirmModal.defaultProps = {
 };
 
 type IPropTypes = {
-  visibility: boolean,
-  setVisibility: Function,
-  title: string,
-  description: string,
-  buttonCancelText: string,
-  buttonConfirmText: string,
-  onConfirmPress: Function,
-  hasTextInput: boolean,
-  textInputPlaceholder: string,
+  visibility: boolean;
+  setVisibility: Function;
+  title: string;
+  description: string;
+  buttonCancelText: string;
+  buttonConfirmText: string;
+  onConfirmPress: Function;
+  hasTextInput: boolean;
+  textInputPlaceholder: string;
 };
 
 export default ConfirmModal;

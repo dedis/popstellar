@@ -1,6 +1,4 @@
-import {
-  Hash, PublicKey, Timestamp, Lao,
-} from 'model/objects';
+import { Hash, PublicKey, Timestamp, Lao } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
@@ -23,31 +21,35 @@ export class UpdateLao implements MessageData {
 
   constructor(msg: Partial<UpdateLao>) {
     if (!msg.name) {
-      throw new ProtocolError('Undefined \'name\' parameter encountered during \'UpdateLao\'');
+      throw new ProtocolError("Undefined 'name' parameter encountered during 'UpdateLao'");
     }
     this.name = msg.name;
 
     if (!msg.last_modified) {
-      throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'UpdateLao\'');
+      throw new ProtocolError("Undefined 'last_modified' parameter encountered during 'UpdateLao'");
     }
     checkTimestampStaleness(msg.last_modified);
     this.last_modified = msg.last_modified;
 
     if (!msg.witnesses) {
-      throw new ProtocolError('Undefined \'witnesses\' parameter encountered during \'UpdateLao\'');
+      throw new ProtocolError("Undefined 'witnesses' parameter encountered during 'UpdateLao'");
     }
     checkWitnesses(msg.witnesses);
     this.witnesses = [...msg.witnesses];
 
     if (!msg.id) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'UpdateLao\'');
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'UpdateLao'");
     }
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
-      lao.organizer.toString(), lao.creation.toString(), msg.name,
+      lao.organizer.toString(),
+      lao.creation.toString(),
+      msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
-      throw new ProtocolError('Invalid \'id\' parameter encountered during \'UpdateLao\': unexpected id value');
+      throw new ProtocolError(
+        "Invalid 'id' parameter encountered during 'UpdateLao': unexpected id value",
+      );
     }
     this.id = msg.id;
   }

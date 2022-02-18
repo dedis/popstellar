@@ -1,6 +1,4 @@
-import {
-  Hash, PublicKey, Signature, Timestamp, WitnessSignature,
-} from 'model/objects';
+import { Hash, PublicKey, Signature, Timestamp, WitnessSignature } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
@@ -38,21 +36,25 @@ export class StateMeeting implements MessageData {
 
   constructor(msg: Partial<StateMeeting>) {
     if (!msg.name) {
-      throw new ProtocolError('Undefined \'name\' parameter encountered during \'StateMeeting\'');
+      throw new ProtocolError("Undefined 'name' parameter encountered during 'StateMeeting'");
     }
     this.name = msg.name;
 
     if (!msg.creation) {
-      throw new ProtocolError('Undefined \'creation\' parameter encountered during \'StateMeeting\'');
+      throw new ProtocolError("Undefined 'creation' parameter encountered during 'StateMeeting'");
     }
     checkTimestampStaleness(msg.creation);
     this.creation = msg.creation;
 
     if (!msg.last_modified) {
-      throw new ProtocolError('Undefined \'last_modified\' parameter encountered during \'StateMeeting\'');
+      throw new ProtocolError(
+        "Undefined 'last_modified' parameter encountered during 'StateMeeting'",
+      );
     }
     if (msg.last_modified < msg.creation) {
-      throw new ProtocolError('Invalid timestamp encountered: \'last_modified\' parameter smaller than \'creation\'');
+      throw new ProtocolError(
+        "Invalid timestamp encountered: 'last_modified' parameter smaller than 'creation'",
+      );
     }
     this.last_modified = msg.last_modified;
 
@@ -61,17 +63,21 @@ export class StateMeeting implements MessageData {
     }
 
     if (!msg.start) {
-      throw new ProtocolError('Undefined \'start\' parameter encountered during \'StateMeeting\'');
+      throw new ProtocolError("Undefined 'start' parameter encountered during 'StateMeeting'");
     }
     checkTimestampStaleness(msg.start);
     this.start = msg.start;
 
     if (msg.end) {
       if (msg.end < msg.creation) {
-        throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'creation\'');
+        throw new ProtocolError(
+          "Invalid timestamp encountered: 'end' parameter smaller than 'creation'",
+        );
       }
       if (msg.end < msg.start) {
-        throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'start\'');
+        throw new ProtocolError(
+          "Invalid timestamp encountered: 'end' parameter smaller than 'start'",
+        );
       }
       this.end = msg.end;
     }
@@ -81,19 +87,23 @@ export class StateMeeting implements MessageData {
     } // clone JS object extra
 
     if (!msg.modification_id) {
-      throw new ProtocolError('Undefined \'modification_id\' parameter encountered during \'StateMeeting\'');
+      throw new ProtocolError(
+        "Undefined 'modification_id' parameter encountered during 'StateMeeting'",
+      );
     }
     checkModificationId(msg.modification_id);
     this.modification_id = msg.modification_id;
 
     if (!msg.modification_signatures) {
-      throw new ProtocolError('Undefined \'modification_signatures\' parameter encountered during \'StateMeeting\'');
+      throw new ProtocolError(
+        "Undefined 'modification_signatures' parameter encountered during 'StateMeeting'",
+      );
     }
     checkWitnessSignatures(msg.modification_signatures, msg.modification_id);
     this.modification_signatures = [...msg.modification_signatures];
 
     if (!msg.id) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'StateMeeting\'');
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'StateMeeting'");
     }
 
     // FIXME: implementation not finished, get event from storage,
@@ -126,12 +136,15 @@ export class StateMeeting implements MessageData {
       creation: new Timestamp(obj.creation),
       last_modified: new Timestamp(obj.last_modified),
       start: new Timestamp(obj.start),
-      end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
+      end: obj.end !== undefined ? new Timestamp(obj.end) : undefined,
       modification_id: new Hash(obj.modification_id),
-      modification_signatures: obj.modification_signatures.map((ws: any) => new WitnessSignature({
-        witness: new PublicKey(ws.witness),
-        signature: new Signature(ws.signature),
-      })),
+      modification_signatures: obj.modification_signatures.map(
+        (ws: any) =>
+          new WitnessSignature({
+            witness: new PublicKey(ws.witness),
+            signature: new Signature(ws.signature),
+          }),
+      ),
       id: new Hash(obj.id),
     });
   }

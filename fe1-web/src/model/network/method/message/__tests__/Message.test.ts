@@ -10,7 +10,11 @@ import {
 } from 'model/objects';
 import { KeyPairStore } from 'store';
 import {
-  mockLao, mockLaoId, mockPopToken, mockPrivateKey, mockPublicKey,
+  mockLao,
+  mockLaoId,
+  mockPopToken,
+  mockPrivateKey,
+  mockPublicKey,
 } from '__tests__/utils/TestUtils';
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { EndElection } from 'features/evoting/network/messages';
@@ -27,10 +31,12 @@ const messageRegistry = new MessageRegistry();
 configureMessages(messageRegistry);
 
 beforeAll(() => {
-  KeyPairStore.store(KeyPair.fromState({
-    publicKey: mockPublicKey,
-    privateKey: mockPrivateKey,
-  }));
+  KeyPairStore.store(
+    KeyPair.fromState({
+      publicKey: mockPublicKey,
+      privateKey: mockPrivateKey,
+    }),
+  );
 });
 
 describe('Message', () => {

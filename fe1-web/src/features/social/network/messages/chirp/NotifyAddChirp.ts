@@ -21,18 +21,20 @@ export class NotifyAddChirp implements MessageData {
 
   constructor(msg: Partial<NotifyAddChirp>) {
     if (!msg.chirp_id) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'NotifyAddChirp\'');
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'NotifyAddChirp'");
     }
     this.chirp_id = msg.chirp_id;
 
     if (!msg.timestamp) {
-      throw new ProtocolError('Undefined \'timestamp\' parameter encountered during \'NotifyAddChirp\'');
+      throw new ProtocolError(
+        "Undefined 'timestamp' parameter encountered during 'NotifyAddChirp'",
+      );
     }
     checkTimestampStaleness(msg.timestamp);
     this.timestamp = msg.timestamp;
 
     if (!msg.channel) {
-      throw new ProtocolError('Undefined \'channel\' parameter encountered during \'NotifyAddChirp\'');
+      throw new ProtocolError("Undefined 'channel' parameter encountered during 'NotifyAddChirp'");
     }
     this.channel = msg.channel;
   }

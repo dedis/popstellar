@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet, View, TouchableOpacity,
-} from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import PropTypes from 'prop-types';
 
 import { Colors } from 'styles';
@@ -11,7 +9,7 @@ import circularButtonStyles from 'styles/stylesheets/circularButtonStyles';
  * Recorder button that executes an onPress action given in props
  *
  * Displays a different icon depending if the witness is currently recording or not
-*/
+ */
 
 const styles = StyleSheet.create({
   center: {
@@ -33,8 +31,7 @@ function RecorderButton({ action }: IPropTypes) {
       onPress={() => {
         action();
         setIsRecording(!isRecording);
-      }}
-    >
+      }}>
       <View style={[styles.center, { borderRadius: isRecording ? 5 : 30 }]} />
     </TouchableOpacity>
   );

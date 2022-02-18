@@ -1,15 +1,8 @@
-import {
-  channelFromIds, EventTags, Hash, Lao, PublicKey, Timestamp,
-} from 'model/objects';
+import { channelFromIds, EventTags, Hash, Lao, PublicKey, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { publish } from 'network/JsonRpcApi';
 
-import {
-  CloseRollCall,
-  CreateRollCall,
-  OpenRollCall,
-  ReopenRollCall,
-} from './messages';
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 
 /**
  * Contains all functions to send roll call related messages.
@@ -26,17 +19,17 @@ import {
  * @return A Promise resolving when the operation is completed
  */
 export function requestCreateRollCall(
-  name: string, location: string,
-  proposedStart: Timestamp, proposedEnd: Timestamp,
+  name: string,
+  location: string,
+  proposedStart: Timestamp,
+  proposedEnd: Timestamp,
   description?: string,
 ): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new CreateRollCall({
-    id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, currentLao.id.toString(), time.toString(), name,
-    ),
+    id: Hash.fromStringArray(EventTags.ROLL_CALL, currentLao.id.toString(), time.toString(), name),
     name: name,
     creation: time,
     location: location,
@@ -58,11 +51,14 @@ export function requestCreateRollCall(
  */
 export function requestOpenRollCall(rollCallId: Hash, start?: Timestamp): Promise<void> {
   const lao: Lao = OpenedLaoStore.get();
-  const time = (start === undefined) ? Timestamp.EpochNow() : start;
+  const time = start === undefined ? Timestamp.EpochNow() : start;
 
   const message = new OpenRollCall({
     update_id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      rollCallId.toString(),
+      time.toString(),
     ),
     opens: rollCallId,
     opened_at: time,
@@ -80,11 +76,14 @@ export function requestOpenRollCall(rollCallId: Hash, start?: Timestamp): Promis
  */
 export function requestReopenRollCall(rollCallId: Hash, start?: Timestamp): Promise<void> {
   const lao: Lao = OpenedLaoStore.get();
-  const time = (start === undefined) ? Timestamp.EpochNow() : start;
+  const time = start === undefined ? Timestamp.EpochNow() : start;
 
   const message = new ReopenRollCall({
     update_id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      rollCallId.toString(),
+      time.toString(),
     ),
     opens: rollCallId,
     opened_at: time,
@@ -107,11 +106,14 @@ export function requestCloseRollCall(
   close?: Timestamp,
 ): Promise<void> {
   const lao: Lao = OpenedLaoStore.get();
-  const time = (close === undefined) ? Timestamp.EpochNow() : close;
+  const time = close === undefined ? Timestamp.EpochNow() : close;
 
   const message = new CloseRollCall({
     update_id: Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), rollCallId.toString(), time.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      rollCallId.toString(),
+      time.toString(),
     ),
     closes: rollCallId,
     closed_at: time,

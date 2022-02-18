@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
 import { dispatch, KeyPairStore, OpenedLaoStore } from 'store';
 import { getNetworkManager, requestCreateLao } from 'network';
 
-import {
-  Channel, Hash, Lao, Timestamp,
-} from 'model/objects';
+import { Channel, Hash, Lao, Timestamp } from 'model/objects';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 
@@ -43,8 +39,8 @@ const Launch = ({ navigation }: IPropTypes) => {
 
     getNetworkManager().connect(inputAddress);
     requestCreateLao(laoName)
-      .then((channel: Channel) => subscribeToChannel(channel)
-        .then(() => {
+      .then((channel: Channel) =>
+        subscribeToChannel(channel).then(() => {
           // navigate to the newly created LAO
           navigation.navigate(STRINGS.app_navigation_tab_organizer, {
             screen: STRINGS.organization_navigation_tab_organizer,
@@ -53,10 +49,9 @@ const Launch = ({ navigation }: IPropTypes) => {
               params: { url: inputAddress },
             },
           });
-        }))
-      .catch(
-        ((reason) => console.debug(`Failed to establish lao connection: ${reason}`)),
-      );
+        }),
+      )
+      .catch((reason) => console.debug(`Failed to establish lao connection: ${reason}`));
   };
 
   const onTestOpenConnection = () => {
@@ -106,10 +101,7 @@ const Launch = ({ navigation }: IPropTypes) => {
           title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
           onPress={onTestOpenConnection}
         />
-        <WideButtonView
-          title="[TEST] Clear (persistent) storage"
-          onPress={onTestClearStorage}
-        />
+        <WideButtonView title="[TEST] Clear (persistent) storage" onPress={onTestClearStorage} />
       </View>
     </View>
   );

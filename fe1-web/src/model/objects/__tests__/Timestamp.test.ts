@@ -57,7 +57,8 @@ describe('Timestamp object', () => {
       expect(timestamp.valueOf()).toStrictEqual(12345);
     });
 
-    it('works with a Number as argument', () => { // Doesn't work
+    it('works with a Number as argument', () => {
+      // Doesn't work
       // eslint-disable-next-line no-new-wrappers
       const n = new Number(12345); // This is for testing purposes only
       const timestamp = new Timestamp(n);

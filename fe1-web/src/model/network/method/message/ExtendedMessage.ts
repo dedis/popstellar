@@ -1,5 +1,11 @@
 import {
-  Hash, PublicKey, Base64UrlData, WitnessSignature, Signature, Timestamp, Channel,
+  Hash,
+  PublicKey,
+  Base64UrlData,
+  WitnessSignature,
+  Signature,
+  Timestamp,
+  Channel,
 } from 'model/objects';
 import { Message, MessageState } from 'model/network/method/message/Message';
 
@@ -9,8 +15,10 @@ export interface ExtendedMessageState extends MessageState {
   channel?: string;
 }
 
-export function markExtMessageAsProcessed(msg: ExtendedMessageState, when?: Timestamp)
-  : ExtendedMessageState {
+export function markExtMessageAsProcessed(
+  msg: ExtendedMessageState,
+  when?: Timestamp,
+): ExtendedMessageState {
   return {
     ...msg,
     processedAt: when?.valueOf() || Timestamp.EpochNow().valueOf(),
@@ -52,10 +60,11 @@ export class ExtendedMessage extends Message {
       signature: new Signature(state.signature),
       message_id: new Hash(state.message_id),
       witness_signatures: state.witness_signatures.map(
-        (ws: any) => new WitnessSignature({
-          witness: new PublicKey(ws.witness),
-          signature: new Signature(ws.signature),
-        }),
+        (ws: any) =>
+          new WitnessSignature({
+            witness: new PublicKey(ws.witness),
+            signature: new Signature(ws.signature),
+          }),
       ),
 
       // extended fields:

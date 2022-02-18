@@ -72,58 +72,63 @@ describe('UpdateLao', () => {
 
   describe('constructor', () => {
     it('should throw an error when name is undefined', () => {
-      const createWrongObj = () => new UpdateLao({
-        object: ObjectType.LAO,
-        action: ActionType.UPDATE_PROPERTIES,
-        id: mockLaoIdHash,
-        last_modified: TIMESTAMP,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new UpdateLao({
+          object: ObjectType.LAO,
+          action: ActionType.UPDATE_PROPERTIES,
+          id: mockLaoIdHash,
+          last_modified: TIMESTAMP,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when last_modified is undefined', () => {
-      const createWrongObj = () => new UpdateLao({
-        object: ObjectType.LAO,
-        action: ActionType.UPDATE_PROPERTIES,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new UpdateLao({
+          object: ObjectType.LAO,
+          action: ActionType.UPDATE_PROPERTIES,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when witnesses is undefined', () => {
-      const createWrongObj = () => new UpdateLao({
-        object: ObjectType.LAO,
-        action: ActionType.UPDATE_PROPERTIES,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        last_modified: TIMESTAMP,
-      });
+      const createWrongObj = () =>
+        new UpdateLao({
+          object: ObjectType.LAO,
+          action: ActionType.UPDATE_PROPERTIES,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          last_modified: TIMESTAMP,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when id is undefined', () => {
-      const createWrongObj = () => new UpdateLao({
-        object: ObjectType.LAO,
-        action: ActionType.UPDATE_PROPERTIES,
-        name: mockLaoName,
-        last_modified: TIMESTAMP,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new UpdateLao({
+          object: ObjectType.LAO,
+          action: ActionType.UPDATE_PROPERTIES,
+          name: mockLaoName,
+          last_modified: TIMESTAMP,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when id is incorrect', () => {
-      const createWrongObj = () => new UpdateLao({
-        object: ObjectType.LAO,
-        action: ActionType.UPDATE_PROPERTIES,
-        id: new Hash('id'),
-        name: mockLaoName,
-        last_modified: TIMESTAMP,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new UpdateLao({
+          object: ObjectType.LAO,
+          action: ActionType.UPDATE_PROPERTIES,
+          id: new Hash('id'),
+          name: mockLaoName,
+          last_modified: TIMESTAMP,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

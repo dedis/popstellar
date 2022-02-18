@@ -78,50 +78,54 @@ describe('Meeting object', () => {
     });
 
     it('throws an error when id is undefined', () => {
-      const createWrongMeeting = () => new Meeting({
-        start: TIMESTAMP,
-        name: NAME,
-        location: LOCATION,
-        creation: TIMESTAMP,
-        lastModified: TIMESTAMP,
-        extra: {},
-      });
+      const createWrongMeeting = () =>
+        new Meeting({
+          start: TIMESTAMP,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP,
+          lastModified: TIMESTAMP,
+          extra: {},
+        });
       expect(createWrongMeeting).toThrow(Error);
     });
 
     it('throws an error when name is undefined', () => {
-      const createWrongMeeting = () => new Meeting({
-        id: ID,
-        start: TIMESTAMP,
-        location: LOCATION,
-        creation: TIMESTAMP,
-        lastModified: TIMESTAMP,
-        extra: {},
-      });
+      const createWrongMeeting = () =>
+        new Meeting({
+          id: ID,
+          start: TIMESTAMP,
+          location: LOCATION,
+          creation: TIMESTAMP,
+          lastModified: TIMESTAMP,
+          extra: {},
+        });
       expect(createWrongMeeting).toThrow(Error);
     });
 
     it('throws an error when creation is undefined', () => {
-      const createWrongMeeting = () => new Meeting({
-        id: ID,
-        start: TIMESTAMP,
-        name: NAME,
-        location: LOCATION,
-        lastModified: TIMESTAMP,
-        extra: {},
-      });
+      const createWrongMeeting = () =>
+        new Meeting({
+          id: ID,
+          start: TIMESTAMP,
+          name: NAME,
+          location: LOCATION,
+          lastModified: TIMESTAMP,
+          extra: {},
+        });
       expect(createWrongMeeting).toThrow(Error);
     });
 
     it('throws an error when start is undefined', () => {
-      const createWrongMeeting = () => new Meeting({
-        id: ID,
-        name: NAME,
-        location: LOCATION,
-        creation: TIMESTAMP,
-        lastModified: TIMESTAMP,
-        extra: {},
-      });
+      const createWrongMeeting = () =>
+        new Meeting({
+          id: ID,
+          name: NAME,
+          location: LOCATION,
+          creation: TIMESTAMP,
+          lastModified: TIMESTAMP,
+          extra: {},
+        });
       expect(createWrongMeeting).toThrow(Error);
     });
 

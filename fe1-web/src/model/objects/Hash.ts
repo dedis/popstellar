@@ -12,26 +12,24 @@ export enum EventTags {
 
 export class Hash extends Base64UrlData {
   /**
-     * Create a base64url encoded hash of an array of strings according to the
-     * communication protocol
-     *
-     * @param data values to be hashed
-     * @return resulting hash
-     */
+   * Create a base64url encoded hash of an array of strings according to the
+   * communication protocol
+   *
+   * @param data values to be hashed
+   * @return resulting hash
+   */
   public static fromStringArray(...data: string[]): Hash {
-    const str = data
-      .map((item) => Hash.computeByteLength(item) + item)
-      .join('');
+    const str = data.map((item) => Hash.computeByteLength(item) + item).join('');
 
     return this.fromString(str);
   }
 
   /**
-     * Create a hash of a string
-     *
-     * @param data value to be hashed
-     * @return resulting hash
-     */
+   * Create a hash of a string
+   *
+   * @param data value to be hashed
+   * @return resulting hash
+   */
   public static fromString(data: string): Hash {
     const hash = sha256.create();
 

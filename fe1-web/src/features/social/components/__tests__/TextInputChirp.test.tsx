@@ -55,10 +55,11 @@ describe('TextInputChirp', () => {
   });
 
   it('renders correctly when writing more than 300 chars', () => {
-    const bigMessage = 'It seems that this message won\'t fit. It seems that this message won\'t fit. '
-      + 'It seems that this message won\'t fit. It seems that this message won\'t fit. It seems that '
-      + 'this message won\'t fit. It seems that this message won\'t fit. It seems that this message '
-      + 'won\'t fit. It seems that this message won\'t fit.';
+    const bigMessage =
+      "It seems that this message won't fit. It seems that this message won't fit. " +
+      "It seems that this message won't fit. It seems that this message won't fit. It seems that " +
+      "this message won't fit. It seems that this message won't fit. It seems that this message " +
+      "won't fit. It seems that this message won't fit.";
     const { getByPlaceholderText, toJSON } = render(
       <TextInputChirp
         onChangeText={onChangeText}

@@ -11,8 +11,12 @@ import { ReopenRollCall } from '../ReopenRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const rollCallId = Hash.fromStringArray('R', mockLaoId, TIMESTAMP.toString(), mockLaoName);
-const rollCallUpdateId = Hash.fromStringArray('R', mockLaoId, rollCallId.toString(),
-  TIMESTAMP.toString());
+const rollCallUpdateId = Hash.fromStringArray(
+  'R',
+  mockLaoId,
+  rollCallId.toString(),
+  TIMESTAMP.toString(),
+);
 
 const sampleReopenRollCall: Partial<ReopenRollCall> = {
   object: ObjectType.ROLL_CALL,

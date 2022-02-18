@@ -18,10 +18,10 @@ export class JsonRpcResponse {
   public readonly id: number;
 
   constructor(resp: Partial<JsonRpcResponse>) {
-    this.id = (resp.id === undefined) ? UNDEFINED_ID : resp.id;
+    this.id = resp.id === undefined ? UNDEFINED_ID : resp.id;
 
     if (resp.error !== undefined && resp.result !== undefined) {
-      throw new ProtocolError('Unexpected json-rpc answer : both \'error\' and \'result\' are present');
+      throw new ProtocolError("Unexpected json-rpc answer : both 'error' and 'result' are present");
     }
 
     if (resp.result !== undefined) {
@@ -32,12 +32,14 @@ export class JsonRpcResponse {
       this.result = resp.result;
     } else if (resp.error !== undefined) {
       if (resp.error.code >= 0) {
-        throw new ProtocolError(`Unexpected json-rpc answer : unexpected error code value '${resp.error.code}'`);
+        throw new ProtocolError(
+          `Unexpected json-rpc answer : unexpected error code value '${resp.error.code}'`,
+        );
       }
 
       this.error = resp.error;
     } else {
-      throw new ProtocolError('Unexpected json-rpc answer : both \'error\' and \'result\' are absent');
+      throw new ProtocolError("Unexpected json-rpc answer : both 'error' and 'result' are absent");
     }
   }
 

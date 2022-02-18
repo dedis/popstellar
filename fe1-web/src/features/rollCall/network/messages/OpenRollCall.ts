@@ -1,6 +1,4 @@
-import {
-  EventTags, Hash, Lao, Timestamp,
-} from 'model/objects';
+import { EventTags, Hash, Lao, Timestamp } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { OpenedLaoStore } from 'store';
@@ -38,11 +36,16 @@ export class OpenRollCall implements MessageData {
     }
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
-      EventTags.ROLL_CALL, lao.id.toString(), this.opens.toString(), this.opened_at.toString(),
+      EventTags.ROLL_CALL,
+      lao.id.toString(),
+      this.opens.toString(),
+      this.opened_at.toString(),
     );
     if (!expectedHash.equals(msg.update_id)) {
-      throw new ProtocolError(`Invalid 'update_id' ${paramError(this)}:`
-        + ' re-computing the value yields a different result');
+      throw new ProtocolError(
+        `Invalid 'update_id' ${paramError(this)}:` +
+          ' re-computing the value yields a different result',
+      );
     }
     this.update_id = msg.update_id;
   }

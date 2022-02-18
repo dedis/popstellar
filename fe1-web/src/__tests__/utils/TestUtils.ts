@@ -1,6 +1,4 @@
-import {
-  Hash, Lao, LaoState, PopToken, PublicKey, Timestamp,
-} from 'model/objects';
+import { Hash, Lao, LaoState, PopToken, PublicKey, Timestamp } from 'model/objects';
 import testKeyPair from 'test_data/keypair.json';
 
 export const mockPublicKey = testKeyPair.publicKey;
@@ -15,7 +13,9 @@ export const org = new PublicKey(mockPublicKey);
 export const mockLaoName = 'MyLao';
 export const mockLaoCreationTime = new Timestamp(1600000000);
 export const mockLaoIdHash: Hash = Hash.fromStringArray(
-  org.toString(), mockLaoCreationTime.toString(), mockLaoName,
+  org.toString(),
+  mockLaoCreationTime.toString(),
+  mockLaoName,
 );
 export const mockLaoId: string = mockLaoIdHash.toString();
 

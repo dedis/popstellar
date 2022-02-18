@@ -1,13 +1,7 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { getReactionChannel, getUserSocialChannel } from 'model/objects';
-import {
-  AsyncDispatch,
-  dispatch,
-  getStore,
-  makeCurrentLao,
-  setLaoLastRollCall,
-} from 'store';
+import { AsyncDispatch, dispatch, getStore, makeCurrentLao, setLaoLastRollCall } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
@@ -28,8 +22,10 @@ const getCurrentLao = makeCurrentLao();
  * @param msg - The extended message for creating a roll call
  */
 function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.ROLL_CALL
-    || msg.messageData.action !== ActionType.CREATE) {
+  if (
+    msg.messageData.object !== ObjectType.ROLL_CALL ||
+    msg.messageData.action !== ActionType.CREATE
+  ) {
     console.warn('handleRollCallCreateMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -66,8 +62,10 @@ function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
  * @param msg - The extended message for opening a roll call
  */
 function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.ROLL_CALL
-    || msg.messageData.action !== ActionType.OPEN) {
+  if (
+    msg.messageData.object !== ObjectType.ROLL_CALL ||
+    msg.messageData.action !== ActionType.OPEN
+  ) {
     console.warn('handleRollCallOpenMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -105,8 +103,10 @@ function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
  * @param msg - The extended message for closing a roll call
  */
 function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.ROLL_CALL
-    || msg.messageData.action !== ActionType.CLOSE) {
+  if (
+    msg.messageData.object !== ObjectType.ROLL_CALL ||
+    msg.messageData.action !== ActionType.CLOSE
+  ) {
     console.warn('handleRollCallCloseMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -147,17 +147,17 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
 
       // If we had a token in this roll call, we subscribe to our own social media channel
       if (token && hasToken) {
-        await subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey))
-          .catch((err) => {
-            console.error(`Could not subscribe to our own social channel ${token.publicKey}, error:`,
-              err);
-          });
+        await subscribeToChannel(getUserSocialChannel(lao.id, token.publicKey)).catch((err) => {
+          console.error(
+            `Could not subscribe to our own social channel ${token.publicKey}, error:`,
+            err,
+          );
+        });
       }
       // everyone is automatically subscribed to the reaction channel after the roll call
-      await subscribeToChannel(getReactionChannel(lao.id))
-        .catch((err) => {
-          console.error('Could not subscribe to reaction channel, error:', err);
-        });
+      await subscribeToChannel(getReactionChannel(lao.id)).catch((err) => {
+        console.error('Could not subscribe to reaction channel, error:', err);
+      });
     } catch (err) {
       console.debug(err);
     }
@@ -172,8 +172,10 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
  * @param msg
  */
 function handleRollCallReopenMessage(msg: ExtendedMessage) {
-  console.warn('A RollCall reopen message was received but'
-    + ' its processing logic is not yet implemented:', msg);
+  console.warn(
+    'A RollCall reopen message was received but' + ' its processing logic is not yet implemented:',
+    msg,
+  );
   return false;
 }
 

@@ -99,6 +99,9 @@ function handleLaoUpdatePropertiesMessage(msg: ExtendedMessage): boolean {
 export function configure(registry: MessageRegistry) {
   registry.addHandler(ObjectType.LAO, ActionType.CREATE, handleLaoCreateMessage);
   registry.addHandler(ObjectType.LAO, ActionType.STATE, handleLaoStateMessage);
-  registry.addHandler(ObjectType.LAO, ActionType.UPDATE_PROPERTIES,
-    handleLaoUpdatePropertiesMessage);
+  registry.addHandler(
+    ObjectType.LAO,
+    ActionType.UPDATE_PROPERTIES,
+    handleLaoUpdatePropertiesMessage,
+  );
 }

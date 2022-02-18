@@ -19,7 +19,7 @@ import eventViewStyles from '../styles/eventViewStyles';
 /**
  * The Event item component: display the correct representation of the event according to its type,
  * otherwise display its name and in all cases its nested events
-*/
+ */
 const Event = (props: IPropTypes) => {
   const { event } = props;
 
@@ -28,27 +28,13 @@ const Event = (props: IPropTypes) => {
 
   const buildEvent = () => {
     if (event instanceof Meeting) {
-      return (
-        <EventMeeting
-          event={event}
-        />
-      );
+      return <EventMeeting event={event} />;
     }
     if (event instanceof RollCall) {
-      return (
-        <EventRollCall
-          event={event}
-          isOrganizer={isOrganizer}
-        />
-      );
+      return <EventRollCall event={event} isOrganizer={isOrganizer} />;
     }
     if (event instanceof Election) {
-      return (
-        <EventElection
-          election={event}
-          isOrganizer={isOrganizer}
-        />
-      );
+      return <EventElection election={event} isOrganizer={isOrganizer} />;
     }
     return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
   };
@@ -56,7 +42,7 @@ const Event = (props: IPropTypes) => {
   return (
     <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
       <TextBlock text={event.name} />
-      { buildEvent() }
+      {buildEvent()}
     </View>
   );
 };

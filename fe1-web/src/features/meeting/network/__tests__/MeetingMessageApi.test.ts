@@ -1,11 +1,7 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import {
-  ActionType,
-  MessageData,
-  ObjectType,
-} from 'model/network/method/message/data';
+import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data';
 import { Hash, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
@@ -61,8 +57,12 @@ const initializeChecks = () => {
     }
 
     // check id
-    const expected = Hash.fromStringArray('M', OpenedLaoStore.get().id.toString(),
-      OpenedLaoStore.get().creation.toString(), data.name);
+    const expected = Hash.fromStringArray(
+      'M',
+      OpenedLaoStore.get().id.toString(),
+      OpenedLaoStore.get().creation.toString(),
+      data.name,
+    );
     expect(data.id).toEqual(expected);
   };
 };
@@ -74,26 +74,28 @@ beforeEach(() => {
 });
 
 describe('MessageApi', () => {
-  it('should create the correct request for requestCreateMeeting without extra',
-    async () => {
-      await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
+  it('should create the correct request for requestCreateMeeting without extra', async () => {
+    await msApi.requestCreateMeeting(mockEventName, mockStartTime, mockLocation, mockEndTime);
 
-      expect(publishMock).toBeCalledTimes(1);
-      const [channel, msgData] = publishMock.mock.calls[0];
-      expect(channel).toBe(`/root/${mockLaoId}`);
-      checkDataCreateMeeting(msgData);
-    });
+    expect(publishMock).toBeCalledTimes(1);
+    const [channel, msgData] = publishMock.mock.calls[0];
+    expect(channel).toBe(`/root/${mockLaoId}`);
+    checkDataCreateMeeting(msgData);
+  });
 
-  it('should create the correct request for requestCreateMeeting with extra',
-    async () => {
-      const mockExtra = { numberParticipants: 12, minAge: 18 };
-      await msApi.requestCreateMeeting(
-        mockEventName, mockStartTime, mockLocation, mockEndTime, mockExtra,
-      );
+  it('should create the correct request for requestCreateMeeting with extra', async () => {
+    const mockExtra = { numberParticipants: 12, minAge: 18 };
+    await msApi.requestCreateMeeting(
+      mockEventName,
+      mockStartTime,
+      mockLocation,
+      mockEndTime,
+      mockExtra,
+    );
 
-      expect(publishMock).toBeCalledTimes(1);
-      const [channel, msgData] = publishMock.mock.calls[0];
-      expect(channel).toBe(`/root/${mockLaoId}`);
-      checkDataCreateMeeting(msgData);
-    });
+    expect(publishMock).toBeCalledTimes(1);
+    const [channel, msgData] = publishMock.mock.calls[0];
+    expect(channel).toBe(`/root/${mockLaoId}`);
+    checkDataCreateMeeting(msgData);
+  });
 });

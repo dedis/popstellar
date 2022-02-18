@@ -44,10 +44,7 @@ const WalletHome = () => {
         title={STRINGS.create_new_wallet_button}
         onPress={() => navigation.navigate(STRINGS.navigation_show_seed_wallet)}
       />
-      <WideButtonView
-        title={STRINGS.import_seed_button}
-        onPress={() => importSeed()}
-      />
+      <WideButtonView title={STRINGS.import_seed_button} onPress={() => importSeed()} />
     </View>
   );
 };

@@ -14,8 +14,7 @@ test('Bip39Path produces the known outputs - test vector 0', async () => {
     "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
   ].join('/');
 
-  expect(Bip39Path.fromLaoRollCall(laoId, rollCallId))
-    .toEqual(expected);
+  expect(Bip39Path.fromLaoRollCall(laoId, rollCallId)).toEqual(expected);
 });
 
 test('Bip39Path produces the known outputs - test vector 1', async () => {
@@ -30,6 +29,5 @@ test('Bip39Path produces the known outputs - test vector 1', async () => {
     "7920043'/38174203'/71210134'/14078251'/2278823'/50163231'/203204108'/4625150'/6448'/23105'/238184'",
   ].join('/');
 
-  expect(Bip39Path.fromLaoRollCall(laoId, rollCallId))
-    .toEqual(expected);
+  expect(Bip39Path.fromLaoRollCall(laoId, rollCallId)).toEqual(expected);
 });

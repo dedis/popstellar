@@ -1,6 +1,4 @@
-import {
-  channelFromIds, EventTags, Hash, Lao, Timestamp,
-} from 'model/objects';
+import { channelFromIds, EventTags, Hash, Lao, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { publish } from 'network/JsonRpcApi';
 
@@ -20,14 +18,21 @@ import { CreateMeeting } from './messages';
  * @param extra - Json object containing extra information about the meeting (optional)
  */
 export function requestCreateMeeting(
-  name: string, startTime: Timestamp, location: string, endTime: Timestamp, extra?: {},
+  name: string,
+  startTime: Timestamp,
+  location: string,
+  endTime: Timestamp,
+  extra?: {},
 ): Promise<void> {
   const time = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new CreateMeeting({
     id: Hash.fromStringArray(
-      EventTags.MEETING, currentLao.id.toString(), currentLao.creation.toString(), name,
+      EventTags.MEETING,
+      currentLao.id.toString(),
+      currentLao.creation.toString(),
+      name,
     ),
     name,
     start: Timestamp.max(time, startTime),

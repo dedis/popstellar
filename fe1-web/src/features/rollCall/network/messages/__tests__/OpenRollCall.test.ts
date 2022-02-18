@@ -11,8 +11,12 @@ import { OpenRollCall } from '../OpenRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const rollCallId = Hash.fromStringArray('R', mockLaoId, TIMESTAMP.toString(), mockLaoName);
-const rollCallUpdateId = Hash.fromStringArray('R', mockLaoId, rollCallId.toString(),
-  TIMESTAMP.toString());
+const rollCallUpdateId = Hash.fromStringArray(
+  'R',
+  mockLaoId,
+  rollCallId.toString(),
+  TIMESTAMP.toString(),
+);
 
 const sampleOpenRollCall: Partial<OpenRollCall> = {
   object: ObjectType.ROLL_CALL,
@@ -66,43 +70,47 @@ describe('OpenRollCall', () => {
 
   describe('constructor', () => {
     it('should throw an error if opened_at is undefined', () => {
-      const createWrongObj = () => new OpenRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        update_id: rollCallUpdateId,
-        opens: rollCallId,
-      });
+      const createWrongObj = () =>
+        new OpenRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          update_id: rollCallUpdateId,
+          opens: rollCallId,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if opens is undefined', () => {
-      const createWrongObj = () => new OpenRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        update_id: rollCallUpdateId,
-        opened_at: TIMESTAMP,
-      });
+      const createWrongObj = () =>
+        new OpenRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          update_id: rollCallUpdateId,
+          opened_at: TIMESTAMP,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if update_id is undefined', () => {
-      const createWrongObj = () => new OpenRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        opens: rollCallId,
-        opened_at: TIMESTAMP,
-      });
+      const createWrongObj = () =>
+        new OpenRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          opens: rollCallId,
+          opened_at: TIMESTAMP,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if update_id is incorrect', () => {
-      const createWrongObj = () => new OpenRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.CREATE,
-        update_id: new Hash('id'),
-        opens: rollCallId,
-        opened_at: TIMESTAMP,
-      });
+      const createWrongObj = () =>
+        new OpenRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.CREATE,
+          update_id: new Hash('id'),
+          opens: rollCallId,
+          opened_at: TIMESTAMP,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

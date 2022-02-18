@@ -1,29 +1,47 @@
 import {
-  AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp,
+  AddChirp,
+  DeleteChirp,
+  NotifyAddChirp,
+  NotifyDeleteChirp,
 } from 'features/social/network/messages/chirp';
 import { AddReaction } from 'features/social/network/messages/reaction';
 import { CreateMeeting, StateMeeting } from 'features/meeting/network/messages';
 import {
-  CastVote, ElectionResult, EndElection, SetupElection,
+  CastVote,
+  ElectionResult,
+  EndElection,
+  SetupElection,
 } from 'features/evoting/network/messages';
 import {
-  CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall,
+  CloseRollCall,
+  CreateRollCall,
+  OpenRollCall,
+  ReopenRollCall,
 } from 'features/rollCall/network/messages';
-import {
-  ActionType, MessageData, ObjectType, SignatureType,
-} from './MessageData';
+import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
 import { CreateLao, StateLao, UpdateLao } from './lao';
 import { WitnessMessage } from './witness';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
 
+const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION } = ObjectType;
 const {
-  LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION,
-} = ObjectType;
-const {
-  CREATE, STATE, UPDATE_PROPERTIES, OPEN, CLOSE, REOPEN, SETUP, CAST_VOTE, END, RESULT, WITNESS,
-  ADD, NOTIFY_ADD, DELETE, NOTIFY_DELETE,
+  CREATE,
+  STATE,
+  UPDATE_PROPERTIES,
+  OPEN,
+  CLOSE,
+  REOPEN,
+  SETUP,
+  CAST_VOTE,
+  END,
+  RESULT,
+  WITNESS,
+  ADD,
+  NOTIFY_ADD,
+  DELETE,
+  NOTIFY_DELETE,
 } = ActionType;
 const { KEYPAIR, POP_TOKEN } = SignatureType;
 

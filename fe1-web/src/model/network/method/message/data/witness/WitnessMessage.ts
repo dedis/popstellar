@@ -14,12 +14,16 @@ export class WitnessMessage implements MessageData {
 
   constructor(msg: Partial<WitnessMessage>) {
     if (!msg.message_id) {
-      throw new ProtocolError('Undefined \'message_id\' parameter encountered during \'WitnessMessage\'');
+      throw new ProtocolError(
+        "Undefined 'message_id' parameter encountered during 'WitnessMessage'",
+      );
     }
     this.message_id = msg.message_id;
 
     if (!msg.signature) {
-      throw new ProtocolError('Undefined \'signature\' parameter encountered during \'WitnessMessage\'');
+      throw new ProtocolError(
+        "Undefined 'signature' parameter encountered during 'WitnessMessage'",
+      );
     }
     // FIXME verify signature without the public key available? 0.o
     // uncomment 3 tests in "FromJson" test suite

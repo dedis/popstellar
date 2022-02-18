@@ -2,7 +2,12 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import {
-  mockLaoCreationTime, mockLaoIdHash, mockLaoName, mockPublicKey, mockPublicKey2, org,
+  mockLaoCreationTime,
+  mockLaoIdHash,
+  mockLaoName,
+  mockPublicKey,
+  mockPublicKey2,
+  org,
 } from '__tests__/utils/TestUtils';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { Hash, PublicKey } from 'model/objects';
@@ -66,75 +71,81 @@ describe('CreateLao', () => {
 
   describe('constructor', () => {
     it('should throw an error if name is undefined', () => {
-      const createWrongObj = () => new CreateLao({
-        object: ObjectType.LAO,
-        action: ActionType.CREATE,
-        id: mockLaoIdHash,
-        creation: mockLaoCreationTime,
-        organizer: org,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new CreateLao({
+          object: ObjectType.LAO,
+          action: ActionType.CREATE,
+          id: mockLaoIdHash,
+          creation: mockLaoCreationTime,
+          organizer: org,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if creation is undefined', () => {
-      const createWrongObj = () => new CreateLao({
-        object: ObjectType.LAO,
-        action: ActionType.CREATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        organizer: org,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new CreateLao({
+          object: ObjectType.LAO,
+          action: ActionType.CREATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          organizer: org,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if witnesses is undefined', () => {
-      const createWrongObj = () => new CreateLao({
-        object: ObjectType.LAO,
-        action: ActionType.CREATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        organizer: org,
-      });
+      const createWrongObj = () =>
+        new CreateLao({
+          object: ObjectType.LAO,
+          action: ActionType.CREATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          organizer: org,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if organizer is undefined', () => {
-      const createWrongObj = () => new CreateLao({
-        object: ObjectType.LAO,
-        action: ActionType.CREATE,
-        id: mockLaoIdHash,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new CreateLao({
+          object: ObjectType.LAO,
+          action: ActionType.CREATE,
+          id: mockLaoIdHash,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is undefined', () => {
-      const createWrongObj = () => new CreateLao({
-        object: ObjectType.LAO,
-        action: ActionType.CREATE,
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        organizer: org,
-        witnesses: [],
-      });
+      const createWrongObj = () =>
+        new CreateLao({
+          object: ObjectType.LAO,
+          action: ActionType.CREATE,
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          organizer: org,
+          witnesses: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is incorrect', () => {
-      const createWrongObj = () => new CreateLao({
-        object: ObjectType.LAO,
-        action: ActionType.CREATE,
-        id: new Hash('id'),
-        name: mockLaoName,
-        creation: mockLaoCreationTime,
-        organizer: org,
-        witnesses: mockWitnesses,
-      });
+      const createWrongObj = () =>
+        new CreateLao({
+          object: ObjectType.LAO,
+          action: ActionType.CREATE,
+          id: new Hash('id'),
+          name: mockLaoName,
+          creation: mockLaoCreationTime,
+          organizer: org,
+          witnesses: mockWitnesses,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

@@ -32,8 +32,10 @@ beforeEach(() => {
 
 describe('MessageApi', () => {
   it('should create the correct request for requestWitnessMessage', async () => {
-    await msApi.requestWitnessMessage(`/root/${mockLaoId}`,
-      Base64UrlData.encode('randomMessageId'));
+    await msApi.requestWitnessMessage(
+      `/root/${mockLaoId}`,
+      Base64UrlData.encode('randomMessageId'),
+    );
 
     expect(publishMock).toBeCalledTimes(1);
     const [channel, msgData] = publishMock.mock.calls[0];

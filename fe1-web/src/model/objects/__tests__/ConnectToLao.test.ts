@@ -42,16 +42,18 @@ describe('ConnectToLao', () => {
 
   describe('constructor', () => {
     it('should throw an error if server is undefined', () => {
-      const wrongObj = () => new ConnectToLao({
-        lao: mockLaoId,
-      });
+      const wrongObj = () =>
+        new ConnectToLao({
+          lao: mockLaoId,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if lao id is undefined', () => {
-      const wrongObj = () => new ConnectToLao({
-        server: serverUrl,
-      });
+      const wrongObj = () =>
+        new ConnectToLao({
+          server: serverUrl,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
   });

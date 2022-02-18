@@ -20,35 +20,35 @@ export interface ElectionState extends LaoEventState {
 }
 
 export interface Question {
-  id: string,
-  question: string,
-  voting_method: string,
-  ballot_options: string[],
-  write_in: boolean,
+  id: string;
+  question: string;
+  voting_method: string;
+  ballot_options: string[];
+  write_in: boolean;
 }
 
 export interface Vote {
-  id: string,
-  question: string,
-  vote?: number[],
-  writeIn?: string,
+  id: string;
+  question: string;
+  vote?: number[];
+  writeIn?: string;
 }
 
 export interface RegisteredVote {
   createdAt: number;
-  sender: string,
-  votes: Vote[],
-  messageId: string,
+  sender: string;
+  votes: Vote[];
+  messageId: string;
 }
 
 export interface MajorityResult {
-  ballotOption: string,
-  count: number,
+  ballotOption: string;
+  count: number;
 }
 
 export interface QuestionResult {
-  id: string,
-  result: MajorityResult[]
+  id: string;
+  result: MajorityResult[];
 }
 
 export enum ElectionStatus {
@@ -84,8 +84,9 @@ export class Election {
 
   constructor(obj: Partial<Election>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a Election object: '
-        + 'undefined/null parameters');
+      throw new Error(
+        'Error encountered while creating a Election object: ' + 'undefined/null parameters',
+      );
     }
     if (obj.lao === undefined) {
       throw new Error("Undefined 'lao' when creating 'Election'");

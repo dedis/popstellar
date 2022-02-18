@@ -18,10 +18,8 @@ const ParagraphBlock = (props: IPropTypes) => {
   const { text } = props;
   const { bold } = props;
 
-  const style = (bold) ? styles.textBold : styles.textStandard;
-  return (text !== undefined && text !== null)
-    ? <Text style={style}>{text}</Text>
-    : null;
+  const style = bold ? styles.textBold : styles.textStandard;
+  return text !== undefined && text !== null ? <Text style={style}>{text}</Text> : null;
 };
 
 const propTypes = {

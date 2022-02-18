@@ -20,27 +20,29 @@ export class EndElection implements MessageData {
 
   constructor(msg: Partial<EndElection>) {
     if (!msg.election) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'EndElection\'');
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'EndElection'");
     }
 
     if (!msg.lao) {
-      throw new ProtocolError('Undefined \'lao\' parameter encountered during \'EndElection\'');
+      throw new ProtocolError("Undefined 'lao' parameter encountered during 'EndElection'");
     }
     this.lao = msg.lao;
 
     if (!msg.created_at) {
-      throw new ProtocolError('Undefined \'created_at\' parameter encountered during \'EndElection\'');
+      throw new ProtocolError("Undefined 'created_at' parameter encountered during 'EndElection'");
     }
     checkTimestampStaleness(msg.created_at);
     this.created_at = msg.created_at;
     if (!msg.registered_votes) {
-      throw new ProtocolError('Undefined \'registered_votes\' parameter encountered during \'EndElection\'');
+      throw new ProtocolError(
+        "Undefined 'registered_votes' parameter encountered during 'EndElection'",
+      );
     }
 
     this.registered_votes = msg.registered_votes;
 
     if (!msg.election) {
-      throw new ProtocolError('Invalid \'election\' parameter encountered during \'EndElection\'');
+      throw new ProtocolError("Invalid 'election' parameter encountered during 'EndElection'");
     }
     this.election = msg.election;
   }

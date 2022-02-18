@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  SectionList, StyleSheet, Text, TextStyle,
-} from 'react-native';
+import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -10,9 +8,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { dispatch, getStore } from 'store';
 import { EventTags, Hash, Timestamp } from 'model/objects';
 import { Spacing, Typography } from 'styles';
-import {
-  BarChartDisplay, CheckboxList, TimeDisplay, WideButtonView,
-} from 'core/components';
+import { BarChartDisplay, CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'res/strings';
 import { FOUR_SECONDS } from 'res/const';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
@@ -56,16 +52,18 @@ const EventElection = (props: IPropTypes) => {
   const untilStart = (election.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
   const untilEnd = (election.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
   // This makes sure the election status is always updated
-  const electionFromStore = useSelector((state) => (
-    // @ts-ignore
-    state.events.byLaoId[election.lao].byId[election.id]));
+  const electionFromStore = useSelector(
+    (state) =>
+      // @ts-ignore
+      state.events.byLaoId[election.lao].byId[election.id],
+  );
   if (!electionFromStore) {
     console.debug('Error in Election display: Election doesnt exist in store');
     return null;
   }
 
   const updateSelectedBallots = (values: number[], idx: number) => {
-    setSelectedBallots((prev) => prev.map((item, id) => ((idx === id) ? values : item)));
+    setSelectedBallots((prev) => prev.map((item, id) => (idx === id ? values : item)));
   };
   const concatenateIndexes = (indexes: number[]) => {
     let concatenated = '';
@@ -105,17 +103,14 @@ const EventElection = (props: IPropTypes) => {
   };
 
   const calculateVoteHash = () => {
-    const votes: { messageId: number, voteIDs: Hash[]; }[] = electionFromStore.registered_votes.map(
-      (registeredVote: RegisteredVote) => (
-        {
-          messageId: registeredVote.messageId,
-          voteIDs: registeredVote.votes.map((vote) => vote.id),
-        }
-      ),
+    const votes: { messageId: number; voteIDs: Hash[] }[] = electionFromStore.registered_votes.map(
+      (registeredVote: RegisteredVote) => ({
+        messageId: registeredVote.messageId,
+        voteIDs: registeredVote.votes.map((vote) => vote.id),
+      }),
     );
     // Sort by message ID
-    votes.sort((a, b) => (
-      a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
+    votes.sort((a, b) => (a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
     const arrayToHash: Hash[] = [];
     votes.forEach((registeredVote) => {
       arrayToHash.push(...registeredVote.voteIDs);
@@ -184,26 +179,21 @@ const EventElection = (props: IPropTypes) => {
             renderSectionHeader={({ section: { title } }) => (
               <Text style={styles.textQuestions}>{title}</Text>
             )}
-            renderItem={({ item }) => (
-              <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>
-            )}
+            renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
           />
         );
       case ElectionStatus.RUNNING:
         return (
           <>
-            {(questions.map((q, idx) => (
+            {questions.map((q, idx) => (
               <CheckboxList
                 key={q.title + idx.toString()}
                 title={q.title}
                 values={q.data}
                 onChange={(values: number[]) => updateSelectedBallots(values, idx)}
               />
-            )))}
-            <WideButtonView
-              title={STRINGS.cast_vote}
-              onPress={onCastVote}
-            />
+            ))}
+            <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
             <Badge value={hasVoted} status="success" />
           </>
         );

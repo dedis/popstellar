@@ -19,18 +19,21 @@ describe('Channel object', () => {
 
   it('getUserSocialChannel should return the correct channel', () => {
     const userToken = new PublicKey('userToken');
-    expect(getUserSocialChannel(mockLaoIdHash, userToken))
-      .toStrictEqual(`/root/${mockLaoIdHash}/social/${userToken.valueOf()}`);
+    expect(getUserSocialChannel(mockLaoIdHash, userToken)).toStrictEqual(
+      `/root/${mockLaoIdHash}/social/${userToken.valueOf()}`,
+    );
   });
 
   it('getGeneralChirpsChannel should return the correct channel', () => {
-    expect(getGeneralChirpsChannel(mockLaoIdHash))
-      .toStrictEqual(`/root/${mockLaoIdHash}/social/chirps`);
+    expect(getGeneralChirpsChannel(mockLaoIdHash)).toStrictEqual(
+      `/root/${mockLaoIdHash}/social/chirps`,
+    );
   });
 
   it('getReactionChannel should return the correct channel', () => {
-    expect(getReactionChannel(mockLaoIdHash))
-      .toStrictEqual(`/root/${mockLaoIdHash}/social/reactions`);
+    expect(getReactionChannel(mockLaoIdHash)).toStrictEqual(
+      `/root/${mockLaoIdHash}/social/reactions`,
+    );
   });
 
   it('getLastPartOfChannel works correctly', () => {

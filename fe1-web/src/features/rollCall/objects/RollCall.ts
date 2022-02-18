@@ -1,7 +1,5 @@
 import { LaoEventState } from 'features/events/objects/LaoEvent';
-import {
-  Hash, PopToken, PublicKey, Timestamp,
-} from 'model/objects';
+import { Hash, PopToken, PublicKey, Timestamp } from 'model/objects';
 
 /**
  * Object to represent a roll call.
@@ -69,8 +67,9 @@ export class RollCall {
 
   constructor(obj: Partial<RollCall>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a RollCall object: '
-      + 'undefined/null parameters');
+      throw new Error(
+        'Error encountered while creating a RollCall object: ' + 'undefined/null parameters',
+      );
     }
 
     if (obj.id === undefined) {
@@ -115,17 +114,17 @@ export class RollCall {
   public static fromState(rollCallState: RollCallState): RollCall {
     return new RollCall({
       id: new Hash(rollCallState.id),
-      idAlias: (rollCallState.idAlias) ? new Hash(rollCallState.idAlias) : undefined,
+      idAlias: rollCallState.idAlias ? new Hash(rollCallState.idAlias) : undefined,
       name: rollCallState.name,
       location: rollCallState.location,
       description: rollCallState.description,
       creation: new Timestamp(rollCallState.creation),
       proposedStart: new Timestamp(rollCallState.proposedStart),
       proposedEnd: new Timestamp(rollCallState.proposedEnd),
-      openedAt: (rollCallState.openedAt !== undefined) ? new Timestamp(rollCallState.openedAt)
-        : undefined,
-      closedAt: (rollCallState.closedAt !== undefined) ? new Timestamp(rollCallState.closedAt)
-        : undefined,
+      openedAt:
+        rollCallState.openedAt !== undefined ? new Timestamp(rollCallState.openedAt) : undefined,
+      closedAt:
+        rollCallState.closedAt !== undefined ? new Timestamp(rollCallState.closedAt) : undefined,
       status: rollCallState.status,
       attendees: rollCallState.attendees?.map((a) => new PublicKey(a)),
     });
@@ -155,8 +154,6 @@ export class RollCall {
       return false;
     }
 
-    return this.attendees.some(
-      (attendee: PublicKey) => attendee.equals(token.publicKey),
-    );
+    return this.attendees.some((attendee: PublicKey) => attendee.equals(token.publicKey));
   }
 }

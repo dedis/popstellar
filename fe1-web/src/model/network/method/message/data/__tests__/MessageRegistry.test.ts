@@ -1,7 +1,5 @@
 import 'jest-extended';
-import {
-  channelFromIds, Lao, LaoState, Timestamp,
-} from 'model/objects';
+import { channelFromIds, Lao, LaoState, Timestamp } from 'model/objects';
 import { ExtendedMessage } from 'model/network/method/message/ExtendedMessage';
 import { configureMessages, Message } from 'model/network/method/message/Message';
 import { AddChirp } from 'features/social/network/messages/chirp';
@@ -35,12 +33,11 @@ beforeEach(() => {
 });
 
 describe('MessageRegistry', () => {
-  it('should throw an error when adding a handler to an unsupported type of message',
-    async () => {
-      const mockHandle = jest.fn();
-      const addWrongHandler = () => registry.addHandler(CHIRP, INVALID, mockHandle);
-      expect(addWrongHandler).toThrow(Error);
-    });
+  it('should throw an error when adding a handler to an unsupported type of message', async () => {
+    const mockHandle = jest.fn();
+    const addWrongHandler = () => registry.addHandler(CHIRP, INVALID, mockHandle);
+    expect(addWrongHandler).toThrow(Error);
+  });
 
   it('should work correctly for handling messages', async () => {
     const mockHandle = jest.fn();
@@ -57,11 +54,10 @@ describe('MessageRegistry', () => {
     expect(buildWrongMessage).toThrow(Error);
   });
 
-  it('should throw an error when getting the signature of an unsupported type of message',
-    () => {
-      const wrongSignature = () => registry.getSignatureType({ object: CHIRP, action: INVALID });
-      expect(wrongSignature).toThrow(Error);
-    });
+  it('should throw an error when getting the signature of an unsupported type of message', () => {
+    const wrongSignature = () => registry.getSignatureType({ object: CHIRP, action: INVALID });
+    expect(wrongSignature).toThrow(Error);
+  });
 
   it('should return the correct signature type', () => {
     expect(registry.getSignatureType(messageData)).toStrictEqual(POP_TOKEN);

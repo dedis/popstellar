@@ -1,8 +1,6 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import {
-  dispatch, getStore, makeCurrentLao,
-} from 'store';
+import { dispatch, getStore, makeCurrentLao } from 'store';
 
 import { Chirp } from '../objects';
 import { AddChirp, DeleteChirp } from './messages/chirp';
@@ -19,8 +17,7 @@ const getCurrentLao = makeCurrentLao();
  * @param msg - The extended message for adding a chirp
  */
 function handleAddChirpMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.CHIRP
-    || msg.messageData.action !== ActionType.ADD) {
+  if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.ADD) {
     console.warn('handleAddChirp was called to process an unsupported message');
     return false;
   }
@@ -56,8 +53,7 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
  * @param msg - The extended message for deleting a chirp
  */
 function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.CHIRP
-    || msg.messageData.action !== ActionType.DELETE) {
+  if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.DELETE) {
     console.warn('handleDeleteChirp was called to process an unsupported message');
     return false;
   }

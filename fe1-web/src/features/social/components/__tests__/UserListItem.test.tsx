@@ -43,10 +43,10 @@ describe('UserListItem', () => {
     const profileButton = getByText(STRINGS.profile_button);
     fireEvent.press(profileButton);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
-    expect(mockNavigate).toHaveBeenCalledWith(
-      STRINGS.social_media_navigation_tab_user_profile,
-      { currentUserPublicKey: mockPublicKey, userPublicKey: publicKey },
-    );
+    expect(mockNavigate).toHaveBeenCalledWith(STRINGS.social_media_navigation_tab_user_profile, {
+      currentUserPublicKey: mockPublicKey,
+      userPublicKey: publicKey,
+    });
   });
 
   it('renders correctly', () => {

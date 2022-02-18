@@ -1,19 +1,12 @@
 import { ExtendedMessage } from 'model/network/method/message';
 import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
 import { channelFromIds, getLastPartOfChannel } from 'model/objects';
-import {
-  dispatch, getStore, KeyPairStore, makeCurrentLao,
-} from 'store';
+import { dispatch, getStore, KeyPairStore, makeCurrentLao } from 'store';
 import { subscribeToChannel } from 'network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
-import {
-  CastVote,
-  ElectionResult,
-  EndElection,
-  SetupElection,
-} from './messages';
+import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, RegisteredVote } from '../objects';
 
 /**
@@ -28,8 +21,10 @@ const getCurrentLao = makeCurrentLao();
  * @param msg - The extended message for setting up an election
  */
 function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.SETUP) {
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.SETUP
+  ) {
     console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -73,8 +68,10 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
  * @param msg - The extended message to cast a vote
  */
 function handleCastVoteMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.CAST_VOTE) {
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.CAST_VOTE
+  ) {
     console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -106,13 +103,17 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
-  if (election.registeredVotes.some(
-    (votes) => votes.sender.toString() === currentVote.sender.toString(),
-  )) { // Update the vote if the person has already voted before
-    election.registeredVotes = election.registeredVotes.map(
-      (prevVote) => (
-        prevVote.sender.toString() === currentVote.sender.toString()
-        && prevVote.createdAt.valueOf() < currentVote.createdAt.valueOf() ? currentVote : prevVote),
+  if (
+    election.registeredVotes.some(
+      (votes) => votes.sender.toString() === currentVote.sender.toString(),
+    )
+  ) {
+    // Update the vote if the person has already voted before
+    election.registeredVotes = election.registeredVotes.map((prevVote) =>
+      prevVote.sender.toString() === currentVote.sender.toString() &&
+      prevVote.createdAt.valueOf() < currentVote.createdAt.valueOf()
+        ? currentVote
+        : prevVote,
     );
   } else {
     election.registeredVotes = [...election.registeredVotes, currentVote];
@@ -128,8 +129,7 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
  */
 function handleElectionEndMessage(msg: ExtendedMessage) {
   console.log('Handling Election end message');
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.END) {
+  if (msg.messageData.object !== ObjectType.ELECTION || msg.messageData.action !== ActionType.END) {
     console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -159,8 +159,10 @@ function handleElectionEndMessage(msg: ExtendedMessage) {
  * @param msg - The extended message for getting the election's results.
  */
 function handleElectionResultMessage(msg: ExtendedMessage) {
-  if (msg.messageData.object !== ObjectType.ELECTION
-    || msg.messageData.action !== ActionType.RESULT) {
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.RESULT
+  ) {
     console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
     return false;
   }

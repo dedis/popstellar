@@ -37,52 +37,57 @@ describe('Reaction object', () => {
     });
 
     it('throws an error when id is undefined', () => {
-      const wrongReaction = () => new Reaction({
-        sender: PK,
-        codepoint: '👍',
-        chirpId: CHIRP_ID,
-        time: TIMESTAMP,
-      });
+      const wrongReaction = () =>
+        new Reaction({
+          sender: PK,
+          codepoint: '👍',
+          chirpId: CHIRP_ID,
+          time: TIMESTAMP,
+        });
       expect(wrongReaction).toThrow(Error);
     });
 
     it('throws an error when sender is undefined', () => {
-      const wrongReaction = () => new Reaction({
-        id: ID,
-        codepoint: '👍',
-        chirpId: CHIRP_ID,
-        time: TIMESTAMP,
-      });
+      const wrongReaction = () =>
+        new Reaction({
+          id: ID,
+          codepoint: '👍',
+          chirpId: CHIRP_ID,
+          time: TIMESTAMP,
+        });
       expect(wrongReaction).toThrow(Error);
     });
 
     it('throws an error when codepoint is undefined', () => {
-      const wrongReaction = () => new Reaction({
-        id: ID,
-        sender: PK,
-        chirpId: CHIRP_ID,
-        time: TIMESTAMP,
-      });
+      const wrongReaction = () =>
+        new Reaction({
+          id: ID,
+          sender: PK,
+          chirpId: CHIRP_ID,
+          time: TIMESTAMP,
+        });
       expect(wrongReaction).toThrow(Error);
     });
 
     it('throws an error when chirp_id is undefined', () => {
-      const wrongReaction = () => new Reaction({
-        id: ID,
-        sender: PK,
-        codepoint: '👍',
-        time: TIMESTAMP,
-      });
+      const wrongReaction = () =>
+        new Reaction({
+          id: ID,
+          sender: PK,
+          codepoint: '👍',
+          time: TIMESTAMP,
+        });
       expect(wrongReaction).toThrow(Error);
     });
 
     it('throws an error when time is undefined', () => {
-      const wrongReaction = () => new Reaction({
-        id: ID,
-        sender: PK,
-        codepoint: '👍',
-        chirpId: CHIRP_ID,
-      });
+      const wrongReaction = () =>
+        new Reaction({
+          id: ID,
+          sender: PK,
+          codepoint: '👍',
+          chirpId: CHIRP_ID,
+        });
       expect(wrongReaction).toThrow(Error);
     });
   });

@@ -18,7 +18,7 @@ import { TextBlock } from 'core/components';
  *
  * TODO use the list that the user have already connect to, and ask data to
  *  some organizer server if needed
-*/
+ */
 const styles = StyleSheet.create({
   flatList: {
     marginTop: Spacing.s,
@@ -53,9 +53,7 @@ const Home = () => {
   const laosList = makeLaosList();
   const laos: Lao[] = useSelector(laosList);
 
-  return (laos && !laos.length)
-    ? getConnectedLaosDisplay(laos)
-    : getWelcomeMessageDisplay();
+  return laos && !laos.length ? getConnectedLaosDisplay(laos) : getWelcomeMessageDisplay();
 };
 
 export default Home;

@@ -30,8 +30,11 @@ export function subscribe(channel: Channel): Promise<void> {
     id: AUTO_ASSIGN_ID,
   });
 
-  return getNetworkManager().sendPayload(request)
-    .then(() => { /* discard JsonRpcResponse, as subscribe only returns an ack */ });
+  return getNetworkManager()
+    .sendPayload(request)
+    .then(() => {
+      /* discard JsonRpcResponse, as subscribe only returns an ack */
+    });
   // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
 
@@ -56,6 +59,6 @@ export async function catchup(channel: Channel): Promise<Generator<Message, void
     throw new Error('FIXME number in result. Should it be here?');
   }
 
-  const msgs = (response.result as any[]);
+  const msgs = response.result as any[];
   return messageGenerator(msgs);
 }

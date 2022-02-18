@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-  StyleSheet, ViewStyle, TextInput, TextStyle, Button, View,
-} from 'react-native';
+import { StyleSheet, ViewStyle, TextInput, TextStyle, Button, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import STRINGS from 'res/strings';
@@ -66,10 +64,13 @@ const TextInputChirp = (props: IPropTypes) => {
   return (
     <View style={styles.container}>
       <View style={styles.leftView}>
-        { // If the current user public key is defined, show the profile picture accordingly
-          currentUserPublicKey.valueOf() === ''
-            ? <Ionicons name="person" size={40} color="black" />
-            : <ProfileIcon publicKey={currentUserPublicKey} />
+        {
+          // If the current user public key is defined, show the profile picture accordingly
+          currentUserPublicKey.valueOf() === '' ? (
+            <Ionicons name="person" size={40} color="black" />
+          ) : (
+            <ProfileIcon publicKey={currentUserPublicKey} />
+          )
         }
       </View>
       <View style={styles.rightView}>
@@ -115,12 +116,12 @@ TextInputChirp.defaultProps = {
 };
 
 type IPropTypes = {
-  placeholder: string,
-  numberOfLines: number,
-  onPress: Function,
-  onChangeText: Function,
-  publishIsDisabledCond: boolean,
-  currentUserPublicKey: PublicKey,
+  placeholder: string;
+  numberOfLines: number;
+  onPress: Function;
+  onChangeText: Function;
+  publishIsDisabledCond: boolean;
+  currentUserPublicKey: PublicKey;
 };
 
 export default TextInputChirp;

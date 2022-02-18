@@ -15,7 +15,7 @@ import ConnectConfirm from 'parts/connect/ConnectConfirm';
  *  - The ConnectOpenScan
  *  - The ConnectConnecting
  *  - The ConnectConfirm
-*/
+ */
 
 const Stack = createStackNavigator();
 
@@ -24,20 +24,10 @@ export default function ConnectNavigation() {
     <Stack.Navigator
       screenOptions={{
         headerShown: false,
-      }}
-    >
-      <Stack.Screen
-        name={STRINGS.connect_unapproved_title}
-        component={ConnectEnableCamera}
-      />
-      <Stack.Screen
-        name={STRINGS.connect_scanning_title}
-        component={ConnectOpenScan}
-      />
-      <Stack.Screen
-        name={STRINGS.connect_confirm_title}
-        component={ConnectConfirm}
-      />
+      }}>
+      <Stack.Screen name={STRINGS.connect_unapproved_title} component={ConnectEnableCamera} />
+      <Stack.Screen name={STRINGS.connect_scanning_title} component={ConnectOpenScan} />
+      <Stack.Screen name={STRINGS.connect_confirm_title} component={ConnectConfirm} />
     </Stack.Navigator>
   );
 }

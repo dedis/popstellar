@@ -1,8 +1,6 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import {
-  Base64UrlData, KeyPair, PrivateKey, PublicKey,
-} from 'model/objects';
+import { Base64UrlData, KeyPair, PrivateKey, PublicKey } from 'model/objects';
 import { mockPrivateKey } from '__tests__/utils/TestUtils';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { ProtocolError } from 'model/network/ProtocolError';
@@ -59,12 +57,8 @@ describe('WitnessMessage', () => {
     const generateKeyPair = () => {
       const pair = sign.keyPair();
       return new KeyPair({
-        publicKey: new PublicKey(
-          Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf(),
-        ),
-        privateKey: new PrivateKey(
-          Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf(),
-        ),
+        publicKey: new PublicKey(Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf()),
+        privateKey: new PrivateKey(Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf()),
       });
     };
 
@@ -103,20 +97,22 @@ describe('WitnessMessage', () => {
 
   describe('constructor', () => {
     it('should throw an error if message_id is undefined', () => {
-      const createWrongObj = () => new WitnessMessage({
-        object: ObjectType.MESSAGE,
-        action: ActionType.CREATE,
-        signature: mockSignature,
-      });
+      const createWrongObj = () =>
+        new WitnessMessage({
+          object: ObjectType.MESSAGE,
+          action: ActionType.CREATE,
+          signature: mockSignature,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if signature is undefined', () => {
-      const createWrongObj = () => new WitnessMessage({
-        object: ObjectType.MESSAGE,
-        action: ActionType.CREATE,
-        message_id: mockMessageId,
-      });
+      const createWrongObj = () =>
+        new WitnessMessage({
+          object: ObjectType.MESSAGE,
+          action: ActionType.CREATE,
+          message_id: mockMessageId,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

@@ -95,89 +95,95 @@ describe('CreateMeeting', () => {
 
   describe('constructor', () => {
     it('should throw an error if name is undefined', () => {
-      const createWrongObj = () => new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        id: mockMeetingId,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-      });
+      const createWrongObj = () =>
+        new CreateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.CREATE,
+          id: mockMeetingId,
+          creation: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if create is undefined', () => {
-      const createWrongObj = () => new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        id: mockMeetingId,
-        name: NAME,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-      });
+      const createWrongObj = () =>
+        new CreateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.CREATE,
+          id: mockMeetingId,
+          name: NAME,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if start is undefined', () => {
-      const createWrongObj = () => new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-      });
+      const createWrongObj = () =>
+        new CreateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.CREATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          location: LOCATION,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is undefined', () => {
-      const createWrongObj = () => new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        name: NAME,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-      });
+      const createWrongObj = () =>
+        new CreateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.CREATE,
+          name: NAME,
+          creation: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if end is before creation', () => {
       const TIMESTAMP_BEFORE = new Timestamp(1609445600);
-      const createWrongObj = () => new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: TIMESTAMP_BEFORE,
-        extra: mockExtra,
-      });
+      const createWrongObj = () =>
+        new CreateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.CREATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: TIMESTAMP_BEFORE,
+          extra: mockExtra,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if id is incorrect', () => {
-      const createWrongObj = () => new CreateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.CREATE,
-        id: new Hash('id'),
-        name: NAME,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-      });
+      const createWrongObj = () =>
+        new CreateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.CREATE,
+          id: new Hash('id'),
+          name: NAME,
+          creation: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

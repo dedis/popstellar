@@ -79,17 +79,17 @@ class NetworkManager {
     // For now, we only have 1 connection opened at a time: the organizer server
 
     if (this.connections.length === 0) {
-      return Promise.reject(new NetworkError('Cannot send payload:'
-        + ' no websocket connection available'));
+      return Promise.reject(
+        new NetworkError('Cannot send payload:' + ' no websocket connection available'),
+      );
     }
 
-    return this.connections[0].sendPayload(payload)
-      .catch((error) => {
-        // Some day, we will want to retry from a different network connection,
-        // before throwing an error to the caller
-        console.error('Could not send payload due to failure:', error);
-        throw error;
-      });
+    return this.connections[0].sendPayload(payload).catch((error) => {
+      // Some day, we will want to retry from a different network connection,
+      // before throwing an error to the caller
+      console.error('Could not send payload due to failure:', error);
+      throw error;
+    });
   }
 
   public setRpcHandler(handler: JsonRpcHandler): void {

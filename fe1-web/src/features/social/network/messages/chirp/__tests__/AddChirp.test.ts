@@ -58,37 +58,41 @@ describe('AddChirp', () => {
 
   describe('constructor', () => {
     it('should throw an error if text is undefined', () => {
-      const createWrongObj = () => new AddChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.CREATE,
-        timestamp: TIMESTAMP,
-        parent_id: PARENT_ID,
-      });
+      const createWrongObj = () =>
+        new AddChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.CREATE,
+          timestamp: TIMESTAMP,
+          parent_id: PARENT_ID,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if text is too long', () => {
-      const bigMessage = 'It seems that this message won\'t fit. It seems that this message won\'t fit. '
-        + 'It seems that this message won\'t fit. It seems that this message won\'t fit. It seems that '
-        + 'this message won\'t fit. It seems that this message won\'t fit. It seems that this message '
-        + 'won\'t fit. It seems that this message won\'t fit.';
-      const createWrongObj = () => new AddChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.CREATE,
-        text: bigMessage,
-        timestamp: TIMESTAMP,
-        parent_id: PARENT_ID,
-      });
+      const bigMessage =
+        "It seems that this message won't fit. It seems that this message won't fit. " +
+        "It seems that this message won't fit. It seems that this message won't fit. It seems that " +
+        "this message won't fit. It seems that this message won't fit. It seems that this message " +
+        "won't fit. It seems that this message won't fit.";
+      const createWrongObj = () =>
+        new AddChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.CREATE,
+          text: bigMessage,
+          timestamp: TIMESTAMP,
+          parent_id: PARENT_ID,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if timestamp is undefined', () => {
-      const createWrongObj = () => new AddChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.CREATE,
-        text: TEXT,
-        parent_id: PARENT_ID,
-      });
+      const createWrongObj = () =>
+        new AddChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.CREATE,
+          text: TEXT,
+          parent_id: PARENT_ID,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

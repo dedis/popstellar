@@ -1,6 +1,4 @@
-import {
-  channelFromIds, EventTags, Hash, Lao, Timestamp,
-} from 'model/objects';
+import { channelFromIds, EventTags, Hash, Lao, Timestamp } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { publish } from 'network/JsonRpcApi';
 
@@ -33,9 +31,7 @@ export function requestCreateElection(
 
   const message = new SetupElection({
     lao: currentLao.id,
-    id: Hash.fromStringArray(
-      EventTags.ELECTION, currentLao.id.toString(), time.toString(), name,
-    ),
+    id: Hash.fromStringArray(EventTags.ELECTION, currentLao.id.toString(), time.toString(), name),
     name: name,
     version: version,
     created_at: time,
@@ -54,10 +50,7 @@ export function requestCreateElection(
  * @param election_id - The id of the ongoing election
  * @param votes - The votes to be added
  */
-export function castVote(
-  election_id: Hash,
-  votes: Vote[],
-): Promise<void> {
+export function castVote(election_id: Hash, votes: Vote[]): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const message = new CastVote({
@@ -77,10 +70,7 @@ export function castVote(
  * @param electionId - The id of the election
  * @param registeredVotes - The registered votes of the election
  */
-export function terminateElection(
-  electionId: Hash,
-  registeredVotes: Hash,
-): Promise<void> {
+export function terminateElection(electionId: Hash, registeredVotes: Hash): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const message = new EndElection({

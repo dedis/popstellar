@@ -1,7 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet, Image, Pressable, ImageStyle,
-} from 'react-native';
+import { StyleSheet, Image, Pressable, ImageStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
 const trashcan = require('res/img/delete.svg');

@@ -10,9 +10,7 @@ import {
 import { KeyPairStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { getCurrentPopTokenFromStore } from 'features/wallet/objects';
-import {
-  MessageData, MessageRegistry, SignatureType,
-} from './data';
+import { MessageData, MessageRegistry, SignatureType } from './data';
 
 let messageRegistry: MessageRegistry;
 
@@ -89,14 +87,20 @@ export class Message {
       throw new ProtocolError("Undefined 'sender' parameter encountered during 'Message' creation");
     }
     if (!msg.signature) {
-      throw new ProtocolError("Undefined 'signature' parameter encountered during 'Message' creation");
+      throw new ProtocolError(
+        "Undefined 'signature' parameter encountered during 'Message' creation",
+      );
     }
 
     if (!msg.signature.verify(msg.sender, msg.data) && !this.isElectionResultMessage()) {
-      throw new ProtocolError("Invalid 'signature' parameter encountered during 'Message' creation");
+      throw new ProtocolError(
+        "Invalid 'signature' parameter encountered during 'Message' creation",
+      );
     }
     if (!msg.message_id) {
-      throw new ProtocolError("Undefined 'message_id' parameter encountered during 'Message' creation");
+      throw new ProtocolError(
+        "Undefined 'message_id' parameter encountered during 'Message' creation",
+      );
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
     if (!expectedHash.equals(msg.message_id) && !this.isElectionResultMessage()) {
@@ -107,11 +111,15 @@ export class Message {
       Expected message_id is: ${expectedHash}`);
     }
     if (!msg.witness_signatures) {
-      throw new ProtocolError("Undefined 'witness_signatures' parameter encountered during 'Message' creation");
+      throw new ProtocolError(
+        "Undefined 'witness_signatures' parameter encountered during 'Message' creation",
+      );
     }
     msg.witness_signatures.forEach((ws: WitnessSignature) => {
       if (msg.data === undefined || !ws.verify(msg.data)) {
-        throw new ProtocolError(`Invalid 'witness_signatures' parameter encountered: invalid signature from ${ws.signature}`);
+        throw new ProtocolError(
+          `Invalid 'witness_signatures' parameter encountered: invalid signature from ${ws.signature}`,
+        );
       }
     });
 
@@ -131,8 +139,8 @@ export class Message {
       sender: new PublicKey(obj.sender.toString()),
       signature: new Signature(obj.signature.toString()),
       message_id: new Hash(obj.message_id.toString()),
-      witness_signatures: obj.witness_signatures.map(
-        (ws: WitnessSignatureState) => WitnessSignature.fromJson(ws),
+      witness_signatures: obj.witness_signatures.map((ws: WitnessSignatureState) =>
+        WitnessSignature.fromJson(ws),
       ),
     });
   }
@@ -148,7 +156,8 @@ export class Message {
    * @returns - The created message
    */
   public static async fromData(
-    data: MessageData, witnessSignatures?: WitnessSignature[],
+    data: MessageData,
+    witnessSignatures?: WitnessSignature[],
   ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     let publicKey = KeyPairStore.getPublicKey();
@@ -165,8 +174,10 @@ export class Message {
         publicKey = token.publicKey;
         privateKey = token.privateKey;
       } else {
-        console.error('Impossible to sign the message with a pop token: no token found for '
-          + 'current user in this LAO');
+        console.error(
+          'Impossible to sign the message with a pop token: no token found for ' +
+            'current user in this LAO',
+        );
       }
       signature = privateKey.sign(encodedDataJson);
 
@@ -175,7 +186,7 @@ export class Message {
         sender: publicKey,
         signature,
         message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-        witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+        witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
       });
     }
     signature = privateKey.sign(encodedDataJson);
@@ -186,7 +197,7 @@ export class Message {
       sender: publicKey,
       signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-      witness_signatures: (witnessSignatures === undefined) ? [] : witnessSignatures,
+      witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
     });
   }
 

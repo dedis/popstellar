@@ -147,93 +147,93 @@ beforeEach(() => {
 
 describe('EventsReducer', () => {
   it('should return the initial state', () => {
-    expect(eventReduce(undefined, {} as AnyAction))
-      .toEqual(emptyState);
+    expect(eventReduce(undefined, {} as AnyAction)).toEqual(emptyState);
   });
 
   it('should add the created roll call', () => {
-    expect(eventReduce(emptyState, addEvent(mockLaoId, rollCallCreated)))
-      .toEqual(filledStateWithRollCallCreated);
+    expect(eventReduce(emptyState, addEvent(mockLaoId, rollCallCreated))).toEqual(
+      filledStateWithRollCallCreated,
+    );
   });
 
   it('should update the opened roll call', () => {
-    expect(eventReduce(filledStateWithRollCallOpened, updateEvent(mockLaoId, rollCallOpened)))
-      .toEqual(filledStateWithRollCallOpened);
+    expect(
+      eventReduce(filledStateWithRollCallOpened, updateEvent(mockLaoId, rollCallOpened)),
+    ).toEqual(filledStateWithRollCallOpened);
   });
 
   it('should add the meeting correctly', () => {
-    expect(eventReduce(filledStateWithRollCallOpened, addEvent(mockLaoId, meeting)))
-      .toEqual(filledStateAfterAddedMeeting);
+    expect(eventReduce(filledStateWithRollCallOpened, addEvent(mockLaoId, meeting))).toEqual(
+      filledStateAfterAddedMeeting,
+    );
   });
 
   it('should remove the meeting', () => {
-    expect(eventReduce(filledStateAfterAddedMeeting, removeEvent(mockLaoId, meeting.id)))
-      .toEqual(filledStateWithRollCallOpened);
+    expect(eventReduce(filledStateAfterAddedMeeting, removeEvent(mockLaoId, meeting.id))).toEqual(
+      filledStateWithRollCallOpened,
+    );
   });
 
   it('should clear all events', () => {
-    expect(eventReduce(filledStateAfterAddedMeeting, clearAllEvents()))
-      .toEqual(emptyLao);
+    expect(eventReduce(filledStateAfterAddedMeeting, clearAllEvents())).toEqual(emptyLao);
   });
 });
 
 describe('event selector', () => {
   it('should return an empty list of makeEventsList when no lao is opened', () => {
-    expect(makeEventsList().resultFunc(emptyState, undefined))
-      .toEqual([]);
+    expect(makeEventsList().resultFunc(emptyState, undefined)).toEqual([]);
   });
 
   it('should return an empty makeEventsList if the state is empty', () => {
-    expect(makeEventsList().resultFunc(emptyState, mockLaoId))
-      .toEqual([]);
+    expect(makeEventsList().resultFunc(emptyState, mockLaoId)).toEqual([]);
   });
 
   it('should return makeEventsList correctly', () => {
-    expect(makeEventsList().resultFunc(filledStateWithRollCallCreated, mockLaoId))
-      .toEqual([RollCall.fromState(rollCallCreated)]);
+    expect(makeEventsList().resultFunc(filledStateWithRollCallCreated, mockLaoId)).toEqual([
+      RollCall.fromState(rollCallCreated),
+    ]);
   });
 
   it('should return an empty makeEventsAliasMap when no lao is opened', () => {
-    expect(makeEventsAliasMap().resultFunc(emptyState, undefined))
-      .toEqual({});
+    expect(makeEventsAliasMap().resultFunc(emptyState, undefined)).toEqual({});
   });
 
   it('should return makeEventsAliasMap correctly', () => {
-    expect(makeEventsAliasMap().resultFunc(filledStateWithRollCallOpened, mockLaoId))
-      .toEqual({ [idAliasString]: rollCallIdString });
+    expect(makeEventsAliasMap().resultFunc(filledStateWithRollCallOpened, mockLaoId)).toEqual({
+      [idAliasString]: rollCallIdString,
+    });
   });
 
   it('should return an empty makeEventsMap when no lao is opened', () => {
-    expect(makeEventsMap().resultFunc(emptyState, undefined))
-      .toEqual({});
+    expect(makeEventsMap().resultFunc(emptyState, undefined)).toEqual({});
   });
 
   it('should return makeEventsMap correctly', () => {
-    expect(makeEventsMap().resultFunc(filledStateWithRollCallCreated, mockLaoId))
-      .toEqual({ [rollCallIdString]: RollCall.fromState(rollCallCreated) });
+    expect(makeEventsMap().resultFunc(filledStateWithRollCallCreated, mockLaoId)).toEqual({
+      [rollCallIdString]: RollCall.fromState(rollCallCreated),
+    });
   });
 
   it('should return undefined for makeEventGetter if the state is empty', () => {
-    expect(makeEventGetter(mockLaoId, rollCallIdString).resultFunc(emptyState))
-      .toEqual(undefined);
+    expect(makeEventGetter(mockLaoId, rollCallIdString).resultFunc(emptyState)).toEqual(undefined);
   });
 
   it('should return makeEventGetter correctly', () => {
-    expect(makeEventGetter(mockLaoId, rollCallIdString).resultFunc(filledStateWithRollCallCreated))
-      .toEqual(RollCall.fromState(rollCallCreated));
+    expect(
+      makeEventGetter(mockLaoId, rollCallIdString).resultFunc(filledStateWithRollCallCreated),
+    ).toEqual(RollCall.fromState(rollCallCreated));
   });
 
   it('should return makeEventByTypeSelector correctly', () => {
-    expect(makeEventByTypeSelector(LaoEventType.ROLL_CALL)
-      .resultFunc(filledStateWithRollCallCreated))
-      .toEqual({
-        [mockLaoId]: { [rollCallIdString]: RollCall.fromState(rollCallCreated) },
-        myLaoId: {},
-      });
+    expect(
+      makeEventByTypeSelector(LaoEventType.ROLL_CALL).resultFunc(filledStateWithRollCallCreated),
+    ).toEqual({
+      [mockLaoId]: { [rollCallIdString]: RollCall.fromState(rollCallCreated) },
+      myLaoId: {},
+    });
   });
 
   it('should return an empty list for lastRollCallAttendeesList if the state is empty', () => {
-    expect(makeRollCallAttendeesList(mockLaoId, '1234').resultFunc(emptyState))
-      .toEqual([]);
+    expect(makeRollCallAttendeesList(mockLaoId, '1234').resultFunc(emptyState)).toEqual([]);
   });
 });

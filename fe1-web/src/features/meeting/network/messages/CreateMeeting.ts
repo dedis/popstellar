@@ -1,6 +1,4 @@
-import {
-  Hash, Timestamp, Lao, EventTags,
-} from 'model/objects';
+import { Hash, Timestamp, Lao, EventTags } from 'model/objects';
 import { OpenedLaoStore } from 'store';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
@@ -29,12 +27,12 @@ export class CreateMeeting implements MessageData {
 
   constructor(msg: Partial<CreateMeeting>) {
     if (!msg.name) {
-      throw new ProtocolError('Undefined \'name\' parameter encountered during \'CreateMeeting\'');
+      throw new ProtocolError("Undefined 'name' parameter encountered during 'CreateMeeting'");
     }
     this.name = msg.name;
 
     if (!msg.creation) {
-      throw new ProtocolError('Undefined \'creation\' parameter encountered during \'CreateMeeting\'');
+      throw new ProtocolError("Undefined 'creation' parameter encountered during 'CreateMeeting'");
     }
     checkTimestampStaleness(msg.creation);
     this.creation = msg.creation;
@@ -44,14 +42,16 @@ export class CreateMeeting implements MessageData {
     }
 
     if (!msg.start) {
-      throw new ProtocolError('Undefined \'start\' parameter encountered during \'CreateMeeting\'');
+      throw new ProtocolError("Undefined 'start' parameter encountered during 'CreateMeeting'");
     }
     checkTimestampStaleness(msg.start);
     this.start = msg.start;
 
     if (msg.end) {
       if (msg.end < msg.creation) {
-        throw new ProtocolError('Invalid timestamp encountered: \'end\' parameter smaller than \'creation\'');
+        throw new ProtocolError(
+          "Invalid timestamp encountered: 'end' parameter smaller than 'creation'",
+        );
       }
       this.end = msg.end;
     }
@@ -61,15 +61,20 @@ export class CreateMeeting implements MessageData {
     } // clone JS object extra
 
     if (!msg.id) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'CreateMeeting\'');
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateMeeting'");
     }
 
     const lao: Lao = OpenedLaoStore.get();
     const expectedHash = Hash.fromStringArray(
-      EventTags.MEETING, lao.id.toString(), lao.creation.toString(), msg.name,
+      EventTags.MEETING,
+      lao.id.toString(),
+      lao.creation.toString(),
+      msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
-      throw new ProtocolError('Invalid \'id\' parameter encountered during \'CreateMeeting\': unexpected id value');
+      throw new ProtocolError(
+        "Invalid 'id' parameter encountered during 'CreateMeeting': unexpected id value",
+      );
     }
     this.id = msg.id;
   }
@@ -90,7 +95,7 @@ export class CreateMeeting implements MessageData {
       ...obj,
       creation: new Timestamp(obj.creation),
       start: new Timestamp(obj.start),
-      end: (obj.end !== undefined) ? new Timestamp(obj.end) : undefined,
+      end: obj.end !== undefined ? new Timestamp(obj.end) : undefined,
       id: new Hash(obj.id),
     });
   }

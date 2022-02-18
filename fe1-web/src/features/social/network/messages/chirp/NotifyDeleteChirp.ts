@@ -21,18 +21,22 @@ export class NotifyDeleteChirp implements MessageData {
 
   constructor(msg: Partial<NotifyDeleteChirp>) {
     if (!msg.chirp_id) {
-      throw new ProtocolError('Undefined \'id\' parameter encountered during \'NotifyDeleteChirp\'');
+      throw new ProtocolError("Undefined 'id' parameter encountered during 'NotifyDeleteChirp'");
     }
     this.chirp_id = msg.chirp_id;
 
     if (!msg.timestamp) {
-      throw new ProtocolError('Undefined \'timestamp\' parameter encountered during \'NotifyDeleteChirp\'');
+      throw new ProtocolError(
+        "Undefined 'timestamp' parameter encountered during 'NotifyDeleteChirp'",
+      );
     }
     checkTimestampStaleness(msg.timestamp);
     this.timestamp = msg.timestamp;
 
     if (!msg.channel) {
-      throw new ProtocolError('Undefined \'channel\' parameter encountered during \'NotifyDeleteChirp\'');
+      throw new ProtocolError(
+        "Undefined 'channel' parameter encountered during 'NotifyDeleteChirp'",
+      );
     }
     this.channel = msg.channel;
   }

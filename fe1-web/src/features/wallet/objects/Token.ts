@@ -3,9 +3,7 @@ import { derivePath, getPublicKey } from 'ed25519-hd-key';
 import { OpenedLaoStore } from 'store';
 import { RollCall } from 'features/rollCall/objects';
 import { EventStore } from 'features/events/store';
-import {
-  Base64UrlData, Hash, PopToken, PrivateKey, PublicKey,
-} from 'model/objects';
+import { Base64UrlData, Hash, PopToken, PrivateKey, PublicKey } from 'model/objects';
 
 import * as bip39path from './Bip32Path';
 import { WalletStore } from '../store';
@@ -41,8 +39,10 @@ export async function generateTokenFromPath(path: string): Promise<PopToken> {
  * @param rollCallId - The id of the Roll Call
  * @returns a Promise resolving to a PopToken or to undefined
  */
-export function generateToken(laoId: Hash, rollCallId: Hash | undefined)
-  : Promise<PopToken | undefined> {
+export function generateToken(
+  laoId: Hash,
+  rollCallId: Hash | undefined,
+): Promise<PopToken | undefined> {
   if (rollCallId === undefined) {
     return Promise.resolve(undefined);
   }

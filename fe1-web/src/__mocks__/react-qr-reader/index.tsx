@@ -9,13 +9,8 @@ export const fireScan = (x: any) => onScan && onScan(x);
 export const fireError = (x: any) => onError && onError(x);
 
 const QrReader = (props: IPropTypes) => {
-  ({
-    onScan,
-    onError,
-  } = props);
-  return (
-    <View />
-  );
+  ({ onScan, onError } = props);
+  return <View />;
 };
 
 const propTypes = {

@@ -1,14 +1,8 @@
-import {
-  Hash, PublicKey, Timestamp, WitnessSignature, Signature,
-} from 'model/objects';
+import { Hash, PublicKey, Timestamp, WitnessSignature, Signature } from 'model/objects';
 import { ProtocolError } from 'model/network/ProtocolError';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
-import {
-  checkTimestampStaleness,
-  checkWitnesses,
-  checkWitnessSignatures,
-} from '../Checker';
+import { checkTimestampStaleness, checkWitnesses, checkWitnessSignatures } from '../Checker';
 
 /** Data received to track the state of a lao */
 export class StateLao implements MessageData {
@@ -50,8 +44,9 @@ export class StateLao implements MessageData {
       throw new ProtocolError(makeErr('last_modified'));
     }
     if (msg.last_modified < msg.creation) {
-      throw new ProtocolError('Invalid timestamp encountered: '
-        + "'last_modified' parameter smaller than 'creation'");
+      throw new ProtocolError(
+        'Invalid timestamp encountered: ' + "'last_modified' parameter smaller than 'creation'",
+      );
     }
     this.last_modified = msg.last_modified;
 
@@ -81,7 +76,9 @@ export class StateLao implements MessageData {
       throw new ProtocolError(makeErr('id'));
     }
     const expectedHash = Hash.fromStringArray(
-      msg.organizer.toString(), msg.creation.toString(), msg.name,
+      msg.organizer.toString(),
+      msg.creation.toString(),
+      msg.name,
     );
     if (!expectedHash.equals(msg.id)) {
       throw new ProtocolError("Invalid 'id' parameter encountered during 'StateLao'");
@@ -107,10 +104,13 @@ export class StateLao implements MessageData {
       organizer: new PublicKey(obj.organizer),
       witnesses: obj.witnesses.map((key: string) => new PublicKey(key)),
       modification_id: new Hash(obj.modification_id),
-      modification_signatures: obj.modification_signatures.map((ws: any) => new WitnessSignature({
-        witness: new PublicKey(ws.witness),
-        signature: new Signature(ws.signature),
-      })),
+      modification_signatures: obj.modification_signatures.map(
+        (ws: any) =>
+          new WitnessSignature({
+            witness: new PublicKey(ws.witness),
+            signature: new Signature(ws.signature),
+          }),
+      ),
       id: new Hash(obj.id),
     });
   }

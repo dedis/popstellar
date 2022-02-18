@@ -9,16 +9,17 @@ jest.mock('platform/Storage');
 jest.mock('platform/crypto/browser');
 const mockId = 'T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=';
 
-const mnemonic: string = 'garbage effort river orphan negative kind outside quit hat camera approve first';
+const mnemonic: string =
+  'garbage effort river orphan negative kind outside quit hat camera approve first';
 
 beforeEach(() => {
   WalletStore.clear();
 });
 
 test('LAO/RollCall produce known token - test vector 0', async () => {
-  const expected = Base64UrlData.fromBuffer(Buffer.from(
-    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex',
-  ));
+  const expected = Base64UrlData.fromBuffer(
+    Buffer.from('7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex'),
+  );
 
   await Seed.importMnemonic(mnemonic);
 
@@ -58,9 +59,9 @@ test('LAO/RollCall produces correct signature', async () => {
 });
 
 test('Path produces known token - test vector 0', async () => {
-  const expected = Base64UrlData.fromBuffer(Buffer.from(
-    '7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex',
-  ));
+  const expected = Base64UrlData.fromBuffer(
+    Buffer.from('7147759d146897111bcf74f60a1948b1d3a22c9199a6b88c236eb7326adc2efc', 'hex'),
+  );
 
   await Seed.importMnemonic(mnemonic);
 

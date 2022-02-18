@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  StyleSheet, TextInput, TextStyle, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 
 import STRINGS from 'res/strings';
 
@@ -40,11 +38,17 @@ const RemovableTextInput = (props: IPropTypes) => {
       <TextInput
         style={styles.textInput}
         placeholder={placeholder}
-        onChangeText={(text: string) => { onChange(id, text); }}
+        onChangeText={(text: string) => {
+          onChange(id, text);
+        }}
         key={id}
         value={value}
       />
-      <DeleteButton action={() => { onRemove(id); }} />
+      <DeleteButton
+        action={() => {
+          onRemove(id);
+        }}
+      />
     </View>
   );
 };
@@ -63,10 +67,10 @@ RemovableTextInput.defaultProps = {
 };
 
 type IPropTypes = {
-  onRemove: Function,
-  onChange: Function,
-  id: number,
-  value: string,
+  onRemove: Function;
+  onChange: Function;
+  id: number;
+  value: string;
 };
 
 export default RemovableTextInput;

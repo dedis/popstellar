@@ -6,9 +6,7 @@ import '__tests__/utils/matchers';
 import keyPair from 'test_data/keypair.json';
 
 import { OpenedLaoStore } from 'store';
-import {
-  Base64UrlData, Hash, Lao, PrivateKey, PublicKey,
-} from 'model/objects';
+import { Base64UrlData, Hash, Lao, PrivateKey, PublicKey } from 'model/objects';
 import { ROOT_CHANNEL } from 'model/objects/Channel';
 import { JsonRpcMethod, JsonRpcRequest } from 'model/network/index';
 import { CreateLao, MessageRegistry } from 'model/network/method/message/data';
@@ -100,7 +98,10 @@ function embeddedMessage(
                 "data": "${data64.toString()}",
                 "sender": "${mockPublicKey.toString()}",
                 "signature": "${mockSecretKey.sign(data64).toString()}",
-                "message_id": "${Hash.fromStringArray(data64.toString(), mockSecretKey.sign(data64).toString())}",
+                "message_id": "${Hash.fromStringArray(
+                  data64.toString(),
+                  mockSecretKey.sign(data64).toString(),
+                )}",
                 "witness_signatures": [
                 ]
             }
@@ -114,8 +115,11 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
   beforeAll(() => {
     const sampleLao: Lao = new Lao({
       name: sampleCreateLaoData.name,
-      id: Hash.fromStringArray(sampleCreateLaoData.organizer.toString(),
-        sampleCreateLaoData.creation.toString(), sampleCreateLaoData.name),
+      id: Hash.fromStringArray(
+        sampleCreateLaoData.organizer.toString(),
+        sampleCreateLaoData.creation.toString(),
+        sampleCreateLaoData.name,
+      ),
       creation: sampleCreateLaoData.creation,
       last_modified: sampleCreateLaoData.creation,
       organizer: sampleCreateLaoData.organizer,
@@ -151,9 +155,9 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
     });
 
     it(`using '${ROOT_CHANNEL}' channel`, () => {
-      const query = JsonRpcRequest.fromJson(embeddedMessage(
-        sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23,
-      ));
+      const query = JsonRpcRequest.fromJson(
+        embeddedMessage(sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23),
+      );
       checkTypicalQuery(query, true);
     });
   });

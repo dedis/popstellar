@@ -6,7 +6,12 @@ import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'model/objects';
 
 import {
-  Election, ElectionStatus, EventTypeElection, Question, RegisteredVote, Vote,
+  Election,
+  ElectionStatus,
+  EventTypeElection,
+  Question,
+  RegisteredVote,
+  Vote,
 } from '../Election';
 
 let question1: Question;
@@ -113,114 +118,122 @@ describe('Election object', () => {
     });
 
     it('throws an error when id is undefined', () => {
-      const createWrongElection = () => new Election({
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          lao: mockLaoIdHash,
+          name: NAME,
+          version: VERSION,
+          createdAt: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when lao is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          name: NAME,
+          version: VERSION,
+          createdAt: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when name is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: mockLaoIdHash,
+          version: VERSION,
+          createdAt: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when version is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        createdAt: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: mockLaoIdHash,
+          name: NAME,
+          createdAt: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when created_at is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: mockLaoIdHash,
+          name: NAME,
+          version: VERSION,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when start is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: mockLaoIdHash,
+          name: NAME,
+          version: VERSION,
+          createdAt: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          questions: QUESTIONS,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when end is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        questions: QUESTIONS,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: mockLaoIdHash,
+          name: NAME,
+          version: VERSION,
+          createdAt: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          questions: QUESTIONS,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 
     it('throws an error when questions is undefined', () => {
-      const createWrongElection = () => new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST1,
-        start: TIMESTAMP_PAST1,
-        end: TIMESTAMP_PAST2,
-        registeredVotes: REGISTERED_VOTES,
-      });
+      const createWrongElection = () =>
+        new Election({
+          id: ELECTION_ID,
+          lao: mockLaoIdHash,
+          name: NAME,
+          version: VERSION,
+          createdAt: TIMESTAMP_PAST1,
+          start: TIMESTAMP_PAST1,
+          end: TIMESTAMP_PAST2,
+          registeredVotes: REGISTERED_VOTES,
+        });
       expect(createWrongElection).toThrow(Error);
     });
 

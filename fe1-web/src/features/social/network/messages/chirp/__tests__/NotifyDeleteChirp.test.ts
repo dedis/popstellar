@@ -60,32 +60,35 @@ describe('NotifyDeleteChirp', () => {
 
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
-      const wrongObj = () => new NotifyDeleteChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.NOTIFY_DELETE,
-        channel: CHANNEL,
-        timestamp: TIMESTAMP,
-      });
+      const wrongObj = () =>
+        new NotifyDeleteChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.NOTIFY_DELETE,
+          channel: CHANNEL,
+          timestamp: TIMESTAMP,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if timestamp is undefined', () => {
-      const wrongObj = () => new NotifyDeleteChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.NOTIFY_DELETE,
-        chirp_id: ID,
-        channel: CHANNEL,
-      });
+      const wrongObj = () =>
+        new NotifyDeleteChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.NOTIFY_DELETE,
+          chirp_id: ID,
+          channel: CHANNEL,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if channel is undefined', () => {
-      const wrongObj = () => new NotifyDeleteChirp({
-        object: ObjectType.CHIRP,
-        action: ActionType.NOTIFY_DELETE,
-        chirp_id: ID,
-        timestamp: TIMESTAMP,
-      });
+      const wrongObj = () =>
+        new NotifyDeleteChirp({
+          object: ObjectType.CHIRP,
+          action: ActionType.NOTIFY_DELETE,
+          chirp_id: ID,
+          timestamp: TIMESTAMP,
+        });
       expect(wrongObj).toThrow(ProtocolError);
     });
   });

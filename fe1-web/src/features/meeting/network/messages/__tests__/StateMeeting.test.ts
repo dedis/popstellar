@@ -99,175 +99,185 @@ describe('StateMeeting', () => {
 
   describe('constructor', () => {
     it('should throw an error when name is undefined', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          creation: TIMESTAMP,
+          last_modified: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when creation is undefined', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        last_modified: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          last_modified: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when last_modified is undefined', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when start is undefined', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
-        location: LOCATION,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          last_modified: TIMESTAMP,
+          location: LOCATION,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when modification_id is undefined', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          last_modified: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when modification_signatures is undefined', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          last_modified: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when id is undefined', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        name: NAME,
-        creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: FUTURE_TIMESTAMP,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          name: NAME,
+          creation: TIMESTAMP,
+          last_modified: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: FUTURE_TIMESTAMP,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when last_modified is before creation', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        last_modified: TIMESTAMP_BEFORE,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: TIMESTAMP_BEFORE,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          last_modified: TIMESTAMP_BEFORE,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: TIMESTAMP_BEFORE,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when end is before creation', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP,
-        last_modified: TIMESTAMP,
-        location: LOCATION,
-        start: TIMESTAMP_BEFORE,
-        end: TIMESTAMP_BEFORE,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP,
+          last_modified: TIMESTAMP,
+          location: LOCATION,
+          start: TIMESTAMP_BEFORE,
+          end: TIMESTAMP_BEFORE,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error when end is before start', () => {
-      const createWrongObj = () => new StateMeeting({
-        object: ObjectType.MEETING,
-        action: ActionType.STATE,
-        id: mockMeetingId,
-        name: NAME,
-        creation: TIMESTAMP_BEFORE,
-        last_modified: TIMESTAMP_BEFORE,
-        location: LOCATION,
-        start: TIMESTAMP,
-        end: TIMESTAMP_BEFORE,
-        extra: mockExtra,
-        modification_id: mockModificationId,
-        modification_signatures: [],
-      });
+      const createWrongObj = () =>
+        new StateMeeting({
+          object: ObjectType.MEETING,
+          action: ActionType.STATE,
+          id: mockMeetingId,
+          name: NAME,
+          creation: TIMESTAMP_BEFORE,
+          last_modified: TIMESTAMP_BEFORE,
+          location: LOCATION,
+          start: TIMESTAMP,
+          end: TIMESTAMP_BEFORE,
+          extra: mockExtra,
+          modification_id: mockModificationId,
+          modification_signatures: [],
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

@@ -19,10 +19,11 @@ const keysDbId: string = 'SecureKeyPair';
  * @private
  */
 async function createKeyPair(): Promise<CryptoKeyPair> {
-  const keyPair = await getSubtleCrypto()
-    .generateKey(
-      algorithm, false, keyUsages,
-    ) as CryptoKeyPair;
+  const keyPair = (await getSubtleCrypto().generateKey(
+    algorithm,
+    false,
+    keyUsages,
+  )) as CryptoKeyPair;
 
   if (!keyPair) {
     throw new Error('KeyPair generation failed');
@@ -56,8 +57,7 @@ async function getOrCreateKeyPair(): Promise<CryptoKeyPair> {
  */
 export async function encrypt(plaintext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> {
   const keys: CryptoKeyPair = await getOrCreateKeyPair();
-  return getSubtleCrypto()
-    .encrypt(algorithm, keys.publicKey, plaintext);
+  return getSubtleCrypto().encrypt(algorithm, keys.publicKey, plaintext);
 }
 
 /**
@@ -71,8 +71,7 @@ export async function encrypt(plaintext: Uint8Array | ArrayBuffer): Promise<Arra
  */
 export async function decrypt(ciphertext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> {
   const keys: CryptoKeyPair = await getOrCreateKeyPair();
-  return getSubtleCrypto()
-    .decrypt(algorithm, keys.privateKey, ciphertext);
+  return getSubtleCrypto().decrypt(algorithm, keys.privateKey, ciphertext);
 }
 
 /**

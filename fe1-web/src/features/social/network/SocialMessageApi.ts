@@ -46,10 +46,7 @@ export function requestAddChirp(
  * @param publicKey - The public key of the sender
  * @param chirpId - The id of the chirp to be deleted
  */
-export function requestDeleteChirp(
-  publicKey: PublicKey,
-  chirpId: Hash,
-): Promise<void> {
+export function requestDeleteChirp(publicKey: PublicKey, chirpId: Hash): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 
@@ -67,10 +64,7 @@ export function requestDeleteChirp(
  * @param reaction_codepoint - The codepoint corresponding to the reaction type
  * @param chirp_id - The id of the chirp where the reaction is added
  */
-export function requestAddReaction(
-  reaction_codepoint: string,
-  chirp_id: Hash,
-): Promise<void> {
+export function requestAddReaction(reaction_codepoint: string, chirp_id: Hash): Promise<void> {
   const timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
 

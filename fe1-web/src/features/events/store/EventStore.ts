@@ -5,7 +5,6 @@ import { LaoEvent } from '../objects';
 import { makeEventsMap } from '../reducer';
 
 export namespace EventStore {
-
   // Consider using an alternative way to access the store wherever possible
   export function getEvent(id: Hash): LaoEvent | undefined {
     const eventsMap = makeEventsMap();

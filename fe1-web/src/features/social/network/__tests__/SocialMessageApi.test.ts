@@ -50,13 +50,12 @@ describe('MessageApi', () => {
     checkDataAddChirp(msgData);
   });
 
-  it('should create the correct request for requestAddChirp without parentId',
-    async () => {
-      await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText);
+  it('should create the correct request for requestAddChirp without parentId', async () => {
+    await msApi.requestAddChirp(new PublicKey(testKeyPair.publicKey), mockText);
 
-      expect(publishMock).toBeCalledTimes(1);
-      const [channel, msgData] = publishMock.mock.calls[0];
-      expect(channel).toBe(`/root/${mockLaoId}/social/${testKeyPair.publicKey}`);
-      checkDataAddChirp(msgData);
-    });
+    expect(publishMock).toBeCalledTimes(1);
+    const [channel, msgData] = publishMock.mock.calls[0];
+    expect(channel).toBe(`/root/${mockLaoId}/social/${testKeyPair.publicKey}`);
+    checkDataAddChirp(msgData);
+  });
 });

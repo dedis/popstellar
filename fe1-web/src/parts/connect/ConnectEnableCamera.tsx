@@ -14,7 +14,9 @@ const ConnectEnableCamera = ({ navigation }: IPropTypes) => (
     <TextBlock text={STRINGS.connect_description} />
     <WideButtonView
       title={STRINGS.connect_button_camera}
-      onPress={() => { navigation.navigate(STRINGS.connect_scanning_title); }}
+      onPress={() => {
+        navigation.navigate(STRINGS.connect_scanning_title);
+      }}
     />
     <WideButtonView
       title={STRINGS.connect_connecting_validate}

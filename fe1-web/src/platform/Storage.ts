@@ -1,8 +1,4 @@
-import {
-  get as kvGet,
-  set as kvSet,
-  update as kvUpdate,
-} from 'idb-keyval';
+import { get as kvGet, set as kvSet, update as kvUpdate } from 'idb-keyval';
 
 type Key = string | number;
 type Updater<T> = (oldValue: T | undefined) => T;

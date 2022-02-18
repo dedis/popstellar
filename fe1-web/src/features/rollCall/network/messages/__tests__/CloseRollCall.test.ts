@@ -3,7 +3,11 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 import { Hash, PublicKey, Timestamp } from 'model/objects';
 import {
-  mockLao, mockLaoId, mockLaoName, mockPublicKey, mockPublicKey2,
+  mockLao,
+  mockLaoId,
+  mockLaoName,
+  mockPublicKey,
+  mockPublicKey2,
 } from '__tests__/utils/TestUtils';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
 import { ProtocolError } from 'model/network/ProtocolError';
@@ -12,10 +16,18 @@ import { OpenedLaoStore } from 'store';
 import { CloseRollCall } from '../CloseRollCall';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const rollCallId = Hash.fromStringArray('R', mockLaoId.toString(), TIMESTAMP.toString(),
-  mockLaoName);
-const rollCallCloseId = Hash.fromStringArray('R', mockLaoId, rollCallId.toString(),
-  TIMESTAMP.toString());
+const rollCallId = Hash.fromStringArray(
+  'R',
+  mockLaoId.toString(),
+  TIMESTAMP.toString(),
+  mockLaoName,
+);
+const rollCallCloseId = Hash.fromStringArray(
+  'R',
+  mockLaoId,
+  rollCallId.toString(),
+  TIMESTAMP.toString(),
+);
 const mockAttendees = [new PublicKey(mockPublicKey2), new PublicKey(mockPublicKey)];
 
 const sampleCloseRollCall: Partial<CloseRollCall> = {
@@ -74,58 +86,63 @@ describe('CloseRollCall', () => {
 
   describe('constructor', () => {
     it('should throw an error if closed_at is undefined', () => {
-      const createWrongObj = () => new CloseRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.DELETE,
-        update_id: rollCallCloseId,
-        closes: rollCallId,
-        attendees: mockAttendees,
-      });
+      const createWrongObj = () =>
+        new CloseRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.DELETE,
+          update_id: rollCallCloseId,
+          closes: rollCallId,
+          attendees: mockAttendees,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if attendees is undefined', () => {
-      const createWrongObj = () => new CloseRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.DELETE,
-        update_id: rollCallCloseId,
-        closes: rollCallId,
-        closed_at: TIMESTAMP,
-      });
+      const createWrongObj = () =>
+        new CloseRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.DELETE,
+          update_id: rollCallCloseId,
+          closes: rollCallId,
+          closed_at: TIMESTAMP,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if closes is undefined', () => {
-      const createWrongObj = () => new CloseRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.DELETE,
-        update_id: rollCallCloseId,
-        closed_at: TIMESTAMP,
-        attendees: mockAttendees,
-      });
+      const createWrongObj = () =>
+        new CloseRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.DELETE,
+          update_id: rollCallCloseId,
+          closed_at: TIMESTAMP,
+          attendees: mockAttendees,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if update_id is undefined', () => {
-      const createWrongObj = () => new CloseRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.DELETE,
-        closes: rollCallId,
-        closed_at: TIMESTAMP,
-        attendees: mockAttendees,
-      });
+      const createWrongObj = () =>
+        new CloseRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.DELETE,
+          closes: rollCallId,
+          closed_at: TIMESTAMP,
+          attendees: mockAttendees,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should throw an error if update_id is undefined', () => {
-      const createWrongObj = () => new CloseRollCall({
-        object: ObjectType.ROLL_CALL,
-        action: ActionType.DELETE,
-        update_id: new Hash('id'),
-        closes: rollCallId,
-        closed_at: TIMESTAMP,
-        attendees: mockAttendees,
-      });
+      const createWrongObj = () =>
+        new CloseRollCall({
+          object: ObjectType.ROLL_CALL,
+          action: ActionType.DELETE,
+          update_id: new Hash('id'),
+          closes: rollCallId,
+          closed_at: TIMESTAMP,
+          attendees: mockAttendees,
+        });
       expect(createWrongObj).toThrow(ProtocolError);
     });
   });

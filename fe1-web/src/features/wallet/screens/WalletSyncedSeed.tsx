@@ -1,7 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import {
-  ScrollView, StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
@@ -104,10 +102,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       <View>
         <TextBlock text={STRINGS.no_tokens_in_wallet} />
         <View style={styles.largePadding} />
-        <WideButtonView
-          title={STRINGS.back_to_wallet_home}
-          onPress={() => setShowTokens(false)}
-        />
+        <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
         <WideButtonView
           title={STRINGS.logout_from_wallet}
           onPress={() => {
@@ -154,22 +149,15 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
         <TextBlock bold text={STRINGS.your_tokens_title} />
         <View style={styles.smallPadding} />
         <View>
-          {
-            Object.keys(tokensByLao).map(
-              (laoId) => Object.keys(tokensByLao[laoId]).map(
-                (rollCallId) => displayOneToken(laoId, rollCallId),
-              ),
-            )
-          }
+          {Object.keys(tokensByLao).map((laoId) =>
+            Object.keys(tokensByLao[laoId]).map((rollCallId) => displayOneToken(laoId, rollCallId)),
+          )}
         </View>
         {!showPublicKey && showPublicKeyButton()}
         {showPublicKey && hidePublicKeyButton()}
         {!showQRPublicKey && showQRButton()}
         {showQRPublicKey && hideQRButton()}
-        <WideButtonView
-          title={STRINGS.back_to_wallet_home}
-          onPress={() => setShowTokens(false)}
-        />
+        <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
         <View style={styles.largePadding} />
       </ScrollView>
     );

@@ -34,9 +34,9 @@ ProfileIcon.defaultProps = {
 ProfileIcon.propTypes = propTypes;
 
 type IPropTypes = {
-  publicKey: PublicKey,
-  size: number,
-  scale: number,
+  publicKey: PublicKey;
+  size: number;
+  scale: number;
 };
 
 export default ProfileIcon;

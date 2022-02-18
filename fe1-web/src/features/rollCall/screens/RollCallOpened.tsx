@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet, View, ViewStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import QrReader from 'react-qr-reader';
 import { Badge } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
@@ -93,20 +91,24 @@ const RollCallOpened = () => {
 
   const onCloseRollCall = () => {
     const updateId = Hash.fromStringArray(
-      EventTags.ROLL_CALL, OpenedLaoStore.get().id.toString(),
-      rollCallID, time,
+      EventTags.ROLL_CALL,
+      OpenedLaoStore.get().id.toString(),
+      rollCallID,
+      time,
     );
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
 
-    return requestCloseRollCall(updateId, attendeesList).then(() => {
-      navigation.navigate(STRINGS.organizer_navigation_tab_home);
-    }).catch((err) => {
-      toast.show(`Could not close roll call, error: ${err}`, {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
+    return requestCloseRollCall(updateId, attendeesList)
+      .then(() => {
+        navigation.navigate(STRINGS.organizer_navigation_tab_home);
+      })
+      .catch((err) => {
+        toast.show(`Could not close roll call, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
       });
-    });
   };
 
   return (
@@ -124,10 +126,7 @@ const RollCallOpened = () => {
           style={{ width: '30%' }}
         />
         <Badge value={attendees.size} status="success" />
-        <WideButtonView
-          title={STRINGS.roll_call_scan_close}
-          onPress={() => onCloseRollCall()}
-        />
+        <WideButtonView title={STRINGS.roll_call_scan_close} onPress={() => onCloseRollCall()} />
         <WideButtonView
           title={STRINGS.roll_call_add_attendee_manually}
           onPress={() => setInputModalIsVisible(true)}

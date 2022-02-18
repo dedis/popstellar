@@ -34,8 +34,9 @@ export class Meeting {
 
   constructor(obj: Partial<Meeting>) {
     if (obj === undefined || obj === null) {
-      throw new Error('Error encountered while creating a Meeting object: '
-        + 'undefined/null parameters');
+      throw new Error(
+        'Error encountered while creating a Meeting object: ' + 'undefined/null parameters',
+      );
     }
 
     if (obj.id === undefined) {
@@ -72,11 +73,12 @@ export class Meeting {
       name: meetingState.name,
       location: meetingState.location,
       creation: new Timestamp(meetingState.creation),
-      lastModified: new Timestamp((meetingState.lastModified) ? meetingState.lastModified
-        : meetingState.creation),
+      lastModified: new Timestamp(
+        meetingState.lastModified ? meetingState.lastModified : meetingState.creation,
+      ),
       start: new Timestamp(meetingState.start),
-      end: (meetingState.end) ? new Timestamp(meetingState.end) : undefined,
-      extra: (meetingState.extra) ? { ...meetingState.extra } : {},
+      end: meetingState.end ? new Timestamp(meetingState.end) : undefined,
+      extra: meetingState.extra ? { ...meetingState.extra } : {},
     });
   }
 

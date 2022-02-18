@@ -39,46 +39,50 @@ describe('Chirp object', () => {
     });
 
     it('throws an error when id is undefined', () => {
-      const createWrongChirp = () => new Chirp({
-        sender: PK,
-        text: TEXT,
-        time: TIMESTAMP,
-        parentId: HASH_PARENT,
-        isDeleted: false,
-      });
+      const createWrongChirp = () =>
+        new Chirp({
+          sender: PK,
+          text: TEXT,
+          time: TIMESTAMP,
+          parentId: HASH_PARENT,
+          isDeleted: false,
+        });
       expect(createWrongChirp).toThrow(Error);
     });
 
     it('throws an error when sender is undefined', () => {
-      const createWrongChirp = () => new Chirp({
-        id: HASH_ID,
-        text: TEXT,
-        time: TIMESTAMP,
-        parentId: HASH_PARENT,
-        isDeleted: false,
-      });
+      const createWrongChirp = () =>
+        new Chirp({
+          id: HASH_ID,
+          text: TEXT,
+          time: TIMESTAMP,
+          parentId: HASH_PARENT,
+          isDeleted: false,
+        });
       expect(createWrongChirp).toThrow(Error);
     });
 
     it('throws an error when text is undefined', () => {
-      const createWrongChirp = () => new Chirp({
-        id: HASH_ID,
-        sender: PK,
-        time: TIMESTAMP,
-        parentId: HASH_PARENT,
-        isDeleted: false,
-      });
+      const createWrongChirp = () =>
+        new Chirp({
+          id: HASH_ID,
+          sender: PK,
+          time: TIMESTAMP,
+          parentId: HASH_PARENT,
+          isDeleted: false,
+        });
       expect(createWrongChirp).toThrow(Error);
     });
 
     it('throws an error when time is undefined', () => {
-      const createWrongChirp = () => new Chirp({
-        id: HASH_ID,
-        sender: PK,
-        text: TEXT,
-        parentId: HASH_PARENT,
-        isDeleted: false,
-      });
+      const createWrongChirp = () =>
+        new Chirp({
+          id: HASH_ID,
+          sender: PK,
+          text: TEXT,
+          parentId: HASH_PARENT,
+          isDeleted: false,
+        });
       expect(createWrongChirp).toThrow(Error);
     });
 

@@ -8,29 +8,26 @@ declare global {
     // we put R in the last argument instead, to prevent complaints from TypeScript
 
     interface Matchers<R> {
-      toBeBase64Url(received: R)
-      : CustomMatcherResult;
+      toBeBase64Url(received: R): CustomMatcherResult;
 
-      toBeJsonEqual(received: any, expected: R)
-      : CustomMatcherResult;
+      toBeJsonEqual(received: any, expected: R): CustomMatcherResult;
 
-      toBeDistinctArray(received: R)
-      : jest.CustomMatcherResult;
+      toBeDistinctArray(received: R): jest.CustomMatcherResult;
 
-      toBeBase64UrlArray(received: R)
-      : jest.CustomMatcherResult;
+      toBeBase64UrlArray(received: R): jest.CustomMatcherResult;
 
-      toBeKeySignatureArray(received: string, keyField: string, signature: R)
-      : jest.CustomMatcherResult;
+      toBeKeySignatureArray(
+        received: string,
+        keyField: string,
+        signature: R,
+      ): jest.CustomMatcherResult;
 
-      toBeNumberObject(received: R)
-      : jest.CustomMatcherResult;
+      toBeNumberObject(received: R): jest.CustomMatcherResult;
     }
   }
 }
 
 expect.extend({
-
   toBeNumberObject(received: any): jest.CustomMatcherResult {
     return {
       pass: typeof received === 'number' || received instanceof Number,
@@ -101,8 +98,11 @@ expect.extend({
     };
   },
 
-  toBeKeySignatureArray(received: any, keyField: string, signature: string)
-    : jest.CustomMatcherResult {
+  toBeKeySignatureArray(
+    received: any,
+    keyField: string,
+    signature: string,
+  ): jest.CustomMatcherResult {
     if (this.isNot) {
       throw new Error('Unsupported negation on toBeKeySignatureArray matcher');
     }
@@ -114,9 +114,7 @@ expect.extend({
     expect(received).toBeArray();
     received.forEach((item: any) => {
       expect(item).toBeObject();
-      expect(item).toEqual(
-        expect.objectContaining(expectedObj),
-      );
+      expect(item).toEqual(expect.objectContaining(expectedObj));
       expect(item[keyField]).toBeBase64Url();
       expect(item[keyField].length).toEqual(44); /* EdDSA public key length in base64 */
       expect(item[signature]).toBeBase64Url();

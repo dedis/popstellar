@@ -10,9 +10,9 @@ export function hasWitnessSignatureQuorum(witSigs: WitnessSignature[]): boolean 
     return false;
   }
 
-  const signaturesCount = witSigs
-    .filter((witSig: WitnessSignature) => lao.witnesses.includes(witSig.witness))
-    .length;
+  const signaturesCount = witSigs.filter((witSig: WitnessSignature) =>
+    lao.witnesses.includes(witSig.witness),
+  ).length;
 
   return signaturesCount * MIN_WITNESS_FACTOR_D >= lao.witnesses.length * MIN_WITNESS_FACTOR_N;
 }

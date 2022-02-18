@@ -1,20 +1,20 @@
 import React from 'react';
 import { useRoute } from '@react-navigation/core';
-import {
-  act, fireEvent, render, waitFor,
-} from '@testing-library/react-native';
+import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import * as reactRedux from 'react-redux';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 
-import {
-  Hash, Lao, PublicKey, Timestamp,
-} from 'model/objects';
+import { Hash, Lao, PublicKey, Timestamp } from 'model/objects';
 import STRINGS from 'res/strings';
 import keyPair from 'test_data/keypair.json';
 import { OpenedLaoStore } from 'store';
 import {
-  mockLao, mockLaoId, mockLaoName, mockLaoState, mockPopToken,
+  mockLao,
+  mockLaoId,
+  mockLaoName,
+  mockLaoState,
+  mockPopToken,
 } from '__tests__/utils/TestUtils';
 
 import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
@@ -55,18 +55,14 @@ describe('RollCallOpened', () => {
   });
 
   it('renders correctly when no scan', async () => {
-    const { toJSON } = render(
-      <RollCallOpened />,
-    );
+    const { toJSON } = render(<RollCallOpened />);
     await waitFor(() => {
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
   it('shows toast when scanning attendees', async () => {
-    render(
-      <RollCallOpened />,
-    );
+    render(<RollCallOpened />);
     act(() => {
       fakeQrReaderScan('123');
       fakeQrReaderScan('456');
@@ -77,9 +73,7 @@ describe('RollCallOpened', () => {
   });
 
   it('shows toast when adding an attendee manually', async () => {
-    const { getByText, getByPlaceholderText } = render(
-      <RollCallOpened />,
-    );
+    const { getByText, getByPlaceholderText } = render(<RollCallOpened />);
     const addAttendeeButton = getByText(STRINGS.roll_call_add_attendee_manually);
     fireEvent.press(addAttendeeButton);
     const textInput = getByPlaceholderText(STRINGS.roll_call_attendee_token_placeholder);
@@ -92,9 +86,7 @@ describe('RollCallOpened', () => {
   });
 
   it('shows toast when trying to add an incorrect token manually', async () => {
-    const { getByText, getByPlaceholderText } = render(
-      <RollCallOpened />,
-    );
+    const { getByText, getByPlaceholderText } = render(<RollCallOpened />);
     const addAttendeeButton = getByText(STRINGS.roll_call_add_attendee_manually);
     fireEvent.press(addAttendeeButton);
     const textInput = getByPlaceholderText(STRINGS.roll_call_attendee_token_placeholder);
@@ -109,30 +101,30 @@ describe('RollCallOpened', () => {
   it('closes correctly with no attendee', async () => {
     const getMock = jest.spyOn(OpenedLaoStore, 'get');
     getMock.mockImplementation(() => Lao.fromState(mockLaoState));
-    const button = render(
-      <RollCallOpened />,
-    ).getByText(STRINGS.roll_call_scan_close);
+    const button = render(<RollCallOpened />).getByText(STRINGS.roll_call_scan_close);
     await waitFor(() => {
       fireEvent.press(button);
-      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(),
-        [mockPopToken.publicKey]);
+      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
+        mockPopToken.publicKey,
+      ]);
     });
   });
 
   it('closes correctly with two attendees', async () => {
     const getMock = jest.spyOn(OpenedLaoStore, 'get');
     getMock.mockImplementation(() => Lao.fromState(mockLaoState));
-    const button = render(
-      <RollCallOpened />,
-    ).getByText(STRINGS.roll_call_scan_close);
+    const button = render(<RollCallOpened />).getByText(STRINGS.roll_call_scan_close);
     await waitFor(() => {
       act(() => {
         fakeQrReaderScan('123');
         fakeQrReaderScan('456');
       });
       fireEvent.press(button);
-      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(),
-        [new PublicKey('123'), new PublicKey('456'), mockPopToken.publicKey]);
+      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
+        new PublicKey('123'),
+        new PublicKey('456'),
+        mockPopToken.publicKey,
+      ]);
     });
   });
 });

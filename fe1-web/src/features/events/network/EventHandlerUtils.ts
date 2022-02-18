@@ -20,11 +20,7 @@ export function getEventFromId(state: any, id: Hash): LaoEvent | undefined {
   const eventMap = getEventMap(state);
 
   const idStr = id.valueOf();
-  const evtId = (idStr in eventAlias)
-    ? eventAlias[idStr]
-    : idStr;
+  const evtId = idStr in eventAlias ? eventAlias[idStr] : idStr;
 
-  return (evtId in eventMap)
-    ? eventMap[evtId]
-    : undefined;
+  return evtId in eventMap ? eventMap[evtId] : undefined;
 }

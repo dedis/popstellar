@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  StyleSheet, TextStyle, View, Text,
-} from 'react-native';
+import { StyleSheet, TextStyle, View, Text } from 'react-native';
 import TimeAgo from 'react-timeago';
 
 import STRINGS from 'res/strings';
@@ -59,11 +57,7 @@ const TimeDisplay = (props: IPropTypes) => {
     timeDisplay = null;
   }
 
-  return (
-    <>
-      { timeDisplay }
-    </>
-  );
+  return <>{timeDisplay}</>;
 };
 
 const propTypes = {
@@ -78,8 +72,8 @@ TimeDisplay.defaultProps = {
 };
 
 type IPropTypes = {
-  start: number,
-  end: number,
+  start: number;
+  end: number;
 };
 
 export default TimeDisplay;

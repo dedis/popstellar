@@ -1,7 +1,5 @@
 import { Store } from 'redux';
-import {
-  getLaoMessagesState, getLaosState, processMessages,
-} from 'store';
+import { getLaoMessagesState, getLaosState, processMessages } from 'store';
 import { ExtendedMessage } from 'model/network/method/message';
 import { MessageRegistry } from 'model/network/method/message/data';
 
@@ -21,9 +19,12 @@ export function makeMessageStoreWatcher(store: Store, messageRegistry: MessageRe
     const newValue = msgState.unprocessedIds || [];
     [previousValue, currentValue] = [currentValue, newValue];
 
-    if (previousValue !== undefined && currentValue !== undefined
-      && previousValue.length === currentValue.length
-      && previousValue.every((value, index) => value === currentValue[index])) {
+    if (
+      previousValue !== undefined &&
+      currentValue !== undefined &&
+      previousValue.length === currentValue.length &&
+      previousValue.every((value, index) => value === currentValue[index])
+    ) {
       // no change detected, return immediately
       return;
     }

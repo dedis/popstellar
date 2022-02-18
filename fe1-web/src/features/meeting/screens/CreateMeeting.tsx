@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View, Platform,
-} from 'react-native';
+import { View, Platform } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useToast } from 'react-native-toast-notifications';
@@ -45,9 +43,7 @@ const CreateMeeting = ({ route }: any) => {
 
   const [location, setLocation] = useState('');
 
-  const confirmButtonVisibility: boolean = (
-    meetingName !== ''
-  );
+  const confirmButtonVisibility: boolean = meetingName !== '';
 
   const createMeeting = () => {
     requestCreateMeeting(meetingName, startTime, location, endTime)
@@ -74,8 +70,9 @@ const CreateMeeting = ({ route }: any) => {
           <ParagraphBlock text={STRINGS.meeting_create_start_time} />
           <DatePicker
             selected={startDate}
-            onChange={(date: Date) => onChangeStartTime(date, setStartTime, setEndTime,
-              DEFAULT_MEETING_DURATION)}
+            onChange={(date: Date) =>
+              onChangeStartTime(date, setStartTime, setEndTime, DEFAULT_MEETING_DURATION)
+            }
           />
         </View>
         <View style={[styles.view, { padding: 5, zIndex: 'initial' }]}>
@@ -94,26 +91,34 @@ const CreateMeeting = ({ route }: any) => {
       <TextBlock text="Create a meeting" />
       <TextInputLine
         placeholder={STRINGS.meeting_create_name}
-        onChangeText={(text: string) => { setMeetingName(text); }}
+        onChangeText={(text: string) => {
+          setMeetingName(text);
+        }}
       />
 
-      { /* see archive branches for date picker used for native apps */ }
-      { Platform.OS === 'web' && buildDatePickerWeb() }
+      {/* see archive branches for date picker used for native apps */}
+      {Platform.OS === 'web' && buildDatePickerWeb()}
 
       <TextInputLine
         placeholder={STRINGS.meeting_create_location}
-        onChangeText={(text: string) => { setLocation(text); }}
+        onChangeText={(text: string) => {
+          setLocation(text);
+        }}
       />
       <WideButtonView
         title={STRINGS.general_button_confirm}
-        onPress={() => onConfirmPress(startTime, endTime, createMeeting, setModalStartIsVisible,
-          setModalEndIsVisible)}
+        onPress={() =>
+          onConfirmPress(
+            startTime,
+            endTime,
+            createMeeting,
+            setModalStartIsVisible,
+            setModalEndIsVisible,
+          )
+        }
         disabled={!confirmButtonVisibility}
       />
-      <WideButtonView
-        title={STRINGS.general_button_cancel}
-        onPress={navigation.goBack}
-      />
+      <WideButtonView title={STRINGS.general_button_cancel} onPress={navigation.goBack} />
 
       <DismissModal
         visibility={modalEndIsVisible}

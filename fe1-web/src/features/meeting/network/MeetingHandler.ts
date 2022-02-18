@@ -20,8 +20,10 @@ const getCurrentLao = makeCurrentLao();
  * @param msg - The extended message for creating a meeting
  */
 function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.MEETING
-    || msg.messageData.action !== ActionType.CREATE) {
+  if (
+    msg.messageData.object !== ObjectType.MEETING ||
+    msg.messageData.action !== ActionType.CREATE
+  ) {
     console.warn('handleMeetingCreateMessage was called to process an unsupported message', msg);
     return false;
   }
@@ -44,7 +46,7 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
     creation: mtgMsg.creation,
     start: mtgMsg.start,
     end: mtgMsg.end ? mtgMsg.end : undefined,
-    extra: (mtgMsg.extra) ? { ...mtgMsg.extra } : {},
+    extra: mtgMsg.extra ? { ...mtgMsg.extra } : {},
   });
 
   dispatch(addEvent(lao.id, meeting.toState()));
@@ -57,8 +59,10 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
  * @param msg - The extended message for getting the meeting's state
  */
 function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
-  if (msg.messageData.object !== ObjectType.MEETING
-    || msg.messageData.action !== ActionType.STATE) {
+  if (
+    msg.messageData.object !== ObjectType.MEETING ||
+    msg.messageData.action !== ActionType.STATE
+  ) {
     console.warn('handleMeetingStateMessage was called to process an unsupported message', msg);
     return false;
   }

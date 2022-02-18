@@ -10,9 +10,7 @@ beforeEach(() => {
 
 describe('DeleteButton', () => {
   it('renders correctly', () => {
-    const { toJSON } = render(
-      <DeleteButton action={() => action} />,
-    );
+    const { toJSON } = render(<DeleteButton action={() => action} />);
     expect(toJSON()).toMatchSnapshot();
   });
 });

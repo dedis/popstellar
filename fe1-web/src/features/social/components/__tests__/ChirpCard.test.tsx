@@ -28,7 +28,7 @@ const initializeData = () => {
 
   chirp = new Chirp({
     id: ID,
-    text: 'Don\'t panic.',
+    text: "Don't panic.",
     sender: sender,
     time: new Timestamp(TIMESTAMP),
     isDeleted: false,
@@ -76,9 +76,7 @@ describe('ChirpCard', () => {
     getMockLao.mockImplementation(() => mockLao);
 
     it('renders correctly for sender', () => {
-      const obj = render(
-        <ChirpCard chirp={chirp} currentUserPublicKey={sender} />,
-      );
+      const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
@@ -99,9 +97,7 @@ describe('ChirpCard', () => {
     });
 
     it('render correct for a deleted chirp', () => {
-      const obj = render(
-        <ChirpCard chirp={deletedChirp} currentUserPublicKey={sender} />,
-      );
+      const obj = render(<ChirpCard chirp={deletedChirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
   });
@@ -109,8 +105,7 @@ describe('ChirpCard', () => {
   describe('for reaction', () => {
     it('renders correctly with reaction', () => {
       const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
-      expect(obj.toJSON())
-        .toMatchSnapshot();
+      expect(obj.toJSON()).toMatchSnapshot();
     });
 
     it('renders correctly without reaction', () => {

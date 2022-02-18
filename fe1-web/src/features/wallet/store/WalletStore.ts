@@ -42,10 +42,12 @@ export namespace WalletStore {
     await getStore().dispatch(async (dispatch: AsyncDispatch): Promise<void> => {
       const encryptedSeed = await encrypt(seed);
       const encryptedMnemonic = await encrypt(binaryMnemonic);
-      dispatch(setWallet({
-        seed: encryptedSeed,
-        mnemonic: encryptedMnemonic,
-      }));
+      dispatch(
+        setWallet({
+          seed: encryptedSeed,
+          mnemonic: encryptedMnemonic,
+        }),
+      );
     });
   }
 

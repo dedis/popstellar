@@ -15,7 +15,7 @@ import LaoProperties from 'features/lao/components/LaoProperties';
 /**
  * WitnessScreen: button to navigate to the witness video screen,
  * a section list of events and lao properties
-*/
+ */
 const WitnessScreen = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
