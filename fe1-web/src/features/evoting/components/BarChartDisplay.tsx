@@ -1,20 +1,26 @@
 import React from 'react';
 import PropTypes, { shape } from 'prop-types';
-import { View } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
-import { MajorityResult } from 'features/evoting/objects';
+import { MajorityResult } from '../objects';
 
-import containerStyles from '../styles/stylesheets/containerStyles';
+const styles = StyleSheet.create({
+  barChartView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    padding: 10,
+  } as ViewStyle,
+});
 
 /**
  * Displays a simple bar chart
  */
-
 const BarChartDisplay = (props: IPropTypes) => {
   const { data } = props;
 
   const data2 = {
-    labels: data.map((d) => d.ballot_option),
+    labels: data.map((d) => d.ballotOption),
     datasets: [
       {
         data: data.map((d) => d.count),
@@ -36,8 +42,15 @@ const BarChartDisplay = (props: IPropTypes) => {
 
   // Displays a Bar Chart
   return (
-    <View style={[containerStyles.anchoredCenter, { padding: 10, justifyContent: 'flex-start' }]}>
-      <BarChart data={data2} width={460} height={260} chartConfig={chartConfig} />
+    <View style={styles.barChartView}>
+      <BarChart
+        data={data2}
+        width={460}
+        height={260}
+        chartConfig={chartConfig}
+        yAxisLabel=""
+        yAxisSuffix=""
+      />
     </View>
   );
 };
@@ -45,7 +58,7 @@ const BarChartDisplay = (props: IPropTypes) => {
 const propTypes = {
   data: PropTypes.arrayOf(
     shape({
-      ballot_option: PropTypes.string.isRequired,
+      ballotOption: PropTypes.string.isRequired,
       count: PropTypes.number.isRequired,
     }),
   ).isRequired,
