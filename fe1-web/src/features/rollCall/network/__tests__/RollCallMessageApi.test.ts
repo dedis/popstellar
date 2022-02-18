@@ -2,7 +2,7 @@ import 'jest-extended';
 import { beforeEach } from '@jest/globals';
 
 import '__tests__/utils/matchers';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
