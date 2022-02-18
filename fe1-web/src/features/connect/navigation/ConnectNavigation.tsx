@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 
 import { ConnectConfirm, ConnectEnableCamera, ConnectOpenScan } from 'features/connect/screens';
 

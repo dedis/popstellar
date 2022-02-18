@@ -1,4 +1,4 @@
-import { Base64UrlData, Hash } from 'model/objects';
+import { Base64UrlData, Hash } from 'core/objects';
 
 import { WalletStore } from '../../store';
 import * as Seed from '../Seed';

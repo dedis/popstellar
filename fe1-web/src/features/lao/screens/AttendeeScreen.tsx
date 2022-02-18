@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/core';
 
-import { Timestamp } from 'model/objects';
+import { Timestamp } from 'core/objects';
 import EventListCollapsible from 'features/events/components/EventListCollapsible';
 import { LaoEvent } from 'features/events/objects';
 import { makeEventsList } from 'features/events/reducer';

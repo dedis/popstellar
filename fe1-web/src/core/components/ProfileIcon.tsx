@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Blockies from 'react-blockies';
 
-import { PublicKey } from 'model/objects';
+import { PublicKey } from 'core/objects';
 
-import { popBlue } from 'styles/colors';
+import { popBlue } from 'core/styles/colors';
 
 const ProfileIcon = (props: IPropTypes) => {
   const { publicKey, size, scale } = props;

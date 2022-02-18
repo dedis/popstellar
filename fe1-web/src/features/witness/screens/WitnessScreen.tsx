@@ -3,9 +3,9 @@ import { ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import { TextBlock, WideButtonView } from 'core/components';
-import { Timestamp } from 'model/objects';
+import { Timestamp } from 'core/objects';
 import EventListCollapsible from 'features/events/components/EventListCollapsible';
 import { LaoEvent } from 'features/events/objects';
 import { makeEventsList } from 'features/events/reducer';

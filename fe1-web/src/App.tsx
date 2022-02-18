@@ -9,21 +9,21 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { ToastProvider } from 'react-native-toast-notifications';
 
 import { Provider } from 'react-redux';
-import { store, persist } from 'store/Storage';
+import { store, persist } from 'core/store/Storage';
 
-import AppNavigation from 'navigation/AppNavigation';
-import { navigationRef } from 'navigation/RootNavigation';
+import AppNavigation from 'core/navigation/AppNavigation';
+import { navigationRef } from 'core/navigation/RootNavigation';
 
-import { configureIngestion } from 'ingestion';
-import { MessageRegistry } from 'model/network/method/message/data';
-import { configureMessages } from 'model/network/method/message';
+import { configureIngestion } from 'core/network/ingestion';
+import { MessageRegistry } from 'core/network/messages';
+import { configureMessages } from 'core/network/messages';
 
 /*
  * The starting point of the app.
  *
  * It opens the navigation component in a safeAreaProvider to be able use
  * SafeAreaView in order to resolve issue with status bar.
- * It initializes the message registry, configures the ingestion and message signatures.
+ * It initializes the messages registry, configures the ingestion and messages signatures.
  *
  * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */

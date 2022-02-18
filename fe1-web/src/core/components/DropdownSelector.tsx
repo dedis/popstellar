@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Picker } from '@react-native-picker/picker';
 
-import containerStyles from 'styles/stylesheets/containerStyles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 
 /**
  * Simple dropdown where the user can select options

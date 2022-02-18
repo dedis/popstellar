@@ -5,8 +5,8 @@ import * as reactRedux from 'react-redux';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 
-import { Hash, PublicKey, Timestamp } from 'model/objects';
-import STRINGS from 'res/strings';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
+import STRINGS from 'resources/strings';
 import keyPair from 'test_data/keypair.json';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';

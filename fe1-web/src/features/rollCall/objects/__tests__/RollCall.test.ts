@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { Hash, PopToken, PrivateKey, PublicKey, Timestamp } from 'model/objects';
+import { Hash, PopToken, PrivateKey, PublicKey, Timestamp } from 'core/objects';
 
 import { EventTypeRollCall, RollCall, RollCallStatus } from '../RollCall';
 

@@ -1,6 +1,6 @@
-import { ProtocolError } from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/messages/MessageData';
 
 import { QuestionResult } from '../../objects/Election';
 

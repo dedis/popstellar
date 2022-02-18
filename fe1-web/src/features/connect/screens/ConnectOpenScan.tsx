@@ -4,12 +4,12 @@ import QrReader from 'react-qr-reader';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 
-import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
-import containerStyles from 'styles/stylesheets/containerStyles';
-import { Colors } from 'styles';
+import STRINGS from 'resources/strings';
+import PROPS_TYPE from 'resources/Props';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { Colors } from 'core/styles';
 import { WideButtonView } from 'core/components';
-import { FOUR_SECONDS } from 'res/const';
+import { FOUR_SECONDS } from 'resources/const';
 
 import { ConnectToLao } from '../objects';
 

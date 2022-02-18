@@ -1,4 +1,4 @@
-import { Hash, PublicKey, Signature } from 'model/objects';
+import { Hash, PublicKey, Signature } from 'core/objects';
 
 /**
  * WitnessSignatureState is the interface that should match JSON.stringify(WitnessSignature)

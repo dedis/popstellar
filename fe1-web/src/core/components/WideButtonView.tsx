@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, StyleSheet, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Spacing } from 'styles';
+import { Spacing } from 'core/styles';
 
 const styles = StyleSheet.create({
   wideButtonView: {

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { View, Modal, Text } from 'react-native';
 
-import STRINGS from 'res/strings';
-import modalStyles from 'styles/stylesheets/modalStyles';
+import STRINGS from 'resources/strings';
+import modalStyles from 'core/styles/stylesheets/modalStyles';
 
 import WideButtonView from './WideButtonView';
 import TextInputLine from './TextInputLine';

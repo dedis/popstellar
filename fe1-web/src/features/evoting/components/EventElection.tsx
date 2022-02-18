@@ -6,11 +6,11 @@ import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
 
 import { dispatch, getStore } from 'store';
-import { EventTags, Hash, Timestamp } from 'model/objects';
-import { Spacing, Typography } from 'styles';
+import { EventTags, Hash, Timestamp } from 'core/objects';
+import { Spacing, Typography } from 'core/styles';
 import { BarChartDisplay, CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
-import STRINGS from 'res/strings';
-import { FOUR_SECONDS } from 'res/const';
+import STRINGS from 'resources/strings';
+import { FOUR_SECONDS } from 'resources/const';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { updateEvent } from 'features/events/reducer';
 
@@ -109,7 +109,7 @@ const EventElection = (props: IPropTypes) => {
         voteIDs: registeredVote.votes.map((vote) => vote.id),
       }),
     );
-    // Sort by message ID
+    // Sort by messages ID
     votes.sort((a, b) => (a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
     const arrayToHash: Hash[] = [];
     votes.forEach((registeredVote) => {
@@ -167,7 +167,7 @@ const EventElection = (props: IPropTypes) => {
   }, []);
 
   // Here we use the election object form the redux store in order to see the electionStatus
-  // update when an  incoming electionEnd or electionResult message comes
+  // update when an  incoming electionEnd or electionResult messages comes
   // (in handler/ElectionHandler.ts)
   const getElectionDisplay = (status: ElectionStatus) => {
     switch (status) {

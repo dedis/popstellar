@@ -1,6 +1,6 @@
-import { ExtendedMessage } from 'model/network/method/message';
+import { ExtendedMessage } from 'core/network/messages';
 import { dispatch, getStore } from 'store';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
 
 import { Reaction } from '../objects';
 import { AddReaction } from './messages/reaction';
@@ -13,13 +13,13 @@ import { makeCurrentLao } from 'features/lao/reducer';
 const getCurrentLao = makeCurrentLao();
 
 /**
- * Handles an addReaction message by storing the reaction sent.
+ * Handles an addReaction messages by storing the reaction sent.
  *
- * @param msg - The extended message for adding a reaction
+ * @param msg - The extended messages for adding a reaction
  */
 function handleAddReactionMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.REACTION || msg.messageData.action !== ActionType.ADD) {
-    console.warn('handleAddReaction was called to process an unsupported message');
+    console.warn('handleAddReaction was called to process an unsupported messages');
     return false;
   }
 

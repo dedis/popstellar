@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, Image, Pressable, ImageStyle } from 'react-native';
 import PropTypes from 'prop-types';
-import { getNavigator } from 'platform/Navigator';
+import { getNavigator } from 'core/platform/Navigator';
 
-const copyIcon = require('res/img/copy.svg');
+const copyIcon = require('resources/img/copy.svg');
 
 /**
  * Copy to clipboard button

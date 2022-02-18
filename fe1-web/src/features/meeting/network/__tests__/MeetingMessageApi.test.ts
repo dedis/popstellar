@@ -1,11 +1,11 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data';
-import { Hash, Timestamp } from 'model/objects';
+import { ActionType, MessageData, ObjectType } from 'core/network/messages';
+import { Hash, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
-import { publish as mockPublish } from 'network/JsonRpcApi';
+import { publish as mockPublish } from 'core/network/jsonrpc/JsonRpcApi';
 
 import { CreateMeeting } from '../messages';
 import * as msApi from '../MeetingMessageApi';

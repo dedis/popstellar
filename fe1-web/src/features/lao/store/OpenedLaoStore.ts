@@ -1,4 +1,4 @@
-import { dispatch, getStore } from 'store/Storage';
+import { dispatch, getStore } from 'core/store/Storage';
 
 import { Lao } from '../objects';
 import { connectToLao, makeCurrentLao } from '../reducer';

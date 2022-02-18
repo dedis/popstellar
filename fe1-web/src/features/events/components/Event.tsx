@@ -4,9 +4,9 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { makeIsLaoOrganizer } from 'features/lao/reducer';
-import { Spacing } from 'styles';
+import { Spacing } from 'core/styles';
 import { ParagraphBlock, TextBlock } from 'core/components';
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { EventMeeting } from 'features/meeting/components';
 import { EventElection } from 'features/evoting/components';
 import { EventRollCall } from 'features/rollCall/components';

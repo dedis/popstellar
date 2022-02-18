@@ -3,7 +3,7 @@ import PropTypes, { shape } from 'prop-types';
 import { View } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 
-import containerStyles from 'styles/stylesheets/containerStyles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { MajorityResult } from 'features/evoting/objects';
 
 /**

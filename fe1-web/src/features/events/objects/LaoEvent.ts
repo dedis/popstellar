@@ -1,4 +1,4 @@
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 
 /**
  * Interface to represent an event within a LAO.

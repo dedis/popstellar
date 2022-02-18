@@ -3,7 +3,7 @@ import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import { Spacing } from 'styles';
+import { Spacing } from 'core/styles';
 import { ConnectToLao } from 'features/connect/objects/ConnectToLao';
 import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 

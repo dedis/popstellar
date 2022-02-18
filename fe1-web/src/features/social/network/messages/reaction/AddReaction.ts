@@ -1,7 +1,7 @@
-import { Hash, Timestamp, ProtocolError } from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { ActionType, MessageData, ObjectType } from 'core/network/messages/MessageData';
 
 /** Data sent to add a reaction */
 export class AddReaction implements MessageData {
@@ -12,7 +12,7 @@ export class AddReaction implements MessageData {
   // Emoji indicating the added reaction
   public readonly reaction_codepoint: string;
 
-  // id of the chirp message
+  // id of the chirp messages
   public readonly chirp_id: Hash;
 
   // timestamp of this add reaction request

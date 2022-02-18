@@ -1,7 +1,7 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import { CreateEvent } from 'features/events/screens';
 import { WitnessScanning } from 'features/witness/components';
 import { CreateMeeting } from 'features/meeting/screens';

@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import STRINGS from 'res/strings';
-import { Spacing, Typography } from 'styles';
+import STRINGS from 'resources/strings';
+import { Spacing, Typography } from 'core/styles';
 
 import { Lao } from '../objects';
 import { connectToLao as connectToLaoAction } from '../reducer';

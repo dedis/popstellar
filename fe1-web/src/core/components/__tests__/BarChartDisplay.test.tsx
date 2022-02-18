@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import { MajorityResult } from 'model/objects';
+import { MajorityResult } from 'core/objects';
 import BarChartDisplay from 'core/components/BarChartDisplay';
 
 describe('BarChartDisplay', () => {

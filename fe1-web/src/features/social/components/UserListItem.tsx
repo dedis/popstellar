@@ -4,11 +4,11 @@ import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 
-import { getUserSocialChannel, Hash, PublicKey } from 'model/objects';
-import { gray } from 'styles/colors';
-import STRINGS from 'res/strings';
-import { subscribeToChannel } from 'network/CommunicationApi';
-import { FOUR_SECONDS } from 'res/const';
+import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
+import { gray } from 'core/styles/colors';
+import STRINGS from 'resources/strings';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { FOUR_SECONDS } from 'resources/const';
 import { ProfileIcon, WideButtonView } from 'core/components';
 
 /**

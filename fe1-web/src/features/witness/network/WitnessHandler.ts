@@ -1,5 +1,5 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+import { ExtendedMessage } from 'core/network/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
 import { addMessageWitnessSignature, dispatch, getStore } from 'store';
 import { makeCurrentLao } from 'features/lao/reducer';
 
@@ -13,14 +13,14 @@ function handleWitnessMessage(msg: ExtendedMessage): boolean {
     msg.messageData.object !== ObjectType.MESSAGE ||
     msg.messageData.action !== ActionType.WITNESS
   ) {
-    console.warn('handleWitnessMessage was called to process an unsupported message', msg);
+    console.warn('handleWitnessMessage was called to process an unsupported messages', msg);
     return false;
   }
 
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn('message/witness was not processed: no LAO is currently active');
+    console.warn('messages/witness was not processed: no LAO is currently active');
     return false;
   }
 
@@ -34,7 +34,7 @@ function handleWitnessMessage(msg: ExtendedMessage): boolean {
 
   if (!ws.verify(msgId)) {
     console.warn(
-      'Definitively ignoring witness message because ' +
+      'Definitively ignoring witness messages because ' +
         `signature by ${ws.witness} doesn't match message ${msgId}`,
       msg,
     );

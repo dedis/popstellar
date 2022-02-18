@@ -1,7 +1,7 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+import { ExtendedMessage } from 'core/network/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
 import { dispatch, getMessage, getStore, makeLaoMessagesState } from 'store';
-import { hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
+import { hasWitnessSignatureQuorum } from 'core/network/ingestion/Utils';
 
 import { Lao } from '../objects';
 import { connectToLao, makeCurrentLao, updateLao } from '../reducer';
@@ -12,7 +12,7 @@ const getMessageState = makeLaoMessagesState();
 
 function handleLaoCreateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.CREATE) {
-    console.warn('handleLaoCreateMessage was called to process an unsupported message', msg);
+    console.warn('handleLaoCreateMessage was called to process an unsupported messages', msg);
     return false;
   }
 
@@ -32,7 +32,7 @@ function handleLaoCreateMessage(msg: ExtendedMessage): boolean {
 
 function handleLaoStateMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.STATE) {
-    console.warn('handleLaoStateMessage was called to process an unsupported message', msg);
+    console.warn('handleLaoStateMessage was called to process an unsupported messages', msg);
     return false;
   }
 
@@ -59,7 +59,7 @@ function handleLaoStateMessage(msg: ExtendedMessage): boolean {
 
   const updateMessage = getMessage(msgState, stateLaoData.modification_id);
   if (!updateMessage) {
-    console.warn(makeErr("'modification_id' references unknown message"));
+    console.warn(makeErr("'modification_id' references unknown messages"));
     return false;
   }
   const updateLaoData = updateMessage.messageData as UpdateLao;

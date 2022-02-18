@@ -1,8 +1,8 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+import { ExtendedMessage } from 'core/network/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
 import { dispatch, getStore } from 'store';
 import { makeCurrentLao } from 'features/lao/reducer';
-import { hasWitnessSignatureQuorum } from 'ingestion/handlers/Utils';
+import { hasWitnessSignatureQuorum } from 'core/network/ingestion/Utils';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
@@ -16,16 +16,16 @@ import { Meeting } from '../objects';
 const getCurrentLao = makeCurrentLao();
 
 /**
- * Handles a MeetingCreate message by creating a meeting in the current Lao.
+ * Handles a MeetingCreate messages by creating a meeting in the current Lao.
  *
- * @param msg - The extended message for creating a meeting
+ * @param msg - The extended messages for creating a meeting
  */
 function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MEETING ||
     msg.messageData.action !== ActionType.CREATE
   ) {
-    console.warn('handleMeetingCreateMessage was called to process an unsupported message', msg);
+    console.warn('handleMeetingCreateMessage was called to process an unsupported messages', msg);
     return false;
   }
 
@@ -55,16 +55,16 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles a MeetingState message by updating the state of the meeting.
+ * Handles a MeetingState messages by updating the state of the meeting.
  *
- * @param msg - The extended message for getting the meeting's state
+ * @param msg - The extended messages for getting the meeting's state
  */
 function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MEETING ||
     msg.messageData.action !== ActionType.STATE
   ) {
-    console.warn('handleMeetingStateMessage was called to process an unsupported message', msg);
+    console.warn('handleMeetingStateMessage was called to process an unsupported messages', msg);
     return false;
   }
 

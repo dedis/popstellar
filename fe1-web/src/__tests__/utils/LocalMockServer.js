@@ -92,7 +92,7 @@ wsServer.on('request', (request) => {
       // choose a random index of the array answers
       const idx = Math.floor(Math.random() * 1000000) % answers.length;
 
-      // broadcasting message to all connected clients
+      // broadcasting messages to all connected clients
       Object.keys(clients).forEach((key) => {
         clients[key].sendUTF(JSON.stringify(answers[idx]));
       });

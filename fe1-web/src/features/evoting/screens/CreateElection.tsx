@@ -4,7 +4,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { useNavigation } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
 import {
   ConfirmModal,
@@ -17,10 +17,10 @@ import {
   ParagraphBlock,
   WideButtonView,
 } from 'core/components';
-import { Hash, Timestamp, EventTags } from 'model/objects';
+import { Hash, Timestamp, EventTags } from 'core/objects';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { FOUR_SECONDS } from 'res/const';
+import { FOUR_SECONDS } from 'resources/const';
 import { onConfirmPress } from 'features/events/screens/CreateEvent';
 
 import { requestCreateElection } from '../network/ElectionMessageApi';

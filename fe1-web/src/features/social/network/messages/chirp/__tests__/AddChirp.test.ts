@@ -1,8 +1,8 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { Hash, Timestamp, ProtocolError } from 'model/objects';
+import { ActionType, ObjectType } from 'core/network/messages/MessageData';
+import { Hash, Timestamp, ProtocolError } from 'core/objects';
 
 import { AddChirp } from '../AddChirp';
 
@@ -69,10 +69,10 @@ describe('AddChirp', () => {
 
     it('should throw an error if text is too long', () => {
       const bigMessage =
-        "It seems that this message won't fit. It seems that this message won't fit. " +
-        "It seems that this message won't fit. It seems that this message won't fit. It seems that " +
-        "this message won't fit. It seems that this message won't fit. It seems that this message " +
-        "won't fit. It seems that this message won't fit.";
+        "It seems that this messages won't fit. It seems that this messages won't fit. " +
+        "It seems that this messages won't fit. It seems that this messages won't fit. It seems that " +
+        "this messages won't fit. It seems that this messages won't fit. It seems that this messages " +
+        "won't fit. It seems that this messages won't fit.";
       const createWrongObj = () =>
         new AddChirp({
           object: ObjectType.CHIRP,

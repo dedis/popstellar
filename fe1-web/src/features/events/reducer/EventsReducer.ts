@@ -5,7 +5,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash, PublicKey } from 'model/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { RollCall } from 'features/rollCall/objects';
 import { getLaosState } from 'features/lao/reducer/LaoReducer';
 
@@ -25,7 +25,7 @@ interface EventReducerState {
    *
    * @remarks
    *
-   * If a new message (with a new_id) changes the state of an event (with old_id),
+   * If a new messages (with a new_id) changes the state of an event (with old_id),
    * this map associates new_id -> old_id.
    * This ensures that we can keep only one event in memory, with its up-to-date state,
    * but future messages can refer to new_id as needed.

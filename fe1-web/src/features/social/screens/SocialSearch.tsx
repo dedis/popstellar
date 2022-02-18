@@ -3,11 +3,11 @@ import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import { makeCurrentLao } from 'features/lao/reducer';
-import { PublicKey } from 'model/objects';
+import { PublicKey } from 'core/objects';
 import { TextBlock } from 'core/components';
-import { gray } from 'styles/colors';
+import { gray } from 'core/styles/colors';
 import { makeRollCallAttendeesList } from 'features/events/reducer';
 
 import { UserListItem } from '../components';

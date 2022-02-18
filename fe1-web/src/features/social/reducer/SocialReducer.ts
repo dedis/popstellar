@@ -5,7 +5,7 @@
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash, PublicKey, Timestamp } from 'model/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { getLaosState } from 'features/lao/reducer/LaoReducer';
 
 import { Chirp, ChirpState, ReactionState } from '../objects';
@@ -98,7 +98,7 @@ const socialSlice = createSlice({
           store.byId[chirp.id] = chirp;
         }
 
-        // even the chirp is deleted, we add it to allIdsInOrder to display the message
+        // even the chirp is deleted, we add it to allIdsInOrder to display the messages
         const insertIdxInAll = findInsertIdx(store.allIdsInOrder, store.byId, chirp.time);
         store.allIdsInOrder.splice(insertIdxInAll, 0, chirp.id);
 

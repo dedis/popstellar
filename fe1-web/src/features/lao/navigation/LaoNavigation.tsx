@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import { getStore, getKeyPairState } from 'store';
-import { PublicKey } from 'model/objects';
-import STRINGS from 'res/strings';
-import Home from 'parts/Home';
+import { PublicKey } from 'core/objects';
+import STRINGS from 'resources/strings';
+import Home from 'core/screens/Home';
 import { SocialMediaNavigation } from 'features/social/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
 import { WitnessNavigation } from 'features/witness/navigation';

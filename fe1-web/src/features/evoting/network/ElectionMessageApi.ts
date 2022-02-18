@@ -1,7 +1,7 @@
-import { channelFromIds, EventTags, Hash, Timestamp } from 'model/objects';
+import { channelFromIds, EventTags, Hash, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Lao } from 'features/lao/objects';
-import { publish } from 'network/JsonRpcApi';
+import { publish } from 'core/network/jsonrpc/JsonRpcApi';
 
 import { CastVote, EndElection, SetupElection } from './messages';
 import { Question, Vote } from '../objects';

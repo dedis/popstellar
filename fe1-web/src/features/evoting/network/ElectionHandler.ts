@@ -1,8 +1,8 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { channelFromIds, getLastPartOfChannel } from 'model/objects';
+import { ExtendedMessage } from 'core/network/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
+import { channelFromIds, getLastPartOfChannel } from 'core/objects';
 import { dispatch, getStore, KeyPairStore } from 'store';
-import { subscribeToChannel } from 'network/CommunicationApi';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { makeCurrentLao } from 'features/lao/reducer';
@@ -17,16 +17,16 @@ import { Election, ElectionStatus, RegisteredVote } from '../objects';
 const getCurrentLao = makeCurrentLao();
 
 /**
- * Handles an ElectionSetup message by setting up the election in the current Lao.
+ * Handles an ElectionSetup messages by setting up the election in the current Lao.
  *
- * @param msg - The extended message for setting up an election
+ * @param msg - The extended messages for setting up an election
  */
 function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ELECTION ||
     msg.messageData.action !== ActionType.SETUP
   ) {
-    console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
+    console.warn('handleElectionSetupMessage was called to process an unsupported messages', msg);
     return false;
   }
 
@@ -64,16 +64,16 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles a CastVote message being sent during an election.
+ * Handles a CastVote messages being sent during an election.
  *
- * @param msg - The extended message to cast a vote
+ * @param msg - The extended messages to cast a vote
  */
 function handleCastVoteMessage(msg: ExtendedMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ELECTION ||
     msg.messageData.action !== ActionType.CAST_VOTE
   ) {
-    console.warn('handleCastVoteMessage was called to process an unsupported message', msg);
+    console.warn('handleCastVoteMessage was called to process an unsupported messages', msg);
     return false;
   }
   const makeErr = (err: string) => `election/cast-vote was not processed: ${err}`;
@@ -124,14 +124,14 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles an ElectionEnd message by ending the election.
+ * Handles an ElectionEnd messages by ending the election.
  *
- * @param msg - The extended message for ending an election
+ * @param msg - The extended messages for ending an election
  */
 function handleElectionEndMessage(msg: ExtendedMessage) {
-  console.log('Handling Election end message');
+  console.log('Handling Election end messages');
   if (msg.messageData.object !== ObjectType.ELECTION || msg.messageData.action !== ActionType.END) {
-    console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
+    console.warn('handleElectionEndMessage was called to process an unsupported messages', msg);
     return false;
   }
   const makeErr = (err: string) => `election/end was not processed: ${err}`;
@@ -155,16 +155,16 @@ function handleElectionEndMessage(msg: ExtendedMessage) {
 }
 
 /**
- * Handles an ElectionResult message by updating the election's state with its results.
+ * Handles an ElectionResult messages by updating the election's state with its results.
  *
- * @param msg - The extended message for getting the election's results.
+ * @param msg - The extended messages for getting the election's results.
  */
 function handleElectionResultMessage(msg: ExtendedMessage) {
   if (
     msg.messageData.object !== ObjectType.ELECTION ||
     msg.messageData.action !== ActionType.RESULT
   ) {
-    console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
+    console.warn('handleElectionResultMessage was called to process an unsupported messages', msg);
     return false;
   }
   const makeErr = (err: string) => `election/Result was not processed: ${err}`;
@@ -175,7 +175,7 @@ function handleElectionResultMessage(msg: ExtendedMessage) {
     return false;
   }
   if (!msg.channel) {
-    console.warn(makeErr('No channel found in message'));
+    console.warn(makeErr('No channel found in messages'));
     return false;
   }
   const electionId = getLastPartOfChannel(msg.channel);
@@ -189,7 +189,7 @@ function handleElectionResultMessage(msg: ExtendedMessage) {
   election.questionResult = ElectionResultMsg.questions;
   election.electionStatus = ElectionStatus.RESULT;
   dispatch(updateEvent(lao.id, election.toState()));
-  console.log('received election Result message: ', ElectionResultMsg);
+  console.log('received election Result messages: ', ElectionResultMsg);
   return true;
 }
 

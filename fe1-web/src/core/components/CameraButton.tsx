@@ -2,9 +2,9 @@ import React from 'react';
 import { StyleSheet, Image, View, TouchableOpacity, ImageStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
-import circularButtonStyles from 'styles/stylesheets/circularButtonStyles';
+import circularButtonStyles from 'core/styles/stylesheets/circularButtonStyles';
 
-const cameraImage = require('res/img/ic_camera.png');
+const cameraImage = require('resources/img/ic_camera.png');
 
 /**
  * Camera button that executes an onPress action given in props

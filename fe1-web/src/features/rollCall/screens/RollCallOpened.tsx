@@ -7,14 +7,14 @@ import { useRoute } from '@react-navigation/core';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { Spacing } from 'styles';
-import containerStyles from 'styles/stylesheets/containerStyles';
-import STRINGS from 'res/strings';
+import { Spacing } from 'core/styles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import STRINGS from 'resources/strings';
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
-import { EventTags, Hash, PublicKey } from 'model/objects';
+import { EventTags, Hash, PublicKey } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { makeCurrentLao } from 'features/lao/reducer';
-import { FOUR_SECONDS } from 'res/const';
+import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
 
 import { requestCloseRollCall } from '../network/RollCallMessageApi';

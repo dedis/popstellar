@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 
 import PropTypes from 'prop-types';
 import { makeIsLaoOrganizer } from 'features/lao/reducer';
-import { Spacing, Typography } from 'styles';
-import STRINGS from 'res/strings';
-import * as RootNavigation from 'navigation/RootNavigation';
+import { Spacing, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
+import * as RootNavigation from 'core/navigation/RootNavigation';
 import { TextBlock } from 'core/components';
 
 import { Event } from './index';

@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import * as store from 'store/Storage';
+import * as store from 'core/store/Storage';
 
 import { WalletStore } from '../WalletStore';
 

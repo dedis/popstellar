@@ -1,8 +1,8 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { Hash, Timestamp, ProtocolError } from 'model/objects';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
+import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { ActionType, ObjectType } from 'core/network/messages/MessageData';
 import { mockLao, mockLaoCreationTime, mockLaoId } from '__tests__/utils/TestUtils';
 import { OpenedLaoStore } from 'features/lao/store';
 

@@ -1,7 +1,7 @@
 import 'jest-extended';
 import { AnyAction } from 'redux';
 
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { mockLaoId } from '__tests__/utils/TestUtils';
 import { Meeting, MeetingState } from 'features/meeting/objects';
 import { RollCall, RollCallState, RollCallStatus } from 'features/rollCall/objects';

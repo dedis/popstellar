@@ -31,7 +31,7 @@ describe('wallet reducer', () => {
     expect(walletReduce({}, setWallet(wrongState))).toEqual(emptyState);
   });
 
-  test('should handle the wallet being set', () => {
+  test('should handle the wallet being cleared', () => {
     expect(walletReduce(filledState, clearWallet())).toEqual(emptyState);
   });
 });

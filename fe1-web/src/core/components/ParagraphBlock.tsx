@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
-import { Typography } from 'styles';
-import * as Spacing from 'styles/spacing';
+import { Typography } from 'core/styles';
+import * as Spacing from 'core/styles/spacing';
 
 const styles = StyleSheet.create({
   textStandard: {

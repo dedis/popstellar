@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { TextInput, TextStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 
-import { Colors, Spacing, Typography } from 'styles';
-import STRINGS from 'res/strings';
+import { Colors, Spacing, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 import { QRCode, TextBlock } from 'core/components';
-import { KeyPairStore } from 'store/stores';
+import { KeyPairStore } from 'core/store';
 
 /**
  * Manage the Identity screen. A user may decide to participate anonymously to a

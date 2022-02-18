@@ -1,8 +1,8 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { getReactionChannel, getUserSocialChannel } from 'model/objects';
+import { ExtendedMessage } from 'core/network/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
+import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'store';
-import { subscribeToChannel } from 'network/CommunicationApi';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import * as Wallet from 'features/wallet/objects';
@@ -18,16 +18,16 @@ import { RollCall, RollCallStatus } from '../objects';
 const getCurrentLao = makeCurrentLao();
 
 /**
- * Handles a RollCallCreate message by creating a roll call in the current Lao.
+ * Handles a RollCallCreate messages by creating a roll call in the current Lao.
  *
- * @param msg - The extended message for creating a roll call
+ * @param msg - The extended messages for creating a roll call
  */
 function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ROLL_CALL ||
     msg.messageData.action !== ActionType.CREATE
   ) {
-    console.warn('handleRollCallCreateMessage was called to process an unsupported message', msg);
+    console.warn('handleRollCallCreateMessage was called to process an unsupported messages', msg);
     return false;
   }
 
@@ -58,16 +58,16 @@ function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handle a RollCallOpen message by opening the corresponding roll call.
+ * Handle a RollCallOpen messages by opening the corresponding roll call.
  *
- * @param msg - The extended message for opening a roll call
+ * @param msg - The extended messages for opening a roll call
  */
 function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ROLL_CALL ||
     msg.messageData.action !== ActionType.OPEN
   ) {
-    console.warn('handleRollCallOpenMessage was called to process an unsupported message', msg);
+    console.warn('handleRollCallOpenMessage was called to process an unsupported messages', msg);
     return false;
   }
 
@@ -99,16 +99,16 @@ function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles a RollCallClose message by closing the corresponding roll call.
+ * Handles a RollCallClose messages by closing the corresponding roll call.
  *
- * @param msg - The extended message for closing a roll call
+ * @param msg - The extended messages for closing a roll call
  */
 function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ROLL_CALL ||
     msg.messageData.action !== ActionType.CLOSE
   ) {
-    console.warn('handleRollCallCloseMessage was called to process an unsupported message', msg);
+    console.warn('handleRollCallCloseMessage was called to process an unsupported messages', msg);
     return false;
   }
 
@@ -168,13 +168,13 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * TODO: Handles a reopen roll call message.
+ * TODO: Handles a reopen roll call messages.
  *
  * @param msg
  */
 function handleRollCallReopenMessage(msg: ExtendedMessage) {
   console.warn(
-    'A RollCall reopen message was received but' + ' its processing logic is not yet implemented:',
+    'A RollCall reopen messages was received but' + ' its processing logic is not yet implemented:',
     msg,
   );
   return false;

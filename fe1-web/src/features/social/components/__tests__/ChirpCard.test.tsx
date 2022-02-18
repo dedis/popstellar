@@ -1,9 +1,9 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { Hash, PublicKey, Timestamp } from 'model/objects';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import { mockLao } from '__tests__/utils/TestUtils';
 
 import {

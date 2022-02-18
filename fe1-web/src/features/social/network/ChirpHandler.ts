@@ -1,5 +1,5 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
+import { ExtendedMessage } from 'core/network/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/messages';
 import { dispatch, getStore } from 'store';
 import { makeCurrentLao } from 'features/lao/reducer';
 
@@ -13,13 +13,13 @@ import { addChirp, deleteChirp } from '../reducer';
 const getCurrentLao = makeCurrentLao();
 
 /**
- * Handles an addChirp message by storing the chirp sent.
+ * Handles an addChirp messages by storing the chirp sent.
  *
- * @param msg - The extended message for adding a chirp
+ * @param msg - The extended messages for adding a chirp
  */
 function handleAddChirpMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.ADD) {
-    console.warn('handleAddChirp was called to process an unsupported message');
+    console.warn('handleAddChirp was called to process an unsupported messages');
     return false;
   }
 
@@ -49,13 +49,13 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * Handles an deleteChirp message
+ * Handles an deleteChirp messages
  *
- * @param msg - The extended message for deleting a chirp
+ * @param msg - The extended messages for deleting a chirp
  */
 function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.DELETE) {
-    console.warn('handleDeleteChirp was called to process an unsupported message');
+    console.warn('handleDeleteChirp was called to process an unsupported messages');
     return false;
   }
 
@@ -83,9 +83,9 @@ function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * TODO: Handles a NotifyAddChirp message.
+ * TODO: Handles a NotifyAddChirp messages.
  *
- * @param msg - The extended message for notifying a chirp addition
+ * @param msg - The extended messages for notifying a chirp addition
  */
 function handleNotifyAddChirpMessage(msg: ExtendedMessage): boolean {
   console.warn(`NotifyAddChirp message lacks of handling logic for now, message: ${msg}`);
@@ -93,9 +93,9 @@ function handleNotifyAddChirpMessage(msg: ExtendedMessage): boolean {
 }
 
 /**
- * TODO: Handles a NotifyDeleteChirp message.
+ * TODO: Handles a NotifyDeleteChirp messages.
  *
- * @param msg - The extended message for notifying a chirp deletion
+ * @param msg - The extended messages for notifying a chirp deletion
  */
 function handleNotifyDeleteChirpMessage(msg: ExtendedMessage): boolean {
   console.warn(`NotifyDeleteChirp message lacks of handling logic for now, message: ${msg}`);

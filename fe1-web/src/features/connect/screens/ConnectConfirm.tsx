@@ -4,15 +4,15 @@ import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 import { useRoute } from '@react-navigation/core';
 
-import { getNetworkManager } from 'network';
-import { subscribeToChannel } from 'network/CommunicationApi';
-import { Channel, channelFromIds, Hash } from 'model/objects';
-import { Spacing } from 'styles';
-import containerStyles from 'styles/stylesheets/containerStyles';
-import STRINGS from 'res/strings';
-import PROPS_TYPE from 'res/Props';
+import { getNetworkManager } from 'core/network';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { Channel, channelFromIds, Hash } from 'core/objects';
+import { Spacing } from 'core/styles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import STRINGS from 'resources/strings';
+import PROPS_TYPE from 'resources/Props';
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
-import { FOUR_SECONDS } from 'res/const';
+import { FOUR_SECONDS } from 'resources/const';
 
 /**
  * Ask for confirmation to connect to a specific LAO

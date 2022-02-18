@@ -1,9 +1,9 @@
-import { Hash, Timestamp, EventTags, ProtocolError } from 'model/objects';
+import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Lao } from 'features/lao/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
-import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/messages/MessageData';
+import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 import { Question } from '../../objects/Election';
 

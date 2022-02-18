@@ -1,5 +1,5 @@
-import { Hash } from 'model/objects';
-import { getStore } from 'store/Storage';
+import { Hash } from 'core/objects';
+import { getStore } from 'core/store/Storage';
 
 import { LaoEvent } from '../objects';
 import { makeEventsMap } from '../reducer';
