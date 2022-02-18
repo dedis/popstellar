@@ -17,9 +17,9 @@ import {
   mockLaoName,
 } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'network/JsonRpcApi';
-import * as msApi from 'network/MessageApi';
 
 import { OpenedLaoStore } from '../../store';
+import * as msApi from '../LaoMessageApi';
 
 jest.mock('network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;

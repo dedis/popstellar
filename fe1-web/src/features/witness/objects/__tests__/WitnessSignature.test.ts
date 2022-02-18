@@ -1,7 +1,8 @@
 import 'jest-extended';
+
 import testKeyPair from 'test_data/keypair.json';
-import { Hash } from '../Hash';
-import { KeyPair } from '../KeyPair';
+import { Hash, KeyPair } from 'model/objects';
+
 import { WitnessSignature, WitnessSignatureState } from '../WitnessSignature';
 
 const kp = KeyPair.fromState({

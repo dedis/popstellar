@@ -4,8 +4,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import STRINGS from 'res/strings';
 import { Typography } from 'styles';
 import PROPS_TYPE from 'res/Props';
-
-import CameraButton from 'core/components/CameraButton';
+import { CameraButton } from 'core/components';
 
 /**
  * Scanning witness component: a camera view and a camera button

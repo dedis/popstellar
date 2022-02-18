@@ -82,7 +82,8 @@ the future.
 `src/features/rollCall/network/__tests__/RollCallMessageApi.ts`, `src/features/rollCall/network/messages`,
 `src/features/rollCall/network/RollCallMessageApi.ts`, `src/features/rollCall/screens/RollCallOpened.tsx`,
 `src/features/social/network/__tests__/SocialMessageApi.test.ts`, `src/features/social/network/SocialMessageApi.ts`,
-`src/ingestion/handlers/Utils.ts`, `src/ingestion/Handler.ts`, `src/parts/Launch.tsx`
+`src/ingestion/handlers/Utils.ts`, `src/ingestion/Handler.ts`, `src/parts/Launch.tsx`,
+`src/features/witness/network/__tests__/WitnessMessageApi.ts`
 - Lao : `src/features/evoting/network/messages/SetupElection.ts`, `src/features/evoting/network/ElectionMessageApi.ts`,
 `src/features/evoting/screens/CreateElection.tsx`, `src/features/meeting/network/messages/CreateMeeting.ts`,
 `src/features/meeting/network/MeetingMessageApi.ts`, `src/features/rollCall/network/messages/__tests_`,
@@ -97,3 +98,9 @@ the future.
 `features/rollCall/screens/RollCallOpened.tsx`
 - WalletNavigation : `navigation/bars/LaoNavigation.tsx`, `navigation/bars/MainNavigation.tsx`
 - WalletReducer : `store/reducers/RootReducer.ts`, `store/__mocks__/Storage.ts`
+
+## Witness
+
+- WitnessScanning : `src/features/lao/navigation/OrganizerNavigation.tsx`
+- WitnessNavigation : `src/features/lao/navigation/LaoNavigation.tsx`
+- WitnessHandler : `src/ingestion/handlers/index.ts`

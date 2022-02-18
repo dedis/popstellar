@@ -9,8 +9,7 @@ import { Timestamp } from 'model/objects';
 import EventListCollapsible from 'features/events/components/EventListCollapsible';
 import { LaoEvent } from 'features/events/objects';
 import { makeEventsList } from 'features/events/reducer';
-
-import LaoProperties from 'features/lao/components/LaoProperties';
+import { LaoProperties } from 'features/lao/components';
 
 /**
  * WitnessScreen: button to navigate to the witness video screen,

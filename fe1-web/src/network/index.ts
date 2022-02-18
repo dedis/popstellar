@@ -10,4 +10,3 @@
 export { getNetworkManager } from './NetworkManager';
 export * from './NetworkError';
 export * from './RpcOperationError';
-export * from './MessageApi';

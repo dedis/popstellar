@@ -3,8 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import STRINGS from 'res/strings';
 
-import { WitnessScreen } from 'features/witness/screens';
-import WitnessCamera from 'parts/lao/witness/WitnessCamera';
+import { WitnessCamera, WitnessScreen } from 'features/witness/screens';
 
 /**
  * Define the Witness stack navigation

@@ -5,9 +5,10 @@ import {
   ObjectType,
   WitnessMessage,
 } from 'model/network/method/message/data';
-import { WitnessSignature } from 'model/objects';
 import { addMessageWitnessSignature, dispatch, getStore } from 'store';
 import { makeCurrentLao } from 'features/lao/reducer';
+
+import { WitnessSignature } from '../objects';
 
 const getCurrentLao = makeCurrentLao();
 

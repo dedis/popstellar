@@ -1,8 +1,12 @@
-import { Hash } from 'model/objects';
-import { WitnessMessage } from 'model/network/method/message/data';
-import { Channel } from 'model/objects/Channel';
 import { KeyPairStore } from 'store';
-import { publish } from './JsonRpcApi';
+import { Channel, Hash } from 'model/objects';
+import { publish } from 'network/JsonRpcApi';
+
+import { WitnessMessage } from './messages';
+
+/**
+ * Contains all functions to send witness related messages.
+ */
 
 /** Send a server message to acknowledge witnessing the message message (JS object) */
 export function requestWitnessMessage(channel: Channel, messageId: Hash): Promise<void> {

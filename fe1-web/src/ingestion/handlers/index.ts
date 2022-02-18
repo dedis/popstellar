@@ -5,7 +5,7 @@ import * as MeetingHandler from 'features/meeting/network/MeetingHandler';
 import * as ElectionHandler from 'features/evoting/network/ElectionHandler';
 import * as RollCallHandler from 'features/rollCall/network/RollCallHandler';
 import * as LaoHandler from 'features/lao/network/LaoHandler';
-import * as WitnessHandler from './WitnessHandler';
+import * as WitnessHandler from 'features/witness/network/WitnessHandler';
 
 type ConfigurableHandler = {
   configure: (msg: MessageRegistry) => void;

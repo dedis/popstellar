@@ -1,4 +1,5 @@
 import 'jest-extended';
+
 import '__tests__/utils/matchers';
 import {
   ActionType,
@@ -9,8 +10,9 @@ import {
 import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { Base64UrlData } from 'model/objects';
 import { publish as mockPublish } from 'network/JsonRpcApi';
-import { OpenedLaoStore } from 'store';
-import * as msApi from '../MessageApi';
+import { OpenedLaoStore } from 'features/lao/store';
+
+import * as msApi from '../WitnessMessageApi';
 
 jest.mock('network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;

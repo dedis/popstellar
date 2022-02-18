@@ -1,1 +1,2 @@
-export { default as WitnessScreen } from 'features/witness/screens/WitnessScreen';
+export { default as WitnessCamera } from './WitnessCamera';
+export { default as WitnessScreen } from './WitnessScreen';

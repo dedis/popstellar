@@ -21,7 +21,7 @@ import {
 import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
 import { ExtendedMessage } from '../ExtendedMessage';
 import { CreateLao, StateLao, UpdateLao } from 'features/lao/network/messages';
-import { WitnessMessage } from './witness';
+import { WitnessMessage } from 'features/witness/network/messages';
 
 type HandleFunction = (msg: ExtendedMessage) => boolean;
 

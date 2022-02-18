@@ -9,4 +9,3 @@ export * from './ProtocolError';
 export * from './PublicKey';
 export * from './Signature';
 export * from './Timestamp';
-export * from './WitnessSignature';
