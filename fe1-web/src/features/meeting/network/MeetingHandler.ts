@@ -1,4 +1,4 @@
-import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'core/redux';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { makeCurrentLao } from 'features/lao/reducer';
@@ -20,7 +20,7 @@ const getCurrentLao = makeCurrentLao();
  *
  * @param msg - The extended message for creating a meeting
  */
-function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
+export function handleMeetingCreateMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MEETING ||
     msg.messageData.action !== ActionType.CREATE
@@ -59,7 +59,7 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for getting the meeting's state
  */
-function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
+export function handleMeetingStateMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MEETING ||
     msg.messageData.action !== ActionType.STATE
@@ -103,14 +103,4 @@ function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
 
   dispatch(updateEvent(lao.id, meeting.toState()));
   return true;
-}
-
-/**
- * Configures the MeetingHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mappings
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.MEETING, ActionType.CREATE, handleMeetingCreateMessage);
-  registry.addHandler(ObjectType.MEETING, ActionType.STATE, handleMeetingStateMessage);
 }

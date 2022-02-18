@@ -5,7 +5,8 @@ import {
   PublicKey,
   Signature,
   Timestamp,
-  WitnessSignature
+  WitnessSignature,
+  WitnessSignatureState,
 } from 'core/objects';
 import { MessageData } from './MessageData';
 

@@ -4,13 +4,13 @@
  */
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Hash, WitnessSignatureState } from 'core/objects';
+import { getLaosState } from 'features/lao/reducer/LaoReducer';
 import {
   ExtendedMessage,
   ExtendedMessageState,
-  markExtMessageAsProcessed,
-} from 'core/network/jsonrpc/messages';
-import { Hash, WitnessSignatureState } from 'core/objects';
-import { getLaosState } from 'features/lao/reducer/LaoReducer';
+  markMessageAsProcessed,
+} from './ExtendedMessage';
 
 /**
  * Reducer & associated function implementation to store all known Messages
@@ -96,7 +96,7 @@ const messagesSlice = createSlice({
           return;
         }
         messageIds.forEach((messageId: string) => {
-          state.byLaoId[laoId].byId[messageId] = markExtMessageAsProcessed(
+          state.byLaoId[laoId].byId[messageId] = markMessageAsProcessed(
             state.byLaoId[laoId].byId[messageId],
           );
           state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds.filter(

@@ -1,4 +1,4 @@
-import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { dispatch, getStore } from 'core/redux';
 import { makeCurrentLao } from 'features/lao/reducer';
@@ -9,7 +9,7 @@ import { WitnessMessage } from './messages';
 
 const getCurrentLao = makeCurrentLao();
 
-function handleWitnessMessage(msg: ExtendedMessage): boolean {
+export function handleWitnessMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MESSAGE ||
     msg.messageData.action !== ActionType.WITNESS
@@ -45,13 +45,4 @@ function handleWitnessMessage(msg: ExtendedMessage): boolean {
   dispatch(addMessageWitnessSignature(lao.id, msgId, ws.toState()));
 
   return true;
-}
-
-/**
- * Configures the WitnessHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mapping
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.MESSAGE, ActionType.WITNESS, handleWitnessMessage);
 }

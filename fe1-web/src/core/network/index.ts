@@ -7,6 +7,10 @@
  * of incoming messages, a task dealt with in the ingestion module.
  */
 
+import { MessageRegistry } from './jsonrpc/messages';
+
 export { getNetworkManager } from './NetworkManager';
 export * from './NetworkError';
 export * from 'core/network/RpcOperationError';
+
+export function configure(messageRegistry: MessageRegistry) {}

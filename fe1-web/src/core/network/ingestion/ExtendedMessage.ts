@@ -1,14 +1,29 @@
-import { Hash, PublicKey, Base64UrlData, Signature, Timestamp, Channel, WitnessSignature } from 'core/objects';
+import {
+  Hash,
+  PublicKey,
+  Base64UrlData,
+  Signature,
+  Timestamp,
+  Channel,
+  WitnessSignature, WitnessSignatureState,
+} from 'core/objects';
 
-import { Message, MessageState } from './Message';
+import { Message } from '../jsonrpc/messages/Message';
+import { ProcessableMessage } from '../jsonrpc/messages/ProcessableMessage';
 
-export interface ExtendedMessageState extends MessageState {
+export interface ExtendedMessageState {
   receivedAt: number;
   processedAt?: number;
-  channel?: string;
+  channel?: Channel;
+
+  data: string;
+  sender: string;
+  signature: string;
+  message_id: string;
+  witness_signatures: WitnessSignatureState[];
 }
 
-export function markExtMessageAsProcessed(
+export function markMessageAsProcessed(
   msg: ExtendedMessageState,
   when?: Timestamp,
 ): ExtendedMessageState {
@@ -18,7 +33,8 @@ export function markExtMessageAsProcessed(
   };
 }
 
-export class ExtendedMessage extends Message {
+
+export class ExtendedMessage extends Message implements ProcessableMessage {
   public readonly receivedAt: Timestamp;
 
   public processedAt?: Timestamp;

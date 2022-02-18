@@ -1,7 +1,8 @@
 import { Store } from 'redux';
 import { getLaosState } from 'features/lao/reducer';
 import { getLaoMessagesState, processMessages } from 'core/reducers';
-import { ExtendedMessage, MessageRegistry } from '../jsonrpc/messages';
+import { MessageRegistry } from '../jsonrpc/messages';
+import { ExtendedMessage } from './ExtendedMessage';
 
 export function makeMessageStoreWatcher(store: Store, messageRegistry: MessageRegistry) {
   let previousValue: string[] | undefined;

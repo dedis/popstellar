@@ -8,13 +8,12 @@ import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
-import { store, persist } from 'core/redux/ReduxSetUp';
+import { store, persist } from 'core/redux';
 
 import AppNavigation from 'core/navigation/AppNavigation';
 import { navigationRef } from 'core/navigation/RootNavigation';
 import { configureIngestion } from 'core/network/ingestion';
-import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { configureMessages } from 'core/network/jsonrpc/messages/Message';
+import { configureFeatures } from 'features';
 
 /*
  * The starting point of the app.
@@ -26,10 +25,8 @@ import { configureMessages } from 'core/network/jsonrpc/messages/Message';
  * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */
 function App() {
-  const messageRegistry = new MessageRegistry();
+  const { messageRegistry, navigationOpts } = configureFeatures();
   configureIngestion(messageRegistry);
-  configureMessages(messageRegistry);
-  messageRegistry.verifyEntries();
 
   useReduxDevToolsExtension(navigationRef);
 
@@ -40,7 +37,7 @@ function App() {
           <SafeAreaProvider>
             {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" backgroundColor="white" />}
             <ToastProvider>
-              <AppNavigation />
+              <AppNavigation opts={navigationOpts} />
             </ToastProvider>
           </SafeAreaProvider>
         </NavigationContainer>

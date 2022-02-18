@@ -21,7 +21,8 @@ const styles = StyleSheet.create({
   },
 });
 
-function AppNavigation() {
+// FIXME: use opts -- Pierluca, 2022-02-18
+function AppNavigation({ opts }) {
   return (
     <SafeAreaView style={styles.view}>
       <Stack.Navigator

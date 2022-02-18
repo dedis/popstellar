@@ -1,4 +1,4 @@
-import { KeyPairStore } from 'store';
+import { KeyPairStore } from 'core/store';
 import { Channel, Hash } from 'core/objects';
 import { publish } from 'core/network/JsonRpcApi';
 

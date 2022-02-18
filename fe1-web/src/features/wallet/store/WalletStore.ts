@@ -1,7 +1,7 @@
 import base64url from 'base64url';
 import platformCrypto from 'core/platform/crypto';
 
-import { AsyncDispatch, getStore } from 'core/redux/ReduxSetUp';
+import { AsyncDispatch, getStore } from 'core/redux';
 
 import { clearWallet, getWalletState, setWallet } from '../reducer';
 

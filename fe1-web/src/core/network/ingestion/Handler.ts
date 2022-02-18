@@ -1,12 +1,13 @@
 import { Channel } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { dispatch } from 'core/redux';
-import { addMessages } from 'core/reducers';
+import { dispatch } from 'core/redux/';
+import { addMessages } from './Reducer';
 import { Broadcast } from '../jsonrpc/Broadcast';
 import { ActionType, ObjectType } from '../jsonrpc/messages/MessageData';
-import { ExtendedMessage, MessageRegistry } from '../jsonrpc/messages';
+import { MessageRegistry } from '../jsonrpc/messages';
 import { Message } from '../jsonrpc/messages/Message';
 import { JsonRpcMethod, JsonRpcRequest } from '../jsonrpc';
+import { ExtendedMessage } from './ExtendedMessage';
 
 let messageRegistry: MessageRegistry;
 

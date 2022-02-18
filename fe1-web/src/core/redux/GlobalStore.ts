@@ -6,7 +6,7 @@ import { ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
 // Import all the reducers, defining how storage is organized and accessed
-import rootReducer from './index';
+import { makeRootReducer } from './RootReducer';
 
 // Extend redux dispatch definition to support ThunkActions
 // as per https://stackoverflow.com/a/67634381
@@ -18,7 +18,7 @@ declare module 'redux' {
 
 // Initialize the store and expose its configuration
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
-export const store: Store = createStore(rootReducer, composedEnhancer);
+export const store: Store = createStore(makeRootReducer({}), composedEnhancer);
 export const persist: Persistor = persistStore(store);
 
 // Expose the access functions
