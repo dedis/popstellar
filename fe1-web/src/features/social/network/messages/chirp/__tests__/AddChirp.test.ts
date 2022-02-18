@@ -2,8 +2,7 @@ import 'jest-extended';
 
 import '__tests__/utils/matchers';
 import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { Hash, Timestamp } from 'model/objects';
-import { ProtocolError } from 'model/network/ProtocolError';
+import { Hash, Timestamp, ProtocolError } from 'model/objects';
 
 import { AddChirp } from '../AddChirp';
 

@@ -1,5 +1,4 @@
-import { Base64UrlData, Hash, PublicKey, Timestamp, WitnessSignature } from 'model/objects';
-import { ProtocolError } from 'model/network/ProtocolError';
+import { Base64UrlData, Hash, PublicKey, Timestamp, WitnessSignature, ProtocolError } from 'model/objects';
 
 export function checkTimestampStaleness(timestamp: Timestamp) {
   const TIMESTAMP_BASE_TIME = new Timestamp(1577833200); // 1st january 2020

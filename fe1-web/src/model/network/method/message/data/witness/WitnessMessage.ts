@@ -1,5 +1,4 @@
-import { Hash, Signature } from 'model/objects';
-import { ProtocolError } from 'model/network/ProtocolError';
+import { Hash, Signature, ProtocolError } from 'model/objects';
 import { validateDataObject } from 'model/network/validation';
 import { ActionType, MessageData, ObjectType } from '../MessageData';
 

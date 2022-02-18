@@ -1,4 +1,4 @@
-import { ProtocolError } from './ProtocolError';
+import { ProtocolError } from 'model/objects/ProtocolError';
 import { Message } from './method/message';
 import { validateJsonRpcResponse } from './validation';
 
