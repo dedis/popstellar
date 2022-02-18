@@ -1,3 +1,4 @@
+import { registerRootComponent } from 'expo';
 import 'react-native-gesture-handler';
 import React from 'react';
 import { StatusBar, Platform } from 'react-native';
@@ -26,7 +27,7 @@ import { configureMessages } from 'model/network/method/message';
 *
 * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
 */
-export default function App() {
+function App() {
   const messageRegistry = new MessageRegistry();
   configureIngestion(messageRegistry);
   configureMessages(messageRegistry);
@@ -50,3 +51,5 @@ export default function App() {
     </Provider>
   );
 }
+
+export default registerRootComponent(App);
