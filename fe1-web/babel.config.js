@@ -8,7 +8,7 @@ module.exports = (api) => {
       [
         'module-resolver',
         {
-          root: ['./'],
+          root: ['./src'],
           extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
           alias: {
             test_data: path.resolve(__dirname, '../tests/data'),
