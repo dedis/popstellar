@@ -1,4 +1,4 @@
-import { get, set } from './Storage';
+import { get, set } from '../Storage';
 import { getSubtleCrypto } from './browser';
 
 const algorithm: RsaHashedKeyAlgorithm = {

@@ -13,7 +13,7 @@ const publicKey = new PublicKey('PublicKey');
 const mockPublicKey = new PublicKey(keyPair.publicKey);
 const laoId = new Hash('LaoId');
 
-jest.mock('network/CommunicationApi.ts', () => ({
+jest.mock('core/network/CommunicationApi.ts', () => ({
   subscribeToChannel: jest.fn((c: Channel) => Promise.resolve(c)),
 }));
 

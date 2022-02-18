@@ -5,8 +5,8 @@ import * as Seed from '../Seed';
 import * as Wallet from '../index';
 import * as Token from '../Token';
 
-jest.mock('platform/Storage');
-jest.mock('platform/crypto/browser');
+jest.mock('core/platform/Storage');
+jest.mock('core/platform/crypto/browser');
 const mockId = 'T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=';
 
 const mnemonic: string =
@@ -30,7 +30,7 @@ test('LAO/RollCall produce known token - test vector 0', async () => {
   expect(token!!.publicKey.valueOf()).toEqual(expected.valueOf());
 });
 
-test('LAO/RollCall produces correct signature', async () => {
+test('LAO/RollCall produces correct signature 1', async () => {
   await Seed.importMnemonic(mnemonic);
 
   const laoId: Hash = new Hash(mockId);
@@ -44,7 +44,7 @@ test('LAO/RollCall produces correct signature', async () => {
   expect(signature.verify(token!!.publicKey, data)).toBeTrue();
 });
 
-test('LAO/RollCall produces correct signature', async () => {
+test('LAO/RollCall produces correct signature 2', async () => {
   await Seed.importMnemonic(mnemonic);
 
   const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');

@@ -11,7 +11,7 @@ import { publish as mockPublish } from 'core/network/JsonRpcApi';
 import * as msApi from '../RollCallMessageApi';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
 
-jest.mock('features/rollCall/network/RollCallMessageApi.ts');
+jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;
 
 const mockEventName = 'myRollCall';
