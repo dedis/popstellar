@@ -1,4 +1,4 @@
-import { Base64UrlData, Hash, PublicKey, Timestamp, ProtocolError, WitnessSignature } from 'core/objects';
+import { Base64UrlData, PublicKey, Timestamp, ProtocolError, WitnessSignature } from 'core/objects';
 
 export function checkTimestampStaleness(timestamp: Timestamp) {
   const TIMESTAMP_BASE_TIME = new Timestamp(1577833200); // 1st january 2020
@@ -23,11 +23,6 @@ export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64U
   if (!witSig.every((ws) => ws.verify(data))) {
     throw new ProtocolError('Invalid witness signatures parameter encountered: invalid signature');
   }
-}
-
-export function checkModificationId(id: Hash) {
-  // FIXME check modification id
-  return id; // simply to remove eslint warning
 }
 
 /**

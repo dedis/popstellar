@@ -2,7 +2,6 @@ import { Hash, PublicKey, Signature, Timestamp, ProtocolError, WitnessSignature 
 import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import {
-  checkModificationId,
   checkTimestampStaleness,
   checkWitnessSignatures,
 } from 'core/network/validation/Checker';
@@ -90,7 +89,7 @@ export class StateMeeting implements MessageData {
         "Undefined 'modification_id' parameter encountered during 'StateMeeting'",
       );
     }
-    checkModificationId(msg.modification_id);
+    // TODO: checkModificationId(msg.modification_id);
     this.modification_id = msg.modification_id;
 
     if (!msg.modification_signatures) {
