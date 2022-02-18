@@ -13,43 +13,36 @@ import {
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
 
-jest.mock('features/social/network/SocialMessageApi');
+// region test data
+const TIMESTAMP = 1609455600; // 31 December 2020
+const sender = new PublicKey('Douglas Adams');
+const ID = new Hash('1234');
 
-let chirp: Chirp;
-let chirp1: Chirp;
-let deletedChirp: Chirp;
-let sender: PublicKey;
-let ID: Hash;
+const chirp = new Chirp({
+  id: ID,
+  text: "Don't panic.",
+  sender: sender,
+  time: new Timestamp(TIMESTAMP),
+  isDeleted: false,
+});
 
-const initializeData = () => {
-  const TIMESTAMP = 1609455600; // 31 December 2020
-  sender = new PublicKey('Douglas Adams');
-  ID = new Hash('1234');
+const deletedChirp = new Chirp({
+  id: new Hash('1234'),
+  text: '',
+  sender: sender,
+  time: new Timestamp(TIMESTAMP),
+  isDeleted: true,
+});
 
-  chirp = new Chirp({
-    id: ID,
-    text: "Don't panic.",
-    sender: sender,
-    time: new Timestamp(TIMESTAMP),
-    isDeleted: false,
-  });
+const chirp1 = new Chirp({
+  id: new Hash('5678'),
+  text: 'Ignore me',
+  sender: new PublicKey('Anonymous'),
+  time: new Timestamp(TIMESTAMP),
+});
+// endregion
 
-  deletedChirp = new Chirp({
-    id: new Hash('1234'),
-    text: '',
-    sender: sender,
-    time: new Timestamp(TIMESTAMP),
-    isDeleted: true,
-  });
-
-  chirp1 = new Chirp({
-    id: new Hash('5678'),
-    text: 'Ignore me',
-    sender: new PublicKey('Anonymous'),
-    time: new Timestamp(TIMESTAMP),
-  });
-};
-
+// region mocks
 jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
@@ -57,28 +50,25 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
+// endregion
 
 beforeAll(() => {
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
 });
 
-beforeEach(() => {
-  initializeData();
-});
-
-// FIXME
-describe.skip('ChirpCard', () => {
+// FIXME: useSelector mock doesn't seem to work correctly
+describe('ChirpCard', () => {
   describe('for deletion', () => {
     const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
     getMockLao.mockImplementation(() => mockLao);
 
-    it('renders correctly for sender', () => {
+    it.skip('renders correctly for sender', () => {
       const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
-    it('renders correctly for non-sender', () => {
+    it.skip('renders correctly for non-sender', () => {
       const obj = render(
         <ChirpCard chirp={chirp} currentUserPublicKey={new PublicKey('IAmNotTheSender')} />,
       );
@@ -101,7 +91,7 @@ describe.skip('ChirpCard', () => {
   });
 
   describe('for reaction', () => {
-    it('renders correctly with reaction', () => {
+    it.skip('renders correctly with reaction', () => {
       const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
