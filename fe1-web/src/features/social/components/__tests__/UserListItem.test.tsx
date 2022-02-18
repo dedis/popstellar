@@ -17,7 +17,7 @@ jest.mock('network/CommunicationApi.ts', () => ({
   subscribeToChannel: jest.fn((c: Channel) => Promise.resolve(c)),
 }));
 
-jest.mock('components/ProfileIcon.tsx', () => () => 'ProfileIcon');
+jest.mock('core/components/ProfileIcon.tsx', () => () => 'ProfileIcon');
 
 beforeEach(() => {
   mockNavigate.mockClear();
