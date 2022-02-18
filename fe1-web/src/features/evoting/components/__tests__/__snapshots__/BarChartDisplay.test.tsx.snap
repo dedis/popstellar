@@ -3,17 +3,12 @@
 exports[`BarChartDisplay renders correctly 1`] = `
 <View
   style={
-    Array [
-      Object {
-        "alignItems": "center",
-        "flex": 1,
-        "justifyContent": "space-evenly",
-      },
-      Object {
-        "justifyContent": "flex-start",
-        "padding": 10,
-      },
-    ]
+    Object {
+      "alignItems": "center",
+      "flex": 1,
+      "justifyContent": "flex-start",
+      "padding": 10,
+    }
   }
 >
   <View
