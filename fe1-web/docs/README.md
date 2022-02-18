@@ -324,7 +324,7 @@ If you write E2E tests, please be mindful of making them maintainable through th
 
 * Make abundant use of the Chrome Development Tools, they offer full visibility in
   the network activity (HTTP requests, WebSocket messages, etc.), they enable you
-  to put breakpoints anywhere in your code and allow you to inspect the browser crypto.
+  to put breakpoints anywhere in your code and allow you to inspect the browser storage.
 * Take it a step further with the "React Developer Tools" and "Redux DevTools" plugins,
   which give you full visibility into the structure of your GUI, and the events
   that changed the application state, respectively.
