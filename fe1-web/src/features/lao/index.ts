@@ -3,7 +3,7 @@ import { addReducer } from 'core/redux';
 
 import { configureNetwork } from './network';
 import { laoReducer } from './reducer';
-import * as components from './components';
+import { PublicComponents } from './components';
 import * as hooks from './hooks';
 import * as navigation from './navigation';
 
@@ -17,7 +17,7 @@ export function configure(registry: MessageRegistry) {
   addReducer(laoReducer);
 
   return {
-    components: components,
+    components: PublicComponents,
     hooks: hooks,
     navigation: navigation,
   };
