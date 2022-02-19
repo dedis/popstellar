@@ -213,7 +213,7 @@ module.exports = {
         'module is to provide the foundations on which the features can be built. ' +
         "If there's something in a feature that you need to access as part of the app's core, " +
         'e.g. for initialization, consider using dependency injection instead.',
-      severity: 'warn',
+      severity: 'error',
       from: {
         path: '^src/core/([^/]+)/.+'
       },
@@ -247,7 +247,7 @@ module.exports = {
           leave out if you want to exclude neither (recommended!)
     */
     exclude : {
-      path: 'node_modules|__tests__|__mocks__',
+      path: 'node_modules|__tests__|__mocks__|resources',
     },
 
     /* pattern specifying which files to include (regular expression)
