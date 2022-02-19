@@ -4,9 +4,9 @@
     "slug": "PopApp",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./src/res/assets/icon.png",
+    "icon": "./src/resources/assets/icon.png",
     "splash": {
-      "image": "./src/res/assets/splash.png",
+      "image": "./src/resources/assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -20,7 +20,7 @@
       "supportsTablet": true
     },
     "web": {
-      "favicon": "./src/res/assets/favicon.png"
+      "favicon": "./src/resources/assets/favicon.png"
     },
     "entryPoint": "./src/App.tsx"
   }

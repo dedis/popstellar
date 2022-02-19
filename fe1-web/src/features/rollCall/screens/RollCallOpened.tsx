@@ -57,7 +57,7 @@ const RollCallOpened = () => {
     Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
       updateAttendees((prev) => new Set<string>(prev.add(token.publicKey.valueOf())));
     });
-  }, []);
+  }, [lao.id, rollCallID]);
 
   const handleError = (err: string) => {
     console.error(err);

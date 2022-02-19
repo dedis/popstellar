@@ -68,11 +68,6 @@ const PROPS_TYPE = {
     navigate: func.isRequired,
     addListener: func.isRequired,
   }),
-
-  // --- navigationState type of react-navigation (simplified) ---
-  navigationState: shape({
-    routes: arrayOf.isRequired,
-  }),
 };
 
 export interface INavigation {

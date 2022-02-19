@@ -1,14 +1,18 @@
-import { Channel } from 'core/objects/Channel';
+import { Channel, KeyPair } from 'core/objects';
 import { getNetworkManager } from 'core/network/NetworkManager';
 
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
-import { Message } from './jsonrpc/messages/Message';
-import { MessageData } from './jsonrpc/messages/MessageData';
+import { Message, MessageData } from './jsonrpc/messages';
 
 export const AUTO_ASSIGN_ID = -1;
 
+async function getKeyPair(msgData: MessageData): Promise<KeyPair> {
+  msgRegistry.getSigningMaterial(msgData);
+}
+
 export async function publish(channel: Channel, msgData: MessageData): Promise<void> {
-  const message = await Message.fromData(msgData);
+  const keyPair = await getKeyPair(msgData);
+  const message = await Message.fromData(msgData, keyPair);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({

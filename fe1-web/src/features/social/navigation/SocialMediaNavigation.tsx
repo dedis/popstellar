@@ -43,7 +43,7 @@ const SocialMediaNavigation = () => {
         setCurrentUserPublicKey(token.publicKey);
       }
     });
-  }, [lao.last_tokenized_roll_call_id]);
+  }, [lao.id, lao.last_tokenized_roll_call_id, rollCall, rollCallId]);
 
   return (
     <Tab.Navigator

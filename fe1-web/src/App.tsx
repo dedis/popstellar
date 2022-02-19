@@ -26,6 +26,7 @@ import { configureFeatures } from 'features';
 function App() {
   const { messageRegistry, navigationOpts } = configureFeatures();
   configureIngestion(messageRegistry);
+  configureNetwork(messageRegistry, keyPairRegistry)
 
   const navigationRef = useNavigationContainerRef();
   useReduxDevToolsExtension(navigationRef);

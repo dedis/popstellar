@@ -58,9 +58,9 @@ const EventElection = (props: IPropTypes) => {
       // @ts-ignore
       state.events.byLaoId[election.lao].byId[election.id],
   );
+
   if (!electionFromStore) {
-    console.debug('Error in Election display: Election doesnt exist in store');
-    return null;
+    throw new Error('Error in Election display: Election doesnt exist in store');
   }
 
   const updateSelectedBallots = (values: number[], idx: number) => {
@@ -134,11 +134,11 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
-  const updateElection = (status: ElectionStatus) => {
+  const updateElection = (status: ElectionStatus, elec: Election) => {
     const storeState = getStore().getState();
-    const oldElec = getEventFromId(storeState, election.id) as Election;
+    const oldElec = getEventFromId(storeState, elec.id) as Election;
     const newElec = new Election({ ...oldElec, electionStatus: status });
-    dispatch(updateEvent(election.lao, newElec.toState()));
+    dispatch(updateEvent(elec.lao, newElec.toState()));
   };
 
   const doesNothing = () => {
@@ -149,23 +149,23 @@ const EventElection = (props: IPropTypes) => {
   useEffect(() => {
     if (untilStart >= 0) {
       const startTimer = setTimeout(() => {
-        updateElection(ElectionStatus.RUNNING);
+        updateElection(ElectionStatus.RUNNING, election);
       }, untilStart);
       return () => clearTimeout(startTimer);
     }
     return doesNothing;
-  }, []);
+  }, [untilStart, election]);
 
   // This makes sure the screen gets updated when the event ends - user can't vote anymore
   useEffect(() => {
     if (untilEnd >= 0) {
       const endTimer = setTimeout(() => {
-        updateElection(ElectionStatus.FINISHED);
+        updateElection(ElectionStatus.FINISHED, election);
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
     return doesNothing;
-  }, []);
+  }, [untilEnd, election]);
 
   // Here we use the election object form the redux store in order to see the electionStatus
   // update when an  incoming electionEnd or electionResult message comes
