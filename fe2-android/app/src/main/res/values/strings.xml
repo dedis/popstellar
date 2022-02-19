@@ -223,6 +223,7 @@
   <string name="delete_button">delete button</string>
 
   <!-- Error Messages -->
+  <string name="generic_error">An error occurred\n%1$s</string>
   <string name="error_pop_token">Could not retrieve PoP Token</string>
   <string name="error_toast_pop_token">Could not retrieve a valid PoP Token : </string>
   <string name="error_sending_chirp">Error when sending chirp. Please try again</string>
@@ -230,6 +231,12 @@
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
-  <string name="timeout_error">a timeout occurred</string>
+  <string name="timeout_exception">a timeout occurred</string>
+  <string name="data_handling_exception">error while handling %1$s message</string>
+  <string name="key_generation_exception">could not generate key</string>
+  <string name="invald_pop_token_exception">the token %1$s is invalid</string>
+  <string name="no_rollcall_exception">no rollcall exist in the LAO</string>
+  <string name="seed_validation_exception">unable to validate seed</string>
+  <string name="uninitzilized_wallet_exception">the wallet is not initialized</string>
 
 </resources>

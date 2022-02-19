@@ -53,7 +53,7 @@ public class ErrorUtils {
       return context.getString(
           exception.getUserMessage(), (Object) exception.getUserMessageArguments());
     } else if (error instanceof TimeoutException) {
-      return context.getString(R.string.timeout_error);
+      return context.getString(R.string.timeout_exception);
     } else {
       // It is not a known error, let's log it but not show information to
       // the average user as it will not be useful to him.
