@@ -1,17 +1,33 @@
-import { Channel, KeyPair } from 'core/objects';
+import { Channel, ProtocolError } from 'core/objects';
 import { getNetworkManager } from 'core/network/NetworkManager';
+import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
-import { Message, MessageData } from './jsonrpc/messages';
+import { Message, MessageData, MessageRegistry } from './jsonrpc/messages';
 
 export const AUTO_ASSIGN_ID = -1;
+let messageRegistry: MessageRegistry;
+let keyPairRegistry: KeyPairRegistry;
 
-async function getKeyPair(msgData: MessageData): Promise<KeyPair> {
-  msgRegistry.getSigningMaterial(msgData);
+/**
+ * Dependency injection of a MessageRegistry and a KeyPairRegistry.
+ *
+ * @param messageReg - The MessageRegistry to be injected
+ * @param keyPairReg - The KeyPairRegistry to be injected
+ */
+export function setSignatureKeyPair(messageReg: MessageRegistry, keyPairReg: KeyPairRegistry) {
+  messageRegistry = messageReg;
+  keyPairRegistry = keyPairReg;
 }
 
 export async function publish(channel: Channel, msgData: MessageData): Promise<void> {
-  const keyPair = await getKeyPair(msgData);
+  const signature = messageRegistry.getSignatureType(msgData);
+  const keyPair = await keyPairRegistry.getSignatureKeyPair(signature);
+
+  if (keyPair === undefined) {
+    throw new ProtocolError('Impossible to sign the message: the key pair is undefined');
+  }
+
   const message = await Message.fromData(msgData, keyPair);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,

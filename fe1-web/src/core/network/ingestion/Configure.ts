@@ -1,22 +1,27 @@
 import { getStore } from 'core/redux';
+import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
+import { setSignatureKeyPair } from 'core/network/JsonRpcApi';
 import { getNetworkManager } from '../NetworkManager';
 import { MessageRegistry } from '../jsonrpc/messages';
 import { handleRpcRequests, setMessageRegistry } from './Handler';
 import { makeMessageStoreWatcher } from './Watcher';
 
 /**
- * Configures all handlers of the system within a MessageRegistry.
+ * Configures all handlers of the system within a MessageRegistry, and configures signatures
+ * with a KeyPairRegistry.
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param messageRegistry
+ * @param keyPairRegistry
  */
-export function configure(registry: MessageRegistry) {
+export function configure(messageRegistry: MessageRegistry, keyPairRegistry: KeyPairRegistry) {
   // configure the message handlers
-  setMessageRegistry(registry);
+  setMessageRegistry(messageRegistry);
+  setSignatureKeyPair(messageRegistry, keyPairRegistry);
 
   // setup the handler for incoming messages
   getNetworkManager().setRpcHandler(handleRpcRequests);
 
   // returns the unsubscribe function, which we don't need.
   const store = getStore();
-  store.subscribe(makeMessageStoreWatcher(store, registry));
+  store.subscribe(makeMessageStoreWatcher(store, messageRegistry));
 }

@@ -7,15 +7,13 @@ import {
   ProtocolError,
   WitnessSignature,
   WitnessSignatureState,
-  PopToken, KeyPair,
+  KeyPair,
 } from 'core/objects';
-import { KeyPairStore } from 'core/keypair';
 
 import { MessageRegistry } from './MessageRegistry';
-import { MessageData, SignatureType } from './MessageData';
+import { MessageData } from './MessageData';
 
 let messageRegistry: MessageRegistry;
-let getPopToken: () => Promise<PopToken | undefined>;
 
 /**
  * Dependency injection of a MessageRegistry to know how messages need to be signed and how they
@@ -25,15 +23,6 @@ let getPopToken: () => Promise<PopToken | undefined>;
  */
 export function configureMessages(registry: MessageRegistry) {
   messageRegistry = registry;
-}
-
-/**
- * Dependency injection of a Wallet function to be able to use the pop token to sign messages.
- *
- * @param getTokenFunc - The function to retrieve the pop token of the current user
- */
-export function configurePopTokenSignature(getTokenFunc: () => Promise<PopToken | undefined>) {
-  getPopToken = getTokenFunc;
 }
 
 /**
@@ -160,46 +149,25 @@ export class Message {
   /**
    * Creates a Message object from a given MessageData and signatures.
    * We don't add the channel property here as we don't want to send that over the network.
-   * It signs the messages with the key pair of the user, or the pop token's key pair
-   * according to the type of message.
+   * It signs the messages with the key pair of the user.
    *
    * @param data - The MessageData to be signed and hashed
+   * @param senderKeyPair - The key pair of the sender
    * @param witnessSignatures- The signatures of the witnesses
    * @returns - The created message
    */
   public static async fromData(
     data: MessageData,
+    senderKeyPair: KeyPair,
     witnessSignatures?: WitnessSignature[],
-    sender: KeyPair,
   ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-    let keyPair = KeyPairStore.get();
-    let keyPair = await getPoptoken();
-    let publicKey = KeyPairStore.getPublicKey();
-    let privateKey = KeyPairStore.getPrivateKey();
+    const { publicKey, privateKey } = senderKeyPair;
+    const signature = privateKey.sign(encodedDataJson);
 
-    // Get the signature type of the type of message we want to sign
-    const signatureType = messageRegistry.getSignatureType(data);
-
-    // If the messages is signed with the pop token, get it from the store and update keys
-    if (signatureType === SignatureType.POP_TOKEN) {
-      const token = await getPopToken();
-      if (token) {
-        publicKey = token.publicKey;
-        privateKey = token.privateKey;
-      } else {
-        console.error(
-          'Impossible to sign the message with a pop token: no token found for ' +
-            'current user in this LAO',
-        );
-      }
-    }
-    const signature = sender.privateKey.sign(encodedDataJson);
-
-    // Send the message with the correct signature
     return new Message({
       data: encodedDataJson,
-      sender: sender.publicKey,
+      sender: publicKey,
       signature: signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
