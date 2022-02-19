@@ -4,11 +4,11 @@ import androidx.annotation.StringRes;
 
 public abstract class GenericException extends Exception {
 
-  public GenericException(String message) {
+  protected GenericException(String message) {
     super(message);
   }
 
-  public GenericException(String message, Throwable cause) {
+  protected GenericException(String message, Throwable cause) {
     super(message, cause);
   }
 

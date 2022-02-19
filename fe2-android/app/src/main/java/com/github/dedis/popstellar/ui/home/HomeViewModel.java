@@ -195,7 +195,6 @@ public class HomeViewModel extends AndroidViewModel
                 error ->
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_create_lao)));
-    ;
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {
