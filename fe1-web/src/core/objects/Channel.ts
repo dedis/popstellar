@@ -4,6 +4,11 @@ import { PublicKey } from 'core/objects/PublicKey';
 export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
 
+export function getLaoIdFromChannel(ch: Channel): Hash {
+  // FIXME: implement this
+  return new Hash(ch);
+}
+
 export function channelFromIds(...args: Hash[]): Channel {
   if (args.length === 0) {
     return ROOT_CHANNEL;

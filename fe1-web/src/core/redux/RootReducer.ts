@@ -10,7 +10,6 @@ const persistConfig = {
 };
 
 export function makeRootReducer(reducers: Record<string, Reducer<any>>): Reducer<any, AnyAction> {
-
   const appReducer = persistCombineReducers(persistConfig, {
     ...reducers,
   });

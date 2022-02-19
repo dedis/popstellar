@@ -7,6 +7,7 @@ import { mockLaoId, mockPopToken } from '__tests__/utils/TestUtils';
 
 import { AddChirp } from 'features/social/network/messages/chirp';
 
+import { ExtendedMessage, markMessageAsProcessed } from '../ExtendedMessage';
 import {
   addMessages,
   getLaoMessagesState,
@@ -15,7 +16,6 @@ import {
   messageReduce,
   processMessages,
 } from '../Reducer';
-import { ExtendedMessage } from '../ExtendedMessage';
 
 jest.mock('features/wallet/objects/Token.ts', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
@@ -88,7 +88,7 @@ describe('MessageReducer', () => {
       },
     };
 
-    const extMsgProcessed = markExtMessageAsProcessed(extMsg.toState());
+    const extMsgProcessed = markMessageAsProcessed(extMsg.toState());
     const processedState = {
       byLaoId: {
         [mockLaoId]: {

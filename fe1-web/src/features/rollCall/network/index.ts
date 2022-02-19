@@ -19,8 +19,18 @@ export function configureNetwork(registry: MessageRegistry) {
     handleRollCallCreateMessage,
     CreateRollCall.fromJson,
   );
-  registry.add(ObjectType.ROLL_CALL, ActionType.OPEN, handleRollCallOpenMessage, OpenRollCall.fromJson);
-  registry.add(ObjectType.ROLL_CALL, ActionType.CLOSE, handleRollCallCloseMessage, CloseRollCall.fromJson);
+  registry.add(
+    ObjectType.ROLL_CALL,
+    ActionType.OPEN,
+    handleRollCallOpenMessage,
+    OpenRollCall.fromJson,
+  );
+  registry.add(
+    ObjectType.ROLL_CALL,
+    ActionType.CLOSE,
+    handleRollCallCloseMessage,
+    CloseRollCall.fromJson,
+  );
   registry.add(
     ObjectType.ROLL_CALL,
     ActionType.REOPEN,

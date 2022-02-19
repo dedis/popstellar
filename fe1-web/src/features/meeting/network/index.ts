@@ -8,6 +8,16 @@ import { CreateMeeting, StateMeeting } from './messages';
  * @param registry - The MessageRegistry where we want to add the mappings
  */
 export function configureNetwork(registry: MessageRegistry) {
-  registry.add(ObjectType.MEETING, ActionType.CREATE, handleMeetingCreateMessage, CreateMeeting.fromJson);
-  registry.add(ObjectType.MEETING, ActionType.STATE, handleMeetingStateMessage, StateMeeting.fromJson);
+  registry.add(
+    ObjectType.MEETING,
+    ActionType.CREATE,
+    handleMeetingCreateMessage,
+    CreateMeeting.fromJson,
+  );
+  registry.add(
+    ObjectType.MEETING,
+    ActionType.STATE,
+    handleMeetingStateMessage,
+    StateMeeting.fromJson,
+  );
 }

@@ -3,14 +3,9 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash, WitnessSignatureState } from 'core/objects';
-import { getLaosState } from 'features/lao/reducer/LaoReducer';
-import {
-  ExtendedMessage,
-  ExtendedMessageState,
-  markMessageAsProcessed,
-} from './ExtendedMessage';
+import { ExtendedMessage, ExtendedMessageState, markMessageAsProcessed } from './ExtendedMessage';
 
 /**
  * Reducer & associated function implementation to store all known Messages
@@ -22,12 +17,10 @@ interface MessageReducerState {
   unprocessedIds: string[];
 }
 
-interface MessageLaoReducerState {
-  byLaoId: Record<string, MessageReducerState>;
-}
-
-const initialState: MessageLaoReducerState = {
-  byLaoId: {},
+const initialState: MessageReducerState = {
+  byId: {},
+  allIds: [],
+  unprocessedIds: [],
 };
 
 const messageReducerPath = 'messages';
@@ -37,86 +30,57 @@ const messagesSlice = createSlice({
   reducers: {
     // Add a Message to the list of known Messages
     addMessages: {
-      prepare(laoId: Hash | string, messages: ExtendedMessageState | ExtendedMessageState[]): any {
+      prepare(messages: ExtendedMessageState | ExtendedMessageState[]): any {
         const msgs = Array.isArray(messages) ? messages : [messages];
-        return { payload: { laoId: laoId.valueOf(), messages: msgs } };
+        return { payload: msgs };
       },
-      reducer(
-        state,
-        action: PayloadAction<{
-          laoId: string;
-          messages: ExtendedMessageState[];
-        }>,
-      ) {
-        const { laoId, messages } = action.payload;
-
-        // Lao not initialized, create it in the message state tree
-        if (!(laoId in state.byLaoId)) {
-          state.byLaoId[laoId] = {
-            byId: {},
-            allIds: [],
-            unprocessedIds: [],
-          };
-        }
+      reducer(state, action: PayloadAction<ExtendedMessageState[]>) {
+        const messages = action.payload;
 
         messages.forEach((msg: ExtendedMessageState) => {
-          if (msg.message_id in state.byLaoId[laoId].byId) {
+          if (msg.message_id in state.byId) {
             // don't add again a message we have already received
             // TODO: we might want to merge the witness signatures here
             return;
           }
 
-          state.byLaoId[laoId].byId[msg.message_id] = msg;
-          state.byLaoId[laoId].allIds.push(msg.message_id);
-          state.byLaoId[laoId].unprocessedIds.push(msg.message_id);
+          state.byId[msg.message_id] = msg;
+          state.allIds.push(msg.message_id);
+          state.unprocessedIds.push(msg.message_id);
         });
       },
     },
 
     // Remove a Message to the list of unprocessed Messages
     processMessages: {
-      prepare(laoId: Hash | string, messageIds: String | String[]): any {
+      prepare(messageIds: String | String[]): any {
         const msgIds = Array.isArray(messageIds) ? messageIds : [messageIds];
         return {
-          payload: {
-            laoId: laoId.valueOf(),
-            messageIds: msgIds.map((m: String) => m.valueOf()),
-          },
+          payload: msgIds.map((m: String) => m.valueOf()),
         };
       },
-      reducer(
-        state,
-        action: PayloadAction<{
-          laoId: string;
-          messageIds: string[];
-        }>,
-      ) {
-        const { laoId, messageIds } = action.payload;
-        if (!(laoId in state.byLaoId)) {
-          return;
-        }
+      reducer(state, action: PayloadAction<string[]>) {
+        const messageIds = action.payload;
+
         messageIds.forEach((messageId: string) => {
-          state.byLaoId[laoId].byId[messageId] = markMessageAsProcessed(
-            state.byLaoId[laoId].byId[messageId],
-          );
-          state.byLaoId[laoId].unprocessedIds = state.byLaoId[laoId].unprocessedIds.filter(
-            (e) => e !== messageId,
-          );
+          state.byId[messageId] = markMessageAsProcessed(state.byId[messageId]);
+          state.unprocessedIds = state.unprocessedIds.filter((e) => e !== messageId);
         });
       },
     },
 
     // Empty the list of known Messages ("reset")
     clearAllMessages: (state) => {
-      state.byLaoId = {};
+      state.byId = {};
+      state.allIds = [];
+      state.unprocessedIds = [];
     },
 
     // Add witness signatures to a message
     addMessageWitnessSignature: {
-      prepare(laoId: Hash | string, messageId: Hash | string, witSig: WitnessSignatureState): any {
+      prepare(messageId: Hash | string, witSig: WitnessSignatureState): any {
         return {
           payload: {
-            laoId: laoId.valueOf(),
             messageId: messageId.valueOf(),
             witnessSignature: witSig,
           },
@@ -125,18 +89,17 @@ const messagesSlice = createSlice({
       reducer(
         state,
         action: PayloadAction<{
-          laoId: string;
           messageId: string;
           witnessSignature: WitnessSignatureState;
         }>,
       ) {
-        const { laoId, messageId, witnessSignature } = action.payload;
+        const { messageId, witnessSignature } = action.payload;
 
-        if (!(laoId in state.byLaoId)) {
+        if (!(messageId in state.byId)) {
           return;
         }
 
-        const msg = state.byLaoId[laoId].byId[messageId];
+        const msg = state.byId[messageId];
         if (!msg.witness_signatures.every((ws) => ws.witness !== witnessSignature.witness)) {
           // avoid adding multiple times the same witness signature
           return;
@@ -151,7 +114,7 @@ const messagesSlice = createSlice({
 export const { addMessages, processMessages, addMessageWitnessSignature, clearAllMessages } =
   messagesSlice.actions;
 
-export function getMessagesState(state: any): MessageLaoReducerState {
+export function getMessagesState(state: any): MessageReducerState {
   return state[messageReducerPath];
 }
 
@@ -161,39 +124,6 @@ export function getMessage(
 ): ExtendedMessage | undefined {
   const id = messageId.valueOf();
   return id in state.byId ? ExtendedMessage.fromState(state.byId[id]) : undefined;
-}
-
-export function makeLaoMessagesState() {
-  return createSelector(
-    // First input: all LAOs map
-    (state) => getMessagesState(state).byLaoId,
-    // Second input: current LAO id
-    (state) => getLaosState(state).currentId,
-    // Selector: returns a LaoState -- should it return a Lao object?
-    (
-      msgMap: Record<string, MessageReducerState>,
-      laoId: string | undefined,
-    ): MessageReducerState | undefined => {
-      if (laoId === undefined || !(laoId in msgMap)) {
-        return undefined;
-      }
-
-      return msgMap[laoId];
-    },
-  );
-}
-
-export function getLaoMessagesState(laoId: Hash | string, state: any): MessageReducerState {
-  const id = laoId.valueOf();
-  const msgState = getMessagesState(state);
-  if (msgState && id in msgState.byLaoId) {
-    return msgState.byLaoId[id];
-  }
-  return {
-    byId: {},
-    allIds: [],
-    unprocessedIds: [],
-  };
 }
 
 export const messageReduce = messagesSlice.reducer;

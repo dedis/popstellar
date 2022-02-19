@@ -5,7 +5,9 @@ import {
   Signature,
   Timestamp,
   Channel,
-  WitnessSignature, WitnessSignatureState,
+  WitnessSignature,
+  WitnessSignatureState,
+  getLaoIdFromChannel,
 } from 'core/objects';
 
 import { Message } from '../jsonrpc/messages/Message';
@@ -15,6 +17,7 @@ export interface ExtendedMessageState {
   receivedAt: number;
   processedAt?: number;
   channel?: Channel;
+  laoId: string;
 
   data: string;
   sender: string;
@@ -33,24 +36,27 @@ export function markMessageAsProcessed(
   };
 }
 
-
 export class ExtendedMessage extends Message implements ProcessableMessage {
   public readonly receivedAt: Timestamp;
 
   public processedAt?: Timestamp;
 
-  // The channel field gets assigned for all incoming messages in JsonRpcWithMessage.ts
-  // In order to use it when handling the messages, such as the election result msg
-  public channel?: Channel;
+  // The channel on which the message was received
+  public channel: Channel;
 
   constructor(msg: Partial<ExtendedMessage>) {
     super(msg);
     this.receivedAt = msg.receivedAt || Timestamp.EpochNow();
     this.processedAt = msg.processedAt;
+    this.channel =
+      msg.channel ||
+      (() => {
+        throw new Error('channel not defined');
+      })();
+  }
 
-    if (msg.channel) {
-      this.channel = msg.channel;
-    }
+  get laoId(): Hash {
+    return getLaoIdFromChannel(this.channel);
   }
 
   public static fromMessage(msg: Message, ch: Channel, receivedAt?: Timestamp): ExtendedMessage {

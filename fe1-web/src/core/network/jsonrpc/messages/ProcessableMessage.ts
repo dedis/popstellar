@@ -6,14 +6,14 @@ import {
   Signature,
   Timestamp,
   WitnessSignature,
-  WitnessSignatureState,
 } from 'core/objects';
 import { MessageData } from './MessageData';
 
 export interface ProcessableMessage {
   receivedAt: Timestamp;
   processedAt?: Timestamp;
-  channel?: Channel;
+  channel: Channel;
+  laoId: Hash;
 
   data: Base64UrlData;
   sender: PublicKey;

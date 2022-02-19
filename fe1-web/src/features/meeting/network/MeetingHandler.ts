@@ -1,8 +1,8 @@
-import { ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { dispatch, getStore } from 'core/redux';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
+import { Hash } from 'core/objects';
+import { dispatch, getStore } from 'core/redux';
+import { makeLaosMap } from 'features/lao/reducer';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
@@ -13,7 +13,13 @@ import { Meeting } from '../objects';
  * Handles all meeting related messages that are received.
  */
 
-const getCurrentLao = makeCurrentLao();
+const getLaos = makeLaosMap();
+
+const hasLao = (laoId: Hash | string): boolean => {
+  const storeState = getStore().getState();
+  const lao = getLaos(storeState);
+  return lao[laoId.valueOf()] !== undefined;
+};
 
 /**
  * Handles a MeetingCreate message by creating a meeting in the current Lao.
@@ -31,10 +37,8 @@ export function handleMeetingCreateMessage(msg: ProcessableMessage): boolean {
 
   const makeErr = (err: string) => `meeting/create was not processed: ${err}`;
 
-  const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
-  if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+  if (!hasLao(msg.laoId)) {
+    console.warn(makeErr('LAO does not exist'));
     return false;
   }
 
@@ -50,7 +54,7 @@ export function handleMeetingCreateMessage(msg: ProcessableMessage): boolean {
     extra: mtgMsg.extra ? { ...mtgMsg.extra } : {},
   });
 
-  dispatch(addEvent(lao.id, meeting.toState()));
+  dispatch(addEvent(msg.laoId, meeting.toState()));
   return true;
 }
 
@@ -70,9 +74,7 @@ export function handleMeetingStateMessage(msg: ProcessableMessage): boolean {
 
   const makeErr = (err: string) => `meeting/state was not processed: ${err}`;
 
-  const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
-  if (!lao) {
+  if (!hasLao(msg.laoId)) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
   }
@@ -83,6 +85,8 @@ export function handleMeetingStateMessage(msg: ProcessableMessage): boolean {
     return false;
   }
 
+  // FIXME: use meeting reducer
+  const storeState = getStore().getState();
   const oldMeeting = getEventFromId(storeState, mtgMsg.id) as Meeting;
   if (!oldMeeting) {
     console.warn(makeErr("no known meeting matching the 'id' field"));
@@ -101,6 +105,6 @@ export function handleMeetingStateMessage(msg: ProcessableMessage): boolean {
     },
   });
 
-  dispatch(updateEvent(lao.id, meeting.toState()));
+  dispatch(updateEvent(msg.laoId, meeting.toState()));
   return true;
 }

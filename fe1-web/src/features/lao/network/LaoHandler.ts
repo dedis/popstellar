@@ -1,15 +1,10 @@
 import { ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { ActionType, ObjectType } from 'core/network/validation/Validator';
-import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
-import { getMessage, makeLaoMessagesState } from 'core/reducers';
-import { dispatch, getStore } from 'core/redux';
+import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
-import { connectToLao, makeCurrentLao, updateLao } from '../reducer';
-import { CreateLao, StateLao, UpdateLao } from './messages';
-
-const getCurrentLao = makeCurrentLao();
-const getMessageState = makeLaoMessagesState();
+import { connectToLao } from '../reducer';
+import { CreateLao } from './messages';
 
 export function handleLaoCreateMessage(msg: ProcessableMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.CREATE) {
@@ -39,6 +34,9 @@ export function handleLaoStateMessage(msg: ProcessableMessage): boolean {
 
   const makeErr = (err: string) => `lao/state was not processed: ${err}`;
 
+  console.warn(makeErr('currently unsupported, needs redesign with consensus'));
+  return true;
+  /*
   const storeState = getStore().getState();
   const oldLao = getCurrentLao(storeState);
   if (!oldLao) {
@@ -72,7 +70,7 @@ export function handleLaoStateMessage(msg: ProcessableMessage): boolean {
   });
 
   dispatch(updateLao(lao.toState()));
-  return true;
+  return true;*/
 }
 
 export function handleLaoUpdatePropertiesMessage(msg: ProcessableMessage): boolean {

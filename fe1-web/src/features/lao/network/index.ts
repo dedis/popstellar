@@ -12,12 +12,7 @@ import { CreateLao, StateLao, UpdateLao } from './messages';
  * @param registry - The MessageRegistry where we want to add the mappings
  */
 export function configureNetwork(registry: MessageRegistry) {
-  registry.add(
-    ObjectType.LAO,
-    ActionType.CREATE,
-    handleLaoCreateMessage,
-    CreateLao.fromJson,
-  );
+  registry.add(ObjectType.LAO, ActionType.CREATE, handleLaoCreateMessage, CreateLao.fromJson);
   registry.add(ObjectType.LAO, ActionType.STATE, handleLaoStateMessage, StateLao.fromJson);
   registry.add(
     ObjectType.LAO,
