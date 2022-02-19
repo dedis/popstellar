@@ -39,12 +39,9 @@ export async function generateTokenFromPath(path: string): Promise<PopToken> {
  * @param rollCallId - The id of the Roll Call
  * @returns a Promise resolving to a PopToken or to undefined
  */
-export function generateToken(
-  laoId: Hash,
-  rollCallId: Hash | undefined,
-): Promise<PopToken | undefined> {
+export function generateToken(laoId: Hash, rollCallId: Hash | undefined): Promise<PopToken> {
   if (rollCallId === undefined) {
-    return Promise.resolve(undefined);
+    throw new Error('Cannot generate a token with an undefined roll call id');
   }
   const path = bip39path.fromLaoRollCall(laoId, rollCallId);
   return generateTokenFromPath(path);

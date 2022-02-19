@@ -29,7 +29,7 @@ export async function recoverWalletPoPTokens(): Promise<Record<string, Record<st
       (rc) =>
         generateToken(new Hash(laoId), rc.id).then((token) => {
           // if it's present in the roll call, add it
-          if (token && rc.containsToken(token)) {
+          if (rc.containsToken(token)) {
             tokens[laoId][rc.id.valueOf()] = token;
           }
         }),
