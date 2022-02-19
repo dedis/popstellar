@@ -1,14 +1,15 @@
 import 'jest-extended';
+import { configureTestFeatures } from '__tests__/utils';
 
 import { channelFromIds, Timestamp } from 'core/objects';
+import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Lao, LaoState } from 'features/lao/objects';
-import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 
-import { MessageRegistry } from '../index';
 import { ActionType, ObjectType, SignatureType } from '../MessageData';
-import { configureMessages, Message } from '../Message';
+import { Message } from '../Message';
+import { MessageRegistry } from '..';
 
 const { CHIRP } = ObjectType;
 const { ADD, INVALID } = ActionType;
@@ -31,25 +32,37 @@ const getMock = jest.spyOn(OpenedLaoStore, 'get');
 getMock.mockImplementation(() => Lao.fromState(laoState));
 
 beforeEach(() => {
-  registry = new MessageRegistry();
-  configureMessages(registry);
+  registry = configureTestFeatures();
 });
 
 describe('MessageRegistry', () => {
   it('should throw an error when adding a handler to an unsupported type of message', async () => {
     const mockHandle = jest.fn();
-    const addWrongHandler = () => registry.addHandler(CHIRP, INVALID, mockHandle);
+    const mockBuild = jest.fn();
+    const addWrongHandler = () => registry.add(CHIRP, INVALID, mockHandle, mockBuild);
     expect(addWrongHandler).toThrow(Error);
   });
 
   it('should work correctly for handling message', async () => {
     const mockHandle = jest.fn();
-    registry.addHandler(CHIRP, ADD, mockHandle);
+    const mockBuild = jest.fn();
+    registry.add(CHIRP, ADD, mockHandle, mockBuild);
     const message = await Message.fromData(messageData);
     const extMsg = ExtendedMessage.fromMessage(message, channel);
     registry.handleMessage(extMsg);
     expect(mockHandle).toHaveBeenCalledTimes(1);
     expect(mockHandle).toHaveBeenCalledWith(extMsg);
+    expect(mockBuild).not.toHaveBeenCalled();
+  });
+
+  it('should work correctly for building message data', async () => {
+    const mockHandle = jest.fn();
+    const mockBuild = jest.fn();
+    registry.add(CHIRP, ADD, mockHandle, mockBuild);
+    registry.buildMessageData(messageData);
+    expect(mockHandle).not.toHaveBeenCalled();
+    expect(mockBuild).toHaveBeenCalledTimes(1);
+    expect(mockBuild).toHaveBeenCalledWith(messageData);
   });
 
   it('should throw an error when building an unsupported type of message', async () => {

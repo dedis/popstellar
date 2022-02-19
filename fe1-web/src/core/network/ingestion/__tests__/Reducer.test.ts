@@ -1,16 +1,16 @@
 import 'jest-extended';
+import { mockPopToken, configureTestFeatures } from '__tests__/utils';
+
 import { AnyAction } from 'redux';
 
 import { channelFromIds, Timestamp } from 'core/objects';
 import { Message } from 'core/network/jsonrpc/messages';
-import { mockPopToken, configureTestMessageRegistry } from '__tests__/utils';
-
 import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { ExtendedMessage, markMessageAsProcessed } from '../ExtendedMessage';
 import { addMessages, getMessage, messageReduce, processMessages } from '../Reducer';
 
-jest.mock('features/wallet/objects/Token.ts', () => ({
+jest.mock('features/wallet/objects/Token', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
 }));
 
@@ -30,9 +30,9 @@ const createExtendedMessage = async () => {
   return ExtendedMessage.fromMessage(message, channel);
 };
 
-describe('MessageReducer', () => {
-  beforeAll(configureTestMessageRegistry);
+beforeAll(configureTestFeatures);
 
+describe('MessageReducer', () => {
   it('should return the initial state', () => {
     expect(messageReduce(undefined, {} as AnyAction)).toEqual(initialState);
   });

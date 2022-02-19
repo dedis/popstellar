@@ -1,15 +1,19 @@
 import 'jest-extended';
-import { beforeEach } from '@jest/globals';
-
 import '__tests__/utils/matchers';
+import {
+  defaultMessageDataFields,
+  mockLao,
+  mockLaoId,
+  configureTestFeatures,
+} from '__tests__/utils';
+
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
 
 import * as msApi from '../RollCallMessageApi';
-import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
 
 jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;
@@ -143,6 +147,7 @@ const initializeChecks = () => {
 };
 
 beforeEach(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
   publishMock.mockClear();
   initializeChecks();

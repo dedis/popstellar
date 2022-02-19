@@ -1,16 +1,15 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
+import { configureTestFeatures } from '__tests__/utils';
 import keyPair from 'test_data/keypair.json';
+
 import { OpenedLaoStore } from 'features/lao/store';
 import { CreateLao } from 'features/lao/network/messages';
 import { Lao } from 'features/lao/objects';
 import { Base64UrlData, Hash, PrivateKey, PublicKey } from 'core/objects';
 import { ROOT_CHANNEL } from 'core/objects/Channel';
 
-import { JsonRpcMethod, JsonRpcRequest } from '../index';
-import { MessageRegistry } from '../messages';
-import { configureMessages } from '../messages/Message';
+import { JsonRpcMethod, JsonRpcRequest } from '..';
 import { JsonRpcParamsWithMessage } from '../JsonRpcParamsWithMessage';
 
 const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id', 'jsonrpc'];
@@ -23,9 +22,6 @@ const METHODS = Object.keys(JsonRpcMethod)
 
 export const mockPublicKey = new PublicKey(keyPair.publicKey);
 export const mockSecretKey = new PrivateKey(keyPair.privateKey);
-
-const messageRegistry = new MessageRegistry();
-configureMessages(messageRegistry);
 
 function checkRpcQuery(obj: any): void {
   expect(obj).toBeObject();
@@ -113,6 +109,8 @@ function embeddedMessage(
 
 describe('=== fromJsonJsonRpcRequest checks ===', () => {
   beforeAll(() => {
+    configureTestFeatures();
+
     const sampleLao: Lao = new Lao({
       name: sampleCreateLaoData.name,
       id: Hash.fromStringArray(

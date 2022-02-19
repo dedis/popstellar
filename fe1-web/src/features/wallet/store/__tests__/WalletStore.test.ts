@@ -6,7 +6,7 @@ import { WalletStore } from '../WalletStore';
 
 jest.mock('core/platform/Storage');
 jest.mock('core/platform/crypto/browser');
-jest.mock('core/redux/ReduxSetUp');
+jest.mock('core/redux/GlobalStore');
 
 const seed = new Uint8Array([0x1, 0x8, 0xf, 0x22, 0xff, 0x33, 0x99]);
 const mnemonic = 'probably insecure definitely memorable';

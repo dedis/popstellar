@@ -7,7 +7,8 @@ import {
   ProtocolError,
   WitnessSignature,
   WitnessSignatureState,
-  PopToken, KeyPair,
+  PopToken,
+  KeyPair,
 } from 'core/objects';
 import { KeyPairStore } from 'core/keypair';
 
