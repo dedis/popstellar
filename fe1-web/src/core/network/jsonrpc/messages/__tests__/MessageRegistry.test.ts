@@ -4,8 +4,9 @@ import { channelFromIds, Timestamp } from 'core/objects';
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Lao, LaoState } from 'features/lao/objects';
+import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 
-import { ExtendedMessage, MessageRegistry } from '../index';
+import { MessageRegistry } from '../index';
 import { ActionType, ObjectType, SignatureType } from '../MessageData';
 import { configureMessages, Message } from '../Message';
 

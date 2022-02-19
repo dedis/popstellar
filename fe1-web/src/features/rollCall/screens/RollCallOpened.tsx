@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 const RollCallOpened = () => {
-  const route = useRoute();
+  // FIXME: route should use proper type
+  const route = useRoute<any>();
   const { rollCallID, time } = route.params;
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();

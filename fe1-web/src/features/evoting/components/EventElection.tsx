@@ -8,7 +8,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { dispatch, getStore } from 'core/redux';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
-import { BarChartDisplay, CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
+import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
@@ -22,6 +22,7 @@ import {
   RegisteredVote,
   Vote,
 } from '../objects/Election';
+import BarChartDisplay from './BarChartDisplay';
 
 /**
  * Component used to display a Election event in the LAO event list
