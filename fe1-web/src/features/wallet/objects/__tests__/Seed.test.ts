@@ -1,3 +1,5 @@
+import { configureTestFeatures } from '__tests__/utils';
+
 import { WalletStore } from '../../store';
 import * as Seed from '../Seed';
 
@@ -6,6 +8,8 @@ jest.mock('core/platform/crypto/browser');
 
 const mnemonic: string =
   'garbage effort river orphan negative kind outside quit hat camera approve first';
+
+beforeAll(configureTestFeatures);
 
 beforeEach(() => {
   WalletStore.clear();

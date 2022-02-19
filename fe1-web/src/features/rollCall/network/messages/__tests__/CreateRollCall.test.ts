@@ -1,9 +1,9 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
+import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
+
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
-import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { CreateRollCall } from '../CreateRollCall';
@@ -41,6 +41,7 @@ const createRollCallJson = `{
 }`;
 
 beforeAll(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
 });
 

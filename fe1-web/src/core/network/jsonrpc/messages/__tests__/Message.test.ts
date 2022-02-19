@@ -1,5 +1,14 @@
 import 'jest-extended';
 import {
+  mockLao,
+  mockLaoId,
+  mockPopToken,
+  mockPrivateKey,
+  mockPublicKey,
+  configureTestFeatures,
+} from '__tests__/utils';
+
+import {
   Base64UrlData,
   EventTags,
   Hash,
@@ -9,14 +18,6 @@ import {
   Timestamp,
 } from 'core/objects';
 import { KeyPairStore } from 'core/keypair';
-import {
-  mockLao,
-  mockLaoId,
-  mockPopToken,
-  mockPrivateKey,
-  mockPublicKey,
-  configureTestMessageRegistry,
-} from '__tests__/utils';
 
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { EndElection } from 'features/evoting/network/messages';
@@ -33,14 +34,14 @@ const messageRegistry = new MessageRegistry();
 configureMessages(messageRegistry);
 
 beforeAll(() => {
+  configureTestFeatures();
+
   KeyPairStore.store(
     KeyPair.fromState({
       publicKey: mockPublicKey,
       privateKey: mockPrivateKey,
     }),
   );
-
-  configureTestMessageRegistry();
 });
 
 describe('Message', () => {

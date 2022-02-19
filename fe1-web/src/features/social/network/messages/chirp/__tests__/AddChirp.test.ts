@@ -1,6 +1,6 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
+
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
 

@@ -13,6 +13,7 @@ import { store, persist } from 'core/redux';
 import AppNavigation from 'core/navigation/AppNavigation';
 import { configureNetwork } from 'core/network/ingestion';
 import { configureFeatures } from 'features';
+import { configureKeyPair } from 'core/keypair';
 
 /*
  * The starting point of the app.
@@ -26,6 +27,7 @@ import { configureFeatures } from 'features';
 function App() {
   const { messageRegistry, keyPairRegistry, navigationOpts } = configureFeatures();
   configureNetwork(messageRegistry, keyPairRegistry);
+  configureKeyPair();
 
   const navigationRef = useNavigationContainerRef();
   useReduxDevToolsExtension(navigationRef);

@@ -6,7 +6,8 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { Hash, PublicKey } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
-import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
+
+import { mockLao, mockLaoId, configureTestFeatures } from '__tests__/utils';
 
 import { AddChirp } from '../messages/chirp';
 import * as msApi from '../SocialMessageApi';
@@ -32,6 +33,8 @@ const initializeChecks = () => {
     expect(data.timestamp).toBeNumberObject();
   };
 };
+
+beforeAll(configureTestFeatures);
 
 beforeEach(() => {
   publishMock.mockClear();

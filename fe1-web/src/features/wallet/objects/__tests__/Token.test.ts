@@ -1,3 +1,5 @@
+import { configureTestFeatures } from '__tests__/utils';
+
 import { Base64UrlData, Hash } from 'core/objects';
 
 import { WalletStore } from '../../store';
@@ -11,6 +13,8 @@ const mockId = 'T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=';
 
 const mnemonic: string =
   'garbage effort river orphan negative kind outside quit hat camera approve first';
+
+beforeAll(configureTestFeatures);
 
 beforeEach(() => {
   WalletStore.clear();
