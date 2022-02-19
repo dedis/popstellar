@@ -5,7 +5,7 @@ import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { makeCurrentLao } from 'features/lao/reducer';
 import { dispatch, getStore } from 'core/redux';
-import { KeyPairStore } from 'core/store';
+import { KeyPairStore } from 'core/keypair';
 
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, RegisteredVote } from '../objects';
@@ -93,10 +93,10 @@ export function handleCastVoteMessage(msg: ProcessableMessage): boolean {
 
   const castVoteMsg = msg.messageData as CastVote;
   const currentVote: RegisteredVote = {
-    createdAt: castVoteMsg.created_at,
-    sender: msg.sender,
+    createdAt: castVoteMsg.created_at.valueOf(),
+    sender: msg.sender.valueOf(),
     votes: castVoteMsg.votes,
-    messageId: msg.message_id,
+    messageId: msg.message_id.valueOf(),
   };
   const election = getEventFromId(storeState, castVoteMsg.election) as Election;
   if (!election) {
@@ -104,15 +104,10 @@ export function handleCastVoteMessage(msg: ProcessableMessage): boolean {
     return false;
   }
 
-  if (
-    election.registeredVotes.some(
-      (votes) => votes.sender.toString() === currentVote.sender.toString(),
-    )
-  ) {
+  if (election.registeredVotes.some((votes) => votes.sender === currentVote.sender)) {
     // Update the vote if the person has already voted before
     election.registeredVotes = election.registeredVotes.map((prevVote) =>
-      prevVote.sender.toString() === currentVote.sender.toString() &&
-      prevVote.createdAt.valueOf() < currentVote.createdAt.valueOf()
+      prevVote.sender === currentVote.sender && prevVote.createdAt < currentVote.createdAt
         ? currentVote
         : prevVote,
     );

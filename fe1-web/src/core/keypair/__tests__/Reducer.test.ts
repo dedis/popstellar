@@ -4,7 +4,7 @@ import { AnyAction } from 'redux';
 import { KeyPair, PrivateKey, PublicKey } from 'core/objects';
 import { mockPrivateKey, mockPublicKey } from '__tests__/utils/TestUtils';
 
-import { keyPairReduce, setKeyPair } from '../KeyPairReducer';
+import { keyPairReduce, setKeyPair } from '../Reducer';
 
 const emptyState = {
   keyPair: undefined,

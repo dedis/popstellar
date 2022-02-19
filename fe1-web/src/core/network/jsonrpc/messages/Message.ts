@@ -8,7 +8,7 @@ import {
   WitnessSignature,
   WitnessSignatureState,
 } from 'core/objects';
-import { KeyPairStore } from 'core/store';
+import { KeyPairStore } from 'core/keypair';
 import { getCurrentPopTokenFromStore } from 'features/wallet/objects';
 
 import { MessageRegistry } from './MessageRegistry';

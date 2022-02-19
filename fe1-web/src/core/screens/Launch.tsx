@@ -13,7 +13,7 @@ import { Channel, Hash, Timestamp } from '../objects';
 import { TextBlock, TextInputLine, WideButtonView } from '../components';
 import containerStyles from '../styles/stylesheets/containerStyles';
 import { subscribeToChannel } from '../network/CommunicationApi';
-import { KeyPairStore } from '../store';
+import { KeyPairStore } from '../keypair';
 import { dispatch } from '../redux';
 
 /**

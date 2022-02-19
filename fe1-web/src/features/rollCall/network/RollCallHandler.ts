@@ -1,4 +1,4 @@
-import { ProcessableMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'core/redux';

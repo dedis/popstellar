@@ -8,14 +8,16 @@ import {
   PublicKey,
   Timestamp,
 } from 'core/objects';
-import { KeyPairStore } from 'core/store';
+import { KeyPairStore } from 'core/keypair';
 import {
   mockLao,
   mockLaoId,
   mockPopToken,
   mockPrivateKey,
   mockPublicKey,
-} from '__tests__/utils/TestUtils';
+  configureTestMessageRegistry,
+} from '__tests__/utils';
+
 import { AddChirp } from 'features/social/network/messages/chirp';
 import { EndElection } from 'features/evoting/network/messages';
 
@@ -37,6 +39,8 @@ beforeAll(() => {
       privateKey: mockPrivateKey,
     }),
   );
+
+  configureTestMessageRegistry();
 });
 
 describe('Message', () => {

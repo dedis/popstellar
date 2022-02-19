@@ -116,7 +116,7 @@ export class MessageRegistry {
    * @returns MessageData - The built message
    */
   buildMessageData(data: unknown): MessageData {
-    if (!this.isMessageData(data)) {
+    if (!MessageRegistry.isMessageData(data)) {
       throw new ProtocolError(`Data (${data}) is not a valid MessageData`);
     }
     const messageEntry = this.getEntry(data);
@@ -172,7 +172,7 @@ export class MessageRegistry {
     return messageEntry;
   }
 
-  private isMessageData(value: unknown): value is MessageData {
+  private static isMessageData(value: unknown): value is MessageData {
     return typeof value === 'object' && value !== null && 'object' in value && 'action' in value;
   }
 }

@@ -16,9 +16,13 @@ declare module 'redux' {
   }
 }
 
+const noopReducer = {
+  noopReducer: () => ({}),
+};
+
 // Initialize the store and expose its configuration
 const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
-export const store: Store = createStore(makeRootReducer({}), composedEnhancer);
+export const store: Store = createStore(makeRootReducer(noopReducer), composedEnhancer);
 export const persist: Persistor = persistStore(store);
 
 // Expose the access functions

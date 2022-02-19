@@ -10,6 +10,7 @@ export function addReducer(newReducers: Record<string, Reducer<any>>) {
     ...newReducers,
   };
   const newRootReducer = makeRootReducer(reducers);
+
   store.replaceReducer(newRootReducer);
 }
 

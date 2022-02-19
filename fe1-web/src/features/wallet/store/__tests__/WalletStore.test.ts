@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import * as store from 'core/redux/ReduxSetUp';
+import { getStore } from 'core/redux';
 
 import { WalletStore } from '../WalletStore';
 
@@ -22,13 +22,13 @@ test('should report a seed after initialization', async () => {
 
 test('should not store the mnemonic in cleartext', async () => {
   await WalletStore.store(mnemonic, seed);
-  const walletState = store.getStore().getState().wallet;
+  const walletState = getStore().getState().wallet;
   expect(walletState.mnemonic).not.toEqual(mnemonic);
 });
 
 test('should not store the seed in cleartext', async () => {
   await WalletStore.store(mnemonic, seed);
-  const walletState = store.getStore().getState().wallet;
+  const walletState = getStore().getState().wallet;
   expect(walletState.seed).not.toEqual(seed.toString());
 });
 

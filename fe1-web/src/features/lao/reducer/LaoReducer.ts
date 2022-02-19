@@ -7,7 +7,7 @@ import { createSlice, createSelector, PayloadAction, Draft } from '@reduxjs/tool
 import { REHYDRATE } from 'redux-persist';
 
 import { Hash } from 'core/objects';
-import { getKeyPairState } from 'core/reducers/KeyPairReducer';
+import { getKeyPairState } from 'core/keypair';
 
 import { Lao, LaoState } from '../objects';
 

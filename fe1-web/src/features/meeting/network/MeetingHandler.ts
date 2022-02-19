@@ -15,11 +15,7 @@ import { Meeting } from '../objects';
 
 const getLaos = makeLaosMap();
 
-const hasLao = (laoId: Hash | string): boolean => {
-  const storeState = getStore().getState();
-  const lao = getLaos(storeState);
-  return lao[laoId.valueOf()] !== undefined;
-};
+const getLao = (laoId: Hash | string) => getLaos(getStore().getState())[laoId.valueOf()];
 
 /**
  * Handles a MeetingCreate message by creating a meeting in the current Lao.
@@ -37,7 +33,8 @@ export function handleMeetingCreateMessage(msg: ProcessableMessage): boolean {
 
   const makeErr = (err: string) => `meeting/create was not processed: ${err}`;
 
-  if (!hasLao(msg.laoId)) {
+  const lao = getLao(msg.laoId);
+  if (!lao) {
     console.warn(makeErr('LAO does not exist'));
     return false;
   }
@@ -74,7 +71,8 @@ export function handleMeetingStateMessage(msg: ProcessableMessage): boolean {
 
   const makeErr = (err: string) => `meeting/state was not processed: ${err}`;
 
-  if (!hasLao(msg.laoId)) {
+  const lao = getLao(msg.laoId);
+  if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
   }

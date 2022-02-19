@@ -70,7 +70,7 @@ export function handleLaoStateMessage(msg: ProcessableMessage): boolean {
   });
 
   dispatch(updateLao(lao.toState()));
-  return true;*/
+  return true; */
 }
 
 export function handleLaoUpdatePropertiesMessage(msg: ProcessableMessage): boolean {

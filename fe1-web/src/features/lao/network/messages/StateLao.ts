@@ -55,7 +55,7 @@ export class StateLao implements MessageData {
     }
     if (msg.last_modified < msg.creation) {
       throw new ProtocolError(
-        'Invalid timestamp encountered: ' + "'last_modified' parameter smaller than 'creation'",
+        "Invalid timestamp encountered:'last_modified' parameter smaller than 'creation'",
       );
     }
     this.last_modified = msg.last_modified;

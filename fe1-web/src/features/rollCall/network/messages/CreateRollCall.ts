@@ -43,7 +43,7 @@ export class CreateRollCall implements MessageData {
       );
     } else if (msg.proposed_start < msg.creation) {
       throw new ProtocolError(
-        'Invalid timestamp encountered:' + " 'proposed_start' parameter smaller than 'creation'",
+        "Invalid timestamp encountered: 'proposed_start' parameter smaller than 'creation'",
       );
     }
     checkTimestampStaleness(msg.proposed_start);
