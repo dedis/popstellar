@@ -1,4 +1,4 @@
-import { getStore } from '../../redux';
+import { getStore } from 'core/redux';
 import { getNetworkManager } from '../NetworkManager';
 import { MessageRegistry } from '../jsonrpc/messages';
 import { handleRpcRequests, setMessageRegistry } from './Handler';

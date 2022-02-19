@@ -7,14 +7,15 @@ import {
   ProtocolError,
   WitnessSignature,
   WitnessSignatureState,
+  PopToken,
 } from 'core/objects';
 import { KeyPairStore } from 'core/keypair';
-import { getCurrentPopTokenFromStore } from 'features/wallet/objects';
 
 import { MessageRegistry } from './MessageRegistry';
 import { MessageData, SignatureType } from './MessageData';
 
 let messageRegistry: MessageRegistry;
+let getPopToken: () => Promise<PopToken | undefined>;
 
 /**
  * Dependency injection of a MessageRegistry to know how messages need to be signed and how they
@@ -24,6 +25,15 @@ let messageRegistry: MessageRegistry;
  */
 export function configureMessages(registry: MessageRegistry) {
   messageRegistry = registry;
+}
+
+/**
+ * Dependency injection of a Wallet function to be able to use the pop token to sign messages.
+ *
+ * @param getTokenFunc - The function to retrieve the pop token of the current user
+ */
+export function configurePopTokenSignature(getTokenFunc: () => Promise<PopToken | undefined>) {
+  getPopToken = getTokenFunc;
 }
 
 /**
@@ -164,14 +174,13 @@ export class Message {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     let publicKey = KeyPairStore.getPublicKey();
     let privateKey = KeyPairStore.getPrivateKey();
-    let signature: Signature;
 
     // Get the signature type of the type of message we want to sign
     const signatureType = messageRegistry.getSignatureType(data);
 
-    // If the messages is signed with the pop token, get it from the store and sign the message
+    // If the messages is signed with the pop token, get it from the store and update keys
     if (signatureType === SignatureType.POP_TOKEN) {
-      const token = await getCurrentPopTokenFromStore();
+      const token = await getPopToken();
       if (token) {
         publicKey = token.publicKey;
         privateKey = token.privateKey;
@@ -181,23 +190,14 @@ export class Message {
             'current user in this LAO',
         );
       }
-      signature = privateKey.sign(encodedDataJson);
-
-      return new Message({
-        data: encodedDataJson,
-        sender: publicKey,
-        signature,
-        message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-        witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
-      });
     }
-    signature = privateKey.sign(encodedDataJson);
+    const signature = privateKey.sign(encodedDataJson);
 
-    // Otherwise, simply sign with the general key pair
+    // Send the message with the correct signature
     return new Message({
       data: encodedDataJson,
       sender: publicKey,
-      signature,
+      signature: signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
     });
