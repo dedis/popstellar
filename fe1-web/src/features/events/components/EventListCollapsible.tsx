@@ -3,13 +3,14 @@ import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react
 import { useSelector } from 'react-redux';
 
 import PropTypes from 'prop-types';
-import { makeIsLaoOrganizer } from 'features/lao/reducer';
-import { Spacing, Typography } from 'core/styles';
-import STRINGS from 'resources/strings';
-import * as RootNavigation from 'core/navigation/RootNavigation';
 import { TextBlock } from 'core/components';
+import { Spacing, Typography } from 'core/styles';
+import { makeIsLaoOrganizer } from 'features/lao/reducer';
+import STRINGS from 'resources/strings';
 
 import { Event } from './index';
+import { useNavigation } from '@react-navigation/native';
+import { eventPropTypes } from './Event';
 
 const styles = StyleSheet.create({
   flexBox: {
@@ -28,24 +29,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-function renderSectionHeader(title: string, isOrganizer: boolean) {
-  const sectionTitle = <TextBlock bold text={title} />;
-  const expandSign: string = '+';
-
-  return isOrganizer && title === 'Future' ? (
-    <View style={styles.flexBox}>
-      <Text style={styles.buttonMatcher}>{expandSign}</Text>
-      {sectionTitle}
-      <Text
-        style={styles.expandButton}
-        onPress={() => RootNavigation.navigate(STRINGS.organizer_navigation_tab_create_event, {})}>
-        {expandSign}
-      </Text>
-    </View>
-  ) : (
-    sectionTitle
-  );
-}
+const useIsLaoOrganizer = () => useSelector(makeIsLaoOrganizer());
 
 /**
  * Collapsible list of events: list with 3 sections corresponding
@@ -56,19 +40,36 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
 
-  const isOrganizerSelect = makeIsLaoOrganizer();
-  const isOrganizer = useSelector(isOrganizerSelect);
+  const isOrganizer = useIsLaoOrganizer();
 
-  const renderItemFn = ({ item }: any) => (
-    <Event event={item} isOrganizer={isOrganizer} renderItemFn={renderItemFn} />
-  );
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
+
+  const renderSectionHeader = (title: string) => {
+    const sectionTitle = <TextBlock bold text={title} />;
+    const expandSign: string = '+';
+
+    return isOrganizer && title === 'Future' ? (
+      <View style={styles.flexBox}>
+        <Text style={styles.buttonMatcher}>{expandSign}</Text>
+        {sectionTitle}
+        <Text
+          style={styles.expandButton}
+          onPress={() => navigation.navigate(STRINGS.organizer_navigation_tab_create_event, {})}>
+          {expandSign}
+        </Text>
+      </View>
+    ) : (
+      sectionTitle
+    );
+  };
 
   return (
     <SectionList
       sections={data}
-      keyExtractor={(item) => `${item.id}`}
-      renderItem={renderItemFn}
-      renderSectionHeader={({ section: { title } }) => renderSectionHeader(title, isOrganizer)}
+      keyExtractor={(item) => item.id.valueOf()}
+      renderItem={({ item }) => <Event event={item} />}
+      renderSectionHeader={({ section: { title } }) => renderSectionHeader(title)}
     />
   );
 };
@@ -77,7 +78,7 @@ const propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       title: PropTypes.string.isRequired,
-      data: PropTypes.arrayOf(PropTypes.shape({})),
+      data: PropTypes.arrayOf(eventPropTypes).isRequired,
     }).isRequired,
   ).isRequired,
 };

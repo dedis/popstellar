@@ -50,6 +50,7 @@ const Event = (props: IPropTypes) => {
 const propTypes = {
   event: PropTypes.shape({
     id: PropTypes.instanceOf(Hash).isRequired,
+    name: PropTypes.string.isRequired,
     start: PropTypes.instanceOf(Timestamp).isRequired,
     end: PropTypes.instanceOf(Timestamp),
   }).isRequired,
@@ -58,4 +59,5 @@ Event.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
+export const eventPropTypes = propTypes.event;
 export default Event;
