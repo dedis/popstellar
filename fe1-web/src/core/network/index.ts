@@ -9,4 +9,5 @@
 
 export { getNetworkManager } from './NetworkManager';
 export * from './NetworkError';
-export * from 'core/network/RpcOperationError';
+export * from './RpcOperationError';
+export { configure as configureNetwork } from './Configure';

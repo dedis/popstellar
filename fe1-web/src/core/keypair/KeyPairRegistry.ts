@@ -2,7 +2,7 @@ import { SignatureType } from 'core/network/jsonrpc/messages';
 import { KeyPair, ProtocolError } from 'core/objects';
 import { KeyPairStore } from './KeyPairStore';
 
-type GetKeyPairFunc = () => Promise<KeyPair | undefined>;
+type GetKeyPairFunc = () => Promise<KeyPair>;
 
 const { KEYPAIR, POP_TOKEN } = SignatureType;
 
@@ -36,7 +36,7 @@ export class KeyPairRegistry {
    *
    * @param signature - The corresponding signature
    */
-  async getSignatureKeyPair(signature: SignatureType): Promise<KeyPair | undefined> {
+  async getSignatureKeyPair(signature: SignatureType): Promise<KeyPair> {
     const messageEntry = this.getEntry(signature);
     return messageEntry.getSignatureKeyPair!();
   }

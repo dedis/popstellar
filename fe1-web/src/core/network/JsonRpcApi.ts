@@ -24,10 +24,6 @@ export async function publish(channel: Channel, msgData: MessageData): Promise<v
   const signature = messageRegistry.getSignatureType(msgData);
   const keyPair = await keyPairRegistry.getSignatureKeyPair(signature);
 
-  if (keyPair === undefined) {
-    throw new ProtocolError('Impossible to sign the message: the key pair is undefined');
-  }
-
   const message = await Message.fromData(msgData, keyPair);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,

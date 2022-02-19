@@ -1,5 +1,3 @@
-import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
-import { setSignatureKeyPair } from 'core/network/JsonRpcApi';
 import { addReducer, getStore } from 'core/redux';
 import { getNetworkManager } from '../NetworkManager';
 import { MessageRegistry } from '../jsonrpc/messages';
@@ -8,16 +6,13 @@ import { makeMessageStoreWatcher } from './Watcher';
 import messageReducer from './Reducer';
 
 /**
- * Configures all handlers of the system within a MessageRegistry, and configures signatures
- * with a KeyPairRegistry.
+ * Configures all handlers of the system within a MessageRegistry.
  *
- * @param messageRegistry
- * @param keyPairRegistry
+ * @param registry
  */
-export function configure(messageRegistry: MessageRegistry, keyPairRegistry: KeyPairRegistry) {
+export function configure(registry: MessageRegistry) {
   // configure the message handlers
-  setMessageRegistry(messageRegistry);
-  setSignatureKeyPair(messageRegistry, keyPairRegistry);
+  setMessageRegistry(registry);
 
   // configure the message reducer
   addReducer(messageReducer);
@@ -27,5 +22,5 @@ export function configure(messageRegistry: MessageRegistry, keyPairRegistry: Key
 
   // returns the unsubscribe function, which we don't need.
   const store = getStore();
-  store.subscribe(makeMessageStoreWatcher(store, messageRegistry));
+  store.subscribe(makeMessageStoreWatcher(store, registry));
 }

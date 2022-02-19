@@ -1,12 +1,14 @@
 import { addReducer } from 'core/redux';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
+import { SignatureType } from 'core/network/jsonrpc/messages';
+
+import { getCurrentPopTokenFromStore } from './objects';
 import { walletReducer } from './reducer';
-import { configureNetwork } from './network';
 
 /**
  * Configures the wallet feature
  */
 export function configure(registry: KeyPairRegistry) {
   addReducer(walletReducer);
-  configureNetwork(registry);
+  registry.add(SignatureType.POP_TOKEN, getCurrentPopTokenFromStore);
 }

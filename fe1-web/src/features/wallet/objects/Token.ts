@@ -56,18 +56,18 @@ export function generateToken(laoId: Hash, rollCallId: Hash | undefined): Promis
  *
  * @returns A Promise that resolves to a PoP token or to undefined if no token exists
  */
-export async function getCurrentPopTokenFromStore(): Promise<PopToken | undefined> {
+export async function getCurrentPopTokenFromStore(): Promise<PopToken> {
   const lao = OpenedLaoStore.get();
 
   const rollCallId = lao.last_tokenized_roll_call_id;
   if (rollCallId === undefined) {
-    return undefined;
+    throw new Error('Cannot retrieve pop token: roll call id is undefined');
   }
 
   const rollCall = EventStore.getEvent(rollCallId) as RollCall;
   const token = await generateToken(lao.id, rollCallId);
-  if (token && rollCall.containsToken(token)) {
+  if (rollCall.containsToken(token)) {
     return token;
   }
-  return undefined;
+  throw new Error('Cannot retrieve pop token: roll call does not contain this token');
 }
