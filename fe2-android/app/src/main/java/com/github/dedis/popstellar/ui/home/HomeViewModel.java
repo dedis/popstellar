@@ -25,6 +25,7 @@ import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -155,9 +156,9 @@ public class HomeViewModel extends AndroidViewModel
 
                   Log.d(TAG, "got success result for subscribe to lao");
                 },
-                throwable ->
-                    Log.d(
-                        TAG, "timed out waiting for a response for subscribe to lao", throwable)));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_subscribe_lao)));
 
     setConnectingLao(channel);
     openConnecting();
@@ -191,7 +192,9 @@ public class HomeViewModel extends AndroidViewModel
                   Log.d(TAG, "got success result for create lao");
                   openHome();
                 },
-                throwable -> Log.e(TAG, "got failure result for create lao", throwable)));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_create_lao)));
   }
 
   public void importSeed(String seed) throws GeneralSecurityException, SeedValidationException {

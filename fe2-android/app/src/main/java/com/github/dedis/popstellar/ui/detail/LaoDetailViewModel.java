@@ -50,6 +50,7 @@ import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionViewModel;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningViewModel;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
@@ -280,7 +281,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "ended election successfully");
                   endElectionEvent();
                 },
-                throwable -> Log.e(TAG, "failed to end election", throwable));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_end_election));
 
     disposables.add(disposable);
   }
@@ -328,23 +331,12 @@ public class LaoDetailViewModel extends AndroidViewModel
                     Toast.makeText(getApplication(), "vote successfully sent !", Toast.LENGTH_LONG)
                         .show();
                   },
-                  throwable -> {
-                    Log.e(TAG, "timed out waiting for result on cast_vote", throwable);
-
-                    Toast.makeText(getApplication(), "vote was sent too late !", Toast.LENGTH_LONG)
-                        .show();
-                  });
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_send_vote));
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.i(
-          TAG,
-          "User tried to send a message that expected proof-of-personhood but it could not be achieved.",
-          e);
-      Toast.makeText(
-              getApplication(),
-              "Could not retrieve a valid PoP Token : " + e.getMessage(),
-              Toast.LENGTH_LONG)
-          .show();
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }
 
@@ -402,7 +394,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "setup an election");
                   mElectionCreatedEvent.postValue(new SingleEvent<>(true));
                 },
-                throwable -> Log.e(TAG, "failed to setup an election", throwable));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_create_election));
 
     disposables.add(disposable);
 
@@ -454,7 +448,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                     mCreatedRollCallEvent.postValue(new SingleEvent<>(true));
                   }
                 },
-                throwable -> Log.d(TAG, "failed to create a roll call", throwable));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_create_rollcall));
     disposables.add(disposable);
   }
 
@@ -494,7 +490,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             .publish(channel, msg)
             .subscribe(
                 () -> Log.d(TAG, "created a consensus with message id : " + msg.getMessageId()),
-                throwable -> Log.e(TAG, "failed to create a consensus", throwable));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_start_election));
     disposables.add(disposable);
   }
 
@@ -531,11 +529,9 @@ public class LaoDetailViewModel extends AndroidViewModel
             .publish(keyManager.getMainKeyPair(), electInstance.getChannel(), consensusElectAccept)
             .subscribe(
                 () -> Log.d(TAG, "sent an elect_accept successfully"),
-                throwable ->
-                    Log.e(
-                        TAG,
-                        "failed to send the elect_accept for consensus : " + messageId,
-                        throwable));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_consensus_accept));
 
     disposables.add(disposable);
   }
@@ -570,12 +566,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     try {
       attendees.add(keyManager.getPoPToken(lao, rollCall).getPublicKey());
     } catch (KeyException e) {
-      Log.e(TAG, "Could not add the organizer's token to the attendees", e);
-      Toast.makeText(
-              getApplication().getApplicationContext(),
-              "Could not add your PoPToken to the attendees : " + e.getMessage(),
-              Toast.LENGTH_LONG)
-          .show();
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
 
     Disposable disposable =
@@ -589,7 +580,10 @@ public class LaoDetailViewModel extends AndroidViewModel
                   scanningAction = ScanningAction.ADD_ROLL_CALL_ATTENDEE;
                   openScanning();
                 },
-                throwable -> Log.e(TAG, "failed to open the roll call", throwable));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_open_rollcall));
+
     disposables.add(disposable);
   }
 
@@ -620,7 +614,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                   attendees.clear();
                   mCloseRollCallEvent.setValue(new SingleEvent<>(nextFragment));
                 },
-                throwable -> Log.e(TAG, "failed to close the roll call", throwable));
+                error ->
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_close_rollcall));
     disposables.add(disposable);
   }
 
@@ -652,7 +648,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                           TAG,
                           "Verifying the signature of  message  with id: "
                               + witnessMessage.getMessageId()),
-                  throwable -> Log.e(TAG, "failed to sign message", throwable)));
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_sign_message)));
 
     } catch (GeneralSecurityException e) {
       Log.d(TAG, PK_FAILURE_MESSAGE, e);
@@ -1053,7 +1051,9 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "updated lao name");
                   dispatchLaoUpdate("lao name", updateLao, lao, channel, msg);
                 },
-                throwable -> Log.e(TAG, "failed to update lao name", throwable));
+                error ->
+                    ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao));
+
     disposables.add(disposable);
   }
 
@@ -1085,7 +1085,8 @@ public class LaoDetailViewModel extends AndroidViewModel
                   Log.d(TAG, "updated lao witnesses");
                   dispatchLaoUpdate("lao state with new witnesses", updateLao, lao, channel, msg);
                 },
-                throwable -> Log.e(TAG, "failed to update lao witnesses", throwable));
+                error ->
+                    ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_update_lao));
     disposables.add(disposable);
   }
 
@@ -1109,7 +1110,8 @@ public class LaoDetailViewModel extends AndroidViewModel
             .publish(keyManager.getMainKeyPair(), channel, stateLao)
             .subscribe(
                 () -> Log.d(TAG, "updated " + desc),
-                throwable -> Log.d(TAG, "failed to update " + desc, throwable)));
+                error ->
+                    ErrorUtils.logAndShow(getApplication(), TAG, error, R.string.error_state_lao)));
   }
 
   public void cancelEdit() {

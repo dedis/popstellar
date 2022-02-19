@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 
 import java.util.Optional;
 
@@ -64,7 +65,7 @@ public final class ChirpHandler {
     Chirp chirp;
 
     if (!chirpOptional.isPresent()) {
-      throw new DataHandlingException(deleteChirp);
+      throw new InvalidMessageIdException(deleteChirp, deleteChirp.getChirpId());
     }
     chirp = chirpOptional.get();
 
