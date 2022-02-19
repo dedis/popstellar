@@ -162,29 +162,7 @@ export class Message {
     witnessSignatures?: WitnessSignature[],
   ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-<<<<<<< HEAD
     const { publicKey, privateKey } = senderKeyPair;
-=======
-    let publicKey = KeyPairStore.getPublicKey();
-    let privateKey = KeyPairStore.getPrivateKey();
-
-    // Get the signature type of the type of message we want to sign
-    const signatureType = messageRegistry.getSignatureType(data);
-
-    // If the messages is signed with the pop token, get it from the store and update keys
-    if (signatureType === SignatureType.POP_TOKEN) {
-      const token = await getPopToken();
-      if (token) {
-        publicKey = token.publicKey;
-        privateKey = token.privateKey;
-      } else {
-        console.error(
-          'Impossible to sign the message with a pop token: no token found for ' +
-            'current user in this LAO',
-        );
-      }
-    }
->>>>>>> origin/work-fe1-pborso-dependency-message-index
     const signature = privateKey.sign(encodedDataJson);
 
     return new Message({
