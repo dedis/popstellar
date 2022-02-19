@@ -3,7 +3,7 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import { StatusBar, Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
 import { useReduxDevToolsExtension } from '@react-navigation/devtools';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ToastProvider } from 'react-native-toast-notifications';
@@ -11,7 +11,6 @@ import { Provider } from 'react-redux';
 import { store, persist } from 'core/redux';
 
 import AppNavigation from 'core/navigation/AppNavigation';
-import { navigationRef } from 'core/navigation/RootNavigation';
 import { configureIngestion } from 'core/network/ingestion';
 import { configureFeatures } from 'features';
 
@@ -28,6 +27,7 @@ function App() {
   const { messageRegistry, navigationOpts } = configureFeatures();
   configureIngestion(messageRegistry);
 
+  const navigationRef = useNavigationContainerRef();
   useReduxDevToolsExtension(navigationRef);
 
   return (
@@ -37,7 +37,7 @@ function App() {
           <SafeAreaProvider>
             {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" backgroundColor="white" />}
             <ToastProvider>
-              <AppNavigation opts={navigationOpts} />
+              <AppNavigation screens={navigationOpts.screens} />
             </ToastProvider>
           </SafeAreaProvider>
         </NavigationContainer>

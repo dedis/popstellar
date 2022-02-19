@@ -1,15 +1,14 @@
 import React from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import PropTypes from 'prop-types';
 import { TextBlock } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
-import { makeIsLaoOrganizer } from 'features/lao/reducer';
+import { useIsLaoOrganizer } from 'features/lao/hooks';
 import STRINGS from 'resources/strings';
 
-import { Event } from './index';
 import { useNavigation } from '@react-navigation/native';
+import { Event } from './index';
 import { eventPropTypes } from './Event';
 
 const styles = StyleSheet.create({
@@ -28,8 +27,6 @@ const styles = StyleSheet.create({
     paddingRight: Spacing.m,
   } as TextStyle,
 });
-
-const useIsLaoOrganizer = () => useSelector(makeIsLaoOrganizer());
 
 /**
  * Collapsible list of events: list with 3 sections corresponding

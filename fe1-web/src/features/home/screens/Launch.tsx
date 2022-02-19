@@ -8,13 +8,13 @@ import { requestCreateLao } from 'features/lao/network/LaoMessageApi';
 import STRINGS from 'resources/strings';
 import PROPS_TYPE from 'resources/Props';
 
-import { getNetworkManager } from '../network';
-import { Channel, Hash, Timestamp } from '../objects';
-import { TextBlock, TextInputLine, WideButtonView } from '../components';
-import containerStyles from '../styles/stylesheets/containerStyles';
-import { subscribeToChannel } from '../network/CommunicationApi';
-import { KeyPairStore } from '../keypair';
-import { dispatch } from '../redux';
+import { getNetworkManager } from 'core/network';
+import { Channel, Hash, Timestamp } from 'core/objects';
+import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { KeyPairStore } from 'core/keypair';
+import { dispatch } from 'core/redux';
 
 /**
  * Manages the Launch screen, where the user enters a name and an address to launch and connect

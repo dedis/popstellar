@@ -1,7 +1,9 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import STRINGS from '../resources/strings';
 
 import * as events from './events';
 import * as evoting from './evoting';
+import * as home from './home';
 import * as lao from './lao';
 import * as meeting from './meeting';
 import * as rollCall from './rollCall';
@@ -13,7 +15,8 @@ export function configureFeatures() {
   const messageRegistry = new MessageRegistry();
 
   // configure features
-  lao.configure(messageRegistry);
+  const laoConfig = lao.configure(messageRegistry);
+  const homeConfig = home.configure();
   evoting.configure(messageRegistry);
   meeting.configure(messageRegistry);
   rollCall.configure(messageRegistry);
@@ -27,6 +30,17 @@ export function configureFeatures() {
 
   return {
     messageRegistry,
-    navigationOpts: {},
+    navigationOpts: {
+      screens: [
+        {
+          name: STRINGS.app_navigation_tab_home,
+          component: homeConfig.navigation.MainNavigation,
+        },
+        {
+          name: STRINGS.app_navigation_tab_organizer,
+          component: laoConfig.navigation.LaoNavigation,
+        },
+      ],
+    },
   };
 }

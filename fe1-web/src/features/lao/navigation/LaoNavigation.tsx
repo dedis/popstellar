@@ -7,10 +7,10 @@ import { getKeyPairState } from 'core/keypair';
 import { getStore } from 'core/redux';
 import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
-import Home from 'core/screens/Home';
 import { SocialMediaNavigation } from 'features/social/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
 import { WitnessNavigation } from 'features/witness/navigation';
+import { Home } from 'features/home/screens';
 
 import { makeCurrentLao } from '../reducer';
 import { AttendeeScreen, Identity } from '../screens';
@@ -71,7 +71,7 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
 
-function LaoNavigation() {
+const LaoNavigation: React.FC = () => {
   const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
@@ -122,6 +122,6 @@ function LaoNavigation() {
       />
     </OrganizationTopTabNavigator.Navigator>
   );
-}
+};
 
 export default LaoNavigation;

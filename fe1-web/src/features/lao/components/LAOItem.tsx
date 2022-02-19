@@ -5,8 +5,8 @@ import { useNavigation } from '@react-navigation/native';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import STRINGS from 'resources/strings';
 import { Spacing, Typography } from 'core/styles';
+import STRINGS from 'resources/strings';
 
 import { Lao } from '../objects';
 import { connectToLao as connectToLaoAction } from '../reducer';
@@ -27,8 +27,9 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const LAOItem = ({ LAO, connectToLao }: IPropTypes) => {
-  const navigation = useNavigation();
+const LaoItem = ({ LAO, connectToLao }: IPropTypes) => {
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
 
   const handlePress = () => {
     connectToLao(LAO.toState());
@@ -48,11 +49,11 @@ const propTypes = {
   LAO: PropTypes.instanceOf(Lao).isRequired,
   connectToLao: PropTypes.func.isRequired,
 };
-LAOItem.propTypes = propTypes;
+LaoItem.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
   connectToLao: (lao: Lao) => dispatch(connectToLaoAction(lao.toState())),
 });
 
-export default connect(null, mapDispatchToProps)(LAOItem);
+export default connect(null, mapDispatchToProps)(LaoItem);

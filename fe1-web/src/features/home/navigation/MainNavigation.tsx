@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function MainNavigation() {
+const MainNavigation: React.FC = () => {
   return (
     <HomeTopTabNavigator.Navigator
       style={styles.navigator}
@@ -45,4 +45,6 @@ export default function MainNavigation() {
       />
     </HomeTopTabNavigator.Navigator>
   );
-}
+};
+
+export default MainNavigation;
