@@ -1,5 +1,12 @@
+.expo
+.expo-shared
+.idea
+coverage
+tsdocs
+web-build
+dist
 .eslint.react-native-config.js
-.eslintrc
+.eslintrc.js
 .depcruise.js
 app.json
 babel.config.js
@@ -8,3 +15,4 @@ package.json
 package-lock.json
 tsconfig.json
 webpack.config.js
+README.md
