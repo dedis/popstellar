@@ -10,7 +10,7 @@ public class UninitializedWalletException extends KeyException {
 
   @Override
   public int getUserMessage() {
-    return R.string.uninitzilized_wallet_exception;
+    return R.string.uninitialized_wallet_exception;
   }
 
   @Override

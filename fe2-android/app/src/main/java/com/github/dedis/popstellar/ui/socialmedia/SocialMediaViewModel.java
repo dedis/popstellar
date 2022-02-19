@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
@@ -217,22 +218,12 @@ public class SocialMediaViewModel extends AndroidViewModel {
               .publish(token, channel, addChirp)
               .subscribe(
                   () -> Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId()),
-                  throwable -> {
-                    Log.e(TAG, "failed to send chirp", throwable);
-                    Toast.makeText(
-                            getApplication().getApplicationContext(),
-                            R.string.error_sending_chirp,
-                            Toast.LENGTH_LONG)
-                        .show();
-                  });
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_sending_chirp));
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
-      Toast.makeText(
-              getApplication().getApplicationContext(),
-              R.string.error_toast_pop_token + e.getMessage(),
-              Toast.LENGTH_LONG)
-          .show();
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }
 
@@ -266,22 +257,12 @@ public class SocialMediaViewModel extends AndroidViewModel {
                             Toast.LENGTH_LONG)
                         .show();
                   },
-                  throwable -> {
-                    Log.e(TAG, "Failed to delete chirp", throwable);
-                    Toast.makeText(
-                            getApplication().getApplicationContext(),
-                            "Error when deleting chirp. Please try again",
-                            Toast.LENGTH_LONG)
-                        .show();
-                  });
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_delete_chirp));
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
-      Toast.makeText(
-              getApplication().getApplicationContext(),
-              R.string.error_toast_pop_token + e.getMessage(),
-              Toast.LENGTH_LONG)
-          .show();
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }
 
@@ -309,7 +290,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
       PoPToken token = keyManager.getValidPoPToken(laoState.getLao());
       return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
-      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
   }

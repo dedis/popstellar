@@ -15,7 +15,7 @@ public class InvalidPoPTokenException extends KeyException {
 
   @Override
   public int getUserMessage() {
-    return R.string.invald_pop_token_exception;
+    return R.string.invalid_pop_token_exception;
   }
 
   @Override
