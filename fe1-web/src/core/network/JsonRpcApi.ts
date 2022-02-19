@@ -6,13 +6,8 @@ import { Message, MessageData } from './jsonrpc/messages';
 
 export const AUTO_ASSIGN_ID = -1;
 
-async function getKeyPair(msgData: MessageData): Promise<KeyPair> {
-  msgRegistry.getSigningMaterial(msgData);
-}
-
 export async function publish(channel: Channel, msgData: MessageData): Promise<void> {
-  const keyPair = await getKeyPair(msgData);
-  const message = await Message.fromData(msgData, keyPair);
+  const message = await Message.fromData(msgData);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({

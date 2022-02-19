@@ -170,11 +170,8 @@ export class Message {
   public static async fromData(
     data: MessageData,
     witnessSignatures?: WitnessSignature[],
-    sender: KeyPair,
   ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-    let keyPair = KeyPairStore.get();
-    let keyPair = await getPoptoken();
     let publicKey = KeyPairStore.getPublicKey();
     let privateKey = KeyPairStore.getPrivateKey();
 
@@ -194,12 +191,12 @@ export class Message {
         );
       }
     }
-    const signature = sender.privateKey.sign(encodedDataJson);
+    const signature = privateKey.sign(encodedDataJson);
 
     // Send the message with the correct signature
     return new Message({
       data: encodedDataJson,
-      sender: sender.publicKey,
+      sender: publicKey,
       signature: signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
