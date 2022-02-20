@@ -16,7 +16,8 @@ import { generateToken } from './Token';
  */
 export async function recoverWalletPoPTokens(): Promise<Record<string, Record<string, PopToken>>> {
   const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
-  const rollCalls = rollCallSelector(getStore()); // we're outside a component, we can't useSelector
+  // we're outside a component, we can't useSelector
+  const rollCalls = rollCallSelector(getStore().getState());
 
   const tokens: Record<string, Record<string, PopToken>> = {};
 

@@ -225,15 +225,15 @@ export const makeEventsMap = (laoId: string | undefined = undefined) =>
     // Second input: get the current LAO id,
     (state) => laoId || getLaosState(state).currentId,
     // Selector: returns a map of ids -> LaoEvents
-    (eventMap: EventLaoReducerState, laoId: string | undefined): Record<string, LaoEvent> => {
-      if (!laoId || !eventMap || !(laoId in eventMap.byLaoId)) {
+    (eventMap: EventLaoReducerState, id: string | undefined): Record<string, LaoEvent> => {
+      if (!id || !eventMap || !(id in eventMap.byLaoId)) {
         return {};
       }
 
       const dictObj: Record<string, LaoEvent> = {};
 
-      eventMap.byLaoId[laoId].allIds.forEach((evtId) => {
-        const e = eventFromState(eventMap.byLaoId[laoId].byId[evtId]);
+      eventMap.byLaoId[id].allIds.forEach((evtId) => {
+        const e = eventFromState(eventMap.byLaoId[id].byId[evtId]);
         if (e) {
           dictObj[evtId] = e;
         }
