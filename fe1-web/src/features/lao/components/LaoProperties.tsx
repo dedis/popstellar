@@ -27,8 +27,9 @@ function renderProperties(lao: Lao, url: string) {
   );
 }
 
+const laoSelect = makeCurrentLao();
+
 const LaoProperties = ({ url }: IPropTypes) => {
-  const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);

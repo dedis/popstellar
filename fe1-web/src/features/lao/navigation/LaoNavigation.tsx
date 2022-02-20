@@ -70,9 +70,9 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
+const laoSelect = makeCurrentLao();
 
 const LaoNavigation: React.FC = () => {
-  const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;

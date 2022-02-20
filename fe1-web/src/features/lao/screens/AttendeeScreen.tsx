@@ -10,6 +10,8 @@ import { makeEventsList } from 'features/events/reducer';
 
 import { LaoProperties } from '../components';
 
+const eventList = makeEventsList();
+
 /**
  * AttendeeScreen: lists LAO properties and past/ongoing/future events.
  * By default, only the past and present section are open.
@@ -17,7 +19,6 @@ import { LaoProperties } from '../components';
  * TODO: use the data receive by the organization server
  */
 const AttendeeScreen = () => {
-  const eventList = makeEventsList();
   const events = useSelector(eventList);
   const now = Timestamp.EpochNow();
   const pastEvents: LaoEvent[] = [];

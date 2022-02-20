@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 import { useRoute } from '@react-navigation/core';
 
 import { getNetworkManager } from 'core/network';
 import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { Channel, channelFromIds, Hash } from 'core/objects';
+
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+
 import STRINGS from 'resources/strings';
 import PROPS_TYPE from 'resources/Props';
-import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { FOUR_SECONDS } from 'resources/const';
+
+import { setLaoServerAddress } from 'features/lao/reducer';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -68,6 +73,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
   const [serverUrl, setServerUrl] = useState(url);
   const [laoId, setLaoId] = useState(laoIdIn);
   const toast = useToast();
+  const dispatch = useDispatch();
 
   const onButtonConfirm = async () => {
     if (!connectTo(serverUrl)) {
@@ -81,6 +87,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
 
     try {
       await subscribeToChannel(channel);
+      dispatch(setLaoServerAddress(laoId, serverUrl));
       navigation.navigate(STRINGS.app_navigation_tab_organizer, {
         screen: STRINGS.organization_navigation_tab_organizer,
         params: {
