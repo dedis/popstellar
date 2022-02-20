@@ -1,5 +1,5 @@
 import { Channel } from 'core/objects';
-import { getNetworkManager } from 'core/network';
+import { getNetworkManager } from 'core/network/NetworkManager';
 import { KeyPairRegistry } from 'core/keypair';
 
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
