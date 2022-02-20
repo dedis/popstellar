@@ -227,8 +227,8 @@ export const makeChirpsList = () =>
     },
   );
 
-export const makeChirpsListOfUser = (user: PublicKey | string) => {
-  const userPublicKey = user.valueOf();
+export const makeChirpsListOfUser = (user: PublicKey | string | undefined) => {
+  const userPublicKey = user?.valueOf();
   return createSelector(
     // First input: Get all chirps across all LAOs
     (state) => getSocialState(state),

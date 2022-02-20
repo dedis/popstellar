@@ -1,9 +1,9 @@
-import { useSelector } from 'react-redux';
+import { Hash, PopToken } from 'core/objects';
+import { getStore } from 'core/redux';
 
 import { RollCall } from 'features/rollCall/objects';
 import { LaoEventType } from 'features/events/objects/LaoEvent';
 import { makeEventByTypeSelector } from 'features/events/reducer';
-import { Hash, PopToken } from 'core/objects';
 
 import { generateToken } from './Token';
 
@@ -16,7 +16,8 @@ import { generateToken } from './Token';
  */
 export async function recoverWalletPoPTokens(): Promise<Record<string, Record<string, PopToken>>> {
   const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
-  const rollCalls = useSelector(rollCallSelector);
+  const rollCalls = rollCallSelector(getStore()); // we're outside a component, we can't useSelector
+
   const tokens: Record<string, Record<string, PopToken>> = {};
 
   let ops: Promise<any>[] = [];
