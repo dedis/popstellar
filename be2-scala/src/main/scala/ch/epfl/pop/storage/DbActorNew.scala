@@ -48,7 +48,7 @@ case class DbActorNew(
     Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
       case Success(Some(json)) => Some(Message.buildFromJson(json))
       case Success(None) => None
-      case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
+      case Failure(ex) => throw ex
     }
   }
 
@@ -57,7 +57,7 @@ case class DbActorNew(
     Try(storage.read(channel.toString)) match {
       case Success(Some(json)) => ChannelData.buildFromJson(json)
       case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ChannelData for channel $channel not in the database")
-      case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
+      case Failure(ex) => throw ex
     }
   }
 
@@ -65,8 +65,8 @@ case class DbActorNew(
   private def readLaoData(channel: Channel): LaoData = {
     Try(storage.read(generateLaoDataKey(channel))) match {
       case Success(Some(json)) => LaoData.buildFromJson(json)
-      case Success(None) => LaoData.emptyLaoData
-      case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
+      case Success(None) => LaoData()
+      case Failure(ex) => throw ex
     }
   }
 
@@ -75,15 +75,10 @@ case class DbActorNew(
     this.synchronized{
       val laoData: LaoData = Try(readLaoData(channel)) match {
         case Success(data) => data
-        case Failure(_) => LaoData.emptyLaoData
+        case Failure(_) => LaoData()
       }
       val laoDataKey: String = generateLaoDataKey(channel)
-
-      Try(storage.write(
-        (laoDataKey, laoData.updateWith(message).toJsonString)
-      )).recover(
-        ex => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
-      )
+      storage.write(laoDataKey -> laoData.updateWith(message).toJsonString)
     }
   }
 
@@ -95,26 +90,17 @@ case class DbActorNew(
       msgIds match {
         case Nil => acc
         case head :: tail =>
-          Try(read(channel, head)).recover(
-            ex => None
-          ) match {
+          Try(read(channel, head)).recover(_ => None) match {
             case Success(Some(msg)) => buildCatchupList(tail, msg :: acc)
-            case _ => 
-              log.error(s"Problem encountered while catching up message with id $head")
+            case _ =>
+              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$channel' but not stored in db")
               buildCatchupList(tail, acc)
           }
       }
     }
 
-    val channelData: ChannelData = Try(readChannelData(channel)) match {
-      case Success(data) => data
-      case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
-    }
-    Try(buildCatchupList(channelData.messages, Nil)) match {
-      case Success(li) => li
-      case Failure(ex) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
-    }
-
+    val channelData: ChannelData = readChannelData(channel)
+    buildCatchupList(channelData.messages, Nil)
   }
 
   @throws [DbActorNAckException]
