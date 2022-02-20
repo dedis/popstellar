@@ -3,7 +3,7 @@ import { getNetworkManager } from 'core/network/NetworkManager';
 import { KeyPairRegistry } from 'core/keypair';
 
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
-import { Message, MessageData, MessageRegistry } from './jsonrpc/messages';
+import { configureMessages, Message, MessageData, MessageRegistry } from './jsonrpc/messages';
 
 export const AUTO_ASSIGN_ID = -1;
 
@@ -18,14 +18,16 @@ let messageRegistry: MessageRegistry;
 let keyPairRegistry: KeyPairRegistry;
 
 /**
- * Dependency injection of a MessageRegistry and a KeyPairRegistry.
+ * Configure the JSON-RPC interface with its dependencies
  *
  * @param messageReg - The MessageRegistry to be injected
  * @param keyPairReg - The KeyPairRegistry to be injected
  */
-export function setSignatureKeyPair(messageReg: MessageRegistry, keyPairReg: KeyPairRegistry) {
+export function configureJsonRpcApi(messageReg: MessageRegistry, keyPairReg: KeyPairRegistry) {
   messageRegistry = messageReg;
   keyPairRegistry = keyPairReg;
+
+  configureMessages(messageReg);
 }
 
 /**

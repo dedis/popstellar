@@ -50,32 +50,37 @@ const SocialMediaNavigation = () => {
       });
   }, [lao.id, lao.last_tokenized_roll_call_id, rollCall, rollCallId]);
 
+  const iconSelector =
+    (routeName: string) =>
+    ({ color }: { color: string }) => {
+      let iconName: 'home' | 'search' | 'people' | 'person' | 'stop';
+
+      switch (routeName) {
+        case STRINGS.social_media_navigation_tab_home:
+          iconName = 'home';
+          break;
+        case STRINGS.social_media_navigation_tab_search:
+          iconName = 'search';
+          break;
+        case STRINGS.social_media_navigation_tab_follows:
+          iconName = 'people';
+          break;
+        case STRINGS.social_media_navigation_tab_profile:
+          iconName = 'person';
+          break;
+        default:
+          iconName = 'stop';
+          console.error('Icon could not be rendered correctly. Wrong route name.');
+          break;
+      }
+
+      return <Ionicons name={iconName} size={23} color={color} />;
+    };
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
-          let iconName;
-
-          switch (route.name) {
-            case STRINGS.social_media_navigation_tab_home:
-              iconName = 'home';
-              break;
-            case STRINGS.social_media_navigation_tab_search:
-              iconName = 'search';
-              break;
-            case STRINGS.social_media_navigation_tab_follows:
-              iconName = 'people';
-              break;
-            case STRINGS.social_media_navigation_tab_profile:
-              iconName = 'person';
-              break;
-            default:
-              console.error('wrong route.');
-              break;
-          }
-
-          return <Ionicons name={iconName} size={23} color={color} />;
-        },
+        tabBarIcon: iconSelector(route.name),
         tabBarActiveTintColor: popBlue,
         tabBarInactiveTintColor: gray,
         swipeEnabled: false,
