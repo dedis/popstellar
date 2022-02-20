@@ -54,7 +54,7 @@ export interface MessageState {
 
   witness_signatures: WitnessSignatureState[];
 
-  channel?: Channel;
+  channel: Channel;
 }
 
 /**
@@ -70,6 +70,9 @@ export class Message {
   public readonly message_id: Hash;
 
   public readonly witness_signatures: WitnessSignature[];
+
+  // Not part of the protocol, but convenient for processing of the message
+  public readonly channel?: Channel;
 
   // ECMAScript private field, not string-ified by JSON
   readonly #messageData: MessageData;
@@ -93,7 +96,7 @@ export class Message {
       );
     }
 
-    if (!msg.signature.verify(msg.sender, msg.data) && !this.isElectionResultMessage()) {
+    if (!msg.signature.verify(msg.sender, msg.data)) {
       throw new ProtocolError(
         "Invalid 'signature' parameter encountered during 'Message' creation",
       );
@@ -104,7 +107,7 @@ export class Message {
       );
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
-    if (!expectedHash.equals(msg.message_id) && !this.isElectionResultMessage()) {
+    if (!expectedHash.equals(msg.message_id)) {
       console.log('Expected Hash was: ', expectedHash);
 
       throw new ProtocolError(`Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value \n
@@ -129,12 +132,16 @@ export class Message {
     this.message_id = msg.message_id;
     this.witness_signatures = [...msg.witness_signatures];
 
+    if (msg.channel) {
+      this.channel = msg.channel;
+    }
+
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
     this.#messageData = messageRegistry.buildMessageData(dataObj);
   }
 
-  public static fromJson(obj: any): Message {
+  public static fromJson(obj: any, channel?: Channel): Message {
     return new Message({
       data: new Base64UrlData(obj.data.toString()),
       sender: new PublicKey(obj.sender.toString()),
@@ -143,6 +150,7 @@ export class Message {
       witness_signatures: obj.witness_signatures.map((ws: WitnessSignatureState) =>
         WitnessSignature.fromJson(ws),
       ),
+      channel: channel,
     });
   }
 
@@ -172,14 +180,5 @@ export class Message {
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
     });
-  }
-
-  // This function disables the checks of signature and messageID for eleciton result messages
-  // Because the message comes from the back-end and it can't sign the messages since it hasn't
-  // access to the private key
-  // This method is only a temporary solution for the demo and should be removed once a better
-  // solution is found
-  private isElectionResultMessage(): boolean {
-    return this.data.decode().includes('"result":');
   }
 }

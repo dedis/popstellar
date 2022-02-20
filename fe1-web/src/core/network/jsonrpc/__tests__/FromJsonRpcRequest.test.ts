@@ -33,22 +33,24 @@ function checkRpcQuery(obj: any): void {
   expect(obj.id).toBeNumber();
 }
 
-function checkRpcParams(obj: any, isRoot: boolean = false): void {
+function checkRpcParams(obj: any, channel: string): void {
   expect(obj).toBeObject();
   expect(obj).toContainAllKeys(['channel', 'message']);
   expect(obj.channel).toBeString();
-  if (isRoot) {
-    expect(obj.channel).toBe(ROOT_CHANNEL);
-  } else {
-    expect(obj.channel).toMatch(/\/root\/[A-Za-z0-9+/]*[=]*/);
-    expect(obj.channel.slice(ROOT_CHANNEL.length + 1)).toBeBase64Url();
-  }
+  expect(obj.channel).toBe(channel);
   expect(obj.message).toBeObject();
 }
 
-function checkMessage(obj: any): void {
+function checkMessage(obj: any, ch: string): void {
   expect(obj).toBeObject();
-  expect(obj).toContainAllKeys(['data', 'sender', 'signature', 'message_id', 'witness_signatures']);
+  expect(obj).toContainAllKeys([
+    'data',
+    'sender',
+    'signature',
+    'message_id',
+    'witness_signatures',
+    'channel',
+  ]);
 
   expect(obj.data).toBeBase64Url();
 
@@ -64,6 +66,8 @@ function checkMessage(obj: any): void {
   expect(obj.message_id).toBeJsonEqual(hashExpected);
 
   expect(obj.witness_signatures).toBeKeySignatureArray('publicKey', 'signature');
+
+  expect(obj.channel).toEqual(ch);
 }
 
 const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
@@ -78,16 +82,11 @@ const sampleCreateLaoData: CreateLao = CreateLao.fromJson({
 
 const sampleCreateLaoDataString: string = JSON.stringify(sampleCreateLaoData);
 
-function embeddedMessage(
-  data: string,
-  method: JsonRpcMethod = JsonRpcMethod.PUBLISH,
-  channel: string = '/root/bGFvX2lk', // note: hardcoded value for testing
-  id: number = 0,
-): string {
+function embeddedMessage(data: string, channel: string, id: number = 0): string {
   const data64: Base64UrlData = Base64UrlData.encode(data);
   return `{
         "jsonrpc": "2.0",
-        "method": "${method.toString()}",
+        "method": "${JsonRpcMethod.PUBLISH.toString()}",
         "params": {
             "channel": "${channel}",
             "message": {
@@ -107,7 +106,7 @@ function embeddedMessage(
     `;
 }
 
-describe('=== fromJsonJsonRpcRequest checks ===', () => {
+describe('FromJsonRpcRequest should successfully create objects from Json', () => {
   beforeAll(() => {
     configureTestFeatures();
 
@@ -127,36 +126,26 @@ describe('=== fromJsonJsonRpcRequest checks ===', () => {
     OpenedLaoStore.store(sampleLao);
   });
 
-  describe('should successfully create objects from Json', () => {
-    const checkTypicalQuery = (query: any, isRoot: boolean = false) => {
-      checkRpcQuery(query);
+  const verify = (jsonString: string, channel: string) => {
+    const query = JsonRpcRequest.fromJson(jsonString);
+    checkRpcQuery(query);
+    checkRpcParams(query.params, channel);
 
-      checkRpcParams(query.params, isRoot);
+    const msg = (query.params as JsonRpcParamsWithMessage).message;
+    checkMessage(msg, channel);
 
-      const msg = (query.params as JsonRpcParamsWithMessage).message;
-      checkMessage(msg);
+    const msgData = JSON.parse(msg.data.decode());
+    expect(msgData).toBeJsonEqual(msg.messageData);
+  };
 
-      const msgData = JSON.parse(msg.data.decode());
-      expect(msgData).toBeJsonEqual(msg.messageData);
-    };
+  it('using a sub-channel', () => {
+    const chan = '/root/bGFvX2lk';
+    const msg = embeddedMessage(sampleCreateLaoDataString, chan);
+    verify(msg, chan);
+  });
 
-    it('using a sub-channel', () => {
-      const query = JsonRpcRequest.fromJson(embeddedMessage(sampleCreateLaoDataString));
-      checkRpcQuery(query);
-      checkRpcParams(query.params);
-
-      const msg = (query.params as JsonRpcParamsWithMessage).message;
-      checkMessage(msg);
-
-      const msgData = JSON.parse(msg.data.decode());
-      expect(msgData).toBeJsonEqual(msg.messageData);
-    });
-
-    it(`using '${ROOT_CHANNEL}' channel`, () => {
-      const query = JsonRpcRequest.fromJson(
-        embeddedMessage(sampleCreateLaoDataString, JsonRpcMethod.PUBLISH, ROOT_CHANNEL, 23),
-      );
-      checkTypicalQuery(query, true);
-    });
+  it(`using '${ROOT_CHANNEL}' channel`, () => {
+    const msg = embeddedMessage(sampleCreateLaoDataString, ROOT_CHANNEL, 23);
+    verify(msg, ROOT_CHANNEL);
   });
 });

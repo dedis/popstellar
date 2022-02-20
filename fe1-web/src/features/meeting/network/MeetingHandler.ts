@@ -40,6 +40,7 @@ export function handleMeetingCreateMessage(msg: ProcessableMessage): boolean {
   }
 
   const mtgMsg = msg.messageData as CreateMeeting;
+  mtgMsg.validate(msg.laoId);
 
   const meeting = new Meeting({
     id: mtgMsg.id,

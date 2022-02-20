@@ -83,9 +83,9 @@ export function subscribe(channel: Channel): Promise<void> {
   // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
 
-function* messageGenerator(msgs: any[]) {
+function* messageGenerator(msgs: any[], channel: Channel) {
   for (const m of msgs) {
-    yield Message.fromJson(m);
+    yield Message.fromJson(m, channel);
   }
 }
 
@@ -110,5 +110,5 @@ export async function catchup(channel: Channel): Promise<Generator<Message, void
   }
 
   const msgs = response.result as any[];
-  return messageGenerator(msgs);
+  return messageGenerator(msgs, channel);
 }

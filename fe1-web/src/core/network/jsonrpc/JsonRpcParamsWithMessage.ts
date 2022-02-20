@@ -36,7 +36,7 @@ export class JsonRpcParamsWithMessage extends JsonRpcParams {
 
     return new JsonRpcParamsWithMessage({
       channel: obj.channel,
-      message: Message.fromJson(obj.message),
+      message: Message.fromJson(obj.message, obj.channel),
     });
   }
 }
