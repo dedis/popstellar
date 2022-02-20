@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 import { mockLao, mockLaoId, mockLaoName, configureTestFeatures } from '__tests__/utils';
 
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { ReopenRollCall } from '../ReopenRollCall';

@@ -1,5 +1,5 @@
-import { PublicKey } from 'core/objects/PublicKey';
-import { PrivateKey } from 'core/objects/PrivateKey';
+import { PublicKey } from './PublicKey';
+import { PrivateKey } from './PrivateKey';
 
 // Plain-old-data
 export interface KeyPairState {

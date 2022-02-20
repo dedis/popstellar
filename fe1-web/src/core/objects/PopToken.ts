@@ -1,6 +1,6 @@
-import { KeyPair } from 'core/objects/KeyPair';
-import { Base64UrlData } from 'core/objects/Base64Url';
-import { Signature } from 'core/objects/Signature';
+import { KeyPair } from './KeyPair';
+import { Base64UrlData } from './Base64Url';
+import { Signature } from './Signature';
 
 export class PopToken extends KeyPair {
   /**

@@ -1,12 +1,12 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 import {
+  configureTestFeatures,
   defaultMessageDataFields,
   mockLao,
   mockLaoId,
   mockLaoName,
-  configureTestFeatures,
-} from '__tests__/utils/TestUtils';
+} from '__tests__/utils';
 
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { KeyPairStore } from 'core/keypair';

@@ -9,7 +9,7 @@ import { Lao } from 'features/lao/objects';
 import { Base64UrlData, Hash, PrivateKey, PublicKey } from 'core/objects';
 import { ROOT_CHANNEL } from 'core/objects/Channel';
 
-import { JsonRpcMethod, JsonRpcRequest } from '..';
+import { JsonRpcMethod, JsonRpcRequest } from '../index';
 import { JsonRpcParamsWithMessage } from '../JsonRpcParamsWithMessage';
 
 const JSON_RPC_FIELDS: string[] = ['method', 'params', 'id', 'jsonrpc'];

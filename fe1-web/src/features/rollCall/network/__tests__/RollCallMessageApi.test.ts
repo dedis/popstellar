@@ -7,12 +7,12 @@ import {
   configureTestFeatures,
 } from '__tests__/utils';
 
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
-import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
 
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
 import * as msApi from '../RollCallMessageApi';
 
 jest.mock('core/network/JsonRpcApi');

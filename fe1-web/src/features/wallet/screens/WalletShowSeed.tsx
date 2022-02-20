@@ -4,10 +4,8 @@ import PropTypes from 'prop-types';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import TextBlock from 'core/components/TextBlock';
-import WideButtonView from 'core/components/WideButtonView';
+import { CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
 import PROPS_TYPE from 'resources/Props';
-import CopiableTextInput from 'core/components/CopiableTextInput';
 
 import * as Wallet from '../objects';
 

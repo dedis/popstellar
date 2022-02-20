@@ -1,4 +1,5 @@
 import { MessageRegistry, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+
 import { handleMeetingCreateMessage, handleMeetingStateMessage } from './MeetingHandler';
 import { CreateMeeting, StateMeeting } from './messages';
 

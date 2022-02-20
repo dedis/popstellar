@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import DismissModal from 'core/components/DismissModal';
+
+import DismissModal from '../DismissModal';
 
 const TITLE = 'Title';
 const DESCRIPTION = 'Description';

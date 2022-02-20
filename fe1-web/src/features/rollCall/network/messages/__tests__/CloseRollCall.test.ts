@@ -10,7 +10,7 @@ import {
 } from '__tests__/utils';
 
 import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { CloseRollCall } from '../CloseRollCall';

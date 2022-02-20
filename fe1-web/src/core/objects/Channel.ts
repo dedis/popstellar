@@ -1,5 +1,5 @@
-import { Hash } from 'core/objects/Hash';
-import { PublicKey } from 'core/objects/PublicKey';
+import { Hash } from './Hash';
+import { PublicKey } from './PublicKey';
 
 export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';

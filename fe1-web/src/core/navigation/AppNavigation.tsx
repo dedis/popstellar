@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 const AppNavigation = ({ screens }: IPropTypes) => {
   const entries = screens.map(({ name, component }) => (
     // make the reasonable assumption that we haven't passed strings as components here
-    <Stack.Screen name={name} component={component as React.ComponentType} />
+    <Stack.Screen name={name} key={name} component={component as React.ComponentType} />
   ));
 
   return (

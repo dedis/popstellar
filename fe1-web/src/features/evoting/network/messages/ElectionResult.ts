@@ -1,6 +1,6 @@
 import { ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { QuestionResult } from '../../objects/Election';
 

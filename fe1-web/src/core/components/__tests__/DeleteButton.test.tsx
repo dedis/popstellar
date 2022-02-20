@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import DeleteButton from 'core/components/DeleteButton';
+
+import DeleteButton from '../DeleteButton';
 
 let action: Function;
 

@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 

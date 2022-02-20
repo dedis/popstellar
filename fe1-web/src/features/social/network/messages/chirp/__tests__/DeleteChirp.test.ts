@@ -2,7 +2,7 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'core/objects';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { DeleteChirp } from '../DeleteChirp';
 

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { Spacing } from 'core/styles';
-import { ConnectToLao } from 'features/connect/objects/ConnectToLao';
+import { ConnectToLao } from 'features/connect/objects';
 import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 
 import laoPropertiesStyles from '../styles/laoPropertiesStyles';
