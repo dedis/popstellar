@@ -5,13 +5,13 @@ import {
   mockLao,
   mockLaoId,
   mockLaoName,
-  configureTestFeatures,
 } from '__tests__/utils/TestUtils';
 
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { KeyPairStore } from 'core/keypair';
 import { Hash } from 'core/objects';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
+import { configureTestFeatures } from '__tests__/utils';
 
 import { CreateLao, StateLao, UpdateLao } from '../messages';
 import { OpenedLaoStore } from '../../store';

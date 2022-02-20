@@ -5,13 +5,10 @@ import { useSelector } from 'react-redux';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import TextBlock from 'core/components/TextBlock';
-import WideButtonView from 'core/components/WideButtonView';
+import { CopiableTextInput, QRCode, TextBlock, WideButtonView } from 'core/components';
 import { PopToken } from 'core/objects';
-import QRCode from 'core/components/QRCode';
 import PROPS_TYPE from 'resources/Props';
 import { makeLaosMap } from 'features/lao/reducer';
-import CopiableTextInput from 'core/components/CopiableTextInput';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';
 import { RollCall } from 'features/rollCall/objects';

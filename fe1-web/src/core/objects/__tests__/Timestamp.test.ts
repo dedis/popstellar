@@ -1,5 +1,6 @@
 import 'jest-extended';
-import { Timestamp } from 'core/objects/Timestamp';
+
+import { Timestamp } from '../Timestamp';
 
 const NOW = 1620255600;
 const TIMESTAMP = 1620455700;

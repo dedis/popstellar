@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { Hash } from 'core/objects/Hash';
+import { Hash } from '../Hash';
 
 test('Hash works against expected data - test vector 0 (ANSI)', () => {
   const hash: Hash = Hash.fromStringArray('abcd', '1234');

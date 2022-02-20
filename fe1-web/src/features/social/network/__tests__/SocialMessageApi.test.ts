@@ -2,7 +2,7 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import testKeyPair from 'test_data/keypair.json';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';

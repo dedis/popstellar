@@ -1,7 +1,7 @@
 import 'jest-extended';
 
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import '__tests__/utils/matchers';

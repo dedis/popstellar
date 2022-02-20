@@ -10,8 +10,7 @@ import {
   getLaoIdFromChannel,
 } from 'core/objects';
 
-import { Message } from '../jsonrpc/messages/Message';
-import { ProcessableMessage } from '../jsonrpc/messages/ProcessableMessage';
+import { Message, ProcessableMessage } from '../jsonrpc/messages';
 
 export interface ExtendedMessageState {
   receivedAt: number;

@@ -1,4 +1,4 @@
-import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
+import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from './jsonrpc/messages';
 import { setSignatureKeyPair } from './JsonRpcApi';
 

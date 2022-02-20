@@ -1,6 +1,6 @@
-import { Channel, ProtocolError } from 'core/objects';
-import { getNetworkManager } from 'core/network/NetworkManager';
-import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
+import { Channel } from 'core/objects';
+import { getNetworkManager } from 'core/network';
+import { KeyPairRegistry } from 'core/keypair';
 
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
 import { Message, MessageData, MessageRegistry } from './jsonrpc/messages';

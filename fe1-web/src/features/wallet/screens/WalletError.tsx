@@ -3,9 +3,8 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import TextBlock from 'core/components/TextBlock';
+import { TextBlock, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
-import WideButtonView from 'core/components/WideButtonView';
 import PROPS_TYPE from 'resources/Props';
 
 const styles = StyleSheet.create({

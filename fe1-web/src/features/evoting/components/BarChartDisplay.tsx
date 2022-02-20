@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes, { shape } from 'prop-types';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
+
 import { MajorityResult } from '../objects';
 
 const styles = StyleSheet.create({

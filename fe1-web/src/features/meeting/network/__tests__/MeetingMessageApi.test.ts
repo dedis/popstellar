@@ -7,7 +7,7 @@ import {
   configureTestFeatures,
 } from '__tests__/utils';
 
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';

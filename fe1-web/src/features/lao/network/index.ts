@@ -1,4 +1,5 @@
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+
 import {
   handleLaoCreateMessage,
   handleLaoStateMessage,

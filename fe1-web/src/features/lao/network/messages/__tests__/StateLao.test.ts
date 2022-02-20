@@ -10,7 +10,7 @@ import {
   configureTestFeatures,
 } from '__tests__/utils';
 
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
 
 import { StateLao } from '../StateLao';

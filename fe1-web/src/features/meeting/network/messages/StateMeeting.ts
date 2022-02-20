@@ -7,7 +7,7 @@ import {
   WitnessSignature,
 } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness, checkWitnessSignatures } from 'core/network/validation/Checker';
 
 /** Data received to track the state of a Meeting */

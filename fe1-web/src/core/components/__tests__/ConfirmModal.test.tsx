@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import ConfirmModal from 'core/components/ConfirmModal';
+
+import ConfirmModal from '../ConfirmModal';
 
 const TITLE = 'Title';
 const DESCRIPTION = 'Description';

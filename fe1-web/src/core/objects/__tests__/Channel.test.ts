@@ -1,15 +1,14 @@
 import 'jest-extended';
 
 import { mockLaoIdHash } from '__tests__/utils/TestUtils';
-import { Hash } from 'core/objects/Hash';
+import { Hash, PublicKey } from '../index';
 import {
   channelFromIds,
   getGeneralChirpsChannel,
   getLastPartOfChannel,
   getReactionChannel,
   getUserSocialChannel,
-} from 'core/objects/Channel';
-import { PublicKey } from 'core/objects/PublicKey';
+} from '../Channel';
 
 describe('Channel object', () => {
   it('channelFromIds should should return the correct channel', () => {

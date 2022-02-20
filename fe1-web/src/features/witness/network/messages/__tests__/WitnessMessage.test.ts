@@ -1,10 +1,11 @@
 import 'jest-extended';
+import { sign } from 'tweetnacl';
+
 import '__tests__/utils/matchers';
 import { mockPrivateKey } from '__tests__/utils';
 
-import { sign } from 'tweetnacl';
 import { Base64UrlData, KeyPair, PrivateKey, PublicKey, ProtocolError } from 'core/objects';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { WitnessMessage } from '../WitnessMessage';
 

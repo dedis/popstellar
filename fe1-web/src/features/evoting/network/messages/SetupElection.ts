@@ -2,7 +2,7 @@ import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Lao } from 'features/lao/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 import { Question } from '../../objects/Election';
