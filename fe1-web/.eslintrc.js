@@ -45,12 +45,18 @@ module.exports = {
   },
 
   rules: {
-    // Can be used to temporarily hide cycles,
-    // 'import/no-cycle': 0,
-
     // Exclude aliases from unresolved imports, due to the limitations of eslint-plugin-import
     // cf. https://github.com/import-js/eslint-plugin-import/issues/496
     'import/no-unresolved': ['error', { ignore: [ 'test_data', 'protocol' ] }],
+
+    // This rule excludes testing files from the requirement to only rely on "dependencies"
+    // Imports in testing files relying on "devDependencies" should be acceptable.
+    'import/no-extraneous-dependencies': [
+      'error', {'devDependencies': [
+          '**/__tests__/**/*',
+          '**/__mocks__/**/*',
+          'jest/**/*.js'
+      ]}],
 
     // allow JSX code only in files with the correct extensions
     'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],
