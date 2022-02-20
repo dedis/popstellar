@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        node-version: [12.x, 14.x]
+        node-version: [14.x, 16.x]
 
     defaults:
       run:
@@ -65,6 +65,11 @@ jobs:
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
         npm run eslint --if-present
+
+    - name: Validate dependencies
+      if: ${{ always() }}  # execute even if previous steps failed
+      run: |
+        npm run depcruise --if-present
 
     - name: Run test
       if: ${{ always() }}  # execute even if previous steps failed
