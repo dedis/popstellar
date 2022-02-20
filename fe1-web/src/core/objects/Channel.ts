@@ -5,8 +5,16 @@ export type Channel = string;
 export const ROOT_CHANNEL: Channel = '/root';
 
 export function getLaoIdFromChannel(ch: Channel): Hash {
-  // FIXME: implement this
-  return new Hash(ch);
+  if (!ch || !ch.startsWith(ROOT_CHANNEL)) {
+    throw new Error('Invalid channel path');
+  }
+
+  const pathComponents = ch.split('/');
+  if (pathComponents.length < 3) {
+    throw new Error('LAO is absent from channel path');
+  }
+
+  return new Hash(pathComponents[2]);
 }
 
 export function channelFromIds(...args: Hash[]): Channel {
@@ -51,6 +59,10 @@ export function getReactionChannel(laoIdHash: Hash): Channel {
  * Output: electionID
  *
  * @param channel - The channel whose last component we want to obtain
+ *
+ * @remarks
+ * Using this function is equivalent to making a lot of assumptions about the channel.
+ * This can be brittle and using a more validation-heavy logic may be preferable.
  */
 export function getLastPartOfChannel(channel: Channel): Hash {
   const channels = channel.split('/');

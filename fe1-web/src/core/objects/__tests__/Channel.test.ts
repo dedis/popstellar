@@ -1,8 +1,9 @@
 import 'jest-extended';
+import { mockLaoIdHash } from '__tests__/utils';
 
-import { mockLaoIdHash } from '__tests__/utils/TestUtils';
 import { Hash, PublicKey } from '../index';
 import {
+  getLaoIdFromChannel,
   channelFromIds,
   getGeneralChirpsChannel,
   getLastPartOfChannel,
@@ -11,7 +12,25 @@ import {
 } from '../Channel';
 
 describe('Channel object', () => {
-  it('channelFromIds should should return the correct channel', () => {
+  it('getLaoIdFromChannel should fail on empty path', () => {
+    expect(() => getLaoIdFromChannel(``)).toThrow(Error);
+  });
+
+  it('getLaoIdFromChannel should fail on root', () => {
+    expect(() => getLaoIdFromChannel(`/root`)).toThrow(Error);
+  });
+
+  it('getLaoIdFromChannel should return the correct LAO ID for LAO path', () => {
+    const actual = getLaoIdFromChannel(`/root/${mockLaoIdHash}`);
+    expect(actual.valueOf()).toEqual(mockLaoIdHash.valueOf());
+  });
+
+  it('getLaoIdFromChannel should return the correct LAO ID for long paths', () => {
+    const actual = getLaoIdFromChannel(`/root/${mockLaoIdHash}/long/path`);
+    expect(actual.valueOf()).toEqual(mockLaoIdHash.valueOf());
+  });
+
+  it('channelFromIds should return the correct channel', () => {
     expect(channelFromIds()).toEqual('/root');
     expect(channelFromIds(mockLaoIdHash)).toStrictEqual(`/root/${mockLaoIdHash}`);
   });
