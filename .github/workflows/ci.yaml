@@ -58,26 +58,23 @@ jobs:
         npm install
 
     - name: Check npm security issues
-      run: |
-        npm audit fix
+      run: npm audit fix
+      continue-on-error: true
 
     - name: Run lint
-      if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        npm run eslint --if-present
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }}  # execute even if previous steps failed
+      run: npm run eslint
 
     - name: Validate dependencies
       if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        npm run depcruise --if-present
+      run: npm run depcruise
 
     - name: Run test
       if: ${{ always() }}  # execute even if previous steps failed
-      run: |
-        npm run test --if-present
+      run: npm run test
 
     - name: Run code analysis
-      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '12.x' }}  # execute even if previous steps failed
+      if: ${{ matrix.os == 'ubuntu-latest' && matrix.node-version == '14.x' }}  # execute even if previous steps failed
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
       run: |
