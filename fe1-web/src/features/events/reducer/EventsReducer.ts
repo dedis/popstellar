@@ -205,7 +205,7 @@ export const makeEventsAliasMap = () =>
     (state) => getLaosState(state).currentId,
     // Selector: returns a map of ids -> LaoEvents' ids
     (eventMap: EventLaoReducerState, laoId: string | undefined): Record<string, string> => {
-      if (!laoId) {
+      if (!laoId || !(laoId in eventMap.byLaoId)) {
         return {};
       }
 
@@ -225,15 +225,15 @@ export const makeEventsMap = (laoId: string | undefined = undefined) =>
     // Second input: get the current LAO id,
     (state) => laoId || getLaosState(state).currentId,
     // Selector: returns a map of ids -> LaoEvents
-    (eventMap: EventLaoReducerState, id: string | undefined): Record<string, LaoEvent> => {
-      if (!id) {
+    (eventMap: EventLaoReducerState, laoId: string | undefined): Record<string, LaoEvent> => {
+      if (!laoId || !eventMap || !(laoId in eventMap.byLaoId)) {
         return {};
       }
 
       const dictObj: Record<string, LaoEvent> = {};
 
-      eventMap.byLaoId[id].allIds.forEach((evtId) => {
-        const e = eventFromState(eventMap.byLaoId[id].byId[evtId]);
+      eventMap.byLaoId[laoId].allIds.forEach((evtId) => {
+        const e = eventFromState(eventMap.byLaoId[laoId].byId[evtId]);
         if (e) {
           dictObj[evtId] = e;
         }
@@ -282,6 +282,10 @@ export const makeEventByTypeSelector = <T extends LaoEvent>(eventType: string) =
     (state) => getEventsState(state),
     // Selector: returns a map of ids -> LaoEvents
     (eventMap: EventLaoReducerState): Record<string, Record<string, T>> => {
+      if (!eventMap || !eventMap.byLaoId) {
+        return {};
+      }
+
       const evtByLao: Record<string, Record<string, T>> = {};
 
       Object.entries(eventMap.byLaoId).forEach(([laoId, evtList]) => {

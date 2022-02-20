@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
+
 /**
  * Wallet UI once the wallet is synced
  */
@@ -35,7 +37,6 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
   const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
 
-  const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
   const rollCalls = useSelector(rollCallSelector);
 
   const laoSelector = makeLaosMap();
