@@ -275,7 +275,7 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     storage.elements(CHANNEL_NAME) should equal (ChannelData(ObjectType.LAO, Nil).toJsonString)
   }
 
-  test("writeLaoData succeeds for both new and updated data"){
+  test("writeLaoData succeeds for new data"){
     // arrange
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, storage)))
@@ -283,7 +283,6 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
     val channelName1: Channel = Channel(CHANNEL_NAME)
 
-    // assert
     storage.size should equal (0)
 
     // act
@@ -298,15 +297,27 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     actualLaoData1.owner should equal(PublicKey(Base64Data.encode("key")))
     actualLaoData1.attendees should equal(List(PublicKey(Base64Data.encode("key"))))
     actualLaoData1.witnesses should equal(List.empty)
+  }
+
+  test("writeLaoData succeeds for updated data"){
+    // arrange
+    val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
+    val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val laoData: LaoData = LaoData().updateWith(messageLao)
+    val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    initialStorage.write((laoDataKey, laoData.toJsonString))
+    val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
 
     // act
     dbActor ! DbActorNew.WriteLaoData(channelName1, messageRollCall); sleep()
 
     // assert
     expectMsg(DbActorNew.DbActorAck())
-    storage.size should equal (1)
+    initialStorage.size should equal (1)
 
-    val actualLaoData2: LaoData = LaoData.buildFromJson(storage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
+    val actualLaoData2: LaoData = LaoData.buildFromJson(initialStorage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
 
     actualLaoData2.owner should equal(PublicKey(Base64Data.encode("key")))
     actualLaoData2.attendees should equal(List(PublicKey(Base64Data.encode("keyAttendee"))))
