@@ -1,5 +1,6 @@
-import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { addReducers } from 'core/redux';
 import STRINGS from '../resources/strings';
 
 import * as events from './events';
@@ -22,18 +23,27 @@ export function configureFeatures() {
   evoting.configure(messageRegistry);
   meeting.configure(messageRegistry);
   rollCall.configure(messageRegistry);
-  social.configure(messageRegistry);
+  const socialConfig = social.configure(messageRegistry);
   witness.configure(messageRegistry);
-  events.configure();
-  wallet.configure(keyPairRegistry);
+  const eventsConfig = events.configure();
+  const walletConfig = wallet.configure(keyPairRegistry);
 
   // verify configuration
   messageRegistry.verifyEntries();
   keyPairRegistry.verifyEntries();
 
+  // setup all reducers
+  addReducers({
+    ...laoConfig.reducers,
+    ...socialConfig.reducers,
+    ...eventsConfig.reducers,
+    ...walletConfig.reducers,
+  });
+
   return {
     messageRegistry,
     keyPairRegistry,
+
     navigationOpts: {
       screens: [
         {

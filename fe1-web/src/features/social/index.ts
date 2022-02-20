@@ -1,6 +1,4 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { addReducer } from 'core/redux';
-
 import { configureNetwork } from './network';
 import { socialReducer } from './reducer';
 
@@ -11,5 +9,9 @@ import { socialReducer } from './reducer';
  */
 export function configure(registry: MessageRegistry) {
   configureNetwork(registry);
-  addReducer(socialReducer);
+  return {
+    reducers: {
+      ...socialReducer,
+    },
+  };
 }

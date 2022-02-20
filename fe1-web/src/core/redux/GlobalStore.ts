@@ -16,12 +16,14 @@ declare module 'redux' {
   }
 }
 
+// Only used at application startup
 const noopReducer = {
-  noopReducer: () => ({}),
+  noopReducer: (x: any) => x || {},
 };
 
 // Initialize the store and expose its configuration
-const composedEnhancer = composeWithDevTools(applyMiddleware(thunkMiddleware));
+const composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 25 });
+const composedEnhancer = composeEnhancers(applyMiddleware(thunkMiddleware));
 export const store: Store = createStore(makeRootReducer(noopReducer), composedEnhancer);
 export const persist: Persistor = persistStore(store);
 

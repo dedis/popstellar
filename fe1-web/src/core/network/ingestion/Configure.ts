@@ -1,4 +1,4 @@
-import { addReducer, getStore } from 'core/redux';
+import { addReducers, getStore } from 'core/redux';
 import { getNetworkManager } from '../NetworkManager';
 import { MessageRegistry } from '../jsonrpc/messages';
 import { handleRpcRequests, setMessageRegistry } from './Handler';
@@ -15,7 +15,7 @@ export function configureIngestion(registry: MessageRegistry) {
   setMessageRegistry(registry);
 
   // configure the message reducer
-  addReducer(messageReducer);
+  addReducers(messageReducer);
 
   // setup the handler for incoming messages
   getNetworkManager().setRpcHandler(handleRpcRequests);

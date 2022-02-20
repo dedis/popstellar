@@ -1,4 +1,4 @@
-import { addReducer } from 'core/redux';
+import { addReducers } from 'core/redux';
 import keyPairReducer from './KeyPairReducer';
 import { KeyPairStore } from './KeyPairStore';
 
@@ -7,7 +7,7 @@ export * from './KeyPairStore';
 export * from './KeyPairReducer';
 
 export function configureKeyPair() {
-  addReducer(keyPairReducer);
+  addReducers(keyPairReducer);
 
   // initialize the keypair
   KeyPairStore.get();

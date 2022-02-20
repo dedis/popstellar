@@ -4,7 +4,7 @@ import { makeRootReducer } from './RootReducer';
 
 let reducers: Record<string, Reducer<any>> = {};
 
-export function addReducer(newReducers: Record<string, Reducer<any>>) {
+export function addReducers(newReducers: Record<string, Reducer<any>>) {
   reducers = {
     ...reducers,
     ...newReducers,

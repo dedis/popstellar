@@ -1,11 +1,9 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { addReducer } from 'core/redux';
-
 import { configureNetwork } from './network';
-import { laoReducer } from './reducer';
 import { PublicComponents } from './components';
 import * as hooks from './hooks';
 import * as navigation from './navigation';
+import { laoReducer } from './reducer';
 
 /**
  * Configures the LAO feature
@@ -14,11 +12,13 @@ import * as navigation from './navigation';
  */
 export function configure(registry: MessageRegistry) {
   configureNetwork(registry);
-  addReducer(laoReducer);
 
   return {
     components: PublicComponents,
     hooks: hooks,
     navigation: navigation,
+    reducers: {
+      ...laoReducer,
+    },
   };
 }

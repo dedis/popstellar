@@ -18,7 +18,7 @@ import { configureKeyPair } from 'core/keypair';
 /*
  * The starting point of the app.
  *
- * It opens the navigation component in a safeAreaProvider to be able use
+ * It opens the navigation component in a safeAreaProvider to be able to use
  * SafeAreaView in order to resolve issue with status bar.
  * It initializes the message registry, configures the ingestion and message signatures.
  *
@@ -26,8 +26,8 @@ import { configureKeyPair } from 'core/keypair';
  */
 function App() {
   const { messageRegistry, keyPairRegistry, navigationOpts } = configureFeatures();
-  configureNetwork(messageRegistry, keyPairRegistry);
   configureKeyPair();
+  configureNetwork(messageRegistry, keyPairRegistry);
 
   const navigationRef = useNavigationContainerRef();
   useReduxDevToolsExtension(navigationRef);

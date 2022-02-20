@@ -1,8 +1,5 @@
-// import { addReducer } from 'core/redux';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-
 import { configureNetwork } from './network';
-// import { rollCallReducer } from './reducer';
 
 /**
  * Configures the roll call feature
@@ -11,5 +8,4 @@ import { configureNetwork } from './network';
  */
 export function configure(registry: MessageRegistry) {
   configureNetwork(registry);
-  // addReducer(rollCallReducer);
 }
