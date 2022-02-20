@@ -35,7 +35,7 @@ export function handleMeetingCreateMessage(msg: ProcessableMessage): boolean {
 
   const lao = getLao(msg.laoId);
   if (!lao) {
-    console.warn(makeErr('LAO does not exist'));
+    console.warn(makeErr(`LAO ${msg.laoId} does not exist`));
     return false;
   }
 

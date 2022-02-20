@@ -29,12 +29,7 @@ export function requestCreateMeeting(
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new CreateMeeting({
-    id: Hash.fromStringArray(
-      EventTags.MEETING,
-      currentLao.id.toString(),
-      currentLao.creation.toString(),
-      name,
-    ),
+    id: Hash.fromStringArray(EventTags.MEETING, currentLao.id.toString(), time.toString(), name),
     name,
     start: Timestamp.max(time, startTime),
     creation: time,
