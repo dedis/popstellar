@@ -2,7 +2,7 @@ import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { JsonRpcMethod, JsonRpcRequest, Broadcast } from '../jsonrpc';
 import { ActionType, ObjectType, MessageRegistry, Message } from '../jsonrpc/messages';
-import { addMessages } from './Reducer';
+import { addMessages } from './MessageReducer';
 import { ExtendedMessage } from './ExtendedMessage';
 
 let messageRegistry: MessageRegistry;

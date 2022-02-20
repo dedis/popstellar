@@ -26,10 +26,10 @@ export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64U
 }
 
 /**
- * Verify if the witness signatures constitute a quorum of the
+ * Verify if the witness signatures constitute a quorum of the LAO witnesses
  *
- * @param witSigs witness signatures
- * @param lao a LAO providing a list of witness keys
+ * @param witSigs - The message witness signatures
+ * @param lao - A LAO providing a list of witness keys
  */
 export function hasWitnessSignatureQuorum(
   witSigs: WitnessSignature[],

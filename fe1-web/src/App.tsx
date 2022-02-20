@@ -11,7 +11,6 @@ import { Provider } from 'react-redux';
 import { store, persist } from 'core/redux';
 
 import AppNavigation from 'core/navigation/AppNavigation';
-import { configureIngestion } from 'core/network/ingestion';
 import { configureNetwork } from 'core/network';
 import { configureFeatures } from 'features';
 import { configureKeyPair } from 'core/keypair';
@@ -27,7 +26,6 @@ import { configureKeyPair } from 'core/keypair';
  */
 function App() {
   const { messageRegistry, keyPairRegistry, navigationOpts } = configureFeatures();
-  configureIngestion(messageRegistry);
   configureNetwork(messageRegistry, keyPairRegistry);
   configureKeyPair();
 

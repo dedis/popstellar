@@ -1,5 +1,4 @@
-import { ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { ProcessableMessage, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'core/redux';
 import { makeCurrentLao } from 'features/lao/reducer';
 

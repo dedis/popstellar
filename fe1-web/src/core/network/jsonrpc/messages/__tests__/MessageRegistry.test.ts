@@ -1,5 +1,5 @@
 import 'jest-extended';
-import { configureTestFeatures } from '__tests__/utils';
+import { configureTestFeatures, mockPopToken } from '__tests__/utils';
 
 import { channelFromIds, Timestamp } from 'core/objects';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
@@ -8,13 +8,13 @@ import { OpenedLaoStore } from 'features/lao/store';
 import { Lao, LaoState } from 'features/lao/objects';
 
 import { ActionType, ObjectType, SignatureType } from '../MessageData';
-import { Message } from '../Message';
+import { configureMessages, Message } from '../Message';
 import { MessageRegistry } from '..';
 
 const { CHIRP } = ObjectType;
 const { ADD, INVALID } = ActionType;
 const { POP_TOKEN } = SignatureType;
-let registry: MessageRegistry;
+
 const messageData = new AddChirp({
   text: 'text',
   timestamp: new Timestamp(1607277600),
@@ -31,8 +31,10 @@ const laoState: LaoState = {
 const getMock = jest.spyOn(OpenedLaoStore, 'get');
 getMock.mockImplementation(() => Lao.fromState(laoState));
 
+let registry: MessageRegistry;
 beforeEach(() => {
   registry = configureTestFeatures();
+  configureMessages(registry);
 });
 
 describe('MessageRegistry', () => {
@@ -44,12 +46,15 @@ describe('MessageRegistry', () => {
   });
 
   it('should work correctly for handling message', async () => {
+    const message = await Message.fromData(messageData, mockPopToken);
+    const extMsg = ExtendedMessage.fromMessage(message, channel);
+
     const mockHandle = jest.fn();
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
-    const message = await Message.fromData(messageData);
-    const extMsg = ExtendedMessage.fromMessage(message, channel);
+
     registry.handleMessage(extMsg);
+
     expect(mockHandle).toHaveBeenCalledTimes(1);
     expect(mockHandle).toHaveBeenCalledWith(extMsg);
     expect(mockBuild).not.toHaveBeenCalled();
@@ -59,7 +64,9 @@ describe('MessageRegistry', () => {
     const mockHandle = jest.fn();
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
+
     registry.buildMessageData(messageData);
+
     expect(mockHandle).not.toHaveBeenCalled();
     expect(mockBuild).toHaveBeenCalledTimes(1);
     expect(mockBuild).toHaveBeenCalledWith(messageData);

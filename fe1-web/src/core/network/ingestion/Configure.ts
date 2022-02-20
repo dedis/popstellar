@@ -3,14 +3,14 @@ import { getNetworkManager } from '../NetworkManager';
 import { MessageRegistry } from '../jsonrpc/messages';
 import { handleRpcRequests, setMessageRegistry } from './Handler';
 import { makeMessageStoreWatcher } from './Watcher';
-import messageReducer from './Reducer';
+import messageReducer from './MessageReducer';
 
 /**
  * Configures all handlers of the system within a MessageRegistry.
  *
  * @param registry
  */
-export function configure(registry: MessageRegistry) {
+export function configureIngestion(registry: MessageRegistry) {
   // configure the message handlers
   setMessageRegistry(registry);
 

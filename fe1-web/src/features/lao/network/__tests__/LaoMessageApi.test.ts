@@ -17,7 +17,7 @@ import { CreateLao, StateLao, UpdateLao } from '../messages';
 import { OpenedLaoStore } from '../../store';
 import * as msApi from '../LaoMessageApi';
 
-jest.mock('network/JsonRpcApi');
+jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;
 
 let checkDataCreateLao: Function;

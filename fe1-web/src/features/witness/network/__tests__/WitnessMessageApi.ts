@@ -10,7 +10,7 @@ import { OpenedLaoStore } from 'features/lao/store';
 import { WitnessMessage } from '../messages';
 import * as msApi from '../WitnessMessageApi';
 
-jest.mock('network/JsonRpcApi');
+jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;
 
 const checkDataWitnessMessage = (obj: MessageData) => {

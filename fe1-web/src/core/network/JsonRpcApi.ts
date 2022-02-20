@@ -1,4 +1,4 @@
-import { Channel } from 'core/objects';
+import { Channel, KeyPair } from 'core/objects';
 import { getNetworkManager } from 'core/network/NetworkManager';
 import { KeyPairRegistry } from 'core/keypair';
 
@@ -6,7 +6,15 @@ import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } fr
 import { Message, MessageData, MessageRegistry } from './jsonrpc/messages';
 
 export const AUTO_ASSIGN_ID = -1;
+
+/**
+ * A local reference to the global MessageRegistry object
+ */
 let messageRegistry: MessageRegistry;
+
+/**
+ * A local reference to the global KeyPairRegistry object
+ */
 let keyPairRegistry: KeyPairRegistry;
 
 /**
@@ -20,10 +28,24 @@ export function setSignatureKeyPair(messageReg: MessageRegistry, keyPairReg: Key
   keyPairRegistry = keyPairReg;
 }
 
-export async function publish(channel: Channel, msgData: MessageData): Promise<void> {
+/**
+ * Get the keypair with which to sign the MessageData
+ *
+ * @param msgData - The MessageData to be signed
+ */
+export function getSigningKeyPair(msgData: MessageData): Promise<KeyPair> {
   const signature = messageRegistry.getSignatureType(msgData);
-  const keyPair = await keyPairRegistry.getSignatureKeyPair(signature);
+  return keyPairRegistry.getSignatureKeyPair(signature);
+}
 
+/**
+ * Publish a message on the channel
+ *
+ * @param channel - The channel on which to publish the message
+ * @param msgData - The message data to be sent on the channel
+ */
+export async function publish(channel: Channel, msgData: MessageData): Promise<void> {
+  const keyPair = await getSigningKeyPair(msgData);
   const message = await Message.fromData(msgData, keyPair);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
@@ -37,6 +59,11 @@ export async function publish(channel: Channel, msgData: MessageData): Promise<v
   await getNetworkManager().sendPayload(request);
 }
 
+/**
+ * Subscribe to a channel
+ *
+ * @param channel - The channel to which we need to subscribe
+ */
 export function subscribe(channel: Channel): Promise<void> {
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.SUBSCRIBE,
@@ -60,6 +87,11 @@ function* messageGenerator(msgs: any[]) {
   }
 }
 
+/**
+ * Catch-up on the messages sent on the channel
+ *
+ * @param channel - The channel on which messages need to be retrieved
+ */
 export async function catchup(channel: Channel): Promise<Generator<Message, void, undefined>> {
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.CATCHUP,

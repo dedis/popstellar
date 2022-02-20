@@ -134,7 +134,7 @@ describe('CloseRollCall', () => {
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
-    it('should throw an error if update_id is undefined', () => {
+    it('should throw an error if update_id is invalid', () => {
       const createWrongObj = () =>
         new CloseRollCall({
           object: ObjectType.ROLL_CALL,

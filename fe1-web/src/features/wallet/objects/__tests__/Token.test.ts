@@ -85,7 +85,5 @@ test('Path produces known token - test vector 0', async () => {
 
 test('generateToken returns undefined with an undefined Roll call id', async () => {
   const laoId = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-  const token = await Token.generateToken(laoId, undefined);
-
-  expect(token).toEqual(undefined);
+  await expect(() => Token.generateToken(laoId, undefined)).toThrow(Error);
 });

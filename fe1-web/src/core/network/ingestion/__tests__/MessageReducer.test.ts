@@ -1,14 +1,19 @@
 import 'jest-extended';
-import { mockPopToken, configureTestFeatures } from '__tests__/utils';
+import {
+  mockPopToken,
+  mockPrivateKey,
+  mockPublicKey,
+  configureTestFeatures,
+} from '__tests__/utils';
 
 import { AnyAction } from 'redux';
 
-import { channelFromIds, Timestamp } from 'core/objects';
+import { channelFromIds, KeyPair, Timestamp } from 'core/objects';
 import { Message } from 'core/network/jsonrpc/messages';
 import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { ExtendedMessage, markMessageAsProcessed } from '../ExtendedMessage';
-import { addMessages, getMessage, messageReduce, processMessages } from '../Reducer';
+import { addMessages, getMessage, messageReduce, processMessages } from '../MessageReducer';
 
 jest.mock('features/wallet/objects/Token', () => ({
   getCurrentPopTokenFromStore: jest.fn(() => Promise.resolve(mockPopToken)),
@@ -20,12 +25,17 @@ const initialState = {
   unprocessedIds: [],
 };
 
+const keyPair = KeyPair.fromState({
+  privateKey: mockPrivateKey,
+  publicKey: mockPublicKey,
+});
+
 const createExtendedMessage = async () => {
   const messageData = new AddChirp({
     text: 'text',
     timestamp: new Timestamp(1607277600),
   });
-  const message = await Message.fromData(messageData);
+  const message = await Message.fromData(messageData, keyPair);
   const channel = channelFromIds();
   return ExtendedMessage.fromMessage(message, channel);
 };
