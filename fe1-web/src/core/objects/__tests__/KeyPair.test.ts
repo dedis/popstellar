@@ -2,7 +2,7 @@ import 'jest-extended';
 // @ts-ignore
 import testKeyPair from 'test_data/keypair.json';
 
-import { Base64UrlData, KeyPair, KeyPairState } from '..';
+import { Base64UrlData, KeyPair, KeyPairState } from '../index';
 
 const kpState: KeyPairState = {
   publicKey: testKeyPair.publicKey,

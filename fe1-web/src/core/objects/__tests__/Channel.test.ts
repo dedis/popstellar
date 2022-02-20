@@ -1,7 +1,7 @@
 import 'jest-extended';
 
 import { mockLaoIdHash } from '__tests__/utils/TestUtils';
-import { Hash, PublicKey } from '..';
+import { Hash, PublicKey } from '../index';
 import {
   channelFromIds,
   getGeneralChirpsChannel,
