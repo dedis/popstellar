@@ -46,7 +46,7 @@ const chirp1 = new Chirp({
 jest.mock('features/social/network/SocialMessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
-  useSelector: jest.fn().mockImplementation(() => ({ 1234: { '👍': 1, '👎': 0, '❤': 0 } })),
+  useSelector: jest.fn().mockImplementation(() => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } })),
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
@@ -63,12 +63,12 @@ describe('ChirpCard', () => {
     const getMockLao = jest.spyOn(OpenedLaoStore, 'get');
     getMockLao.mockImplementation(() => mockLao);
 
-    it.skip('renders correctly for sender', () => {
+    it('renders correctly for sender', () => {
       const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });
 
-    it.skip('renders correctly for non-sender', () => {
+    it('renders correctly for non-sender', () => {
       const obj = render(
         <ChirpCard chirp={chirp} currentUserPublicKey={new PublicKey('IAmNotTheSender')} />,
       );
@@ -91,7 +91,7 @@ describe('ChirpCard', () => {
   });
 
   describe('for reaction', () => {
-    it.skip('renders correctly with reaction', () => {
+    it('renders correctly with reaction', () => {
       const obj = render(<ChirpCard chirp={chirp} currentUserPublicKey={sender} />);
       expect(obj.toJSON()).toMatchSnapshot();
     });

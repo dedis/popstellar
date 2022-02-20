@@ -1,9 +1,9 @@
 import 'jest-extended';
-import { sign } from 'tweetnacl';
-
 import '__tests__/utils/matchers';
+import { mockPrivateKey } from '__tests__/utils';
+
+import { sign } from 'tweetnacl';
 import { Base64UrlData, KeyPair, PrivateKey, PublicKey, ProtocolError } from 'core/objects';
-import { mockPrivateKey } from '__tests__/utils/TestUtils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 
 import { WitnessMessage } from '../WitnessMessage';
@@ -54,7 +54,7 @@ describe('WitnessMessage', () => {
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
-  it.skip('fromJson should throw an error if signature is incorrect', () => {
+  it('fromJson should throw an error if signature is incorrect', () => {
     const generateKeyPair = () => {
       const pair = sign.keyPair();
       return new KeyPair({

@@ -38,12 +38,17 @@ const SocialMediaNavigation = () => {
 
   // This will be run again each time the lao.last_tokenized_roll_call_id changes
   useEffect(() => {
-    generateToken(lao.id, rollCallId).then((token) => {
-      if (token && rollCall.containsToken(token)) {
-        setCurrentUserPublicKey(token.publicKey);
-      }
-    });
-  }, [lao.last_tokenized_roll_call_id]);
+    generateToken(lao.id, rollCallId)
+      .then((token) => {
+        if (rollCall.containsToken(token)) {
+          setCurrentUserPublicKey(token.publicKey);
+        }
+      })
+      // If an error happens when generating the token, it should not affect the Social Media
+      .catch(() => {
+        /* noop */
+      });
+  }, [lao.id, lao.last_tokenized_roll_call_id, rollCall, rollCallId]);
 
   return (
     <Tab.Navigator

@@ -1,4 +1,5 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import STRINGS from '../resources/strings';
 
 import * as events from './events';
@@ -13,6 +14,7 @@ import * as witness from './witness';
 
 export function configureFeatures() {
   const messageRegistry = new MessageRegistry();
+  const keyPairRegistry = new KeyPairRegistry();
 
   // configure features
   const laoConfig = lao.configure(messageRegistry);
@@ -23,13 +25,15 @@ export function configureFeatures() {
   social.configure(messageRegistry);
   witness.configure(messageRegistry);
   events.configure();
-  wallet.configure();
+  wallet.configure(keyPairRegistry);
 
   // verify configuration
   messageRegistry.verifyEntries();
+  keyPairRegistry.verifyEntries();
 
   return {
     messageRegistry,
+    keyPairRegistry,
     navigationOpts: {
       screens: [
         {

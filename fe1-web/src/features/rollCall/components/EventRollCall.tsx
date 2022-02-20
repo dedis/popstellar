@@ -24,8 +24,7 @@ const EventRollCall = (props: IPropTypes) => {
   const navigation = useNavigation();
 
   if (!lao) {
-    console.warn('no LAO is currently active');
-    return null;
+    throw new Error('no LAO is currently active');
   }
   const [popToken, setPopToken] = useState('');
 

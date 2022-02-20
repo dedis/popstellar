@@ -1,7 +1,9 @@
-import { addReducer } from '../redux/Manage';
+import { addReducer } from 'core/redux';
 import keyPairReducer from './Reducer';
 
-export * from './Reducer';
 export * from './KeyPairStore';
+export * from './Reducer';
 
-addReducer(keyPairReducer);
+export function configureKeyPair() {
+  addReducer(keyPairReducer);
+}

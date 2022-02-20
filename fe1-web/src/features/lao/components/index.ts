@@ -1,3 +1,9 @@
-export { default as LaoItem } from './LaoItem';
-export { default as LaoProperties } from './LaoProperties';
-export { default as LaoList } from './LaoList';
+import LaoItem from './LaoItem';
+import LaoProperties from './LaoProperties';
+import LaoList from './LaoList';
+
+export { LaoItem, LaoProperties, LaoList };
+
+export const PublicComponents = {
+  LaoList: LaoList,
+};

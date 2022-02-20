@@ -12,7 +12,9 @@ import { store, persist } from 'core/redux';
 
 import AppNavigation from 'core/navigation/AppNavigation';
 import { configureIngestion } from 'core/network/ingestion';
+import { configureNetwork } from 'core/network';
 import { configureFeatures } from 'features';
+import { configureKeyPair } from 'core/keypair';
 
 /*
  * The starting point of the app.
@@ -24,8 +26,10 @@ import { configureFeatures } from 'features';
  * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */
 function App() {
-  const { messageRegistry, navigationOpts } = configureFeatures();
+  const { messageRegistry, keyPairRegistry, navigationOpts } = configureFeatures();
   configureIngestion(messageRegistry);
+  configureNetwork(messageRegistry, keyPairRegistry);
+  configureKeyPair();
 
   const navigationRef = useNavigationContainerRef();
   useReduxDevToolsExtension(navigationRef);

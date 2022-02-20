@@ -1,10 +1,11 @@
 import 'jest-extended';
 
-import '__tests__/utils/matchers';
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
-import { mockLao, mockLaoCreationTime, mockLaoId } from '__tests__/utils/TestUtils';
 import { OpenedLaoStore } from 'features/lao/store';
+
+import '__tests__/utils/matchers';
+import { mockLao, mockLaoId, mockLaoCreationTime, configureTestFeatures } from '__tests__/utils';
 
 import { CreateMeeting } from '../CreateMeeting';
 
@@ -40,6 +41,7 @@ const createMeetingJson = `{
 }`;
 
 beforeAll(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
 });
 

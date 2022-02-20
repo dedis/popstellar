@@ -1,14 +1,16 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { KeyPairStore } from 'core/keypair';
-import { Hash } from 'core/objects';
 import {
   defaultMessageDataFields,
   mockLao,
   mockLaoId,
   mockLaoName,
+  configureTestFeatures,
 } from '__tests__/utils/TestUtils';
+
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { KeyPairStore } from 'core/keypair';
+import { Hash } from 'core/objects';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
 
 import { CreateLao, StateLao, UpdateLao } from '../messages';
@@ -130,6 +132,8 @@ const initializeChecks = () => {
     expect(data.id).toBeJsonEqual(expected);
   };
 };
+
+beforeAll(configureTestFeatures);
 
 beforeEach(() => {
   OpenedLaoStore.store(mockLao);

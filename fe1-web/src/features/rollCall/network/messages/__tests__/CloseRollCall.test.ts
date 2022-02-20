@@ -1,14 +1,15 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
-import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
 import {
   mockLao,
   mockLaoId,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
-} from '__tests__/utils/TestUtils';
+  configureTestFeatures,
+} from '__tests__/utils';
+
+import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { OpenedLaoStore } from 'features/lao/store';
 
@@ -48,6 +49,7 @@ const closeRollCallJson = `{
 }`;
 
 beforeAll(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
 });
 

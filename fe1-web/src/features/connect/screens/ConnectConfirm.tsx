@@ -61,7 +61,8 @@ export function validateLaoId(laoId: string): Channel | undefined {
 }
 
 const ConnectConfirm = ({ navigation }: IPropTypes) => {
-  const route = useRoute();
+  // FIXME: route should use proper type
+  const route = useRoute<any>();
   const { laoIdIn, url } = route.params;
   const [serverUrl, setServerUrl] = useState(url);
   const [laoId, setLaoId] = useState(laoIdIn);

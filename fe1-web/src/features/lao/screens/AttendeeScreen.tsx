@@ -23,7 +23,8 @@ const AttendeeScreen = () => {
   const pastEvents: LaoEvent[] = [];
   const currentEvents: LaoEvent[] = [];
   const futureEvents: LaoEvent[] = [];
-  const route = useRoute();
+  // FIXME: route should use proper type
+  const route = useRoute<any>();
   const { url } = route.params || '';
   const [serverUrl] = useState(url);
 

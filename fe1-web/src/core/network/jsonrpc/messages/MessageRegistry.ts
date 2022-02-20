@@ -86,10 +86,10 @@ export class MessageRegistry {
   /**
    * Adds callback functions to manage a type of message in the registry.
    *
-   * @param object - The object of the message
+   * @param obj - The object of the message
    * @param action - The action of the message
    * @param handleFunc - The function that handles this type of message
-   * @param buildFun - The function that builds a MessageData from this type of message
+   * @param buildFunc - The function to build this type of message
    */
   add(obj: ObjectType, action: ActionType, handleFunc: HandleFunction, buildFunc: BuildFunction) {
     const entry = this.getEntry({ object: obj, action: action });
@@ -172,7 +172,7 @@ export class MessageRegistry {
     return messageEntry;
   }
 
-  private static isMessageData(value: unknown): value is MessageData {
+  static isMessageData(value: unknown): value is MessageData {
     return typeof value === 'object' && value !== null && 'object' in value && 'action' in value;
   }
 }
