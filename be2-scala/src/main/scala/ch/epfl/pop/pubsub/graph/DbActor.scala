@@ -272,7 +272,7 @@ object DbActor extends AskPatternConstants {
               batch.put(laoDataKey.getBytes, laoDataNew.toJsonString.getBytes)
               laoDataCache.put(laoDataKey, laoDataNew)
             } else if (bt == null) {
-              val laoDataNew: LaoData = LaoData.emptyLaoData.updateWith(message)
+              val laoDataNew: LaoData = LaoData().updateWith(message)
               batch.put(laoDataKey.getBytes, laoDataNew.toJsonString.getBytes)
               laoDataCache.put(laoDataKey, laoDataNew)
             }

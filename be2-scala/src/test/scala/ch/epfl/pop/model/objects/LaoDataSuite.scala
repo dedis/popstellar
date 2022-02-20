@@ -59,7 +59,7 @@ class LaoDataSuite extends FunSuite with Matchers {
   }
 
   test("emptyLaoData generates what it should") {
-    val emptyData: LaoData = LaoData.emptyLaoData
+    val emptyData: LaoData = LaoData()
 
     emptyData.owner should equal(null)
     emptyData.attendees should equal(List.empty)
@@ -77,7 +77,7 @@ class LaoDataSuite extends FunSuite with Matchers {
     val messageAddChirp: Message = MessageExample.MESSAGE_ADDCHIRP
     val messageWithoutMessageData: Message = MessageExample.MESSAGE
 
-    val emptyData: LaoData = LaoData.emptyLaoData
+    val emptyData: LaoData = LaoData()
 
     val chirpData: LaoData = emptyData.updateWith(messageAddChirp)
 

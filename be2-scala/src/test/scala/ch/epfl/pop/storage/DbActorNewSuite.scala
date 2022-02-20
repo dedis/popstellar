@@ -8,8 +8,9 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
-import scala.concurrent.Await
 import util.examples.MessageExample
+
+import scala.concurrent.Await
 
 
 class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll with AskPatternConstants {
@@ -400,7 +401,7 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     val listIds: List[Hash] = MESSAGE.message_id :: message2.message_id :: Nil
     val channelData: ChannelData = ChannelData(ObjectType.LAO, listIds)
     initialStorage.write(
-      (CHANNEL_NAME, channelData.toJsonString), 
+      (CHANNEL_NAME, channelData.toJsonString),
       (s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString),
       (s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString),
     )
@@ -428,7 +429,7 @@ class DbActorNewSuite extends TestKit(ActorSystem("DbActorNewSuiteActorSystem"))
     val listIds: List[Hash] = MESSAGE.message_id :: message2Id :: Nil
     val channelData: ChannelData = ChannelData(ObjectType.LAO, listIds)
     initialStorage.write(
-      (CHANNEL_NAME, channelData.toJsonString), 
+      (CHANNEL_NAME, channelData.toJsonString),
       (s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString),
     )
     val dbActor: AskableActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
