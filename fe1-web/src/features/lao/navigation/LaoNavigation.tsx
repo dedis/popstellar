@@ -9,7 +9,6 @@ import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 import { SocialMediaNavigation } from 'features/social/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
-import { WitnessNavigation } from 'features/witness/navigation';
 import { Home } from 'features/home/screens';
 
 import { makeCurrentLao } from '../reducer';
@@ -56,10 +55,8 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
   let component;
 
-  if (isOrganizer) {
+  if (isOrganizer || isWitness) {
     component = OrganizerNavigation;
-  } else if (isWitness) {
-    component = WitnessNavigation;
   } else {
     component = AttendeeScreen;
   }
