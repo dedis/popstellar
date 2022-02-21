@@ -25,7 +25,7 @@ jest.mock('@react-navigation/core');
 jest.mock('react-qr-reader');
 jest.mock('features/rollCall/network/RollCallMessageApi');
 
-let mockToastShow = jest.fn();
+const mockToastShow = jest.fn();
 const mockToastRet = {
   show: mockToastShow,
 };
