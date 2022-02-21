@@ -1,17 +1,11 @@
-import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
-import { ActionType, ObjectType } from 'core/network/validation/Validator';
-import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
-import { getMessage, makeLaoMessagesState } from 'core/reducers';
-import { dispatch, getStore } from 'core/redux';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
+import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';
-import { connectToLao, makeCurrentLao, updateLao } from '../reducer';
-import { CreateLao, StateLao, UpdateLao } from './messages';
+import { connectToLao } from '../reducer';
+import { CreateLao } from './messages';
 
-const getCurrentLao = makeCurrentLao();
-const getMessageState = makeLaoMessagesState();
-
-function handleLaoCreateMessage(msg: ExtendedMessage): boolean {
+export function handleLaoCreateMessage(msg: ProcessableMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.CREATE) {
     console.warn('handleLaoCreateMessage was called to process an unsupported message', msg);
     return false;
@@ -31,7 +25,7 @@ function handleLaoCreateMessage(msg: ExtendedMessage): boolean {
   return true;
 }
 
-function handleLaoStateMessage(msg: ExtendedMessage): boolean {
+export function handleLaoStateMessage(msg: ProcessableMessage): boolean {
   if (msg.messageData.object !== ObjectType.LAO || msg.messageData.action !== ActionType.STATE) {
     console.warn('handleLaoStateMessage was called to process an unsupported message', msg);
     return false;
@@ -39,6 +33,9 @@ function handleLaoStateMessage(msg: ExtendedMessage): boolean {
 
   const makeErr = (err: string) => `lao/state was not processed: ${err}`;
 
+  console.warn(makeErr('currently unsupported, needs redesign with consensus'));
+  return true;
+  /*
   const storeState = getStore().getState();
   const oldLao = getCurrentLao(storeState);
   if (!oldLao) {
@@ -72,25 +69,10 @@ function handleLaoStateMessage(msg: ExtendedMessage): boolean {
   });
 
   dispatch(updateLao(lao.toState()));
-  return true;
+  return true; */
 }
 
-function handleLaoUpdatePropertiesMessage(msg: ExtendedMessage): boolean {
+export function handleLaoUpdatePropertiesMessage(msg: ProcessableMessage): boolean {
   console.debug(`lao/update_properties message was archived: no action needs to be taken ${msg}`);
   return true;
-}
-
-/**
- * Configures the LaoHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mappings
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.LAO, ActionType.CREATE, handleLaoCreateMessage);
-  registry.addHandler(ObjectType.LAO, ActionType.STATE, handleLaoStateMessage);
-  registry.addHandler(
-    ObjectType.LAO,
-    ActionType.UPDATE_PROPERTIES,
-    handleLaoUpdatePropertiesMessage,
-  );
 }

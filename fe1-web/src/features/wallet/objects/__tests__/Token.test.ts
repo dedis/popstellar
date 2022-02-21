@@ -1,3 +1,5 @@
+import { configureTestFeatures } from '__tests__/utils';
+
 import { Base64UrlData, Hash } from 'core/objects';
 
 import { WalletStore } from '../../store';
@@ -11,6 +13,8 @@ const mockId = 'T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=';
 
 const mnemonic: string =
   'garbage effort river orphan negative kind outside quit hat camera approve first';
+
+beforeAll(configureTestFeatures);
 
 beforeEach(() => {
   WalletStore.clear();
@@ -80,8 +84,8 @@ test('Path produces known token - test vector 0', async () => {
 });
 
 test('generateToken returns undefined with an undefined Roll call id', async () => {
-  const laoId = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-  const token = await Token.generateToken(laoId, undefined);
+  expect.assertions(1);
 
-  expect(token).toEqual(undefined);
+  const laoId = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  await expect(Token.generateToken(laoId, undefined)).rejects.toThrow(Error);
 });

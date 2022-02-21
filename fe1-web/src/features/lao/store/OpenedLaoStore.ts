@@ -1,4 +1,4 @@
-import { dispatch, getStore } from 'core/redux/ReduxSetUp';
+import { dispatch, getStore } from 'core/redux';
 
 import { Lao } from '../objects';
 import { connectToLao, makeCurrentLao } from '../reducer';

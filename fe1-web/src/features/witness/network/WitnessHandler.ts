@@ -1,15 +1,17 @@
-import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { addMessageWitnessSignature } from 'core/network/ingestion';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
+import { Hash, WitnessSignature } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
-import { makeCurrentLao } from 'features/lao/reducer';
-import { addMessageWitnessSignature } from 'core/reducers';
 
-import { WitnessSignature } from '../objects';
+import { makeLaosMap } from 'features/lao/reducer';
+
 import { WitnessMessage } from './messages';
 
-const getCurrentLao = makeCurrentLao();
+const getLaos = makeLaosMap();
 
-function handleWitnessMessage(msg: ExtendedMessage): boolean {
+const getLao = (laoId: Hash | string) => getLaos(getStore().getState())[laoId.valueOf()];
+
+export function handleWitnessMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MESSAGE ||
     msg.messageData.action !== ActionType.WITNESS
@@ -18,10 +20,16 @@ function handleWitnessMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
-  const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+  const makeErr = (err: string) => `message/witness was not processed: ${err}`;
+
+  const lao = getLao(msg.laoId);
   if (!lao) {
-    console.warn('message/witness was not processed: no LAO is currently active');
+    console.warn(makeErr('LAO does not exist'));
+    return false;
+  }
+
+  if (!lao.witnesses.includes(msg.sender)) {
+    console.warn(makeErr('sender does not appear to be a valid witness'));
     return false;
   }
 
@@ -42,16 +50,7 @@ function handleWitnessMessage(msg: ExtendedMessage): boolean {
     return true;
   }
 
-  dispatch(addMessageWitnessSignature(lao.id, msgId, ws.toState()));
+  dispatch(addMessageWitnessSignature(msgId, ws.toState()));
 
   return true;
-}
-
-/**
- * Configures the WitnessHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mapping
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.MESSAGE, ActionType.WITNESS, handleWitnessMessage);
 }

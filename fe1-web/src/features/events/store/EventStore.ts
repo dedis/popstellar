@@ -1,5 +1,5 @@
 import { Hash } from 'core/objects';
-import { getStore } from 'core/redux/ReduxSetUp';
+import { getStore } from 'core/redux';
 
 import { LaoEvent } from '../objects';
 import { makeEventsMap } from '../reducer';

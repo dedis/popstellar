@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import STRINGS from 'resources/strings';
 import { gray, popBlue } from 'core/styles/colors';
@@ -15,16 +15,42 @@ import { RollCall } from 'features/rollCall/objects';
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 
+const Tab = createMaterialTopTabNavigator();
+
+const iconSelector =
+  (routeName: string) =>
+  ({ color }: { color: string }) => {
+    let iconName: 'home' | 'search' | 'people' | 'person' | 'stop';
+
+    switch (routeName) {
+      case STRINGS.social_media_navigation_tab_home:
+        iconName = 'home';
+        break;
+      case STRINGS.social_media_navigation_tab_search:
+        iconName = 'search';
+        break;
+      case STRINGS.social_media_navigation_tab_follows:
+        iconName = 'people';
+        break;
+      case STRINGS.social_media_navigation_tab_profile:
+        iconName = 'person';
+        break;
+      default:
+        iconName = 'stop';
+        console.error('Icon could not be rendered correctly. Wrong route name.');
+        break;
+    }
+
+    return <Ionicons name={iconName} size={23} color={color} />;
+  };
+
 /**
  * This class manages the social media navigation and creates the corresponding navigation bar.
  */
-
-const Tab = createMaterialTopTabNavigator();
-
 const SocialMediaNavigation = () => {
   const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
 
-  const laoSelect = makeCurrentLao();
+  const laoSelect = useMemo(makeCurrentLao, []);
   const lao = useSelector(laoSelect);
 
   if (lao === undefined) {
@@ -38,39 +64,22 @@ const SocialMediaNavigation = () => {
 
   // This will be run again each time the lao.last_tokenized_roll_call_id changes
   useEffect(() => {
-    generateToken(lao.id, rollCallId).then((token) => {
-      if (token && rollCall.containsToken(token)) {
-        setCurrentUserPublicKey(token.publicKey);
-      }
-    });
-  }, [lao.last_tokenized_roll_call_id]);
+    generateToken(lao.id, rollCallId)
+      .then((token) => {
+        if (rollCall.containsToken(token)) {
+          setCurrentUserPublicKey(token.publicKey);
+        }
+      })
+      // If an error happens when generating the token, it should not affect the Social Media
+      .catch(() => {
+        /* noop */
+      });
+  }, [lao.id, lao.last_tokenized_roll_call_id, rollCall, rollCallId]);
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarIcon: ({ color }) => {
-          let iconName;
-
-          switch (route.name) {
-            case STRINGS.social_media_navigation_tab_home:
-              iconName = 'home';
-              break;
-            case STRINGS.social_media_navigation_tab_search:
-              iconName = 'search';
-              break;
-            case STRINGS.social_media_navigation_tab_follows:
-              iconName = 'people';
-              break;
-            case STRINGS.social_media_navigation_tab_profile:
-              iconName = 'person';
-              break;
-            default:
-              console.error('wrong route.');
-              break;
-          }
-
-          return <Ionicons name={iconName} size={23} color={color} />;
-        },
+        tabBarIcon: iconSelector(route.name),
         tabBarActiveTintColor: popBlue,
         tabBarInactiveTintColor: gray,
         swipeEnabled: false,

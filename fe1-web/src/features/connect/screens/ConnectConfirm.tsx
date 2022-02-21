@@ -1,18 +1,22 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 import { useRoute } from '@react-navigation/core';
 
-import { getNetworkManager } from 'core/network';
-import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { getNetworkManager, subscribeToChannel } from 'core/network';
+import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { Channel, channelFromIds, Hash } from 'core/objects';
+
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+
 import STRINGS from 'resources/strings';
 import PROPS_TYPE from 'resources/Props';
-import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { FOUR_SECONDS } from 'resources/const';
+
+import { setLaoServerAddress } from 'features/lao/reducer';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -61,11 +65,14 @@ export function validateLaoId(laoId: string): Channel | undefined {
 }
 
 const ConnectConfirm = ({ navigation }: IPropTypes) => {
-  const route = useRoute();
-  const { laoIdIn, url } = route.params;
+  // FIXME: route should use proper type
+  const route = useRoute<any>();
+  const laoIdIn = route.params?.laoIdIn || '';
+  const url = route.params?.url || 'ws://localhost:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(url);
   const [laoId, setLaoId] = useState(laoIdIn);
   const toast = useToast();
+  const dispatch = useDispatch();
 
   const onButtonConfirm = async () => {
     if (!connectTo(serverUrl)) {
@@ -79,6 +86,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
 
     try {
       await subscribeToChannel(channel);
+      dispatch(setLaoServerAddress(laoId, serverUrl));
       navigation.navigate(STRINGS.app_navigation_tab_organizer, {
         screen: STRINGS.organization_navigation_tab_organizer,
         params: {

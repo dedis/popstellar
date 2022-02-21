@@ -30,7 +30,7 @@ export class Reaction {
   constructor(obj: Partial<Reaction>) {
     if (obj === undefined || obj === null) {
       throw new Error(
-        'Error encountered while creating a reaction object: ' + 'undefined/null parameters',
+        'Error encountered while creating a reaction object: undefined/null parameters',
       );
     }
 

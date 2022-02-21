@@ -1,8 +1,5 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
-import { Base64UrlData, Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
 import {
   mockLaoCreationTime,
   mockLaoIdHash,
@@ -10,7 +7,11 @@ import {
   mockPublicKey,
   mockPublicKey2,
   org,
-} from '__tests__/utils/TestUtils';
+  configureTestFeatures,
+} from '__tests__/utils';
+
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Base64UrlData, Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
 
 import { StateLao } from '../StateLao';
 
@@ -45,6 +46,8 @@ const stateLaoJson = `{
 }`;
 
 describe('StateLao', () => {
+  beforeAll(configureTestFeatures);
+
   it('should be created correctly from Json', () => {
     expect(new StateLao(sampleStateLao)).toBeJsonEqual(sampleStateLao);
     const temp = {

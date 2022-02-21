@@ -1,6 +1,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
-import CheckboxList from 'core/components/CheckboxList';
+
+import CheckboxList from '../CheckboxList';
 
 let onChange: Function;
 const question = {

@@ -1,12 +1,9 @@
 import { Channel } from 'core/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 import { dispatch } from 'core/redux';
-import { addMessages } from 'core/reducers';
-import { Broadcast } from '../jsonrpc/Broadcast';
-import { ActionType, ObjectType } from '../jsonrpc/messages/MessageData';
-import { ExtendedMessage, MessageRegistry } from '../jsonrpc/messages';
-import { Message } from '../jsonrpc/messages/Message';
-import { JsonRpcMethod, JsonRpcRequest } from '../jsonrpc';
+import { JsonRpcMethod, JsonRpcRequest, Broadcast } from '../jsonrpc';
+import { ActionType, ObjectType, MessageRegistry, Message } from '../jsonrpc/messages';
+import { addMessages } from './MessageReducer';
+import { ExtendedMessage } from './ExtendedMessage';
 
 let messageRegistry: MessageRegistry;
 
@@ -44,11 +41,8 @@ export function storeMessage(msg: Message, ch: Channel) {
     const isLao = handleLaoCreateMessages(extMsg);
 
     if (!isLao) {
-      // get the current LAO
-      const laoId = OpenedLaoStore.get().id;
-
       // send it to the store
-      dispatch(addMessages(laoId.valueOf(), extMsg.toState()));
+      dispatch(addMessages(extMsg.toState()));
     }
   } catch (err) {
     console.warn('Messages could not be stored, error:', err, msg);

@@ -10,29 +10,13 @@ import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 import { Chirp, ChirpState } from '../objects';
 import { makeChirpsListOfUser } from '../reducer';
 
+const styles = socialMediaProfileStyles;
+
 /**
  * UI for the profile of a user.
  */
-
-const styles = socialMediaProfileStyles;
-
 const SocialUserProfile = ({ route }: any) => {
   const { currentUserPublicKey, userPublicKey } = route.params;
-  if (!userPublicKey) {
-    return (
-      <View style={styles.viewCenter}>
-        <View style={styles.topView}>
-          <View style={{ marginBottom: 15 }}>
-            <BackButton
-              navigationTabName={STRINGS.social_media_navigation_tab_search}
-              testID="backButtonUserProfile"
-            />
-          </View>
-          <TextBlock text="Impossible to load profile of user: public key not provided." />
-        </View>
-      </View>
-    );
-  }
 
   const userChirps = makeChirpsListOfUser(userPublicKey);
   const userChirpList = useSelector(userChirps);
@@ -41,7 +25,21 @@ const SocialUserProfile = ({ route }: any) => {
     <ChirpCard chirp={Chirp.fromState(item)} currentUserPublicKey={currentUserPublicKey} />
   );
 
-  return (
+  const displayNoUser = () => (
+    <View style={styles.viewCenter}>
+      <View style={styles.topView}>
+        <View style={{ marginBottom: 15 }}>
+          <BackButton
+            navigationTabName={STRINGS.social_media_navigation_tab_search}
+            testID="backButtonUserProfile"
+          />
+        </View>
+        <TextBlock text="Impossible to load profile of user: public key not provided." />
+      </View>
+    </View>
+  );
+
+  const displayUser = () => (
     <View style={styles.viewCenter}>
       <View style={styles.topView}>
         <View style={{ marginBottom: 15 }}>
@@ -67,6 +65,8 @@ const SocialUserProfile = ({ route }: any) => {
       </View>
     </View>
   );
+
+  return userPublicKey !== undefined ? displayUser() : displayNoUser();
 };
 
 export default SocialUserProfile;

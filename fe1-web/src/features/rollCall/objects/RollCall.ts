@@ -68,7 +68,7 @@ export class RollCall {
   constructor(obj: Partial<RollCall>) {
     if (obj === undefined || obj === null) {
       throw new Error(
-        'Error encountered while creating a RollCall object: ' + 'undefined/null parameters',
+        'Error encountered while creating a RollCall object: undefined/null parameters',
       );
     }
 

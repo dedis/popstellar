@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, ViewStyle, View, TextStyle, Text, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
@@ -78,7 +78,8 @@ const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const { currentUserPublicKey } = props;
   const toast = useToast();
-  const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
+  const reactionList = useMemo(makeReactionsList, []);
+  const reactions = useSelector(reactionList)[chirp.id.toString()];
 
   const zero = '  0';
   const thumbsUp = reactions ? reactions['👍'] : 0;

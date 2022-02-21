@@ -3,14 +3,13 @@ import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import { getKeyPairState } from 'core/reducers';
+import { getKeyPairState } from 'core/keypair';
 import { getStore } from 'core/redux';
 import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
-import Home from 'core/screens/Home';
 import { SocialMediaNavigation } from 'features/social/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
-import { WitnessNavigation } from 'features/witness/navigation';
+import { Home } from 'features/home/screens';
 
 import { makeCurrentLao } from '../reducer';
 import { AttendeeScreen, Identity } from '../screens';
@@ -56,10 +55,8 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
   let component;
 
-  if (isOrganizer) {
+  if (isOrganizer || isWitness) {
     component = OrganizerNavigation;
-  } else if (isWitness) {
-    component = WitnessNavigation;
   } else {
     component = AttendeeScreen;
   }
@@ -70,9 +67,9 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
+const laoSelect = makeCurrentLao();
 
-function LaoNavigation() {
-  const laoSelect = makeCurrentLao();
+const LaoNavigation: React.FC = () => {
   const lao = useSelector(laoSelect);
 
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
@@ -122,6 +119,6 @@ function LaoNavigation() {
       />
     </OrganizationTopTabNavigator.Navigator>
   );
-}
+};
 
 export default LaoNavigation;

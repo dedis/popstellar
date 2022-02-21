@@ -35,7 +35,7 @@ export class Meeting {
   constructor(obj: Partial<Meeting>) {
     if (obj === undefined || obj === null) {
       throw new Error(
-        'Error encountered while creating a Meeting object: ' + 'undefined/null parameters',
+        'Error encountered while creating a Meeting object: undefined/null parameters',
       );
     }
 

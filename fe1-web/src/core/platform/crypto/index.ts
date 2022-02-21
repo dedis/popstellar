@@ -5,7 +5,7 @@ const algorithm: RsaHashedKeyAlgorithm = {
   name: 'RSA-OAEP',
   modulusLength: 4096,
   publicExponent: new Uint8Array([1, 0, 1]),
-  hash: 'SHA-256',
+  hash: { name: 'SHA-256' },
 };
 
 const keyUsages: KeyUsage[] = ['encrypt', 'decrypt'];
@@ -57,6 +57,10 @@ async function getOrCreateKeyPair(): Promise<CryptoKeyPair> {
  */
 export async function encrypt(plaintext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> {
   const keys: CryptoKeyPair = await getOrCreateKeyPair();
+  if (!keys.publicKey) {
+    throw new Error('Public key could not be retrieved or generated');
+  }
+
   return getSubtleCrypto().encrypt(algorithm, keys.publicKey, plaintext);
 }
 
@@ -71,6 +75,10 @@ export async function encrypt(plaintext: Uint8Array | ArrayBuffer): Promise<Arra
  */
 export async function decrypt(ciphertext: Uint8Array | ArrayBuffer): Promise<ArrayBuffer> {
   const keys: CryptoKeyPair = await getOrCreateKeyPair();
+  if (!keys.privateKey) {
+    throw new Error('Private key could not be retrieved or generated');
+  }
+
   return getSubtleCrypto().decrypt(algorithm, keys.privateKey, ciphertext);
 }
 

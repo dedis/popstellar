@@ -70,6 +70,7 @@ describe('LaoEventBuilder', () => {
   it('returns undefined for an event type that does not exist', () => {
     const eventState: LaoEventState = {
       eventType: '' as LaoEventType,
+      name: 'my Event',
       id: 'eventId',
       start: 12345,
     };

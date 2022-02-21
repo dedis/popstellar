@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
-import WideButtonView from 'core/components/WideButtonView';
+
+import WideButtonView from '../WideButtonView';
 
 let onPress: Function;
 const wideButtonTitle = 'I am a wide button';

@@ -4,15 +4,15 @@ import {
   Timestamp,
   Signature,
   ProtocolError,
+  WitnessSignature,
 } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import {
   checkTimestampStaleness,
   checkWitnesses,
   checkWitnessSignatures,
 } from 'core/network/validation/Checker';
-import { WitnessSignature } from 'features/witness/objects';
 
 /** Data received to track the state of a lao */
 export class StateLao implements MessageData {
@@ -55,7 +55,7 @@ export class StateLao implements MessageData {
     }
     if (msg.last_modified < msg.creation) {
       throw new ProtocolError(
-        'Invalid timestamp encountered: ' + "'last_modified' parameter smaller than 'creation'",
+        "Invalid timestamp encountered:'last_modified' parameter smaller than 'creation'",
       );
     }
     this.last_modified = msg.last_modified;

@@ -7,7 +7,7 @@ import { createSlice, createSelector, PayloadAction, Draft } from '@reduxjs/tool
 import { REHYDRATE } from 'redux-persist';
 
 import { Hash } from 'core/objects';
-import { getKeyPairState } from 'core/reducers/KeyPairReducer';
+import { getKeyPairState } from 'core/keypair';
 
 import { Lao, LaoState } from '../objects';
 
@@ -89,6 +89,34 @@ const laosSlice = createSlice({
       state.currentId = undefined;
     },
 
+    // Set the LAO server address
+    setLaoServerAddress: {
+      prepare(laoId: Hash | string, serverAddress: string) {
+        return {
+          payload: {
+            laoId: laoId.valueOf(),
+            serverAddress,
+          },
+        };
+      },
+      reducer(
+        state,
+        action: PayloadAction<{
+          laoId: string;
+          serverAddress: string;
+        }>,
+      ) {
+        const { laoId, serverAddress } = action.payload;
+
+        // Lao not initialized, return
+        if (!(laoId in state.byId)) {
+          return;
+        }
+
+        state.byId[laoId].server_address = serverAddress;
+      },
+    },
+
     // Update the last roll call observed in the LAO and for which we have a token
     setLaoLastRollCall: {
       prepare(laoId: Hash | string, rollCallId: Hash | string, hasToken: boolean): any {
@@ -124,11 +152,16 @@ const laosSlice = createSlice({
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
-    builder.addCase(REHYDRATE, (state) => ({
-      ...state,
-      // make sure we always start disconnected
-      currentId: undefined,
-    }));
+    builder.addCase(REHYDRATE, (state) => {
+      if (state.currentId) {
+        return {
+          ...state,
+          // make sure we always start disconnected
+          currentId: undefined,
+        };
+      }
+      return state;
+    });
   },
 });
 
@@ -140,6 +173,7 @@ export const {
   connectToLao,
   disconnectFromLao,
   setLaoLastRollCall,
+  setLaoServerAddress,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[laoReducerPath];

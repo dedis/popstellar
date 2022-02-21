@@ -1,21 +1,14 @@
 import { Store } from 'redux';
-import { getLaosState } from 'features/lao/reducer';
-import { getLaoMessagesState, processMessages } from 'core/reducers';
-import { ExtendedMessage, MessageRegistry } from '../jsonrpc/messages';
+import { MessageRegistry } from '../jsonrpc/messages';
+import { ExtendedMessage } from './ExtendedMessage';
+import { processMessages, getMessagesState } from './MessageReducer';
 
 export function makeMessageStoreWatcher(store: Store, messageRegistry: MessageRegistry) {
   let previousValue: string[] | undefined;
   let currentValue: string[] | undefined;
   return () => {
     const state = store.getState();
-    const laoId = getLaosState(state)?.currentId;
-
-    if (!laoId) {
-      // not connected to a LAO, return immediately
-      return;
-    }
-
-    const msgState = getLaoMessagesState(laoId, state);
+    const msgState = getMessagesState(state);
     const newValue = msgState.unprocessedIds || [];
     [previousValue, currentValue] = [currentValue, newValue];
 
@@ -23,7 +16,7 @@ export function makeMessageStoreWatcher(store: Store, messageRegistry: MessageRe
       previousValue !== undefined &&
       currentValue !== undefined &&
       previousValue.length === currentValue.length &&
-      previousValue.every((value, index) => value === currentValue[index])
+      previousValue.every((value, index) => !currentValue || value === currentValue[index])
     ) {
       // no change detected, return immediately
       return;
@@ -39,7 +32,7 @@ export function makeMessageStoreWatcher(store: Store, messageRegistry: MessageRe
       try {
         const handled = messageRegistry.handleMessage(msg);
         if (handled) {
-          store.dispatch(processMessages(laoId, msg.message_id));
+          store.dispatch(processMessages(msg.message_id));
         }
       } catch (err) {
         console.error('An exception was raised when processing the messages:', msg, err);

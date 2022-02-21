@@ -1,9 +1,9 @@
 import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
-import { Vote } from '../../objects/Election';
+import { Vote } from '../../objects';
 
 /** Data sent to cast a vote */
 export class CastVote implements MessageData {

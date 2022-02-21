@@ -18,7 +18,7 @@ import { Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import { onConfirmPress } from 'features/events/screens/CreateEvent';
 
-import { requestCreateRollCall } from '../network/RollCallMessageApi';
+import { requestCreateRollCall } from '../network';
 
 const DEFAULT_ROLL_CALL_DURATION = 3600;
 

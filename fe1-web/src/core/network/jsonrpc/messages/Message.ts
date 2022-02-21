@@ -1,10 +1,17 @@
-import { Base64UrlData, Channel, Hash, PublicKey, Signature, ProtocolError } from 'core/objects';
-import { KeyPairStore } from 'core/store';
-import { getCurrentPopTokenFromStore } from 'features/wallet/objects';
-import { WitnessSignature, WitnessSignatureState } from 'features/witness/objects';
+import {
+  Base64UrlData,
+  Channel,
+  Hash,
+  PublicKey,
+  Signature,
+  ProtocolError,
+  WitnessSignature,
+  WitnessSignatureState,
+  KeyPair,
+} from 'core/objects';
 
 import { MessageRegistry } from './MessageRegistry';
-import { MessageData, SignatureType } from './MessageData';
+import { MessageData } from './MessageData';
 
 let messageRegistry: MessageRegistry;
 
@@ -47,7 +54,7 @@ export interface MessageState {
 
   witness_signatures: WitnessSignatureState[];
 
-  channel?: Channel;
+  channel: Channel;
 }
 
 /**
@@ -63,6 +70,9 @@ export class Message {
   public readonly message_id: Hash;
 
   public readonly witness_signatures: WitnessSignature[];
+
+  // Not part of the protocol, but convenient for processing of the message
+  public readonly channel?: Channel;
 
   // ECMAScript private field, not string-ified by JSON
   readonly #messageData: MessageData;
@@ -86,7 +96,7 @@ export class Message {
       );
     }
 
-    if (!msg.signature.verify(msg.sender, msg.data) && !this.isElectionResultMessage()) {
+    if (!msg.signature.verify(msg.sender, msg.data)) {
       throw new ProtocolError(
         "Invalid 'signature' parameter encountered during 'Message' creation",
       );
@@ -97,7 +107,7 @@ export class Message {
       );
     }
     const expectedHash = Hash.fromStringArray(msg.data.toString(), msg.signature.toString());
-    if (!expectedHash.equals(msg.message_id) && !this.isElectionResultMessage()) {
+    if (!expectedHash.equals(msg.message_id)) {
       console.log('Expected Hash was: ', expectedHash);
 
       throw new ProtocolError(`Invalid 'message_id' parameter encountered during 'Message' creation: unexpected id value \n
@@ -122,12 +132,16 @@ export class Message {
     this.message_id = msg.message_id;
     this.witness_signatures = [...msg.witness_signatures];
 
+    if (msg.channel) {
+      this.channel = msg.channel;
+    }
+
     const jsonData = msg.data.decode();
     const dataObj = JSON.parse(jsonData);
-    this.#messageData = messageRegistry.buildMessageData(dataObj as MessageData);
+    this.#messageData = messageRegistry.buildMessageData(dataObj);
   }
 
-  public static fromJson(obj: any): Message {
+  public static fromJson(obj: any, channel?: Channel): Message {
     return new Message({
       data: new Base64UrlData(obj.data.toString()),
       sender: new PublicKey(obj.sender.toString()),
@@ -136,71 +150,35 @@ export class Message {
       witness_signatures: obj.witness_signatures.map((ws: WitnessSignatureState) =>
         WitnessSignature.fromJson(ws),
       ),
+      channel: channel,
     });
   }
 
   /**
    * Creates a Message object from a given MessageData and signatures.
    * We don't add the channel property here as we don't want to send that over the network.
-   * It signs the messages with the key pair of the user, or the pop token's key pair
-   * according to the type of message.
+   * It signs the messages with the key pair of the user.
    *
    * @param data - The MessageData to be signed and hashed
+   * @param senderKeyPair - The key pair of the sender
    * @param witnessSignatures- The signatures of the witnesses
    * @returns - The created message
    */
   public static async fromData(
     data: MessageData,
+    senderKeyPair: KeyPair,
     witnessSignatures?: WitnessSignature[],
   ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
-    let publicKey = KeyPairStore.getPublicKey();
-    let privateKey = KeyPairStore.getPrivateKey();
-    let signature: Signature;
+    const { publicKey, privateKey } = senderKeyPair;
+    const signature = privateKey.sign(encodedDataJson);
 
-    // Get the signature type of the type of message we want to sign
-    const signatureType = messageRegistry.getSignatureType(data);
-
-    // If the messages is signed with the pop token, get it from the store and sign the message
-    if (signatureType === SignatureType.POP_TOKEN) {
-      const token = await getCurrentPopTokenFromStore();
-      if (token) {
-        publicKey = token.publicKey;
-        privateKey = token.privateKey;
-      } else {
-        console.error(
-          'Impossible to sign the message with a pop token: no token found for ' +
-            'current user in this LAO',
-        );
-      }
-      signature = privateKey.sign(encodedDataJson);
-
-      return new Message({
-        data: encodedDataJson,
-        sender: publicKey,
-        signature,
-        message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
-        witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
-      });
-    }
-    signature = privateKey.sign(encodedDataJson);
-
-    // Otherwise, simply sign with the general key pair
     return new Message({
       data: encodedDataJson,
       sender: publicKey,
-      signature,
+      signature: signature,
       message_id: Hash.fromStringArray(encodedDataJson.toString(), signature.toString()),
       witness_signatures: witnessSignatures === undefined ? [] : witnessSignatures,
     });
-  }
-
-  // This function disables the checks of signature and messageID for eleciton result messages
-  // Because the message comes from the back-end and it can't sign the messages since it hasn't
-  // access to the private key
-  // This method is only a temporary solution for the demo and should be removed once a better
-  // solution is found
-  private isElectionResultMessage(): boolean {
-    return this.data.decode().includes('"result":');
   }
 }

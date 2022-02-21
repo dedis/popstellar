@@ -1,14 +1,15 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import {
   mockLao,
   mockLaoIdHash,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
-} from '__tests__/utils/TestUtils';
+  configureTestFeatures,
+} from '__tests__/utils';
+
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey, ProtocolError, Timestamp } from 'core/objects';
 
 import { OpenedLaoStore } from '../../../store';
@@ -36,6 +37,7 @@ const updateLaoJson = `{
 }`;
 
 beforeAll(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
 });
 

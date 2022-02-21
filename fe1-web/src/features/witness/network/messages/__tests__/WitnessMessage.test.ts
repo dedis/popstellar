@@ -1,16 +1,14 @@
 import 'jest-extended';
-import { sign } from 'tweetnacl';
-
 import '__tests__/utils/matchers';
-import { Base64UrlData, KeyPair, PrivateKey, PublicKey, ProtocolError } from 'core/objects';
-import { mockPrivateKey } from '__tests__/utils/TestUtils';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { mockKeyPair, mockPopToken } from '__tests__/utils';
+
+import { Base64UrlData, ProtocolError } from 'core/objects';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { WitnessMessage } from '../WitnessMessage';
 
 const mockMessageId = Base64UrlData.encode('message_id');
-const mockSecretKey = new PrivateKey(mockPrivateKey);
-const mockSignature = mockSecretKey.sign(mockMessageId);
+const mockSignature = mockKeyPair.privateKey.sign(mockMessageId);
 
 const sampleWitnessMessage: Partial<WitnessMessage> = {
   object: ObjectType.MESSAGE,
@@ -54,14 +52,9 @@ describe('WitnessMessage', () => {
     expect(createWrongObj).toThrow(ProtocolError);
   });
 
-  it.skip('fromJson should throw an error if signature is incorrect', () => {
-    const generateKeyPair = () => {
-      const pair = sign.keyPair();
-      return new KeyPair({
-        publicKey: new PublicKey(Base64UrlData.fromBuffer(Buffer.from(pair.publicKey)).valueOf()),
-        privateKey: new PrivateKey(Base64UrlData.fromBuffer(Buffer.from(pair.secretKey)).valueOf()),
-      });
-    };
+  it.skip('fromJson should throw an error if signature does not match message_id', () => {
+    // precondition
+    expect(mockKeyPair.privateKey.valueOf() !== mockPopToken.privateKey.valueOf()).toBeTrue();
 
     // incorrect signature
     expect(() => {
@@ -69,29 +62,7 @@ describe('WitnessMessage', () => {
         object: ObjectType.MESSAGE,
         action: ActionType.WITNESS,
         message_id: mockMessageId.valueOf(),
-        signature: generateKeyPair().privateKey.sign(mockMessageId).valueOf(),
-      });
-    }).toThrow(ProtocolError);
-  });
-
-  it.skip('fromJson should throw an error if message_id is incorrect', () => {
-    // inconsistent message_id
-    expect(() => {
-      WitnessMessage.fromJson({
-        object: ObjectType.MESSAGE,
-        action: ActionType.WITNESS,
-        message_id: Base64UrlData.encode('inconsistent message_id').valueOf(),
-        signature: mockSecretKey.sign(mockMessageId).valueOf(),
-      });
-    }).toThrow(ProtocolError);
-
-    // inconsistent message_id for signature
-    expect(() => {
-      WitnessMessage.fromJson({
-        object: ObjectType.MESSAGE,
-        action: ActionType.WITNESS,
-        message_id: mockMessageId.valueOf(),
-        signature: mockSecretKey.sign(Base64UrlData.encode('inconsistent message_id')).valueOf(),
+        signature: mockPopToken.privateKey.sign(mockMessageId).valueOf(),
       });
     }).toThrow(ProtocolError);
   });

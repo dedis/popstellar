@@ -1,6 +1,8 @@
-import { KeyPair } from 'core/objects/KeyPair';
-import { Base64UrlData } from 'core/objects/Base64Url';
-import { Signature } from 'core/objects/Signature';
+import { KeyPair, KeyPairState } from './KeyPair';
+import { Base64UrlData } from './Base64Url';
+import { Signature } from './Signature';
+import { PublicKey } from './PublicKey';
+import { PrivateKey } from './PrivateKey';
 
 export class PopToken extends KeyPair {
   /**
@@ -10,5 +12,12 @@ export class PopToken extends KeyPair {
    */
   public sign(data: Base64UrlData): Signature {
     return this.privateKey.sign(data);
+  }
+
+  public static fromState(kp: KeyPairState): PopToken {
+    return new PopToken({
+      publicKey: new PublicKey(kp.publicKey),
+      privateKey: new PrivateKey(kp.privateKey),
+    });
   }
 }

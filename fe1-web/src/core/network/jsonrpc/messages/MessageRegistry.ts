@@ -1,35 +1,9 @@
-import {
-  AddChirp,
-  DeleteChirp,
-  NotifyAddChirp,
-  NotifyDeleteChirp,
-} from 'features/social/network/messages/chirp';
-import { AddReaction } from 'features/social/network/messages/reaction';
-import { CreateMeeting, StateMeeting } from 'features/meeting/network/messages';
-import {
-  CastVote,
-  ElectionResult,
-  EndElection,
-  SetupElection,
-} from 'features/evoting/network/messages';
-import {
-  CloseRollCall,
-  CreateRollCall,
-  OpenRollCall,
-  ReopenRollCall,
-} from 'features/rollCall/network/messages';
-import {
-  ActionType,
-  MessageData,
-  ObjectType,
-  SignatureType,
-} from 'core/network/jsonrpc/messages/MessageData';
-import { CreateLao, StateLao, UpdateLao } from 'features/lao/network/messages';
-import { WitnessMessage } from 'features/witness/network/messages';
+import { ProtocolError } from 'core/objects';
+import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
+import { ProcessableMessage } from './ProcessableMessage';
 
-import { ExtendedMessage } from './ExtendedMessage';
-
-type HandleFunction = (msg: ExtendedMessage) => boolean;
+type HandleFunction = (msg: ProcessableMessage) => boolean;
+type BuildFunction = (data: MessageData) => MessageData;
 
 const { LAO, MEETING, ROLL_CALL, ELECTION, MESSAGE, CHIRP, REACTION } = ObjectType;
 const {
@@ -59,7 +33,7 @@ interface MessageEntry {
   handle?: HandleFunction;
 
   // Function to build this type of message from Json
-  build?: Function;
+  build?: BuildFunction;
 
   // Informs how the message should be signed
   signature?: SignatureType;
@@ -76,49 +50,51 @@ const k = (object: ObjectType, action: ActionType): string => `${object}, ${acti
 export class MessageRegistry {
   private readonly mapping = new Map<string, MessageEntry>([
     // Lao
-    [k(LAO, CREATE), { build: CreateLao.fromJson, signature: KEYPAIR }],
-    [k(LAO, STATE), { build: StateLao.fromJson, signature: KEYPAIR }],
-    [k(LAO, UPDATE_PROPERTIES), { build: UpdateLao.fromJson, signature: KEYPAIR }],
+    [k(LAO, CREATE), { signature: KEYPAIR }],
+    [k(LAO, STATE), { signature: KEYPAIR }],
+    [k(LAO, UPDATE_PROPERTIES), { signature: KEYPAIR }],
 
     // Meeting
-    [k(MEETING, CREATE), { build: CreateMeeting.fromJson, signature: KEYPAIR }],
-    [k(MEETING, STATE), { build: StateMeeting.fromJson, signature: KEYPAIR }],
+    [k(MEETING, CREATE), { signature: KEYPAIR }],
+    [k(MEETING, STATE), { signature: KEYPAIR }],
 
     // Roll call
-    [k(ROLL_CALL, CREATE), { build: CreateRollCall.fromJson, signature: KEYPAIR }],
-    [k(ROLL_CALL, OPEN), { build: OpenRollCall.fromJson, signature: KEYPAIR }],
-    [k(ROLL_CALL, CLOSE), { build: CloseRollCall.fromJson, signature: KEYPAIR }],
-    [k(ROLL_CALL, REOPEN), { build: ReopenRollCall.fromJson, signature: KEYPAIR }],
+    [k(ROLL_CALL, CREATE), { signature: KEYPAIR }],
+    [k(ROLL_CALL, OPEN), { signature: KEYPAIR }],
+    [k(ROLL_CALL, CLOSE), { signature: KEYPAIR }],
+    [k(ROLL_CALL, REOPEN), { signature: KEYPAIR }],
 
     // Election
-    [k(ELECTION, SETUP), { build: SetupElection.fromJson, signature: KEYPAIR }],
-    [k(ELECTION, CAST_VOTE), { build: CastVote.fromJson, signature: POP_TOKEN }],
-    [k(ELECTION, END), { build: EndElection.fromJson, signature: KEYPAIR }],
-    [k(ELECTION, RESULT), { build: ElectionResult.fromJson, signature: KEYPAIR }],
+    [k(ELECTION, SETUP), { signature: KEYPAIR }],
+    [k(ELECTION, CAST_VOTE), { signature: POP_TOKEN }],
+    [k(ELECTION, END), { signature: KEYPAIR }],
+    [k(ELECTION, RESULT), { signature: KEYPAIR }],
 
     // Witness
-    [k(MESSAGE, WITNESS), { build: WitnessMessage.fromJson, signature: KEYPAIR }],
+    [k(MESSAGE, WITNESS), { signature: KEYPAIR }],
 
     // Chirps
-    [k(CHIRP, ADD), { build: AddChirp.fromJson, signature: POP_TOKEN }],
-    [k(CHIRP, NOTIFY_ADD), { build: NotifyAddChirp.fromJson, signature: KEYPAIR }],
-    [k(CHIRP, DELETE), { build: DeleteChirp.fromJson, signature: POP_TOKEN }],
-    [k(CHIRP, NOTIFY_DELETE), { build: NotifyDeleteChirp.fromJson, signature: KEYPAIR }],
+    [k(CHIRP, ADD), { signature: POP_TOKEN }],
+    [k(CHIRP, NOTIFY_ADD), { signature: KEYPAIR }],
+    [k(CHIRP, DELETE), { signature: POP_TOKEN }],
+    [k(CHIRP, NOTIFY_DELETE), { signature: KEYPAIR }],
 
     // Reactions
-    [k(REACTION, ADD), { build: AddReaction.fromJson, signature: POP_TOKEN }],
+    [k(REACTION, ADD), { signature: POP_TOKEN }],
   ]);
 
   /**
-   * Adds a handle function to a type of message in the registry.
+   * Adds callback functions to manage a type of message in the registry.
    *
-   * @param object - The object of the message
+   * @param obj - The object of the message
    * @param action - The action of the message
    * @param handleFunc - The function that handles this type of message
+   * @param buildFunc - The function to build this type of message
    */
-  addHandler(object: ObjectType, action: ActionType, handleFunc: HandleFunction) {
-    const entry = this.getEntry({ object: object, action: action });
+  add(obj: ObjectType, action: ActionType, handleFunc: HandleFunction, buildFunc: BuildFunction) {
+    const entry = this.getEntry({ object: obj, action: action });
     entry.handle = handleFunc;
+    entry.build = buildFunc;
   }
 
   /**
@@ -127,7 +103,7 @@ export class MessageRegistry {
    * @param msg - The message to be handled
    * @returns boolean - Telling if the message has been processed or not
    */
-  handleMessage(msg: ExtendedMessage): boolean {
+  handleMessage(msg: ProcessableMessage): boolean {
     const data = msg.messageData;
     const messageEntry = this.getEntry(data);
     return messageEntry.handle!(msg);
@@ -139,13 +115,16 @@ export class MessageRegistry {
    * @param data -The type of message to be built
    * @returns MessageData - The built message
    */
-  buildMessageData(data: MessageData): MessageData {
+  buildMessageData(data: unknown): MessageData {
+    if (!MessageRegistry.isMessageData(data)) {
+      throw new ProtocolError(`Data (${data}) is not a valid MessageData`);
+    }
     const messageEntry = this.getEntry(data);
     return messageEntry.build!(data);
   }
 
   /**
-   * Gets the signature type of a MessageData.
+   * Gets the signature to use for a MessageData.
    *
    * @param data - The type of message we want to know how to sign
    * @returns SignatureType - The type of signature of the message
@@ -188,8 +167,12 @@ export class MessageRegistry {
     const key = k(data.object, data.action);
     const messageEntry = this.mapping.get(key);
     if (messageEntry === undefined) {
-      throw new Error(`Message '${key}' is not contained in MessageRegistry`);
+      throw new ProtocolError(`Message '${key}' is not contained in MessageRegistry`);
     }
     return messageEntry;
+  }
+
+  static isMessageData(value: unknown): value is MessageData {
+    return typeof value === 'object' && value !== null && 'object' in value && 'action' in value;
   }
 }

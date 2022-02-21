@@ -8,20 +8,15 @@ import { useToast } from 'react-native-toast-notifications';
 import { dispatch, getStore } from 'core/redux';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
-import { BarChartDisplay, CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
+import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { updateEvent } from 'features/events/reducer';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
-import {
-  Election,
-  ElectionStatus,
-  QuestionResult,
-  RegisteredVote,
-  Vote,
-} from '../objects/Election';
+import { Election, ElectionStatus, QuestionResult, RegisteredVote, Vote } from '../objects';
+import BarChartDisplay from './BarChartDisplay';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -57,9 +52,9 @@ const EventElection = (props: IPropTypes) => {
       // @ts-ignore
       state.events.byLaoId[election.lao].byId[election.id],
   );
+
   if (!electionFromStore) {
-    console.debug('Error in Election display: Election doesnt exist in store');
-    return null;
+    throw new Error('Error in Election display: Election doesnt exist in store');
   }
 
   const updateSelectedBallots = (values: number[], idx: number) => {
@@ -82,8 +77,8 @@ const EventElection = (props: IPropTypes) => {
         election.id.toString(),
         election.questions[idx].id,
         concatenateIndexes(item),
-      ),
-      question: new Hash(election.questions[idx].id),
+      ).valueOf(),
+      question: election.questions[idx].id,
       vote: item,
     }));
     return votes;
@@ -133,11 +128,11 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
-  const updateElection = (status: ElectionStatus) => {
+  const updateElection = (status: ElectionStatus, elec: Election) => {
     const storeState = getStore().getState();
-    const oldElec = getEventFromId(storeState, election.id) as Election;
+    const oldElec = getEventFromId(storeState, elec.id) as Election;
     const newElec = new Election({ ...oldElec, electionStatus: status });
-    dispatch(updateEvent(election.lao, newElec.toState()));
+    dispatch(updateEvent(elec.lao, newElec.toState()));
   };
 
   const doesNothing = () => {
@@ -148,23 +143,23 @@ const EventElection = (props: IPropTypes) => {
   useEffect(() => {
     if (untilStart >= 0) {
       const startTimer = setTimeout(() => {
-        updateElection(ElectionStatus.RUNNING);
+        updateElection(ElectionStatus.RUNNING, election);
       }, untilStart);
       return () => clearTimeout(startTimer);
     }
     return doesNothing;
-  }, []);
+  }, [untilStart, election]);
 
   // This makes sure the screen gets updated when the event ends - user can't vote anymore
   useEffect(() => {
     if (untilEnd >= 0) {
       const endTimer = setTimeout(() => {
-        updateElection(ElectionStatus.FINISHED);
+        updateElection(ElectionStatus.FINISHED, election);
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
     return doesNothing;
-  }, []);
+  }, [untilEnd, election]);
 
   // Here we use the election object form the redux store in order to see the electionStatus
   // update when an  incoming electionEnd or electionResult message comes

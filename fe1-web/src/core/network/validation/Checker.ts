@@ -1,6 +1,4 @@
-import { Base64UrlData, Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
-import { Lao } from 'features/lao/objects';
-import { WitnessSignature } from 'features/witness/objects';
+import { Base64UrlData, PublicKey, Timestamp, ProtocolError, WitnessSignature } from 'core/objects';
 
 export function checkTimestampStaleness(timestamp: Timestamp) {
   const TIMESTAMP_BASE_TIME = new Timestamp(1577833200); // 1st january 2020
@@ -27,18 +25,22 @@ export function checkWitnessSignatures(witSig: WitnessSignature[], data: Base64U
   }
 }
 
-export function checkModificationId(id: Hash) {
-  // FIXME check modification id
-  return id; // simply to remove eslint warning
-}
-
-const MIN_WITNESS_FACTOR_N = 3; // numerator
-const MIN_WITNESS_FACTOR_D = 5; // denominator, = three fifths = 60%
-
-export function hasWitnessSignatureQuorum(witSigs: WitnessSignature[], lao: Lao): boolean {
+/**
+ * Verify if the witness signatures constitute a quorum of the LAO witnesses
+ *
+ * @param witSigs - The message witness signatures
+ * @param lao - A LAO providing a list of witness keys
+ */
+export function hasWitnessSignatureQuorum(
+  witSigs: WitnessSignature[],
+  lao: { witnesses: PublicKey[] },
+): boolean {
   if (!lao) {
     return false;
   }
+
+  const MIN_WITNESS_FACTOR_N = 3; // numerator
+  const MIN_WITNESS_FACTOR_D = 5; // denominator, = three fifths = 60%
 
   const signaturesCount = witSigs.filter((witSig: WitnessSignature) =>
     lao.witnesses.includes(witSig.witness),

@@ -5,13 +5,10 @@ import { useSelector } from 'react-redux';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import TextBlock from 'core/components/TextBlock';
-import WideButtonView from 'core/components/WideButtonView';
+import { CopiableTextInput, QRCode, TextBlock, WideButtonView } from 'core/components';
 import { PopToken } from 'core/objects';
-import QRCode from 'core/components/QRCode';
 import PROPS_TYPE from 'resources/Props';
 import { makeLaosMap } from 'features/lao/reducer';
-import CopiableTextInput from 'core/components/CopiableTextInput';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';
 import { RollCall } from 'features/rollCall/objects';
@@ -28,20 +25,22 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
+const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
+const laoSelector = makeLaosMap();
+
+const hasTokens = (tokensByLao: Record<string, Record<string, PopToken>>): boolean =>
+  tokensByLao && Object.values(tokensByLao).some((tokens) => Object.entries(tokens).length);
+
 /**
  * Wallet UI once the wallet is synced
  */
 const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   /* boolean set to true if the token recover process is finished */
   const [showTokens, setShowTokens] = useState(false);
-  const [showPublicKey, setShowPublicKey] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
   const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
 
-  const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
   const rollCalls = useSelector(rollCallSelector);
-
-  const laoSelector = makeLaosMap();
   const laos = useSelector(laoSelector);
 
   useEffect(() => {
@@ -51,68 +50,6 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
       })
       .catch((err) => console.debug(err));
   }, [rollCalls]);
-
-  /* the below 4 functions are to manage user interaction with buttons */
-  function hidePublicKeyButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.hide_public_keys}
-        onPress={() => {
-          setShowPublicKey(false);
-        }}
-      />
-    );
-  }
-
-  function showPublicKeyButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.show_public_keys}
-        onPress={() => {
-          setShowPublicKey(true);
-        }}
-      />
-    );
-  }
-
-  function hideQRButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.hide_qr_public_keys}
-        onPress={() => {
-          setShowQRPublicKey(false);
-        }}
-      />
-    );
-  }
-
-  function showQRButton() {
-    return (
-      <WideButtonView
-        title={STRINGS.show_qr_public_keys}
-        onPress={() => {
-          setShowQRPublicKey(true);
-        }}
-      />
-    );
-  }
-
-  function displayNoTokens() {
-    return (
-      <View>
-        <TextBlock text={STRINGS.no_tokens_in_wallet} />
-        <View style={styles.largePadding} />
-        <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
-        <WideButtonView
-          title={STRINGS.logout_from_wallet}
-          onPress={() => {
-            Wallet.forget();
-            navigation.navigate(STRINGS.navigation_home_tab_wallet);
-          }}
-        />
-      </View>
-    );
-  }
 
   function displayOneToken(laoId: string, rollCallId: string): ReactNode {
     if (!tokensByLao) {
@@ -124,13 +61,10 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
     return (
-      <View style={containerStyles.centered}>
+      <View style={containerStyles.centered} key={`token-${laoId}-${rollCallId}`}>
         <View style={styles.smallPadding} />
-        <TextBlock bold text={STRINGS.lao_id} />
-        <CopiableTextInput text={lao.name} />
-        <TextBlock bold text={STRINGS.roll_call_name} />
-        <TextBlock text={rollCall.name} visibility />
-        <View style={styles.smallPadding} />
+        <TextBlock bold text={`${STRINGS.lao_name}: ${lao.name}`} />
+        <TextBlock bold text={`${STRINGS.roll_call_name}: ${rollCall.name}`} />
         <CopiableTextInput text={tokenPk.valueOf()} />
         <View style={styles.smallPadding} />
         <QRCode value={tokenPk.valueOf()} visibility={showQRPublicKey} />
@@ -138,9 +72,33 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     );
   }
 
+  const toggleQRButton = (
+    <WideButtonView
+      title={showQRPublicKey ? STRINGS.hide_qr_public_keys : STRINGS.show_qr_public_keys}
+      onPress={() => {
+        setShowQRPublicKey(!showQRPublicKey);
+      }}
+    />
+  );
+
+  const displayNoTokens = (
+    <View>
+      <TextBlock text={STRINGS.no_tokens_in_wallet} />
+      <View style={styles.largePadding} />
+      <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
+      <WideButtonView
+        title={STRINGS.logout_from_wallet}
+        onPress={() => {
+          Wallet.forget();
+          navigation.navigate(STRINGS.navigation_home_tab_wallet);
+        }}
+      />
+    </View>
+  );
+
   function displayTokens() {
-    if (!tokensByLao || Object.keys(tokensByLao).length === 0) {
-      return displayNoTokens();
+    if (!tokensByLao || !hasTokens(tokensByLao)) {
+      return displayNoTokens;
     }
 
     return (
@@ -153,10 +111,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
             Object.keys(tokensByLao[laoId]).map((rollCallId) => displayOneToken(laoId, rollCallId)),
           )}
         </View>
-        {!showPublicKey && showPublicKeyButton()}
-        {showPublicKey && hidePublicKeyButton()}
-        {!showQRPublicKey && showQRButton()}
-        {showQRPublicKey && hideQRButton()}
+        {toggleQRButton}
         <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
         <View style={styles.largePadding} />
       </ScrollView>

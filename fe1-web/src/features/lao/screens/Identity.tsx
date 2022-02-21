@@ -5,7 +5,7 @@ import { CheckBox } from 'react-native-elements';
 import { Colors, Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 import { QRCode, TextBlock } from 'core/components';
-import { KeyPairStore } from 'core/store';
+import { KeyPairStore } from 'core/keypair';
 
 /**
  * Manage the Identity screen. A user may decide to participate anonymously to a

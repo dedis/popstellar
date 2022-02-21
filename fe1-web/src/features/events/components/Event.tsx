@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -23,7 +23,7 @@ import eventViewStyles from '../styles/eventViewStyles';
 const Event = (props: IPropTypes) => {
   const { event } = props;
 
-  const isOrganizerSelect = makeIsLaoOrganizer();
+  const isOrganizerSelect = useMemo(makeIsLaoOrganizer, []);
   const isOrganizer = useSelector(isOrganizerSelect);
 
   const buildEvent = () => {
@@ -50,6 +50,7 @@ const Event = (props: IPropTypes) => {
 const propTypes = {
   event: PropTypes.shape({
     id: PropTypes.instanceOf(Hash).isRequired,
+    name: PropTypes.string.isRequired,
     start: PropTypes.instanceOf(Timestamp).isRequired,
     end: PropTypes.instanceOf(Timestamp),
   }).isRequired,
@@ -58,4 +59,5 @@ Event.propTypes = propTypes;
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
+export const eventPropTypes = propTypes.event;
 export default Event;

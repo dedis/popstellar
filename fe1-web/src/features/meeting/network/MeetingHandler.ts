@@ -1,8 +1,8 @@
-import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
-import { dispatch, getStore } from 'core/redux';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
+import { Hash } from 'core/objects';
+import { dispatch, getStore } from 'core/redux';
+import { makeLaosMap } from 'features/lao/reducer';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 
@@ -13,14 +13,16 @@ import { Meeting } from '../objects';
  * Handles all meeting related messages that are received.
  */
 
-const getCurrentLao = makeCurrentLao();
+const getLaos = makeLaosMap();
+
+const getLao = (laoId: Hash | string) => getLaos(getStore().getState())[laoId.valueOf()];
 
 /**
  * Handles a MeetingCreate message by creating a meeting in the current Lao.
  *
  * @param msg - The extended message for creating a meeting
  */
-function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
+export function handleMeetingCreateMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MEETING ||
     msg.messageData.action !== ActionType.CREATE
@@ -31,14 +33,14 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
 
   const makeErr = (err: string) => `meeting/create was not processed: ${err}`;
 
-  const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+  const lao = getLao(msg.laoId);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(`LAO ${msg.laoId} does not exist`));
     return false;
   }
 
   const mtgMsg = msg.messageData as CreateMeeting;
+  mtgMsg.validate(msg.laoId);
 
   const meeting = new Meeting({
     id: mtgMsg.id,
@@ -50,7 +52,7 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
     extra: mtgMsg.extra ? { ...mtgMsg.extra } : {},
   });
 
-  dispatch(addEvent(lao.id, meeting.toState()));
+  dispatch(addEvent(msg.laoId, meeting.toState()));
   return true;
 }
 
@@ -59,7 +61,7 @@ function handleMeetingCreateMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for getting the meeting's state
  */
-function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
+export function handleMeetingStateMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.MEETING ||
     msg.messageData.action !== ActionType.STATE
@@ -70,8 +72,7 @@ function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
 
   const makeErr = (err: string) => `meeting/state was not processed: ${err}`;
 
-  const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+  const lao = getLao(msg.laoId);
   if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
@@ -83,6 +84,8 @@ function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
+  // FIXME: use meeting reducer
+  const storeState = getStore().getState();
   const oldMeeting = getEventFromId(storeState, mtgMsg.id) as Meeting;
   if (!oldMeeting) {
     console.warn(makeErr("no known meeting matching the 'id' field"));
@@ -101,16 +104,6 @@ function handleMeetingStateMessage(msg: ExtendedMessage): boolean {
     },
   });
 
-  dispatch(updateEvent(lao.id, meeting.toState()));
+  dispatch(updateEvent(msg.laoId, meeting.toState()));
   return true;
-}
-
-/**
- * Configures the MeetingHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mappings
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.MEETING, ActionType.CREATE, handleMeetingCreateMessage);
-  registry.addHandler(ObjectType.MEETING, ActionType.STATE, handleMeetingStateMessage);
 }

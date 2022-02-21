@@ -1,6 +1,5 @@
-import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'core/redux';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
 import { makeCurrentLao } from 'features/lao/reducer';
 
 import { Reaction } from '../objects';
@@ -17,7 +16,7 @@ const getCurrentLao = makeCurrentLao();
  *
  * @param msg - The extended message for adding a reaction
  */
-function handleAddReactionMessage(msg: ExtendedMessage): boolean {
+export function handleAddReactionMessage(msg: ProcessableMessage): boolean {
   if (msg.messageData.object !== ObjectType.REACTION || msg.messageData.action !== ActionType.ADD) {
     console.warn('handleAddReaction was called to process an unsupported message');
     return false;
@@ -46,13 +45,4 @@ function handleAddReactionMessage(msg: ExtendedMessage): boolean {
 
   dispatch(addReaction(lao.id, reaction.toState()));
   return true;
-}
-
-/**
- * Configures the ReactionHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mapping
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.REACTION, ActionType.ADD, handleAddReactionMessage);
 }

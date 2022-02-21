@@ -1,5 +1,5 @@
 import { validateConnectToLao } from 'core/network/validation';
-import { ProtocolError } from 'core/objects/ProtocolError';
+import { ProtocolError } from 'core/objects';
 
 /**
  * Object containing the server url and Lao id to generate the QR code of a Lao.
@@ -12,7 +12,7 @@ export class ConnectToLao {
   constructor(connectToLao: Partial<ConnectToLao>) {
     if (connectToLao === undefined || connectToLao === null) {
       throw new ProtocolError(
-        'Error encountered while creating a ConnectToLao object: ' + 'undefined/null parameters',
+        'Error encountered while creating a ConnectToLao object: undefined/null parameters',
       );
     }
 

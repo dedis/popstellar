@@ -2,7 +2,7 @@ import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 /** Data sent to create a Roll-Call event */
@@ -43,7 +43,7 @@ export class CreateRollCall implements MessageData {
       );
     } else if (msg.proposed_start < msg.creation) {
       throw new ProtocolError(
-        'Invalid timestamp encountered:' + " 'proposed_start' parameter smaller than 'creation'",
+        "Invalid timestamp encountered: 'proposed_start' parameter smaller than 'creation'",
       );
     }
     checkTimestampStaleness(msg.proposed_start);

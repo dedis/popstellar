@@ -2,11 +2,12 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import testKeyPair from 'test_data/keypair.json';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
-import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
+
+import { mockLao, mockLaoId, configureTestFeatures } from '__tests__/utils';
 
 import { AddChirp } from '../messages/chirp';
 import * as msApi from '../SocialMessageApi';
@@ -16,27 +17,24 @@ const publishMock = mockPublish as jest.Mock;
 
 const mockText = 'text';
 
-let checkDataAddChirp: Function;
+const checkDataAddChirp = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.CHIRP);
+  expect(obj.action).toBe(ActionType.ADD);
 
-const initializeChecks = () => {
-  checkDataAddChirp = (obj: MessageData) => {
-    expect(obj.object).toBe(ObjectType.CHIRP);
-    expect(obj.action).toBe(ActionType.ADD);
-
-    const data: AddChirp = obj as AddChirp;
-    expect(data).toBeObject();
-    expect(data.text).toBeString();
-    if (data.parent_id) {
-      expect(data.parent_id).toBeBase64Url();
-    }
-    expect(data.timestamp).toBeNumberObject();
-  };
+  const data: AddChirp = obj as AddChirp;
+  expect(data).toBeObject();
+  expect(data.text).toBeString();
+  if (data.parent_id) {
+    expect(data.parent_id).toBeBase64Url();
+  }
+  expect(data.timestamp).toBeNumberObject();
 };
+
+beforeAll(configureTestFeatures);
 
 beforeEach(() => {
   publishMock.mockClear();
   OpenedLaoStore.store(mockLao);
-  initializeChecks();
 });
 
 describe('MessageApi', () => {

@@ -1,4 +1,4 @@
-import { Channel } from 'core/objects/Channel';
+import { Channel } from 'core/objects';
 
 import { catchup, subscribe } from './JsonRpcApi';
 import { storeMessage } from './ingestion';

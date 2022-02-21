@@ -1,4 +1,5 @@
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 
 import jsonRPC from 'protocol/jsonRPC.json';
 import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
@@ -6,47 +7,10 @@ import querySchema from 'core/network/validation/schemas/querySchemas';
 import messageSchema from 'core/network/validation/schemas/messageSchemas';
 import dataSchema from 'core/network/validation/schemas/dataSchemas';
 import answerSchema from 'core/network/validation/schemas/answerSchemas';
+import { ObjectType, ActionType } from '../jsonrpc/messages';
 
-// FIXME: these two enums need to be redefined locally because otherwise their values are
-//  undefined here, it could be due to cyclical dependencies that still need to be fixed.
-//  C.f. https://github.com/kulshekhar/ts-jest/issues/281 and others
-
-export enum ObjectType {
-  // uninitialized placeholder
-  INVALID = '__INVALID_OBJECT__',
-
-  LAO = 'lao',
-  MESSAGE = 'message',
-  MEETING = 'meeting',
-  ROLL_CALL = 'roll_call',
-  ELECTION = 'election',
-  CHIRP = 'chirp',
-  REACTION = 'reaction',
-}
-
-export enum ActionType {
-  // uninitialized placeholder
-  INVALID = '__INVALID_ACTION__',
-
-  CAST_VOTE = 'cast_vote',
-  CREATE = 'create',
-  END = 'end',
-  SETUP = 'setup',
-  UPDATE_PROPERTIES = 'update_properties',
-  STATE = 'state',
-  WITNESS = 'witness',
-  OPEN = 'open',
-  REOPEN = 'reopen',
-  RESULT = 'result',
-  CLOSE = 'close',
-  ADD = 'add',
-  NOTIFY_ADD = 'notify_add',
-  DELETE = 'delete',
-  NOTIFY_DELETE = 'notify_delete',
-}
-
-const ajv = new Ajv();
-ajv.opts.strict = false;
+const ajv = new Ajv({ strict: false });
+addFormats(ajv);
 ajv.addSchema([
   jsonRPC,
   connectToLaoSchema,

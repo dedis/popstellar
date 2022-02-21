@@ -7,6 +7,7 @@ import { PublicKey } from 'core/objects';
 import { ProfileIcon, TextBlock } from 'core/components';
 import STRINGS from 'resources/strings';
 
+import { useMemo } from 'react';
 import socialMediaProfileStyles from '../styles/socialMediaProfileStyles';
 import { ChirpCard } from '../components';
 import { Chirp, ChirpState } from '../objects';
@@ -20,7 +21,10 @@ const styles = socialMediaProfileStyles;
 
 const SocialProfile = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
-  const userChirps = makeChirpsListOfUser(currentUserPublicKey);
+  const userChirps = useMemo(
+    () => makeChirpsListOfUser(currentUserPublicKey),
+    [currentUserPublicKey],
+  );
   const userChirpList = useSelector(userChirps);
 
   if (!currentUserPublicKey || currentUserPublicKey.valueOf() === '') {

@@ -1,8 +1,7 @@
-import { ExtendedMessage, MessageRegistry } from 'core/network/jsonrpc/messages';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'core/redux';
-import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { subscribeToChannel } from 'core/network';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import * as Wallet from 'features/wallet/objects';
@@ -22,7 +21,7 @@ const getCurrentLao = makeCurrentLao();
  *
  * @param msg - The extended message for creating a roll call
  */
-function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
+export function handleRollCallCreateMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ROLL_CALL ||
     msg.messageData.action !== ActionType.CREATE
@@ -62,7 +61,7 @@ function handleRollCallCreateMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for opening a roll call
  */
-function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
+export function handleRollCallOpenMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ROLL_CALL ||
     msg.messageData.action !== ActionType.OPEN
@@ -103,7 +102,7 @@ function handleRollCallOpenMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for closing a roll call
  */
-function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
+export function handleRollCallCloseMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ROLL_CALL ||
     msg.messageData.action !== ActionType.CLOSE
@@ -172,22 +171,10 @@ function handleRollCallCloseMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg
  */
-function handleRollCallReopenMessage(msg: ExtendedMessage) {
+export function handleRollCallReopenMessage(msg: ProcessableMessage) {
   console.warn(
     'A RollCall reopen message was received but its processing logic is not yet implemented:',
     msg,
   );
   return false;
-}
-
-/**
- * Configures the RollCallHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mappings
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.ROLL_CALL, ActionType.CREATE, handleRollCallCreateMessage);
-  registry.addHandler(ObjectType.ROLL_CALL, ActionType.OPEN, handleRollCallOpenMessage);
-  registry.addHandler(ObjectType.ROLL_CALL, ActionType.CLOSE, handleRollCallCloseMessage);
-  registry.addHandler(ObjectType.ROLL_CALL, ActionType.REOPEN, handleRollCallReopenMessage);
 }

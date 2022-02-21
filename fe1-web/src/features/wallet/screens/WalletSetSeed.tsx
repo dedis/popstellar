@@ -2,12 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
+import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import TextBlock from 'core/components/TextBlock';
-import WideButtonView from 'core/components/WideButtonView';
 import PROPS_TYPE from 'resources/Props';
-import TextInputLine from 'core/components/TextInputLine';
 
 import * as Wallet from '../objects';
 
@@ -36,25 +34,21 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
     }
   };
 
-  function getInsertSeedWalletDisplay() {
-    return (
-      <View style={containerStyles.centered}>
-        <TextBlock text={STRINGS.type_seed_info} />
-        <TextInputLine
-          placeholder={STRINGS.type_seed_example}
-          onChangeText={(input: string) => setSeed(input)}
-        />
-        <View style={styles.smallPadding} />
-        <WideButtonView title={STRINGS.setup_wallet} onPress={() => initWallet()} />
-        <WideButtonView
-          title={STRINGS.back_to_wallet_home}
-          onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
-        />
-      </View>
-    );
-  }
-
-  return getInsertSeedWalletDisplay();
+  return (
+    <View style={containerStyles.centered}>
+      <TextBlock text={STRINGS.type_seed_info} />
+      <TextInputLine
+        placeholder={STRINGS.type_seed_example}
+        onChangeText={(input: string) => setSeed(input)}
+      />
+      <View style={styles.smallPadding} />
+      <WideButtonView title={STRINGS.setup_wallet} onPress={() => initWallet()} />
+      <WideButtonView
+        title={STRINGS.back_to_wallet_home}
+        onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+      />
+    </View>
+  );
 };
 
 const propTypes = {

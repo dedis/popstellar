@@ -107,20 +107,6 @@ describe('RollCall object', () => {
     expect(rollCall.containsToken(undefined as unknown as PopToken)).toBeFalse();
   });
 
-  it('containsToken function works when token is undefined', () => {
-    const rollCall = new RollCall({
-      id: ID,
-      name: NAME,
-      location: LOCATION,
-      creation: TIMESTAMP_START,
-      proposedStart: TIMESTAMP_START,
-      proposedEnd: TIMESTAMP_END,
-      status: RollCallStatus.CLOSED,
-      attendees: ATTENDEES.map((s: string) => new PublicKey(s)),
-    });
-    expect(rollCall.containsToken(undefined as unknown as PopToken)).toBeFalse();
-  });
-
   it('containsToken function works when attendees and token are defined', () => {
     const rollCall = new RollCall({
       id: ID,

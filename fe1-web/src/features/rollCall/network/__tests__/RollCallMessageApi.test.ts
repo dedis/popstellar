@@ -1,15 +1,19 @@
 import 'jest-extended';
-import { beforeEach } from '@jest/globals';
-
 import '__tests__/utils/matchers';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages/MessageData';
+import {
+  defaultMessageDataFields,
+  mockLao,
+  mockLaoId,
+  configureTestFeatures,
+} from '__tests__/utils';
+
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { defaultMessageDataFields, mockLao, mockLaoId } from '__tests__/utils/TestUtils';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
 
-import * as msApi from '../RollCallMessageApi';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from '../messages';
+import * as msApi from '../RollCallMessageApi';
 
 jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;
@@ -20,132 +24,128 @@ const mockStartTime = new Timestamp(1735685990);
 const mockEndTime = new Timestamp(1735686000);
 const mockRollCallId = Hash.fromString('my-roll-call');
 
-let checkDataCreateRollCall: Function;
-let checkDataOpenRollCall: Function;
-let checkDataReopenRollCall: Function;
-let checkDataCloseRollCall: Function;
+const checkDataCreateRollCall = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.ROLL_CALL);
+  expect(obj.action).toBe(ActionType.CREATE);
 
-const initializeChecks = () => {
-  checkDataCreateRollCall = (obj: MessageData) => {
-    expect(obj.object).toBe(ObjectType.ROLL_CALL);
-    expect(obj.action).toBe(ActionType.CREATE);
+  const data: CreateRollCall = obj as CreateRollCall;
+  expect(data).toBeObject();
+  expect(data).toContainKeys([
+    ...defaultMessageDataFields,
+    'id',
+    'name',
+    'creation',
+    'location',
+    'proposed_start',
+    'proposed_end',
+  ]);
+  expect(data.id).toBeBase64Url();
+  expect(data.name).toBeString();
+  expect(data.name).toBe('myRollCall');
+  expect(data.creation).toBeNumberObject();
+  expect(data.creation.valueOf()).toBeGreaterThan(0);
+  expect(data.proposed_start).toBeNumberObject();
+  expect(data.proposed_start.valueOf()).toBeGreaterThan(0);
+  expect(data.proposed_start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
+  expect(data.proposed_end).toBeNumberObject();
+  expect(data.proposed_end.valueOf()).toBeGreaterThan(0);
+  expect(data.proposed_end.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
+  expect(data.location).toBeString();
+  expect(data.location).toBe('location');
 
-    const data: CreateRollCall = obj as CreateRollCall;
-    expect(data).toBeObject();
-    expect(data).toContainKeys([
-      ...defaultMessageDataFields,
-      'id',
-      'name',
-      'creation',
-      'location',
-      'proposed_start',
-      'proposed_end',
-    ]);
-    expect(data.id).toBeBase64Url();
-    expect(data.name).toBeString();
-    expect(data.name).toBe('myRollCall');
-    expect(data.creation).toBeNumberObject();
-    expect(data.creation.valueOf()).toBeGreaterThan(0);
-    expect(data.proposed_start).toBeNumberObject();
-    expect(data.proposed_start.valueOf()).toBeGreaterThan(0);
-    expect(data.proposed_start.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-    expect(data.proposed_end).toBeNumberObject();
-    expect(data.proposed_end.valueOf()).toBeGreaterThan(0);
-    expect(data.proposed_end.valueOf() + 1).toBeGreaterThan(data.creation.valueOf());
-    expect(data.location).toBeString();
-    expect(data.location).toBe('location');
+  if ('description' in data) {
+    expect(data.description).toBeString();
+  }
 
-    if ('description' in data) {
-      expect(data.description).toBeString();
-    }
-
-    // Check id
-    const expected = Hash.fromStringArray(
-      'R',
-      OpenedLaoStore.get().id.toString(),
-      data.creation.toString(),
-      data.name,
-    );
-    expect(data.id).toEqual(expected);
-  };
-
-  checkDataOpenRollCall = (obj: MessageData) => {
-    expect(obj.object).toBe(ObjectType.ROLL_CALL);
-    expect(obj.action).toBe(ActionType.OPEN);
-
-    const data: OpenRollCall = obj as OpenRollCall;
-    expect(data).toBeObject();
-    expect(data).toContainKeys([...defaultMessageDataFields, 'update_id', 'opens', 'opened_at']);
-    expect(data.update_id).toBeBase64Url();
-    expect(data.opens).toBeBase64Url();
-    expect(data.opened_at).toBeNumberObject();
-    expect(data.opened_at.valueOf()).toBeGreaterThan(0);
-
-    // Check id
-    const expected = Hash.fromStringArray(
-      'R',
-      OpenedLaoStore.get().id.toString(),
-      data.opens.toString(),
-      data.opened_at.toString(),
-    );
-    expect(data.update_id).toEqual(expected);
-  };
-
-  checkDataReopenRollCall = (obj: MessageData) => {
-    expect(obj.object).toBe(ObjectType.ROLL_CALL);
-    expect(obj.action).toBe(ActionType.REOPEN);
-
-    const data: ReopenRollCall = obj as ReopenRollCall;
-    expect(data).toContainKeys([...defaultMessageDataFields, 'update_id', 'opens', 'opened_at']);
-    expect(data.update_id).toBeBase64Url();
-    expect(data.opens).toBeBase64Url();
-    expect(data.opened_at).toBeNumberObject();
-    expect(data.opened_at.valueOf()).toBeGreaterThan(0);
-
-    // check id
-    const expected = Hash.fromStringArray(
-      'R',
-      OpenedLaoStore.get().id.toString(),
-      data.opens.toString(),
-      data.opened_at.toString(),
-    );
-    expect(data.update_id).toEqual(expected);
-  };
-
-  checkDataCloseRollCall = (obj: MessageData) => {
-    expect(obj.object).toBe(ObjectType.ROLL_CALL);
-    expect(obj.action).toBe(ActionType.CLOSE);
-
-    const data: CloseRollCall = obj as CloseRollCall;
-    expect(data).toBeObject();
-    expect(data).toContainKeys([
-      ...defaultMessageDataFields,
-      'update_id',
-      'closes',
-      'closed_at',
-      'attendees',
-    ]);
-    expect(data.update_id).toBeBase64Url();
-    expect(data.closed_at).toBeNumberObject();
-    expect(data.closed_at.valueOf()).toBeGreaterThan(0);
-    expect(data.attendees).toBeBase64UrlArray();
-    expect(data.attendees).toBeDistinctArray();
-
-    // check id
-    const expected = Hash.fromStringArray(
-      'R',
-      OpenedLaoStore.get().id.toString(),
-      data.closes.toString(),
-      data.closed_at.toString(),
-    );
-    expect(data.update_id).toEqual(expected);
-  };
+  // Check id
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.creation.toString(),
+    data.name,
+  );
+  expect(data.id).toEqual(expected);
 };
 
+const checkDataOpenRollCall = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.ROLL_CALL);
+  expect(obj.action).toBe(ActionType.OPEN);
+
+  const data: OpenRollCall = obj as OpenRollCall;
+  expect(data).toBeObject();
+  expect(data).toContainKeys([...defaultMessageDataFields, 'update_id', 'opens', 'opened_at']);
+  expect(data.update_id).toBeBase64Url();
+  expect(data.opens).toBeBase64Url();
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
+
+  // Check id
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.opens.toString(),
+    data.opened_at.toString(),
+  );
+  expect(data.update_id).toEqual(expected);
+};
+
+const checkDataReopenRollCall = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.ROLL_CALL);
+  expect(obj.action).toBe(ActionType.REOPEN);
+
+  const data: ReopenRollCall = obj as ReopenRollCall;
+  expect(data).toContainKeys([...defaultMessageDataFields, 'update_id', 'opens', 'opened_at']);
+  expect(data.update_id).toBeBase64Url();
+  expect(data.opens).toBeBase64Url();
+  expect(data.opened_at).toBeNumberObject();
+  expect(data.opened_at.valueOf()).toBeGreaterThan(0);
+
+  // check id
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.opens.toString(),
+    data.opened_at.toString(),
+  );
+  expect(data.update_id).toEqual(expected);
+};
+
+const checkDataCloseRollCall = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.ROLL_CALL);
+  expect(obj.action).toBe(ActionType.CLOSE);
+
+  const data: CloseRollCall = obj as CloseRollCall;
+  expect(data).toBeObject();
+  expect(data).toContainKeys([
+    ...defaultMessageDataFields,
+    'update_id',
+    'closes',
+    'closed_at',
+    'attendees',
+  ]);
+  expect(data.update_id).toBeBase64Url();
+  expect(data.closed_at).toBeNumberObject();
+  expect(data.closed_at.valueOf()).toBeGreaterThan(0);
+  expect(data.attendees).toBeBase64UrlArray();
+  expect(data.attendees).toBeDistinctArray();
+
+  // check id
+  const expected = Hash.fromStringArray(
+    'R',
+    OpenedLaoStore.get().id.toString(),
+    data.closes.toString(),
+    data.closed_at.toString(),
+  );
+  expect(data.update_id).toEqual(expected);
+};
+
+beforeAll(() => {
+  configureTestFeatures();
+});
+
 beforeEach(() => {
-  OpenedLaoStore.store(mockLao);
   publishMock.mockClear();
-  initializeChecks();
+  OpenedLaoStore.store(mockLao);
 });
 
 describe('MessageApi', () => {

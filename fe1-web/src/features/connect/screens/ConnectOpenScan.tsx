@@ -31,24 +31,26 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     });
   };
 
-  const handleScan = (data: string) => {
+  const handleScan = (data: string | null) => {
+    if (!data) {
+      return;
+    }
+
     console.log(data);
-    if (data) {
-      setQrWasScanned(true);
-      try {
-        const obj = JSON.parse(data);
-        const connectToLao = ConnectToLao.fromJson(obj);
-        navigation.navigate(STRINGS.connect_confirm_title, {
-          laoIdIn: connectToLao.lao,
-          url: connectToLao.server,
-        });
-      } catch (error) {
-        toast.show(STRINGS.connect_scanning_fail, {
-          type: 'danger',
-          placement: 'top',
-          duration: FOUR_SECONDS,
-        });
-      }
+    setQrWasScanned(true);
+    try {
+      const obj = JSON.parse(data);
+      const connectToLao = ConnectToLao.fromJson(obj);
+      navigation.navigate(STRINGS.connect_confirm_title, {
+        laoIdIn: connectToLao.lao,
+        url: connectToLao.server,
+      });
+    } catch (error) {
+      toast.show(STRINGS.connect_scanning_fail, {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      });
     }
   };
 

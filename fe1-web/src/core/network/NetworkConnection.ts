@@ -208,7 +208,7 @@ export class NetworkConnection {
 
     let count = 0;
     return new Promise((resolve, reject) => {
-      const id: number = setInterval(() => {
+      const id = setInterval(() => {
         if (this.ws.readyState) {
           clearInterval(id);
           resolve();
