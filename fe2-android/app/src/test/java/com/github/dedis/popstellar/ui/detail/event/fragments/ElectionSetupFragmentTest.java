@@ -225,18 +225,6 @@ public class ElectionSetupFragmentTest {
   }
 
   @Test
-  public void canLaunchTimePickerFragmentFromStartTimeButton() {
-    startTimeView().perform(click());
-    getLastDialog(TimePickerDialog.class);
-  }
-
-  @Test
-  public void canLaunchTimePickerFragmentFromEndTimeButton() {
-    endTimeView().perform(click());
-    getLastDialog(TimePickerDialog.class);
-  }
-
-  @Test
   public void canChooseRandomStartTimeWhenNoDate() {
     startTimeView().perform(click());
     getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
