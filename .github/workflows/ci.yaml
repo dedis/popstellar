@@ -214,7 +214,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FE2 }}
         run: |
-          ./gradlew sonarqube
+          # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
+          # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
+          ( set -o pipefail; ./gradlew sonarqube --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
 
   be2-scala:
     name: Be2-Scala
