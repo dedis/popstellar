@@ -27,7 +27,7 @@ public class UITestUtils {
    * @param args arguments to the resource
    */
   public static void assertToastIsDisplayedWithText(@StringRes int resId, Object... args) {
-    assertThat("No toast have been displayed", ShadowToast.getLatestToast(), notNullValue());
+    assertThat("No toast was displayed", ShadowToast.getLatestToast(), notNullValue());
 
     String expected = ApplicationProvider.getApplicationContext().getString(resId, args);
     assertEquals(expected, ShadowToast.getTextOfLatestToast());
@@ -42,7 +42,7 @@ public class UITestUtils {
    */
   public static <D extends Dialog> D getLastDialog(Class<D> type) {
     Dialog dialog = ShadowDialog.getLatestDialog();
-    assertThat("No dialog have been displayed", dialog, notNullValue());
+    assertThat("No dialog has been displayed", dialog, notNullValue());
     assertThat("The dialog is not a " + type.getSimpleName(), dialog, is(instanceOf(type)));
     //noinspection unchecked
     return (D) dialog;
