@@ -17,21 +17,17 @@ const publishMock = mockPublish as jest.Mock;
 
 const mockText = 'text';
 
-let checkDataAddChirp: Function;
+const checkDataAddChirp = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.CHIRP);
+  expect(obj.action).toBe(ActionType.ADD);
 
-const initializeChecks = () => {
-  checkDataAddChirp = (obj: MessageData) => {
-    expect(obj.object).toBe(ObjectType.CHIRP);
-    expect(obj.action).toBe(ActionType.ADD);
-
-    const data: AddChirp = obj as AddChirp;
-    expect(data).toBeObject();
-    expect(data.text).toBeString();
-    if (data.parent_id) {
-      expect(data.parent_id).toBeBase64Url();
-    }
-    expect(data.timestamp).toBeNumberObject();
-  };
+  const data: AddChirp = obj as AddChirp;
+  expect(data).toBeObject();
+  expect(data.text).toBeString();
+  if (data.parent_id) {
+    expect(data.parent_id).toBeBase64Url();
+  }
+  expect(data.timestamp).toBeNumberObject();
 };
 
 beforeAll(configureTestFeatures);
@@ -39,7 +35,6 @@ beforeAll(configureTestFeatures);
 beforeEach(() => {
   publishMock.mockClear();
   OpenedLaoStore.store(mockLao);
-  initializeChecks();
 });
 
 describe('MessageApi', () => {

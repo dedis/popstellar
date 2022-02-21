@@ -1,8 +1,8 @@
 import { useSelector } from 'react-redux';
+import { useMemo } from 'react';
 
 import { Lao } from './objects';
 import { makeIsLaoOrganizer, makeLaosList, makeLaosMap } from './reducer';
-import { useMemo } from 'react';
 
 /**
  * Retrieves a list of all the LAOs known to the system

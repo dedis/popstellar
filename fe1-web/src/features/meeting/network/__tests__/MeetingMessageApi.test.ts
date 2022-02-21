@@ -23,53 +23,49 @@ const mockLocation = 'location';
 const mockStartTime = new Timestamp(1735685990);
 const mockEndTime = new Timestamp(1735686000);
 
-let checkDataCreateMeeting: Function;
+const checkDataCreateMeeting = (obj: MessageData) => {
+  expect(obj.object).toBe(ObjectType.MEETING);
+  expect(obj.action).toBe(ActionType.CREATE);
 
-const initializeChecks = () => {
-  checkDataCreateMeeting = (obj: MessageData) => {
-    expect(obj.object).toBe(ObjectType.MEETING);
-    expect(obj.action).toBe(ActionType.CREATE);
+  const data: CreateMeeting = obj as CreateMeeting;
+  expect(data).toBeObject();
+  const expectedMinFields = [...defaultMessageDataFields, 'id', 'name', 'creation', 'start'];
+  expect(data).toContainKeys(expectedMinFields);
+  expect(data.id).toBeBase64Url();
+  expect(data.name).toBeString();
+  expect(data.name).toBe(mockEventName);
+  expect(data.creation).toBeNumberObject();
+  expect(data.creation.valueOf()).toBeGreaterThan(0);
 
-    const data: CreateMeeting = obj as CreateMeeting;
-    expect(data).toBeObject();
-    const expectedMinFields = [...defaultMessageDataFields, 'id', 'name', 'creation', 'start'];
-    expect(data).toContainKeys(expectedMinFields);
-    expect(data.id).toBeBase64Url();
-    expect(data.name).toBeString();
-    expect(data.name).toBe(mockEventName);
-    expect(data.creation).toBeNumberObject();
-    expect(data.creation.valueOf()).toBeGreaterThan(0);
+  if ('location' in data) {
+    expect(data.location).toBeString();
+    expect(data.location).toBe(mockLocation);
+  }
 
-    if ('location' in data) {
-      expect(data.location).toBeString();
-      expect(data.location).toBe(mockLocation);
-    }
+  expect(data.start).toBeNumberObject();
+  expect(data.start.valueOf()).toBeGreaterThan(0);
+  expect(data.start.valueOf()).toBeGreaterThanOrEqual(data.creation.valueOf());
 
-    expect(data.start).toBeNumberObject();
-    expect(data.start.valueOf()).toBeGreaterThan(0);
-    expect(data.start.valueOf()).toBeGreaterThanOrEqual(data.creation.valueOf());
+  if ('end' in data) {
+    expect(data.end).toBeNumberObject();
+    // @ts-ignore
+    expect(data.end.valueOf()).toBeGreaterThan(0);
+    // @ts-ignore
+    expect(data.end.valueOf() + 1).toBeGreaterThan(data.start.valueOf());
+  }
 
-    if ('end' in data) {
-      expect(data.end).toBeNumberObject();
-      // @ts-ignore
-      expect(data.end.valueOf()).toBeGreaterThan(0);
-      // @ts-ignore
-      expect(data.end.valueOf() + 1).toBeGreaterThan(data.start.valueOf());
-    }
+  if ('extra' in data) {
+    expect(data.extra).toBeObject();
+  }
 
-    if ('extra' in data) {
-      expect(data.extra).toBeObject();
-    }
-
-    // check id
-    const expected = Hash.fromStringArray(
-      'M',
-      OpenedLaoStore.get().id.toString(),
-      data.creation.toString(),
-      data.name,
-    );
-    expect(data.id).toEqual(expected);
-  };
+  // check id
+  const expected = Hash.fromStringArray(
+    'M',
+    OpenedLaoStore.get().id.toString(),
+    data.creation.toString(),
+    data.name,
+  );
+  expect(data.id).toEqual(expected);
 };
 
 beforeAll(configureTestFeatures);
@@ -77,7 +73,6 @@ beforeAll(configureTestFeatures);
 beforeEach(() => {
   OpenedLaoStore.store(mockLao);
   publishMock.mockClear();
-  initializeChecks();
 });
 
 describe('MessageApi', () => {
