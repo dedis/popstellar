@@ -61,9 +61,17 @@ android {
         }
     }
 
+    // The release tests cannot work as they need the debug-only activity EmptyActivity
+    // This configuration is only there to keep the usual test folder instead of a testDebug folder
     sourceSets {
-        debug {
-            manifest.srcFile "src/testDebug/AndroidManifest.xml"
+        testDebug {
+            java.srcDirs = test.java.srcDirs
+            resources.srcDirs = test.resources.srcDirs
+        }
+
+        test {
+            java.srcDirs = []
+            resources.srcDirs = []
         }
     }
 }
