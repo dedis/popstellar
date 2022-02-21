@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-import { makeCurrentLao } from 'features/lao/reducer';
 import { Timestamp } from 'core/objects';
 import { QRCode, WideButtonView } from 'core/components';
-import STRINGS from 'resources/strings';
+import { makeEventGetter } from 'features/events/reducer';
+import { makeCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
+import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
@@ -19,29 +20,31 @@ import { RollCall, RollCallStatus } from '../objects';
 const EventRollCall = (props: IPropTypes) => {
   const { event } = props;
   const { isOrganizer } = props;
-  const laoSelect = makeCurrentLao();
+  const laoSelect = useMemo(makeCurrentLao, []);
   const lao = useSelector(laoSelect);
-  const navigation = useNavigation();
+  // FIXME: use a more specific navigation
+  const navigation = useNavigation<any>();
+
+  const rollCallSelect = useMemo(() => makeEventGetter(lao?.id, event?.id), [lao, event]);
+  const rollCall = useSelector(rollCallSelect) as RollCall | undefined;
 
   if (!lao) {
     throw new Error('no LAO is currently active');
   }
   const [popToken, setPopToken] = useState('');
 
-  const rollCallFromStore = useSelector(
-    (state) =>
-      // @ts-ignore
-      state.events.byLaoId[lao.id].byId[event.id],
-  );
-
   useEffect(() => {
+    if (!lao || !lao.id || !rollCall || !!rollCall.id) {
+      return;
+    }
+
     // Here we get the pop-token to display in the QR code
-    Wallet.generateToken(lao.id, event.id)
+    Wallet.generateToken(lao.id, rollCall.id)
       .then((token) => setPopToken(token.publicKey.valueOf()))
       .catch((err) => console.error(`Could not generate token: ${err}`));
-  }, [lao, event]);
+  }, [lao, rollCall]);
 
-  if (!rollCallFromStore) {
+  if (!rollCall) {
     console.debug('Error in Roll Call display: Roll Call doesnt exist in store');
     return null;
   }
@@ -54,14 +57,13 @@ const EventRollCall = (props: IPropTypes) => {
         );
         return;
       }
-      requestOpenRollCall(event.idAlias)
-        .then()
-        .catch((e) => console.debug('Unable to send Roll call re-open request', e));
+      requestOpenRollCall(event.idAlias).catch((e) =>
+        console.debug('Unable to send Roll call re-open request', e),
+      );
     } else {
       const time = Timestamp.EpochNow();
       requestOpenRollCall(event.id, time)
         .then(() => {
-          // @ts-ignore
           navigation.navigate(STRINGS.roll_call_open, {
             rollCallID: event.id.toString(),
             time: time.toString(),
@@ -92,6 +94,12 @@ const EventRollCall = (props: IPropTypes) => {
                 <QRCode visibility value={popToken} />
               </>
             )}
+            {isOrganizer && (
+              <WideButtonView
+                title="Scan Attendees"
+                onPress={() => console.error('not implemented yet')}
+              />
+            )}
           </>
         );
       case RollCallStatus.CLOSED:
@@ -99,8 +107,8 @@ const EventRollCall = (props: IPropTypes) => {
           <>
             <Text>Closed</Text>
             <Text>Attendees are:</Text>
-            {rollCallFromStore.attendees.map((attendee: string) => (
-              <Text key={attendee}>{attendee}</Text>
+            {rollCall.attendees?.map((attendee) => (
+              <Text key={attendee.valueOf()}>{attendee}</Text>
             ))}
             {isOrganizer && (
               <WideButtonView title="Re-open Roll Call" onPress={() => onOpenRollCall(true)} />
@@ -123,7 +131,7 @@ const EventRollCall = (props: IPropTypes) => {
   return (
     <>
       <Text>Roll Call</Text>
-      {getRollCallDisplay(rollCallFromStore.status)}
+      {getRollCallDisplay(rollCall.status)}
     </>
   );
 };

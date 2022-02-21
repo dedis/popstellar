@@ -1,6 +1,6 @@
 import React from 'react';
-import { useRoute } from '@react-navigation/core';
-import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
+import { useRoute, useNavigation } from '@react-navigation/core';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import * as reactRedux from 'react-redux';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
@@ -8,15 +8,9 @@ import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import STRINGS from 'resources/strings';
 import keyPair from 'test_data/keypair.json';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
-import {
-  mockLao,
-  mockLaoId,
-  mockLaoName,
-  mockLaoState,
-  mockPopToken,
-} from '__tests__/utils/TestUtils';
+import { mockLao, mockLaoId, mockLaoName, mockPopToken } from '__tests__/utils/TestUtils';
+
+import * as token from 'features/wallet/objects/Token';
 
 import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
 import RollCallOpened from '../RollCallOpened';
@@ -29,48 +23,66 @@ const rollCallId = Hash.fromStringArray('R', mockLaoId, time, mockLaoName).toStr
 
 jest.mock('@react-navigation/core');
 jest.mock('react-qr-reader');
-jest.mock('features/rollCall/network/RollCallMessageApi.ts');
+jest.mock('features/rollCall/network/RollCallMessageApi');
 
 let mockToastShow = jest.fn();
+const mockToastRet = {
+  show: mockToastShow,
+};
 jest.mock('react-native-toast-notifications', () => ({
-  useToast: () => ({
-    show: mockToastShow,
-  }),
+  useToast: () => mockToastRet,
 }));
 
-jest.mock('features/wallet/objects/Token.ts', () => ({
-  generateToken: jest.fn(() => Promise.resolve(mockPopToken)),
-}));
-
+const generateTokenMock = jest.spyOn(token, 'generateToken');
+let promise: Promise<any>;
 beforeEach(() => {
-  mockToastShow = jest.fn();
-});
+  jest.resetAllMocks();
 
-describe('RollCallOpened', () => {
   const useSelectorMock = jest.spyOn(reactRedux, 'useSelector');
-  useSelectorMock.mockReturnValue({ mockLao });
+  useSelectorMock.mockReturnValue(mockLao);
+
+  promise = Promise.resolve(mockPopToken);
+  generateTokenMock.mockImplementation(() => promise);
 
   (useRoute as jest.Mock).mockReturnValue({
     name: STRINGS.roll_call_open,
     params: { rollCallID: rollCallId, time: time },
   });
 
+  (useNavigation as jest.Mock).mockReturnValue({
+    navigation: jest.fn(),
+  });
+
+  (mockRequestCloseRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
+});
+
+describe('RollCallOpened', () => {
   it('renders correctly when no scan', async () => {
     const { toJSON } = render(<RollCallOpened />);
     await waitFor(() => {
+      expect(generateTokenMock).toHaveBeenCalled();
       expect(toJSON()).toMatchSnapshot();
     });
   });
 
-  it('shows toast when scanning attendees', async () => {
-    render(<RollCallOpened />);
-    act(() => {
+  it('renders correctly when scanning attendees', async () => {
+    const { toJSON } = render(<RollCallOpened />);
+    await waitFor(async () => {
       fakeQrReaderScan('123');
       fakeQrReaderScan('456');
+      expect(generateTokenMock).toHaveBeenCalled();
     });
-    await waitFor(() => {
-      expect(mockToastShow).toHaveBeenCalledTimes(2);
+    expect(toJSON()).toMatchSnapshot();
+  });
+
+  it('shows toast when scanning attendees', async () => {
+    render(<RollCallOpened />);
+    await waitFor(async () => {
+      fakeQrReaderScan('123');
+      fakeQrReaderScan('456');
+      expect(generateTokenMock).toHaveBeenCalled();
     });
+    expect(mockToastShow).toHaveBeenCalledTimes(2);
   });
 
   it('shows toast when adding an attendee manually', async () => {
@@ -100,32 +112,26 @@ describe('RollCallOpened', () => {
   });
 
   it('closes correctly with no attendee', async () => {
-    const getMock = jest.spyOn(OpenedLaoStore, 'get');
-    getMock.mockImplementation(() => Lao.fromState(mockLaoState));
     const button = render(<RollCallOpened />).getByText(STRINGS.roll_call_scan_close);
-    await waitFor(() => {
-      fireEvent.press(button);
-      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
-        mockPopToken.publicKey,
-      ]);
-    });
+    await waitFor(() => expect(generateTokenMock).toHaveBeenCalled());
+    fireEvent.press(button);
+    expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
+      mockPopToken.publicKey,
+    ]);
   });
 
   it('closes correctly with two attendees', async () => {
-    const getMock = jest.spyOn(OpenedLaoStore, 'get');
-    getMock.mockImplementation(() => Lao.fromState(mockLaoState));
     const button = render(<RollCallOpened />).getByText(STRINGS.roll_call_scan_close);
     await waitFor(() => {
-      act(() => {
-        fakeQrReaderScan('123');
-        fakeQrReaderScan('456');
-      });
-      fireEvent.press(button);
-      expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
-        new PublicKey('123'),
-        new PublicKey('456'),
-        mockPopToken.publicKey,
-      ]);
+      fakeQrReaderScan('123');
+      fakeQrReaderScan('456');
+      expect(generateTokenMock).toHaveBeenCalled();
     });
+    fireEvent.press(button);
+    expect(mockRequestCloseRollCall).toHaveBeenCalledWith(expect.anything(), [
+      new PublicKey('123'),
+      new PublicKey('456'),
+      mockPopToken.publicKey,
+    ]);
   });
 });

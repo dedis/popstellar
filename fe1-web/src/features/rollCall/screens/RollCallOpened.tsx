@@ -2,8 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import QrReader from 'react-qr-reader';
 import { Badge } from 'react-native-elements';
-import { useNavigation } from '@react-navigation/native';
-import { useRoute } from '@react-navigation/core';
+import { useRoute, useNavigation } from '@react-navigation/core';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
@@ -12,7 +11,6 @@ import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { EventTags, Hash, PublicKey } from 'core/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 import { makeCurrentLao } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
@@ -36,11 +34,10 @@ const styles = StyleSheet.create({
 const tokenMatcher = new RegExp('^[A-Za-z0-9_-]{43}=$');
 
 const RollCallOpened = () => {
-  // FIXME: route should use proper type
+  // FIXME: navigation and route should user proper type
+  const navigation = useNavigation<any>();
   const route = useRoute<any>();
   const { rollCallID, time } = route.params;
-  // FIXME: Navigation should use a defined type here (instead of any)
-  const navigation = useNavigation<any>();
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -53,11 +50,26 @@ const RollCallOpened = () => {
 
   // This will run only when the state changes
   useEffect(() => {
+    if (!lao || !lao.id || !rollCallID || !toast) {
+      return;
+    }
+
+    const addOwnToken = async () => {
+      try {
+        const tok = await Wallet.generateToken(lao.id, new Hash(rollCallID));
+        updateAttendees((prev) => new Set<string>([...prev, tok.publicKey.valueOf()]));
+      } catch (err) {
+        toast.show(`Could not generate organizer's PoP token, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      }
+    };
+
     // Add the token of the organizer as soon as we open the roll call
-    Wallet.generateToken(lao.id, new Hash(rollCallID)).then((token) => {
-      updateAttendees((prev) => new Set<string>(prev.add(token.publicKey.valueOf())));
-    });
-  }, [lao.id, rollCallID]);
+    addOwnToken().catch((e) => console.error(e));
+  }, [lao, rollCallID, toast]);
 
   const handleError = (err: string) => {
     console.error(err);
@@ -92,14 +104,8 @@ const RollCallOpened = () => {
   };
 
   const onCloseRollCall = () => {
-    const updateId = Hash.fromStringArray(
-      EventTags.ROLL_CALL,
-      OpenedLaoStore.get().id.toString(),
-      rollCallID,
-      time,
-    );
+    const updateId = Hash.fromStringArray(EventTags.ROLL_CALL, lao.id.toString(), rollCallID, time);
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-
     return requestCloseRollCall(updateId, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
