@@ -20,8 +20,8 @@ import dagger.hilt.android.AndroidEntryPoint;
  * <p>Help found here (outdated) :
  * https://brandonlehr.com/android/learn-to-code/2018/08/19/callling-android-datepicker-fragment-from-a-fragment-and-getting-the-date
  */
-@AndroidEntryPoint
-public final class DatePickerFragment extends AppCompatDialogFragment
+@AndroidEntryPoint(AppCompatDialogFragment.class)
+public final class DatePickerFragment extends Hilt_DatePickerFragment
     implements DatePickerDialog.OnDateSetListener {
 
   public static final String TAG = DatePickerFragment.class.getSimpleName();

@@ -1,10 +1,10 @@
 package com.github.dedis.popstellar.model.objects;
 
-import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.di.KeysetModule.WalletKeyset;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.ui.wallet.stellar.SLIP10;
@@ -13,8 +13,6 @@ import com.github.dedis.popstellar.utility.error.keys.KeyGenerationException;
 import com.github.dedis.popstellar.utility.error.keys.SeedValidationException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 import com.google.crypto.tink.Aead;
-import com.google.crypto.tink.aead.AeadConfig;
-import com.google.crypto.tink.aead.AesGcmKeyManager;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 
 import net.i2p.crypto.eddsa.Utils;
@@ -22,7 +20,6 @@ import net.i2p.crypto.eddsa.Utils;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -35,7 +32,6 @@ import java.util.StringJoiner;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.github.novacrypto.bip39.MnemonicGenerator;
 import io.github.novacrypto.bip39.MnemonicValidator;
 import io.github.novacrypto.bip39.SeedCalculator;
@@ -61,10 +57,10 @@ public class Wallet {
 
   /** Class constructor, initialize the wallet keyset. */
   @Inject
-  public Wallet(@ApplicationContext Context context) {
+  public Wallet(@WalletKeyset AndroidKeysetManager keysetManager) {
     try {
-      initKeysManager(context);
-    } catch (IOException | GeneralSecurityException e) {
+      aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
+    } catch (GeneralSecurityException e) {
       Log.e(TAG, "Failed to initialize the Wallet", e);
       throw new IllegalStateException("Failed to initialize the Wallet", e);
     }
@@ -188,24 +184,6 @@ public class Wallet {
     SecureRandom random = new SecureRandom();
     seed = random.generateSeed(64);
     Log.d(TAG, "Wallet initialized with a new random seed: " + Utils.bytesToHex(seed));
-  }
-
-  /**
-   * Method to init the AndroidKeysetManager
-   *
-   * @param context of the application
-   */
-  private void initKeysManager(Context context) throws IOException, GeneralSecurityException {
-    AesGcmKeyManager.register(true);
-    AeadConfig.register();
-    AndroidKeysetManager keysetManager =
-        new AndroidKeysetManager.Builder()
-            .withSharedPref(context, "POP_KEYSET_2", "POP_KEYSET_SP_2")
-            .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
-            .withMasterKeyUri("android-keystore://POP_MASTER_KEY_2")
-            .build();
-
-    aead = keysetManager.getKeysetHandle().getPrimitive(Aead.class);
   }
 
   /**

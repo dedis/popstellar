@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.network.method.{Params, ParamsWithMessage}
 import ch.epfl.pop.model.objects._
 import org.scalatest.{FunSuite, Matchers}
-import util.examples.MessageExample
+import util.examples.{JsonRpcRequestExample, MessageExample}
 
 
 class JsonRpcRequestSuite extends FunSuite with Matchers {
@@ -80,11 +80,11 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
 
   test("getDecodedDataHeader returns right value") {
 
-    rpcReq.getDecodedDataHeader should equal(None)
+    rpcReq.getDecodedDataHeader should equal((ObjectType.INVALID, ActionType.INVALID))
 
-    rpcReq2.getDecodedDataHeader should equal(None)
+    rpcReq2.getDecodedDataHeader should equal((ObjectType.INVALID, ActionType.INVALID))
 
-    rpcReq3.getDecodedDataHeader should equal(Some((ObjectType.LAO, ActionType.CREATE)))
+    rpcReq3.getDecodedDataHeader should equal((ObjectType.LAO, ActionType.CREATE))
   }
 
   test("getWithDecodedData sets data as intended") {
@@ -106,8 +106,20 @@ class JsonRpcRequestSuite extends FunSuite with Matchers {
     rpcReqWithParams2.get.getDecodedData should equal(Some(decodedData))
   }
 
-  test("extractLaoId returns right id") {
+  test("extractLaoId returns the correct lao id") {
     rpcReq.extractLaoId should equal(Hash(Base64Data(laoId)))
+  }
+
+  test("getId returns the correct rpc id") {
+    rpcReq.getId should equal(id)
+    rpcReq2.getId should equal(id)
+    rpcReq3.getId should equal(id)
+
+    // Rpc request without any id (e.g. faulty message)
+    JsonRpcRequest(rpc, methodType, params, None).getId should equal(None)
+
+    // Broadcast rpc message
+    JsonRpcRequestExample.broadcastRpcRequest.getId should equal(None)
   }
 
 }

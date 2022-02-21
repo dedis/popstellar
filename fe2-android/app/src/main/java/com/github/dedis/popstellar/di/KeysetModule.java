@@ -2,14 +2,20 @@ package com.github.dedis.popstellar.di;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
+import com.google.crypto.tink.aead.AeadConfig;
+import com.google.crypto.tink.aead.AesGcmKeyManager;
 import com.google.crypto.tink.integration.android.AndroidKeysetManager;
 import com.google.crypto.tink.signature.Ed25519PrivateKeyManager;
 import com.google.crypto.tink.signature.PublicKeySignWrapper;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.security.GeneralSecurityException;
 
+import javax.inject.Qualifier;
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -22,21 +28,28 @@ import dagger.hilt.components.SingletonComponent;
 @InstallIn(SingletonComponent.class)
 public class KeysetModule {
 
-  private static final String KEYSET_NAME = "POP_KEYSET";
-  private static final String SHARED_PREF_FILE_NAME = "POP_KEYSET_SP";
-  private static final String MASTER_KEY_URI = "android-keystore://POP_MASTER_KEY";
+  private static final String TAG = KeysetModule.class.getSimpleName();
+
+  private static final String DEVICE_KEYSET_NAME = "POP_KEYSET";
+  private static final String DEVICE_SHARED_PREF_FILE_NAME = "POP_KEYSET_SP";
+  private static final String DEVICE_MASTER_KEY_URI = "android-keystore://POP_MASTER_KEY";
+
+  private static final String WALLET_KEYSET_NAME = "POP_KEYSET_2";
+  private static final String WALLET_SHARED_PREF_FILE_NAME = "POP_KEYSET_SP_2";
+  private static final String WALLET_MASTER_KEY_URI = "android-keystore://POP_MASTER_KEY_2";
 
   private KeysetModule() {}
 
   @Provides
+  @DeviceKeyset
   @Singleton
-  public static AndroidKeysetManager provideAndroidKeysetManager(
+  public static AndroidKeysetManager provideDeviceKeysetManager(
       @ApplicationContext Context applicationContext) {
 
     try {
       SharedPreferences.Editor editor =
           applicationContext
-              .getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+              .getSharedPreferences(DEVICE_SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
               .edit();
       editor.apply();
 
@@ -46,12 +59,39 @@ public class KeysetModule {
       // TODO: move to background thread
 
       return new AndroidKeysetManager.Builder()
-          .withSharedPref(applicationContext, KEYSET_NAME, SHARED_PREF_FILE_NAME)
+          .withSharedPref(applicationContext, DEVICE_KEYSET_NAME, DEVICE_SHARED_PREF_FILE_NAME)
           .withKeyTemplate(Ed25519PrivateKeyManager.rawEd25519Template())
-          .withMasterKeyUri(MASTER_KEY_URI)
+          .withMasterKeyUri(DEVICE_MASTER_KEY_URI)
           .build();
     } catch (IOException | GeneralSecurityException e) {
-      throw new SecurityException("Could not retrieve the keyset from the app", e);
+      throw new SecurityException("Could not retrieve the device keyset from the app", e);
     }
   }
+
+  @Provides
+  @WalletKeyset
+  @Singleton
+  public static AndroidKeysetManager provideWalletKeysetManager(
+      @ApplicationContext Context applicationContext) {
+    try {
+      AesGcmKeyManager.register(true);
+      AeadConfig.register();
+      return new AndroidKeysetManager.Builder()
+          .withSharedPref(applicationContext, WALLET_KEYSET_NAME, WALLET_SHARED_PREF_FILE_NAME)
+          .withKeyTemplate(AesGcmKeyManager.rawAes256GcmTemplate())
+          .withMasterKeyUri(WALLET_MASTER_KEY_URI)
+          .build();
+    } catch (GeneralSecurityException | IOException e) {
+      Log.e(TAG, "Could not retrieve the wallet keyset from the app", e);
+      throw new SecurityException("Could not retrieve the wallet keyset from the app", e);
+    }
+  }
+
+  @Qualifier
+  @Retention(RetentionPolicy.RUNTIME)
+  public @interface DeviceKeyset {}
+
+  @Qualifier
+  @Retention(RetentionPolicy.RUNTIME)
+  public @interface WalletKeyset {}
 }

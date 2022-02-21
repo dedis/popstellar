@@ -28,8 +28,8 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
-@AndroidEntryPoint
-public class ElectionSetupFragment extends AbstractEventCreationFragment {
+@AndroidEntryPoint(AbstractEventCreationFragment.class)
+public class ElectionSetupFragment extends Hilt_ElectionSetupFragment {
 
   public static final String TAG = ElectionSetupFragment.class.getSimpleName();
 

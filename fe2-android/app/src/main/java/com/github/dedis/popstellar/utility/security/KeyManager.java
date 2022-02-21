@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.utility.security;
 
+import static com.github.dedis.popstellar.di.KeysetModule.DeviceKeyset;
+
 import android.util.Log;
 
 import androidx.annotation.VisibleForTesting;
@@ -47,7 +49,7 @@ public class KeyManager {
   private KeyPair keyPair;
 
   @Inject
-  public KeyManager(AndroidKeysetManager keysetManager, Wallet wallet) {
+  public KeyManager(@DeviceKeyset AndroidKeysetManager keysetManager, Wallet wallet) {
     this.keysetManager = keysetManager;
     this.wallet = wallet;
 

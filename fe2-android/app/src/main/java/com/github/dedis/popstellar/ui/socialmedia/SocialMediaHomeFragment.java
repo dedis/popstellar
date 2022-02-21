@@ -26,8 +26,8 @@ import java.util.function.Supplier;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment of the home feed of the social media */
-@AndroidEntryPoint
-public class SocialMediaHomeFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class SocialMediaHomeFragment extends Hilt_SocialMediaHomeFragment {
   private SocialMediaHomeFragmentBinding mSocialMediaHomeFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
   private ChirpListAdapter mChirpListAdapter;

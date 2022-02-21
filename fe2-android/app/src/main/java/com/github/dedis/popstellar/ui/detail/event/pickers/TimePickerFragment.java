@@ -17,8 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint;
  *
  * <p>More info : https://developer.android.com/guide/fragments/communicate
  */
-@AndroidEntryPoint
-public final class TimePickerFragment extends AppCompatDialogFragment
+@AndroidEntryPoint(AppCompatDialogFragment.class)
+public final class TimePickerFragment extends Hilt_TimePickerFragment
     implements TimePickerDialog.OnTimeSetListener {
 
   public static final String TAG = TimePickerFragment.class.getSimpleName();

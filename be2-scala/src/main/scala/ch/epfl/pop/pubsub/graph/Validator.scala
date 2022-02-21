@@ -1,81 +1,22 @@
 package ch.epfl.pop.pubsub.graph
 
-import java.io.InputStream
-
 import akka.NotUsed
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method._
-import ch.epfl.pop.model.network.requests.election.{JsonRpcRequestCastVoteElection, JsonRpcRequestEndElection, JsonRpcRequestResultElection, JsonRpcRequestSetupElection}
-import ch.epfl.pop.model.network.requests.lao.{JsonRpcRequestCreateLao, JsonRpcRequestStateLao, JsonRpcRequestUpdateLao}
-import ch.epfl.pop.model.network.requests.meeting.{JsonRpcRequestCreateMeeting, JsonRpcRequestStateMeeting}
-import ch.epfl.pop.model.network.requests.rollCall.{JsonRpcRequestCloseRollCall, JsonRpcRequestCreateRollCall, JsonRpcRequestOpenRollCall, JsonRpcRequestReopenRollCall}
-import ch.epfl.pop.model.network.requests.socialMedia._
-import ch.epfl.pop.model.network.requests.witness.JsonRpcRequestWitnessMessage
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse}
-import ch.epfl.pop.pubsub.graph.validators.ElectionValidator._
-import ch.epfl.pop.pubsub.graph.validators.LaoValidator._
-import ch.epfl.pop.pubsub.graph.validators.MeetingValidator._
+import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.validators.ParamsValidator._
-import ch.epfl.pop.pubsub.graph.validators.RollCallValidator._
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator._
-import ch.epfl.pop.pubsub.graph.validators.SocialMediaValidator._
-import ch.epfl.pop.pubsub.graph.validators.WitnessValidator._
-import com.fasterxml.jackson.databind.{JsonNode, ObjectMapper}
-import com.networknt.schema.{JsonSchema, JsonSchemaFactory, SpecVersion, ValidationMessage}
-import spray.json._
-
-import scala.jdk.CollectionConverters._
-import scala.util.{Success, Try}
 
 
 object Validator {
-
-  private final val queryPath = "protocol/query/query.json" //With respect to resource folder
-  private final val objectMapper: ObjectMapper = new ObjectMapper()
-  private final lazy val schema: JsonSchema = setupSchemaValidation(queryPath, objectMapper)
-
-  def setupSchemaValidation(jsonPath: String, objectMapper: ObjectMapper): JsonSchema = {
-    //Get input stream of query.json file from resources folder
-    def queryFile: InputStream = this.getClass.getClassLoader.getResourceAsStream(jsonPath)
-
-    // Creation of a JsonSchemaFactory that supports the DraftV07 with the schema obtained from a node created from query.json
-    val factory: JsonSchemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)
-    // Creation of a JsonNode using the readTree function from the file query.json (at queryPath)
-    // Closing the stream is done by readTree
-    // FIXME: error handling for queryPath
-    lazy val jsonSchemaNode: JsonNode = objectMapper.readTree(queryFile)
-    // Creation of a JsonSchema from the previously created factory and JsonNode
-    factory.getSchema(jsonSchemaNode)
-  }
-
-  def validateSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
-    // Creation of a JsonNode containing the information from the input jsonString
-    val jsonNode: JsonNode = objectMapper.readTree(jsonString)
-    // Validation of the input, the result is a set of errors (if no errors, the set is empty)
-
-    val errors: Set[ValidationMessage] = schema.validate(jsonNode).asScala.toSet
-    if (errors.isEmpty) {
-      Left(jsonString)
-    } else {
-      val rpcId = extractRpcId(jsonString)
-      // we get and concatenate all of the JsonString messages
-      Right(PipelineError(ErrorCodes.INVALID_DATA.id, errors.mkString("; "), rpcId))
-    }
-  }
 
   private def validationError(rpcId: Option[Int]): PipelineError = PipelineError(
     ErrorCodes.INVALID_ACTION.id,
     "Unsupported action: Validator was given a message it could not recognize",
     rpcId
   )
-
-  private def extractRpcId(jsonString: JsonString): Option[Int] = {
-    Try(jsonString.parseJson.asJsObject.getFields("id")) match {
-      case Success(Seq(JsNumber(id))) => Some(id.toInt)
-      case _ => None
-    }
-  }
 
   private def validateJsonRpcContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     case Left(jsonRpcMessage) => jsonRpcMessage match {
@@ -129,46 +70,29 @@ object Validator {
     case graphMessage@_ => graphMessage
   }
 
-  def validateMessageDataContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {
-    case Left(jsonRpcMessage) => jsonRpcMessage match {
-      case message@(_: JsonRpcRequestCreateLao) => validateCreateLao(message)
-      case message@(_: JsonRpcRequestStateLao) => validateStateLao(message)
-      case message@(_: JsonRpcRequestUpdateLao) => validateUpdateLao(message)
-      case message@(_: JsonRpcRequestCreateMeeting) => validateCreateMeeting(message)
-      case message@(_: JsonRpcRequestStateMeeting) => validateStateMeeting(message)
-      case message@(_: JsonRpcRequestCreateRollCall) => validateCreateRollCall(message)
-      case message@(_: JsonRpcRequestOpenRollCall) => validateOpenRollCall(message)
-      case message@(_: JsonRpcRequestReopenRollCall) => validateReopenRollCall(message)
-      case message@(_: JsonRpcRequestCloseRollCall) => validateCloseRollCall(message)
-      case message@(_: JsonRpcRequestSetupElection) => validateSetupElection(message)
-      case message@(_: JsonRpcRequestCastVoteElection) => validateCastVoteElection(message)
-      case message@(_: JsonRpcRequestResultElection) => validateResultElection(message)
-      case message@(_: JsonRpcRequestEndElection) => validateEndElection(message)
-      case message@(_: JsonRpcRequestWitnessMessage) => validateWitnessMessage(message)
-      case message@(_: JsonRpcRequestAddChirp) => validateAddChirp(message)
-      case message@(_: JsonRpcRequestNotifyAddChirp) => validateNotifyAddChirp(message)
-      case message@(_: JsonRpcRequestDeleteChirp) => validateDeleteChirp(message)
-      case message@(_: JsonRpcRequestNotifyDeleteChirp) => validateNotifyDeleteChirp(message)
-      case message@(_: JsonRpcRequestAddReaction) => validateAddReaction(message)
-      case message@(_: JsonRpcRequestDeleteReaction) => validateDeleteReaction(message)
-
-      case _ => Right(validationError(jsonRpcMessage match {
-        case r: JsonRpcRequest => r.id
-        case r: JsonRpcResponse => r.id
-        case _ => None
-      }))
+  def validateMessageDataContent(rpcRequest: JsonRpcRequest, registry: MessageRegistry): GraphMessage = {
+    val (_object, action) = rpcRequest.getDecodedDataHeader
+    registry.getValidator(_object, action) match {
+      case Some(validator) => validator(rpcRequest)
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_ERROR.id,
+        s"MessageRegistry could not find any data validator for JsonRpcRequest : $rpcRequest'",
+        rpcRequest.getId
+      ))
     }
-    case graphMessage@_ => graphMessage
   }
-
-
-  // takes a string (json) input and compares it with the JsonSchema
-  // /!\ Json Schema plugin?
-  val schemaValidator: Flow[JsonString, Either[JsonString, PipelineError], NotUsed] = Flow[JsonString].map(validateSchema)
 
   // takes a JsonRpcMessage and validates input until Message layer
   val jsonRpcContentValidator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(validateHighLevelMessage)
 
   // validation from Message layer
-  val messageContentValidator: Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(validateMessageDataContent)
+  def messageContentValidator(messageRegistry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
+    case Left(rpcRequest: JsonRpcRequest) => validateMessageDataContent(rpcRequest, messageRegistry)
+    case Left(rpcResponse: JsonRpcResponse) => Right(PipelineError(
+      ErrorCodes.SERVER_ERROR.id,
+      "'messageContentValidator' was called on a JsonRpcResponse, which by definition, does not contain any Message layer'",
+      rpcResponse.getId
+    ))
+    case graphMessage@_ => graphMessage
+  }
 }

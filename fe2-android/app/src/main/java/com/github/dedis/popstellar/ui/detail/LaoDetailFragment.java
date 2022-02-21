@@ -35,8 +35,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the LAO Detail UI */
-@AndroidEntryPoint
-public class LaoDetailFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class LaoDetailFragment extends Hilt_LaoDetailFragment {
 
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
 
