@@ -188,12 +188,19 @@ jobs:
         run: |
           chmod +x ./gradlew
 
-      - name: Run Unit Tests
+      - name: Build App and Run Tests
         shell: bash
         run: |
           # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
           # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
-          ( set -o pipefail; ./gradlew testDebugUnitTest --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
+          ( set -o pipefail; ./gradlew build --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
+      
+      - name: Generate Coverage Report
+        shell: bash
+        run: |
+          # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
+          # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
+          ( set -o pipefail; ./gradlew jacocoTestReport --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
 
       - name: Cache SonarCloud packages
         uses: actions/cache@v2

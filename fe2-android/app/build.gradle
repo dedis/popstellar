@@ -14,23 +14,6 @@ android {
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "com.github.dedis.popstellar.HiltTestRunner"
-
-        // The following argument makes the Android Test Orchestrator run its
-        // "pm clear" command after each test invocation. This command ensures
-        // that the app's state is completely cleared between tests.
-        testInstrumentationRunnerArguments clearPackageData: 'true'
-        // These arguments allows the tests to produce coverage data correctly.
-        // As the process to do so is different between Android<30 and Android >=30,
-        // some arguments are only relevant if the tests are running on a specific device.
-        // This setup allows the coverage to be produced on any device.
-        //
-        // An great and updated sample project on coverage can be found here :
-        // https://github.com/growse/Android-Test-Coverage-Sample/
-        testInstrumentationRunnerArguments useTestStorageService: 'true' // Android>=30
-        testInstrumentationRunnerArguments coverage: 'true' // Android<30
-        testInstrumentationRunnerArguments coverageFilePath: '/sdcard/coverage/' // Android<30
-
         buildTypes {
             debug {
                 isDefault true
@@ -64,7 +47,6 @@ android {
 
         // Enable the android test orchestrator to isolate the test from one another.
         testOptions {
-            execution 'ANDROIDX_TEST_ORCHESTRATOR'
             animationsDisabled true
 
             unitTests {
@@ -79,12 +61,11 @@ android {
         }
     }
 
-    // Add the common test sources to the project
-    sourceSets
-        .findAll { it.name.toLowerCase().contains("test") }
-        .forEach {
-            it.java.srcDirs += file("$project.projectDir/src/test/common")
+    sourceSets {
+        debug {
+            manifest.srcFile "src/testDebug/AndroidManifest.xml"
         }
+    }
 }
 
 // Jacoco configuration - This configures jacoco for each test task
@@ -103,9 +84,9 @@ sonarqube {
         property "sonar.organization", "dedis"
         property "sonar.host.url", "https://sonarcloud.io"
         // Comma-separated paths to the various directories containing the *.xml JUnit report files. Each path may be absolute or relative to the project base directory.
-        property "sonar.junit.reportPaths", "${project.buildDir}/test-results/testDebugUnitTest/,${project.buildDir}/outputs/androidTest-results/connected/flavors/mock/"
+        property "sonar.junit.reportPaths", "${project.buildDir}/test-results/testDebugUnitTest/"
         // Paths to xml files with Android Lint issues. If the main flavor is changed, this file will have to be changed too.
-        property "sonar.androidLint.reportPaths", "${project.buildDir}/reports/lint-results-prodDebug.xml"
+        property "sonar.androidLint.reportPaths", "${project.buildDir}/reports/lint-results-debug.xml"
         // Paths to JaCoCo XML coverage report files.
         property "sonar.coverage.jacoco.xmlReportPaths", "${project.buildDir}/reports/jacoco/jacocoTestReport/jacocoTestReport.xml"
     }
@@ -208,7 +189,7 @@ copy {
     }
 }
 
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
+task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
     reports {
         xml.required = true
         html.required = true
