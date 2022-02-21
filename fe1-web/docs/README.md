@@ -33,38 +33,72 @@ for their use.
 
 ## Project Structure
 
-The project is organized into different modules as follows
+At a high level, the project is roughly split in a `core` and `features`.
+The `core` provides the technical foundations to the app's architecture, its initialization and ensures its portability.
+The `features` module provides the application's functionality, built on top of the `core`.
+Here's the annotated directory tree:
+
 
 ```
 .
-├── App.tsx                    # the entry point
+├── App.tsx                  # the entry point
 │
-├── __mocks__                  # test mocks for external libraries
-├── __tests__                  # tests
+├── core                     # core elements of the system
 │
-├── components                 # library of reusable UI component (React-based)
+│   ├── components               # library of simple, reusable UI component
+│   │
+│   ├── keypair                  # module dealing with the storage of a global, unique keypair
+│   │
+│   ├── navigation               # module dealing with the top-level React navigation
+│   │
+│   ├── network                  # module to network with the backend
+│   │   ├── ingestion              # implementation and configuration of the processing of incoming messages
+│   │   ├── jsonrpc                # network & protocol objects
+│   │   └── validation             # protocol validation utilities
+│   │
+│   ├── objects                  # module containing the core business objects
+│   │
+│   ├── platform                 # platform-specific implementation of system functionality
+│   │
+│   ├── redux                    # module dealing with the global configuration of the application state (Redux-based)
+│   │
+│   └── styles                   # stylesheets
 │
-├── ingestion                  # module to process incoming messages
+├── features                 # independent features in the system
 │
-├── model                      # module containing the data model & objects
-│    ├── network               # ... of the objects sent over the network
-│    └── objects               # ... of the application's entities
+│   ├── connect                  # feature dealing with LAO/server connection
+│   │
+│   ├── lao                      # feature dealing with the notion of a LAO, showing the typical feature structure
+│   │   ├── components             # feature components
+│   │   ├── navigation             # navigation within the feature screens
+│   │   ├── network                # network APIs, objects and message parsing for the feature
+│   │   ├── objects                # business objects for the feature
+│   │   ├── reducer                # redux-based state management for the feature
+│   │   ├── screens                # UI screens of the feature
+│   │   ├── store                  # static access to the feature's reducer store (DEPRECATED)
+│   │   └── styles                 # UI styles for the feature (DEPRECATED)
+│   │
+│   ├── events                   # feature dealing with events happening in a LAO
+│   │
+│   ├── evoting                  # feature dealing with E-Voting and Elections
+│   │
+│   ├── home                     # feature dealing with the app's home screen
+│   │
+│   ├── meeting                  # feature dealing with meetings, a type of event
+│   │
+│   ├── rollCall                 # feature dealing with roll calls, a type of event
+│   │
+│   ├── social                   # feature dealing with social media functionality
+│   │
+│   ├── wallet                   # feature providing a HD-Wallet for safekeeping of secrets
+│   │
+│   └── witness                  # feature dealing with witness operations
 │
-├── navigation                 # module dealing with the React navigation
+├── __mocks__                # test mocks for external libraries
 │
-├── network                    # module to network with the backend
+├── __tests__                # test utilities
 │
-├── parts                      # module containing the application's unique screens
-│
-├── platform                   # platform-specific implementation of system functionality
-│
-├── res                        # resources (assets, images, etc.)
-│
-├── store                      # module dealing with application state (Redux-based)
-│    ├── reducers              # module containing the reducers (Redux)
-│    └── stores                # module to access states outside the React environment
-│
-└── styles                     # stylesheets
+└── resources                # application resources (icon, etc.)
 ```
 
 ## Architecture
@@ -110,11 +144,11 @@ that, one would expect all devices connected to a LAO to "see" the same thing.
 Drawing a parallel, one would expect all social media users to be able to access
 the same posts, see (roughly) the same number of associated likes, etc.
 
-In order to achieve this, and as a general rule, the UI displays information
-from the `store` module (the application state container),
-but it **doesn't** modify the LAO-wide information contained within it.
+In order to achieve this, and as a general rule, each feature's UI displays
+information from its local `reducer` (the application state container),
+but it *doesn't* modify the LAO-wide information contained within it.
 The view of the LAO, contained in the application state,
-only gets updated in response to messages from the backends.
+*only* gets updated in response to messages from the backends.
 
 As such, let's take the example of a user who wants to publish or modify LAO-wide information.
 In our example, the user wants to cast a vote in an election and does the necessary UI operations.
@@ -132,9 +166,9 @@ Occasionally, the user interface could directly modify the application state,
 but this would only be valid for local operations affecting local data
 (e.g., changing a local setting, clearing the data stored in the browser, etc.).
 
-For more information on managing the application state, please refer to the
-[store module](https://github.com/dedis/popstellar/tree/master/fe1-web/store)
-and make sure you have a solid understanding of Redux and its concepts.
+For more information on managing the application state, please refer to the various features reducers
+and make sure you have a solid understanding of [Redux](https://redux.js.org/) and its concepts,
+as well as [React Redux](https://react-redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/).
 
 #### Managing & storing secrets
 
@@ -165,9 +199,9 @@ to generate non-extractable key material, and the
 [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API)
 to store it reasonably securely.
 This is abstracted away in the
-[WalletStore](https://github.com/dedis/popstellar/tree/master/fe1-web/stores/WalletStore.ts),
+[WalletStore](https://github.com/dedis/popstellar/tree/master/fe1-web/src/features/wallet/store/WalletStore.ts),
 while the platform implementation is in
-[platform/crypto](https://github.com/dedis/popstellar/tree/master/fe1-web/platform/crypto/).
+[platform/crypto](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/platform/crypto).
 
 Support for mobile devices is planned and the architecture allows it,
 but secret management is not yet implemented.
@@ -178,7 +212,7 @@ The communication stack within the PoP project is made of
 [multiple layers](https://docs.google.com/document/d/1AeV7JX_SJ30mu9PIwmz24UkIi3jCo6NSYA0sPxdbscU)
 and you need to be familiar with them to understand how communication happens.
 
-The [network module](https://github.com/dedis/popstellar/tree/master/fe1-web/network)
+The [core/network module](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/network)
 contains most of the logic to encapsulate application-level messages and pass them down the stack,
 and it is organized as follows, going from the lowest abstraction to the highest:
 * `NetworkManager` and `NetworkConnection` classes abstract away the intricacies of
@@ -188,13 +222,13 @@ and it is organized as follows, going from the lowest abstraction to the highest
   functions to publish a message, subscribe and unsubscribe to a channel, and so on.
   **Importantly**, the publishing of messages also takes care of the `Message` layer,
   effectively encapsulating the application-level message as needed.
-* `MessageApi` exposes the application-level message generation logic,
-  in order to simplify the logic in the application code and reduce repetition.
 * `CommunicationApi` contains utility functions to deal with common operations,
   such as subscribing to a channel and retrieving past messages.
+* It should be noted that the code specific to the publishing of an application-level message
+  belonging to a feature, is implemented as part of the feature's module.
 
 For more information on sending messages on the network, please refer to the
-[network module](https://github.com/dedis/popstellar/tree/master/fe1-web/network)
+[network module](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/network)
 and make sure you have a solid understanding
 of [JSON-RPC](https://www.jsonrpc.org/specification),
 the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
@@ -210,36 +244,41 @@ are very different steps involving completely unrelated logic,
 the two operations are split in separate and independent modules.
 
 On the networking side, the `NetworkManager` and `NetworkConnection` classes
-have facilities to define and attach a `JsonRpcHandler` callback (see `network/RpcHandler.ts`)
+have facilities to define and attach a `JsonRpcHandler` callback (see `core/network/RpcHandler.ts`)
 to a websocket connection.
 This callback is called whenever the backend sends a JSON-RPC request or notification.
 
 On the "message processing" side,
-the [ingestion module](https://github.com/dedis/popstellar/tree/master/fe1-web/ingestion)
+the [core/network/ingestion](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/network/ingestion) module
 is the module responsible for receiving the messages and processing them,
 effectively "ingesting and digesting" them (hence the name).
-It is solely responsible for forwarding incoming messages in the `store`,
-processing them to update the application state as needed,
+It is solely responsible for forwarding incoming messages in the `MessageReducer`,
+making sure they get processed by their handlers as needed,
 and finally marking them as processed within the `store` itself.
 
-Within the `ingestion` module, the `handlers` submodule is responsible for
-processing different kind of messages, based on their types.
+The `core/network/ingestion` module relies on the
+[MessageRegistry](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/network/jsonrpc/messages/MessageRegistry.ts)
+to process the messages, thereby enabling any feature to inject its own message handler.
+
+The feature message handlers are found in the `features/{myFeature}/network/` folder.
 
 For more information on processing messages received from the network, please refer to the
-the [ingestion module](https://github.com/dedis/popstellar/tree/master/fe1-web/ingestion)
+[core/network/ingestion](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/network/ingestion) module
 and make sure you have a solid understanding of [Redux](https://redux.js.org/)
 and the PoP communication protocol.
 
 ### Message definitions
 
-All objects referred to in the protocol specification (and the logic for parsing them)
-are defined in `model/network` package, closely mirroring the JSON-Schema folder structure.
+All low- and mid-level objects referred to in the protocol specification (and the logic for parsing them)
+are defined in `core/network/jsonrpc` package, closely mirroring the JSON-Schema folder structure.
 
 Please note that the JSON-RPC definitions in the root of the repository are to be considered
 a source of truth since the validation library checks the messages against it.
 
 When you need to create a new object, please refer to existing message types and in particular
 their `fromJSON` method to get an idea about how to implement a new type.
+
+High-level objects are stored as part of features, in the `features/{myFeature}/network/messages` folder.
 
 ### User Interface
 
@@ -259,18 +298,20 @@ As you go down into sub- and sub-sub-components, you'll come across more generic
 which is only dealing with the UI itself.
 
 As part of the PoP Web front-end, you'll find the low-level reusable UI components in the
-`/components` package, while the main views and screens of the application are found in `/parts`.
+`core/components` package, while most of the feature-specific UI will be found in the feature-folder.
+Within a feature folder, main views/screens are found in `features/{myFeature}/screens`,
+whereas display components can be found in `features/{myFeature}/components`.
 
-In concrete terms, the `/components` package provides elements such as a
-[Date Picker](https://github.com/dedis/popstellar/tree/master/fe1-web/components/DatePicker.tsx),
-a [QR Code displayer](https://github.com/dedis/popstellar/tree/master/fe1-web/components/QRCode.tsx),
+In concrete terms, the `core/components` package provides elements such as a
+[Date Picker](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/components/DatePicker.tsx),
+a [QR Code displayer](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/components/QRCode.tsx),
 or a component managing
-[a list of Text Inputs](https://github.com/dedis/popstellar/tree/master/fe1-web/components/TextInputList.tsx).
+[a list of Text Inputs](https://github.com/dedis/popstellar/tree/master/fe1-web/src/core/components/TextInputList.tsx).
 
-The `/parts` package, on the other hand, contains screens such as the
-[Wallet setup](https://github.com/dedis/popstellar/tree/master/fe1-web/parts/wallet/WalletSetSeed.tsx)
+A `features/{myFeature}/screens` package, on the other hand, contains screens such as the
+[Wallet setup](https://github.com/dedis/popstellar/blob/master/fe1-web/src/features/wallet/screens/WalletSetSeed.tsx)
 and the
-[Wallet home](https://github.com/dedis/popstellar/tree/master/fe1-web/parts/wallet/WalletHome.tsx).
+[Wallet home](https://github.com/dedis/popstellar/blob/master/fe1-web/src/features/wallet/screens/WalletHome.tsx).
 
 This is the current organization, but as this project evolves you should feel free to reorganize the
 code layout (in agreement with your project teammates and the TAs) in any way that is convenient.
@@ -286,18 +327,22 @@ and look at existing components.
 
 #### Navigation
 
-The navigation is handled in the `navigation` package.
+The root navigation in the application is handled in `core/navigation`.
+All other navigation is setup as part of the `features`.
+
+It should be notd that as of February 2022, the navigation in the application suffers from a few bad implementation choices.
+It would warrant being significantly cleaned.
 
 For more information on managing the navigation in the user interface,
 please make sure you have a solid understanding of [React Navigation](https://reactnavigation.org/).
 
 ### Validation
 
-All the incoming messages are validated using the `network/validation` package,
+All the incoming messages are validated using the `core/network/validation` package,
 which ensures that all constraints defined within the JSON Schema are respected.
 
-Furthermore, each object has specific constraints defined within its constructor.
-For an example, see `model/network/method/message/data/rollCall/CreateRollCall.ts`.
+Furthermore, each object has specific constraints defined within its constructor. For an example, see
+[CreateRollCall.ts](https://github.com/dedis/popstellar/blob/master/fe1-web/src/features/rollCall/network/messages/CreateRollCall.ts)
 
 ## Testing
 
@@ -311,11 +356,9 @@ in ensuring the code you write conforms to the specifications and your expectati
 - [Testing application state management with Redux](https://redux.js.org/usage/writing-tests)
 
 These resources mostly relate to unit and integration testing, but End-to-End (E2E) testing
-has its own dedicated set of tools:
+has its own dedicated set of tools.
 
-- [Selenium](https://www.selenium.dev/) is the most famous one, but it has a low-level API
-- [NightWatch.js](https://nightwatchjs.org/) offers a wrapper around Selenium and alternatives,
-making it straightforward to write E2E tests for an application.
+The PoP project E2E testing effort, based on Karate, can be found in this repository's `/tests` folder.
 
 If you write E2E tests, please be mindful of making them maintainable through the use of the
 [Page Object Model](https://martinfowler.com/bliki/PageObject.html).
@@ -332,6 +375,8 @@ If you write E2E tests, please be mindful of making them maintainable through th
   It's useful to get feedback about which steps executed and how far the message
   reached in the processing pipeline rather than getting an opaque error.
 * Ensure your error messages are descriptive.
+* Don't neglect `eslint`, `dependency-cruiser` and the unit tests.
+  They may prevent bugs before you even see them in the UI.
 
 ## Deployments
 
@@ -339,7 +384,7 @@ Please reach out to the DEDIS Engineering team members to deploy a build to an
 internet accessible host.
 
 The web application can be packaged for deploynent by executing `npm run build-web`.
-This will generate the `./web-build` folder, which can then be zip'd or tar'd.
+This will generate a timestamped zip package in the `./dist` folder.
 
 
 ## Coding Style

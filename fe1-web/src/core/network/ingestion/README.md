@@ -8,11 +8,11 @@ The setup (in `Configure.ts`) wires two things up:
    It only processes synchronously 'LAO/Create' messages,
    as those messages are received during catchup and used to detect a new connection to a LAO.
 
-2. It creates a "listener" on the MessageReducer store that parses message as they come in.
+2. It creates a "listener" on the MessageReducer store that processes message as they come in.
    The watcher is setup in `Watcher.ts`,
-   but most of the logic is contained in the `./handlers` folder.
+   but most of the processing logic is delegated to the features, called through the `MessageRegistry`.
 
-This architecture achieves two separate and equally desirable goals:
+This architecture achieves three separate and equally desirable goals:
 
 1. The decoupling of network activity from data processing operations,
    as these two tasks might have very different requirements.
@@ -20,3 +20,5 @@ This architecture achieves two separate and equally desirable goals:
 2. The buffering of messages until they can be processed,
    thus supporting out-of-order message processing.
 
+3. The total separation of the implementation dealing with incoming network messages,
+   and the implementation of the handling of application-specific messages.
