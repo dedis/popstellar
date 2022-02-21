@@ -1,11 +1,9 @@
 import { addReducers, getStore } from 'core/redux';
-import { JsonRpcRequest } from '../jsonrpc';
+import { JsonRpcHandler } from '../RpcHandler';
 import { MessageRegistry } from '../jsonrpc/messages';
 import { handleRpcRequests, setMessageRegistry } from './Handler';
 import { makeMessageStoreWatcher } from './Watcher';
 import messageReducer from './MessageReducer';
-
-type RpcHandler = (r: JsonRpcRequest) => void;
 
 /**
  * Configures all handlers of the system within a MessageRegistry.
@@ -14,7 +12,7 @@ type RpcHandler = (r: JsonRpcRequest) => void;
  */
 export function configureIngestion(
   registry: MessageRegistry,
-  setRpcHandler: (r: RpcHandler) => void,
+  setRpcHandler: (r: JsonRpcHandler) => void,
 ) {
   // configure the message handlers
   setMessageRegistry(registry);

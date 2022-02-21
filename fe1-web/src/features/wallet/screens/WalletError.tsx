@@ -16,22 +16,16 @@ const styles = StyleSheet.create({
 /**
  * Wallet synchronization error screen
  */
-const WalletError = ({ navigation }: IPropTypes) => {
-  function getWalletErrorDisplay() {
-    return (
-      <View style={containerStyles.centered}>
-        <TextBlock text={STRINGS.wallet_error} />
-        <View style={styles.largePadding} />
-        <WideButtonView
-          title={STRINGS.back_to_wallet_home}
-          onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
-        />
-      </View>
-    );
-  }
-
-  return getWalletErrorDisplay();
-};
+const WalletError = ({ navigation }: IPropTypes) => (
+  <View style={containerStyles.centered}>
+    <TextBlock text={STRINGS.wallet_error} />
+    <View style={styles.largePadding} />
+    <WideButtonView
+      title={STRINGS.back_to_wallet_home}
+      onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+    />
+  </View>
+);
 
 const propTypes = {
   navigation: PROPS_TYPE.navigation.isRequired,

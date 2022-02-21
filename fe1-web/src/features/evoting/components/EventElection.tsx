@@ -15,13 +15,7 @@ import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { updateEvent } from 'features/events/reducer';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
-import {
-  Election,
-  ElectionStatus,
-  QuestionResult,
-  RegisteredVote,
-  Vote,
-} from '../objects';
+import { Election, ElectionStatus, QuestionResult, RegisteredVote, Vote } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
 
 /**
