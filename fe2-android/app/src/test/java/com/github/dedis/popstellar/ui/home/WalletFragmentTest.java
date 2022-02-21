@@ -1,28 +1,28 @@
 package com.github.dedis.popstellar.ui.home;
 
-import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.CoreMatchers.not;
+import static com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsShown;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.is;
 
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.widget.Button;
 
-import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.github.dedis.popstellar.R;
@@ -35,12 +35,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.junit.runner.RunWith;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
 @LargeTest
 @HiltAndroidTest
+@RunWith(AndroidJUnit4.class)
 public class WalletFragmentTest {
 
   // TODO: update those tests: needs to be simplified and readable
@@ -61,7 +63,7 @@ public class WalletFragmentTest {
   }
 
   @Test
-  public void HomeWalletUITest() {
+  public void homeWalletUITest() {
     ViewInteraction button =
         onView(
             allOf(
@@ -70,59 +72,24 @@ public class WalletFragmentTest {
                 withParent(
                     allOf(
                         withId(R.id.tab_wallet_only),
-                        withParent(withId(R.id.fragment_container_home)))),
-                isDisplayed()));
+                        withParent(withId(R.id.fragment_container_home))))));
     button.check(matches(isDisplayed()));
+    button.perform(click());
 
-    ViewInteraction appCompatButton =
-        onView(
-            allOf(
-                withId(R.id.tab_wallet),
-                withText("Wallet"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.tab_wallet_only),
-                        childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    3),
-                isDisplayed()));
-    appCompatButton.perform(click());
-
-    ViewInteraction textView =
+    ViewInteraction mainText =
         onView(
             allOf(
                 withText("Welcome to your wallet !"),
-                withParent(withParent(withId(R.id.fragment_wallet))),
-                isDisplayed()));
-    textView.check(matches(withText("Welcome to your wallet !")));
+                withParent(withParent(withId(R.id.fragment_wallet)))));
+    mainText.check(matches(isDisplayed()));
 
-    ViewInteraction textView2 =
-        onView(
-            allOf(
-                withText("Welcome to your wallet !"),
-                withParent(withParent(withId(R.id.fragment_wallet))),
-                isDisplayed()));
-    textView2.check(matches(isDisplayed()));
-
-    ViewInteraction textView3 =
+    ViewInteraction tooltip =
         onView(
             allOf(
                 withText(
                     "ATTENTION: if you create a new wallet remember to write down the given seed and store it secure place, this is the only backup to your PoP tokens."),
-                withParent(withParent(withId(R.id.fragment_wallet))),
-                isDisplayed()));
-    textView3.check(
-        matches(
-            withText(
-                "ATTENTION: if you create a new wallet remember to write down the given seed and store it secure place, this is the only backup to your PoP tokens.")));
-
-    ViewInteraction textView4 =
-        onView(
-            allOf(
-                withText(
-                    "ATTENTION: if you create a new wallet remember to write down the given seed and store it secure place, this is the only backup to your PoP tokens."),
-                withParent(withParent(withId(R.id.fragment_wallet))),
-                isDisplayed()));
-    textView4.check(matches(isDisplayed()));
+                withParent(withParent(withId(R.id.fragment_wallet)))));
+    tooltip.check(matches(isDisplayed()));
 
     ViewInteraction button2 =
         onView(
@@ -156,19 +123,18 @@ public class WalletFragmentTest {
   }
 
   @Test
-  public void SetUpWalletUITest() {
-    ViewInteraction appCompatButton =
+  public void setUpWalletUITest() {
+    ViewInteraction button =
         onView(
             allOf(
                 withId(R.id.tab_wallet),
-                withText("Wallet"),
-                childAtPosition(
+                withText("WALLET"),
+                withParent(
                     allOf(
                         withId(R.id.tab_wallet_only),
-                        childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    3),
-                isDisplayed()));
-    appCompatButton.perform(click());
+                        withParent(withId(R.id.fragment_container_home))))));
+    button.check(matches(isDisplayed()));
+    button.perform(click());
 
     ViewInteraction appCompatButton2 =
         onView(
@@ -180,16 +146,6 @@ public class WalletFragmentTest {
                 isDisplayed()));
     appCompatButton2.perform(click());
 
-    ViewInteraction button =
-        onView(
-            allOf(
-                withId(R.id.tab_wallet),
-                withText("WALLET"),
-                withParent(
-                    allOf(
-                        withId(R.id.tab_wallet_only),
-                        withParent(withId(R.id.fragment_container_home)))),
-                isDisplayed()));
     button.check(matches(isDisplayed()));
 
     ViewInteraction textView =
@@ -225,9 +181,7 @@ public class WalletFragmentTest {
                 isDisplayed()));
     textView4.perform(click());
 
-    ViewInteraction toast =
-        onView(withText(R.string.copied_to_clipboard)).inRoot(withDecorView(not(decorView)));
-    toast.check(matches(isDisplayed()));
+    assertToastIsShown(R.string.copied_to_clipboard);
 
     ViewInteraction button2 =
         onView(
@@ -248,65 +202,23 @@ public class WalletFragmentTest {
                 isDisplayed()));
     appCompatButton3.perform(click());
 
-    ViewInteraction textView5 =
-        onView(
-            allOf(
-                withId(R.id.alertTitle),
-                withText("You are sure you have saved the words somewhere?"),
-                withParent(allOf(withId(R.id.title_template), withParent(withId(R.id.topPanel)))),
-                isDisplayed()));
-    textView5.check(matches(withText("You are sure you have saved the words somewhere?")));
-
-    ViewInteraction textView6 =
-        onView(
-            allOf(
-                withId(R.id.alertTitle),
-                withText("You are sure you have saved the words somewhere?"),
-                withParent(allOf(withId(R.id.title_template), withParent(withId(R.id.topPanel)))),
-                isDisplayed()));
-    textView6.check(matches(isDisplayed()));
-
-    ViewInteraction button4 =
-        onView(
-            allOf(
-                withId(android.R.id.button2),
-                withText("CANCEL"),
-                withParent(withParent(withId(R.id.buttonPanel))),
-                isDisplayed()));
-    button4.check(matches(isDisplayed()));
-
-    ViewInteraction button5 =
-        onView(
-            allOf(
-                withId(android.R.id.button1),
-                withText("YES"),
-                withParent(withParent(withId(R.id.buttonPanel))),
-                isDisplayed()));
-    button5.check(matches(isDisplayed()));
-
-    ViewInteraction appCompatButton4 =
-        onView(
-            allOf(
-                withId(android.R.id.button2),
-                withText("Cancel"),
-                childAtPosition(childAtPosition(withId(R.id.buttonPanel), 0), 2)));
-    appCompatButton4.perform(scrollTo(), click());
+    assertThat(dialogPositiveButton(), allOf(withText("YES"), isDisplayed()));
+    assertThat(dialogNegativeButton(), allOf(withText("Cancel"), isDisplayed()));
   }
 
   @Test
-  public void ContentOfNewWalletUITest() {
-    ViewInteraction appCompatButton =
+  public void contentOfNewWalletUITest() {
+    ViewInteraction button =
         onView(
             allOf(
                 withId(R.id.tab_wallet),
-                withText("Wallet"),
-                childAtPosition(
+                withText("WALLET"),
+                withParent(
                     allOf(
                         withId(R.id.tab_wallet_only),
-                        childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    3),
-                isDisplayed()));
-    appCompatButton.perform(click());
+                        withParent(withId(R.id.fragment_container_home))))));
+    button.check(matches(isDisplayed()));
+    button.perform(click());
 
     ViewInteraction appCompatButton2 =
         onView(
@@ -328,13 +240,8 @@ public class WalletFragmentTest {
                 isDisplayed()));
     appCompatButton3.perform(click());
 
-    ViewInteraction appCompatButton4 =
-        onView(
-            allOf(
-                withId(android.R.id.button1),
-                withText("Yes"),
-                childAtPosition(childAtPosition(withId(R.id.buttonPanel), 0), 3)));
-    appCompatButton4.perform(scrollTo(), click());
+    assertThat(dialogPositiveButton(), allOf(withText("Yes"), isDisplayed()));
+    dialogPositiveButton().performClick();
 
     ViewInteraction textView =
         onView(
@@ -409,7 +316,7 @@ public class WalletFragmentTest {
                 isDisplayed()));
     textView6.check(matches(isDisplayed()));
 
-    ViewInteraction button =
+    ViewInteraction button1 =
         onView(
             allOf(
                 withId(R.id.logout_button),
@@ -419,7 +326,7 @@ public class WalletFragmentTest {
                         withId(R.id.fragment_content_wallet),
                         withParent(withId(R.id.fragment_container_home)))),
                 isDisplayed()));
-    button.check(matches(isDisplayed()));
+    button1.check(matches(isDisplayed()));
 
     ViewInteraction button2 =
         onView(
@@ -435,7 +342,7 @@ public class WalletFragmentTest {
   }
 
   @Test
-  public void SetUpWithSeedWalletUITest() {
+  public void setUpWithSeedWalletUITest() {
     ViewInteraction appCompatButton =
         onView(
             allOf(
@@ -459,105 +366,18 @@ public class WalletFragmentTest {
                 isDisplayed()));
     appCompatButton2.perform(click());
 
-    DataInteraction appCompatCheckedTextView =
-        onData(anything())
-            .inAdapterView(
-                allOf(
-                    withId(R.id.select_dialog_listview),
-                    childAtPosition(withId(R.id.contentPanel), 1)))
-            .atPosition(0);
-    appCompatCheckedTextView.perform(click());
+    Button setupWallet = dialogPositiveButton();
 
-    ViewInteraction textView =
-        onView(
-            allOf(
-                withId(R.id.alertTitle),
-                withText("Type the 12 word seed:"),
-                withParent(allOf(withId(R.id.title_template), withParent(withId(R.id.topPanel)))),
-                isDisplayed()));
-    textView.check(matches(withText("Type the 12 word seed:")));
+    assertThat(setupWallet, allOf(withText("SET UP WALLET"), isDisplayed()));
+    assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
 
-    ViewInteraction textView2 =
-        onView(
-            allOf(
-                withId(R.id.alertTitle),
-                withText("Type the 12 word seed:"),
-                withParent(allOf(withId(R.id.title_template), withParent(withId(R.id.topPanel)))),
-                isDisplayed()));
-    textView2.check(matches(isDisplayed()));
-
-    ViewInteraction checkedTextView =
-        onView(
-            allOf(
-                withId(android.R.id.text1),
-                withText("show password"),
-                withParent(
-                    allOf(
-                        withId(R.id.select_dialog_listview),
-                        withParent(withId(R.id.contentPanel)))),
-                isDisplayed()));
-    checkedTextView.check(matches(isDisplayed()));
-
-    ViewInteraction editText =
-        onView(
-            allOf(
-                withText(
-                    "elbow six card empty next sight turn quality capital please vocal indoor"),
-                withParent(allOf(withId(R.id.custom), withParent(withId(R.id.customPanel)))),
-                isDisplayed()));
-    editText.check(
-        matches(
-            withText("elbow six card empty next sight turn quality capital please vocal indoor")));
-
-    ViewInteraction editText2 =
-        onView(
-            allOf(
-                withText(
-                    "elbow six card empty next sight turn quality capital please vocal indoor"),
-                withParent(allOf(withId(R.id.custom), withParent(withId(R.id.customPanel)))),
-                isDisplayed()));
-    editText2.check(matches(isDisplayed()));
-
-    ViewInteraction button =
-        onView(
-            allOf(
-                withId(android.R.id.button2),
-                withText("CANCEL"),
-                withParent(withParent(withId(R.id.buttonPanel))),
-                isDisplayed()));
-    button.check(matches(isDisplayed()));
-
-    ViewInteraction button2 =
-        onView(
-            allOf(
-                withId(android.R.id.button1),
-                withText("SET UP WALLET"),
-                withParent(withParent(withId(R.id.buttonPanel))),
-                isDisplayed()));
-    button2.check(matches(isDisplayed()));
-
-    ViewInteraction appCompatButton3 =
-        onView(
-            allOf(
-                withId(android.R.id.button1),
-                withText("Set up wallet"),
-                childAtPosition(childAtPosition(withId(R.id.buttonPanel), 0), 3)));
-    appCompatButton3.perform(scrollTo(), click());
+    setupWallet.performClick();
   }
 
   @Test
-  public void LogoutWalletUITest() {
+  public void logoutWalletUITest() {
     ViewInteraction appCompatButton =
-        onView(
-            allOf(
-                withId(R.id.tab_wallet),
-                withText("Wallet"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.tab_wallet_only),
-                        childAtPosition(withId(R.id.fragment_container_home), 2)),
-                    3),
-                isDisplayed()));
+        onView(allOf(withId(R.id.tab_wallet), withText("Wallet"), isDisplayed()));
     appCompatButton.perform(click());
 
     ViewInteraction appCompatButton2 =
@@ -570,13 +390,9 @@ public class WalletFragmentTest {
                 isDisplayed()));
     appCompatButton2.perform(click());
 
-    ViewInteraction appCompatButton3 =
-        onView(
-            allOf(
-                withId(android.R.id.button1),
-                withText("Set up wallet"),
-                childAtPosition(childAtPosition(withId(R.id.buttonPanel), 0), 3)));
-    appCompatButton3.perform(scrollTo(), click());
+    Button setupWallet = dialogPositiveButton();
+    assertThat(setupWallet, allOf(withText("SET UP WALLET"), isDisplayed()));
+    setupWallet.performClick();
 
     ViewInteraction appCompatButton4 =
         onView(
@@ -591,72 +407,11 @@ public class WalletFragmentTest {
                 isDisplayed()));
     appCompatButton4.perform(click());
 
-    ViewInteraction textView =
-        onView(
-            allOf(
-                withId(R.id.alertTitle),
-                withText("Log out"),
-                withParent(allOf(withId(R.id.title_template), withParent(withId(R.id.topPanel)))),
-                isDisplayed()));
-    textView.check(matches(withText("Log out")));
+    assertThat(dialogNegativeButton(), allOf(withText("CANCEL"), isDisplayed()));
 
-    ViewInteraction textView2 =
-        onView(
-            allOf(
-                withId(R.id.alertTitle),
-                withText("Log out"),
-                withParent(allOf(withId(R.id.title_template), withParent(withId(R.id.topPanel)))),
-                isDisplayed()));
-    textView2.check(matches(isDisplayed()));
-
-    ViewInteraction textView3 =
-        onView(
-            allOf(
-                withId(android.R.id.message),
-                withText(
-                    "This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed."),
-                withParent(withParent(withId(R.id.scrollView))),
-                isDisplayed()));
-    textView3.check(
-        matches(
-            withText(
-                "This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed.")));
-
-    ViewInteraction textView4 =
-        onView(
-            allOf(
-                withId(android.R.id.message),
-                withText(
-                    "This action will delete the current seed of your wallet and your tokens will be lost. They can be recovered later once you import the current seed."),
-                withParent(withParent(withId(R.id.scrollView))),
-                isDisplayed()));
-    textView4.check(matches(isDisplayed()));
-
-    ViewInteraction button =
-        onView(
-            allOf(
-                withId(android.R.id.button2),
-                withText("CANCEL"),
-                withParent(withParent(withId(R.id.buttonPanel))),
-                isDisplayed()));
-    button.check(matches(isDisplayed()));
-
-    ViewInteraction button2 =
-        onView(
-            allOf(
-                withId(android.R.id.button1),
-                withText("CONFIRM"),
-                withParent(withParent(withId(R.id.buttonPanel))),
-                isDisplayed()));
-    button2.check(matches(isDisplayed()));
-
-    ViewInteraction appCompatButton5 =
-        onView(
-            allOf(
-                withId(android.R.id.button1),
-                withText("Confirm"),
-                childAtPosition(childAtPosition(withId(R.id.buttonPanel), 0), 3)));
-    appCompatButton5.perform(scrollTo(), click());
+    Button confirm = dialogPositiveButton();
+    assertThat(confirm, allOf(withText("Confirm"), isDisplayed()));
+    confirm.performClick();
   }
 
   private static Matcher<View> childAtPosition(

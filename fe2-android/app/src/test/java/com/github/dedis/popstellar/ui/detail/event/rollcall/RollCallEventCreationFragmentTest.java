@@ -4,17 +4,18 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.datePicker;
-import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.endDateView;
-import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.endTimeView;
-import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.pickerAcceptButton;
-import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.startDateView;
-import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.startTimeView;
-import static com.github.dedis.popstellar.pages.detail.event.EventCreationPageObject.timePicker;
+import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
+import static com.github.dedis.popstellar.testutils.UITestUtils.getLastDialog;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endDateView;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.endTimeView;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startDateView;
+import static com.github.dedis.popstellar.ui.pages.detail.event.EventCreationPageObject.startTimeView;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-import android.icu.util.Calendar;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 
-import androidx.test.espresso.contrib.PickerActions;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
@@ -22,15 +23,22 @@ import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.junit.runner.RunWith;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
 
 @LargeTest
 @HiltAndroidTest
+@RunWith(AndroidJUnit4.class)
 public class RollCallEventCreationFragmentTest {
 
-  private static final String DATE_FORMAT = "%02d/%02d/%02d";
+  private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy", Locale.FRENCH);
   private static final String TIME_FORMAT = "%02d:%02d";
 
   private static final int YEAR;
@@ -48,10 +56,9 @@ public class RollCallEventCreationFragmentTest {
     today.add(Calendar.MONTH, 13);
 
     YEAR = today.get(Calendar.YEAR);
-    MONTH_OF_YEAR = today.get(Calendar.MONTH) + 1;
+    MONTH_OF_YEAR = today.get(Calendar.MONTH);
     DAY_OF_MONTH = today.get(Calendar.DAY_OF_MONTH);
-
-    DATE = String.format(DATE_FORMAT, DAY_OF_MONTH, MONTH_OF_YEAR, YEAR);
+    DATE = DATE_FORMAT.format(today.getTime());
   }
 
   private final FragmentScenarioRule<RollCallEventCreationFragment> fragmentRule =
@@ -64,21 +71,21 @@ public class RollCallEventCreationFragmentTest {
   @Test
   public void canLaunchDatePickerFragmentFromStartDateButton() {
     startDateView().perform(click());
-    datePicker().check(matches(isDisplayed()));
+    assertThat(getLastDialog(DatePickerDialog.class).getDatePicker(), isDisplayed());
   }
 
   @Test
   public void canLaunchDatePickerFragmentFromEndDateButton() {
     endDateView().perform(click());
-    datePicker().check(matches(isDisplayed()));
+    assertThat(getLastDialog(DatePickerDialog.class).getDatePicker(), isDisplayed());
   }
 
   @Test
   public void canChooseRandomDate() {
     startDateView().perform(click());
 
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
 
     startDateView().check(matches(withText(DATE)));
   }
@@ -86,26 +93,23 @@ public class RollCallEventCreationFragmentTest {
   @Test
   public void datePickerChoosesTodayByDefault() {
     final Calendar currentCalendar = Calendar.getInstance();
-    int year = currentCalendar.get(Calendar.YEAR);
-    int month = currentCalendar.get(Calendar.MONTH) + 1;
-    int day = currentCalendar.get(Calendar.DAY_OF_MONTH);
-    final String date = String.format(DATE_FORMAT, day, month, year);
+    final String date = DATE_FORMAT.format(currentCalendar.getTime());
 
     startDateView().perform(click());
-    pickerAcceptButton().perform(click());
+    dialogPositiveButton().performClick();
     startDateView().check(matches(withText(date)));
   }
 
   @Test
   public void startDateAndEndDateCanBothBeSameDay() {
     startDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     startDateView().check(matches(withText(DATE)));
 
     endDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     endDateView().check(matches(withText(DATE)));
   }
 
@@ -113,126 +117,127 @@ public class RollCallEventCreationFragmentTest {
   public void canLaunchTimePickerFragmentFromStartTimeButton() {
     startTimeView().perform(click());
 
-    timePicker().check(matches(isDisplayed()));
+    getLastDialog(TimePickerDialog.class);
   }
 
   @Test
   public void canLaunchTimePickerFragmentFromEndTimeButton() {
     endTimeView().perform(click());
-    timePicker().check(matches(isDisplayed()));
+
+    getLastDialog(TimePickerDialog.class);
   }
 
   @Test
   public void canChooseRandomStartTimeWhenNoDate() {
     startTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     startTimeView().check(matches(withText(TIME)));
   }
 
   @Test
   public void canChooseRandomEndTimeWhenNoDate() {
     endTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     endTimeView().check(matches(withText(TIME)));
   }
 
   @Test
   public void canChooseRandomStartTimeWhenStartDateFilled() {
     startDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     startDateView().check(matches(withText(DATE)));
 
     startTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     startTimeView().check(matches(withText(TIME)));
   }
 
   @Test
   public void canChooseRandomStartTimeWhenEndDateFilled() {
     endDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     endDateView().check(matches(withText(DATE)));
 
     startTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     startTimeView().check(matches(withText(TIME)));
   }
 
   @Test
   public void canChooseRandomEndTimeWhenStartDateFilled() {
     startDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     startDateView().check(matches(withText(DATE)));
 
     endTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     endTimeView().check(matches(withText(TIME)));
   }
 
   @Test
   public void canChooseRandomEndTimeWhenEndDateFilled() {
     endDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     endDateView().check(matches(withText(DATE)));
 
     endTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     endTimeView().check(matches(withText(TIME)));
   }
 
   @Test
   public void canChooseStartTimeBeforeEndTimeWhenSameDayEvent() {
     startDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     startDateView().check(matches(withText(DATE)));
 
     endDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     endDateView().check(matches(withText(DATE)));
 
     endTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     endTimeView().check(matches(withText(TIME)));
 
     startTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS - 1, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS - 1, MINUTES);
+    dialogPositiveButton().performClick();
     startTimeView().check(matches(withText("" + (HOURS - 1) + ":" + MINUTES)));
   }
 
   @Test
   public void canChooseEndTimeBeforeStartTimeWhenSameDayEvent() {
     startDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     startDateView().check(matches(withText(DATE)));
 
     endDateView().perform(click());
-    datePicker().perform(PickerActions.setDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH));
-    pickerAcceptButton().perform(click());
+    getLastDialog(DatePickerDialog.class).updateDate(YEAR, MONTH_OF_YEAR, DAY_OF_MONTH);
+    dialogPositiveButton().performClick();
     endDateView().check(matches(withText(DATE)));
 
     startTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS, MINUTES);
+    dialogPositiveButton().performClick();
     startTimeView().check(matches(withText(TIME)));
 
     endTimeView().perform(click());
-    timePicker().perform(PickerActions.setTime(HOURS + 1, MINUTES));
-    pickerAcceptButton().perform(click());
+    getLastDialog(TimePickerDialog.class).updateTime(HOURS + 1, MINUTES);
+    dialogPositiveButton().performClick();
     endTimeView().check(matches(withText(String.format(TIME_FORMAT, HOURS + 1, MINUTES))));
   }
 }

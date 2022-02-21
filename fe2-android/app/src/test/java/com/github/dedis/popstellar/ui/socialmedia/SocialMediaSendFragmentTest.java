@@ -3,26 +3,21 @@ package com.github.dedis.popstellar.ui.socialmedia;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.entryBoxChirpText;
+import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.nullLaoIdToastText;
 import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.sendChirpButton;
-import static com.github.dedis.popstellar.ui.pages.socialmedia.SocialMediaSendPageObject.toast;
-import static org.hamcrest.CoreMatchers.not;
-
-import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.testutils.UITestUtils;
 import com.github.dedis.popstellar.testutils.fragment.FragmentScenarioRule;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -41,15 +36,6 @@ public class SocialMediaSendFragmentTest {
   private final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
   @Rule public final RuleChain chain = RuleChain.outerRule(hiltRule).around(fragmentRule);
-
-  private View decorView;
-
-  @Before
-  public void setUp() {
-    fragmentRule
-        .getScenario()
-        .onActivity(activity -> decorView = activity.getWindow().getDecorView());
-  }
 
   @Test
   public void writingTextInEditText() {
@@ -85,7 +71,6 @@ public class SocialMediaSendFragmentTest {
     sendChirpButton().check(matches(isNotEnabled()));
   }
 
-  @Ignore("Toast are not tested correctly yet")
   @Test
   public void displayToastIfLaoIdIsNull() {
     fragmentRule
@@ -100,6 +85,6 @@ public class SocialMediaSendFragmentTest {
     fragmentRule.getScenario().recreate();
 
     sendChirpButton().perform(click());
-    toast().inRoot(withDecorView(not(decorView))).check(matches(isDisplayed()));
+    UITestUtils.assertToastIsShown(nullLaoIdToastText());
   }
 }

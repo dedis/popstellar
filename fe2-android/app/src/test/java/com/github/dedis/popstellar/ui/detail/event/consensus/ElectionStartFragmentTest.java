@@ -5,10 +5,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isNotEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.electionStartButton;
-import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.electionStatus;
-import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.electionTitle;
-import static com.github.dedis.popstellar.pages.detail.event.consensus.ElectionStartPageObject.nodesGrid;
+import static com.github.dedis.popstellar.ui.pages.detail.event.consensus.ElectionStartPageObject.electionStartButton;
+import static com.github.dedis.popstellar.ui.pages.detail.event.consensus.ElectionStartPageObject.electionStatus;
+import static com.github.dedis.popstellar.ui.pages.detail.event.consensus.ElectionStartPageObject.electionTitle;
+import static com.github.dedis.popstellar.ui.pages.detail.event.consensus.ElectionStartPageObject.nodesGrid;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,6 +17,7 @@ import static org.mockito.Mockito.when;
 import androidx.fragment.app.FragmentActivity;
 import androidx.test.espresso.DataInteraction;
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.answer.Result;
@@ -55,6 +56,7 @@ import org.junit.Test;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.RuleChain;
 import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -76,6 +78,7 @@ import dagger.hilt.android.testing.HiltAndroidTest;
 import io.reactivex.Observable;
 
 @HiltAndroidTest
+@RunWith(AndroidJUnit4.class)
 public class ElectionStartFragmentTest {
 
   @Inject KeyManager keyManager;
@@ -134,11 +137,13 @@ public class ElectionStartFragmentTest {
             throw new RuntimeException(e);
           }
 
-          LAO.setChannel(LAO_CHANNEL);
-          LAO.setOrganizer(mainKeyPair.getPublicKey());
-          LAO.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
+          lao = new Lao(LAO_ID);
+          lao.setChannel(LAO_CHANNEL);
+          lao.setOrganizer(mainKeyPair.getPublicKey());
+          lao.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
-          List<ConsensusNode> nodes = LAO.getNodes();
+          List<ConsensusNode> nodes = lao.getNodes();
+          System.out.println(nodes);
           for (int i = 0; i < nodes.size(); ++i) {
             String key = nodes.get(i).getPublicKey().getEncoded();
             if (key.equals(publicKey)) {
@@ -149,7 +154,7 @@ public class ElectionStartFragmentTest {
               node3Pos = i;
             }
           }
-          laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(LAO));
+          laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
           laoRepository.updateNodes(LAO_CHANNEL);
         }
       };
@@ -175,7 +180,6 @@ public class ElectionStartFragmentTest {
   private static final long PAST_TIME = 946684800;
   private static final long FUTURE_TIME = 2145916800;
 
-  private static final Lao LAO = new Lao(LAO_ID);
   private static final Election election = new Election(LAO_ID, PAST_TIME, ELECTION_NAME);
   private static final ConsensusKey KEY = new ConsensusKey("election", election.getId(), "state");
   private static final String INSTANCE_ID =
@@ -196,6 +200,8 @@ public class ElectionStartFragmentTest {
   private static final String START_SCHEDULED = "Election scheduled to start at\n" + DATE_FUTURE;
   private static final String START_START = "Start Election";
   private static final String START_STARTED = "Election started successfully at\n" + DATE_PAST;
+
+  private Lao lao;
 
   private KeyPair mainKeyPair;
   private KeyPair node3KeyPair;
@@ -373,7 +379,7 @@ public class ElectionStartFragmentTest {
               LaoDetailViewModel laoDetailViewModel =
                   LaoDetailActivity.obtainViewModel(fragmentActivity);
               laoDetailViewModel.setCurrentElection(election);
-              laoDetailViewModel.setCurrentLao(LAO);
+              laoDetailViewModel.setCurrentLao(lao);
             });
     // Recreate the fragment because the viewModel needed to be modified before start
     fragmentRule.getScenario().recreate();

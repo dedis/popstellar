@@ -53,7 +53,6 @@ public class ElectionSetupPageObject {
         allOf(
             withParent(childAtPosition(withId(R.id.election_setup_ballot_options_ll), i)),
             withId(R.id.new_ballot_option_text),
-            withHint(R.string.new_ballot_option_hint),
             isDisplayed()));
   }
 

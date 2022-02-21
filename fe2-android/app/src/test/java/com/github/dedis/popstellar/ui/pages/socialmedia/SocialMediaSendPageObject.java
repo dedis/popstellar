@@ -2,8 +2,8 @@ package com.github.dedis.popstellar.ui.pages.socialmedia;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import androidx.annotation.StringRes;
 import androidx.test.espresso.ViewInteraction;
 
 import com.github.dedis.popstellar.R;
@@ -23,7 +23,8 @@ public class SocialMediaSendPageObject {
     return onView(withId(R.id.entry_box_chirp));
   }
 
-  public static ViewInteraction toast() {
-    return onView(withText(R.string.error_no_lao));
+  @StringRes
+  public static int nullLaoIdToastText() {
+    return R.string.error_no_lao;
   }
 }
