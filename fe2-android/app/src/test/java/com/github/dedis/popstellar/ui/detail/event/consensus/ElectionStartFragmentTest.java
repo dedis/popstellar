@@ -143,7 +143,6 @@ public class ElectionStartFragmentTest {
           lao.setWitnesses(Sets.newSet(node2KeyPair.getPublicKey(), node3KeyPair.getPublicKey()));
 
           List<ConsensusNode> nodes = lao.getNodes();
-          System.out.println(nodes);
           for (int i = 0; i < nodes.size(); ++i) {
             String key = nodes.get(i).getPublicKey().getEncoded();
             if (key.equals(publicKey)) {
