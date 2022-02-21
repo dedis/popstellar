@@ -1,10 +1,9 @@
-import { Hash, Timestamp, Lao, EventTags, ProtocolError } from 'model/objects';
-import { OpenedLaoStore } from 'store';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
-import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
+import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
-import { Question } from '../../objects/Election';
+import { Question } from '../../objects';
 
 /** Data sent to setup an Election event */
 export class SetupElection implements MessageData {
@@ -84,21 +83,27 @@ export class SetupElection implements MessageData {
     SetupElection.validateQuestions(msg.questions, msg.id.toString());
     this.questions = msg.questions;
 
-    const lao: Lao = OpenedLaoStore.get();
+    this.id = msg.id;
+  }
 
+  /**
+   * Validates the SetupElection object based on external information
+   *
+   * @param laoId - The ID of the LAO this message was sent to
+   */
+  public validate(laoId: Hash) {
     const expectedHash = Hash.fromStringArray(
       EventTags.ELECTION,
-      lao.id.toString(),
-      msg.created_at.toString(),
-      msg.name,
+      laoId.toString(),
+      this.created_at.toString(),
+      this.name,
     );
-    if (!expectedHash.equals(msg.id)) {
+    if (!expectedHash.equals(this.id)) {
       throw new ProtocolError(
         "Invalid 'id' parameter encountered during 'SetupElection':" +
           ' re-computing the value yields a different result',
       );
     }
-    this.id = msg.id;
   }
 
   /**

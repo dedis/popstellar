@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Image, Pressable, ImageStyle } from 'react-native';
 import PropTypes from 'prop-types';
 
-const trashcan = require('res/img/delete.svg');
+const trashcan = require('resources/img/delete.svg');
 
 /**
  * Delete button that displays a little trashcan and executes an onPress action given in props

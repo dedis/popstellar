@@ -1,4 +1,4 @@
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { LaoEventState } from 'features/events/objects/LaoEvent';
 
 /**
@@ -85,7 +85,7 @@ export class Election {
   constructor(obj: Partial<Election>) {
     if (obj === undefined || obj === null) {
       throw new Error(
-        'Error encountered while creating a Election object: ' + 'undefined/null parameters',
+        'Error encountered while creating a Election object: undefined/null parameters',
       );
     }
     if (obj.lao === undefined) {

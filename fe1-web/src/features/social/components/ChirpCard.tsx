@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { StyleSheet, ViewStyle, View, TextStyle, Text, Pressable } from 'react-native';
 import PropTypes from 'prop-types';
 import TimeAgo from 'react-timeago';
@@ -6,10 +6,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
-import { PublicKey } from 'model/objects';
-import STRINGS from 'res/strings';
-import { gray } from 'styles/colors';
-import { ConfirmModal, ProfileIcon } from 'core/components/ProfileIcon';
+import { PublicKey } from 'core/objects';
+import STRINGS from 'resources/strings';
+import { gray } from 'core/styles/colors';
+import { ConfirmModal, ProfileIcon } from 'core/components';
 
 import { Chirp } from '../objects';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
@@ -78,7 +78,8 @@ const ChirpCard = (props: IPropTypes) => {
   const { chirp } = props;
   const { currentUserPublicKey } = props;
   const toast = useToast();
-  const reactions = useSelector(makeReactionsList())[chirp.id.toString()];
+  const reactionList = useMemo(makeReactionsList, []);
+  const reactions = useSelector(reactionList)[chirp.id.toString()];
 
   const zero = '  0';
   const thumbsUp = reactions ? reactions['👍'] : 0;

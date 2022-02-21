@@ -1,10 +1,10 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { dispatch, getStore, makeCurrentLao } from 'store';
+import { ProcessableMessage, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { dispatch, getStore } from 'core/redux';
+import { makeCurrentLao } from 'features/lao/reducer';
 
 import { Chirp } from '../objects';
 import { AddChirp, DeleteChirp } from './messages/chirp';
-import { addChirp, deleteChirp } from '../reducer/SocialReducer';
+import { addChirp, deleteChirp } from '../reducer';
 
 /**
  * Handler for social media chirp
@@ -16,7 +16,7 @@ const getCurrentLao = makeCurrentLao();
  *
  * @param msg - The extended message for adding a chirp
  */
-function handleAddChirpMessage(msg: ExtendedMessage): boolean {
+export function handleAddChirpMessage(msg: ProcessableMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.ADD) {
     console.warn('handleAddChirp was called to process an unsupported message');
     return false;
@@ -52,7 +52,7 @@ function handleAddChirpMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for deleting a chirp
  */
-function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
+export function handleDeleteChirpMessage(msg: ProcessableMessage): boolean {
   if (msg.messageData.object !== ObjectType.CHIRP || msg.messageData.action !== ActionType.DELETE) {
     console.warn('handleDeleteChirp was called to process an unsupported message');
     return false;
@@ -86,7 +86,7 @@ function handleDeleteChirpMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for notifying a chirp addition
  */
-function handleNotifyAddChirpMessage(msg: ExtendedMessage): boolean {
+export function handleNotifyAddChirpMessage(msg: ProcessableMessage): boolean {
   console.warn(`NotifyAddChirp message lacks of handling logic for now, message: ${msg}`);
   return true; // Pretend it has been handled
 }
@@ -96,19 +96,7 @@ function handleNotifyAddChirpMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for notifying a chirp deletion
  */
-function handleNotifyDeleteChirpMessage(msg: ExtendedMessage): boolean {
+export function handleNotifyDeleteChirpMessage(msg: ProcessableMessage): boolean {
   console.warn(`NotifyDeleteChirp message lacks of handling logic for now, message: ${msg}`);
   return true; // Pretend it has been handled
-}
-
-/**
- * Configures the ChirpHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mappings
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.CHIRP, ActionType.ADD, handleAddChirpMessage);
-  registry.addHandler(ObjectType.CHIRP, ActionType.DELETE, handleDeleteChirpMessage);
-  registry.addHandler(ObjectType.CHIRP, ActionType.NOTIFY_ADD, handleNotifyAddChirpMessage);
-  registry.addHandler(ObjectType.CHIRP, ActionType.NOTIFY_DELETE, handleNotifyDeleteChirpMessage);
 }

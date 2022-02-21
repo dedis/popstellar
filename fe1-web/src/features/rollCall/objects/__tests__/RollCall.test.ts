@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { Hash, PopToken, PrivateKey, PublicKey, Timestamp } from 'model/objects';
+import { Hash, PopToken, PrivateKey, PublicKey, Timestamp } from 'core/objects';
 
 import { EventTypeRollCall, RollCall, RollCallStatus } from '../RollCall';
 
@@ -91,20 +91,6 @@ describe('RollCall object', () => {
       status: RollCallStatus.CLOSED,
     });
     expect(rollCall.containsToken(token)).toBeFalse();
-  });
-
-  it('containsToken function works when token is undefined', () => {
-    const rollCall = new RollCall({
-      id: ID,
-      name: NAME,
-      location: LOCATION,
-      creation: TIMESTAMP_START,
-      proposedStart: TIMESTAMP_START,
-      proposedEnd: TIMESTAMP_END,
-      status: RollCallStatus.CLOSED,
-      attendees: ATTENDEES.map((s: string) => new PublicKey(s)),
-    });
-    expect(rollCall.containsToken(undefined as unknown as PopToken)).toBeFalse();
   });
 
   it('containsToken function works when token is undefined', () => {

@@ -1,16 +1,20 @@
-import { Base64UrlData, Hash } from 'model/objects';
+import { configureTestFeatures } from '__tests__/utils';
+
+import { Base64UrlData, Hash } from 'core/objects';
 
 import { WalletStore } from '../../store';
 import * as Seed from '../Seed';
 import * as Wallet from '../index';
 import * as Token from '../Token';
 
-jest.mock('platform/Storage');
-jest.mock('platform/crypto/browser');
+jest.mock('core/platform/Storage');
+jest.mock('core/platform/crypto/browser');
 const mockId = 'T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=';
 
 const mnemonic: string =
   'garbage effort river orphan negative kind outside quit hat camera approve first';
+
+beforeAll(configureTestFeatures);
 
 beforeEach(() => {
   WalletStore.clear();
@@ -30,7 +34,7 @@ test('LAO/RollCall produce known token - test vector 0', async () => {
   expect(token!!.publicKey.valueOf()).toEqual(expected.valueOf());
 });
 
-test('LAO/RollCall produces correct signature', async () => {
+test('LAO/RollCall produces correct signature 1', async () => {
   await Seed.importMnemonic(mnemonic);
 
   const laoId: Hash = new Hash(mockId);
@@ -44,7 +48,7 @@ test('LAO/RollCall produces correct signature', async () => {
   expect(signature.verify(token!!.publicKey, data)).toBeTrue();
 });
 
-test('LAO/RollCall produces correct signature', async () => {
+test('LAO/RollCall produces correct signature 2', async () => {
   await Seed.importMnemonic(mnemonic);
 
   const laoId: Hash = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
@@ -80,8 +84,8 @@ test('Path produces known token - test vector 0', async () => {
 });
 
 test('generateToken returns undefined with an undefined Roll call id', async () => {
-  const laoId = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
-  const token = await Token.generateToken(laoId, undefined);
+  expect.assertions(1);
 
-  expect(token).toEqual(undefined);
+  const laoId = new Hash('T8grJq7LR9KGjE7741gXMqPny8xsLvsyBiwIFwoF7rg=');
+  await expect(Token.generateToken(laoId, undefined)).rejects.toThrow(Error);
 });

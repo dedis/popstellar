@@ -1,9 +1,9 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 
-import STRINGS from 'res/strings';
-import { Channel, Hash, PublicKey } from 'model/objects';
-import { subscribeToChannel } from 'network/CommunicationApi';
+import STRINGS from 'resources/strings';
+import { Channel, Hash, PublicKey } from 'core/objects';
+import { subscribeToChannel } from 'core/network/CommunicationApi';
 import keyPair from 'test_data/keypair.json';
 import { mockNavigate } from '__mocks__/useNavigationMock';
 
@@ -13,7 +13,7 @@ const publicKey = new PublicKey('PublicKey');
 const mockPublicKey = new PublicKey(keyPair.publicKey);
 const laoId = new Hash('LaoId');
 
-jest.mock('network/CommunicationApi.ts', () => ({
+jest.mock('core/network/CommunicationApi.ts', () => ({
   subscribeToChannel: jest.fn((c: Channel) => Promise.resolve(c)),
 }));
 

@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useToast } from 'react-native-toast-notifications';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import {
   ConfirmModal,
   DatePicker,
@@ -15,8 +15,8 @@ import {
   WideButtonView,
 } from 'core/components';
 import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
-import { Timestamp } from 'model/objects';
-import { FOUR_SECONDS } from 'res/const';
+import { Timestamp } from 'core/objects';
+import { FOUR_SECONDS } from 'resources/const';
 import { onConfirmPress } from 'features/events/screens/CreateEvent';
 
 import { requestCreateMeeting } from '../network/MeetingMessageApi';

@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import STRINGS from 'res/strings';
+import STRINGS from 'resources/strings';
 import { Meeting, MeetingState } from 'features/meeting/objects';
 import { Election, ElectionState, Question, RegisteredVote } from 'features/evoting/objects';
 import { RollCall, RollCallState, RollCallStatus } from 'features/rollCall/objects';
@@ -70,6 +70,7 @@ describe('LaoEventBuilder', () => {
   it('returns undefined for an event type that does not exist', () => {
     const eventState: LaoEventState = {
       eventType: '' as LaoEventType,
+      name: 'my Event',
       id: 'eventId',
       start: 12345,
     };

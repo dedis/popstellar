@@ -1,7 +1,9 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+
 import { mockNavigate } from '__mocks__/useNavigationMock';
-import BackButton from 'core/components/BackButton';
+
+import BackButton from '../BackButton';
 
 const mockHomeTab = 'Home';
 

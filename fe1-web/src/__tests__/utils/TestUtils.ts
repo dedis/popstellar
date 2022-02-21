@@ -1,9 +1,14 @@
-import { Hash, Lao, LaoState, PopToken, PublicKey, Timestamp } from 'model/objects';
+import { Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import testKeyPair from 'test_data/keypair.json';
+import { Lao, LaoState } from 'features/lao/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
 export const mockPublicKey2 = testKeyPair.publicKey2;
+export const mockKeyPair = KeyPair.fromState({
+  publicKey: testKeyPair.publicKey,
+  privateKey: testKeyPair.privateKey,
+});
 export const mockPopToken = PopToken.fromState({
   publicKey: testKeyPair.publicKey2,
   privateKey: testKeyPair.privateKey2,

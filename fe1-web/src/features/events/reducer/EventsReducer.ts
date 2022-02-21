@@ -5,9 +5,9 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash, PublicKey } from 'model/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { RollCall } from 'features/rollCall/objects';
-import { getLaosState } from 'store/reducers/LaoReducer';
+import { getLaosState } from 'features/lao/reducer/LaoReducer';
 
 import { eventFromState, LaoEvent, LaoEventState } from '../objects';
 
@@ -205,7 +205,7 @@ export const makeEventsAliasMap = () =>
     (state) => getLaosState(state).currentId,
     // Selector: returns a map of ids -> LaoEvents' ids
     (eventMap: EventLaoReducerState, laoId: string | undefined): Record<string, string> => {
-      if (!laoId) {
+      if (!laoId || !(laoId in eventMap.byLaoId)) {
         return {};
       }
 
@@ -226,7 +226,7 @@ export const makeEventsMap = (laoId: string | undefined = undefined) =>
     (state) => laoId || getLaosState(state).currentId,
     // Selector: returns a map of ids -> LaoEvents
     (eventMap: EventLaoReducerState, id: string | undefined): Record<string, LaoEvent> => {
-      if (!id) {
+      if (!id || !eventMap || !(id in eventMap.byLaoId)) {
         return {};
       }
 
@@ -249,8 +249,11 @@ export const makeEventsMap = (laoId: string | undefined = undefined) =>
  * @param laoId - The id of the Lao
  * @param eventId - The id of the event
  */
-export const makeEventGetter = (laoId: Hash | string, eventId: Hash | string | undefined) => {
-  const id = laoId.valueOf();
+export const makeEventGetter = (
+  laoId: Hash | string | undefined,
+  eventId: Hash | string | undefined,
+) => {
+  const id = laoId?.valueOf();
   const evtId = eventId?.valueOf();
 
   return createSelector(
@@ -282,6 +285,10 @@ export const makeEventByTypeSelector = <T extends LaoEvent>(eventType: string) =
     (state) => getEventsState(state),
     // Selector: returns a map of ids -> LaoEvents
     (eventMap: EventLaoReducerState): Record<string, Record<string, T>> => {
+      if (!eventMap || !eventMap.byLaoId) {
+        return {};
+      }
+
       const evtByLao: Record<string, Record<string, T>> = {};
 
       Object.entries(eventMap.byLaoId).forEach(([laoId, evtList]) => {

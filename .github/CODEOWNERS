@@ -13,5 +13,8 @@ fe1-web/ @dedis/student_pop-ta
 # Protocol
 protocol/ @dedis/student_pop-ta
 
+# Global tests
+tests/ @dedis/student_pop-ta
+
 # Github CI
 .github/ @dedis/student_pop-ta

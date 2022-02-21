@@ -3,12 +3,14 @@ import { useSelector } from 'react-redux';
 import { ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/core';
 
-import { Timestamp } from 'model/objects';
+import { Timestamp } from 'core/objects';
 import EventListCollapsible from 'features/events/components/EventListCollapsible';
 import { LaoEvent } from 'features/events/objects';
 import { makeEventsList } from 'features/events/reducer';
 
 import { LaoProperties } from '../components';
+
+const eventList = makeEventsList();
 
 /**
  * AttendeeScreen: lists LAO properties and past/ongoing/future events.
@@ -17,13 +19,13 @@ import { LaoProperties } from '../components';
  * TODO: use the data receive by the organization server
  */
 const AttendeeScreen = () => {
-  const eventList = makeEventsList();
   const events = useSelector(eventList);
   const now = Timestamp.EpochNow();
   const pastEvents: LaoEvent[] = [];
   const currentEvents: LaoEvent[] = [];
   const futureEvents: LaoEvent[] = [];
-  const route = useRoute();
+  // FIXME: route should use proper type
+  const route = useRoute<any>();
   const { url } = route.params || '';
   const [serverUrl] = useState(url);
 

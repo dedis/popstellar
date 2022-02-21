@@ -1,10 +1,10 @@
 import 'jest-extended';
 
 import '__tests__/utils/matchers';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { Hash, Timestamp, ProtocolError } from 'model/objects';
-import { mockLao, mockLaoId, mockLaoName } from '__tests__/utils/TestUtils';
-import { OpenedLaoStore } from 'store';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { mockLao, mockLaoId, mockLaoName, configureTestFeatures } from '__tests__/utils';
+import { OpenedLaoStore } from 'features/lao/store';
 
 import { OpenRollCall } from '../OpenRollCall';
 
@@ -34,6 +34,7 @@ const openRollCallJson = `{
 }`;
 
 beforeAll(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
 });
 

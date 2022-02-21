@@ -1,11 +1,17 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
-import { EventTags, Hash, Timestamp, ProtocolError } from 'model/objects';
-import STRINGS from 'res/strings';
-import { mockLao, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
-import { OpenedLaoStore } from 'store';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
+import {
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+  mockLaoName,
+  configureTestFeatures,
+} from '__tests__/utils';
+
+import { EventTags, Hash, Timestamp, ProtocolError } from 'core/objects';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { OpenedLaoStore } from 'features/lao/store';
+import STRINGS from 'resources/strings';
 
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
@@ -83,6 +89,7 @@ const initializeData = () => {
 };
 
 beforeAll(() => {
+  configureTestFeatures();
   initializeData();
   OpenedLaoStore.store(mockLao);
 });

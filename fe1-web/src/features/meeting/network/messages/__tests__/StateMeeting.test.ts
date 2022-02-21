@@ -1,10 +1,11 @@
 import 'jest-extended';
 
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'core/objects';
+import { OpenedLaoStore } from 'features/lao/store';
+
 import '__tests__/utils/matchers';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'model/objects';
-import { mockLao, mockLaoId } from '__tests__/utils/TestUtils';
-import { OpenedLaoStore } from 'store';
+import { mockLao, mockLaoId, configureTestFeatures } from '__tests__/utils';
 
 import { StateMeeting } from '../StateMeeting';
 
@@ -49,6 +50,7 @@ const stateMeetingJson = `{
 }`;
 
 beforeAll(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
 });
 

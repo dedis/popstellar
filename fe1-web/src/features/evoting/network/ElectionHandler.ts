@@ -1,10 +1,11 @@
-import { ExtendedMessage } from 'model/network/method/message';
-import { ActionType, MessageRegistry, ObjectType } from 'model/network/method/message/data';
-import { channelFromIds, getLastPartOfChannel } from 'model/objects';
-import { dispatch, getStore, KeyPairStore, makeCurrentLao } from 'store';
-import { subscribeToChannel } from 'network/CommunicationApi';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
+import { channelFromIds, getLastPartOfChannel } from 'core/objects';
+import { subscribeToChannel } from 'core/network';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
+import { makeCurrentLao } from 'features/lao/reducer';
+import { dispatch, getStore } from 'core/redux';
+import { KeyPairStore } from 'core/keypair';
 
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, RegisteredVote } from '../objects';
@@ -20,7 +21,7 @@ const getCurrentLao = makeCurrentLao();
  *
  * @param msg - The extended message for setting up an election
  */
-function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
+export function handleElectionSetupMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ELECTION ||
     msg.messageData.action !== ActionType.SETUP
@@ -39,6 +40,7 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
   }
 
   const elecMsg = msg.messageData as SetupElection;
+  elecMsg.validate(msg.laoId);
 
   const election = new Election({
     lao: elecMsg.lao,
@@ -67,7 +69,7 @@ function handleElectionSetupMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message to cast a vote
  */
-function handleCastVoteMessage(msg: ExtendedMessage): boolean {
+export function handleCastVoteMessage(msg: ProcessableMessage): boolean {
   if (
     msg.messageData.object !== ObjectType.ELECTION ||
     msg.messageData.action !== ActionType.CAST_VOTE
@@ -92,10 +94,10 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
 
   const castVoteMsg = msg.messageData as CastVote;
   const currentVote: RegisteredVote = {
-    createdAt: castVoteMsg.created_at,
-    sender: msg.sender,
+    createdAt: castVoteMsg.created_at.valueOf(),
+    sender: msg.sender.valueOf(),
     votes: castVoteMsg.votes,
-    messageId: msg.message_id,
+    messageId: msg.message_id.valueOf(),
   };
   const election = getEventFromId(storeState, castVoteMsg.election) as Election;
   if (!election) {
@@ -103,15 +105,10 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
     return false;
   }
 
-  if (
-    election.registeredVotes.some(
-      (votes) => votes.sender.toString() === currentVote.sender.toString(),
-    )
-  ) {
+  if (election.registeredVotes.some((votes) => votes.sender === currentVote.sender)) {
     // Update the vote if the person has already voted before
     election.registeredVotes = election.registeredVotes.map((prevVote) =>
-      prevVote.sender.toString() === currentVote.sender.toString() &&
-      prevVote.createdAt.valueOf() < currentVote.createdAt.valueOf()
+      prevVote.sender === currentVote.sender && prevVote.createdAt < currentVote.createdAt
         ? currentVote
         : prevVote,
     );
@@ -127,7 +124,7 @@ function handleCastVoteMessage(msg: ExtendedMessage): boolean {
  *
  * @param msg - The extended message for ending an election
  */
-function handleElectionEndMessage(msg: ExtendedMessage) {
+export function handleElectionEndMessage(msg: ProcessableMessage) {
   console.log('Handling Election end message');
   if (msg.messageData.object !== ObjectType.ELECTION || msg.messageData.action !== ActionType.END) {
     console.warn('handleElectionEndMessage was called to process an unsupported message', msg);
@@ -158,7 +155,7 @@ function handleElectionEndMessage(msg: ExtendedMessage) {
  *
  * @param msg - The extended message for getting the election's results.
  */
-function handleElectionResultMessage(msg: ExtendedMessage) {
+export function handleElectionResultMessage(msg: ProcessableMessage) {
   if (
     msg.messageData.object !== ObjectType.ELECTION ||
     msg.messageData.action !== ActionType.RESULT
@@ -190,16 +187,4 @@ function handleElectionResultMessage(msg: ExtendedMessage) {
   dispatch(updateEvent(lao.id, election.toState()));
   console.log('received election Result message: ', ElectionResultMsg);
   return true;
-}
-
-/**
- * Configures the ElectionHandler in a MessageRegistry.
- *
- * @param registry - The MessageRegistry where we want to add the mappings
- */
-export function configure(registry: MessageRegistry) {
-  registry.addHandler(ObjectType.ELECTION, ActionType.SETUP, handleElectionSetupMessage);
-  registry.addHandler(ObjectType.ELECTION, ActionType.CAST_VOTE, handleCastVoteMessage);
-  registry.addHandler(ObjectType.ELECTION, ActionType.END, handleElectionEndMessage);
-  registry.addHandler(ObjectType.ELECTION, ActionType.RESULT, handleElectionResultMessage);
 }

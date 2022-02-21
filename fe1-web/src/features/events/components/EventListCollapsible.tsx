@@ -1,15 +1,15 @@
 import React from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 
 import PropTypes from 'prop-types';
-import { makeIsLaoOrganizer } from 'store';
-import { Spacing, Typography } from 'styles';
-import STRINGS from 'res/strings';
-import * as RootNavigation from 'navigation/RootNavigation';
 import { TextBlock } from 'core/components';
+import { Spacing, Typography } from 'core/styles';
+import { useIsLaoOrganizer } from 'features/lao/hooks';
+import STRINGS from 'resources/strings';
 
 import { Event } from './index';
+import { eventPropTypes } from './Event';
 
 const styles = StyleSheet.create({
   flexBox: {
@@ -28,25 +28,6 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-function renderSectionHeader(title: string, isOrganizer: boolean) {
-  const sectionTitle = <TextBlock bold text={title} />;
-  const expandSign: string = '+';
-
-  return isOrganizer && title === 'Future' ? (
-    <View style={styles.flexBox}>
-      <Text style={styles.buttonMatcher}>{expandSign}</Text>
-      {sectionTitle}
-      <Text
-        style={styles.expandButton}
-        onPress={() => RootNavigation.navigate(STRINGS.organizer_navigation_tab_create_event, {})}>
-        {expandSign}
-      </Text>
-    </View>
-  ) : (
-    sectionTitle
-  );
-}
-
 /**
  * Collapsible list of events: list with 3 sections corresponding
  * to 'past', 'present' and 'future' events.
@@ -56,19 +37,36 @@ function renderSectionHeader(title: string, isOrganizer: boolean) {
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
 
-  const isOrganizerSelect = makeIsLaoOrganizer();
-  const isOrganizer = useSelector(isOrganizerSelect);
+  const isOrganizer = useIsLaoOrganizer();
 
-  const renderItemFn = ({ item }: any) => (
-    <Event event={item} isOrganizer={isOrganizer} renderItemFn={renderItemFn} />
-  );
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
+
+  const renderSectionHeader = (title: string) => {
+    const sectionTitle = <TextBlock bold text={title} />;
+    const expandSign: string = '+';
+
+    return isOrganizer && title === 'Future' ? (
+      <View style={styles.flexBox}>
+        <Text style={styles.buttonMatcher}>{expandSign}</Text>
+        {sectionTitle}
+        <Text
+          style={styles.expandButton}
+          onPress={() => navigation.navigate(STRINGS.organizer_navigation_tab_create_event, {})}>
+          {expandSign}
+        </Text>
+      </View>
+    ) : (
+      sectionTitle
+    );
+  };
 
   return (
     <SectionList
       sections={data}
-      keyExtractor={(item) => `${item.id}`}
-      renderItem={renderItemFn}
-      renderSectionHeader={({ section: { title } }) => renderSectionHeader(title, isOrganizer)}
+      keyExtractor={(item) => item.id.valueOf()}
+      renderItem={({ item }) => <Event event={item} />}
+      renderSectionHeader={({ section: { title } }) => renderSectionHeader(title)}
     />
   );
 };
@@ -77,7 +75,7 @@ const propTypes = {
   data: PropTypes.arrayOf(
     PropTypes.shape({
       title: PropTypes.string.isRequired,
-      data: PropTypes.arrayOf(PropTypes.shape({})),
+      data: PropTypes.arrayOf(eventPropTypes).isRequired,
     }).isRequired,
   ).isRequired,
 };

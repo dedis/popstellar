@@ -3,9 +3,9 @@ import PropTypes from 'prop-types';
 import { StyleSheet, ViewStyle, TextInput, TextStyle, Button, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-import STRINGS from 'res/strings';
-import { gray, red } from 'styles/colors';
-import { PublicKey } from 'model/objects';
+import STRINGS from 'resources/strings';
+import { gray, red } from 'core/styles/colors';
+import { PublicKey } from 'core/objects';
 import { ProfileIcon, TextBlock } from 'core/components';
 
 const MAX_CHIRP_CHARS = 300;

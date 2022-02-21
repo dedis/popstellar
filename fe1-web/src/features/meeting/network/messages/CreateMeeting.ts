@@ -1,8 +1,7 @@
-import { Hash, Timestamp, Lao, EventTags, ProtocolError } from 'model/objects';
-import { OpenedLaoStore } from 'store';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
-import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
+import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 /** Data sent to create a Meeting event */
 export class CreateMeeting implements MessageData {
@@ -63,19 +62,26 @@ export class CreateMeeting implements MessageData {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'CreateMeeting'");
     }
 
-    const lao: Lao = OpenedLaoStore.get();
+    this.id = msg.id;
+  }
+
+  /**
+   * Validates the CreateMeeting object based on external information
+   *
+   * @param laoId - The ID of the LAO this message was sent to
+   */
+  public validate(laoId: Hash) {
     const expectedHash = Hash.fromStringArray(
       EventTags.MEETING,
-      lao.id.toString(),
-      lao.creation.toString(),
-      msg.name,
+      laoId.toString(),
+      this.creation.toString(),
+      this.name,
     );
-    if (!expectedHash.equals(msg.id)) {
+    if (!expectedHash.equals(this.id)) {
       throw new ProtocolError(
         "Invalid 'id' parameter encountered during 'CreateMeeting': unexpected id value",
       );
     }
-    this.id = msg.id;
   }
 
   /**

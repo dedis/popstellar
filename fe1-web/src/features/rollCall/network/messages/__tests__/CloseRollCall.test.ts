@@ -1,16 +1,17 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
-import { Hash, PublicKey, Timestamp, ProtocolError } from 'model/objects';
 import {
   mockLao,
   mockLaoId,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
-} from '__tests__/utils/TestUtils';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { OpenedLaoStore } from 'store';
+  configureTestFeatures,
+} from '__tests__/utils';
+
+import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { OpenedLaoStore } from 'features/lao/store';
 
 import { CloseRollCall } from '../CloseRollCall';
 
@@ -48,6 +49,7 @@ const closeRollCallJson = `{
 }`;
 
 beforeAll(() => {
+  configureTestFeatures();
   OpenedLaoStore.store(mockLao);
 });
 
@@ -132,7 +134,7 @@ describe('CloseRollCall', () => {
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
-    it('should throw an error if update_id is undefined', () => {
+    it('should throw an error if update_id is invalid', () => {
       const createWrongObj = () =>
         new CloseRollCall({
           object: ObjectType.ROLL_CALL,

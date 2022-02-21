@@ -1,6 +1,6 @@
 import 'jest-extended';
 
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 
 import { EventTypeMeeting, Meeting } from '../Meeting';
 

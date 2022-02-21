@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { StyleSheet, TextInput, TextStyle } from 'react-native';
 
-import { Spacing, Typography } from 'styles';
+import { Spacing, Typography } from '../styles';
 
 /**
  * Component which creates the typical one line text input used in the application.

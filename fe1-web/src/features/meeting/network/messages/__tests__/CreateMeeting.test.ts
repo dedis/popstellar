@@ -1,10 +1,9 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
-import { Hash, Timestamp, ProtocolError } from 'model/objects';
-import { ActionType, ObjectType } from 'model/network/method/message/data/MessageData';
-import { mockLao, mockLaoCreationTime, mockLaoId } from '__tests__/utils/TestUtils';
-import { OpenedLaoStore } from 'store';
+import { mockLaoId, configureTestFeatures } from '__tests__/utils';
+
+import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { CreateMeeting } from '../CreateMeeting';
 
@@ -12,7 +11,7 @@ const NAME = 'myMeeting';
 const LOCATION = 'location';
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const FUTURE_TIMESTAMP = new Timestamp(1735686000); // 1st january 2025
-const mockMeetingId = Hash.fromStringArray('M', mockLaoId, mockLaoCreationTime.toString(), NAME);
+const mockMeetingId = Hash.fromStringArray('M', mockLaoId, TIMESTAMP.toString(), NAME);
 const mockExtra = { extra: 'extra info' };
 
 const sampleCreateMeeting: Partial<CreateMeeting> = {
@@ -40,7 +39,7 @@ const createMeetingJson = `{
 }`;
 
 beforeAll(() => {
-  OpenedLaoStore.store(mockLao);
+  configureTestFeatures();
 });
 
 describe('CreateMeeting', () => {
@@ -169,21 +168,37 @@ describe('CreateMeeting', () => {
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
+  });
+
+  describe('validate', () => {
+    it('should succeed if id is correct', () => {
+      const obj = new CreateMeeting({
+        object: ObjectType.MEETING,
+        action: ActionType.CREATE,
+        id: mockMeetingId,
+        name: NAME,
+        creation: TIMESTAMP,
+        location: LOCATION,
+        start: TIMESTAMP,
+        end: FUTURE_TIMESTAMP,
+        extra: mockExtra,
+      });
+      expect(() => obj.validate(new Hash(mockLaoId))).not.toThrow();
+    });
 
     it('should throw an error if id is incorrect', () => {
-      const createWrongObj = () =>
-        new CreateMeeting({
-          object: ObjectType.MEETING,
-          action: ActionType.CREATE,
-          id: new Hash('id'),
-          name: NAME,
-          creation: TIMESTAMP,
-          location: LOCATION,
-          start: TIMESTAMP,
-          end: FUTURE_TIMESTAMP,
-          extra: mockExtra,
-        });
-      expect(createWrongObj).toThrow(ProtocolError);
+      const obj = new CreateMeeting({
+        object: ObjectType.MEETING,
+        action: ActionType.CREATE,
+        id: new Hash('id'),
+        name: NAME,
+        creation: TIMESTAMP,
+        location: LOCATION,
+        start: TIMESTAMP,
+        end: FUTURE_TIMESTAMP,
+        extra: mockExtra,
+      });
+      expect(() => obj.validate(new Hash(mockLaoId))).toThrow(ProtocolError);
     });
   });
 });

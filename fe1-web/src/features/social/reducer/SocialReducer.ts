@@ -5,8 +5,8 @@
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { Hash, PublicKey, Timestamp } from 'model/objects';
-import { getLaosState } from 'store/reducers/LaoReducer';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
+import { getLaosState } from 'features/lao/reducer/LaoReducer';
 
 import { Chirp, ChirpState, ReactionState } from '../objects';
 
@@ -227,8 +227,8 @@ export const makeChirpsList = () =>
     },
   );
 
-export const makeChirpsListOfUser = (user: PublicKey | string) => {
-  const userPublicKey = user.valueOf();
+export const makeChirpsListOfUser = (user: PublicKey | string | undefined) => {
+  const userPublicKey = user?.valueOf();
   return createSelector(
     // First input: Get all chirps across all LAOs
     (state) => getSocialState(state),

@@ -1,7 +1,7 @@
-import { Hash, Timestamp, ProtocolError } from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
-import { checkTimestampStaleness } from 'model/network/method/message/data/Checker';
+import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 /** Data sent to end an Election event */
 export class EndElection implements MessageData {

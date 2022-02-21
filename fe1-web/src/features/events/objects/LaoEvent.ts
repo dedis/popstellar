@@ -1,4 +1,4 @@
-import { Hash, Timestamp } from 'model/objects';
+import { Hash, Timestamp } from 'core/objects';
 
 /**
  * Interface to represent an event within a LAO.
@@ -19,6 +19,8 @@ export interface LaoEventState {
 
   readonly idAlias?: string;
 
+  readonly name: string;
+
   readonly start: number;
 
   readonly end?: number;
@@ -28,6 +30,8 @@ export interface LaoEvent {
   readonly id: Hash;
 
   readonly idAlias?: Hash;
+
+  readonly name: string;
 
   readonly start: Timestamp;
 

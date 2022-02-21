@@ -1,12 +1,12 @@
 import 'jest-extended';
 
-import * as store from 'store/Storage';
+import { getStore } from 'core/redux';
 
 import { WalletStore } from '../WalletStore';
 
-jest.mock('platform/Storage');
-jest.mock('platform/crypto/browser');
-jest.mock('store/Storage');
+jest.mock('core/platform/Storage');
+jest.mock('core/platform/crypto/browser');
+jest.mock('core/redux/GlobalStore');
 
 const seed = new Uint8Array([0x1, 0x8, 0xf, 0x22, 0xff, 0x33, 0x99]);
 const mnemonic = 'probably insecure definitely memorable';
@@ -22,13 +22,13 @@ test('should report a seed after initialization', async () => {
 
 test('should not store the mnemonic in cleartext', async () => {
   await WalletStore.store(mnemonic, seed);
-  const walletState = store.getStore().getState().wallet;
+  const walletState = getStore().getState().wallet;
   expect(walletState.mnemonic).not.toEqual(mnemonic);
 });
 
 test('should not store the seed in cleartext', async () => {
   await WalletStore.store(mnemonic, seed);
-  const walletState = store.getStore().getState().wallet;
+  const walletState = getStore().getState().wallet;
   expect(walletState.seed).not.toEqual(seed.toString());
 });
 

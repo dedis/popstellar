@@ -1,8 +1,8 @@
-import { ProtocolError } from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
+import { ProtocolError } from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 
-import { QuestionResult } from '../../objects/Election';
+import { QuestionResult } from '../../objects';
 
 /** Data sent to ask for the result of an election */
 export class ElectionResult implements MessageData {

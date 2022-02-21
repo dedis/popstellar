@@ -1,8 +1,8 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import STRINGS from 'res/strings';
-import { PublicKey } from 'model/objects';
+import STRINGS from 'resources/strings';
+import { PublicKey } from 'core/objects';
 import PropTypes from 'prop-types';
 
 import { SocialSearch, SocialUserProfile } from '../screens';

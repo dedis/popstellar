@@ -1,10 +1,10 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
 
-import { Hash, PublicKey, Timestamp } from 'model/objects';
-import { OpenedLaoStore } from 'store';
-import STRINGS from 'res/strings';
-import { mockLao, mockLaoState } from '__tests__/utils/TestUtils';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
+import { OpenedLaoStore } from 'features/lao/store';
+import STRINGS from 'resources/strings';
+import { mockLao } from '__tests__/utils/TestUtils';
 
 import {
   requestAddReaction as mockRequestAddReaction,
@@ -13,63 +13,51 @@ import {
 import { Chirp } from '../../objects';
 import ChirpCard from '../ChirpCard';
 
+// region test data
+const TIMESTAMP = 1609455600; // 31 December 2020
+const sender = new PublicKey('Douglas Adams');
+const ID = new Hash('1234');
+
+const chirp = new Chirp({
+  id: ID,
+  text: "Don't panic.",
+  sender: sender,
+  time: new Timestamp(TIMESTAMP),
+  isDeleted: false,
+});
+
+const deletedChirp = new Chirp({
+  id: new Hash('1234'),
+  text: '',
+  sender: sender,
+  time: new Timestamp(TIMESTAMP),
+  isDeleted: true,
+});
+
+const chirp1 = new Chirp({
+  id: new Hash('5678'),
+  text: 'Ignore me',
+  sender: new PublicKey('Anonymous'),
+  time: new Timestamp(TIMESTAMP),
+});
+// endregion
+
+// region mocks
 jest.mock('features/social/network/SocialMessageApi');
-
-let chirp: Chirp;
-let chirp1: Chirp;
-let deletedChirp: Chirp;
-let sender: PublicKey;
-let ID: Hash;
-
-const initializeData = () => {
-  const TIMESTAMP = 1609455600; // 31 December 2020
-  sender = new PublicKey('Douglas Adams');
-  ID = new Hash('1234');
-
-  chirp = new Chirp({
-    id: ID,
-    text: "Don't panic.",
-    sender: sender,
-    time: new Timestamp(TIMESTAMP),
-    isDeleted: false,
-  });
-
-  deletedChirp = new Chirp({
-    id: new Hash('1234'),
-    text: '',
-    sender: sender,
-    time: new Timestamp(TIMESTAMP),
-    isDeleted: true,
-  });
-
-  chirp1 = new Chirp({
-    id: new Hash('5678'),
-    text: 'Ignore me',
-    sender: new PublicKey('Anonymous'),
-    time: new Timestamp(TIMESTAMP),
-  });
-};
-
-jest.mock('network/MessageApi');
 jest.mock('react-redux', () => ({
   ...jest.requireActual('react-redux'),
-  useSelector: jest.fn().mockImplementation(() => mockLaoState),
+  useSelector: jest.fn().mockImplementation(() => ({ 1234: { '👍': 1, '👎': 0, '❤️': 0 } })),
 }));
 
-jest.mock('react-redux', () => ({
-  useSelector: () => ({ 1234: { '👍': 1, '👎': 0, '❤': 0 } }),
-}));
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
+// endregion
 
 beforeAll(() => {
   jest.useFakeTimers('modern');
   jest.setSystemTime(new Date(1620255600000)); // 5 May 2021
 });
 
-beforeEach(() => {
-  initializeData();
-});
-
+// FIXME: useSelector mock doesn't seem to work correctly
 describe('ChirpCard', () => {
   describe('for deletion', () => {
     const getMockLao = jest.spyOn(OpenedLaoStore, 'get');

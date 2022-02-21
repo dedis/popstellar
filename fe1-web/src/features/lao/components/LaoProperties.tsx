@@ -3,16 +3,13 @@ import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import { Spacing } from 'styles';
-import laoPropertiesStyles from 'styles/stylesheets/laoPropertiesStyles';
-import { Lao } from 'model/objects';
-import { makeCurrentLao } from 'store/reducers';
-import { ConnectToLao } from 'model/objects/ConnectToLao';
+import { Spacing } from 'core/styles';
+import { ConnectToLao } from 'features/connect/objects';
+import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 
-import TextBlock from 'core/components/TextBlock';
-import ListCollapsibleIcon from 'core/components/ListCollapsibleIcon';
-import ParagraphBlock from 'core/components/ParagraphBlock';
-import QRCode from 'core/components/QRCode';
+import laoPropertiesStyles from '../styles/laoPropertiesStyles';
+import { Lao } from '../objects';
+import { makeCurrentLao } from '../reducer';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.toDateString();
@@ -30,8 +27,9 @@ function renderProperties(lao: Lao, url: string) {
   );
 }
 
+const laoSelect = makeCurrentLao();
+
 const LaoProperties = ({ url }: IPropTypes) => {
-  const laoSelect = makeCurrentLao();
   const lao = useSelector(laoSelect);
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);

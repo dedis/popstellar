@@ -1,6 +1,7 @@
-import { channelFromIds, EventTags, Hash, Lao, Timestamp } from 'model/objects';
-import { OpenedLaoStore } from 'store';
-import { publish } from 'network/JsonRpcApi';
+import { channelFromIds, EventTags, Hash, Timestamp } from 'core/objects';
+import { Lao } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
+import { publish } from 'core/network';
 
 import { CreateMeeting } from './messages';
 
@@ -28,12 +29,7 @@ export function requestCreateMeeting(
   const currentLao: Lao = OpenedLaoStore.get();
 
   const message = new CreateMeeting({
-    id: Hash.fromStringArray(
-      EventTags.MEETING,
-      currentLao.id.toString(),
-      currentLao.creation.toString(),
-      name,
-    ),
+    id: Hash.fromStringArray(EventTags.MEETING, currentLao.id.toString(), time.toString(), name),
     name,
     start: Timestamp.max(time, startTime),
     creation: time,

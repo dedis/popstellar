@@ -3,16 +3,12 @@ import {
   PublicKey,
   Signature,
   Timestamp,
-  WitnessSignature,
   ProtocolError,
-} from 'model/objects';
-import { validateDataObject } from 'model/network/validation';
-import { ActionType, MessageData, ObjectType } from 'model/network/method/message/data/MessageData';
-import {
-  checkModificationId,
-  checkTimestampStaleness,
-  checkWitnessSignatures,
-} from 'model/network/method/message/data/Checker';
+  WitnessSignature,
+} from 'core/objects';
+import { validateDataObject } from 'core/network/validation';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { checkTimestampStaleness, checkWitnessSignatures } from 'core/network/validation/Checker';
 
 /** Data received to track the state of a Meeting */
 export class StateMeeting implements MessageData {
@@ -97,7 +93,7 @@ export class StateMeeting implements MessageData {
         "Undefined 'modification_id' parameter encountered during 'StateMeeting'",
       );
     }
-    checkModificationId(msg.modification_id);
+    // TODO: checkModificationId(msg.modification_id);
     this.modification_id = msg.modification_id;
 
     if (!msg.modification_signatures) {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { StyleSheet, View, ViewStyle, Text, TextStyle } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 
-import { Views, Typography } from 'styles';
+import { Views, Typography } from '../styles';
 
 /**
  * Component with a title and a list of checkboxes below it.
