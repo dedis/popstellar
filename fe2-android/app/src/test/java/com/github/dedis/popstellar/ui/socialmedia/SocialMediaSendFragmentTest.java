@@ -85,6 +85,6 @@ public class SocialMediaSendFragmentTest {
     fragmentRule.getScenario().recreate();
 
     sendChirpButton().perform(click());
-    UITestUtils.assertToastIsShown(nullLaoIdToastText());
+    UITestUtils.assertToastIsDisplayedWithText(nullLaoIdToastText());
   }
 }

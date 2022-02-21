@@ -21,12 +21,12 @@ import org.robolectric.shadows.ShadowToast;
 public class UITestUtils {
 
   /**
-   * Assert that the latest toast showed the provided text
+   * Assert that the latest toast was shown with the expected text
    *
    * @param resId resource of the text
    * @param args arguments to the resource
    */
-  public static void assertToastIsShown(@StringRes int resId, Object... args) {
+  public static void assertToastIsDisplayedWithText(@StringRes int resId, Object... args) {
     assertThat("No toast have been displayed", ShadowToast.getLatestToast(), notNullValue());
 
     String expected = ApplicationProvider.getApplicationContext().getString(resId, args);

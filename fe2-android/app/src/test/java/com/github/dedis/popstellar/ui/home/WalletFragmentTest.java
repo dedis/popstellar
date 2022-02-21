@@ -9,7 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsShown;
+import static com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedWithText;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static org.hamcrest.Matchers.allOf;
@@ -181,7 +181,7 @@ public class WalletFragmentTest {
                 isDisplayed()));
     textView4.perform(click());
 
-    assertToastIsShown(R.string.copied_to_clipboard);
+    assertToastIsDisplayedWithText(R.string.copied_to_clipboard);
 
     ViewInteraction button2 =
         onView(
