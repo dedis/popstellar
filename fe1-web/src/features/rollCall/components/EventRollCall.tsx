@@ -10,7 +10,7 @@ import { QRCode, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
 import * as Wallet from 'features/wallet/objects';
 
-import { requestOpenRollCall } from '../network/RollCallMessageApi';
+import { requestOpenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
 
 /**

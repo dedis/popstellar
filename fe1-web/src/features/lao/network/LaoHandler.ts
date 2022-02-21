@@ -1,5 +1,4 @@
-import { ProcessableMessage } from 'core/network/jsonrpc/messages';
-import { ActionType, ObjectType } from 'core/network/validation/Validator';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch } from 'core/redux';
 
 import { Lao } from '../objects';

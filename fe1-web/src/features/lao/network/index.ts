@@ -7,6 +7,8 @@ import {
 } from './LaoHandler';
 import { CreateLao, StateLao, UpdateLao } from './messages';
 
+export * from './LaoMessageApi';
+
 /**
  * Configures the network callbacks in a MessageRegistry.
  *

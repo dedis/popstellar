@@ -3,7 +3,7 @@ import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
-import { Question } from '../../objects/Election';
+import { Question } from '../../objects';
 
 /** Data sent to setup an Election event */
 export class SetupElection implements MessageData {

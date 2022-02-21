@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { requestCreateLao } from 'features/lao/network/LaoMessageApi';
+import { requestCreateLao } from 'features/lao/network';
 import STRINGS from 'resources/strings';
 import PROPS_TYPE from 'resources/Props';
 
@@ -12,7 +12,7 @@ import { getNetworkManager } from 'core/network';
 import { Channel, Hash, Timestamp } from 'core/objects';
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { subscribeToChannel } from 'core/network';
 import { KeyPairStore } from 'core/keypair';
 import { dispatch } from 'core/redux';
 

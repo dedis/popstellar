@@ -21,7 +21,7 @@ import {
   QuestionResult,
   RegisteredVote,
   Vote,
-} from '../objects/Election';
+} from '../objects';
 import BarChartDisplay from './BarChartDisplay';
 
 /**

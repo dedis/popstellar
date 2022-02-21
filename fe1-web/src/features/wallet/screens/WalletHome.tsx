@@ -6,7 +6,7 @@ import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 import { TextBlock, WideButtonView } from 'core/components';
 
-import { WalletStore } from '../store/WalletStore';
+import { WalletStore } from '../store';
 
 const styles = StyleSheet.create({
   smallPadding: {

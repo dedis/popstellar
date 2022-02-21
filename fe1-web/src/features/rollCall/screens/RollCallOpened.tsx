@@ -17,7 +17,7 @@ import { makeCurrentLao } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
 
-import { requestCloseRollCall } from '../network/RollCallMessageApi';
+import { requestCloseRollCall } from '../network';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them

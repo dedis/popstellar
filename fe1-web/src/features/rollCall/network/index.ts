@@ -7,6 +7,8 @@ import {
 } from './RollCallHandler';
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 
+export * from './RollCallMessageApi';
+
 /**
  * Configures the network callbacks in a MessageRegistry.
  *

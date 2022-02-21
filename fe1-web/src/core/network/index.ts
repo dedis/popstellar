@@ -7,6 +7,8 @@
  * of incoming messages, a task dealt with in the ingestion module.
  */
 
+export * from './CommunicationApi';
+export * from './JsonRpcApi';
 export { getNetworkManager } from './NetworkManager';
 export * from './NetworkError';
 export * from './RpcOperationError';

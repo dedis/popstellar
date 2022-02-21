@@ -1,6 +1,6 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { channelFromIds, getLastPartOfChannel } from 'core/objects';
-import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { subscribeToChannel } from 'core/network';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { makeCurrentLao } from 'features/lao/reducer';

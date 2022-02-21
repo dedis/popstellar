@@ -1,6 +1,6 @@
-import { ProtocolError } from 'core/objects/ProtocolError';
+import { ProtocolError } from 'core/objects';
 
-import { Message } from './messages/Message';
+import { Message } from './messages';
 import { JsonRpcParams } from './JsonRpcParams';
 
 /**

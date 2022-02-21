@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { ParagraphBlock, TimeDisplay } from 'core/components';
 
-import { Meeting } from '../objects/Meeting';
+import { Meeting } from '../objects';
 
 /**
  * Component used to display a Meeting event in the LAO event list

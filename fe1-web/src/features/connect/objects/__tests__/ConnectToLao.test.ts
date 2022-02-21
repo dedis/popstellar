@@ -2,7 +2,7 @@ import 'jest-extended';
 
 import '__tests__/utils/matchers';
 import { mockLaoId } from '__tests__/utils/TestUtils';
-import { ProtocolError } from 'core/objects/ProtocolError';
+import { ProtocolError } from 'core/objects';
 
 import { ConnectToLao } from '../ConnectToLao';
 

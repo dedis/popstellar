@@ -1,7 +1,8 @@
 import { KeyPairRegistry } from 'core/keypair';
 import { MessageRegistry } from './jsonrpc/messages';
 import { configureJsonRpcApi } from './JsonRpcApi';
-import { configureIngestion } from './ingestion/Configure';
+import { configureIngestion } from './ingestion';
+import { getNetworkManager } from './NetworkManager';
 /**
  * Configures the network with a MessageRegistry and a KeyPairRegistry.
  *
@@ -12,6 +13,7 @@ export function configureNetwork(
   messageRegistry: MessageRegistry,
   keyPairRegistry: KeyPairRegistry,
 ) {
-  configureIngestion(messageRegistry);
+  const networkManager = getNetworkManager();
+  configureIngestion(messageRegistry, networkManager.setRpcHandler);
   configureJsonRpcApi(messageRegistry, keyPairRegistry);
 }

@@ -114,7 +114,7 @@ const laosSlice = createSlice({
         }
 
         state.byId[laoId].server_address = serverAddress;
-      }
+      },
     },
 
     // Update the last roll call observed in the LAO and for which we have a token

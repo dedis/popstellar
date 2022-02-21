@@ -6,7 +6,7 @@ import { useToast } from 'react-native-toast-notifications';
 import { useRoute } from '@react-navigation/core';
 
 import { getNetworkManager } from 'core/network';
-import { subscribeToChannel } from 'core/network/CommunicationApi';
+import { subscribeToChannel } from 'core/network';
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { Channel, channelFromIds, Hash } from 'core/objects';
 

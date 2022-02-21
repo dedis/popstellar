@@ -1,6 +1,6 @@
 import { KeyPairStore } from 'core/keypair';
 import { Channel, Hash } from 'core/objects';
-import { publish } from 'core/network/JsonRpcApi';
+import { publish } from 'core/network';
 
 import { WitnessMessage } from './messages';
 
