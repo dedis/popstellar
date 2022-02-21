@@ -27,7 +27,7 @@ public class UITestUtils {
    * @param args arguments to the resource
    */
   public static void assertToastIsShown(@StringRes int resId, Object... args) {
-    assertThat("No toast have been displayed", ShadowToast.getLatestToast(), notNullValue());
+    assertThat("No toast was displayed", ShadowToast.getLatestToast(), notNullValue());
 
     String expected = ApplicationProvider.getApplicationContext().getString(resId, args);
     assertEquals(expected, ShadowToast.getTextOfLatestToast());
