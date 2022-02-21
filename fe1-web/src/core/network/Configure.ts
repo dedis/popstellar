@@ -13,7 +13,6 @@ export function configureNetwork(
   messageRegistry: MessageRegistry,
   keyPairRegistry: KeyPairRegistry,
 ) {
-  const networkManager = getNetworkManager();
-  configureIngestion(messageRegistry, networkManager.setRpcHandler);
+  configureIngestion(messageRegistry, (h) => getNetworkManager().setRpcHandler(h));
   configureJsonRpcApi(messageRegistry, keyPairRegistry);
 }

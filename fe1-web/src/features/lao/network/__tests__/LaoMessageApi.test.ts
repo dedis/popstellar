@@ -20,7 +20,6 @@ import * as msApi from '../LaoMessageApi';
 jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;
 
-
 const checkDataCreateLao = (obj: MessageData) => {
   expect(obj.object).toBe(ObjectType.LAO);
   expect(obj.action).toBe(ActionType.CREATE);
