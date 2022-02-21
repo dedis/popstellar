@@ -13,6 +13,7 @@
     "noEmit": true,                           /* Do not emit outputs. */
     "isolatedModules": true,                  /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
     "strict": true,                           /* Enable all strict type-checking options. */
+    "strictNullChecks": true,
     "moduleResolution": "node",               /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
     "baseUrl": "./src",                       /* Base directory to resolve non-absolute module names. */
     "paths": {                                /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
@@ -44,6 +45,7 @@
     ".expo",
     "coverage",
     "dist",
+    "tsdocs",
     ".depcruise.js",
     "babel.config.js",
     "metro.config.js",
@@ -51,7 +53,7 @@
     "webpack.config.js"
   ],
   "typedocOptions": {
-    "entryPoints": ["./App.tsx"],
-    "out": "tsdocs"
+    "entryPoints": ["./src/App.tsx"],
+    "out": "tsdocs",
   }
 }

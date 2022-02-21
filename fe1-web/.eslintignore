@@ -2,6 +2,7 @@ node_modules
 dist
 coverage
 web-build
+tsdocs
 .eslint.react-native-config.js
 .eslintrc.js
 .expo

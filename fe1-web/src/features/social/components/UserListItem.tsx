@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
 const UserListItem = (props: IPropTypes) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const { currentUserPublicKey, laoId, publicKey } = props;
-  const navigation = useNavigation();
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
   const toast = useToast();
 
   const followUser = () => {

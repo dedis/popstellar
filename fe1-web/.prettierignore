@@ -5,6 +5,7 @@ coverage
 tsdocs
 web-build
 dist
+tsdocs
 .eslint.react-native-config.js
 .eslintrc.js
 .depcruise.js

@@ -77,8 +77,8 @@ const EventElection = (props: IPropTypes) => {
         election.id.toString(),
         election.questions[idx].id,
         concatenateIndexes(item),
-      ),
-      question: new Hash(election.questions[idx].id),
+      ).valueOf(),
+      question: election.questions[idx].id,
       vote: item,
     }));
     return votes;
