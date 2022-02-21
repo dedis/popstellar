@@ -65,7 +65,7 @@ const initializeChecks = () => {
     const expected = Hash.fromStringArray(
       'M',
       OpenedLaoStore.get().id.toString(),
-      OpenedLaoStore.get().creation.toString(),
+      data.creation.toString(),
       data.name,
     );
     expect(data.id).toEqual(expected);
