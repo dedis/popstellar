@@ -5,7 +5,6 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.Signature;
-import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
 
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
@@ -18,6 +17,8 @@ import java.util.Random;
  *
  * <p>This uses a fixed seed. So two test runs will have the same generated data This is important
  * when trying to extract the cause ofa failing test
+ *
+ * <p>Do not use this outside of tests, this is extremely unsecure
  */
 public class Base64DataUtils {
 
@@ -52,15 +53,7 @@ public class Base64DataUtils {
 
   /** @return a pseudo randomly generated valid Ed25519 keypair */
   public static KeyPair generateKeyPair() {
-    byte[] privateKey = new byte[KEY_LENGTH];
-    RANDOM.nextBytes(privateKey);
-
-    Ed25519PrivateKeyParameters privateKeyParameters =
-        new Ed25519PrivateKeyParameters(privateKey, 0);
-    Ed25519PublicKeyParameters publicKeyParameters = privateKeyParameters.generatePublicKey();
-
-    return new KeyPair(
-        new PlainPrivateKey(privateKey), new PublicKey(publicKeyParameters.getEncoded()));
+    return generatePoPToken();
   }
 
   /** @return a pseudo randomly generated valid Ed25519 keypair */
