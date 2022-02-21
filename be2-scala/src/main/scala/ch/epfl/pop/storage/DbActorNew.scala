@@ -1,12 +1,13 @@
 package ch.epfl.pop.storage
 
-import akka.actor.{Actor, ActorLogging, ActorRef}
+import akka.actor.{Actor, ActorLogging, ActorRef, Status}
 import akka.event.LoggingReceive
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.PubSubMediator
 import ch.epfl.pop.pubsub.graph.ErrorCodes
+import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActorNew._
 
 import scala.util.{Failure, Success, Try}
@@ -113,9 +114,7 @@ case class DbActorNew(
   private def createChannel(channel: Channel, objectType: ObjectType.ObjectType): Unit = {
     if (!checkChannelExistence(channel)) {
       val pair = channel.toString -> ChannelData(objectType, List.empty).toJsonString
-      Try(storage.write(pair)).recover(
-        ex => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage)
-      )
+      storage.write(pair)
     }
   }
 
@@ -142,7 +141,7 @@ case class DbActorNew(
     // creating ChannelData from the filtered input
     val mapped: List[(String, String)] = filtered.map { case (c, o) => (c.toString, ChannelData(o, List.empty).toJsonString) }
 
-    Try(storage.write(mapped : _*)).recover(ex => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, ex.getMessage))
+    Try(storage.write(mapped : _*))
   }
 
   private def checkChannelExistence(channel: Channel): Boolean = {
@@ -171,69 +170,68 @@ case class DbActorNew(
   }
 
 
-  // TODO REFACTORING TUOMAS -- the following Failure cases are incomplete! Link them with the failed future once you have finished with Awaits :)
   override def receive: Receive = LoggingReceive {
-    case DbActorNew.Write(channel, message) =>
+    case Write(channel, message) =>
       log.info(s"Actor $self (db) received a WRITE request on channel '$channel'")
       Try(write(channel, message)) match {
         case Success(_) => sender() ! DbActorAck()
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case Read(channel, messageId) =>
       log.info(s"Actor $self (db) received a READ request for message_id '$messageId' from channel '$channel'")
       Try(read(channel, messageId)) match {
         case Success(opt) => sender() ! DbActorReadAck(opt)
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadChannelData(channel) =>
       log.info(s"Actor $self (db) received a ReadChannelData request from channel '$channel'")
       Try(readChannelData(channel)) match {
         case Success(channelData) => sender() ! DbActorReadChannelDataAck(channelData)
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ReadLaoData(channel) =>
       log.info(s"Actor $self (db) received a ReadLaoData request")
       Try(readLaoData(channel)) match {
         case Success(laoData) => sender() ! DbActorReadLaoDataAck(laoData)
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteLaoData(channel, message) =>
       log.info(s"Actor $self (db) received a WriteLaoData request for channel $channel")
       Try(writeLaoData(channel, message)) match {
-        case Success(laoData) => sender() ! DbActorAck()
-        case Failure(_) =>
+        case Success(_) => sender() ! DbActorAck()
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case Catchup(channel) =>
       log.info(s"Actor $self (db) received a CATCHUP request for channel '$channel'")
       Try(catchupChannel(channel)) match {
         case Success(messages) => sender() ! DbActorCatchupAck(messages)
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case WriteAndPropagate(channel, message) =>
       log.info(s"Actor $self (db) received a WriteAndPropagate request on channel '$channel'")
       Try(writeAndPropagate(channel, message)) match {
         case Success(_) => sender() ! DbActorAck()
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case CreateChannel(channel, objectType) =>
       log.info(s"Actor $self (db) received an CreateChannel request for channel '$channel' of type '$objectType'")
       Try(createChannel(channel, objectType)) match {
         case Success(_) => sender() ! DbActorAck()
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case CreateChannelsFromList(list) =>
       log.info(s"Actor $self (db) received a CreateChannelsFromList request for list $list")
       Try(createChannels(list)) match {
         case Success(_) => sender() ! DbActorAck()
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case ChannelExists(channel) =>
@@ -241,26 +239,28 @@ case class DbActorNew(
       if (checkChannelExistence(channel)) {
         sender() ! DbActorAck()
       } else {
-        ()
+        sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"channel '$channel' does not exist in db"))
       }
 
     case AddWitnessSignature(messageId, signature) =>
       log.info(s"Actor $self (db) received an AddWitnessSignature request for message_id '$messageId'")
       Try(addWitnessSignature(messageId, signature)) match {
         case Success(_) => sender() ! DbActorAck()
-        case Failure(_) =>
+        case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
     case m@_ =>
       log.info(s"Actor $self (db) received an unknown message")
-      throw DbActorNAckException(
-        ErrorCodes.SERVER_ERROR.id,
-        s"database actor received a message '$m' that it could not recognize"
-      )
+      sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
   }
 }
 
 object DbActorNew {
+
+  final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
+
+  def getInstance: AskableActorRef = INSTANCE
+
   // DbActor Events correspond to messages the actor may receive
   sealed trait Event
 

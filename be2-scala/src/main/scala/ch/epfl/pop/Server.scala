@@ -12,8 +12,8 @@ import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
 import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
-import ch.epfl.pop.pubsub.graph.DbActor
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
+import ch.epfl.pop.storage.DbActorNew
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -45,7 +45,7 @@ object Server {
       options.createIfMissing(true)
 
       val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-      val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef)), "DbActor")
+      val dbActorRef: AskableActorRef = system.actorOf(Props(DbActorNew(pubSubMediatorRef)), "DbActorNew")
       val messageRegistry: MessageRegistry = MessageRegistry()
 
       def publishSubscribeRoute: RequestContext => Future[RouteResult] = path(config.path) {

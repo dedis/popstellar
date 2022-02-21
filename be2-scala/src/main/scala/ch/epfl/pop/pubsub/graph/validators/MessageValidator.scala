@@ -6,9 +6,11 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActorNew
 
 import scala.concurrent.Await
+import scala.util.Success
 
 
 object MessageValidator extends ContentValidator with AskPatternConstants {
@@ -47,10 +49,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    * @param channel the channel we want the LaoData for
    * @param dbActor the AskableActorRef we use (by default the main DbActor, obtained through getInstance)
    */
-  def validateAttendee(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
-    val ask = dbActor ? DbActor.ReadLaoData(channel)
-    Await.result(ask, duration) match {
-      case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.attendees.contains(sender)
+  def validateAttendee(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActorNew.getInstance): Boolean = {
+    val ask = dbActor ? DbActorNew.ReadLaoData(channel)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActorNew.DbActorReadLaoDataAck(laoData)) => laoData.attendees.contains(sender)
       case _ => false
     }
   }
@@ -62,10 +64,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    * @param channel the channel we want the LaoData for
    * @param dbActor the DbActor we use (by default the main one, obtained through getInstance)
    */
-  def validateOwner(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
-    val ask = dbActor ? DbActor.ReadLaoData(channel)
-    Await.result(ask, duration) match {
-      case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.owner == sender
+  def validateOwner(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActorNew.getInstance): Boolean = {
+    val ask = dbActor ? DbActorNew.ReadLaoData(channel)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActorNew.DbActorReadLaoDataAck(laoData)) => laoData.owner == sender
       case _ => false
     }
   }
@@ -77,10 +79,10 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    * @param channel           the channel we want to check
    * @param dbActor           the DbActor we use (by default the main one, obtained through getInstance)
    */
-  def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
-    val ask = dbActor ? DbActor.ReadChannelData(channel)
-    Await.result(ask, duration) match {
-      case DbActor.DbActorReadChannelDataAck(Some(channelData)) => channelData.channelType == channelObjectType
+  def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActorNew.getInstance): Boolean = {
+    val ask = dbActor ? DbActorNew.ReadChannelData(channel)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActorNew.DbActorReadChannelDataAck(channelData)) => channelData.channelType == channelObjectType
       case _ => false
     }
   }

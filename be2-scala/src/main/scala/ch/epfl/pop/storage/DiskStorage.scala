@@ -81,7 +81,7 @@ class DiskStorage(val databaseFolder: String = DiskStorage.DATABASE_FOLDER) exte
 }
 
 object DiskStorage {
-  val DATABASE_FOLDER: String = "database-new"
+  val DATABASE_FOLDER: String = "database"
 
   private val CACHE_SIZE: Long = 64 * 1024 * 1024 // 64 MB
 }

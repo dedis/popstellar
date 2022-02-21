@@ -6,11 +6,12 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActorNew
 import spray.json._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
 
 object SocialMediaHandler extends MessageHandler {
   final lazy val handlerInstance = new SocialMediaHandler(super.dbActor)
@@ -44,21 +45,23 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
    * @param broadcastChannel : the Channel in which we broadcast
    */
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
-    val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
-    Await.result(askLaoData, duration) match {
-      case DbActor.DbActorReadLaoDataAck(Some(laoData)) =>
+    val askLaoData = dbActor ? DbActorNew.ReadLaoData(rpcMessage.getParamsChannel)
+
+    Await.ready(askLaoData, duration).value.get match {
+      case Success(DbActorNew.DbActorReadLaoDataAck(laoData)) =>
         val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
         val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
         //FIXME: once consensus is implemented, fix the WitnessSignaturePair list handling
         val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
-        val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)).map {
-          case DbActor.DbActorWriteAck() => Left(rpcMessage)
-          case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDatabase, rpcMessage.id))
+
+        val askWritePropagate = dbActor ? DbActorNew.WriteAndPropagate(broadcastChannel, broadcastMessage)
+        Await.ready(askWritePropagate, duration).value.get match {
+          case Success(_) => Left(rpcMessage)
+          case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : ${ex.getMessage}", rpcMessage.getId))
         }
-        Await.result(ask, duration)
-      case DbActor.DbActorReadLaoDataAck(None) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"Can't fetch LaoData for channel ${rpcMessage.getParamsChannel}.", rpcMessage.id))
-      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
+
+      case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : ${ex.getMessage}", rpcMessage.getId))
+      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
   }
 

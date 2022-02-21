@@ -8,52 +8,52 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, MethodType}
 import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.PubSubMediator._
-import ch.epfl.pop.pubsub.graph.DbActor.DbActorAck
+import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage}
+import ch.epfl.pop.storage.DbActorNew
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.Success
 
 class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
 
   // Map from channels to the collection of actors subscribed to the channel
   private var channelMap: mutable.Map[Channel, mutable.Set[ActorRef]] = mutable.Map.empty
-  lazy val dbActor: AskableActorRef = DbActor.getInstance
+  lazy val dbActor: AskableActorRef = DbActorNew.getInstance
 
 
   private def subscribeTo(channel: Channel, clientActorRef: ActorRef): Future[PubSubMediatorMessage] = {
-    val ask: Future[PubSubMediatorMessage] = (dbActor ? DbActor.ChannelExists(channel)).map {
+    val askChannelExistence = dbActor ? DbActorNew.ChannelExists(channel)
+    askChannelExistence.transformWith {
       // if the channel exists in db, we can start thinking about subscribing a client to it
-      case DbActorAck() => channelMap.get(channel) match {
+      case Success(_) => channelMap.get(channel) match {
         // if we have people already subscribed to said channel
         case Some(set) =>
           if (set.contains(clientActorRef)) {
             val reason: String = s"Actor $clientActorRef was already subscribed to channel '$channel'"
             log.info(reason)
-            SubscribeToNAck(channel, reason)
+            Future(SubscribeToNAck(channel, reason))
           } else {
             log.info(s"Subscribing $clientActorRef to channel '$channel'")
             set += clientActorRef
-            SubscribeToAck(channel)
+            Future(SubscribeToAck(channel))
           }
 
         // if we have no one subscribed to said channel
         case _ =>
           log.info(s"Subscribing $clientActorRef to channel '$channel'")
           channelMap = channelMap ++ List(channel -> mutable.Set(clientActorRef))
-          SubscribeToAck(channel)
+          Future(SubscribeToAck(channel))
       }
 
       // db doesn't recognize the channel, thus mediator cannot subscribe anyone to a non existing channel
       case _ =>
         val reason: String = s"Channel '$channel' doesn't exist in db"
         log.info(reason)
-        SubscribeToNAck(channel, reason)
+        Future(SubscribeToNAck(channel, reason))
     }
-
-    ask
   }
 
   private def unsubscribeFrom(channel: Channel, clientActorRef: ActorRef): PubSubMediatorMessage = channelMap.get(channel) match {

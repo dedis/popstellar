@@ -6,11 +6,12 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
-import ch.epfl.pop.pubsub.graph.DbActor._
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActorNew
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
 
 /**
  * RollCallHandler object uses the db instance from the MessageHandler (i.e PublishSubscribe)
@@ -61,15 +62,18 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           case Some(message: Message) =>
             val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
 
-            //Creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a GraphMessage
+            // creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a GraphMessage
             def createAttendeeChannels(attendees: List[PublicKey], rpcMessage: JsonRpcRequest): GraphMessage = {
-              val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map(attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP))
-              val askCreateChannels: Future[GraphMessage] = (dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)).map {
-                case DbActorAck() => Left(rpcMessage)
-                case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-                case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
+              val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map {
+                attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP)
               }
-              Await.result(askCreateChannels, duration)
+
+              val askCreateChannels = dbActor ? DbActorNew.CreateChannelsFromList(listAttendeeChannels)
+
+              Await.ready(askCreateChannels, duration).value.get match {
+                case Success(_) => Left(rpcMessage)
+                case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : ${ex.getMessage}", rpcMessage.getId))
+              }
             }
 
             val laoChannel: Option[Base64Data] = rpcMessage.getParamsChannel.decodeChannelLaoId
@@ -80,22 +84,14 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 rpcMessage.id
               ))
               case Some(_) =>
-                val askOldData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
+                val combined = for {
+                  _ <- dbActor ? DbActorNew.ReadLaoData(rpcMessage.getParamsChannel)
+                  _ <- dbActor ? DbActorNew.Write(rpcMessage.getParamsChannel, message)
+                } yield ()
 
-                Await.result(askOldData, duration) match {
-                  case DbActorReadLaoDataAck(Some(_)) =>
-                    val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
-                      case DbActorWriteAck() => createAttendeeChannels(data.attendees, rpcMessage)
-                      case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-                      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
-                    }
-                    Await.result(ask, duration)
-                  case _ => Right(PipelineError(
-                    ErrorCodes.SERVER_ERROR.id,
-                    s"There is an issue with the data of the LAO",
-                    rpcMessage.id
-                  ))
-
+                Await.ready(combined, duration).value.get match {
+                  case Success(_) => createAttendeeChannels(data.attendees, rpcMessage)
+                  case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : ${ex.getMessage}", rpcMessage.getId))
                 }
             }
           case _ => Right(PipelineError(

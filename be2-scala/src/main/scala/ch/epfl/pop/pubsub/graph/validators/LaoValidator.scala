@@ -6,10 +6,11 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.objects.{Channel, Hash}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActorNew
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
+import scala.util.{Failure, Success}
 
 
 case object LaoValidator extends MessageDataContentValidator {
@@ -77,8 +78,11 @@ case object LaoValidator extends MessageDataContentValidator {
         val channel: Channel = rpcMessage.getParamsChannel
 
         // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
-        val ask: Future[GraphMessage] = (dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)).map {
-          case DbActor.DbActorReadAck(Some(retrievedMessage)) =>
+        val askLaoMessage = dbActor ? DbActorNew.Read(rpcMessage.getParamsChannel, ???)
+        Await.ready(askLaoMessage, duration).value.get match {
+          case Success(DbActorNew.DbActorReadAck(None)) =>
+            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
+          case Success(DbActorNew.DbActorReadAck(Some(retrievedMessage))) =>
             val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
             // Calculate expected hash
             val expectedHash: Hash = Hash.fromStrings(
@@ -96,16 +100,9 @@ case object LaoValidator extends MessageDataContentValidator {
             } else {
               Left(rpcMessage)
             }
-
-          case DbActor.DbActorReadAck(None) =>
-            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "No CreateLao message associated found", rpcMessage.id))
-          case DbActor.DbActorNAck(code, description) =>
-            Right(PipelineError(code, description, rpcMessage.id))
-          case _ =>
-            Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
+          case Success(reply) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+          case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : ${ex.getMessage}", rpcMessage.getId))
         }
-
-        Await.result(ask, duration)
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))
     }

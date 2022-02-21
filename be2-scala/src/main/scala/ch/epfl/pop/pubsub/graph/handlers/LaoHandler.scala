@@ -4,40 +4,51 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
-import ch.epfl.pop.model.objects.{Channel, Hash}
-import ch.epfl.pop.pubsub.graph.DbActor.{DbActorAck, DbActorNAck, DbActorWriteAck}
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActorNew
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
 
 case object LaoHandler extends MessageHandler {
-
-  private val unknownAnswerDB: String = "Database actor returned an unknown answer"
 
   def handleCreateLao(rpcMessage: JsonRpcRequest): GraphMessage = {
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateLao = message.decodedData.get.asInstanceOf[CreateLao]
+
         // we are using the lao id instead of the message_id at lao creation
-        val channel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
-        val socialChannel: Channel = Channel(s"$channel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
-        val reactionChannel: Channel = Channel(s"$channel${Channel.REACTIONS_CHANNEL_PREFIX}")
-        val askCreate = dbActor ? DbActor.CreateChannelsFromList(List(
-          (channel, ObjectType.LAO),
-          (socialChannel, ObjectType.CHIRP),
-          (reactionChannel, ObjectType.REACTION)
-        ))
-        Await.result(askCreate, duration) match {
-          case DbActorAck() =>
-            val ask = dbActor ? DbActor.Write(channel, message)
-            Await.result(ask, duration) match {
-              case DbActorWriteAck() => Left(rpcMessage)
-              case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-              case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
+        val laoChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
+        val socialChannel: Channel = Channel(s"$laoChannel${Channel.SOCIAL_MEDIA_CHIRPS_PREFIX}")
+        val reactionChannel: Channel = Channel(s"$laoChannel${Channel.REACTIONS_CHANNEL_PREFIX}")
+
+        val combined = for {
+          // check whether the lao already exists in db
+          _ <- {
+            (dbActor ? DbActorNew.ChannelExists(laoChannel)).transformWith {
+              case Success(_) => Future { throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "lao already exists in db") }
+              case _ => Future { () }
             }
-          case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswerDB, rpcMessage.id))
+          }
+          // create lao channels
+          _ <- dbActor ? DbActorNew.CreateChannelsFromList(List(
+            (laoChannel, ObjectType.LAO),
+            (socialChannel, ObjectType.CHIRP),
+            (reactionChannel, ObjectType.REACTION)
+          ))
+          // write lao creation message
+          _ <- dbActor ? DbActorNew.Write(laoChannel, message)
+          // write lao data
+          _ <- dbActor ? DbActorNew.WriteLaoData(laoChannel, message)
+        } yield ()
+
+        Await.ready(combined, duration).value.get match {
+          case Success(_) => Left(rpcMessage)
+          case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : ${ex.getMessage}", rpcMessage.getId))
         }
+
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
         s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",

@@ -5,10 +5,12 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
 import ch.epfl.pop.model.objects.{Channel, Hash}
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActorNew
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.util.{Failure, Success}
 
 object ElectionHandler extends MessageHandler {
 
@@ -18,16 +20,15 @@ object ElectionHandler extends MessageHandler {
     val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
-    val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)).map {
-      case DbActor.DbActorWriteAck() => Await.result((dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)).map {
-        case DbActor.DbActorAck() => Left(rpcMessage)
-        case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-      }, duration)
-      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
-    }
+    val combined = for {
+      _ <- dbActor ? DbActorNew.Write(rpcMessage.getParamsChannel, message)
+      _ <- dbActor ? DbActorNew.CreateChannel(electionChannel, ObjectType.ELECTION)
+    } yield ()
 
-    Await.result(ask, duration)
+    Await.ready(combined, duration).value.get match {
+      case Success(_) => Left(rpcMessage)
+      case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : ${ex.getMessage}", rpcMessage.getId))
+    }
   }
 
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
