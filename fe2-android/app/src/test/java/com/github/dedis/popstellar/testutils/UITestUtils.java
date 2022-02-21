@@ -42,7 +42,7 @@ public class UITestUtils {
    */
   public static <D extends Dialog> D getLastDialog(Class<D> type) {
     Dialog dialog = ShadowDialog.getLatestDialog();
-    assertThat("No dialog have been displayed", dialog, notNullValue());
+    assertThat("No dialog has been displayed", dialog, notNullValue());
     assertThat("The dialog is not a " + type.getSimpleName(), dialog, is(instanceOf(type)));
     //noinspection unchecked
     return (D) dialog;
