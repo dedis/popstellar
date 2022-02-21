@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -99,7 +100,7 @@ public class KeyManagerTest {
     assertEquals(token, manager.getValidPoPToken(lao, rollCall1));
 
     // make sure that rollcall1 was taken and not rollcall2 as the oldest is rollcall 1
-    verify(wallet).recoverKey(eq(lao.getId()), eq(rollCall1.getId()), any());
+    verify(wallet, atLeast(1)).recoverKey(eq(lao.getId()), eq(rollCall1.getId()), any());
   }
 
   @Test
