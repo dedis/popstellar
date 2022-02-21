@@ -1,3 +1,10 @@
+### Warning: this is a working document, partially superseded by the introduction of dependency-cruiser.
+
+If you don't know what this is about, it's probably safe for you to ignore it :-)
+
+-----
+
+
 # Feature dependencies
 
 Here is the list of dependency between features that will need to be resolved in
