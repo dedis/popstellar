@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -54,7 +54,7 @@ const SocialHome = (props: IPropTypes) => {
     });
   };
 
-  const chirps = makeChirpsList();
+  const chirps = useMemo(makeChirpsList, []);
   const chirpList = useSelector(chirps);
 
   const renderChirpState = ({ item }: ListRenderItemInfo<ChirpState>) => (

@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import STRINGS from 'resources/strings';
 import { gray, popBlue } from 'core/styles/colors';
@@ -50,7 +50,7 @@ const iconSelector =
 const SocialMediaNavigation = () => {
   const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
 
-  const laoSelect = makeCurrentLao();
+  const laoSelect = useMemo(makeCurrentLao, []);
   const lao = useSelector(laoSelect);
 
   if (lao === undefined) {

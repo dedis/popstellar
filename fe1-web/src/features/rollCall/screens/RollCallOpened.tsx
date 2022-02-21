@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import QrReader from 'react-qr-reader';
 import { Badge } from 'react-native-elements';
@@ -44,7 +44,7 @@ const RollCallOpened = () => {
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
-  const laoSelect = makeCurrentLao();
+  const laoSelect = useMemo(makeCurrentLao, []);
   const lao = useSelector(laoSelect);
 
   if (!lao) {

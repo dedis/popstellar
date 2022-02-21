@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
@@ -23,7 +23,7 @@ import eventViewStyles from '../styles/eventViewStyles';
 const Event = (props: IPropTypes) => {
   const { event } = props;
 
-  const isOrganizerSelect = makeIsLaoOrganizer();
+  const isOrganizerSelect = useMemo(makeIsLaoOrganizer, []);
   const isOrganizer = useSelector(isOrganizerSelect);
 
   const buildEvent = () => {
