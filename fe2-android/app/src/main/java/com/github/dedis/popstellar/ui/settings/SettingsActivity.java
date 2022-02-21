@@ -11,8 +11,8 @@ import com.github.dedis.popstellar.utility.ActivityUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint
-public class SettingsActivity extends AppCompatActivity {
+@AndroidEntryPoint(AppCompatActivity.class)
+public class SettingsActivity extends Hilt_SettingsActivity {
 
   @Override
   public void onCreate(Bundle savedInstanceState) {

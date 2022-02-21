@@ -14,8 +14,8 @@ import com.github.dedis.popstellar.databinding.SocialMediaProfileFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment of the user's profile page */
-@AndroidEntryPoint
-public class SocialMediaProfileFragment extends Fragment {
+@AndroidEntryPoint(Fragment.class)
+public class SocialMediaProfileFragment extends Hilt_SocialMediaProfileFragment {
 
   public static SocialMediaProfileFragment newInstance() {
     return new SocialMediaProfileFragment();

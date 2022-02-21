@@ -21,8 +21,8 @@ import com.github.dedis.popstellar.ui.detail.event.AbstractEventCreationFragment
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment that shows up when user wants to create a Roll-Call Event */
-@AndroidEntryPoint
-public final class RollCallEventCreationFragment extends AbstractEventCreationFragment {
+@AndroidEntryPoint(AbstractEventCreationFragment.class)
+public final class RollCallEventCreationFragment extends Hilt_RollCallEventCreationFragment {
 
   public static final String TAG = RollCallEventCreationFragment.class.getSimpleName();
 
