@@ -79,6 +79,7 @@ case object LaoValidator extends MessageDataContentValidator {
 
         // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
         val askLaoMessage = dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)
+
         Await.ready(askLaoMessage, duration).value match {
           case Some(Success(DbActor.DbActorReadAck(None))) =>
             Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
