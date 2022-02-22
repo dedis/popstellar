@@ -48,7 +48,7 @@ trait MessageHandler extends AskPatternConstants {
     val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, m)
     askWritePropagate.transformWith {
       case Success(_) => Future(Left(rpcMessage))
-      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write & propagate message $message", rpcMessage.id)))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $message", rpcMessage.id)))
     }
   }
 }

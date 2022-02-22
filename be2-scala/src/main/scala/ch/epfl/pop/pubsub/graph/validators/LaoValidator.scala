@@ -81,7 +81,7 @@ case object LaoValidator extends MessageDataContentValidator {
         val askLaoMessage = dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)
         Await.ready(askLaoMessage, duration).value.get match {
           case Success(DbActor.DbActorReadAck(None)) =>
-            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
+            Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no associated CreateLao message found", rpcMessage.id))
           case Success(DbActor.DbActorReadAck(Some(retrievedMessage))) =>
             val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
             // Calculate expected hash
