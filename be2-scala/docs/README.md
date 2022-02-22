@@ -162,42 +162,45 @@ Each additional message constraint (e.g. in this particular case, "start_time" s
 
 We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to store messages "inside" channels. A channel is represented with a "path name" style prefix of structure `root/lao_id/...`.
 
-Multiple messages may then be stored "inside" each channel (all within one single database file). Since leveldb is a key-value database, we are using `channel/message_id` as key and the corresponding `message` (in its json representation) as value.
+Multiple messages may then be stored "inside" each channel (all within one single database file). Since leveldb is a key-value database, we are using `channel#message_id` as key and the corresponding `message` (in its json representation) as value.
+
+Summary of the keys used to retrieve data:
+1. for a message: `channel#message_id`
+2. for ChannelData: `channel`
+3. for LaoData: `root/lao_id#laodata`
+
+We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
+
+The database handling is separated in two layers: we have the external interface, used where needed (for example in the handlers), provided by a special unique database actor (`DbActor`) using standard [akka ask pattern](https://doc.akka.io/docs/akka/current/typed/interaction-patterns.html#request-response). `DbActor` then uses an object implementing the `Storage` trait (`DiskStorage` in our case), which provides only four simple operations:
 
 ```scala
-private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
-
-val messageId: Hash = message.message_id
-
-Try(channelDb.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)) match {
-	case Success(_) =>
-		log.info(s"Actor $self (db) wrote message_id '$messageId' on channel '$channel'")
-		sender ! DbActorWriteAck
-	case Failure(exception) =>
-		log.info(s"Actor $self (db) encountered a problem while writing message_id '$messageId' on channel '$channel'")
-		sender ! DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
-}
+def read(key: String): Option[String]
+def write(keyValues: (String, String)*): Unit
+def delete(key: String): Unit
+def close(): Unit
 ```
 
-However, this is only a simplified example, because in our actual structure, we also write the message_id to the ChannelData stored at `channel` and some messages also modify the LaoData stored at `root/lao_id` and for that purpose, we use a WriteBatch (also from [leveldb](https://github.com/codeborui/leveldb-scala)) to be able to store all that information atomically and prevent incoherences inside the database due to write errors.
+As we can write multiple elements in the database in a single request, the `DiskStorage` uses a WriteBatch (also from [leveldb](https://github.com/codeborui/leveldb-scala)) to be able to store all that information atomically and prevent incoherences inside the database due to write errors.
 
 ```scala
 val batch: WriteBatch = db.createWriteBatch()
-batch.put(channel.toString.getBytes, ChannelData.buildFromJson(json).addMessage(messageId).toJsonString.getBytes)
-batch.put(generateMessageKey(channel, messageId).getBytes, message.toJsonString.getBytes)
-Try(db.write(batch)) match {
-        case Success(_) =>
-          log.info(s"Actor $self (db) wrote batch and message_id '$messageId' on channel '$channel'") //change with object and objectId/name/smth like that
-          DbActorWriteAck()
-        case Failure(exception) =>
-          log.error(s"Actor $self (db) encountered a problem while writing message_id '$messageId' and batch on channel '$channel' because of the batch write")
-          DbActorNAck(ErrorCodes.SERVER_ERROR.id, exception.getMessage)
+    try {
+      for (kv <- keyValues) {
+        batch.put(kv._1.getBytes(StandardCharsets.UTF_8), kv._2.getBytes(StandardCharsets.UTF_8))
       }
+      db.write(batch)
+    } catch {
+      case ex: Throwable => throw DbActorNAckException(
+        ErrorCodes.SERVER_ERROR.id,
+        s"could not write ${keyValues.size} elements to DiskStorage : ${ex.getMessage}"
+      )
+    } finally {
+      batch.close()
+    }
 ```
-This example has also been simplified a bit to showcase the basic idea, the actual implementation can be found in `pubsub/graph/DbActor.scala`.
+This example has been extracted from `pubsub/storage/DiskStorage.scala`.
 
-
-You may store/fetch data on/from the database using a special unique database actor (`DbActor`) using standard [akka ask pattern](https://doc.akka.io/docs/akka/current/typed/interaction-patterns.html#request-response). Akka messages `DbActor` understands are defined in `DbActor.scala:Event`, they include:
+Akka messages `DbActor` understands are defined in `DbActor.scala:Event`, they include:
 
 ```scala
 // DbActor Events correspond to messages the actor may receive
@@ -216,37 +219,48 @@ sealed trait DbActorMessage
 final case class DbActorWriteAck() extends DbActorMessage
 final case class DbActorReadAck(message: Option[Message]) extends DbActorMessage
 final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
-final case class DbActorNAck(code: Int, description: String) extends DbActorMessage
+final case class DbActorAck() extends DbActorMessage
+```
+
+When the `DbActor` fails to complete an operation, instead of sending a `DbActorMessage`, a function will throw a `DbActorNAckException` and it will be propagated inside the answer wrapped in a `Status.Failure(exception)`.
+
+As a simplified example, we can look at the Write event from `DbActor`, where we use `this.synchronized` to avoid concurrency issues for multiple Writes. We see that we write both the message on the channel and the message_id in the ChannelData object (stored at 'channel').
+
+```scala
+this.synchronized {
+  val channelData: ChannelData = readChannelData(channel)
+  storage.write(
+    (channel.toString, channelData.addMessage(message.message_id).toJsonString),
+    (s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
+  )
+}
 ```
 
 Here's an example (shamefully stolen from `MessageHandler.scala`) showing the power of `DbActor` coupled with Scala [Future](https://www.scala-lang.org/files/archive/api/2.13.1/scala/concurrent/Future.html)
 
 ```scala
-val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(channel, message)).map {
-	case DbActorWriteAck => Left(rpcMessage)
-	case DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-	case _ => Right(PipelineError(
-    ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id)
-	)
+val askWrite = dbActor ? DbActor.Write(rpcMessage.getParamsChannel, m)
+askWrite.transformWith {
+  case Success(_) => Future(Left(rpcMessage))
+  case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $message", rpcMessage.id)))
 }
-
-// Await.result waits for <duration> for the future <ask> to complete. It returns the value contained by the future (here `GraphMessage`) if the latter is successful, or throws if the Future terminates without being successful (i.e. either Failure or Timeout)
-Await.result(ask, duration)
 ```
 
 There are also methods to read ChannelData for a given channel and LaoData for the Lao to which a channel belongs.
+We also have the possibility to modify the LaoData (stored at `root/lao_id#laodata`) with a separate event called `WriteLaoData`.
 
 ```scala
 final case class ReadLaoData(channel: Channel) extends Event
 final case class ReadChannelData(channel: Channel) extends Event
+final case class WriteLaoData(channel: Channel, message: Message) extends Event
 
-final case class DbActorReadChannelDataAck(channelData: Option[ChannelData]) extends DbActorMessage
-final case class DbActorReadLaoDataAck(laoData: Option[LaoData]) extends DbActorMessage
+final case class DbActorReadChannelDataAck(channelData: ChannelData) extends DbActorMessage
+final case class DbActorReadLaoDataAck(laoData: LaoData) extends DbActorMessage
 ```
 
 :warning: for now, the LaoData also stores the private key used by the Lao to sign broadcast messages, however, there is a security issue, as anyone able to use `ReadLaoData()` can therefore access the private key.
 
-For the Social Media functionality, each user has their own channel with the identifier `root/lao_id/pop_token` and each broadcast containing the message_id of a post will be written to `root/lao_id/posts`.
+For the Social Media functionality, each user has their own channel with the identifier `root/lao_id/own_pop_token` and each broadcast containing the message_id of a post will be written to `root/lao_id/posts`.
 
 
 
