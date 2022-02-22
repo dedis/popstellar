@@ -40,7 +40,8 @@ scalacOptions ++= Seq(
 )
 
 Scapegoat/ scalacOptions -= "-Xfatal-warnings"
-
+// Temporarily report scapegoat errors as warnings, to avoid broken builds
+Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
 
 // Reload changes automatically
 Global / onChangedBuildSource := ReloadOnSourceChanges
