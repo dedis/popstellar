@@ -34,24 +34,74 @@ case class DbActorNew(
     }
     createChannel(channel, _object)
 
-    val channelData: ChannelData = readChannelData(channel)
-    storage.write(
-      (channel.toString, channelData.addMessage(message.message_id).toJsonString),
-      (s"$channel:${message.message_id}", message.toJsonString)
-    )
+    this.synchronized{
+      val channelData: ChannelData = readChannelData(channel)
+      storage.write(
+        (channel.toString, channelData.addMessage(message.message_id).toJsonString),
+        (s"$channel${Channel.DATA_SEPARATOR}${message.message_id}", message.toJsonString)
+      )
+    }
   }
 
   @throws [DbActorNAckException]
-  private def read(channel: Channel, messageId: Hash): Option[Message] = ???
+  private def read(channel: Channel, messageId: Hash): Option[Message] = {
+    Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
+      case Success(Some(json)) => Some(Message.buildFromJson(json))
+      case Success(None) => None
+      case Failure(ex) => throw ex
+    }
+  }
 
   @throws [DbActorNAckException]
-  private def readChannelData(channel: Channel): ChannelData = ???
+  private def readChannelData(channel: Channel): ChannelData = {
+    Try(storage.read(channel.toString)) match {
+      case Success(Some(json)) => ChannelData.buildFromJson(json)
+      case Success(None) => throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"ChannelData for channel $channel not in the database")
+      case Failure(ex) => throw ex
+    }
+  }
 
   @throws [DbActorNAckException]
-  private def readLaoData(channel: Channel): LaoData = ???
+  private def readLaoData(channel: Channel): LaoData = {
+    Try(storage.read(generateLaoDataKey(channel))) match {
+      case Success(Some(json)) => LaoData.buildFromJson(json)
+      case Success(None) => LaoData()
+      case Failure(ex) => throw ex
+    }
+  }
 
   @throws [DbActorNAckException]
-  private def catchupChannel(channel: Channel): List[Message] = ???
+  private def writeLaoData(channel: Channel, message: Message): Unit = {
+    this.synchronized{
+      val laoData: LaoData = Try(readLaoData(channel)) match {
+        case Success(data) => data
+        case Failure(_) => LaoData()
+      }
+      val laoDataKey: String = generateLaoDataKey(channel)
+      storage.write(laoDataKey -> laoData.updateWith(message).toJsonString)
+    }
+  }
+
+  @throws [DbActorNAckException]
+  private def catchupChannel(channel: Channel): List[Message] = {
+
+    @scala.annotation.tailrec
+    def buildCatchupList(msgIds: List[Hash], acc: List[Message]): List[Message] = {
+      msgIds match {
+        case Nil => acc
+        case head :: tail =>
+          Try(read(channel, head)).recover(_ => None) match {
+            case Success(Some(msg)) => buildCatchupList(tail, msg :: acc)
+            case _ =>
+              log.error(s"/!\\ Critical error encountered: message_id '$head' is listed in channel '$channel' but not stored in db")
+              buildCatchupList(tail, acc)
+          }
+      }
+    }
+
+    val channelData: ChannelData = readChannelData(channel)
+    buildCatchupList(channelData.messages, Nil)
+  }
 
   @throws [DbActorNAckException]
   private def writeAndPropagate(channel: Channel, message: Message): Unit = {
@@ -110,6 +160,16 @@ case class DbActorNew(
     )
   }
 
+  @throws [DbActorNAckException]
+  private def generateLaoDataKey(channel: Channel): String = {
+    channel.decodeChannelLaoId match {
+      case Some(data) => s"${Channel.ROOT_CHANNEL_PREFIX}$data${Channel.LAO_DATA_LOCATION}"
+      case None =>
+        log.error(s"Actor $self (db) encountered a problem while decoding LAO channel from '$channel'")
+        throw DbActorNAckException(ErrorCodes.SERVER_ERROR.id, s"Could not extract the LAO id for channel $channel")
+    }
+  }
+
 
   // TODO REFACTORING TUOMAS -- the following Failure cases are incomplete! Link them with the failed future once you have finished with Awaits :)
   override def receive: Receive = LoggingReceive {
@@ -138,6 +198,13 @@ case class DbActorNew(
       log.info(s"Actor $self (db) received a ReadLaoData request")
       Try(readLaoData(channel)) match {
         case Success(laoData) => sender() ! DbActorReadLaoDataAck(laoData)
+        case Failure(_) =>
+      }
+
+    case WriteLaoData(channel, message) =>
+      log.info(s"Actor $self (db) received a WriteLaoData request for channel $channel")
+      Try(writeLaoData(channel, message)) match {
+        case Success(laoData) => sender() ! DbActorAck()
         case Failure(_) =>
       }
 
@@ -229,6 +296,14 @@ object DbActorNew {
    * the channel we need the LAO's data for
    */
   final case class ReadLaoData(channel: Channel) extends Event
+
+  /**
+   * Request to update the laoData of the LAO, with key laoId and given message
+   *
+   * @param channel the channel part of the LAO which data we need to update
+   * @param message the message we use to update it
+   */
+  final case class WriteLaoData(channel: Channel, message: Message) extends Event
 
   /**
    * Request to read all messages from a specific <channel>
