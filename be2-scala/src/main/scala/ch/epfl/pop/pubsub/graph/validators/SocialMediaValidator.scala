@@ -6,7 +6,8 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects.{Channel, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
-import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
 
 // Similarly to the handlers, we create a SocialMediaValidator object which creates a SocialMediaValidator class instance.
 // The default dbActorRef is used in the object, but the class can now be mocked with a custom dbActorRef for testing purposes.
