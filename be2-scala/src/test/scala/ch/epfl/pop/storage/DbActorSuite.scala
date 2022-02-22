@@ -233,7 +233,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val ask = dbActor ? DbActor.ChannelExists(Channel(CHANNEL_NAME))
 
     ScalaFutures.whenReady(ask.failed){
-      e => 
+      e =>
         e shouldBe a [DbActorNAckException]
     }
 
@@ -291,14 +291,14 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((laoDataKey, laoData.toJsonString))
-    val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
 
     // act
     dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall); sleep()
 
     // assert
     expectMsg(DbActor.DbActorAck())
-    storage.size should equal (1)
+    initialStorage.size should equal (1)
 
     val actualLaoData2: LaoData = LaoData.buildFromJson(initialStorage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
 
