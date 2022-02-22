@@ -8,10 +8,10 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
-case class DeleteChirp(
-                        chirp_id: Hash,
-                        timestamp: Timestamp
-                      ) extends MessageData {
+final case class DeleteChirp(
+                              chirp_id: Hash,
+                              timestamp: Timestamp
+                            ) extends MessageData {
   override val _object: ObjectType = ObjectType.CHIRP
   override val action: ActionType = ActionType.DELETE
 }

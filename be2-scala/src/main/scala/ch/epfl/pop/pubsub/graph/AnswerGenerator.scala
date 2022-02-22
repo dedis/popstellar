@@ -27,7 +27,7 @@ object AnswerGenerator extends AskPatternConstants {
   val generator: Flow[GraphMessage, GraphMessage, NotUsed] = answerGen.generator
 }
 
-sealed class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
+class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer
@@ -36,11 +36,11 @@ sealed class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternCons
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getParams match {
       case Catchup(channel) =>
         val askCatchup = dbActor ? DbActor.Catchup(channel)
-        Await.ready(askCatchup, duration).value.get match {
-          case Success(DbActor.DbActorCatchupAck(messages)) =>
+        Await.ready(askCatchup, duration).value match {
+          case Some(Success(DbActor.DbActorCatchupAck(messages))) =>
             val resultObject: ResultObject = new ResultObject(messages)
             Left(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
-          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))
+          case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))
           case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
         }
 

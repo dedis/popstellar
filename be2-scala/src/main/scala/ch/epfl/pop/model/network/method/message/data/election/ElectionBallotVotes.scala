@@ -4,10 +4,10 @@ import ch.epfl.pop.json.MessageDataProtocol._
 import ch.epfl.pop.model.network.Parsable
 import spray.json._
 
-case class ElectionBallotVotes(
-                                ballot_option: String,
-                                count: Int
-                              )
+final case class ElectionBallotVotes(
+                                      ballot_option: String,
+                                      count: Int
+                                    )
 
 object ElectionBallotVotes extends Parsable {
   def apply(

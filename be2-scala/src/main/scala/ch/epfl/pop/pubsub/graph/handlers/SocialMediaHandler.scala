@@ -26,7 +26,7 @@ object SocialMediaHandler extends MessageHandler {
   def handleDeleteReaction(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleDeleteReaction(rpcMessage)
 }
 
-sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
+class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   /**
    * Overrides default DbActor with provided parameter
@@ -47,8 +47,8 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
     val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
 
-    Await.ready(askLaoData, duration).value.get match {
-      case Success(DbActor.DbActorReadLaoDataAck(laoData)) =>
+    Await.ready(askLaoData, duration).value match {
+      case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) =>
         val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
         val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
         //FIXME: once consensus is implemented, fix the WitnessSignaturePair list handling
@@ -61,7 +61,7 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
           case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
         }
 
-      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
+      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
   }

@@ -8,11 +8,11 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
-case class ReopenRollCall(
-                           update_id: Hash,
-                           opens: Hash,
-                           opened_at: Timestamp
-                         ) extends MessageData with IOpenRollCall {
+final case class ReopenRollCall(
+                                 update_id: Hash,
+                                 opens: Hash,
+                                 opened_at: Timestamp
+                               ) extends MessageData with IOpenRollCall {
   override val _object: ObjectType = ObjectType.ROLL_CALL
   override val action: ActionType = ActionType.REOPEN
 }

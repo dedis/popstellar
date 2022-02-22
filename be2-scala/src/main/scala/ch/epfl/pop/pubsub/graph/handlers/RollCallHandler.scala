@@ -30,7 +30,7 @@ object RollCallHandler extends MessageHandler {
  *
  * @param dbRef reference of the db actor
  */
-sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
+class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   /**
    * Overrides default DbActor with provided parameter
@@ -39,71 +39,71 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
   private val unknownAnswer: String = "Database actor returned an unknown answer"
 
-  def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+  def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
     Await.result(ask, duration)
   }
 
-  def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+  def handleOpenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
     Await.result(ask, duration)
   }
 
-  def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+  def handleReopenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
     Await.result(ask, duration)
   }
 
-  def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+  def handleCloseRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
     Await.result(ask, duration) match {
       case Left(_) =>
-        rpcMessage.getParamsMessage match {
+        rpcRequest.getParamsMessage match {
           case Some(message: Message) =>
             val data: CloseRollCall = message.decodedData.get.asInstanceOf[CloseRollCall]
 
             // creates a channel for each attendee (of name /root/lao_id/social/PublicKeyAttendee), returns a GraphMessage
-            def createAttendeeChannels(attendees: List[PublicKey], rpcMessage: JsonRpcRequest): GraphMessage = {
+            def createAttendeeChannels(attendees: List[PublicKey]): GraphMessage = {
               val listAttendeeChannels: List[(Channel, ObjectType.ObjectType)] = data.attendees.map {
-                attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP)
+                attendee => (generateSocialChannel(rpcRequest.getParamsChannel, attendee), ObjectType.CHIRP)
               }
 
               val askCreateChannels = dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)
 
-              Await.ready(askCreateChannels, duration).value.get match {
-                case Success(_) => Left(rpcMessage)
-                case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcMessage.getId))
-                case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+              Await.ready(askCreateChannels, duration).value match {
+                case Some(Success(_)) => Left(rpcRequest)
+                case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
+                case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
               }
             }
 
-            val laoChannel: Option[Base64Data] = rpcMessage.getParamsChannel.decodeChannelLaoId
+            val laoChannel: Option[Base64Data] = rpcRequest.getParamsChannel.decodeChannelLaoId
             laoChannel match {
               case None => Right(PipelineError(
                 ErrorCodes.SERVER_ERROR.id,
                 s"There is an issue with the data of the LAO",
-                rpcMessage.id
+                rpcRequest.id
               ))
               case Some(_) =>
                 val combined = for {
-                  _ <- dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
-                  _ <- dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)
+                  _ <- dbActor ? DbActor.ReadLaoData(rpcRequest.getParamsChannel)
+                  _ <- dbActor ? DbActor.Write(rpcRequest.getParamsChannel, message)
                 } yield ()
 
-                Await.ready(combined, duration).value.get match {
-                  case Success(_) => createAttendeeChannels(data.attendees, rpcMessage)
-                  case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcMessage.getId))
-                  case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+                Await.ready(combined, duration).value match {
+                  case Some(Success(_)) => createAttendeeChannels(data.attendees)
+                  case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcRequest.getId))
+                  case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
                 }
             }
           case _ => Right(PipelineError(
             ErrorCodes.SERVER_ERROR.id,
-            s"Unable to handle lao message $rpcMessage. Not a Publish/Broadcast message",
-            rpcMessage.id
+            s"Unable to handle lao message $rpcRequest. Not a Publish/Broadcast message",
+            rpcRequest.id
           ))
         }
       case error@Right(_) => error
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcMessage.id))
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, unknownAnswer, rpcRequest.id))
     }
   }
 
