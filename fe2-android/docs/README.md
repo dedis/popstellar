@@ -56,11 +56,9 @@ app/src
 │         │    
 │         └── utility           # module containg the utility classes
 │
-├── androidTest                 # tests needing an emulator/android phone
-│
 ├── debug                       # module containing the debug files. Currently only an empty activity used for androidTest
 │
-└── test                        # unit tests
+└── test                        # unit tests, this contains both usual unit tests and thanks to robolectric, ui tests
 ```
 
 The letter `P` represents the project package: `com/github/dedis/popstellar`.
@@ -71,21 +69,18 @@ The PoP Java frontend provides an interface to allow the users to interact as pa
 Autonomous Organization (LAO), within which they will acquire Proof-of-Personhood tokens to identify
 themselves.
 
-Under the hood, the frontend establishes one or more long-lived websocket connections with the
-servers (organizers, witnesses), through which messages are sent back and forth using a
-publish/subscribe pattern.
+Under the hood, the frontend establishes one or more long-lived websocket connections with the servers (organizers,
+witnesses), through which messages are sent back and forth using a publish/subscribe pattern.
 
-On a higher level of abstraction, the frontend may publish messages or subscribe for messages on a *
-channel*. You may think of a channel as a topic which stores events that occur over time. For
-instance, every LAO is denoted by a unique channel (also called the LAO channel) and contains
-messages about all events that occur within it, for example, the creation of an election, a roll
-call. A channel may have sub channels associated with it. For instance, a LAO may have a sub-channel
-for the elections where all messages associated with that election are published. Please refer
+On a higher level of abstraction, the frontend may publish messages or subscribe for messages on a *channel*. You may
+think of a channel as a topic which stores events that occur over time. For instance, every LAO is denoted by a unique
+channel (also called the LAO channel) and contains messages about all events that occur within it, for example, the
+creation of an election, a roll call. A channel may have sub channels associated with it. For instance, a LAO may have a
+sub-channel for the elections where all messages associated with that election are published. Please refer
 to [Data pipeline architecture](https://docs.google.com/document/d/19r3rP6o8TO-xeZBM0GQzkHYQFSJtWy7UhjLhzzZVry4/edit#heading=h.1h71fzpdznrh)
 for more information.
 
-All the messages are encoded using JSON and are validated
-using [JSON Schemas](https://json-schema.org) as defined in
+All the messages are encoded using JSON and are validated using [JSON Schemas](https://json-schema.org) as defined in
 the [protocol folder](https://github.com/dedis/popstellar/tree/master/protocol).
 
 [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
@@ -111,13 +106,11 @@ this [guide to app architecture](https://developer.android.com/jetpack/guide).
   The [Room](https://developer.android.com/reference/androidx/room/package-summary) persistence
   library is used to define the application's database, the entities and Data Access Object.
 
-Below is the diagram from
-the [guide to app architecture](https://developer.android.com/jetpack/guide)
-written to fit this project.
-
+Below is the diagram of the application architecture :
 <div align="center">
-  <img src="images/mvvm.png" alt="MVVM"/>
+  <img src="images/architecture_diagram.png" alt="Architecture"/>
 </div>
+
 
 ### Managing the application state
 
@@ -126,24 +119,22 @@ state robustly. Its internal state is made up of local data, such as a user's cr
 and preferences, but also of the local representation of the application's view of the whole PoP
 system and its state.
 
-The latter needs to be eventually consistent, i.e., sooner or later all frontend users obtain the
-same "view" of the system. This translates to a basic expectation that, one would expect all devices
-connected to a LAO to "see" the same thing. Drawing a parallel, one would expect all social media
-users to be able to access the same posts, see (roughly) the same number of associated likes, etc.
+The latter needs to be eventually consistent, i.e., sooner or later all frontend users obtain the same "view" of the
+system. This translates to a basic expectation that, one would expect all devices connected to a LAO to "see" the same
+thing. Drawing a parallel, one would expect all social media users to be able to access the same posts, see (roughly)
+the same number of associated likes, etc.
 
 In order to achieve this, and as a general rule, the UI displays information from
 the [`LAORepository`](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/LAORepository.java)
-class (the application state container for now), but it **doesn't** modify the LAO-wide information
-contained in it. The list of LAOs contained in the `LAORepository` only gets updated in response to
-messages from the backends.
+class, but it **doesn't** modify the LAO-wide information contained in it. The list of LAOs contained in
+the `LAORepository` only gets updated in response to messages from the backends.
 
-As such, let's take the example of a user who wants to publish or modify LAO-wide information. In
-our example, the user wants to cast a vote in an election and does the necessary UI operations. In
-turn, the application will send a message to the backend (which the backend should acknowledge),
-which will then validate it and propagate it in the system. Eventually, the vote is sent back to the
-application (through the publish/subscribe channel), and upon receiving it the application would
-update its state. By doing so, the list of LAOs in `LAORepository` would contain new information
-that would automatically be reflected in the UI.
+As such, let's take the example of a user who wants to publish or modify LAO-wide information. In our example, the user
+wants to cast a vote in an election and does the necessary UI operations. In turn, the application will send a message
+to the backend (which the backend should acknowledge), which will then validate it and propagate it in the system.
+Eventually, the vote is sent back to the application (through the publish/subscribe channel), and upon receiving it the
+application would update its state. By doing so, the list of LAOs in `LAORepository` would contain new information that
+would automatically be reflected in the UI.
 
 Occasionally, the user interface could directly modify the application state, but this would only be
 valid for local operations affecting local data (e.g., changing a local setting, clearing the data
@@ -179,44 +170,40 @@ The communication stack within the PoP project is made
 of [multiple layers](https://docs.google.com/document/d/1AeV7JX_SJ30mu9PIwmz24UkIi3jCo6NSYA0sPxdbscU)
 and you need to be familiar with them to understand how communication happens.
 
-The [repository module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository)
-contains some of the network communication logic, it is organized as follows:
+The [remote module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/remote)
+contains most of the network communication logic, it is organized as follows:\
+The `GlobalNetworkManager` is responsible for holding, creating and destroying WebSocket connections.\
+It uses the `ConnectionFactory` to produce new `Connection` objects using
+the [Scarlet](https://github.com/Tinder/Scarlet) library.
 
-* The `remote` module deals with the WebSocket-based connections, using
-  the [Scarlet](https://github.com/Tinder/Scarlet) library.
-* The `LAORepository` exposes the [JSON-RPC](https://www.jsonrpc.org/specification) -based API that
-  provides the publish/subscribe communication abstraction. In it, you will find functions to
-  publish a message, subscribe and unsubscribe to a channel, and so on.
-
-The application-level message generation logic is implemented in the `ViewModel` classes, for
-example the request for a LAO creation is in `HomeViewModel`. In the future an API could be created
-to simplify the logic in the application code and reduce repetition.
+The `Connection` is passed to a `LAOConnectionManager` that is responsible for handling the JsonRPC layer of the
+protocol. It exposes the protocol API with the `MessageSender` interface that can be retrieved by `ViewModel`though
+the `GlobalNetworkManager`.
 
 For more information on sending messages on the network, please refer to
-the [repository module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository)
+the [remote module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/repository/remote)
 and the `ViewModel` classes. Also, make sure you have a solid understanding
 of [JSON-RPC](https://www.jsonrpc.org/specification),
 the [Protocol Specifications](https://docs.google.com/document/d/1fyNWSPzLhM6W9V0VTFf2waMLiJGcscy7wa4bQlLkySM)
-and their actual implementation in
-the [protocol schemas](https://github.com/dedis/popstellar/tree/master/protocol)
+and their actual implementation in the [protocol schemas](https://github.com/dedis/popstellar/tree/master/protocol)
 
 ### Getting messages over the wire
 
 Once it is clear how to send messages over the wire, it is important to turn one's attention to
 receiving them.
 
-Because receiving messages over the network and processing them to update the application state are
-very different steps involving completely unrelated logic.
+Because receiving messages over the network and processing them to update the application state are very different steps
+involving completely unrelated logic.
 
-On the networking side, the `repository/remote` module observes the upcoming messages and notifies
-the `LAORepository`.
+On the networking side, the embedded Scarlet service handles the upcoming websocket messages and transform them into
+Java Object using Gson as the Json Parser.
 
-On the "message processing" side, the `LAORepository` only forwards the incoming messages in
-the `handler`. The `handler` submodule is responsible for processing different kind of messages,
+`LAONetworkManager` then hands them to the `MessageHandler` that will use the application's `DataRegistry` to pass the
+Data message to the right handler. The `handler` submodule is responsible for processing different kind of messages,
 based on their types, and update the application state as needed.
 
 For more information on processing messages received from the network, please refer to
-the [handler](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/utility/handler)
+the [handler module](https://github.com/dedis/popstellar/tree/master/fe2-android/app/src/main/java/com/github/dedis/popstellar/utility/handler)
 and the PoP communication protocol.
 
 ### Message definitions
@@ -305,7 +292,6 @@ the module :
 Here, the `NetworkService` argument is provided by Hilt in another by another rule.
 
 ```java
-
 @Module
 public abstract class DatabaseModule {
 
