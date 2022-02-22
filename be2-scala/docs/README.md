@@ -84,7 +84,7 @@ The results are then collected by the main merger (blue "merger" circle) and sen
 
 ### Sending and Receiving Messages
 
-??? Explain ClientActor?
+> Explain ClientActor?
 
 ### Message Definition
 
@@ -94,8 +94,19 @@ are defined in `model/network` package, closely mirroring the JSON-Schema folder
 Please note that the JSON-RPC definitions in the root of the repository are to be considered
 a source of truth since the validation library checks the messages against it.
 
-:information_source: When you need to create a new object, please refer to existing message types and in particular
-their `buildFromJson` method to get an idea about how to implement a new type. In order to tell the encoder/decoder how to encode/decode the new message (e.g. `buildFromJson`), its "recipe" must be added directly in the `json/MessageDataProtocol.scala` file. If you need to add a new ObjectType (in `model/.../data/ObjectType.scala`), you need to add a new element to the builder in `model/.../data/DataRegistryModule.scala`, a new case and a new schema path in `model/.../data/DataSchemaValidator.scala`, potentially new ActionTypes in `model/.../data/ActionType.scala`, new cases in `pubsub/graph/MessageDecoder.scala`, a new port for handling the new ObjectType in `pubsub/.../handlers/ParamsWithMessageHandler.scala`, a handler in `pubsub/.../handlers`, a validator in `pubsub/.../validators` and of course the new MessageDatas in a new corresponding folder in `model/.../data/newFolder` and JsonRpcRequests in a corresponding folder in `model/.../requests/newFolder`.
+:information_source: When you need to create a new data case class (e.g. `CreateLao.scala`), please refer to existing message case classes. In order to tell the encoder/decoder how to encode/decode the new message (e.g. with `buildFromJson`), its "recipe" must be added directly in the `json/MessageDataProtocol.scala` file. Finally, an entry should be added to the `MessageRegistry` for your new data (object, action) pair containing the location of a schema verifier, builder, validator, and handler. Here's an example of such entry:
+
+```scala
+register.add(
+  (ObjectType.LAO, ActionType.CREATE), 	
+  SchemaValidator.createSchemaValidator("dataCreateLao.json"), 
+  CreateLao.buildFromJson, 
+  LaoValidator.validateCreateLao, 
+  LaoHandler.handleCreateLao
+)
+```
+
+:information_source: You might also need to define a new `ObjectType` or `ActionType`  depending on your needs
 
 
 ### Spray-json Conversion
@@ -118,7 +129,7 @@ implicit val formatB: RootJsonFormat[B] = jsonFormat1(B) // (1)
 implicit val formatA: RootJsonFormat[A] = jsonFormat2(A) // (2)
 ```
 
-Note that order matters! In order to convert `A`, (2) gets called. It first handles the `name` parameter (`String`) and then converts `b` (`B`). Thus the conversion for `B` (here (1)) has to be defined *above*.
+:warning: Note that order matters! In order to convert `A`, (2) gets called. It first handles the `name` parameter (`String`) and then converts `b` (`B`). Thus the conversion for `B` (here (1)) has to be defined *above*.
 
 :warning: Spray-json is *not* able to automatically convert "complex" types such as `Option[T]`, `Either[A, B]`, ... Examples of such cases are provided in the codebase.
 
@@ -147,7 +158,7 @@ implicit object Format extends RootJsonFormat[Point] {
 
 Once again, a lot of examples of such cases are present within the codebase
 
-:information_source: *tips*: always try to prioritize case classes whenever possible :)
+:information_source: *tips*: always try to prioritize *case classes* whenever possible :)
 
 
 ### Validation
@@ -165,9 +176,9 @@ We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to s
 Multiple messages may then be stored "inside" each channel (all within one single database file). Since leveldb is a key-value database, we are using `channel#message_id` as key and the corresponding `message` (in its json representation) as value.
 
 Summary of the keys used to retrieve data:
-1. for a message: `channel#message_id`
-2. for ChannelData: `channel`
-3. for LaoData: `root/lao_id#laodata`
+- for a message: `channel#message_id`
+- for ChannelData: `channel`
+- for LaoData: `root/lao_id#laodata`
 
 We use `/` as a separator for parts of a channel and `#` as a separator for data objects when needed.
 
@@ -200,7 +211,7 @@ val batch: WriteBatch = db.createWriteBatch()
 ```
 This example has been extracted from `pubsub/storage/DiskStorage.scala`.
 
-Akka messages `DbActor` understands are defined in `DbActor.scala:Event`, they include:
+`DbActor` is an akka actor and thus "understands" messages defined as case classes in `DbActor.scala:Event`. Examples of such messages include:
 
 ```scala
 // DbActor Events correspond to messages the actor may receive
@@ -213,18 +224,19 @@ final case class Read(channel: Channel, id: Hash) extends Event
 `DbActor` will then answer using one of its predetermined answers defined within the same file:
 
 ```scala
-// DbActor Events correspond to messages the actor may emit
+// DbActor DbActorMessages correspond to messages the actor may emit
 sealed trait DbActorMessage
 
-final case class DbActorWriteAck() extends DbActorMessage
+final case class DbActorAck() extends DbActorMessage
 final case class DbActorReadAck(message: Option[Message]) extends DbActorMessage
 final case class DbActorCatchupAck(messages: List[Message]) extends DbActorMessage
-final case class DbActorAck() extends DbActorMessage
 ```
 
-When the `DbActor` fails to complete an operation, instead of sending a `DbActorMessage`, a function will throw a `DbActorNAckException` and it will be propagated inside the answer wrapped in a `Status.Failure(exception)`.
+When the `DbActor` fails to complete an operation – instead of sending a `DbActorMessage` –, the actor will send back to the origin a wrapped `DbActorNAckException` (containing both the error code and reason the exception occurred). The wrapper itself is a [`Status.Failure`](https://doc.akka.io/japi/akka/current/akka/actor/Status.Failure.html) often used by akka to notify a different actor that something went wrong.
 
-As a simplified example, we can look at the Write event from `DbActor`, where we use `this.synchronized` to avoid concurrency issues for multiple Writes. We see that we write both the message on the channel and the message_id in the ChannelData object (stored at 'channel').
+:information_source: Note that the `Status.Failure` takes a `Throwable` at construction. You should **not** throw the exception inside the Failure unless you feel the urge to waste 3 hours debugging an incomprehensible actor state (definitely did not go through this :smile_cat:...)!
+
+As a simplified example, we can look at the Write event from `DbActor`, where we use `this.synchronized` to avoid concurrency issues for sequential read/writes that should be seen as a single transaction. In this examples, we are writing both the message on the channel (line 5) and the message_id in the ChannelData object (stored at 'channel', line 4).
 
 ```scala
 this.synchronized {
@@ -264,7 +276,7 @@ For the Social Media functionality, each user has their own channel with the ide
 
 
 
-:information_source: the database may easily be reset/purged by deleting the `database` folder entirely
+:information_source: the database may easily be reset/purged by deleting the `database` folder entirely. You may add the `-Dclean` flag at compilation for automatic database purge
 
 
 
