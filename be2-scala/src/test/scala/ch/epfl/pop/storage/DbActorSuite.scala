@@ -8,12 +8,14 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
+import org.scalatest.concurrent.ScalaFutures
 import util.examples.MessageExample
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
-class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll with AskPatternConstants {
+class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with ScalaFutures with BeforeAndAfterAll with AskPatternConstants {
 
   final val mediatorRef: ActorRef = system.actorOf(PubSubMediator.props)
 
@@ -150,7 +152,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     dbActor ! DbActor.CreateChannel(Channel(CHANNEL_NAME), ObjectType.LAO); sleep()
 
-    // expectMsg(DbActorNew.DbActorNAck())
     storage.size should equal (1)
     storage.elements(CHANNEL_NAME) should equal (ChannelData(ObjectType.LAO, Nil).toJsonString)
   }
@@ -224,14 +225,18 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("checkChannelExistence does not detect a non-existing channel") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
 
     storage.size should equal (0)
 
     // checking the existence of a non-existing channel
-    dbActor ! DbActor.ChannelExists(Channel(CHANNEL_NAME)); sleep()
+    val ask = dbActor ? DbActor.ChannelExists(Channel(CHANNEL_NAME))
 
-    // expectMsg(DbActorNew.DbActorNAck())
+    ScalaFutures.whenReady(ask.failed){
+      e =>
+        e shouldBe a [DbActorNAckException]
+    }
+
     storage.size should equal (0)
   }
 
@@ -258,28 +263,17 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val storage: InMemoryStorage = InMemoryStorage()
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
 
-    storage.dump(); println(s"END ${storage.size}")
-
-    // val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
-    // val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
+    val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
+    val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
 
     storage.size should equal (0)
 
-    dbActor ! DbActor.Write(Channel(CHANNEL_NAME), MESSAGE); sleep()
-
-    expectMsg(DbActor.DbActorAck())
-    storage.size should equal (2)
-
-    storage.dump(); println("")
-/*
     // act
-    dbActor ! DbActorNew.WriteLaoData(Channel(CHANNEL_NAME), messageLao); sleep()
+    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageLao); sleep()
 
     // assert
-    expectMsg(DbActorNew.DbActorAck())
-    storage.size should equal (3)
-
-    storage.dump(); println("")
+    expectMsg(DbActor.DbActorAck())
+    storage.size should equal (1)
 
     val actualLaoData1: LaoData = LaoData.buildFromJson(storage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
 
@@ -297,13 +291,13 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((laoDataKey, laoData.toJsonString))
-    val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
 
     // act
-    dbActor ! DbActorNew.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall); sleep()
+    dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall); sleep()
 
     // assert
-    expectMsg(DbActorNew.DbActorAck())
+    expectMsg(DbActor.DbActorAck())
     initialStorage.size should equal (1)
 
     val actualLaoData2: LaoData = LaoData.buildFromJson(initialStorage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
@@ -311,7 +305,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     actualLaoData2.owner should equal(PublicKey(Base64Data.encode("key")))
     actualLaoData2.attendees should equal(List(PublicKey(Base64Data.encode("keyAttendee"))))
     actualLaoData2.witnesses should equal(List.empty)
-*/
   }
 
   test("readLaoData succeeds for existing LaoData"){
@@ -339,7 +332,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     readLaoData.witnesses should equal(List.empty)
   }
 
-  // TODO REFACTORING correct test
   test("read succeeds for existing message"){
     // arrange
     val channelName1: Channel = Channel(CHANNEL_NAME)
@@ -356,7 +348,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     val readMessage: Message = answer.asInstanceOf[DbActor.DbActorReadAck].message.get
 
-    readMessage should equal(MESSAGE)
+    readMessage should equal(MESSAGE.copy(decodedData = None))
   }
 
   test("read does not fail for non-existing message (returns None)"){
