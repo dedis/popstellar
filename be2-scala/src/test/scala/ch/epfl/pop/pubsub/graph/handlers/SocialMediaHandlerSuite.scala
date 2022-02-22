@@ -1,10 +1,12 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.pubsub.graph.{DbActor, PipelineError}
+import ch.epfl.pop.model.objects.DbActorNAckException
+import ch.epfl.pop.pubsub.graph.PipelineError
+import ch.epfl.pop.storage.DbActorNew
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.LaoDataExample
 import util.examples.data.{AddChirpMessages, AddReactionMessages, DeleteChirpMessages, DeleteReactionMessages}
@@ -13,7 +15,7 @@ import scala.concurrent.duration.FiniteDuration
 
 
 class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System")) with FunSuiteLike with ImplicitSender with Matchers with BeforeAndAfterAll {
-  // Implicites for system actors
+  // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
   implicit val timeout: Timeout = Timeout(duration)
 
@@ -24,110 +26,105 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
   }
 
   def mockDbWithNack: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
+        case m: DbActorNew.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Nack")
 
-          sender() ! DbActor.DbActorNAck(1, "error")
+          sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
-    }
-    )
-    system.actorOf(mockedDB, "MockedDB-NACK")
+    })
+    system.actorOf(dbActorMock, "MockedDB-NACK")
   }
 
   def mockDbWithAck: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
+        case m: DbActorNew.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActor.DbActorWriteAck()
+          sender() ! DbActorNew.DbActorAck()
 
-        case m: DbActor.ReadLaoData =>
+        case m: DbActorNew.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+          sender() ! DbActorNew.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
       }
-    }
-    )
-    system.actorOf(mockedDB, "MockedDB-ACK")
+    })
+    system.actorOf(dbActorMock, "MockedDB-ACK")
   }
 
   def mockDbWithAckAndNotifyNAck: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActor.WriteAndPropagate(channel, message) =>
+        case DbActorNew.WriteAndPropagate(channel, message) =>
           if (channel == AddChirpMessages.CHANNEL) {
             system.log.info(s"Received WAP on channel $channel")
             system.log.info("Responding with a Ack")
 
-            sender() ! DbActor.DbActorWriteAck()
+            sender() ! DbActorNew.DbActorAck()
           }
           else {
             system.log.info(s"Received WAP on channel $channel")
             system.log.info("Responding with a NAck")
 
-            sender() ! DbActor.DbActorNAck(1, "error")
+            sender() ! Status.Failure(DbActorNAckException(1, "error"))
           }
 
-        case m: DbActor.ReadLaoData =>
+        case m: DbActorNew.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActor.DbActorReadLaoDataAck(Some(LaoDataExample.LAODATA))
+          sender() ! DbActorNew.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
       }
-    }
-    )
-    system.actorOf(mockedDB, "MockedDB-ACK-NAck-on-Notify")
+    })
+    system.actorOf(dbActorMock, "MockedDB-ACK-NAck-on-Notify")
   }
 
   def mockDbWithAckButEmptyAckLaoData: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
+        case m: DbActorNew.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActor.DbActorWriteAck()
+          sender() ! DbActorNew.DbActorAck()
 
-        case m: DbActor.ReadLaoData =>
+        case m: DbActorNew.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a NAck")
 
-          sender() ! DbActor.DbActorReadLaoDataAck(None)
+          sender() ! Status.Failure(DbActorNAckException(1, "No corresponding lao data (mocked)"))
       }
-    }
-    )
-    system.actorOf(mockedDB, "MockedDB-ACK-EmptyAckLaoData")
+    })
+    system.actorOf(dbActorMock, "MockedDB-ACK-EmptyAckLaoData")
   }
 
   def mockDbWithAckButNAckLaoData: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
+        case m: DbActorNew.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActor.DbActorWriteAck()
+          sender() ! DbActorNew.DbActorAck()
 
-        case m: DbActor.ReadLaoData =>
+        case m: DbActorNew.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a NAck")
 
-          sender() ! DbActor.DbActorNAck(1, "error")
+          sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
-    }
-    )
-    system.actorOf(mockedDB, "MockedDB-ACK-NAckLaoData")
+    })
+    system.actorOf(dbActorMock, "MockedDB-ACK-NAckLaoData")
   }
 
   test("AddReaction fails if the database fails storing the message") {

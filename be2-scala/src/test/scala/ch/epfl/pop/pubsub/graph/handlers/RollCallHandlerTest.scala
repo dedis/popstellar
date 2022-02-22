@@ -1,10 +1,12 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.pubsub.graph.{DbActor, PipelineError}
+import ch.epfl.pop.model.objects.DbActorNAckException
+import ch.epfl.pop.pubsub.graph.PipelineError
+import ch.epfl.pop.storage.DbActorNew
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.data.CreateRollCallMessages
 
@@ -22,33 +24,31 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
   }
 
   def mockDbWithNack: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
+        case m: DbActorNew.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Nack")
 
-          sender() ! DbActor.DbActorNAck(1, "error")
+          sender() ! Status.Failure(DbActorNAckException(1, "error"))
       }
-    }
-    )
-    system.actorOf(mockedDB, "MockedDB-NACK")
+    })
+    system.actorOf(dbActorMock, "MockedDB-NACK")
   }
 
   def mockDbWithAck: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActor.WriteAndPropagate =>
+        case m: DbActorNew.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActor.DbActorWriteAck()
+          sender() ! DbActorNew.DbActorAck()
       }
-    }
-    )
-    system.actorOf(mockedDB, "MockedDB-ACK")
+    })
+    system.actorOf(dbActorMock, "MockedDB-ACK")
   }
 
   test("CreateRollCall fails if the database fails storing the message") {

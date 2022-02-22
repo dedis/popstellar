@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActorNew
@@ -100,8 +100,8 @@ case object LaoValidator extends MessageDataContentValidator {
             } else {
               Left(rpcMessage)
             }
-          case Success(reply) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-          case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : ${ex.getMessage}", rpcMessage.getId))
+          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"validateUpdateLao failed : ${ex.message}", rpcMessage.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"validateUpdateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }
 
       case _ => Right(validationErrorNoMessage(rpcMessage.id))

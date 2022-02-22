@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
-import ch.epfl.pop.model.objects.{Base64Data, Channel, PublicKey}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActorNew
 
@@ -72,7 +72,8 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
               Await.ready(askCreateChannels, duration).value.get match {
                 case Success(_) => Left(rpcMessage)
-                case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : ${ex.getMessage}", rpcMessage.getId))
+                case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcMessage.getId))
+                case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
               }
             }
 
@@ -91,7 +92,8 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
 
                 Await.ready(combined, duration).value.get match {
                   case Success(_) => createAttendeeChannels(data.attendees, rpcMessage)
-                  case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : ${ex.getMessage}", rpcMessage.getId))
+                  case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCloseRollCall failed : ${ex.message}", rpcMessage.getId))
+                  case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseRollCall failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
                 }
             }
           case _ => Right(PipelineError(

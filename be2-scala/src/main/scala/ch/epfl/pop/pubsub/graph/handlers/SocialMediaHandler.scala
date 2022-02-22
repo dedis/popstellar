@@ -57,10 +57,11 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
         val askWritePropagate = dbActor ? DbActorNew.WriteAndPropagate(broadcastChannel, broadcastMessage)
         Await.ready(askWritePropagate, duration).value.get match {
           case Success(_) => Left(rpcMessage)
-          case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : ${ex.getMessage}", rpcMessage.getId))
+          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
         }
 
-      case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : ${ex.getMessage}", rpcMessage.getId))
+      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"broadcastHelper failed : unknown DbActor reply $reply", rpcMessage.getId))
     }
   }

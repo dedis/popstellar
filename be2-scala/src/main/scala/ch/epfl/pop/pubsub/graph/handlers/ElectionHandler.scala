@@ -4,7 +4,7 @@ import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
-import ch.epfl.pop.model.objects.{Channel, Hash}
+import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActorNew
 
@@ -27,7 +27,8 @@ object ElectionHandler extends MessageHandler {
 
     Await.ready(combined, duration).value.get match {
       case Success(_) => Left(rpcMessage)
-      case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : ${ex.getMessage}", rpcMessage.getId))
+      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
+      case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
   }
 

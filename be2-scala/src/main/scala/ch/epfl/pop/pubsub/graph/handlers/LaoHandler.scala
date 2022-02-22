@@ -46,7 +46,8 @@ case object LaoHandler extends MessageHandler {
 
         Await.ready(combined, duration).value.get match {
           case Success(_) => Left(rpcMessage)
-          case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : ${ex.getMessage}", rpcMessage.getId))
+          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcMessage.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
         }
 
       case _ => Right(PipelineError(

@@ -35,7 +35,7 @@ case class DbActorNew(
     }
     createChannel(channel, _object)
 
-    this.synchronized{
+    this.synchronized {
       val channelData: ChannelData = readChannelData(channel)
       storage.write(
         (channel.toString, channelData.addMessage(message.message_id).toJsonString),
@@ -73,7 +73,7 @@ case class DbActorNew(
 
   @throws [DbActorNAckException]
   private def writeLaoData(channel: Channel, message: Message): Unit = {
-    this.synchronized{
+    this.synchronized {
       val laoData: LaoData = Try(readLaoData(channel)) match {
         case Success(data) => data
         case Failure(_) => LaoData()
@@ -249,7 +249,7 @@ case class DbActorNew(
         case failure => sender() ! failure.recover(Status.Failure(_))
       }
 
-    case m@_ =>
+    case m =>
       log.info(s"Actor $self (db) received an unknown message")
       sender() ! Status.Failure(DbActorNAckException(ErrorCodes.INVALID_ACTION.id, s"database actor received a message '$m' that it could not recognize"))
   }

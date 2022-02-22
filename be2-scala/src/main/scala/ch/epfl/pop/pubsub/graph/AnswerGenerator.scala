@@ -5,6 +5,7 @@ import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
 import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
 import ch.epfl.pop.model.network.{ResultObject, _}
+import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.storage.DbActorNew
@@ -39,8 +40,8 @@ sealed class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternCons
           case Success(DbActorNew.DbActorCatchupAck(messages)) =>
             val resultObject: ResultObject = new ResultObject(messages)
             Left(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
-          case Success(reply) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
-          case Failure(ex) => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : ${ex.getMessage}", rpcRequest.getId))
+          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
         }
 
 
