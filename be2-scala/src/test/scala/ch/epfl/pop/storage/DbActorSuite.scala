@@ -266,7 +266,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
     val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
 
-    // assert
     storage.size should equal (0)
 
     // act
@@ -281,6 +280,18 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     actualLaoData1.owner should equal(PublicKey(Base64Data.encode("key")))
     actualLaoData1.attendees should equal(List(PublicKey(Base64Data.encode("key"))))
     actualLaoData1.witnesses should equal(List.empty)
+  }
+
+  test("writeLaoData succeeds for updated data"){
+    // arrange
+    val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
+    val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
+    val channelName1: Channel = Channel(CHANNEL_NAME)
+    val laoData: LaoData = LaoData().updateWith(messageLao)
+    val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
+    val initialStorage: InMemoryStorage = InMemoryStorage()
+    initialStorage.write((laoDataKey, laoData.toJsonString))
+    val dbActor: ActorRef = system.actorOf(Props(DbActorNew(mediatorRef, initialStorage)))
 
     // act
     dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall); sleep()
@@ -289,7 +300,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     expectMsg(DbActor.DbActorAck())
     storage.size should equal (1)
 
-    val actualLaoData2: LaoData = LaoData.buildFromJson(storage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
+    val actualLaoData2: LaoData = LaoData.buildFromJson(initialStorage.elements(s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}laodata"))
 
     actualLaoData2.owner should equal(PublicKey(Base64Data.encode("key")))
     actualLaoData2.attendees should equal(List(PublicKey(Base64Data.encode("keyAttendee"))))
