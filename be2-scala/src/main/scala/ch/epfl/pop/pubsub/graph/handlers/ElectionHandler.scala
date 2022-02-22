@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.election.SetupElection
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -21,8 +21,8 @@ object ElectionHandler extends MessageHandler {
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     val combined = for {
-      _ <- dbActor ? DbActorNew.Write(rpcMessage.getParamsChannel, message)
-      _ <- dbActor ? DbActorNew.CreateChannel(electionChannel, ObjectType.ELECTION)
+      _ <- dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)
+      _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
     } yield ()
 
     Await.ready(combined, duration).value.get match {

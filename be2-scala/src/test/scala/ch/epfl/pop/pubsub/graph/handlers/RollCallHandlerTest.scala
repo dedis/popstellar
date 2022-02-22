@@ -6,7 +6,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.PipelineError
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.data.CreateRollCallMessages
 
@@ -27,7 +27,7 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActorNew.WriteAndPropagate =>
+        case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Nack")
 
@@ -41,11 +41,11 @@ class RollCallHandlerTest extends TestKit(ActorSystem("RollCall-DB-System")) wit
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActorNew.WriteAndPropagate =>
+        case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActorNew.DbActorAck()
+          sender() ! DbActor.DbActorAck()
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ACK")

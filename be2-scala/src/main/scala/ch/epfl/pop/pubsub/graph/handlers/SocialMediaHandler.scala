@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 import spray.json._
 
 import scala.concurrent.{Await, Future}
@@ -45,16 +45,16 @@ sealed class SocialMediaHandler(dbRef: => AskableActorRef) extends MessageHandle
    * @param broadcastChannel : the Channel in which we broadcast
    */
   private def broadcastHelper(rpcMessage: JsonRpcRequest, broadcastData: Base64Data, broadcastChannel: Channel): GraphMessage = {
-    val askLaoData = dbActor ? DbActorNew.ReadLaoData(rpcMessage.getParamsChannel)
+    val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
 
     Await.ready(askLaoData, duration).value.get match {
-      case Success(DbActorNew.DbActorReadLaoDataAck(laoData)) =>
+      case Success(DbActor.DbActorReadLaoDataAck(laoData)) =>
         val broadcastSignature: Signature = laoData.privateKey.signData(broadcastData)
         val broadcastId: Hash = Hash.fromStrings(broadcastData.toString, broadcastSignature.toString)
         //FIXME: once consensus is implemented, fix the WitnessSignaturePair list handling
         val broadcastMessage: Message = Message(broadcastData, laoData.publicKey, broadcastSignature, broadcastId, List.empty)
 
-        val askWritePropagate = dbActor ? DbActorNew.WriteAndPropagate(broadcastChannel, broadcastMessage)
+        val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(broadcastChannel, broadcastMessage)
         Await.ready(askWritePropagate, duration).value.get match {
           case Success(_) => Left(rpcMessage)
           case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"broadcastHelper failed : ${ex.message}", rpcMessage.getId))

@@ -6,7 +6,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.PipelineError
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.LaoDataExample
 import util.examples.data.{AddChirpMessages, AddReactionMessages, DeleteChirpMessages, DeleteReactionMessages}
@@ -29,7 +29,7 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActorNew.WriteAndPropagate =>
+        case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Nack")
 
@@ -43,17 +43,17 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActorNew.WriteAndPropagate =>
+        case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActorNew.DbActorAck()
+          sender() ! DbActor.DbActorAck()
 
-        case m: DbActorNew.ReadLaoData =>
+        case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActorNew.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ACK")
@@ -63,12 +63,12 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case DbActorNew.WriteAndPropagate(channel, message) =>
+        case DbActor.WriteAndPropagate(channel, message) =>
           if (channel == AddChirpMessages.CHANNEL) {
             system.log.info(s"Received WAP on channel $channel")
             system.log.info("Responding with a Ack")
 
-            sender() ! DbActorNew.DbActorAck()
+            sender() ! DbActor.DbActorAck()
           }
           else {
             system.log.info(s"Received WAP on channel $channel")
@@ -77,11 +77,11 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
             sender() ! Status.Failure(DbActorNAckException(1, "error"))
           }
 
-        case m: DbActorNew.ReadLaoData =>
+        case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActorNew.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
+          sender() ! DbActor.DbActorReadLaoDataAck(LaoDataExample.LAODATA)
       }
     })
     system.actorOf(dbActorMock, "MockedDB-ACK-NAck-on-Notify")
@@ -91,13 +91,13 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActorNew.WriteAndPropagate =>
+        case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActorNew.DbActorAck()
+          sender() ! DbActor.DbActorAck()
 
-        case m: DbActorNew.ReadLaoData =>
+        case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a NAck")
 
@@ -111,13 +111,13 @@ class SocialMediaHandlerSuite extends TestKit(ActorSystem("SocialMedia-DB-System
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         // You can modify the following match case to include more args, names...
-        case m: DbActorNew.WriteAndPropagate =>
+        case m: DbActor.WriteAndPropagate =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a Ack")
 
-          sender() ! DbActorNew.DbActorAck()
+          sender() ! DbActor.DbActorAck()
 
-        case m: DbActorNew.ReadLaoData =>
+        case m: DbActor.ReadLaoData =>
           system.log.info("Received {}", m)
           system.log.info("Responding with a NAck")
 

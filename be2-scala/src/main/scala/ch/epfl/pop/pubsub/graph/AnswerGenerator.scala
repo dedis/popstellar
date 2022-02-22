@@ -8,7 +8,7 @@ import ch.epfl.pop.model.network.{ResultObject, _}
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
 import scala.util.{Failure, Success}
@@ -19,7 +19,7 @@ import scala.util.{Failure, Success}
  *
  */
 object AnswerGenerator extends AskPatternConstants {
-  lazy val dbActor: AskableActorRef = DbActorNew.getInstance
+  lazy val dbActor: AskableActorRef = DbActor.getInstance
   val answerGen = new AnswerGenerator(dbActor)
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = answerGen.generateAnswer(graphMessage)
@@ -35,9 +35,9 @@ sealed class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternCons
 
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getParams match {
       case Catchup(channel) =>
-        val askCatchup = dbActor ? DbActorNew.Catchup(channel)
+        val askCatchup = dbActor ? DbActor.Catchup(channel)
         Await.ready(askCatchup, duration).value.get match {
-          case Success(DbActorNew.DbActorCatchupAck(messages)) =>
+          case Success(DbActor.DbActorCatchupAck(messages)) =>
             val resultObject: ResultObject = new ResultObject(messages)
             Left(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
           case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))

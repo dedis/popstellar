@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao}
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -27,21 +27,21 @@ case object LaoHandler extends MessageHandler {
         val combined = for {
           // check whether the lao already exists in db
           _ <- {
-            (dbActor ? DbActorNew.ChannelExists(laoChannel)).transformWith {
+            (dbActor ? DbActor.ChannelExists(laoChannel)).transformWith {
               case Success(_) => Future { throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "lao already exists in db") }
               case _ => Future { () }
             }
           }
           // create lao channels
-          _ <- dbActor ? DbActorNew.CreateChannelsFromList(List(
+          _ <- dbActor ? DbActor.CreateChannelsFromList(List(
             (laoChannel, ObjectType.LAO),
             (socialChannel, ObjectType.CHIRP),
             (reactionChannel, ObjectType.REACTION)
           ))
           // write lao creation message
-          _ <- dbActor ? DbActorNew.Write(laoChannel, message)
+          _ <- dbActor ? DbActor.Write(laoChannel, message)
           // write lao data
-          _ <- dbActor ? DbActorNew.WriteLaoData(laoChannel, message)
+          _ <- dbActor ? DbActor.WriteLaoData(laoChannel, message)
         } yield ()
 
         Await.ready(combined, duration).value.get match {

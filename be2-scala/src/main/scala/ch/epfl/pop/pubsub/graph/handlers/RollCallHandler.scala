@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
 import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -68,7 +68,7 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
                 attendee => (generateSocialChannel(rpcMessage.getParamsChannel, attendee), ObjectType.CHIRP)
               }
 
-              val askCreateChannels = dbActor ? DbActorNew.CreateChannelsFromList(listAttendeeChannels)
+              val askCreateChannels = dbActor ? DbActor.CreateChannelsFromList(listAttendeeChannels)
 
               Await.ready(askCreateChannels, duration).value.get match {
                 case Success(_) => Left(rpcMessage)
@@ -86,8 +86,8 @@ sealed class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
               ))
               case Some(_) =>
                 val combined = for {
-                  _ <- dbActor ? DbActorNew.ReadLaoData(rpcMessage.getParamsChannel)
-                  _ <- dbActor ? DbActorNew.Write(rpcMessage.getParamsChannel, message)
+                  _ <- dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
+                  _ <- dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)
                 } yield ()
 
                 Await.ready(combined, duration).value.get match {

@@ -8,11 +8,11 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.ErrorCodes
 import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribe}
-import ch.epfl.pop.storage.DbActorNew._
+import ch.epfl.pop.storage.DbActor._
 
 import scala.util.{Failure, Success, Try}
 
-case class DbActorNew(
+case class DbActor(
                        private val mediatorRef: ActorRef,
                        private val storage: Storage = new DiskStorage()
                      ) extends Actor with ActorLogging {
@@ -255,7 +255,7 @@ case class DbActorNew(
   }
 }
 
-object DbActorNew {
+object DbActor {
 
   final lazy val INSTANCE: AskableActorRef = PublishSubscribe.getDbActorRef
 

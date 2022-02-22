@@ -11,7 +11,7 @@ import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
-import ch.epfl.pop.storage.{DbActorNew, InMemoryStorage}
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.JsonRpcRequestExample._
 import util.examples.socialMedia.AddChirpExamples
@@ -26,7 +26,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   final val DB_TEST_FOLDER: String = "databaseSocialMediaTest"
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActorNew(pubSubMediatorRef, InMemoryStorage())), "DbActor")
+  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, InMemoryStorage())), "DbActor")
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
@@ -52,10 +52,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWorking: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
-          sender() ! DbActorNew.DbActorReadLaoDataAck(laoDataRight)
-        case DbActorNew.ReadChannelData(_) =>
-          sender() ! DbActorNew.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
       }
     })
     system.actorOf(dbActorMock)
@@ -64,10 +64,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWorkingReaction: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
-          sender() ! DbActorNew.DbActorReadLaoDataAck(laoDataRight)
-        case DbActorNew.ReadChannelData(_) =>
-          sender() ! DbActorNew.DbActorReadChannelDataAck(channelDataReaction)
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataReaction)
       }
     })
     system.actorOf(dbActorMock)
@@ -76,10 +76,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWrongTokenReaction: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
-          sender() ! DbActorNew.DbActorReadLaoDataAck(laoDataWrong)
-        case DbActorNew.ReadChannelData(_) =>
-          sender() ! DbActorNew.DbActorReadChannelDataAck(channelDataReaction)
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataReaction)
       }
     })
     system.actorOf(dbActorMock)
@@ -88,10 +88,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWrongToken: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
-          sender() ! DbActorNew.DbActorReadLaoDataAck(laoDataWrong)
-        case DbActorNew.ReadChannelData(_) =>
-          sender() ! DbActorNew.DbActorReadChannelDataAck(channelDataRight)
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
       }
     })
     system.actorOf(dbActorMock)
@@ -100,10 +100,10 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   private def mockDbWrongChannel: AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
-          sender() ! DbActorNew.DbActorReadLaoDataAck(laoDataRight)
-        case DbActorNew.ReadChannelData(_) =>
-          sender() ! DbActorNew.DbActorReadChannelDataAck(channelDataWrong)
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
       }
     })
     system.actorOf(dbActorMock)

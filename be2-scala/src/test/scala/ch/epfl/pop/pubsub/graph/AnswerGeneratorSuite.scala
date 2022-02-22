@@ -9,7 +9,7 @@ import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject}
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
 import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite._
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
 
@@ -40,8 +40,8 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   def mockDbWithMessages(messages: List[Message]): AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.Catchup(_) =>
-          sender() ! DbActorNew.DbActorCatchupAck(messages)
+        case DbActor.Catchup(_) =>
+          sender() ! DbActor.DbActorCatchupAck(messages)
       }
     })
     system.actorOf(dbActorMock)
@@ -57,7 +57,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   def mockDbWithNack(code: Int, description: String): AskableActorRef = {
     val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.Catchup(_) =>
+        case DbActor.Catchup(_) =>
           sender() ! Status.Failure(DbActorNAckException(code, description))
       }
     })

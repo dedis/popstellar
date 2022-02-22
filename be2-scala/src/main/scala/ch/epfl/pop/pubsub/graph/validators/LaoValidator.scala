@@ -7,7 +7,7 @@ import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, U
 import ch.epfl.pop.model.objects.{Channel, DbActorNAckException, Hash}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent._
 import scala.util.{Failure, Success}
@@ -78,11 +78,11 @@ case object LaoValidator extends MessageDataContentValidator {
         val channel: Channel = rpcMessage.getParamsChannel
 
         // FIXME get lao creation message in order to calculate "SHA256(organizer||creation||name)"
-        val askLaoMessage = dbActor ? DbActorNew.Read(rpcMessage.getParamsChannel, ???)
+        val askLaoMessage = dbActor ? DbActor.Read(rpcMessage.getParamsChannel, ???)
         Await.ready(askLaoMessage, duration).value.get match {
-          case Success(DbActorNew.DbActorReadAck(None)) =>
+          case Success(DbActor.DbActorReadAck(None)) =>
             Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "validateUpdateLao failed : no CreateLao message associated found", rpcMessage.id))
-          case Success(DbActorNew.DbActorReadAck(Some(retrievedMessage))) =>
+          case Success(DbActor.DbActorReadAck(Some(retrievedMessage))) =>
             val laoCreationMessage = retrievedMessage.decodedData.get.asInstanceOf[CreateLao]
             // Calculate expected hash
             val expectedHash: Hash = Hash.fromStrings(

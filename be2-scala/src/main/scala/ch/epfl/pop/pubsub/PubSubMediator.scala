@@ -10,7 +10,7 @@ import ch.epfl.pop.model.objects.Channel
 import ch.epfl.pop.pubsub.PubSubMediator._
 import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,11 +21,11 @@ class PubSubMediator extends Actor with ActorLogging with AskPatternConstants {
 
   // Map from channels to the collection of actors subscribed to the channel
   private var channelMap: mutable.Map[Channel, mutable.Set[ActorRef]] = mutable.Map.empty
-  lazy val dbActor: AskableActorRef = DbActorNew.getInstance
+  lazy val dbActor: AskableActorRef = DbActor.getInstance
 
 
   private def subscribeTo(channel: Channel, clientActorRef: ActorRef): Future[PubSubMediatorMessage] = {
-    val askChannelExistence = dbActor ? DbActorNew.ChannelExists(channel)
+    val askChannelExistence = dbActor ? DbActor.ChannelExists(channel)
     askChannelExistence.transformWith {
       // if the channel exists in db, we can start thinking about subscribing a client to it
       case Success(_) => channelMap.get(channel) match {

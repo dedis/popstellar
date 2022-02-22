@@ -7,7 +7,7 @@ import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.PipelineError
-import ch.epfl.pop.storage.DbActorNew
+import ch.epfl.pop.storage.DbActor
 
 //import util.examples.MessageExample._
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
@@ -40,9 +40,9 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
   private def mockDbNack: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
+        case DbActor.ReadLaoData(_) =>
           sender() ! Status.Failure(DbActorNAckException(0, "error"))
-        case DbActorNew.ReadChannelData(_) =>
+        case DbActor.ReadChannelData(_) =>
           sender() ! Status.Failure(DbActorNAckException(0, "error"))
       }
     })
@@ -52,7 +52,7 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
   private def mockDbAckWithNone: AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
+        case DbActor.ReadLaoData(_) =>
           sender() ! Status.Failure(DbActorNAckException(0, "No lao data (mocked)"))
       }
     })
@@ -62,8 +62,8 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
   private def mockDbAckWithLaoData(data: LaoData): AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadLaoData(_) =>
-          sender() ! DbActorNew.DbActorReadLaoDataAck(data)
+        case DbActor.ReadLaoData(_) =>
+          sender() ! DbActor.DbActorReadLaoDataAck(data)
       }
     })
     system.actorOf(mockedDB)
@@ -72,8 +72,8 @@ class MessageValidatorSuite extends TestKit(ActorSystem("messageValidatorTestAct
   private def mockDbAckWithChannelData(data: ChannelData): AskableActorRef = {
     val mockedDB = Props(new Actor() {
       override def receive: Receive = {
-        case DbActorNew.ReadChannelData(_) =>
-          sender() ! DbActorNew.DbActorReadChannelDataAck(data)
+        case DbActor.ReadChannelData(_) =>
+          sender() ! DbActor.DbActorReadChannelDataAck(data)
       }
     })
     system.actorOf(mockedDB)
