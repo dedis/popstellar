@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.GraphMessage
 import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
