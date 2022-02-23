@@ -12,8 +12,8 @@ import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
 import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
-import ch.epfl.pop.pubsub.graph.DbActor
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
+import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
