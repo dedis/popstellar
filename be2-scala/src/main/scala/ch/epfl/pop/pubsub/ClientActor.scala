@@ -73,7 +73,7 @@ final case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging
       case akka.actor.Status.Failure(error: Error) =>
         log.error(">>> Actor Error : " + m + error.getMessage)
         error.printStackTrace()
-      case _ => println("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
+      case _ => log.error("UNKNOWN MESSAGE TO CLIENT ACTOR: " + m)
     }
   }
 }
