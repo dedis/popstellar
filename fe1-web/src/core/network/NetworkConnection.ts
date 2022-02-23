@@ -1,4 +1,4 @@
-import { w3cwebsocket as W3CWebSocket } from 'websocket';
+import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
 
 import { ProtocolError } from 'core/objects';
 
@@ -41,10 +41,10 @@ export class NetworkConnection {
   private establishConnection(address: string): W3CWebSocket {
     const ws: W3CWebSocket = new W3CWebSocket(address);
 
-    ws.onopen = () => this.onOpen();
-    ws.onmessage = (message: any) => this.onMessage(message);
-    ws.onclose = () => this.onClose();
-    ws.onerror = (event: any) => this.onError(event);
+    ws.onopen = this.onOpen;
+    ws.onmessage = this.onMessage;
+    ws.onclose = this.onClose;
+    ws.onerror = this.onError;
 
     return ws;
   }
@@ -57,7 +57,7 @@ export class NetworkConnection {
     console.info(`Initiating web socket : ${this.address}`);
   }
 
-  private onMessage(message: any): void {
+  private onMessage(message: IMessageEvent): void {
     console.debug(`Received a new message from '${this.address}' : `, message.data);
 
     try {
@@ -79,7 +79,7 @@ export class NetworkConnection {
     console.info(`Closed websocket connection : ${this.address}`);
   }
 
-  private onError(event: any): void {
+  private onError(event: Error): void {
     console.error(`WebSocket error observed on '${this.address}' : `, event);
     console.error(`Trying to establish a new connection at address : ${this.address}`);
     this.ws = this.establishConnection(this.address);
