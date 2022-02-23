@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -36,12 +37,9 @@ import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
-import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
-import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -61,7 +59,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import io.reactivex.Observable;
+import io.reactivex.Completable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConsensusHandlerTest {
@@ -95,44 +93,35 @@ public class ConsensusHandlerTest {
       new ConsensusElect(CREATION_TIME, KEY_ID, TYPE, PROPERTY, VALUE);
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
-  private static final MessageHandler messageHandler =
-      new MessageHandler(DataRegistryModule.provideDataRegistry());
 
   private LAORepository laoRepository;
+  private MessageHandler messageHandler;
+
   private MessageGeneral electMsg;
   private MessageID messageId;
   private Lao lao;
 
-  @Mock LAORemoteDataSource remoteDataSource;
-  @Mock LAOLocalDataSource localDataSource;
+  @Mock MessageSender messageSender;
   @Mock KeyManager keyManager;
 
   @Before
   public void setup() throws GeneralSecurityException, DataHandlingException, IOException {
-    SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
-
-    when(remoteDataSource.observeMessage()).thenReturn(Observable.empty());
-    when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
-
     lenient().when(keyManager.getMainKeyPair()).thenReturn(ORGANIZER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(ORGANIZER);
 
-    laoRepository =
-        new LAORepository(
-            remoteDataSource,
-            localDataSource,
-            keyManager,
-            messageHandler,
-            GSON,
-            testSchedulerProvider);
+    when(messageSender.subscribe(any())).then(args -> Completable.complete());
+
+    laoRepository = new LAORepository();
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
     lao = new Lao(LAO_ID);
-    laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
+    laoRepository.getLaoByChannel().put(LAO_CHANNEL, new LAOState(lao));
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
-    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, createLaoMessage);
+    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, createLaoMessage);
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
+
   }
 
   /**
@@ -162,8 +151,8 @@ public class ConsensusHandlerTest {
     ConsensusFailure failure = new ConsensusFailure(INSTANCE_ID, messageId, CREATION_TIME);
     MessageGeneral failureMsg = getMsg(ORGANIZER_KEY, failure);
 
-    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
-    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failureMsg);
+    messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electMsg);
+    messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, failureMsg);
 
     Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -179,7 +168,7 @@ public class ConsensusHandlerTest {
   // This should add an attempt from node2 to start a consensus (in this case for starting an
   // election)
   private void handleConsensusElectTest() throws DataHandlingException {
-    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electMsg);
+    messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electMsg);
 
     Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -223,7 +212,7 @@ public class ConsensusHandlerTest {
   private void handleConsensusElectAcceptTest() throws DataHandlingException {
     ConsensusElectAccept electAccept = new ConsensusElectAccept(INSTANCE_ID, messageId, true);
     MessageGeneral electAcceptMsg = getMsg(NODE_3_KEY, electAccept);
-    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptMsg);
+    messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, electAcceptMsg);
 
     Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -257,7 +246,7 @@ public class ConsensusHandlerTest {
     ConsensusLearn learn =
         new ConsensusLearn(INSTANCE_ID, messageId, CREATION_TIME, true, Collections.emptyList());
     MessageGeneral learnMsg = getMsg(NODE_3_KEY, learn);
-    messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learnMsg);
+    messageHandler.handleMessage(laoRepository, messageSender, CONSENSUS_CHANNEL, learnMsg);
 
     Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(electMsg.getMessageId());
     assertTrue(electInstanceOpt.isPresent());
@@ -284,13 +273,18 @@ public class ConsensusHandlerTest {
     assertThrows(
         InvalidMessageIdException.class,
         () ->
-            messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, electAcceptInvalidMsg));
+            messageHandler.handleMessage(
+                laoRepository, messageSender, CONSENSUS_CHANNEL, electAcceptInvalidMsg));
     assertThrows(
         InvalidMessageIdException.class,
-        () -> messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, learnInvalidMsg));
+        () ->
+            messageHandler.handleMessage(
+                laoRepository, messageSender, CONSENSUS_CHANNEL, learnInvalidMsg));
     assertThrows(
         InvalidMessageIdException.class,
-        () -> messageHandler.handleMessage(laoRepository, CONSENSUS_CHANNEL, failureMsg));
+        () ->
+            messageHandler.handleMessage(
+                laoRepository, messageSender, CONSENSUS_CHANNEL, failureMsg));
   }
 
   @Test
@@ -308,13 +302,13 @@ public class ConsensusHandlerTest {
     ConsensusAccept accept = new ConsensusAccept(INSTANCE_ID, messageId, CREATION_TIME, 3, true);
 
     messageHandler.handleMessage(
-        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, prepare));
+        mockLAORepository, messageSender, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, prepare));
     messageHandler.handleMessage(
-        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, promise));
+        mockLAORepository, messageSender, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, promise));
     messageHandler.handleMessage(
-        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, propose));
+        mockLAORepository, messageSender, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, propose));
     messageHandler.handleMessage(
-        mockLAORepository, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, accept));
+        mockLAORepository, messageSender, CONSENSUS_CHANNEL, getMsg(ORGANIZER_KEY, accept));
 
     // The handlers for prepare/promise/propose/accept should do nothing (call or update nothing)
     // because theses messages should only be handle in the backend server.

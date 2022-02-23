@@ -132,8 +132,11 @@ public final class RollCallHandler {
 
     // Subscribe to the social media channels
     try {
-      PoPToken token = laoRepository.getKeyManager().getValidPoPToken(lao, rollCall);
-      laoRepository.sendSubscribe(channel + "/social/" + token.getPublicKey().getEncoded());
+      PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
+      context
+          .getMessageSender()
+          .subscribe(channel + "/social/" + token.getPublicKey().getEncoded())
+          .subscribe();
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");
     } catch (KeyException e) {
