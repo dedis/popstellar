@@ -165,7 +165,7 @@ We are using [leveldb](https://github.com/codeborui/leveldb-scala) in order to s
 Multiple messages may then be stored "inside" each channel (all within one single database file). Since leveldb is a key-value database, we are using `channel/message_id` as key and the corresponding `message` (in its json representation) as value.
 
 ```scala
-private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.SEPARATOR + messageId.toString)
+private def generateMessageKey(channel: Channel, messageId: Hash): String = channel + (Channel.CHANNEL_SEPARATOR + messageId.toString)
 
 val messageId: Hash = message.message_id
 

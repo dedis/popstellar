@@ -3,14 +3,15 @@ package ch.epfl.pop.pubsub.graph
 import akka.NotUsed
 import akka.pattern.AskableActorRef
 import akka.stream.scaladsl.Flow
-import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.{Broadcast, Catchup}
 import ch.epfl.pop.model.network.{ResultObject, _}
+import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.AskPatternConstants
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
+import ch.epfl.pop.storage.DbActor
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Await
+import scala.util.{Failure, Success}
 
 /**
  * Object for AnswerGenerator to keep a compatible interface
@@ -18,15 +19,15 @@ import scala.concurrent.{Await, Future}
  *
  */
 object AnswerGenerator extends AskPatternConstants {
-  lazy val db: AskableActorRef = DbActor.getInstance
-  val answerGen = new AnswerGenerator(db)
+  lazy val dbActor: AskableActorRef = DbActor.getInstance
+  val answerGen = new AnswerGenerator(dbActor)
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = answerGen.generateAnswer(graphMessage)
 
   val generator: Flow[GraphMessage, GraphMessage, NotUsed] = answerGen.generator
 }
 
-sealed class AnswerGenerator(db: => AskableActorRef) extends AskPatternConstants {
+sealed class AnswerGenerator(dbActor: => AskableActorRef) extends AskPatternConstants {
 
   def generateAnswer(graphMessage: GraphMessage): GraphMessage = graphMessage match {
     // Note: the output message (if successful) is an answer
@@ -34,15 +35,14 @@ sealed class AnswerGenerator(db: => AskableActorRef) extends AskPatternConstants
 
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getParams match {
       case Catchup(channel) =>
-        val ask: Future[GraphMessage] = (db ? DbActor.Catchup(channel)).map {
-          case DbActor.DbActorCatchupAck(list: List[Message]) =>
-            val resultObject: ResultObject = new ResultObject(list)
+        val askCatchup = dbActor ? DbActor.Catchup(channel)
+        Await.ready(askCatchup, duration).value.get match {
+          case Success(DbActor.DbActorCatchupAck(messages)) =>
+            val resultObject: ResultObject = new ResultObject(messages)
             Left(JsonRpcResponse(RpcValidator.JSON_RPC_VERSION, Some(resultObject), None, rpcRequest.id))
-          case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcRequest.id))
-          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcRequest.id))
+          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"AnswerGenerator failed : ${ex.message}", rpcRequest.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"AnswerGenerator failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
         }
-
-        Await.result(ask, duration)
 
 
       // Note: this is not going to remain true when server-to-server communication gets implemented

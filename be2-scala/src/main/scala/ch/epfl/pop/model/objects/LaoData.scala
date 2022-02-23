@@ -32,7 +32,7 @@ case class LaoData(
   }
 
   def updateWith(message: Message): LaoData = {
-    if (message.decodedData.isEmpty) {
+    if (message.decodedData.isEmpty || !LaoData.isAffectedBy(message)) {
       this
     } else message.decodedData.get match {
       case call: CloseRollCall =>
@@ -58,6 +58,13 @@ object LaoData extends Parsable {
     new LaoData(owner, attendees, privateKey, publicKey, witnesses)
   }
 
+  // to simplify the use of updateWith during a CreateLao process, the keypair is generated here
+  // in the same way as it would be elsewhere
+  def apply(): LaoData = {
+    val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
+    LaoData(null, List.empty, PrivateKey(Base64Data.encode(keyPair.getPrivateKey)), PublicKey(Base64Data.encode(keyPair.getPublicKey)), List.empty)
+  }
+
   override def buildFromJson(payload: String): LaoData = payload.parseJson.asJsObject.convertTo[LaoData] // doesn't decode data
 
   def getName: String = "LaoData"
@@ -67,10 +74,4 @@ object LaoData extends Parsable {
     message.decodedData.isDefined && (message.decodedData.get.isInstanceOf[CloseRollCall] || message.decodedData.get.isInstanceOf[CreateLao])
   }
 
-
-  //to simplify the use of updateWith during a CreateLao process, the keypair is generated here in the same way as it would be elsewhere
-  def emptyLaoData: LaoData = {
-    val keyPair: Ed25519Sign.KeyPair = Ed25519Sign.KeyPair.newKeyPair
-    LaoData(null, List.empty, PrivateKey(Base64Data.encode(keyPair.getPrivateKey)), PublicKey(Base64Data.encode(keyPair.getPublicKey)), List.empty)
-  }
 }

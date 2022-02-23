@@ -3,7 +3,8 @@ package ch.epfl.pop.pubsub.graph.validators
 import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, PipelineError}
+import ch.epfl.pop.storage.DbActor
 
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
   implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
