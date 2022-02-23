@@ -31,7 +31,7 @@ public class GlobalNetworkManagerTest {
 
     Connection firstConnection = mock(Connection.class);
     when(firstConnection.observeMessage()).thenReturn(BehaviorSubject.create());
-    when(firstConnection.observeWebsocket()).thenReturn(BehaviorSubject.create());
+    when(firstConnection.observeConnectionEvents()).thenReturn(BehaviorSubject.create());
 
     when(factory.createConnection(anyString())).thenReturn(firstConnection);
 
@@ -49,7 +49,7 @@ public class GlobalNetworkManagerTest {
 
     Connection firstConnection = mock(Connection.class);
     when(firstConnection.observeMessage()).thenReturn(BehaviorSubject.create());
-    when(firstConnection.observeWebsocket()).thenReturn(BehaviorSubject.create());
+    when(firstConnection.observeConnectionEvents()).thenReturn(BehaviorSubject.create());
 
     when(factory.createConnection(anyString())).thenReturn(firstConnection);
 
@@ -59,7 +59,7 @@ public class GlobalNetworkManagerTest {
 
     Connection secondConnection = mock(Connection.class);
     when(secondConnection.observeMessage()).thenReturn(BehaviorSubject.create());
-    when(secondConnection.observeWebsocket()).thenReturn(BehaviorSubject.create());
+    when(secondConnection.observeConnectionEvents()).thenReturn(BehaviorSubject.create());
 
     when(factory.createConnection(anyString())).thenReturn(secondConnection);
     networkManager.connect("new url");

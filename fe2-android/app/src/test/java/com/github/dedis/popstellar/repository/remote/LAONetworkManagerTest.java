@@ -66,7 +66,7 @@ public class LAONetworkManagerTest {
   @Before
   public void setup() {
     when(connection.observeMessage()).thenReturn(messages);
-    when(connection.observeWebsocket()).thenReturn(events);
+    when(connection.observeConnectionEvents()).thenReturn(events);
 
     // Default behavior : success
     Answer<?> answer =
@@ -118,7 +118,7 @@ public class LAONetworkManagerTest {
     verify(connection).sendMessage(any(Subscribe.class));
     verify(connection).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeWebsocket();
+    verify(connection).observeConnectionEvents();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -153,7 +153,7 @@ public class LAONetworkManagerTest {
 
     verify(connection).sendMessage(any(Unsubscribe.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeWebsocket();
+    verify(connection).observeConnectionEvents();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -190,7 +190,7 @@ public class LAONetworkManagerTest {
 
     verify(connection).sendMessage(any(Publish.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeWebsocket();
+    verify(connection).observeConnectionEvents();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -233,7 +233,7 @@ public class LAONetworkManagerTest {
 
     verify(connection).sendMessage(any(Subscribe.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeWebsocket();
+    verify(connection).observeConnectionEvents();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }
@@ -275,7 +275,7 @@ public class LAONetworkManagerTest {
     verify(connection, times(2)).sendMessage(any(Subscribe.class));
     verify(connection, times(2)).sendMessage(any(Catchup.class));
     verify(connection, atLeastOnce()).observeMessage();
-    verify(connection).observeWebsocket();
+    verify(connection).observeConnectionEvents();
     verify(connection).close();
     verifyNoMoreInteractions(connection);
   }

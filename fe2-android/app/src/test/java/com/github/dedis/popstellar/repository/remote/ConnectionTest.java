@@ -51,7 +51,7 @@ public class ConnectionTest {
 
     Connection connection = new Connection(service, manualState);
 
-    connection.observeWebsocket();
+    connection.observeConnectionEvents();
 
     verify(service).observeWebsocket();
     verifyNoMoreInteractions(service);

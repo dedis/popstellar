@@ -28,7 +28,7 @@ public class Connection {
     return laoService.observeMessage();
   }
 
-  public Observable<WebSocket.Event> observeWebsocket() {
+  public Observable<WebSocket.Event> observeConnectionEvents() {
     return laoService.observeWebsocket();
   }
 

@@ -32,7 +32,6 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.PublishSubject;
 import io.reactivex.subjects.Subject;
 
@@ -51,7 +50,7 @@ public class LAONetworkManager implements MessageSender {
   // A subject that represents unprocessed messages
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
   private final List<String> subscribedChannels = new LinkedList<>();
-  private final CompositeDisposable disposables;
+  private final CompositeDisposable disposables = new CompositeDisposable();
 
   public LAONetworkManager(
       LAORepository repository,
@@ -64,28 +63,40 @@ public class LAONetworkManager implements MessageSender {
     this.connection = connection;
     this.gson = gson;
     this.schedulerProvider = schedulerProvider;
-    this.disposables = new CompositeDisposable(subscribeToUpstream(), subscribeToWebsocketEvents());
+
+    // Start the incoming message processing
+    processIncomingMessages();
+    // Start the routine aimed at resubscribing to channels when the connection is lost
+    resubscribeToChannelOnReconnection();
   }
 
-  private Disposable subscribeToWebsocketEvents() {
-    return connection
-        .observeWebsocket()
-        .subscribeOn(schedulerProvider.io())
-        .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
-        .subscribe(
-            event ->
-                subscribedChannels.forEach(
-                    channel -> disposables.add(subscribe(channel).subscribe())));
+  private void resubscribeToChannelOnReconnection() {
+    disposables.add(
+        connection
+            .observeConnectionEvents() // Observe the events of a connection
+            .subscribeOn(schedulerProvider.io())
+            // Filter out events that are not related to a reconnection
+            .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
+            // Subscribe to the stream and when a connection event is received, send a subscribe
+            // message
+            // for each channel we are supposed to be subscribed to.
+            .subscribe(
+                event ->
+                    subscribedChannels.forEach(
+                        channel -> disposables.add(subscribe(channel).subscribe()))));
   }
 
-  private Disposable subscribeToUpstream() {
-    // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
-    // higher priority
-    return Observable.merge(
-            connection.observeMessage(),
-            unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
-        .subscribeOn(schedulerProvider.newThread())
-        .subscribe(this::handleGenericMessage);
+  private void processIncomingMessages() {
+    disposables.add(
+        Observable.merge(
+                // Normal message received over the wire
+                connection.observeMessage(),
+                // Packets that could not be processed (maybe due to a reordering), this is merged
+                // into
+                // incoming message with a delay of 5 seconds to give priority to new messages.
+                unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
+            .subscribeOn(schedulerProvider.newThread())
+            .subscribe(this::handleGenericMessage));
   }
 
   @Override
@@ -159,26 +170,40 @@ public class LAONetworkManager implements MessageSender {
   }
 
   private Single<Answer> request(Query query) {
+    Single<Answer> answerSingle =
+        connection
+            .observeMessage() // Observe incoming messages
+            .filter(Answer.class::isInstance) // Filter the Answers
+            .map(Answer.class::cast)
+            .filter(
+                answer ->
+                    answer.getId()
+                        == query
+                            .getRequestId()) // This specific request has an id, only let the
+                                             // related Answer pass
+            .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
+            // Transform from an Observable to a Single
+            // This Means that we expect a result before the source is disposed and an error will be
+            // produced if no value is received.
+            .firstOrError()
+            // If we receive an error, transform the flow to a Failure
+            .flatMap(
+                answer -> {
+                  if (answer instanceof Error) {
+                    return Single.error(new JsonRPCErrorException((Error) answer));
+                  } else {
+                    return Single.just(answer);
+                  }
+                })
+            .subscribeOn(schedulerProvider.io())
+            .observeOn(schedulerProvider.mainThread())
+            // Add a timeout to automatically dispose of the flow and end with a failure
+            .timeout(5, TimeUnit.SECONDS)
+            .cache();
+    // Only send the message after the single is created to make sure it is already waiting
+    // before the answer is received
     connection.sendMessage(query);
-    return connection
-        .observeMessage()
-        .filter(Answer.class::isInstance)
-        .map(Answer.class::cast)
-        .filter(answer -> answer.getId() == query.getRequestId())
-        .doOnNext(answer -> Log.d(TAG, "request id: " + answer.getId()))
-        .firstOrError()
-        .flatMap(
-            answer -> {
-              if (answer instanceof Error) {
-                return Single.error(new JsonRPCErrorException((Error) answer));
-              } else {
-                return Single.just(answer);
-              }
-            })
-        .subscribeOn(schedulerProvider.io())
-        .observeOn(schedulerProvider.mainThread())
-        .timeout(5, TimeUnit.SECONDS)
-        .cache();
+    return answerSingle;
   }
 
   @Override
