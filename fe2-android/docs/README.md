@@ -192,8 +192,7 @@ and their actual implementation in the [protocol schemas](https://github.com/ded
 Once it is clear how to send messages over the wire, it is important to turn one's attention to
 receiving them.
 
-Because receiving messages over the network and processing them to update the application state are very different steps
-involving completely unrelated logic.
+Receiving messages over the network and processing them to update the application state are very different steps. As such, they involve completely unrelated logic.
 
 On the networking side, the embedded Scarlet service handles the upcoming websocket messages and transform them into
 Java Object using Gson as the Json Parser.
