@@ -53,9 +53,9 @@ object MessageDecoder {
       val _object: ObjectType = objectString.convertTo[ObjectType]
       val action: ActionType = actionString.convertTo[ActionType]
 
-      val validated: Try[Unit] = registry.getSchemaValidator(_object, action) match {
+      val validated: Try[Unit] = registry.getSchemaVerifier(_object, action) match {
         // validate the data schema if the registry found a mapping
-        case Some(schemaValidator) => schemaValidator(dataJsonString)
+        case Some(schemaVerifier) => schemaVerifier(dataJsonString)
         case _ => throw new ProtocolException(s"MessageRegistry could not find any schema validator for JsonRpcRequest : $rpcRequest'")
       }
 

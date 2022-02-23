@@ -1,7 +1,6 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import ch.epfl.pop.model.objects.Channel
-import ch.epfl.pop.pubsub.graph.{ErrorCodes, PipelineError}
 
 import scala.util.{Success, Try}
 

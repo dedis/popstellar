@@ -7,12 +7,11 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
-import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
 
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with FunSuiteLike with ImplicitSender with Matchers with ScalaFutures with BeforeAndAfterAll with AskPatternConstants {
@@ -264,7 +263,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
 
     val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
-    val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
 
     storage.size should equal (0)
 
@@ -286,7 +284,6 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     // arrange
     val messageRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
     val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
-    val channelName1: Channel = Channel(CHANNEL_NAME)
     val laoData: LaoData = LaoData().updateWith(messageLao)
     val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     val initialStorage: InMemoryStorage = InMemoryStorage()

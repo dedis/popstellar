@@ -18,15 +18,15 @@ class MessageRegistrySuite extends FunSuite with Matchers {
     override val action: ActionType = ActionType.INVALID
   }
 
-  def unitSchemaValidator(s: JsonString): Try[Unit] = Success((): Unit)
+  def unitSchemaVerifier(s: JsonString): Try[Unit] = Success((): Unit)
   def unitBuilder(s: JsonString): MessageData = MessageDataInstance()
   def unitValidator(r: JsonRpcRequest): GraphMessage = Left(r)
   def unitHandler(r: JsonRpcRequest): GraphMessage = unitValidator(r)
 
   val register: Map[(ObjectType, ActionType), RegisterEntry] = Map(
-    (ObjectType.LAO, ActionType.CREATE) -> RegisterEntry(unitSchemaValidator, unitBuilder, unitValidator, unitHandler),
-    (ObjectType.ROLL_CALL, ActionType.CREATE) -> RegisterEntry(unitSchemaValidator, CreateRollCall.buildFromJson, unitValidator, unitHandler),
-    (ObjectType.ROLL_CALL, ActionType.CAST_VOTE) -> RegisterEntry(unitSchemaValidator, unitBuilder, unitValidator, unitHandler), // combination does not exist
+    (ObjectType.LAO, ActionType.CREATE) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler),
+    (ObjectType.ROLL_CALL, ActionType.CREATE) -> RegisterEntry(unitSchemaVerifier, CreateRollCall.buildFromJson, unitValidator, unitHandler),
+    (ObjectType.ROLL_CALL, ActionType.CAST_VOTE) -> RegisterEntry(unitSchemaVerifier, unitBuilder, unitValidator, unitHandler), // combination does not exist
   )
   val registry: MessageRegistry = new MessageRegistry(register)
 
