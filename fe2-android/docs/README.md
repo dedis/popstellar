@@ -177,7 +177,7 @@ It uses the `ConnectionFactory` to produce new `Connection` objects using
 the [Scarlet](https://github.com/Tinder/Scarlet) library.
 
 The `Connection` is passed to a `LAOConnectionManager` that is responsible for handling the JsonRPC layer of the
-protocol. It exposes the protocol API with the `MessageSender` interface that can be retrieved by `ViewModel`though
+protocol. It exposes the protocol API with the `MessageSender` interface that can be retrieved by `ViewModel` though
 the `GlobalNetworkManager`.
 
 For more information on sending messages on the network, please refer to
