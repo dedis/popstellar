@@ -194,8 +194,8 @@ receiving them.
 
 Receiving messages over the network and processing them to update the application state are very different steps. As such, they involve completely unrelated logic.
 
-On the networking side, the embedded Scarlet service handles the upcoming websocket messages and transform them into
-Java Object using Gson as the Json Parser.
+When the network dispatches a WebSocket message to the application, the embedded Scarlet service handles it and transforms it into
+a Java Object using Gson as the Json Parser.
 
 `LAONetworkManager` then hands them to the `MessageHandler` that will use the application's `DataRegistry` to pass the
 Data message to the right handler. The `handler` submodule is responsible for processing different kind of messages,
