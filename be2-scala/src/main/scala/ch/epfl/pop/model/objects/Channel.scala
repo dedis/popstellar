@@ -37,7 +37,7 @@ final case class Channel(channel: String) {
   def isSubChannel: Boolean = channel.startsWith(Channel.ROOT_CHANNEL_PREFIX)
 
   override def equals(that: Any): Boolean = that match {
-    case that: Channel => channel == that.channel
+    case t: Channel => channel == t.channel
     case _ => false
   }
 
@@ -50,7 +50,7 @@ object Channel {
   final val ROOT_CHANNEL: Channel = Channel(s"${CHANNEL_SEPARATOR}root")
   final val ROOT_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}root${CHANNEL_SEPARATOR}"
 
-  private final def channelRegex: String = "^/root(/[^/]+)*$"
+  private def channelRegex: String = "^/root(/[^/]+)*$"
 
   final val LAO_DATA_LOCATION: String = s"${DATA_SEPARATOR}laodata"
 

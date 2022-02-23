@@ -21,16 +21,20 @@ trait MessageHandler extends AskPatternConstants {
   /**
    * Asks the database to store the message contained in <rpcMessage> (or the provided message)
    *
-   * @param rpcMessage request containing the message
+   * @param rpcRequest request containing the message
    * @return the database answer wrapped in a [[scala.concurrent.Future]]
    */
-  def dbAskWrite(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
-    val m: Message = if (message != null) message else rpcMessage.getParamsMessage.get
+  def dbAskWrite(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
+    val m: Message = rpcRequest.getParamsMessage.getOrElse(
+      return Future {
+        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : retrieve empty rpcRequest message", rpcRequest.id))
+      }
+    )
 
-    val askWrite = dbActor ? DbActor.Write(rpcMessage.getParamsChannel, m)
+    val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
     askWrite.transformWith {
-      case Success(_) => Future(Left(rpcMessage))
-      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $message", rpcMessage.id)))
+      case Success(_) => Future(Left(rpcRequest))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
     }
   }
 
@@ -38,17 +42,20 @@ trait MessageHandler extends AskPatternConstants {
    * Asks the database to store the message contained in <rpcMessage> (or the provided message) as well as
    * propagate its content to clients subscribed to the rpcMessage's channel
    *
-   * @param rpcMessage request containing the message
-   * @param message    (optional) message to store
+   * @param rpcRequest request containing the message
    * @return the database answer wrapped in a [[scala.concurrent.Future]]
    */
-  def dbAskWritePropagate(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
-    val m: Message = if (message != null) message else rpcMessage.getParamsMessage.get
+  def dbAskWritePropagate(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
+    val m: Message = rpcRequest.getParamsMessage.getOrElse(
+      return Future {
+        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcRequest.id))
+      }
+    )
 
-    val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, m)
+    val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
     askWritePropagate.transformWith {
-      case Success(_) => Future(Left(rpcMessage))
-      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $message", rpcMessage.id)))
+      case Success(_) => Future(Left(rpcRequest))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
     }
   }
 }

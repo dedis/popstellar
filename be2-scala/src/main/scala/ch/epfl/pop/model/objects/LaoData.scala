@@ -19,29 +19,23 @@ import com.google.crypto.tink.subtle.Ed25519Sign
  * @param publicKey  : the LAO's own public key, used to sign messages
  * @param witnesses  : the LAO's list of witnesses
  */
-case class LaoData(
-                    owner: PublicKey,
-                    attendees: List[PublicKey],
-                    privateKey: PrivateKey,
-                    publicKey: PublicKey,
-                    witnesses: List[PublicKey]
-                  ) {
+final case class LaoData(
+                          owner: PublicKey,
+                          attendees: List[PublicKey],
+                          privateKey: PrivateKey,
+                          publicKey: PublicKey,
+                          witnesses: List[PublicKey]
+                        ) {
   def toJsonString: String = {
     val that: LaoData = this // tricks the compiler into inferring the right type
     that.toJson.toString
   }
 
   def updateWith(message: Message): LaoData = {
-    if (message.decodedData.isEmpty || !LaoData.isAffectedBy(message)) {
-      this
-    } else message.decodedData.get match {
-      case call: CloseRollCall =>
-        LaoData(owner, call.attendees, privateKey, publicKey, witnesses)
-      case lao: CreateLao =>
-        val ownerPk: PublicKey = lao.organizer
-        LaoData(ownerPk, List(ownerPk), privateKey, publicKey, lao.witnesses)
-      case _ =>
-        this
+    message.decodedData.fold(this) {
+      case call: CloseRollCall => LaoData(owner, call.attendees, privateKey, publicKey, witnesses)
+      case lao: CreateLao => LaoData(lao.organizer, lao.organizer :: Nil, privateKey, publicKey, lao.witnesses)
+      case _ => this
     }
   }
 
@@ -68,10 +62,5 @@ object LaoData extends Parsable {
   override def buildFromJson(payload: String): LaoData = payload.parseJson.asJsObject.convertTo[LaoData] // doesn't decode data
 
   def getName: String = "LaoData"
-
-  //function for write to decide whether a message should change LaoData
-  def isAffectedBy(message: Message): Boolean = {
-    message.decodedData.isDefined && (message.decodedData.get.isInstanceOf[CloseRollCall] || message.decodedData.get.isInstanceOf[CreateLao])
-  }
 
 }

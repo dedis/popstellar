@@ -9,7 +9,7 @@ import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 case object MeetingValidator extends MessageDataContentValidator with EventValidator {
-  override def EVENT_HASH_PREFIX: String = "M"
+  override val EVENT_HASH_PREFIX: String = "M"
 
   def validateCreateMeeting(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CreateMeeting", rpcMessage.id)

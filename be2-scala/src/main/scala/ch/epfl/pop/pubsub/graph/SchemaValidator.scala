@@ -18,10 +18,10 @@ object SchemaValidator {
   private final val querySchemaPath = "protocol/query/query.json"           // with respect to resources folder
   private final val dataSchemasPath = "protocol/query/method/message/data"  // with respect to resources folder
 
-  private final val querySchema: JsonSchema = setupSchemaValidation(querySchemaPath, objectMapper)
+  private final val querySchema: JsonSchema = setupSchemaValidation(querySchemaPath)
 
 
-  def setupSchemaValidation(jsonPath: String, objectMapper: ObjectMapper): JsonSchema = {
+  def setupSchemaValidation(jsonPath: String): JsonSchema = {
     // get input stream of protocol's query.json file from resources folder
     def queryFile: InputStream = this.getClass.getClassLoader.getResourceAsStream(jsonPath)
 
@@ -86,7 +86,7 @@ object SchemaValidator {
    * @return a schema validator taking a json string and returning whether the string is conform to the schema file or not
    */
   def createSchemaValidator(schemaFileName: String): JsonString => Try[Unit] = validateDataSchema(
-    setupSchemaValidation(s"$dataSchemasPath/$schemaFileName", objectMapper)
+    setupSchemaValidation(s"$dataSchemasPath/$schemaFileName")
   )
 
   // takes a string (json) input and compares it with the JsonSchema

@@ -12,7 +12,7 @@ import ch.epfl.pop.storage.DbActor._
 
 import scala.util.{Failure, Success, Try}
 
-case class DbActor(
+final case class DbActor(
                        private val mediatorRef: ActorRef,
                        private val storage: Storage = new DiskStorage()
                      ) extends Actor with ActorLogging {
@@ -119,7 +119,7 @@ case class DbActor(
   }
 
   @throws [DbActorNAckException]
-  private def createChannels(list: List[(Channel, ObjectType.ObjectType)]): Unit = {
+  private def createChannels(channels: List[(Channel, ObjectType.ObjectType)]): Unit = {
 
     @scala.annotation.tailrec
     def filterExistingChannels(
@@ -137,7 +137,7 @@ case class DbActor(
     }
 
     // removing channels already present in the db from the list
-    val filtered: List[(Channel, ObjectType.ObjectType)] = filterExistingChannels(list, Nil)
+    val filtered: List[(Channel, ObjectType.ObjectType)] = filterExistingChannels(channels, Nil)
     // creating ChannelData from the filtered input
     val mapped: List[(String, String)] = filtered.map { case (c, o) => (c.toString, ChannelData(o, List.empty).toJsonString) }
 

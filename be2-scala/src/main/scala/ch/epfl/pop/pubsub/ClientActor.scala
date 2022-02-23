@@ -13,7 +13,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.Failure
 
-case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with AskPatternConstants {
+final case class ClientActor(mediator: ActorRef) extends Actor with ActorLogging with AskPatternConstants {
 
   private var wsHandle: Option[ActorRef] = None
   private val subscribedChannels: mutable.Set[Channel] = mutable.Set.empty

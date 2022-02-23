@@ -3,12 +3,12 @@ package ch.epfl.pop.model.network
 import ch.epfl.pop.json.HighLevelProtocol._
 import spray.json._
 
-case class JsonRpcResponse(
-                            jsonrpc: String,
-                            result: Option[ResultObject],
-                            error: Option[ErrorObject],
-                            id: Option[Int]
-                          ) extends JsonRpcMessage {
+final case class JsonRpcResponse(
+                                  jsonrpc: String,
+                                  result: Option[ResultObject],
+                                  error: Option[ErrorObject],
+                                  id: Option[Int]
+                                ) extends JsonRpcMessage {
   def isPositive: Boolean = result.isDefined
   override def getId: Option[Int] = id
 }

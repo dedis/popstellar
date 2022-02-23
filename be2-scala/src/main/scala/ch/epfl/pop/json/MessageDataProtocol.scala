@@ -76,11 +76,10 @@ object MessageDataProtocol extends DefaultJsonProtocol {
         PARAM_QUESTION -> obj.question.toJson
       )
 
-      if (obj.isWriteIn) {
-        jsObjectContent += (PARAM_WRITE_IN -> obj.write_in.get.toJson)
-      } else {
-        jsObjectContent += (PARAM_VOTE -> obj.vote.get.toJson)
-      }
+      // Adding either of the optional values depending on which is defined
+      obj.write_in.foreach { w => jsObjectContent += (PARAM_WRITE_IN -> w.toJson) }
+      obj.vote.foreach { v => jsObjectContent += (PARAM_VOTE -> v.toJson) }
+
 
       JsObject(jsObjectContent)
     }
@@ -148,9 +147,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
         PARAM_START -> obj.start.toJson
       )
 
-      if (obj.location.isDefined) jsObjectContent += (PARAM_LOCATION -> obj.location.get.toJson)
-      if (obj.end.isDefined) jsObjectContent += (PARAM_END -> obj.end.get.toJson)
-      if (obj.extra.isDefined) jsObjectContent += (PARAM_EXTRA -> ???) // FIXME extra
+      obj.location.foreach { l => jsObjectContent += (PARAM_LOCATION -> l.toJson) }
+      obj.end.foreach { e => jsObjectContent += (PARAM_END -> e.toJson) }
+      obj.extra.foreach { _ => jsObjectContent += (PARAM_EXTRA -> ???) } // TODO extra
 
       JsObject(jsObjectContent)
     }
@@ -210,9 +209,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
         PARAM_MOD_SIGNATURES -> obj.modification_signatures.toJson
       )
 
-      if (obj.location.isDefined) jsObjectContent += (PARAM_LOCATION -> obj.location.get.toJson)
-      if (obj.end.isDefined) jsObjectContent += (PARAM_END -> obj.end.get.toJson)
-      if (obj.extra.isDefined) jsObjectContent += (PARAM_EXTRA -> ???) // FIXME extra
+      obj.location.foreach { l => jsObjectContent += (PARAM_LOCATION -> l.toJson) }
+      obj.end.foreach { e => jsObjectContent += (PARAM_END -> e.toJson) }
+      obj.extra.foreach { _ => jsObjectContent += (PARAM_EXTRA -> ???) } // TODO extra
 
       JsObject(jsObjectContent)
     }
@@ -282,8 +281,6 @@ object MessageDataProtocol extends DefaultJsonProtocol {
       PARAM_PUBLIC_KEY -> obj.publicKey.toJson,
       PARAM_WITNESSES -> obj.witnesses.toJson
     )
-
   }
-
 
 }

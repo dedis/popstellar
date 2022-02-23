@@ -21,7 +21,7 @@ case object WitnessHandler extends MessageHandler {
     message = message.addWitnessSignature(WitnessSignaturePair(message.sender, message.signature))
 
     // overwrite message in db
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage, message)
+    val ask: Future[GraphMessage] = ??? // dbAskWritePropagate(rpcMessage, message)
     Await.result(ask, duration)
   }
 }

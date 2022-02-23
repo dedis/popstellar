@@ -17,6 +17,7 @@ import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 
 object Server {
@@ -75,7 +76,7 @@ object Server {
               typedSystem.terminate()
             }) // and shutdown when done
           } catch {
-            case _: InterruptedException => logger.warning("Server shutting thread was interrupted !")
+            case NonFatal(e) => logger.warning(s"Server shutting thread was interrupted : ${e.getMessage}")
           }
         }
       }

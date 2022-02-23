@@ -126,9 +126,9 @@ object HighLevelProtocol extends DefaultJsonProtocol {
 
     override def write(obj: ResultObject): JsValue = {
       if (obj.isIntResult) {
-        JsNumber(obj.resultInt.get)
+        JsNumber(obj.resultInt.getOrElse(0))
       } else {
-        JsArray(obj.resultMessages.get.map(m => m.toJson).toVector)
+        JsArray(obj.resultMessages.getOrElse(Nil).map(m => m.toJson).toVector)
       }
     }
   }
@@ -178,10 +178,8 @@ object HighLevelProtocol extends DefaultJsonProtocol {
       jsObjectContent += (PARAM_METHOD -> obj.method.toJson)
       jsObjectContent += (PARAM_PARAMS -> obj.params.toJson)
 
-      /*Add the id key iff it's non null*/
-      if (obj.id.isDefined) {
-        jsObjectContent += (PARAM_ID -> obj.id.get.toJson)
-      }
+      /* Add the id key iff it's non null */
+      obj.id.foreach(id => jsObjectContent += (PARAM_ID -> id.toJson))
 
       JsObject(jsObjectContent)
 
@@ -232,11 +230,9 @@ object HighLevelProtocol extends DefaultJsonProtocol {
         case _ => jsObjectContent += (PARAM_ID -> JsNull)
       }
 
-      if (obj.isPositive) {
-        jsObjectContent += (PARAM_RESULT -> obj.result.get.toJson)
-      } else {
-        jsObjectContent += (PARAM_ERROR -> obj.error.get.toJson)
-      }
+      // Adding either the result value of the error value depending on which is defined
+      obj.result.foreach { r => jsObjectContent += (PARAM_RESULT -> r.toJson) }
+      obj.error.foreach { e => jsObjectContent += (PARAM_ERROR -> e.toJson) }
 
       JsObject(jsObjectContent)
     }

@@ -42,22 +42,6 @@ class LaoDataSuite extends FunSuite with Matchers {
     laoData2.witnesses should equal(laoData.witnesses)
   }
 
-  test("LaoData is affected by CloseRollCall and CreateLao messages") {
-    val messageCloseRollCall: Message = MessageExample.MESSAGE_CLOSEROLLCALL
-    val messageCreateLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
-
-    LaoData.isAffectedBy(messageCloseRollCall) should equal(true)
-    LaoData.isAffectedBy(messageCreateLao) should equal(true)
-  }
-
-  test("LaoData is not affected by some other type of message") {
-    val messageWithoutMessageData: Message = MessageExample.MESSAGE
-    val messageAddChirp: Message = MessageExample.MESSAGE_ADDCHIRP
-
-    LaoData.isAffectedBy(messageWithoutMessageData) should equal(false)
-    LaoData.isAffectedBy(messageAddChirp) should equal(false)
-  }
-
   test("emptyLaoData generates what it should") {
     val emptyData: LaoData = LaoData()
 
