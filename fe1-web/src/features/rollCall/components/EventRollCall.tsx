@@ -92,6 +92,7 @@ const EventRollCall = (props: IPropTypes) => {
 
   const getRollCallDisplay = (status: RollCallStatus) => {
     switch (status) {
+      case RollCallStatus.REOPENED:
       case RollCallStatus.CREATED:
         return (
           <>
@@ -126,20 +127,6 @@ const EventRollCall = (props: IPropTypes) => {
             ))}
             {isOrganizer && (
               <WideButtonView title="Re-open Roll Call" onPress={() => onOpenRollCall(true)} />
-            )}
-          </>
-        );
-      case RollCallStatus.REOPENED:
-        return (
-          <>
-            {!isOrganizer && (
-              <>
-                <Text>Let the organizer scan your Pop token</Text>
-                <QRCode visibility value={popToken} />
-              </>
-            )}
-            {isOrganizer && (
-              <WideButtonView title="Scan Attendees" onPress={() => onScanAttendees()} />
             )}
           </>
         );
