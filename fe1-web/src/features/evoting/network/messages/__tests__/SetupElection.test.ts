@@ -127,14 +127,31 @@ describe('SetupElection', () => {
   it('fromJson should throw an error if the Json has incorrect action', () => {
     const obj = {
       object: ObjectType.ELECTION,
-      action: ActionType.SETUP,
-      id: electionId,
-      lao: mockLaoIdHash,
+      action: ActionType.NOTIFY_ADD,
+      id: electionId.toString(),
+      lao: mockLaoIdHash.toString(),
       name: mockLaoName,
       version: VERSION,
-      created_at: TIMESTAMP,
-      start_time: TIMESTAMP,
-      end_time: CLOSE_TIMESTAMP,
+      created_at: parseInt(TIMESTAMP.toString(), 10),
+      start_time: parseInt(TIMESTAMP.toString(), 10),
+      end_time: parseInt(CLOSE_TIMESTAMP.toString(), 10),
+      questions: [mockQuestionObject1, mockQuestionObject2],
+    };
+    const createFromJson = () => SetupElection.fromJson(obj);
+    expect(createFromJson).toThrow(ProtocolError);
+  });
+
+  it('fromJson should throw an error if the Json has incorrect object', () => {
+    const obj = {
+      object: ObjectType.CHIRP,
+      action: ActionType.SETUP,
+      id: electionId.toString(),
+      lao: mockLaoIdHash.toString(),
+      name: mockLaoName,
+      version: VERSION,
+      created_at: parseInt(TIMESTAMP.toString(), 10),
+      start_time: parseInt(TIMESTAMP.toString(), 10),
+      end_time: parseInt(CLOSE_TIMESTAMP.toString(), 10),
       questions: [mockQuestionObject1, mockQuestionObject2],
     };
     const createFromJson = () => SetupElection.fromJson(obj);
@@ -306,6 +323,25 @@ describe('SetupElection', () => {
         questions: [mockQuestionObject1, mockQuestionObject2],
       });
     expect(createWrongObj).toThrow(ProtocolError);
+  });
+
+  it('should ignore passed object and action parameters', () => {
+    const msg = new SetupElection({
+      // @ts-ignore. Here we pass additional fields to the constructor that should not be set
+      object: ObjectType.CHIRP,
+      action: ActionType.NOTIFY_ADD,
+      id: electionId,
+      lao: mockLaoIdHash,
+      name: mockLaoName,
+      version: VERSION,
+      created_at: TIMESTAMP,
+      start_time: TIMESTAMP,
+      end_time: CLOSE_TIMESTAMP,
+      questions: [mockQuestionObject1, mockQuestionObject2],
+    });
+
+    expect(msg.object).toEqual(ObjectType.ELECTION);
+    expect(msg.action).toEqual(ActionType.SETUP);
   });
 
   describe('validateQuestions', () => {
