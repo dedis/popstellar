@@ -17,6 +17,7 @@ import { updateEvent } from 'features/events/reducer';
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, RegisteredVote, Vote } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
+import { CastVote } from '../network/messages';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -60,26 +61,14 @@ const EventElection = (props: IPropTypes) => {
   const updateSelectedBallots = (values: number[], idx: number) => {
     setSelectedBallots((prev) => prev.map((item, id) => (idx === id ? values : item)));
   };
-  const concatenateIndexes = (indexes: number[]) => {
-    let concatenated = '';
-    indexes.forEach((index) => {
-      concatenated += index.toString();
-    });
-    return concatenated;
-  };
 
   // Prepares the votes with the hash and the vote indexes to match the protocol
   // id: SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in))
   const refactorVotes = (selected: number[][]) => {
-    const votes: Vote[] = selected.map((item, idx) => ({
-      id: Hash.fromStringArray(
-        EventTags.VOTE,
-        election.id.toString(),
-        election.questions[idx].id,
-        concatenateIndexes(item),
-      ).valueOf(),
+    const votes = selected.map<Vote>((selectionOptions, idx) => ({
+      id: CastVote.generateVoteId(election, idx, selectionOptions).valueOf(),
       question: election.questions[idx].id,
-      vote: item,
+      vote: selectionOptions,
     }));
     return votes;
   };
