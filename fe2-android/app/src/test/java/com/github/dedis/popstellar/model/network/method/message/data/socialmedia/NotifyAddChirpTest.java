@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThrows;
 import com.github.dedis.popstellar.model.network.JsonTestUtils;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.JsonParseException;
 
@@ -17,7 +18,7 @@ import org.junit.Test;
 public class NotifyAddChirpTest {
 
   private static final MessageID CHIRP_ID = generateMessageID();
-  private static final String CHANNEL = "/root/laoId/social/myChannel";
+  private static final Channel CHANNEL = Channel.newChannel("/root/laoId/social/myChannel");
   private static final long TIMESTAMP = 1631280815;
 
   private static final NotifyAddChirp NOTIFY_ADD_CHIRP =
@@ -56,7 +57,8 @@ public class NotifyAddChirpTest {
     assertNotEquals(
         NOTIFY_ADD_CHIRP,
         new NotifyAddChirp(generateMessageIDOtherThan(CHIRP_ID), CHANNEL, TIMESTAMP));
-    assertNotEquals(NOTIFY_ADD_CHIRP, new NotifyAddChirp(CHIRP_ID, random, TIMESTAMP));
+    assertNotEquals(
+        NOTIFY_ADD_CHIRP, new NotifyAddChirp(CHIRP_ID, Channel.ROOT.sub(random), TIMESTAMP));
     assertNotEquals(NOTIFY_ADD_CHIRP, new NotifyAddChirp(CHIRP_ID, CHANNEL, TIMESTAMP + 1));
   }
 

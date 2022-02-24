@@ -11,6 +11,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -57,10 +58,10 @@ public class ChirpListAdapterTest {
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME);
 
-  private static final String CHIRP_CHANNEL_1 =
-      "/root/" + LAO_ID + "/social/" + SENDER_1.getEncoded();
-  private static final String CHIRP_CHANNEL_2 =
-      "/root/" + LAO_ID + "/social/" + SENDER_2.getEncoded();
+  private static final Channel CHIRP_CHANNEL_1 =
+      Channel.ROOT.sub(LAO_ID).sub("social").sub(SENDER_1.getEncoded());
+  private static final Channel CHIRP_CHANNEL_2 =
+      Channel.ROOT.sub(LAO_ID).sub("social").sub(SENDER_2.getEncoded());
   private static final String TEXT_1 = "text1";
   private static final String TEXT_2 = "text2";
   private static final long TIMESTAMP_1 = 1632204910;
@@ -148,7 +149,7 @@ public class ChirpListAdapterTest {
 
   private void setupChirp(
       Chirp chirp,
-      String channel,
+      Channel channel,
       PublicKey sender,
       String text,
       long timestamp,

@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -50,9 +51,9 @@ public class ChirpHandlerTest {
   private static final long DELETION_TIME = 1642244760;
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME);
-  private static final String LAO_CHANNEL = "/root/" + LAO_ID;
-  private static final String CHIRP_CHANNEL = LAO_CHANNEL + "/social/" + SENDER;
   private static final Lao LAO = new Lao(LAO_ID);
+  private static final Channel CHIRP_CHANNEL =
+      LAO.getChannel().sub("social").sub(SENDER.getEncoded());
 
   private static final String TEXT = "textOfTheChirp";
   private static final String EMPTY_STRING = "";
@@ -80,10 +81,10 @@ public class ChirpHandlerTest {
     laoRepository = new LAORepository();
     messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
-    laoRepository.getLaoByChannel().put(LAO_CHANNEL, new LAOState(LAO));
+    laoRepository.getLaoById().put(LAO.getId(), new LAOState(LAO));
 
     MessageGeneral createLaoMessage = new MessageGeneral(SENDER_KEY, CREATE_LAO, GSON);
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, createLaoMessage);
+    messageHandler.handleMessage(laoRepository, messageSender, LAO.getChannel(), createLaoMessage);
   }
 
   @Test

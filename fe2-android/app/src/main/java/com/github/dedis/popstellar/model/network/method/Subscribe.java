@@ -1,9 +1,11 @@
 package com.github.dedis.popstellar.model.network.method;
 
+import com.github.dedis.popstellar.model.objects.Channel;
+
 /** Subscribe to a channel */
 public final class Subscribe extends Query {
 
-  public Subscribe(String channel, int id) {
+  public Subscribe(Channel channel, int id) {
     super(channel, id);
   }
 

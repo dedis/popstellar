@@ -27,6 +27,7 @@ import com.github.dedis.popstellar.model.network.method.Unsubscribe;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
@@ -52,7 +53,7 @@ import io.reactivex.subjects.BehaviorSubject;
 @RunWith(MockitoJUnitRunner.class)
 public class LAONetworkManagerTest {
 
-  private static final String CHANNEL = "channel";
+  private static final Channel CHANNEL = Channel.ROOT.sub("channel");
   private static final KeyPair KEY_PAIR = Base64DataUtils.generateKeyPair();
   private static final Data DATA = new CreateLao("LaoName", KEY_PAIR.getPublicKey());
 

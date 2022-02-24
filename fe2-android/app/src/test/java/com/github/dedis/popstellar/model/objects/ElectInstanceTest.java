@@ -29,7 +29,7 @@ public class ElectInstanceTest {
   private static final Object value = "TestValue";
 
   private static final MessageID electMessageId = generateMessageID();
-  private static final String channel = "/root/aaa/consensus";
+  private static final Channel channel = Channel.newChannel("/root/aaa/consensus");
   private static final PublicKey proposer = generatePublicKey();
   private static final PublicKey node2 = generatePublicKey();
   private static final PublicKey node3 = generatePublicKey();

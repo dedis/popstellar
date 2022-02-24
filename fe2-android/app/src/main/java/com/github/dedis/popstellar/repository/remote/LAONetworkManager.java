@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.model.network.method.Subscribe;
 import com.github.dedis.popstellar.model.network.method.Unsubscribe;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
@@ -49,7 +50,7 @@ public class LAONetworkManager implements MessageSender {
 
   // A subject that represents unprocessed messages
   private final Subject<GenericMessage> unprocessed = PublishSubject.create();
-  private final List<String> subscribedChannels = new LinkedList<>();
+  private final List<Channel> subscribedChannels = new LinkedList<>();
   private final CompositeDisposable disposables = new CompositeDisposable();
 
   public LAONetworkManager(
@@ -100,7 +101,7 @@ public class LAONetworkManager implements MessageSender {
   }
 
   @Override
-  public Completable catchup(String channel) {
+  public Completable catchup(Channel channel) {
     Log.d(TAG, "sending a catchup to the channel " + channel);
     Catchup catchup = new Catchup(channel, requestCounter.incrementAndGet());
     return request(catchup)
@@ -112,19 +113,19 @@ public class LAONetworkManager implements MessageSender {
   }
 
   @Override
-  public Completable publish(KeyPair keyPair, String channel, Data data) {
+  public Completable publish(KeyPair keyPair, Channel channel, Data data) {
     return publish(channel, new MessageGeneral(keyPair, data, gson));
   }
 
   @Override
-  public Completable publish(String channel, MessageGeneral msg) {
+  public Completable publish(Channel channel, MessageGeneral msg) {
     Log.d(TAG, "sending a publish " + msg.getData().getClass() + " to the channel " + channel);
     Publish publish = new Publish(channel, requestCounter.incrementAndGet(), msg);
     return request(publish).ignoreElement();
   }
 
   @Override
-  public Completable subscribe(String channel) {
+  public Completable subscribe(Channel channel) {
     Log.d(TAG, "sending a subscribe on the channel " + channel);
     Subscribe subscribe = new Subscribe(channel, requestCounter.incrementAndGet());
     return request(subscribe)
@@ -135,7 +136,7 @@ public class LAONetworkManager implements MessageSender {
   }
 
   @Override
-  public Completable unsubscribe(String channel) {
+  public Completable unsubscribe(Channel channel) {
     Log.d(TAG, "sending an unsubscribe on the channel " + channel);
     Unsubscribe unsubscribe = new Unsubscribe(channel, requestCounter.incrementAndGet());
     return request(unsubscribe)
@@ -159,7 +160,7 @@ public class LAONetworkManager implements MessageSender {
     }
   }
 
-  private void handleMessages(List<MessageGeneral> messages, String channel) {
+  private void handleMessages(List<MessageGeneral> messages, Channel channel) {
     for (MessageGeneral msg : messages) {
       try {
         messageHandler.handleMessage(repository, this, channel, msg);

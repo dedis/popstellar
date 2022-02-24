@@ -31,7 +31,7 @@ public class ConsensusNodeTest {
   private static final ConsensusElect elect3 =
       new ConsensusElect(3000, key.getId(), key.getType(), key.getProperty(), "value_3");
   private static final String instanceId = elect1.getInstanceId();
-  private static final String channel = "/root/laoChannel/consensus";
+  private static final Channel channel = Channel.newChannel("/root/laoChannel/consensus");
   private static final PublicKey publicKey = generatePublicKey();
   private static final MessageID messageId1 = generateMessageID();
   private static final MessageID messageId2 = generateMessageID();

@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.utility.handler.data;
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
@@ -14,14 +15,14 @@ public final class HandlerContext {
   private final LAORepository laoRepository;
   private final KeyManager keyManager;
   private final MessageSender messageSender;
-  private final String channel;
+  private final Channel channel;
   private final MessageGeneral message;
 
   public HandlerContext(
       @NonNull LAORepository laoRepository,
       @NonNull KeyManager keyManager,
       @NonNull MessageSender messageSender,
-      @NonNull String channel,
+      @NonNull Channel channel,
       @NonNull MessageGeneral message) {
     this.laoRepository = laoRepository;
     this.keyManager = keyManager;
@@ -42,7 +43,7 @@ public final class HandlerContext {
     return messageSender;
   }
 
-  public String getChannel() {
+  public Channel getChannel() {
     return channel;
   }
 

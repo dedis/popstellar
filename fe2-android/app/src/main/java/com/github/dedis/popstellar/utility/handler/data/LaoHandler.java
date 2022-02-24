@@ -6,6 +6,7 @@ import com.github.dedis.popstellar.model.network.method.message.PublicKeySignatu
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.PendingUpdate;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -37,7 +38,7 @@ public final class LaoHandler {
    */
   public static void handleCreateLao(HandlerContext context, CreateLao createLao) {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
 
     Log.d(TAG, "handleCreateLao: channel " + channel + ", msg=" + createLao);
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -51,7 +52,7 @@ public final class LaoHandler {
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
-      context.getMessageSender().subscribe(lao.getChannel() + "/consensus").subscribe();
+      context.getMessageSender().subscribe(lao.getChannel().sub("consensus")).subscribe();
     }
     laoRepository.updateNodes(channel);
   }
@@ -65,7 +66,7 @@ public final class LaoHandler {
   public static void handleUpdateLao(HandlerContext context, UpdateLao updateLao)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
     Log.d(TAG, " Receive Update Lao Broadcast msg=" + updateLao);
@@ -106,7 +107,7 @@ public final class LaoHandler {
   public static void handleStateLao(HandlerContext context, StateLao stateLao)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
 
     Log.d(TAG, "Receive State Lao Broadcast msg=" + stateLao);
 
@@ -138,7 +139,7 @@ public final class LaoHandler {
 
     PublicKey publicKey = context.getKeyManager().getMainPublicKey();
     if (lao.getOrganizer().equals(publicKey) || lao.getWitnesses().contains(publicKey)) {
-      context.getMessageSender().subscribe(lao.getChannel() + "/consensus").subscribe();
+      context.getMessageSender().subscribe(lao.getChannel().sub("consensus")).subscribe();
     }
 
     // Now we're going to remove all pending updates which came prior to this state lao

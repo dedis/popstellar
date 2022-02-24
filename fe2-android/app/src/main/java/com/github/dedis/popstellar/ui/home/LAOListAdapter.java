@@ -72,9 +72,9 @@ public class LAOListAdapter extends BaseAdapter {
     LAOItemUserActionsListener userActionsListener =
         lao -> {
           if (openLaoDetail) {
-            homeViewModel.openLAO(lao.getChannel());
+            homeViewModel.openLAO(lao.getId());
           } else {
-            homeViewModel.openLaoWallet(lao.getChannel());
+            homeViewModel.openLaoWallet(lao.getId());
           }
         };
 

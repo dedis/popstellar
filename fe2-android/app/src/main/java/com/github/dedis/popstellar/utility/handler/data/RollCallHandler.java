@@ -5,6 +5,7 @@ import android.util.Log;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -39,7 +40,7 @@ public final class RollCallHandler {
    */
   public static void handleCreateRollCall(HandlerContext context, CreateRollCall createRollCall) {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -70,7 +71,7 @@ public final class RollCallHandler {
   public static void handleOpenRollCall(HandlerContext context, OpenRollCall openRollCall)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -106,7 +107,7 @@ public final class RollCallHandler {
   public static void handleCloseRollCall(HandlerContext context, CloseRollCall closeRollCall)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -135,7 +136,7 @@ public final class RollCallHandler {
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
       context
           .getMessageSender()
-          .subscribe(channel + "/social/" + token.getPublicKey().getEncoded())
+          .subscribe(channel.sub("social").sub(token.getPublicKey().getEncoded()))
           .subscribe();
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");

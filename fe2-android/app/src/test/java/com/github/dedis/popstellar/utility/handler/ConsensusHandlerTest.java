@@ -8,7 +8,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -29,6 +28,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -75,8 +75,7 @@ public class ConsensusHandlerTest {
   private static final long CREATION_TIME = 946684800;
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION_TIME, LAO_NAME);
-  private static final String LAO_CHANNEL = "/root/" + LAO_ID;
-  private static final String CONSENSUS_CHANNEL = LAO_CHANNEL + "/consensus";
+  private static final Channel CONSENSUS_CHANNEL = Channel.ROOT.sub(LAO_ID).sub("consensus");
 
   private static final String TYPE = "election";
   private static final String KEY_ID = "-t0xoQZa-ryiW18JnTjJHCsCNehFxuXOFOsfgKHHkj0=";
@@ -115,13 +114,12 @@ public class ConsensusHandlerTest {
     messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
     lao = new Lao(LAO_ID);
-    laoRepository.getLaoByChannel().put(LAO_CHANNEL, new LAOState(lao));
+    laoRepository.getLaoById().put(LAO_ID, new LAOState(lao));
     MessageGeneral createLaoMessage = getMsg(ORGANIZER_KEY, CREATE_LAO);
-    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, createLaoMessage);
+    messageHandler.handleMessage(laoRepository, messageSender, lao.getChannel(), createLaoMessage);
 
     electMsg = getMsg(NODE_2_KEY, elect);
     messageId = electMsg.getMessageId();
-
   }
 
   /**
@@ -312,7 +310,7 @@ public class ConsensusHandlerTest {
 
     // The handlers for prepare/promise/propose/accept should do nothing (call or update nothing)
     // because theses messages should only be handle in the backend server.
-    verify(mockLAORepository, never()).getLaoByChannel(anyString());
-    verify(mockLAORepository, never()).updateNodes(anyString());
+    verify(mockLAORepository, never()).getLaoByChannel(any(Channel.class));
+    verify(mockLAORepository, never()).updateNodes(any(Channel.class));
   }
 }

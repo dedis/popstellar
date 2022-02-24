@@ -14,6 +14,7 @@ import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
@@ -47,8 +48,7 @@ public class LaoHandlerTest {
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final String CHANNEL = "/root";
-  private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
+  private static final Channel LAO_CHANNEL = Channel.ROOT.sub(CREATE_LAO.getId());
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
@@ -74,7 +74,7 @@ public class LaoHandlerTest {
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     lao.setLastModified(lao.getCreation());
-    laoRepository.getLaoByChannel().put(LAO_CHANNEL, new LAOState(lao));
+    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
     laoRepository.setAllLaoSubject();
 
     // Add the CreateLao message to the LAORepository
