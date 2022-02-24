@@ -196,7 +196,7 @@ export function handleRollCallReopenMessage(msg: ProcessableMessage) {
     return false;
   }
   // TODO: delete those logs
-  console.log("Update id from reopen = "+rcMsgData.update_id);
+  console.log(`Update id from reopen = ${rcMsgData.update_id}`);
   const rc = new RollCall({
     ...oldRC,
     idAlias: rcMsgData.update_id,

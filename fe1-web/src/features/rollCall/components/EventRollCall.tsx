@@ -66,26 +66,29 @@ const EventRollCall = (props: IPropTypes) => {
         .then(() => {
           navigation.navigate(STRINGS.roll_call_open, {
             rollCallID: event.id.toString(),
-            updateID: Hash.fromStringArray(EventTags.ROLL_CALL, lao.id.toString(), event.id.toString(), time.toString())
+            updateID: Hash.fromStringArray(
+              EventTags.ROLL_CALL,
+              lao.id.toString(),
+              event.id.toString(),
+              time.toString(),
+            ),
           });
         })
         .catch((e) => console.debug('Unable to send Roll call open request', e));
     }
   };
 
-  //Scanning attendees should be available only when the Roll Call is in state opened or reopened => idAlias is defined
+  // Scanning attendees should be available only when the Roll Call is in state opened or reopened => idAlias is defined
   const onScanAttendees = () => {
     if (!event.idAlias) {
-      console.debug(
-        'Unable to scan attendees, the event does not have an idAlias',
-      );
+      console.debug('Unable to scan attendees, the event does not have an idAlias');
       return;
     }
     navigation.navigate(STRINGS.roll_call_open, {
       rollCallID: event.id.toString(),
-      updateID: event.idAlias.toString()
+      updateID: event.idAlias.toString(),
     });
-  }
+  };
 
   const getRollCallDisplay = (status: RollCallStatus) => {
     switch (status) {
@@ -109,10 +112,7 @@ const EventRollCall = (props: IPropTypes) => {
               </>
             )}
             {isOrganizer && (
-              <WideButtonView
-                title="Scan Attendees"
-                onPress={() => onScanAttendees()}
-              />
+              <WideButtonView title="Scan Attendees" onPress={() => onScanAttendees()} />
             )}
           </>
         );
@@ -139,10 +139,7 @@ const EventRollCall = (props: IPropTypes) => {
               </>
             )}
             {isOrganizer && (
-              <WideButtonView
-                title="Scan Attendees"
-                onPress={() => onScanAttendees()}
-              />
+              <WideButtonView title="Scan Attendees" onPress={() => onScanAttendees()} />
             )}
           </>
         );

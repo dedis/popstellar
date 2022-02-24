@@ -10,7 +10,7 @@ import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
-import { EventTags, Hash, PublicKey } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { makeCurrentLao } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
