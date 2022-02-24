@@ -2,7 +2,8 @@ import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
-import { MessageDataProperties, RemoveMethods } from 'core/types';
+import { MessageDataProperties } from 'core/types';
+import { Election } from 'features/evoting/objects';
 
 /** Data sent to end an Election event */
 export class EndElection implements MessageData {
@@ -65,5 +66,19 @@ export class EndElection implements MessageData {
       election: new Hash(obj.election),
       lao: new Hash(obj.lao),
     });
+  }
+
+  public static computeRegisteredVotesHash(election: Election) {
+    const sortedVoteIds = election.registeredVotes
+      // First sort by timestamp, than by message ID as tiebreaker
+      .sort((a, b) => {
+        const tiebreaker = a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1;
+        return a !== b ? a.createdAt - b.createdAt : tiebreaker;
+      })
+      // Now expand each registered vote to the contained vote ids
+      // flatMap = map + flatten array
+      .flatMap((registeredVote) => registeredVote.votes.map((vote) => vote.id));
+
+    return Hash.fromStringArray(...sortedVoteIds);
   }
 }

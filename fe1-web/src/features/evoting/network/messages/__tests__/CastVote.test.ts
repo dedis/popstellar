@@ -85,19 +85,19 @@ const initializeData = () => {
   const mockVoteVotes1 = new Set([0]);
   const mockVoteVotes2 = new Set([1, 0]);
 
-  const mockVoteId1 = CastVote.generateVoteId(election, 0, mockVoteVotes1);
-  const mockVoteId2 = CastVote.generateVoteId(election, 1, mockVoteVotes2);
+  const mockVoteId1 = CastVote.computeVoteId(election, 0, mockVoteVotes1);
+  const mockVoteId2 = CastVote.computeVoteId(election, 1, mockVoteVotes2);
 
   mockVoteObject1 = {
     id: mockVoteId1.toString(),
     question: mockQuestionId1.valueOf(),
-    vote: [0],
+    vote: new Set([0]),
   };
 
   mockVoteObject2 = {
     id: mockVoteId2.toString(),
     question: mockQuestionId2.valueOf(),
-    vote: [0],
+    vote: new Set([0]),
   };
 
   const mockVotes = [mockVoteObject1];

@@ -100,7 +100,7 @@ export class CastVote implements MessageData {
    * @param questionIndex The index of the question in the given election, this vote is cast for
    * @param selectionOptions The selected answers for the given question in the given eeleciton
    */
-  public static generateVoteId(
+  public static computeVoteId(
     election: Election,
     questionIndex: number,
     selectionOptions: Set<number>,

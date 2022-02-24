@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
 
 import { dispatch, getStore } from 'core/redux';
-import { Hash, Timestamp } from 'core/objects';
+import { Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
@@ -15,9 +14,8 @@ import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { updateEvent } from 'features/events/reducer';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
-import { Election, ElectionStatus, QuestionResult, RegisteredVote, Vote } from '../objects';
+import { Election, ElectionStatus, QuestionResult } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
-import { CastVote } from '../network/messages';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -38,43 +36,23 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const EventElection = (props: IPropTypes) => {
+const EventElection: FunctionComponent<IPropTypes> = (props) => {
   const { election } = props;
   const { isOrganizer } = props;
   const toast = useToast();
-  const questions = election.questions.map((q) => ({ title: q.question, data: q.ballot_options }));
-  const [selectedBallots, setSelectedBallots] = useState(new Array(questions.length).fill([]));
+  const questions = useMemo(
+    () => election.questions.map((q) => ({ title: q.question, data: q.ballot_options })),
+    [election.questions],
+  );
+  const [selectedBallots, setSelectedBallots] = useState<{ [questionIndex: number]: Set<number> }>(
+    {},
+  );
   const [hasVoted, setHasVoted] = useState(0);
   const untilStart = (election.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
   const untilEnd = (election.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
-  // This makes sure the election status is always updated
-  const electionFromStore = useSelector(
-    (state) =>
-      // @ts-ignore
-      state.events.byLaoId[election.lao].byId[election.id],
-  );
-
-  if (!electionFromStore) {
-    throw new Error('Error in Election display: Election doesnt exist in store');
-  }
-
-  const updateSelectedBallots = (values: number[], idx: number) => {
-    setSelectedBallots((prev) => prev.map((item, id) => (idx === id ? values : item)));
-  };
-
-  // Prepares the votes with the hash and the vote indexes to match the protocol
-  // id: SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in))
-  const refactorVotes = (selected: number[][]) => {
-    const votes = selected.map<Vote>((selectionOptions, idx) => ({
-      id: CastVote.generateVoteId(election, idx, new Set(selectionOptions)).valueOf(),
-      question: election.questions[idx].id,
-      vote: selectionOptions,
-    }));
-    return votes;
-  };
 
   const onCastVote = () => {
-    castVote(election.id, refactorVotes(selectedBallots))
+    castVote(election, selectedBallots)
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
@@ -86,26 +64,9 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
-  const calculateVoteHash = () => {
-    const votes: { messageId: number; voteIDs: Hash[] }[] = electionFromStore.registered_votes.map(
-      (registeredVote: RegisteredVote) => ({
-        messageId: registeredVote.messageId,
-        voteIDs: registeredVote.votes.map((vote) => vote.id),
-      }),
-    );
-    // Sort by message ID
-    votes.sort((a, b) => (a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1));
-    const arrayToHash: Hash[] = [];
-    votes.forEach((registeredVote) => {
-      arrayToHash.push(...registeredVote.voteIDs);
-    });
-    const stringArray: string[] = arrayToHash.map((hash) => hash.valueOf());
-    return Hash.fromStringArray(...stringArray);
-  };
-
   const onTerminateElection = () => {
     console.log('Terminating Election');
-    terminateElection(election.id, calculateVoteHash())
+    terminateElection(election)
       .then(() => console.log('Election Terminated'))
       .catch((err) => {
         console.error('Could not terminate election, error:', err);
@@ -119,13 +80,9 @@ const EventElection = (props: IPropTypes) => {
 
   const updateElection = (status: ElectionStatus, elec: Election) => {
     const storeState = getStore().getState();
-    const oldElec = getEventFromId(storeState, elec.id) as Election;
-    const newElec = new Election({ ...oldElec, electionStatus: status });
-    dispatch(updateEvent(elec.lao, newElec.toState()));
-  };
-
-  const doesNothing = () => {
-    // This is intentional to return an empty function at the end of useEffect
+    const oldElection = getEventFromId(storeState, elec.id) as Election;
+    const newElection = new Election({ ...oldElection, electionStatus: status });
+    dispatch(updateEvent(elec.lao, newElection.toState()));
   };
 
   // This makes sure the screen gets updated when the event starts
@@ -136,7 +93,9 @@ const EventElection = (props: IPropTypes) => {
       }, untilStart);
       return () => clearTimeout(startTimer);
     }
-    return doesNothing;
+
+    // no callback if no timer was installed. Return statement makes eslint happy (consistent-return)
+    return undefined;
   }, [untilStart, election]);
 
   // This makes sure the screen gets updated when the event ends - user can't vote anymore
@@ -147,7 +106,9 @@ const EventElection = (props: IPropTypes) => {
       }, untilEnd);
       return () => clearTimeout(endTimer);
     }
-    return doesNothing;
+
+    // no callback if no timer was installed. Return statement makes eslint happy (consistent-return)
+    return undefined;
   }, [untilEnd, election]);
 
   // Here we use the election object form the redux store in order to see the electionStatus
@@ -174,7 +135,9 @@ const EventElection = (props: IPropTypes) => {
                 key={q.title + idx.toString()}
                 title={q.title}
                 values={q.data}
-                onChange={(values: number[]) => updateSelectedBallots(values, idx)}
+                onChange={(values: number[]) =>
+                  setSelectedBallots({ ...selectedBallots, [idx]: new Set(values) })
+                }
               />
             ))}
             <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
@@ -204,13 +167,14 @@ const EventElection = (props: IPropTypes) => {
         return (
           <>
             <Text style={styles.text}>Election Result</Text>
-            {electionFromStore.questionResult.map((question: QuestionResult) => (
-              <BarChartDisplay data={question.result} key={question.id.valueOf()} />
-            ))}
+            {election.questionResult &&
+              election.questionResult.map((question: QuestionResult) => (
+                <BarChartDisplay data={question.result} key={question.id.valueOf()} />
+              ))}
           </>
         );
       default:
-        console.warn('Election Status was undefined in Election display', electionFromStore);
+        console.warn('Election Status was undefined in Election display', election);
         return null;
     }
   };
@@ -218,7 +182,7 @@ const EventElection = (props: IPropTypes) => {
   return (
     <>
       <TimeDisplay start={election.start.valueOf()} end={election.end.valueOf()} />
-      {getElectionDisplay(electionFromStore.electionStatus)}
+      {getElectionDisplay(election.electionStatus)}
     </>
   );
 };
