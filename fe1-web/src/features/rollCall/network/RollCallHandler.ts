@@ -195,8 +195,7 @@ export function handleRollCallReopenMessage(msg: ProcessableMessage) {
     console.warn(makeErr("no known roll call matching the 'opens' field"));
     return false;
   }
-  // TODO: delete those logs
-  console.log(`Update id from reopen = ${rcMsgData.update_id}`);
+
   const rc = new RollCall({
     ...oldRC,
     idAlias: rcMsgData.update_id,
