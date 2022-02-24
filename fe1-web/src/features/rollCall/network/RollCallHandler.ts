@@ -7,7 +7,7 @@ import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import * as Wallet from 'features/wallet/objects';
 import { makeCurrentLao, setLaoLastRollCall } from 'features/lao/reducer';
 
-import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 import { RollCall, RollCallStatus } from '../objects';
 
 /**
@@ -167,14 +167,43 @@ export function handleRollCallCloseMessage(msg: ProcessableMessage): boolean {
 }
 
 /**
- * TODO: Handles a reopen roll call message.
+ * Handles a RollCallReopen message by reopening the corresponding roll call.
  *
- * @param msg
+ * @param msg - The extended message for reopening a roll call
  */
 export function handleRollCallReopenMessage(msg: ProcessableMessage) {
-  console.warn(
-    'A RollCall reopen message was received but its processing logic is not yet implemented:',
-    msg,
-  );
-  return false;
+  if (
+    msg.messageData.object !== ObjectType.ROLL_CALL ||
+    msg.messageData.action !== ActionType.REOPEN
+  ) {
+    console.warn('handleRollCallReopenMessage was called to process an unsupported message', msg);
+    return false;
+  }
+
+  const makeErr = (err: string) => `roll_call/reopen was not processed: ${err}`;
+
+  const storeState = getStore().getState();
+  const lao = getCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+
+  const rcMsgData = msg.messageData as ReopenRollCall;
+  const oldRC = getEventFromId(storeState, rcMsgData.opens) as RollCall;
+  if (!oldRC) {
+    console.warn(makeErr("no known roll call matching the 'opens' field"));
+    return false;
+  }
+  // TODO: delete those logs
+  console.log("Update id from reopen = "+rcMsgData.update_id);
+  const rc = new RollCall({
+    ...oldRC,
+    idAlias: rcMsgData.update_id,
+    openedAt: rcMsgData.opened_at,
+    status: RollCallStatus.REOPENED,
+  });
+
+  dispatch(updateEvent(lao.id, rc.toState()));
+  return true;
 }
