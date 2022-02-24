@@ -37,7 +37,7 @@ const RollCallOpened = () => {
   // FIXME: navigation and route should user proper type
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { rollCallID, time } = route.params;
+  const { rollCallID, updateID } = route.params;
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -45,7 +45,7 @@ const RollCallOpened = () => {
   const lao = useSelector(laoSelect);
 
   if (!lao) {
-    throw new Error('Impossible to open a Roll Call without being connected to an LAO');
+    throw new Error('Impossible to open a Roll Call without being connected to a LAO');
   }
 
   // This will run only when the state changes
@@ -104,9 +104,8 @@ const RollCallOpened = () => {
   };
 
   const onCloseRollCall = () => {
-    const updateId = Hash.fromStringArray(EventTags.ROLL_CALL, lao.id.toString(), rollCallID, time);
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-    return requestCloseRollCall(updateId, attendeesList)
+    return requestCloseRollCall(updateID, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })

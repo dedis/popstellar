@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-import { Timestamp } from 'core/objects';
+import { Timestamp, Hash, EventTags } from 'core/objects';
 import { QRCode, WideButtonView } from 'core/components';
 import { makeEventGetter } from 'features/events/reducer';
 import { makeCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
-import { requestOpenRollCall } from '../network';
+import { requestOpenRollCall, requestReopenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
 
 /**
@@ -57,7 +57,7 @@ const EventRollCall = (props: IPropTypes) => {
         );
         return;
       }
-      requestOpenRollCall(event.idAlias).catch((e) =>
+      requestReopenRollCall(event.idAlias).catch((e) =>
         console.debug('Unable to send Roll call re-open request', e),
       );
     } else {
@@ -66,12 +66,26 @@ const EventRollCall = (props: IPropTypes) => {
         .then(() => {
           navigation.navigate(STRINGS.roll_call_open, {
             rollCallID: event.id.toString(),
-            time: time.toString(),
+            updateID: Hash.fromStringArray(EventTags.ROLL_CALL, lao.id.toString(), event.id.toString(), time.toString())
           });
         })
         .catch((e) => console.debug('Unable to send Roll call open request', e));
     }
   };
+
+  //Scanning attendees should be available only when the Roll Call is in state opened or reopened => idAlias is defined
+  const onScanAttendees = () => {
+    if (!event.idAlias) {
+      console.debug(
+        'Unable to scan attendees, the event does not have an idAlias',
+      );
+      return;
+    }
+    navigation.navigate(STRINGS.roll_call_open, {
+      rollCallID: event.id.toString(),
+      updateID: event.idAlias.toString()
+    });
+  }
 
   const getRollCallDisplay = (status: RollCallStatus) => {
     switch (status) {
@@ -97,7 +111,7 @@ const EventRollCall = (props: IPropTypes) => {
             {isOrganizer && (
               <WideButtonView
                 title="Scan Attendees"
-                onPress={() => console.error('not implemented yet')}
+                onPress={() => onScanAttendees()}
               />
             )}
           </>
@@ -118,8 +132,18 @@ const EventRollCall = (props: IPropTypes) => {
       case RollCallStatus.REOPENED:
         return (
           <>
-            <Text>Re-Opened</Text>
-            <QRCode visibility value={popToken} />
+            {!isOrganizer && (
+              <>
+                <Text>Let the organizer scan your Pop token</Text>
+                <QRCode visibility value={popToken} />
+              </>
+            )}
+            {isOrganizer && (
+              <WideButtonView
+                title="Scan Attendees"
+                onPress={() => onScanAttendees()}
+              />
+            )}
           </>
         );
       default:
