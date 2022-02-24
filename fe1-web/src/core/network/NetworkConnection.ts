@@ -41,10 +41,10 @@ export class NetworkConnection {
   private establishConnection(address: string): W3CWebSocket {
     const ws: W3CWebSocket = new W3CWebSocket(address);
 
-    ws.onopen = this.onOpen;
-    ws.onmessage = this.onMessage;
-    ws.onclose = this.onClose;
-    ws.onerror = this.onError;
+    ws.onopen = this.onOpen.bind(this);
+    ws.onmessage = this.onMessage.bind(this);
+    ws.onclose = this.onClose.bind(this);
+    ws.onerror = this.onError.bind(this);
 
     return ws;
   }
