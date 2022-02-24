@@ -13,6 +13,7 @@ import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
 
+import { MessageDataProperties } from 'core/types';
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 
@@ -24,6 +25,10 @@ const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 let electionId: Hash;
 let mockQuestionObject1: Question;
 let mockQuestionObject2: Question;
+
+// As discussed on slack, in these tests we should assume that the input to the messages is
+// just a Partial<> and not a MessageDataProperties<>
+// as this will catch more issues at runtime. (Defensive programming)
 let sampleSetupElection: Partial<SetupElection>;
 
 let setupElectionJson: string;
@@ -96,7 +101,9 @@ beforeAll(() => {
 
 describe('SetupElection', () => {
   it('should be created correctly from Json', () => {
-    expect(new SetupElection(sampleSetupElection)).toBeJsonEqual(sampleSetupElection);
+    expect(
+      new SetupElection(sampleSetupElection as MessageDataProperties<SetupElection>),
+    ).toBeJsonEqual(sampleSetupElection);
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.SETUP,
@@ -137,9 +144,8 @@ describe('SetupElection', () => {
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -153,9 +159,8 @@ describe('SetupElection', () => {
 
     it('should throw an error if lao is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           name: mockLaoName,
           version: VERSION,
@@ -169,9 +174,8 @@ describe('SetupElection', () => {
 
     it('should throw an error if name is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           version: VERSION,
@@ -185,9 +189,8 @@ describe('SetupElection', () => {
 
     it('should throw an error if version is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
@@ -201,9 +204,8 @@ describe('SetupElection', () => {
 
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
@@ -217,9 +219,8 @@ describe('SetupElection', () => {
 
     it('should throw an error if start_time is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
@@ -233,9 +234,8 @@ describe('SetupElection', () => {
 
     it('should throw an error if end_time is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
@@ -249,9 +249,8 @@ describe('SetupElection', () => {
 
     it('should throw an error if questions is undefined', () => {
       const createWrongObj = () =>
+        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
@@ -266,8 +265,6 @@ describe('SetupElection', () => {
     it('should throw an error if start_time is before created_at', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
@@ -283,8 +280,6 @@ describe('SetupElection', () => {
     it('should throw an error if end_time is before start_time', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
@@ -300,9 +295,8 @@ describe('SetupElection', () => {
 
   it('should throw an error if id is undefined', () => {
     const createWrongObj = () =>
+      // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
       new SetupElection({
-        object: ObjectType.ELECTION,
-        action: ActionType.SETUP,
         lao: mockLaoIdHash,
         name: mockLaoName,
         version: VERSION,

@@ -14,6 +14,11 @@ export class ElectionResult implements MessageData {
   public readonly questions: QuestionResult[];
 
   constructor(msg: MessageDataProperties<ElectionResult>) {
+    if (!msg.questions) {
+      throw new ProtocolError(
+        "Undefined 'questions' parameter encountered during 'ElectionResult'",
+      );
+    }
     this.questions = msg.questions;
   }
 
