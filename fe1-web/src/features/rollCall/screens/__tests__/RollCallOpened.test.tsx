@@ -46,7 +46,7 @@ beforeEach(() => {
 
   (useRoute as jest.Mock).mockReturnValue({
     name: STRINGS.roll_call_open,
-    params: { rollCallID: rollCallId, time: time },
+    params: { rollCallID: rollCallId, updateID: rollCallId },
   });
 
   (useNavigation as jest.Mock).mockReturnValue({
