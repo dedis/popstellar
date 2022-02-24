@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { useToast } from 'react-native-toast-notifications';
 
 import { dispatch, getStore } from 'core/redux';
-import { EventTags, Hash, Timestamp } from 'core/objects';
+import { Hash, Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
@@ -66,7 +66,7 @@ const EventElection = (props: IPropTypes) => {
   // id: SHA256('Vote'||election_id||question_id||(vote_index(es)|write_in))
   const refactorVotes = (selected: number[][]) => {
     const votes = selected.map<Vote>((selectionOptions, idx) => ({
-      id: CastVote.generateVoteId(election, idx, selectionOptions).valueOf(),
+      id: CastVote.generateVoteId(election, idx, new Set(selectionOptions)).valueOf(),
       question: election.questions[idx].id,
       vote: selectionOptions,
     }));
