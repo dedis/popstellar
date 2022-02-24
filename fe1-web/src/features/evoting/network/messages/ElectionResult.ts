@@ -2,6 +2,7 @@ import { ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 
+import { MessageDataProperties } from 'core/types';
 import { QuestionResult } from '../../objects';
 
 /** Data sent to ask for the result of an election */
@@ -12,12 +13,7 @@ export class ElectionResult implements MessageData {
 
   public readonly questions: QuestionResult[];
 
-  constructor(msg: Partial<ElectionResult>) {
-    if (!msg.questions) {
-      throw new ProtocolError(
-        "Undefined 'questions' parameter encountered during 'ElectionResult'",
-      );
-    }
+  constructor(msg: MessageDataProperties<ElectionResult>) {
     this.questions = msg.questions;
   }
 

@@ -2,6 +2,7 @@ import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { MessageDataProperties, RemoveMethods } from 'core/types';
 
 /** Data sent to end an Election event */
 export class EndElection implements MessageData {
@@ -17,33 +18,12 @@ export class EndElection implements MessageData {
 
   public readonly registered_votes: Hash;
 
-  constructor(msg: Partial<EndElection>) {
-    if (!msg.election) {
-      throw new ProtocolError("Undefined 'id' parameter encountered during 'EndElection'");
-    }
-
-    if (!msg.lao) {
-      throw new ProtocolError("Undefined 'lao' parameter encountered during 'EndElection'");
-    }
-    this.lao = msg.lao;
-
-    if (!msg.created_at) {
-      throw new ProtocolError("Undefined 'created_at' parameter encountered during 'EndElection'");
-    }
+  constructor(msg: MessageDataProperties<EndElection>) {
     checkTimestampStaleness(msg.created_at);
-    this.created_at = msg.created_at;
-    if (!msg.registered_votes) {
-      throw new ProtocolError(
-        "Undefined 'registered_votes' parameter encountered during 'EndElection'",
-      );
-    }
-
-    this.registered_votes = msg.registered_votes;
-
-    if (!msg.election) {
-      throw new ProtocolError("Invalid 'election' parameter encountered during 'EndElection'");
-    }
+    this.lao = msg.lao;
     this.election = msg.election;
+    this.created_at = msg.created_at;
+    this.registered_votes = msg.registered_votes;
   }
 
   /**

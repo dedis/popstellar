@@ -3,6 +3,7 @@ import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
+import { MessageDataProperties } from 'core/types';
 import { Question } from '../../objects';
 
 /** Data sent to setup an Election event */
@@ -27,63 +28,35 @@ export class SetupElection implements MessageData {
 
   public readonly questions: Question[];
 
-  constructor(msg: Partial<SetupElection>) {
-    if (!msg.id) {
-      throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
-    }
-
-    if (!msg.lao) {
-      throw new ProtocolError("Undefined 'lao' parameter encountered during 'SetupElection'");
-    }
+  constructor(msg: MessageDataProperties<SetupElection>) {
     this.lao = msg.lao;
-
-    if (!msg.name) {
-      throw new ProtocolError("Undefined 'name' parameter encountered during 'SetupElection'");
-    }
     this.name = msg.name;
-
-    if (!msg.version) {
-      throw new ProtocolError("Undefined 'version' parameter encountered during 'SetupElection'");
-    }
     this.version = msg.version;
+    this.id = msg.id;
 
-    if (!msg.created_at) {
-      throw new ProtocolError(
-        "Undefined 'created_at' parameter encountered during 'SetupElection'",
-      );
-    }
+    // Check if timestamps are stale
     checkTimestampStaleness(msg.created_at);
-    this.created_at = msg.created_at;
-    if (!msg.start_time) {
-      throw new ProtocolError(
-        "Undefined 'start_time' parameter encountered during 'SetupElection'",
-      );
-    }
     checkTimestampStaleness(msg.start_time);
-    if (!msg.end_time) {
-      throw new ProtocolError("Undefined 'end_time' parameter encountered during 'SetupElection'");
-    }
     checkTimestampStaleness(msg.end_time);
+
+    // And whether created_at <= start_time <= end_time
     if (msg.start_time.before(msg.created_at)) {
       throw new ProtocolError(
         "Invalid timestamp encountered: 'start' parameter smaller than 'created_at'",
       );
     }
-    this.start_time = msg.start_time;
+
     if (msg.end_time.before(msg.start_time)) {
       throw new ProtocolError(
         "Invalid timestamp encountered: 'end' parameter smaller than 'start'",
       );
     }
+    this.created_at = msg.created_at;
+    this.start_time = msg.start_time;
     this.end_time = msg.end_time;
 
-    if (!msg.questions) {
-      throw new ProtocolError("Undefined 'questions' parameter encountered during 'SetupElection'");
-    }
     SetupElection.validateQuestions(msg.questions, msg.id.toString());
     this.questions = msg.questions;
-
-    this.id = msg.id;
   }
 
   /**
