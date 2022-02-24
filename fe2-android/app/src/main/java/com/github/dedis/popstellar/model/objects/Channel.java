@@ -52,9 +52,9 @@ public class Channel {
   }
 
   private Channel(Channel base, String subElement) {
-    List<String> elements = new ArrayList<>(base.elements);
-    elements.add(subElement);
-    this.elements = Collections.unmodifiableList(elements);
+    List<String> newElems = new ArrayList<>(base.elements);
+    newElems.add(subElement);
+    this.elements = Collections.unmodifiableList(newElems);
 
     if (!CHANNEL_VALIDATOR.test(getAsString()))
       throw new IllegalArgumentException(getAsString() + " is not a valid channel");

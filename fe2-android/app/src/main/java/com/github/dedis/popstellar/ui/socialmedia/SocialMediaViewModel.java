@@ -29,6 +29,7 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -265,7 +266,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
   }
 
   public List<Chirp> getChirpList(String laoId) {
-    return getLao(laoId).getChirpsInOrder();
+    Lao lao = getLao(laoId);
+    if (lao == null) return Collections.emptyList();
+    else return lao.getChirpsInOrder();
   }
 
   /**
