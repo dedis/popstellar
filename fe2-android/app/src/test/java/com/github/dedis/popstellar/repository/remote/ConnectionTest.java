@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.tinder.scarlet.Lifecycle;
 import com.tinder.scarlet.ShutdownReason;
 
@@ -23,7 +24,7 @@ public class ConnectionTest {
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
     Connection connection = new Connection(service, manualState);
-    Message msg = new Subscribe("channel", 12);
+    Message msg = new Subscribe(Channel.ROOT, 12);
 
     connection.sendMessage(msg);
 

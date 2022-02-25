@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.repository;
 import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -24,10 +25,9 @@ import io.reactivex.subjects.BehaviorSubject;
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
-  private static final String ROOT = "/root/";
 
   // State for LAO
-  private final Map<String, LAOState> laoByChannel;
+  private final Map<String, LAOState> laoById;
 
   // State for Messages
   private final Map<MessageID, MessageGeneral> messageById;
@@ -36,31 +36,21 @@ public class LAORepository {
   private final BehaviorSubject<List<Lao>> allLaoSubject;
 
   // Observable for view models that need access to all Nodes
-  private final Map<String, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject;
+  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject;
 
   @Inject
   public LAORepository() {
-    laoByChannel = new HashMap<>();
+    laoById = new HashMap<>();
     messageById = new HashMap<>();
     allLaoSubject = BehaviorSubject.create();
     channelToNodesSubject = new HashMap<>();
-  }
-
-  /**
-   * Checks that a given channel corresponds to a LAO channel, i.e /root/laoId
-   *
-   * @param channel the channel we want to check
-   * @return true if the channel is a lao channel, false otherwise
-   */
-  public boolean isLaoChannel(String channel) {
-    return channel.split("/").length == 3;
   }
 
   /** Set allLaoSubject to contain all LAOs */
   public void setAllLaoSubject() {
     Log.d(TAG, "posted allLaos to allLaoSubject");
     allLaoSubject.onNext(
-        laoByChannel.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
+        laoById.values().stream().map(LAOState::getLao).collect(Collectors.toList()));
   }
 
   /**
@@ -69,14 +59,14 @@ public class LAORepository {
    * @param channel the channel on which the election was created
    * @return the election corresponding to this channel
    */
-  public Election getElectionByChannel(String channel) {
+  public Election getElectionByChannel(Channel channel) {
     Log.d(TAG, "querying election for channel " + channel);
 
-    if (channel.split("/").length < 4)
+    if (!channel.isElectionChannel())
       throw new IllegalArgumentException("invalid channel for an election : " + channel);
 
     Lao lao = getLaoByChannel(channel);
-    Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
+    Optional<Election> electionOption = lao.getElection(channel.extractElectionId());
     if (!electionOption.isPresent()) {
       throw new IllegalArgumentException("the election should be present when receiving a result");
     }
@@ -89,24 +79,22 @@ public class LAORepository {
    * @param channel the channel on which the Lao was created
    * @return the Lao corresponding to this channel
    */
-  public Lao getLaoByChannel(String channel) {
+  public Lao getLaoByChannel(Channel channel) {
     Log.d(TAG, "querying lao for channel " + channel);
-
-    String[] split = channel.split("/");
-    return laoByChannel.get(ROOT + split[2]).getLao();
+    return laoById.get(channel.extractLaoId()).getLao();
   }
 
   public Observable<List<Lao>> getAllLaos() {
     return allLaoSubject;
   }
 
-  public Observable<Lao> getLaoObservable(String channel) {
-    Log.d(TAG, "LaoIds we have are: " + laoByChannel.keySet());
-    return laoByChannel.get(channel).getObservable();
+  public Observable<Lao> getLaoObservable(String laoId) {
+    Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
+    return laoById.get(laoId).getObservable();
   }
 
-  public Map<String, LAOState> getLaoByChannel() {
-    return laoByChannel;
+  public Map<String, LAOState> getLaoById() {
+    return laoById;
   }
 
   /**
@@ -115,7 +103,7 @@ public class LAORepository {
    * @param channel the lao channel.
    * @return an Observable to the list of nodes
    */
-  public Observable<List<ConsensusNode>> getNodesByChannel(String channel) {
+  public Observable<List<ConsensusNode>> getNodesByChannel(Channel channel) {
     return channelToNodesSubject.get(channel);
   }
 
@@ -125,7 +113,7 @@ public class LAORepository {
    *
    * @param channel the lao channel
    */
-  public void updateNodes(String channel) {
+  public void updateNodes(Channel channel) {
     List<ConsensusNode> nodes = getLaoByChannel(channel).getNodes();
     channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create());
     channelToNodesSubject.get(channel).onNext(nodes);

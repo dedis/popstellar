@@ -18,6 +18,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateL
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -56,8 +57,7 @@ public class RollCallHandlerTest {
   private static final PoPToken POP_TOKEN = generatePoPToken();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final String CHANNEL = "/root";
-  private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
+  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
@@ -95,7 +95,7 @@ public class RollCallHandlerTest {
         });
 
     // Add the LAO to the LAORepository
-    laoRepository.getLaoByChannel().put(LAO_CHANNEL, new LAOState(lao));
+    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
     laoRepository.setAllLaoSubject();
 
     // Add the CreateLao message to the LAORepository

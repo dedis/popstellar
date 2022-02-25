@@ -67,12 +67,7 @@ public class RollCallTokenFragment extends Hilt_RollCallTokenFragment {
       rollCall = optRollCall.get();
     }
 
-    String firstLaoId =
-        mLaoDetailViewModel
-            .getCurrentLaoValue()
-            .getChannel()
-            .substring(6); // use the laoId set at creation + need to remove /root/ prefix
-
+    String firstLaoId = mLaoDetailViewModel.getCurrentLaoValue().getId();
     String pk = "";
     Log.d(TAG, "rollcall: " + rollCallId);
     try {

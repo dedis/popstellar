@@ -30,6 +30,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.message.Wit
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CloseRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.CreateRollCall;
 import com.github.dedis.popstellar.model.network.method.message.data.rollcall.OpenRollCall;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.Election;
@@ -233,7 +234,7 @@ public class LaoDetailViewModel extends AndroidViewModel
    */
   private boolean attendedOrOrganized(Lao lao, RollCall rollcall) {
     // find out if user has attended the rollcall
-    String firstLaoId = lao.getChannel().substring(6);
+    String firstLaoId = lao.getId();
     try {
       PublicKey pk = wallet.generatePoPToken(firstLaoId, rollcall.getPersistentId()).getPublicKey();
       return rollcall.getAttendees().contains(pk) || isOrganizer().getValue();
@@ -266,8 +267,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
 
-    String channel = election.getChannel();
-    String laoId = lao.getChannel().substring(6); // removing /root/ prefix
+    Channel channel = election.getChannel();
+    String laoId = lao.getId();
     ElectionEnd electionEnd =
         new ElectionEnd(election.getId(), laoId, election.computerRegisteredVotes());
 
@@ -316,7 +317,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
       CastVote castVote = new CastVote(votes, election.getId(), lao.getId());
-      String electionChannel = election.getChannel();
+      Channel electionChannel = election.getChannel();
 
       Log.d(TAG, PUBLISH_MESSAGE);
       Disposable disposable =
@@ -371,7 +372,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       return null;
     }
 
-    String channel = lao.getChannel();
+    Channel channel = lao.getChannel();
     ElectionSetup electionSetup =
         new ElectionSetup(
             name,
@@ -428,7 +429,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
-    String channel = lao.getChannel();
+    Channel channel = lao.getChannel();
     // FIXME Location : Lausanne ?
     CreateRollCall createRollCall =
         new CreateRollCall(
@@ -477,7 +478,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
-    String channel = lao.getChannel() + "/consensus";
+    Channel channel = lao.getChannel().subChannel("consensus");
 
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 
@@ -552,8 +553,8 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     long openedAt = Instant.now().getEpochSecond();
-    String channel = lao.getChannel();
-    String laoId = channel.substring(6); // removing /root/ prefix
+    Channel channel = lao.getChannel();
+    String laoId = lao.getId();
     Optional<RollCall> optRollCall = lao.getRollCall(id);
     if (!optRollCall.isPresent()) {
       Log.d(TAG, "failed to retrieve roll call with id " + id + "laoID: " + laoId);
@@ -600,7 +601,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     long end = Instant.now().getEpochSecond();
-    String channel = lao.getChannel();
+    Channel channel = lao.getChannel();
     CloseRollCall closeRollCall =
         new CloseRollCall(lao.getId(), currentRollCallId, end, new ArrayList<>(attendees));
     Disposable disposable =
@@ -628,7 +629,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
 
-    String channel = lao.getChannel();
+    Channel channel = lao.getChannel();
 
     try {
       KeyPair mainKey = keyManager.getMainKeyPair();
@@ -1031,7 +1032,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     Log.d(TAG, "Updating lao name to " + mLaoName.getValue());
 
     Lao lao = getCurrentLaoValue();
-    String channel = lao.getChannel();
+    Channel channel = lao.getChannel();
     KeyPair mainKey = keyManager.getMainKeyPair();
     long now = Instant.now().getEpochSecond();
     UpdateLao updateLao =
@@ -1070,7 +1071,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
-    String channel = lao.getChannel();
+    Channel channel = lao.getChannel();
     KeyPair mainKey = keyManager.getMainKeyPair();
     long now = Instant.now().getEpochSecond();
     UpdateLao updateLao =
@@ -1092,7 +1093,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   /** Helper method for updateLaoWitnesses and updateLaoName to send a stateLao message */
   private void dispatchLaoUpdate(
-      String desc, UpdateLao updateLao, Lao lao, String channel, MessageGeneral msg) {
+      String desc, UpdateLao updateLao, Lao lao, Channel channel, MessageGeneral msg) {
     StateLao stateLao =
         new StateLao(
             updateLao.getId(),
@@ -1154,10 +1155,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       mWalletMessageEvent.setValue(new SingleEvent<>(true));
       return;
     }
-    String firstLaoId =
-        getCurrentLaoValue()
-            .getChannel()
-            .substring(6); // use the laoId set at creation + need to remove /root/ prefix
+    String firstLaoId = getCurrentLaoValue().getId();
     String errorMessage = "failed to retrieve public key from wallet";
     try {
       PublicKey publicKey = wallet.generatePoPToken(firstLaoId, id).getPublicKey();

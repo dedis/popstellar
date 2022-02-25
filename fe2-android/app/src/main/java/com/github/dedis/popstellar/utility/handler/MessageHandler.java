@@ -10,6 +10,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
 import com.github.dedis.popstellar.repository.remote.MessageSender;
@@ -46,7 +47,7 @@ public final class MessageHandler {
   public void handleMessage(
       LAORepository laoRepository,
       MessageSender messageSender,
-      String channel,
+      Channel channel,
       MessageGeneral message)
       throws DataHandlingException {
     Log.d(TAG, "handle incoming message");
@@ -81,9 +82,9 @@ public final class MessageHandler {
    * @param data the data received
    * @param channel the channel of the message received
    */
-  private void notifyLaoUpdate(LAORepository laoRepository, Data data, String channel) {
-    if (!(data instanceof WitnessMessageSignature) && laoRepository.isLaoChannel(channel)) {
-      LAOState laoState = laoRepository.getLaoByChannel().get(channel);
+  private void notifyLaoUpdate(LAORepository laoRepository, Data data, Channel channel) {
+    if (!(data instanceof WitnessMessageSignature) && channel.isLaoChannel()) {
+      LAOState laoState = laoRepository.getLaoById().get(channel.extractLaoId());
       laoState.publish(); // Trigger an onNext
       if (data instanceof StateLao || data instanceof CreateLao) {
         laoRepository.setAllLaoSubject();

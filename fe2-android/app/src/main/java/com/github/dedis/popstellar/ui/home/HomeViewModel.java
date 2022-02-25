@@ -16,6 +16,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
@@ -139,19 +140,18 @@ public class HomeViewModel extends AndroidViewModel
     }
 
     networkManager.connect(data.server);
-    String channel = "/root/" + data.lao;
+    Lao lao = new Lao(data.lao);
     disposables.add(
         networkManager
             .getMessageSender()
-            .subscribe(channel)
+            .subscribe(lao.getChannel())
             .doFinally(this::openHome)
             .subscribe(
                 () -> {
-                  Log.d(TAG, "subscribing to LAO with id " + channel);
+                  Log.d(TAG, "subscribing to LAO with id " + lao.getId());
 
                   // Create the new LAO and add it to the LAORepository LAO lists
-                  Lao lao = new Lao(data.lao);
-                  laoRepository.getLaoByChannel().put(channel, new LAOState(lao));
+                  laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
                   laoRepository.setAllLaoSubject();
 
                   Log.d(TAG, "got success result for subscribe to lao");
@@ -160,7 +160,7 @@ public class HomeViewModel extends AndroidViewModel
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_subscribe_lao)));
 
-    setConnectingLao(channel);
+    setConnectingLao(lao.getId());
     openConnecting();
   }
 
@@ -186,7 +186,7 @@ public class HomeViewModel extends AndroidViewModel
     disposables.add(
         networkManager
             .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), "/root", createLao)
+            .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
             .subscribe(
                 () -> {
                   Log.d(TAG, "got success result for create lao");

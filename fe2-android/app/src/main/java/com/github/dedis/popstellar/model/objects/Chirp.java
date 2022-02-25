@@ -11,7 +11,7 @@ public class Chirp {
   private static final int MAX_CHIRP_CHARS = 300;
 
   private MessageID id;
-  private String channel;
+  private Channel channel;
 
   private PublicKey sender;
   private String text;
@@ -41,11 +41,11 @@ public class Chirp {
     this.id = id;
   }
 
-  public String getChannel() {
+  public Channel getChannel() {
     return channel;
   }
 
-  public void setChannel(@NonNull String channel) {
+  public void setChannel(@NonNull Channel channel) {
     this.channel = channel;
   }
 
