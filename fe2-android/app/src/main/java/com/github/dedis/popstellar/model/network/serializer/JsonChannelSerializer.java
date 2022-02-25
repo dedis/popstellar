@@ -16,7 +16,7 @@ public class JsonChannelSerializer implements JsonSerializer<Channel>, JsonDeser
   @Override
   public Channel deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
       throws JsonParseException {
-    return Channel.newChannel(json.getAsString());
+    return Channel.fromString(json.getAsString());
   }
 
   @Override

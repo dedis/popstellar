@@ -18,7 +18,7 @@ import org.junit.Test;
 public class NotifyAddChirpTest {
 
   private static final MessageID CHIRP_ID = generateMessageID();
-  private static final Channel CHANNEL = Channel.newChannel("/root/laoId/social/myChannel");
+  private static final Channel CHANNEL = Channel.fromString("/root/laoId/social/myChannel");
   private static final long TIMESTAMP = 1631280815;
 
   private static final NotifyAddChirp NOTIFY_ADD_CHIRP =
@@ -58,7 +58,7 @@ public class NotifyAddChirpTest {
         NOTIFY_ADD_CHIRP,
         new NotifyAddChirp(generateMessageIDOtherThan(CHIRP_ID), CHANNEL, TIMESTAMP));
     assertNotEquals(
-        NOTIFY_ADD_CHIRP, new NotifyAddChirp(CHIRP_ID, Channel.ROOT.sub(random), TIMESTAMP));
+        NOTIFY_ADD_CHIRP, new NotifyAddChirp(CHIRP_ID, Channel.ROOT.subChannel(random), TIMESTAMP));
     assertNotEquals(NOTIFY_ADD_CHIRP, new NotifyAddChirp(CHIRP_ID, CHANNEL, TIMESTAMP + 1));
   }
 

@@ -136,7 +136,7 @@ public final class RollCallHandler {
       PoPToken token = context.getKeyManager().getValidPoPToken(lao, rollCall);
       context
           .getMessageSender()
-          .subscribe(channel.sub("social").sub(token.getPublicKey().getEncoded()))
+          .subscribe(channel.subChannel("social").subChannel(token.getPublicKey().getEncoded()))
           .subscribe();
     } catch (InvalidPoPTokenException e) {
       Log.i(TAG, "Received a close roll-call that you did not attend");

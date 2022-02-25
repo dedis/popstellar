@@ -75,7 +75,8 @@ public class ConsensusHandlerTest {
   private static final long CREATION_TIME = 946684800;
   private static final String LAO_NAME = "laoName";
   private static final String LAO_ID = Lao.generateLaoId(ORGANIZER, CREATION_TIME, LAO_NAME);
-  private static final Channel CONSENSUS_CHANNEL = Channel.ROOT.sub(LAO_ID).sub("consensus");
+  private static final Channel CONSENSUS_CHANNEL =
+      Channel.getLaoChannel(LAO_ID).subChannel("consensus");
 
   private static final String TYPE = "election";
   private static final String KEY_ID = "-t0xoQZa-ryiW18JnTjJHCsCNehFxuXOFOsfgKHHkj0=";

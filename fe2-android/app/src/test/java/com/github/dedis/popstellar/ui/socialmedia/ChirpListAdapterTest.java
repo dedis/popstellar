@@ -59,9 +59,9 @@ public class ChirpListAdapterTest {
   private static final String LAO_ID = Lao.generateLaoId(SENDER_1, CREATION_TIME, LAO_NAME);
 
   private static final Channel CHIRP_CHANNEL_1 =
-      Channel.ROOT.sub(LAO_ID).sub("social").sub(SENDER_1.getEncoded());
+      Channel.getLaoChannel(LAO_ID).subChannel("social").subChannel(SENDER_1.getEncoded());
   private static final Channel CHIRP_CHANNEL_2 =
-      Channel.ROOT.sub(LAO_ID).sub("social").sub(SENDER_2.getEncoded());
+      Channel.getLaoChannel(LAO_ID).subChannel("social").subChannel(SENDER_2.getEncoded());
   private static final String TEXT_1 = "text1";
   private static final String TEXT_2 = "text2";
   private static final long TIMESTAMP_1 = 1632204910;

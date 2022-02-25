@@ -28,13 +28,26 @@ public class Channel {
   /** Root channel, every client is subscribed to it. */
   public static final Channel ROOT = new Channel();
 
-  public static Channel newChannel(String value) {
-    // Avoid creating duplicate instances
-    if (ROOT_CHANNEL.equals(value)) return ROOT;
-
+  /**
+   * Create a Channel from the protocol string representation of it
+   *
+   * @param value of the channel
+   * @return the new channel
+   */
+  public static Channel fromString(String value) {
     // Remove the "/root/" part of the value as it is not relevant and does not need to be stored
     String relevantPart = value.substring(ROOT_CHANNEL.length() + 1);
     return new Channel(relevantPart.split(DELIMITER));
+  }
+
+  /**
+   * Create a new LAO Channel (/root/<lao_id>)
+   *
+   * @param laoId of the lao
+   * @return the new channel
+   */
+  public static Channel getLaoChannel(String laoId) {
+    return Channel.ROOT.subChannel(laoId);
   }
 
   // ================ Object itself =================
@@ -42,19 +55,19 @@ public class Channel {
   // This list contains the different parts of the channel except the root as every channel has a
   // root part
   // So for the channel /root/lao_id/election_id, the elements will be [lao_id, election_id]
-  @NonNull private final List<String> elements;
+  @NonNull private final List<String> segments;
 
-  private Channel(String... elements) {
-    this.elements = Arrays.asList(elements);
+  private Channel(String... segments) {
+    this.segments = Arrays.asList(segments);
 
     if (!CHANNEL_VALIDATOR.test(getAsString()))
       throw new IllegalArgumentException(getAsString() + " is not a valid channel");
   }
 
-  private Channel(Channel base, String subElement) {
-    List<String> newElems = new ArrayList<>(base.elements);
-    newElems.add(subElement);
-    this.elements = Collections.unmodifiableList(newElems);
+  private Channel(Channel base, String subSegments) {
+    List<String> newSegments = new ArrayList<>(base.segments);
+    newSegments.add(subSegments);
+    this.segments = Collections.unmodifiableList(newSegments);
 
     if (!CHANNEL_VALIDATOR.test(getAsString()))
       throw new IllegalArgumentException(getAsString() + " is not a valid channel");
@@ -63,32 +76,41 @@ public class Channel {
   /**
    * Return a channel that is this channel with one more element underneath
    *
-   * @param subElement element to append to this channel
+   * @param segment to append to this channel
    * @return a new Channel object
    */
-  public Channel sub(String subElement) {
-    return new Channel(this, subElement);
+  public Channel subChannel(String segment) {
+    return new Channel(this, segment);
   }
 
   /** @return true if this channel is of the form '/root/lao_id' */
   public boolean isLaoChannel() {
-    return elements.size() == 1;
+    return segments.size() == 1;
   }
 
-  /** @return true if this channel could be an election channel */
+  /**
+   * Check if the channel could be an election channel.
+   *
+   * <p>This check is not perfect, any channel of the form /root/xxx/xxx are accepted as valid
+   * election channel
+   *
+   * <p>Be careful when using this function
+   *
+   * @return true if this channel could be an election channel
+   */
   public boolean isElectionChannel() {
-    return elements.size() == 2;
+    return segments.size() == 2;
   }
 
   /** @return the LAO ID contained in this channel */
   public String extractLaoId() {
-    if (elements.isEmpty())
+    if (segments.isEmpty())
       throw new IllegalStateException(
           "This channel is the root channel and does not contain any LAO ID");
 
     // In the current implementation of the protocol, the first element of the channel (if present)
     // is always the LAO id
-    return elements.get(0);
+    return segments.get(0);
   }
 
   /**
@@ -100,15 +122,15 @@ public class Channel {
    * @return the election id contained in this channel
    */
   public String extractElectionId() {
-    if (elements.size() < 2)
+    if (segments.size() < 2)
       throw new IllegalStateException("This channel is not an election channel");
 
-    return elements.get(1);
+    return segments.get(1);
   }
 
   /** @return the protocol like String representation of the channel (/root/abc/efg) */
   public String getAsString() {
-    return ROOT_CHANNEL + elements.stream().map(e -> "/" + e).collect(Collectors.joining());
+    return ROOT_CHANNEL + segments.stream().map(e -> "/" + e).collect(Collectors.joining());
   }
 
   @Override
@@ -116,12 +138,12 @@ public class Channel {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Channel channel = (Channel) o;
-    return elements.equals(channel.elements);
+    return segments.equals(channel.segments);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(elements);
+    return Objects.hash(segments);
   }
 
   @NonNull

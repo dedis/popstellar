@@ -48,7 +48,7 @@ public class LaoHandlerTest {
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final Channel LAO_CHANNEL = Channel.ROOT.sub(CREATE_LAO.getId());
+  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 

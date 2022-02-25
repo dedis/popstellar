@@ -53,7 +53,7 @@ public class ChirpHandlerTest {
   private static final String LAO_ID = Lao.generateLaoId(SENDER, CREATION_TIME, LAO_NAME);
   private static final Lao LAO = new Lao(LAO_ID);
   private static final Channel CHIRP_CHANNEL =
-      LAO.getChannel().sub("social").sub(SENDER.getEncoded());
+      LAO.getChannel().subChannel("social").subChannel(SENDER.getEncoded());
 
   private static final String TEXT = "textOfTheChirp";
   private static final String EMPTY_STRING = "";

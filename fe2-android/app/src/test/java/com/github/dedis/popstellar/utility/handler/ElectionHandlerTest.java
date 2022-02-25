@@ -56,7 +56,7 @@ public class ElectionHandlerTest extends TestCase {
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final Channel LAO_CHANNEL = Channel.ROOT.sub(CREATE_LAO.getId());
+  private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(CREATE_LAO.getId());
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
@@ -100,7 +100,7 @@ public class ElectionHandlerTest extends TestCase {
     election = new Election(lao.getId(), Instant.now().getEpochSecond(), "election 1");
     election.setStart(Instant.now().getEpochSecond());
     election.setEnd(Instant.now().getEpochSecond() + 20L);
-    election.setChannel(lao.getChannel().sub(election.getId()));
+    election.setChannel(lao.getChannel().subChannel(election.getId()));
     electionQuestion =
         new ElectionQuestion(
             "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
@@ -172,7 +172,7 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL.sub(election.getId()), message);
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
     // Check the Election is present with state RESULTS_READY and the results
     Optional<Election> electionOpt =
@@ -191,7 +191,7 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL.sub(election.getId()), message);
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
     // Check the Election is present with state CLOSED and the results
     Optional<Election> electionOpt =

@@ -38,7 +38,7 @@ public class ChirpTest {
 
   @Test
   public void setAndGetChannelTest() {
-    Channel channel = Channel.newChannel("/root/laoId/social/myChannel");
+    Channel channel = Channel.fromString("/root/laoId/social/myChannel");
     CHIRP.setChannel(channel);
     assertEquals(channel, CHIRP.getChannel());
   }

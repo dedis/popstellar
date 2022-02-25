@@ -478,7 +478,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       Log.d(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
-    Channel channel = lao.getChannel().sub("consensus");
+    Channel channel = lao.getChannel().subChannel("consensus");
 
     ConsensusElect consensusElect = new ConsensusElect(creation, objId, type, property, value);
 

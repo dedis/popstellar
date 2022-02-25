@@ -208,7 +208,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      Channel channel = lao.getChannel().sub(SOCIAL).sub(token.getPublicKey().getEncoded());
+      Channel channel =
+          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
       Log.d(TAG, PUBLISH_MESSAGE);
       MessageGeneral msg = new MessageGeneral(token, addChirp, gson);
 
@@ -239,7 +240,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
     try {
       PoPToken token = keyManager.getValidPoPToken(lao);
-      Channel channel = lao.getChannel().sub(SOCIAL).sub(token.getPublicKey().getEncoded());
+      Channel channel =
+          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
       Log.d(TAG, PUBLISH_MESSAGE);
       MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
 

@@ -49,7 +49,7 @@ public final class Lao {
       throw new IllegalArgumentException(" The id of the Lao is empty");
     }
 
-    this.channel = Channel.ROOT.sub(id);
+    this.channel = Channel.getLaoChannel(id);
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
@@ -225,6 +225,7 @@ public final class Lao {
     }
 
     this.id = id;
+    this.channel = Channel.getLaoChannel(id);
   }
 
   public String getName() {
