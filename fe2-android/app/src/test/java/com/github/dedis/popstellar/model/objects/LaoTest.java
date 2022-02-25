@@ -265,7 +265,7 @@ public class LaoTest {
 
   @Test
   public void setAndGetId() {
-    LAO_1.setId("New Id");
-    assertThat(LAO_1.getId(), is("New Id"));
+    LAO_1.setId("New_Id");
+    assertThat(LAO_1.getId(), is("New_Id"));
   }
 }
