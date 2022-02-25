@@ -23,7 +23,7 @@ public class Channel {
   private static final String DELIMITER = "/";
   // Predicate matching a String with the protocol regex of a channel
   private static final Predicate<String> CHANNEL_VALIDATOR =
-      Pattern.compile("^/root(/[^/]+)*$").asPredicate();
+      Pattern.compile("^/root(/[a-zA-Z0-9=!*+()~?#%_-]+)*+$").asPredicate();
 
   /** Root channel, every client is subscribed to it. */
   public static final Channel ROOT = new Channel();
