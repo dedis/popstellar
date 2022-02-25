@@ -428,7 +428,8 @@ func (c *Channel) broadcastElectionResult() error {
 		MessageID:         messagedata.Hash(newData64, signature),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
-
+	
+	c.inbox.StoreMessage(electionResultMsg)
 	c.broadcastToAllClients(electionResultMsg)
 
 	return nil
