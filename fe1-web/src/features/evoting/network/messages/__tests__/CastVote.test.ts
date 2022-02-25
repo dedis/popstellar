@@ -91,13 +91,13 @@ const initializeData = () => {
   mockVoteObject1 = {
     id: mockVoteId1.toString(),
     question: mockQuestionId1.valueOf(),
-    vote: new Set([0]),
+    vote: [0],
   };
 
   mockVoteObject2 = {
     id: mockVoteId2.toString(),
     question: mockQuestionId2.valueOf(),
-    vote: new Set([0]),
+    vote: [0],
   };
 
   const mockVotes = [mockVoteObject1];

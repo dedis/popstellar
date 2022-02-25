@@ -73,9 +73,11 @@ export function castVote(
       .map<Vote>(({ index, selectionOptions }) => ({
         id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
         question: election.questions[index].id,
-        vote: selectionOptions,
+        // sort votes in ascending order
+        vote: [...selectionOptions].sort(),
       })),
   });
+  console.log(message.votes);
 
   // publish on the LAO channel specific to this election
   return publish(channelFromIds(currentLao.id, election.id), message);

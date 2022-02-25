@@ -30,7 +30,7 @@ export interface Question {
 export interface Vote {
   id: string;
   question: string;
-  vote?: Set<number>;
+  vote?: number[];
   writeIn?: string;
 }
 
