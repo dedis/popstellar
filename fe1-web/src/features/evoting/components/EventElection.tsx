@@ -103,6 +103,12 @@ const EventElection: FunctionComponent<IPropTypes> = (props) => {
             ))}
             <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
             <Badge value={hasVoted} status="success" />
+            {isOrganizer && (
+              <WideButtonView
+                title="Terminate Election / Tally Votes"
+                onPress={onTerminateElection}
+              />
+            )}
           </>
         );
       case ElectionStatus.FINISHED:
