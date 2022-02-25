@@ -1,17 +1,13 @@
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
 
-import { dispatch, getStore } from 'core/redux';
-import { Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
-import { getEventFromId } from 'features/events/network/EventHandlerUtils';
-import { updateEvent } from 'features/events/reducer';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult } from '../objects';
@@ -48,8 +44,6 @@ const EventElection: FunctionComponent<IPropTypes> = (props) => {
     {},
   );
   const [hasVoted, setHasVoted] = useState(0);
-  const untilStart = (election.start.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
-  const untilEnd = (election.end.valueOf() - Timestamp.EpochNow().valueOf()) * 1000;
 
   const onCastVote = () => {
     castVote(election, selectedBallots)
@@ -77,39 +71,6 @@ const EventElection: FunctionComponent<IPropTypes> = (props) => {
         });
       });
   };
-
-  const updateElection = (status: ElectionStatus, elec: Election) => {
-    const storeState = getStore().getState();
-    const oldElection = getEventFromId(storeState, elec.id) as Election;
-    const newElection = new Election({ ...oldElection, electionStatus: status });
-    dispatch(updateEvent(elec.lao, newElection.toState()));
-  };
-
-  // This makes sure the screen gets updated when the event starts
-  useEffect(() => {
-    if (untilStart >= 0) {
-      const startTimer = setTimeout(() => {
-        updateElection(ElectionStatus.RUNNING, election);
-      }, untilStart);
-      return () => clearTimeout(startTimer);
-    }
-
-    // no callback if no timer was installed. Return statement makes eslint happy (consistent-return)
-    return undefined;
-  }, [untilStart, election]);
-
-  // This makes sure the screen gets updated when the event ends - user can't vote anymore
-  useEffect(() => {
-    if (untilEnd >= 0) {
-      const endTimer = setTimeout(() => {
-        updateElection(ElectionStatus.FINISHED, election);
-      }, untilEnd);
-      return () => clearTimeout(endTimer);
-    }
-
-    // no callback if no timer was installed. Return statement makes eslint happy (consistent-return)
-    return undefined;
-  }, [untilEnd, election]);
 
   // Here we use the election object form the redux store in order to see the electionStatus
   // update when an  incoming electionEnd or electionResult message comes
