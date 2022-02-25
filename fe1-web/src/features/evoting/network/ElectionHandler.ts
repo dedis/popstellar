@@ -182,7 +182,11 @@ export function handleElectionResultMessage(msg: ProcessableMessage) {
     return false;
   }
 
-  election.questionResult = ElectionResultMsg.questions;
+  election.questionResult = ElectionResultMsg.questions.map((q) => ({
+    id: q.id,
+    result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+  }));
+
   election.electionStatus = ElectionStatus.RESULT;
   dispatch(updateEvent(lao.id, election.toState()));
   console.log('received election Result message: ', ElectionResultMsg);

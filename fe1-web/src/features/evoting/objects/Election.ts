@@ -7,6 +7,14 @@ import { LaoEventState } from 'features/events/objects/LaoEvent';
 
 export const EventTypeElection = 'ELECTION';
 
+export enum ElectionStatus {
+  NOT_STARTED = 'not started',
+  RUNNING = 'running',
+  FINISHED = 'finished', // When the time is over
+  TERMINATED = 'terminated', // When manually terminated by organizer
+  RESULT = 'result', // When result is available
+}
+
 export interface ElectionState extends LaoEventState {
   lao: string;
   name: string;
@@ -15,6 +23,7 @@ export interface ElectionState extends LaoEventState {
   start: number;
   end: number;
   questions: Question[];
+  electionStatus: ElectionStatus;
   registeredVotes: RegisteredVote[];
   questionResult?: QuestionResult[];
 }
@@ -49,14 +58,6 @@ export interface MajorityResult {
 export interface QuestionResult {
   id: string;
   result: MajorityResult[];
-}
-
-export enum ElectionStatus {
-  NOT_STARTED = 'not started',
-  RUNNING = 'running',
-  FINISHED = 'finished', // When the time is over
-  TERMINATED = 'terminated', // When manually terminated by organizer
-  RESULT = 'result', // When result is available
 }
 
 export class Election {
@@ -127,8 +128,12 @@ export class Election {
     this.end = obj.end;
     this.questions = obj.questions;
     this.questionResult = obj.questionResult;
-    // Sets the election status automatically
-    this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
+    // Sets the election status automatically if none is passed
+    if (obj.electionStatus === undefined) {
+      this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
+    } else {
+      this.electionStatus = obj.electionStatus;
+    }
   }
 
   /**
@@ -147,6 +152,8 @@ export class Election {
       end: new Timestamp(electionState.end),
       questions: electionState.questions,
       registeredVotes: electionState.registeredVotes,
+      electionStatus: electionState.electionStatus,
+      questionResult: electionState.questionResult,
     });
   }
 
