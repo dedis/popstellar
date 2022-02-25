@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
 
-  private Channel channel;
+  private final Channel channel;
   private String id;
   private String name;
   private Long lastModified;
@@ -225,7 +225,6 @@ public final class Lao {
     }
 
     this.id = id;
-    this.channel = Channel.getLaoChannel(id);
   }
 
   public String getName() {
