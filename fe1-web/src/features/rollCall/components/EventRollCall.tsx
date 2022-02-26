@@ -76,9 +76,7 @@ const EventRollCall = (props: IPropTypes) => {
             ),
           });
         })
-        .catch((e) =>
-        console.debug('Unable to send Roll call re-open request', e),
-      );
+        .catch((e) => console.debug('Unable to send Roll call re-open request', e));
     } else {
       const time = Timestamp.EpochNow();
       requestOpenRollCall(event.id, time)
