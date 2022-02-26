@@ -57,7 +57,26 @@ const EventRollCall = (props: IPropTypes) => {
         );
         return;
       }
-      requestReopenRollCall(event.idAlias).catch((e) =>
+      const time = Timestamp.EpochNow();
+      requestReopenRollCall(event.idAlias, time)
+        .then(() => {
+          if (!event.idAlias) {
+            console.debug(
+              'Unable to send roll call re-open request, the event does not have an idAlias',
+            );
+            return;
+          }
+          navigation.navigate(STRINGS.roll_call_open, {
+            rollCallID: event.id.toString(),
+            updateID: Hash.fromStringArray(
+              EventTags.ROLL_CALL,
+              lao.id.toString(),
+              event.idAlias.toString(),
+              time.toString(),
+            ),
+          });
+        })
+        .catch((e) =>
         console.debug('Unable to send Roll call re-open request', e),
       );
     } else {
@@ -92,7 +111,6 @@ const EventRollCall = (props: IPropTypes) => {
 
   const getRollCallDisplay = (status: RollCallStatus) => {
     switch (status) {
-      case RollCallStatus.REOPENED:
       case RollCallStatus.CREATED:
         return (
           <>
@@ -103,6 +121,7 @@ const EventRollCall = (props: IPropTypes) => {
             )}
           </>
         );
+      case RollCallStatus.REOPENED:
       case RollCallStatus.OPENED:
         return (
           <>
