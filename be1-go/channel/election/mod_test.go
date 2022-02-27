@@ -375,9 +375,11 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
 		electionSetup.Questions, attendees, fakeHub, nolog, keypair.public)
 
-	fakeHub.NotifyNewChannel(channel.channelID, &channel, &fakeSocket{id: "socket"})
+	channelElec := channel.(*Channel)
 
-	return &channel, pkOrganizer
+	fakeHub.NotifyNewChannel(channelElec.channelID, channel, &fakeSocket{id: "socket"})
+
+	return channelElec, pkOrganizer
 }
 
 type keypair struct {

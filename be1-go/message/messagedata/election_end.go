@@ -12,3 +12,18 @@ type ElectionEnd struct {
 
 	RegisteredVotes string `json:"registered_votes"`
 }
+
+// GetObject implements MessageData
+func (ElectionEnd) GetObject() string {
+	return ElectionObject
+}
+
+// GetAction implements MessageData
+func (ElectionEnd) GetAction() string {
+	return ElectionActionEnd
+}
+
+// NewEmpty implements MessageData
+func (ElectionEnd) NewEmpty() MessageData {
+	return &ElectionEnd{}
+}

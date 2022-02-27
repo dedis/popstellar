@@ -610,7 +610,7 @@ func (c *Channel) createElection(msg message.Message,
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
+	c.hub.NotifyNewChannel(channelPath, electionCh, socket)
 
 	return nil
 }

@@ -19,3 +19,18 @@ type Vote struct {
 	Question string `json:"question"`
 	Vote     []int  `json:"vote"`
 }
+
+// GetObject implements MessageData
+func (VoteCastVote) GetObject() string {
+	return ElectionObject
+}
+
+// GetAction implements MessageData
+func (VoteCastVote) GetAction() string {
+	return VoteActionCastVote
+}
+
+// NewEmpty implements MessageData
+func (VoteCastVote) NewEmpty() MessageData {
+	return &VoteCastVote{}
+}
