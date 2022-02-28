@@ -1231,7 +1231,7 @@ The election can be opened by publishing an election/open message on the electio
     "action": "open",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
-    "created_at": 1633099883
+    "opened_at": 1633099883
 }
 ```
 </details>
