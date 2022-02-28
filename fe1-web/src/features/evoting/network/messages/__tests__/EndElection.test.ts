@@ -53,7 +53,26 @@ const election = new Election({
   end: CLOSE_TIMESTAMP,
   questions: [question],
   electionStatus: ElectionStatus.NOT_STARTED,
-  registeredVotes: [],
+  registeredVotes: [
+    {
+      createdAt: 0,
+      messageId: '1',
+      sender: '',
+      votes: [
+        { id: '', question: '', vote: [0] },
+        { id: '', question: '', vote: [0] },
+      ],
+    },
+    {
+      createdAt: 1,
+      messageId: '1',
+      sender: '',
+      votes: [
+        { id: '', question: '', vote: [0] },
+        { id: '', question: '', vote: [0] },
+      ],
+    },
+  ],
 });
 
 const mockVoteId = 'x';
