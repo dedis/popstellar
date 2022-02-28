@@ -3,7 +3,6 @@ import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 import { MessageDataProperties } from 'core/types';
-import { Election } from 'features/evoting/objects';
 
 /** Data sent to end an Election event */
 export class OpenElection implements MessageData {

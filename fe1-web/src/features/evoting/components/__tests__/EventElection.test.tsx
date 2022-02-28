@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
+import { render } from '@testing-library/react-native';
 
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
