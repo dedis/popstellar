@@ -5,14 +5,14 @@ import { walletReducer } from 'features/wallet/reducer';
 import { eventsReducer } from 'features/events/reducer';
 import { laoReducer } from 'features/lao/reducer';
 
-export function wrapWithClearStorageReducer(reducers: Reducer): Reducer {
+export function wrapWithClearStorageReducer(rs: Reducer): Reducer {
   return (state: any, action: AnyAction) => {
     // clears the local cached storage as well as the state of the storage
     let newState = state;
     if (action.type === 'CLEAR_STORAGE') {
       newState = undefined;
     }
-    return reducers(newState, action);
+    return rs(newState, action);
   };
 }
 
