@@ -74,7 +74,7 @@ export function castVote(
         id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
         question: election.questions[index].id,
         // sort votes in ascending order
-        vote: [...selectionOptions].sort(),
+        vote: [...selectionOptions].sort((a, b) => a - b),
       })),
   });
 
