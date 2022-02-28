@@ -1,24 +1,20 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
 import {
-  mockLao,
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
   configureTestFeatures,
-  mockKeyPair,
   mockKeyPair2,
   mockLaoState,
 } from '__tests__/utils';
 
-import { EventTags, Hash, Timestamp, ProtocolError, Base64UrlData, Signature } from 'core/objects';
+import { Hash, Timestamp, Base64UrlData, Signature } from 'core/objects';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { OpenedLaoStore } from 'features/lao/store';
 
-import { MessageDataProperties } from 'core/types';
 import STRINGS from 'resources/strings';
-import { getStore, RootState, dispatch } from 'core/redux';
-import { addLao, connectToLao } from 'features/lao/reducer';
+import { getStore, dispatch } from 'core/redux';
+import { connectToLao } from 'features/lao/reducer';
 import { addEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { Election, ElectionStatus } from 'features/evoting/objects';
