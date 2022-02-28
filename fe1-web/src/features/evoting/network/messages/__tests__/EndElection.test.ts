@@ -13,13 +13,7 @@ import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { MessageDataProperties } from 'core/types';
-import {
-  Election,
-  ElectionStatus,
-  Question,
-  QuestionResult,
-  RegisteredVote,
-} from 'features/evoting/objects';
+import { Election, ElectionStatus, Question } from 'features/evoting/objects';
 import STRINGS from 'resources/strings';
 import { EndElection } from '../EndElection';
 
