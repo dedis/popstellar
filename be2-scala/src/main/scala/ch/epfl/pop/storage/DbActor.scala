@@ -3,10 +3,11 @@ package ch.epfl.pop.storage
 import akka.actor.{Actor, ActorLogging, ActorRef, Status}
 import akka.event.LoggingReceive
 import akka.pattern.AskableActorRef
+import ch.epfl.pop.json.MessageDataProtocol
 import ch.epfl.pop.model.network.method.message.Message
-import ch.epfl.pop.model.network.method.message.data.ObjectType
+import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.graph.ErrorCodes
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, JsonString}
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor._
 
@@ -29,11 +30,10 @@ final case class DbActor(
 
   @throws [DbActorNAckException]
   private def write(channel: Channel, message: Message): Unit = {
+    // determine data object type. Assumption: all payloads carry header fields.
+    val (_object, action) = MessageDataProtocol.parseHeader(message.data.decodeToString()).get
+
     // create channel if missing. If already present => createChannel does nothing
-    val _object = message.decodedData match {
-      case Some(data) => data._object
-      case _ => ObjectType.LAO
-    }
     createChannel(channel, _object)
 
     this.synchronized {
@@ -48,7 +48,17 @@ final case class DbActor(
   @throws [DbActorNAckException]
   private def read(channel: Channel, messageId: Hash): Option[Message] = {
     Try(storage.read(s"$channel${Channel.DATA_SEPARATOR}$messageId")) match {
-      case Success(Some(json)) => Some(Message.buildFromJson(json))
+      case Success(Some(json)) =>
+        val msg = Message.buildFromJson(json)
+        val data: JsonString = msg.data.decodeToString()
+        MessageDataProtocol.parseHeader(data) match {
+          case Success((_object, action)) =>
+            val builder = registry.getBuilder(_object, action).get
+            Some(msg.copy(decodedData=Some(builder(data))))
+          case Failure(ex) =>
+            log.error(s"Unable to decode message data: $ex")
+            Some(msg)
+        }
       case Success(None) => None
       case Failure(ex) => throw ex
     }

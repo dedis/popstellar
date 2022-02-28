@@ -345,7 +345,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
     val readMessage: Message = answer.asInstanceOf[DbActor.DbActorReadAck].message.get
 
-    readMessage should equal(MESSAGE.copy(decodedData = None))
+    readMessage should equal(MESSAGE)
   }
 
   test("read does not fail for non-existing message (returns None)"){
@@ -406,8 +406,8 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
 
     list.size should equal (2)
-    list should contain(MESSAGE.copy(decodedData = None))
-    list should contain(message2.copy(decodedData = None))
+    list should contain(MESSAGE)
+    list should contain(message2)
   }
 
   test("catchup should not fail on a channel with ChannelData containing missing message_ids (and only return valid messages)"){
@@ -433,7 +433,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val list: List[Message] = answer.asInstanceOf[DbActor.DbActorCatchupAck].messages
 
     list.size should equal(1)
-    list should contain(MESSAGE.copy(decodedData = None))
+    list should contain(MESSAGE)
   }
 
 }
