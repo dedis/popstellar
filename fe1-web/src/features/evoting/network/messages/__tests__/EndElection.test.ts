@@ -8,14 +8,60 @@ import {
   configureTestFeatures,
 } from '__tests__/utils';
 
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { Hash, Timestamp, ProtocolError, EventTags } from 'core/objects';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { MessageDataProperties } from 'core/types';
+import {
+  Election,
+  ElectionStatus,
+  Question,
+  QuestionResult,
+  RegisteredVote,
+} from 'features/evoting/objects';
+import STRINGS from 'resources/strings';
 import { EndElection } from '../EndElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
+const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
+
+const mockElectionId = Hash.fromStringArray(
+  'Election',
+  mockLaoId,
+  TIMESTAMP.toString(),
+  mockLaoName,
+);
+
+const mockQuestion = 'Mock Question 1';
+const mockQuestionId = Hash.fromStringArray(
+  EventTags.QUESTION,
+  mockElectionId.toString(),
+  mockQuestion,
+);
+const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
+
+const question: Question = {
+  id: mockQuestionId.toString(),
+  question: mockQuestion,
+  voting_method: STRINGS.election_method_Plurality,
+  ballot_options: mockBallotOptions,
+  write_in: false,
+};
+
+const election = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: 'An election',
+  version: STRINGS.election_version_identifier,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: [question],
+  electionStatus: ElectionStatus.NOT_STARTED,
+  registeredVotes: [],
+});
+
 const mockVoteId = 'x';
 const mockElectionResultHash = Hash.fromStringArray(mockVoteId);
 
@@ -162,5 +208,12 @@ describe('EndElection', () => {
       expect(msg.object).toEqual(ObjectType.ELECTION);
       expect(msg.action).toEqual(ActionType.END);
     });
+  });
+
+  describe('computeRegisteredVotesHash', () => {
+    // It seems a bit silly to test this function apart from it not returning an error as
+    // we would simply write the same code here again?
+    const fn = () => EndElection.computeRegisteredVotesHash(election);
+    expect(fn).not.toThrow();
   });
 });

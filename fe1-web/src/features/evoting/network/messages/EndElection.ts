@@ -20,10 +20,6 @@ export class EndElection implements MessageData {
   public readonly registered_votes: Hash;
 
   constructor(msg: MessageDataProperties<EndElection>) {
-    if (!msg.election) {
-      throw new ProtocolError("Undefined 'id' parameter encountered during 'EndElection'");
-    }
-
     if (!msg.lao) {
       throw new ProtocolError("Undefined 'lao' parameter encountered during 'EndElection'");
     }

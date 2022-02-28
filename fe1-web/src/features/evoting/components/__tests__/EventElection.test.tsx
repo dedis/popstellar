@@ -93,6 +93,19 @@ const terminatedElection = new Election({
   registeredVotes: [registeredVote],
 });
 
+const finishedElection = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: 'An election',
+  version: STRINGS.election_version_identifier,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: [question],
+  electionStatus: ElectionStatus.FINISHED,
+  registeredVotes: [registeredVote],
+});
+
 const resultElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
@@ -102,7 +115,22 @@ const resultElection = new Election({
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
   questions: [question],
-  electionStatus: ElectionStatus.TERMINATED,
+  electionStatus: ElectionStatus.RESULT,
+  registeredVotes: [registeredVote],
+  questionResult: [questionResult],
+});
+
+const undefinedElection = new Election({
+  lao: mockLaoIdHash,
+  id: mockElectionId,
+  name: 'An election',
+  version: STRINGS.election_version_identifier,
+  createdAt: TIMESTAMP,
+  start: TIMESTAMP,
+  end: CLOSE_TIMESTAMP,
+  questions: [question],
+  // @ts-ignore: Sonarcloud wants high test coverage, this is to hit the default case
+  electionStatus: 'undefined',
   registeredVotes: [registeredVote],
   questionResult: [questionResult],
 });
@@ -153,7 +181,20 @@ describe('EventElection', () => {
     });
   });
 
-  describe('Terminated election where the results are available', () => {
+  describe('Finished election where the results are not yet available', () => {
+    it('renders correctly for an organizer', () => {
+      const component = render(<EventElection election={finishedElection} isOrganizer />).toJSON();
+      expect(component).toMatchSnapshot();
+    });
+    it('renders correctly for an attendee', () => {
+      const component = render(
+        <EventElection election={finishedElection} isOrganizer={false} />,
+      ).toJSON();
+      expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('Finished election where the results are available', () => {
     it('renders correctly for an organizer', () => {
       const component = render(<EventElection election={resultElection} isOrganizer />).toJSON();
       expect(component).toMatchSnapshot();
@@ -163,6 +204,33 @@ describe('EventElection', () => {
         <EventElection election={resultElection} isOrganizer={false} />,
       ).toJSON();
       expect(component).toMatchSnapshot();
+    });
+  });
+
+  describe('Undefined election status', () => {
+    it('renders null for an organizer', () => {
+      const mockFn = jest.fn();
+      console.warn = mockFn;
+
+      const component = render(<EventElection election={undefinedElection} isOrganizer />).toJSON();
+      expect(component).toMatchSnapshot();
+
+      expect(mockFn).toHaveBeenCalledTimes(1);
+      // check if the printed warning message contains substring
+      expect(mockFn.mock.calls[0][0]).toMatch(/undefined/i);
+    });
+    it('renders null for an attendee', () => {
+      const mockFn = jest.fn();
+      console.warn = mockFn;
+
+      const component = render(
+        <EventElection election={undefinedElection} isOrganizer={false} />,
+      ).toJSON();
+      expect(component).toMatchSnapshot();
+
+      expect(mockFn).toHaveBeenCalledTimes(1);
+      // check if the printed warning message contains substring
+      expect(mockFn.mock.calls[0][0]).toMatch(/undefined/i);
     });
   });
 });
