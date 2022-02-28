@@ -77,7 +77,6 @@ export function castVote(
         vote: [...selectionOptions].sort(),
       })),
   });
-  console.log(message.votes);
 
   // publish on the LAO channel specific to this election
   return publish(channelFromIds(currentLao.id, election.id), message);
