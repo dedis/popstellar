@@ -9,6 +9,7 @@ import { KeyPairStore } from 'core/keypair';
 
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, RegisteredVote } from '../objects';
+import { OpenElection } from './messages/OpenElection';
 
 /**
  * Handles all election related messages coming from the network.
@@ -61,6 +62,40 @@ export function handleElectionSetupMessage(msg: ProcessableMessage): boolean {
   });
 
   dispatch(addEvent(lao.id, election.toState()));
+  return true;
+}
+
+/**
+ * Handles an ElectionOpen message by opening the election.
+ *
+ * @param msg - The extended message for opening an election
+ */
+export function handleElectionOpenMessage(msg: ProcessableMessage) {
+  console.log('Handling Election open message');
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.OPEN
+  ) {
+    console.warn('handleElectionOpenMessage was called to process an unsupported message', msg);
+    return false;
+  }
+  const makeErr = (err: string) => `election/open was not processed: ${err}`;
+  const storeState = getStore().getState();
+  const lao = getCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+  const ElectionOpenMsg = msg.messageData as OpenElection;
+  const election = getEventFromId(storeState, ElectionOpenMsg.election) as Election;
+  if (!election) {
+    console.warn(makeErr('No active election to end'));
+    return false;
+  }
+
+  // Change election status here such that it will change the election display in the event list
+  election.electionStatus = ElectionStatus.RUNNING;
+  dispatch(updateEvent(lao.id, election.toState()));
   return true;
 }
 

@@ -44,6 +44,7 @@ const schemaIds: Record<ObjectType, Record<string, string>> = {
   },
   [ObjectType.ELECTION]: {
     [ActionType.SETUP]: 'dataSetupElection',
+    [ActionType.OPEN]: 'dataOpenElection',
     [ActionType.CAST_VOTE]: 'dataCastVote',
     [ActionType.END]: 'dataEndElection',
     [ActionType.RESULT]: 'dataResultElection',

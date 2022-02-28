@@ -5,7 +5,9 @@ import {
   handleCastVoteMessage,
   handleElectionEndMessage,
   handleElectionResultMessage,
+  handleElectionOpenMessage,
 } from './ElectionHandler';
+import { OpenElection } from './messages/OpenElection';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
@@ -18,6 +20,12 @@ export function configureNetwork(registry: MessageRegistry) {
     ActionType.SETUP,
     handleElectionSetupMessage,
     SetupElection.fromJson,
+  );
+  registry.add(
+    ObjectType.ELECTION,
+    ActionType.OPEN,
+    handleElectionOpenMessage,
+    OpenElection.fromJson,
   );
   registry.add(ObjectType.ELECTION, ActionType.CAST_VOTE, handleCastVoteMessage, CastVote.fromJson);
   registry.add(ObjectType.ELECTION, ActionType.END, handleElectionEndMessage, EndElection.fromJson);
