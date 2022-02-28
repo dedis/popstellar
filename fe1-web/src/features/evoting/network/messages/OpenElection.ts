@@ -53,18 +53,4 @@ export class OpenElection implements MessageData {
       opened_at: new Timestamp(obj.opened_at),
     });
   }
-
-  public static computeRegisteredVotesHash(election: Election) {
-    const sortedVoteIds = election.registeredVotes
-      // First sort by timestamp, than by message ID as tiebreaker
-      .sort((a, b) => {
-        const tiebreaker = a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1;
-        return a !== b ? a.createdAt - b.createdAt : tiebreaker;
-      })
-      // Now expand each registered vote to the contained vote ids
-      // flatMap = map + flatten array
-      .flatMap((registeredVote) => registeredVote.votes.map((vote) => vote.id));
-
-    return Hash.fromStringArray(...sortedVoteIds);
-  }
 }
