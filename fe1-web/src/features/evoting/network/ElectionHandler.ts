@@ -7,6 +7,7 @@ import { makeCurrentLao } from 'features/lao/reducer';
 import { dispatch, getStore } from 'core/redux';
 import { KeyPairStore } from 'core/keypair';
 
+import STRINGS from 'resources/strings';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, RegisteredVote } from '../objects';
 import { OpenElection } from './messages/OpenElection';
@@ -36,7 +37,7 @@ export function handleElectionSetupMessage(msg: ProcessableMessage): boolean {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
 
@@ -83,7 +84,7 @@ export function handleElectionOpenMessage(msg: ProcessableMessage) {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
   const ElectionOpenMsg = msg.messageData as OpenElection;
@@ -116,7 +117,7 @@ export function handleCastVoteMessage(msg: ProcessableMessage): boolean {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
   const myPublicKey = KeyPairStore.getPublicKey();
@@ -169,7 +170,7 @@ export function handleElectionEndMessage(msg: ProcessableMessage) {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
   const ElectionEndMsg = msg.messageData as EndElection;
@@ -202,7 +203,7 @@ export function handleElectionResultMessage(msg: ProcessableMessage) {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
   if (!msg.channel) {
