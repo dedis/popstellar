@@ -15,6 +15,7 @@ import { makeCurrentLao } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
 
+import { instanceOf } from 'prop-types';
 import { requestCloseRollCall } from '../network';
 
 /**
@@ -37,7 +38,7 @@ const RollCallOpened = () => {
   // FIXME: navigation and route should user proper type
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { rollCallID, updateID } = route.params;
+  const { rollCallID } = route.params;
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -72,17 +73,18 @@ const RollCallOpened = () => {
   }, [lao, rollCallID, toast]);
 
   const handleError = (err: any) => {
-    console.error(err);
-    // The "err" object might be an exception, take the message property if it exists
-    toast.show(
-      err?.message ||
-        (typeof err === 'string' ? err : 'Unkown error, please check the console and report it!'),
-      {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
-      },
-    );
+    let message: string;
+    if (err instanceof DOMException) {
+      message = (err as DOMException).message;
+    } else {
+      message = err as string;
+    }
+    console.error(message);
+    toast.show(message, {
+      type: 'danger',
+      placement: 'top',
+      duration: FOUR_SECONDS,
+    });
   };
 
   const addAttendeeAndShowToast = (attendee: string, toastMessage: string) => {
@@ -110,7 +112,7 @@ const RollCallOpened = () => {
 
   const onCloseRollCall = () => {
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-    return requestCloseRollCall(updateID, attendeesList)
+    return requestCloseRollCall(rollCallID, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
