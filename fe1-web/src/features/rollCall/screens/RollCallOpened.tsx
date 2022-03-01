@@ -72,11 +72,9 @@ const RollCallOpened = () => {
   }, [lao, rollCallID, toast]);
 
   const handleError = (err: any) => {
-    let message: string;
+    let message: string = err;
     if (err instanceof DOMException) {
-      message = (err as DOMException).message;
-    } else {
-      message = err as string;
+      message = err.message
     }
     console.error(message);
     toast.show(message, {
