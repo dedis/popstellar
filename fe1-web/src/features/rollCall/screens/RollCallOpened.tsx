@@ -15,7 +15,6 @@ import { makeCurrentLao } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
 
-import { instanceOf } from 'prop-types';
 import { requestCloseRollCall } from '../network';
 
 /**
