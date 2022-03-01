@@ -16,6 +16,7 @@ import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
 
 import { requestCloseRollCall } from '../network';
+import { instanceOf } from 'prop-types';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
@@ -37,7 +38,7 @@ const RollCallOpened = () => {
   // FIXME: navigation and route should user proper type
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { rollCallID, updateID } = route.params;
+  const { rollCallID } = route.params;
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -71,9 +72,15 @@ const RollCallOpened = () => {
     addOwnToken().catch((e) => console.error(e));
   }, [lao, rollCallID, toast]);
 
-  const handleError = (err: string) => {
-    console.error(err);
-    toast.show(err, {
+  const handleError = (err: any) => {
+    let message: string;
+    if(err instanceof DOMException){
+      message = (err as DOMException).message;
+    }else{
+      message = err as string;
+    }
+    console.error(message);
+    toast.show(message, {
       type: 'danger',
       placement: 'top',
       duration: FOUR_SECONDS,
@@ -105,7 +112,7 @@ const RollCallOpened = () => {
 
   const onCloseRollCall = () => {
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-    return requestCloseRollCall(updateID, attendeesList)
+    return requestCloseRollCall(rollCallID, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
