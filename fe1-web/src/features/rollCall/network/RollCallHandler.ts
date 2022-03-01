@@ -65,10 +65,6 @@ export function handleRollCallOpenMessage(msg: ProcessableMessage): boolean {
     console.warn(makeErr("no known roll call matching the 'opens' field"));
     return false;
   }
-  if(oldRC.status != RollCallStatus.CLOSED){
-    console.error(makeErr("The roll call status is not coherent"));
-    return false;
-  }
 
   const rc = new RollCall({
     ...oldRC,
@@ -167,6 +163,10 @@ export function handleRollCallReopenMessage(msg: ProcessableMessage) {
   const oldRC = getEventFromId(storeState, rcMsgData.opens) as RollCall;
   if (!oldRC) {
     console.warn(makeErr("no known roll call matching the 'opens' field"));
+    return false;
+  }
+  if (oldRC.status !== RollCallStatus.CLOSED) {
+    console.error(makeErr('The roll call status is not coherent'));
     return false;
   }
 

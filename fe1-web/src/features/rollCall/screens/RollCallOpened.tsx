@@ -16,7 +16,6 @@ import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
 
 import { requestCloseRollCall } from '../network';
-import { instanceOf } from 'prop-types';
 
 /**
  * UI for a currently opened roll call. From there, the organizer can scan attendees or add them
@@ -74,9 +73,9 @@ const RollCallOpened = () => {
 
   const handleError = (err: any) => {
     let message: string;
-    if(err instanceof DOMException){
+    if (err instanceof DOMException) {
       message = (err as DOMException).message;
-    }else{
+    } else {
       message = err as string;
     }
     console.error(message);

@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 
-import { Timestamp, Hash, EventTags } from 'core/objects';
 import { QRCode, WideButtonView } from 'core/components';
 import { makeEventGetter } from 'features/events/reducer';
 import { makeCurrentLao } from 'features/lao/reducer';
@@ -57,11 +56,13 @@ const EventRollCall = (props: IPropTypes) => {
         );
         return;
       }
-      requestReopenRollCall(event.idAlias)
-        .catch((e) => console.debug('Unable to send Roll call re-open request', e));
+      requestReopenRollCall(event.idAlias).catch((e) =>
+        console.debug('Unable to send Roll call re-open request', e),
+      );
     } else {
-      requestOpenRollCall(event.id)
-        .catch((e) => console.debug('Unable to send Roll call open request', e));
+      requestOpenRollCall(event.id).catch((e) =>
+        console.debug('Unable to send Roll call open request', e),
+      );
     }
   };
 
