@@ -45,7 +45,7 @@ object Answerer {
       // Send the ClientAnswer to clientActorRef. Whenever the stream between the client
       // actor and the actual client (front-end) is broken, the message DisconnectWsHandle
       // is sent to clientActorRef
-      .to(Sink.actorRef(clientActorRef, DisconnectWsHandle, { t: Throwable => print(t); DisconnectWsHandle }))
+      .to(Sink.actorRef(clientActorRef, DisconnectWsHandle, { t: Throwable => println(t); DisconnectWsHandle }))
 
     // Integration point between Akka Streams and above actor
     val source: Source[TextMessage, NotUsed] = Source

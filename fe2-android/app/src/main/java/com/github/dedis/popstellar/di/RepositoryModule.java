@@ -7,7 +7,6 @@ import androidx.room.Room;
 import com.github.dedis.popstellar.repository.LAODataSource;
 import com.github.dedis.popstellar.repository.local.LAODatabase;
 import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
 import com.github.dedis.popstellar.utility.scheduler.ProdSchedulerProvider;
 import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
 
@@ -34,10 +33,6 @@ public abstract class RepositoryModule {
             application.getApplicationContext(), LAODatabase.class, DATABASE_NAME)
         .build();
   }
-
-  @Binds
-  @Singleton
-  public abstract LAODataSource.Remote bindsRemote(LAORemoteDataSource remoteDataSource);
 
   @Binds
   @Singleton

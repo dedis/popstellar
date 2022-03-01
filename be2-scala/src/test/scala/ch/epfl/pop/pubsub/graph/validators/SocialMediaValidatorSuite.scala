@@ -9,8 +9,9 @@ import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.JsonRpcRequestExample._
 import util.examples.socialMedia.AddChirpExamples
@@ -25,7 +26,7 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
   final val DB_TEST_FOLDER: String = "databaseSocialMediaTest"
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, DB_TEST_FOLDER)), "DbActor")
+  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, InMemoryStorage())), "DbActor")
 
   // Implicit for system actors
   implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
@@ -39,78 +40,73 @@ class SocialMediaValidatorSuite extends TestKit(ActorSystem("socialMediaValidato
     directory.deleteRecursively()
   }
 
-  private final val PUBLICKEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
-  private final val PRIVATEKEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
-  private final val PKOWNER: PublicKey = PublicKey(Base64Data.encode("owner"))
-  private final val laoDataRight: LaoData = LaoData(PKOWNER, List(AddChirpExamples.SENDER_ADDCHIRP), PRIVATEKEY, PUBLICKEY, List.empty)
-  private final val laoDataWrong: LaoData = LaoData(PKOWNER, List(PKOWNER), PRIVATEKEY, PUBLICKEY, List.empty)
+  private final val PUBLIC_KEY: PublicKey = PublicKey(Base64Data("jsNj23IHALvppqV1xQfP71_3IyAHzivxiCz236_zzQc="))
+  private final val PRIVATE_KEY: PrivateKey = PrivateKey(Base64Data("qRfms3wzSLkxAeBz6UtwA-L1qP0h8D9XI1FSvY68t7Y="))
+  private final val PK_OWNER: PublicKey = PublicKey(Base64Data.encode("owner"))
+  private final val laoDataRight: LaoData = LaoData(PK_OWNER, List(AddChirpExamples.SENDER_ADDCHIRP), PRIVATE_KEY, PUBLIC_KEY, List.empty)
+  private final val laoDataWrong: LaoData = LaoData(PK_OWNER, List(PK_OWNER), PRIVATE_KEY, PUBLIC_KEY, List.empty)
   private final val channelDataRight: ChannelData = ChannelData(ObjectType.CHIRP, List.empty)
   private final val channelDataWrong: ChannelData = ChannelData(ObjectType.LAO, List.empty)
   private final val channelDataReaction: ChannelData = ChannelData(ObjectType.REACTION, List.empty)
 
   private def mockDbWorking: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataRight))
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
       }
-    }
-    )
-    system.actorOf(mockedDB)
+    })
+    system.actorOf(dbActorMock)
   }
 
   private def mockDbWorkingReaction: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataReaction))
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataReaction)
       }
-    }
-    )
-    system.actorOf(mockedDB)
+    })
+    system.actorOf(dbActorMock)
   }
 
   private def mockDbWrongTokenReaction: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataReaction))
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataReaction)
       }
-    }
-    )
-    system.actorOf(mockedDB)
+    })
+    system.actorOf(dbActorMock)
   }
 
   private def mockDbWrongToken: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataWrong))
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataWrong)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataRight))
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataRight)
       }
-    }
-    )
-    system.actorOf(mockedDB)
+    })
+    system.actorOf(dbActorMock)
   }
 
   private def mockDbWrongChannel: AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.ReadLaoData(_) =>
-          sender() ! DbActor.DbActorReadLaoDataAck(Some(laoDataRight))
+          sender() ! DbActor.DbActorReadLaoDataAck(laoDataRight)
         case DbActor.ReadChannelData(_) =>
-          sender() ! DbActor.DbActorReadChannelDataAck(Some(channelDataWrong))
+          sender() ! DbActor.DbActorReadChannelDataAck(channelDataWrong)
       }
-    }
-    )
-    system.actorOf(mockedDB)
+    })
+    system.actorOf(dbActorMock)
   }
 
   //AddChirp

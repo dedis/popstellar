@@ -8,10 +8,10 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Signature}
 import spray.json._
 
-case class WitnessMessage(
-                           message_id: Hash,
-                           signature: Signature,
-                         ) extends MessageData {
+final case class WitnessMessage(
+                                 message_id: Hash,
+                                 signature: Signature,
+                               ) extends MessageData {
   override val _object: ObjectType = ObjectType.MESSAGE
   override val action: ActionType = ActionType.WITNESS
 }

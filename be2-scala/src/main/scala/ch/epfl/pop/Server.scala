@@ -12,11 +12,12 @@ import akka.http.scaladsl.server.{RequestContext, RouteResult}
 import akka.pattern.AskableActorRef
 import akka.util.Timeout
 import ch.epfl.pop.config.{RuntimeEnvironment, ServerConf}
-import ch.epfl.pop.pubsub.graph.DbActor
 import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
+import ch.epfl.pop.storage.DbActor
 import org.iq80.leveldb.Options
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 
 object Server {
@@ -75,7 +76,7 @@ object Server {
               typedSystem.terminate()
             }) // and shutdown when done
           } catch {
-            case _: InterruptedException => logger.warning("Server shutting thread was interrupted !")
+            case NonFatal(e) => logger.warning(s"Server shutting thread was interrupted : ${e.getMessage}")
           }
         }
       }

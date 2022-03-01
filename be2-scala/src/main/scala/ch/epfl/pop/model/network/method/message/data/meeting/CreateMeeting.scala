@@ -8,15 +8,15 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
-case class CreateMeeting(
-                          id: Hash,
-                          name: String,
-                          creation: Timestamp,
-                          location: Option[String],
-                          start: Timestamp,
-                          end: Option[Timestamp],
-                          extra: Option[Any]
-                        ) extends MessageData {
+final case class CreateMeeting(
+                                id: Hash,
+                                name: String,
+                                creation: Timestamp,
+                                location: Option[String],
+                                start: Timestamp,
+                                end: Option[Timestamp],
+                                extra: Option[Any]
+                              ) extends MessageData {
   override val _object: ObjectType = ObjectType.MEETING
   override val action: ActionType = ActionType.CREATE
 }

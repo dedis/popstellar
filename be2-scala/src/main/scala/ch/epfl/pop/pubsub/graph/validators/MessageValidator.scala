@@ -6,23 +6,14 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.GraphMessage
+import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.Await
+import scala.util.Success
 
 
 object MessageValidator extends ContentValidator with AskPatternConstants {
-  /**
-   * Creates a validation error message for reason <reason> that happened in
-   * validator module <validator> with optional error code <errorCode>
-   *
-   * @param reason    the reason of the validation error
-   * @param validator validator module where the error occurred
-   * @param errorCode error code related to the error
-   * @return a description of the error and where it occurred
-   */
-  override def validationError(reason: String, validator: String, rpcId: Option[Int], errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
-    super.validationError(reason, validator, rpcId, errorCode)
 
   def validateMessage(rpcMessage: JsonRpcRequest): GraphMessage = {
 
@@ -49,8 +40,8 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    */
   def validateAttendee(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
-    Await.result(ask, duration) match {
-      case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.attendees.contains(sender)
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadLaoDataAck(laoData)) => laoData.attendees.contains(sender)
       case _ => false
     }
   }
@@ -64,8 +55,8 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    */
   def validateOwner(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
-    Await.result(ask, duration) match {
-      case DbActor.DbActorReadLaoDataAck(Some(laoData)) => laoData.owner == sender
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadLaoDataAck(laoData)) => laoData.owner == sender
       case _ => false
     }
   }
@@ -79,8 +70,8 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
    */
   def validateChannelType(channelObjectType: ObjectType.ObjectType, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadChannelData(channel)
-    Await.result(ask, duration) match {
-      case DbActor.DbActorReadChannelDataAck(Some(channelData)) => channelData.channelType == channelObjectType
+    Await.ready(ask, duration).value.get match {
+      case Success(DbActor.DbActorReadChannelDataAck(channelData)) => channelData.channelType == channelObjectType
       case _ => false
     }
   }

@@ -4,10 +4,12 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.pubsub.AskPatternConstants
-import ch.epfl.pop.pubsub.graph.{DbActor, ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
+import ch.epfl.pop.storage.DbActor
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.Success
 
 trait MessageHandler extends AskPatternConstants {
 
@@ -19,36 +21,41 @@ trait MessageHandler extends AskPatternConstants {
   /**
    * Asks the database to store the message contained in <rpcMessage> (or the provided message)
    *
-   * @param rpcMessage request containing the message
+   * @param rpcRequest request containing the message
    * @return the database answer wrapped in a [[scala.concurrent.Future]]
    */
-  def dbAskWrite(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
-    val m: Message = if (message != null) message else rpcMessage.getParamsMessage.get
-    val ask: Future[GraphMessage] = (dbActor ? DbActor.Write(rpcMessage.getParamsChannel, m)).map {
-      case DbActor.DbActorWriteAck() => Left(rpcMessage)
-      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
-    }
+  def dbAskWrite(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
+    val m: Message = rpcRequest.getParamsMessage.getOrElse(
+      return Future {
+        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : retrieve empty rpcRequest message", rpcRequest.id))
+      }
+    )
 
-    ask
+    val askWrite = dbActor ? DbActor.Write(rpcRequest.getParamsChannel, m)
+    askWrite.transformWith {
+      case Success(_) => Future(Left(rpcRequest))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWrite failed : could not write message $m", rpcRequest.id)))
+    }
   }
 
   /**
    * Asks the database to store the message contained in <rpcMessage> (or the provided message) as well as
    * propagate its content to clients subscribed to the rpcMessage's channel
    *
-   * @param rpcMessage request containing the message
-   * @param message    (optional) message to store
+   * @param rpcRequest request containing the message
    * @return the database answer wrapped in a [[scala.concurrent.Future]]
    */
-  def dbAskWritePropagate(rpcMessage: JsonRpcRequest, message: Message = null): Future[GraphMessage] = {
-    val m: Message = if (message != null) message else rpcMessage.getParamsMessage.get
-    val ask: Future[GraphMessage] = (dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, m)).map {
-      case DbActor.DbActorWriteAck() => Left(rpcMessage)
-      case DbActor.DbActorNAck(code, description) => Right(PipelineError(code, description, rpcMessage.id))
-      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, "Database actor returned an unknown answer", rpcMessage.id))
-    }
+  def dbAskWritePropagate(rpcRequest: JsonRpcRequest): Future[GraphMessage] = {
+    val m: Message = rpcRequest.getParamsMessage.getOrElse(
+      return Future {
+        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : retrieve empty rpcRequest message", rpcRequest.id))
+      }
+    )
 
-    ask
+    val askWritePropagate = dbActor ? DbActor.WriteAndPropagate(rpcRequest.getParamsChannel, m)
+    askWritePropagate.transformWith {
+      case Success(_) => Future(Left(rpcRequest))
+      case _ => Future(Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"dbAskWritePropagate failed : could not write & propagate message $m", rpcRequest.id)))
+    }
   }
 }

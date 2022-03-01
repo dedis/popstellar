@@ -21,7 +21,7 @@ import java.util.TreeMap;
 
 public class Election extends Event {
 
-  private String channel;
+  private Channel channel;
   private String id;
   private String name;
   private long creation;
@@ -79,7 +79,7 @@ public class Election extends Event {
     return getCreation() * 1000;
   }
 
-  public String getChannel() {
+  public Channel getChannel() {
     return channel;
   }
 
@@ -140,7 +140,7 @@ public class Election extends Event {
     messageMap.put(messageId, senderPk);
   }
 
-  public void setChannel(String channel) {
+  public void setChannel(Channel channel) {
     this.channel = channel;
   }
 

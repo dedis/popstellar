@@ -5,13 +5,13 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.objects.Hash
 import spray.json._
 
-case class ElectionQuestion(
-                             id: Hash,
-                             question: String,
-                             voting_method: String,
-                             ballot_options: List[String],
-                             write_in: Boolean
-                           )
+final case class ElectionQuestion(
+                                   id: Hash,
+                                   question: String,
+                                   voting_method: String,
+                                   ballot_options: List[String],
+                                   write_in: Boolean
+                                 )
 
 object ElectionQuestion extends Parsable {
   def apply(

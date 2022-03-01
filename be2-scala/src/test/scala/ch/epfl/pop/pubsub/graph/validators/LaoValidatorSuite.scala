@@ -1,11 +1,12 @@
 package ch.epfl.pop.pubsub.graph.validators
 
 import akka.actor.{ActorRef, ActorSystem, Props}
+import ch.epfl.pop.storage.{DbActor, InMemoryStorage}
 //import akka.actor.typed.ActorRef
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
-import ch.epfl.pop.pubsub.graph.{DbActor, GraphMessage, PipelineError}
+import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
 
 //import util.examples.MessageExample._
@@ -27,7 +28,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
   final val DB_TEST_FOLDER: String = "databaseLaoTest"
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, DB_TEST_FOLDER)), "DbActor")
+  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, InMemoryStorage())), "DbActor")
 
   override def afterAll(): Unit = {
     // Stops the test actor system

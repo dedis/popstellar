@@ -7,10 +7,10 @@ import spray.json._
 
 
 //the general ObjectType will be LAO (for all but election and chirp channels for now)
-case class ChannelData(
-                        channelType: ObjectType.ObjectType,
-                        messages: List[Hash]
-                      ) {
+final case class ChannelData(
+                              channelType: ObjectType.ObjectType,
+                              messages: List[Hash]
+                            ) {
   def toJsonString: String = {
     val that: ChannelData = this // tricks the compiler into inferring the right type
     that.toJson.toString
