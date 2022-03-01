@@ -131,7 +131,7 @@ public class LAONetworkManager implements MessageSender {
     return request(subscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.add(channel))
-        .doAfterSuccess(answer -> catchup(channel))
+        .doAfterSuccess(answer -> catchup(channel).subscribe())
         .ignoreElement();
   }
 
