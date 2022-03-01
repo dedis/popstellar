@@ -71,9 +71,9 @@ const RollCallOpened = () => {
     addOwnToken().catch((e) => console.error(e));
   }, [lao, rollCallID, toast]);
 
-  const handleError = (err: string) => {
+  const handleError = (err: any) => {
     console.error(err);
-    toast.show(err, {
+    toast.show(err?.message || err, {
       type: 'danger',
       placement: 'top',
       duration: FOUR_SECONDS,
