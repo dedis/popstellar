@@ -1,5 +1,9 @@
 // Copied from https://stackoverflow.com/a/49062616/2897827
 /**
+ * Returns a union type consisting of all non-method keys, i.e. for {'a': 0, 'b': 1, 'c': () => {}} it is 'a' | 'b'
+ *
+ * @privateRemarks
+ *
  * Given a type T, this returns a type with all keys set
  * keyof T returns a union of the keys of T, i.e. if T = {a: number, b: string, c: () => 0}, then keyof T = 'a' | 'b' | 'c'
  * T['a' | 'b' | 'c'] returns a union of types for the given keys, i.e. using the previous example T['a' | 'b'] = number | string | () => 0

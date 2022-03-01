@@ -1217,7 +1217,7 @@ The election may allow write-in or have ballot options.
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
 **Mid Level** > **High level** (*election#open*)
 
-The election can be opened by publishing an election/open message on the election channel. This message indicates when votes begin to be valid. Until consensus or other changes are implemented, this message is automatically sent by the backends at the start_time of an election and allows the frontend to trigger state changes.
+The election can be opened by publishing an election/open message on the election channel. This message indicates when votes begin to be valid. Until consensus or other changes are implemented, this message is manually sent by the organizer or witnesses, at their discretion, though normally before or soon after the start_time.
 
 <details>
 <summary>

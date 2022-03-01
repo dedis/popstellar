@@ -43,6 +43,9 @@ export interface Vote {
   writeIn?: string;
 }
 
+// This type ensures that for each question there is a unique set of option indices
+export type SelectedBallots = { [questionIndex: number]: Set<number> };
+
 export interface RegisteredVote {
   createdAt: number;
   sender: string;
@@ -113,6 +116,9 @@ export class Election {
     if (obj.questions === undefined) {
       throw new Error("Undefined 'questions' when creating 'Election'");
     }
+    if (obj.electionStatus === undefined) {
+      throw new Error("Undefined 'electionStatus' when creating 'Election'");
+    }
     if (obj.registeredVotes === undefined) {
       this.registeredVotes = [];
     } else {
@@ -128,12 +134,7 @@ export class Election {
     this.end = obj.end;
     this.questions = obj.questions;
     this.questionResult = obj.questionResult;
-    // Sets the election status automatically if none is passed
-    if (obj.electionStatus === undefined) {
-      this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
-    } else {
-      this.electionStatus = obj.electionStatus;
-    }
+    this.electionStatus = obj.electionStatus;
   }
 
   /**
@@ -166,23 +167,5 @@ export class Election {
       ...obj,
       eventType: EventTypeElection,
     };
-  }
-
-  /**
-   * Gets the status of an election by knowing its start and end times.
-   *
-   * @param start - The start time of the election
-   * @param end - The end time of the election
-   * @private
-   */
-  private static getElectionStatus(start: Timestamp, end: Timestamp): ElectionStatus {
-    const now = Timestamp.EpochNow();
-    if (now.before(start)) {
-      return ElectionStatus.NOT_STARTED;
-    }
-    if (now.before(end)) {
-      return ElectionStatus.RUNNING;
-    }
-    return ElectionStatus.FINISHED;
   }
 }

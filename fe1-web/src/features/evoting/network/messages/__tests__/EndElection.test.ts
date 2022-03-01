@@ -80,7 +80,7 @@ const mockElectionResultHash = Hash.fromStringArray(mockVoteId);
 
 let electionId: Hash;
 
-// As discussed on slack, in these tests we should assume that the input to the messages is
+// In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
 let sampleEndElection: Partial<EndElection>;

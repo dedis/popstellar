@@ -14,7 +14,7 @@ import { OpenedLaoStore } from 'features/lao/store';
 
 import { MessageDataProperties } from 'core/types';
 import STRINGS from 'resources/strings';
-import { Election, Question, Vote } from '../../../objects';
+import { Election, ElectionStatus, Question, Vote } from '../../../objects';
 import { CastVote } from '../CastVote';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -27,7 +27,7 @@ let election: Election;
 let mockVoteObject1: Vote;
 let mockVoteObject2: Vote;
 
-// As discussed on slack, in these tests we should assume that the input to the messages is
+// In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
 let sampleCastVote: Partial<CastVote>;
@@ -78,6 +78,7 @@ const initializeData = () => {
     start: TIMESTAMP_BEFORE,
     end: CLOSE_TIMESTAMP,
     questions: [mockQuestionObject1, mockQuestionObject2],
+    electionStatus: ElectionStatus.RUNNING,
     registeredVotes: [],
     questionResult: [],
   });

@@ -4,7 +4,7 @@ import { Lao } from 'features/lao/objects';
 import { publish } from 'core/network';
 
 import { CastVote, EndElection, SetupElection } from './messages';
-import { Election, Question, Vote } from '../objects';
+import { Election, Question, Vote, SelectedBallots } from '../objects';
 
 /**
  * Contains all functions to send election related messages.
@@ -49,12 +49,9 @@ export function requestCreateElection(
  * Sends a query to cast a vote during an election.
  *
  * @param election - The election for which the vote should be casted
- * @param votes - The votes to be added, a map from question index to the set of selected answer indices
+ * @param selectedBallots - The votes to be added, a map from question index to the set of selected answer indices
  */
-export function castVote(
-  election: Election,
-  votes: { [questionIndex: number]: Set<number> },
-): Promise<void> {
+export function castVote(election: Election, selectedBallots: SelectedBallots): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const message = new CastVote({
@@ -62,20 +59,7 @@ export function castVote(
     election: election.id,
     created_at: time,
     // Convert object to array
-    votes: Object.entries(votes)
-      .map(([idx, selectionOptions]) => ({
-        index: parseInt(idx, 10),
-        selectionOptions,
-      }))
-      // sort it by index
-      .sort((a, b) => a.index - b.index)
-      // and add an id to all votes as well as the matching question id
-      .map<Vote>(({ index, selectionOptions }) => ({
-        id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
-        question: election.questions[index].id,
-        // sort votes in ascending order
-        vote: [...selectionOptions].sort((a, b) => a - b),
-      })),
+    votes: CastVote.selectedBallotsToVotes(election, selectedBallots),
   });
 
   // publish on the LAO channel specific to this election

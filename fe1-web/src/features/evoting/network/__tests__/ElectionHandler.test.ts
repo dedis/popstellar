@@ -5,7 +5,7 @@ import {
   mockLaoIdHash,
   mockLaoName,
   configureTestFeatures,
-  mockKeyPair2,
+  mockKeyPair,
   mockLaoState,
 } from '__tests__/utils';
 
@@ -19,9 +19,6 @@ import { addEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
 import { Election, ElectionStatus } from 'features/evoting/objects';
 import { handleElectionOpenMessage } from '../ElectionHandler';
-
-jest.mock('core/platform/Storage');
-jest.mock('core/redux/GlobalStore');
 
 const store = getStore();
 
@@ -52,7 +49,7 @@ const mockMessageData = {
   receivedAt: TIMESTAMP,
   laoId: mockLaoIdHash,
   data: Base64UrlData.encode(''),
-  sender: mockKeyPair2.publicKey,
+  sender: mockKeyPair.publicKey,
   signature: Base64UrlData.encode('') as Signature,
   channel: '',
   message_id: Hash.fromString(''),
@@ -124,6 +121,27 @@ describe('ElectionHandler', () => {
       expect(mockFn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
       expect(mockFn.mock.calls[0][0]).toMatch(/LAO/i);
+    });
+    it('should return false if there the message LAO does not match the current LAO', () => {
+      const mockFn = jest.fn();
+      console.warn = mockFn;
+
+      dispatch(connectToLao(mockLaoState));
+
+      expect(
+        handleElectionOpenMessage({
+          ...mockMessageData,
+          laoId: Hash.fromString('some garbage id'),
+          messageData: {
+            object: ObjectType.ELECTION,
+            action: ActionType.OPEN,
+          },
+        }),
+      ).toBeFalse();
+
+      expect(mockFn).toHaveBeenCalledTimes(1);
+      // check if the printed warning message contains substring
+      expect(mockFn.mock.calls[0][0]).toMatch(/current LAO/i);
     });
 
     it('should return false if the election has not previously been stored', () => {

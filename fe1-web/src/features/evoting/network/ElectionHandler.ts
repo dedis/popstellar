@@ -3,7 +3,7 @@ import { channelFromIds, getLastPartOfChannel } from 'core/objects';
 import { subscribeToChannel } from 'core/network';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { makeCurrentLao, selectCurrentLaoId } from 'features/lao/reducer';
 import { dispatch, getStore } from 'core/redux';
 import { KeyPairStore } from 'core/keypair';
 
@@ -53,6 +53,7 @@ export function handleElectionSetupMessage(msg: ProcessableMessage): boolean {
     start: elecMsg.start_time,
     end: elecMsg.end_time,
     questions: elecMsg.questions,
+    electionStatus: ElectionStatus.NOT_STARTED,
     registeredVotes: [],
   });
 
@@ -82,9 +83,13 @@ export function handleElectionOpenMessage(msg: ProcessableMessage) {
   }
   const makeErr = (err: string) => `election/open was not processed: ${err}`;
   const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
-  if (!lao) {
+  const laoId = selectCurrentLaoId(storeState);
+  if (!laoId) {
     console.warn(makeErr(STRINGS.no_active_lao));
+    return false;
+  }
+  if (laoId !== msg.laoId.valueOf()) {
+    console.warn(makeErr('LaoId of message does not match the current LAO'));
     return false;
   }
   const ElectionOpenMsg = msg.messageData as OpenElection;
@@ -96,7 +101,7 @@ export function handleElectionOpenMessage(msg: ProcessableMessage) {
 
   // Change election status here such that it will change the election display in the event list
   election.electionStatus = ElectionStatus.RUNNING;
-  dispatch(updateEvent(lao.id, election.toState()));
+  dispatch(updateEvent(msg.laoId, election.toState()));
   return true;
 }
 

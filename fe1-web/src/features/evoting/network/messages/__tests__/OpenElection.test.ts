@@ -19,7 +19,7 @@ const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
 let electionId: Hash;
 
-// As discussed on slack, in these tests we should assume that the input to the messages is
+// In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
 let sampleOpenElection: Partial<OpenElection>;

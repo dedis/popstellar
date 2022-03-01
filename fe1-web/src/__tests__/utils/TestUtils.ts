@@ -12,11 +12,6 @@ export const mockKeyPair = KeyPair.fromState({
 export const mockPublicKey2 = testKeyPair.publicKey2;
 export const mockPrivateKey2 = testKeyPair.privateKey2;
 
-export const mockKeyPair2 = KeyPair.fromState({
-  publicKey: mockPublicKey2,
-  privateKey: mockPrivateKey2,
-});
-
 export const mockPopToken = PopToken.fromState({
   publicKey: testKeyPair.publicKey2,
   privateKey: testKeyPair.privateKey2,

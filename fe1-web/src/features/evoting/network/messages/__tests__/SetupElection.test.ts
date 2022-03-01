@@ -26,7 +26,7 @@ let electionId: Hash;
 let mockQuestionObject1: Question;
 let mockQuestionObject2: Question;
 
-// As discussed on slack, in these tests we should assume that the input to the messages is
+// In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
 let sampleSetupElection: Partial<SetupElection>;

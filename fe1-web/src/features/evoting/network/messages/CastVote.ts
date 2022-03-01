@@ -4,7 +4,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 import { MessageDataProperties } from 'core/types';
-import { Election, Vote } from '../../objects';
+import { Election, SelectedBallots, Vote } from '../../objects';
 
 /** Data sent to cast a vote */
 export class CastVote implements MessageData {
@@ -90,6 +90,39 @@ export class CastVote implements MessageData {
       election: new Hash(obj.election),
       lao: new Hash(obj.lao),
     });
+  }
+
+  /**
+   * Coverts an object of type SelectedBallots to an array of votes ready to be passed to a CastVote message
+   * @param election The election for which these votes are cast
+   * @param selectedBallots The selected ballot options
+   * @returns An array of votes that can be passed to a CastVote message
+   */
+  public static selectedBallotsToVotes(
+    election: Election,
+    selectedBallots: SelectedBallots,
+  ): Vote[] {
+    // Convert object to array
+    const ballotArray = Object.entries(selectedBallots).map(([idx, selectionOptions]) => ({
+      index: parseInt(idx, 10),
+      selectionOptions,
+    }));
+
+    // sort the answers by index
+    ballotArray.sort((a, b) => a.index - b.index);
+
+    return (
+      ballotArray
+        // and add an id to all votes as well as the matching question id
+        .map<Vote>(({ index, selectionOptions }) => ({
+          // generate the vote id
+          id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
+          // find matching question id from the election
+          question: election.questions[index].id,
+          // convert the set to an array and sort votes in ascending order
+          vote: [...selectionOptions].sort((a, b) => a - b),
+        }))
+    );
   }
 
   /**

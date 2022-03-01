@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import PropTypes from 'prop-types';
@@ -10,7 +10,7 @@ import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
 
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
-import { Election, ElectionStatus, QuestionResult } from '../objects';
+import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
 
 /**
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const EventElection: FunctionComponent<IPropTypes> = (props) => {
+const EventElection = (props: IPropTypes) => {
   const { election } = props;
   const { isOrganizer } = props;
   const toast = useToast();
@@ -40,9 +40,7 @@ const EventElection: FunctionComponent<IPropTypes> = (props) => {
     () => election.questions.map((q) => ({ title: q.question, data: q.ballot_options })),
     [election.questions],
   );
-  const [selectedBallots, setSelectedBallots] = useState<{ [questionIndex: number]: Set<number> }>(
-    {},
-  );
+  const [selectedBallots, setSelectedBallots] = useState<SelectedBallots>({});
   const [hasVoted, setHasVoted] = useState(0);
 
   const onCastVote = () => {
