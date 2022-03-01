@@ -4,7 +4,7 @@ import { Lao } from 'features/lao/objects';
 import { publish } from 'core/network';
 
 import { CastVote, EndElection, SetupElection } from './messages';
-import { Election, Question, Vote, SelectedBallots } from '../objects';
+import { Election, Question, SelectedBallots } from '../objects';
 
 /**
  * Contains all functions to send election related messages.
