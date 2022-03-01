@@ -21,3 +21,20 @@ func (message ChirpAdd) Verify() error {
 
 	return nil
 }
+
+//GetObject implements MessageData
+func (ChirpAdd) GetObject() string {
+	return ChirpObject
+
+}
+
+//GetAction implements MessageData
+func (ChirpAdd) GetAction() string {
+	return ChirpActionAdd
+}
+
+//NewEmpty implements MessageData
+func (ChirpAdd) NewEmpty() MessageData {
+	return &ChirpAdd{}
+
+}

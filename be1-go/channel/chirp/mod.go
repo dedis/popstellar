@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -40,6 +41,14 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 	}
 }
 
+func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
+	registry.Register(messagedata.ChirpAdd{}, c.publishAddChirp)
+	registry.Register(messagedata.ChirpDelete{}, c.publishDeleteChirp)
+	//	registry.Register(messagedata.ChirpBroadcast{}, c.Broadcast)
+	return registry
+}
+
 // Channel is used to handle chirp messages.
 type Channel struct {
 	sockets        channel.Sockets
@@ -50,6 +59,7 @@ type Channel struct {
 	owner     string
 	hub       channel.HubFunctionalities
 	log       zerolog.Logger
+	registry  registry.MessageRegistry
 }
 
 // Publish is used to handle publish messages in the chirp channel.
@@ -74,36 +84,41 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message) error {
-	data := msg.Data
-
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err := c.registry.Process(msg)
 	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
-
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get object and action from message data: %v", err)
-	}
-
-	if object != messagedata.ChirpObject {
-		return xerrors.Errorf("object should be 'chirp' but is %s", object)
-	}
-
-	switch action {
-	case messagedata.ChirpActionAdd:
-		err := c.publishAddChirp(msg)
-		if err != nil {
-			return xerrors.Errorf("failed to publish chirp: %v", err)
-		}
-	case messagedata.ChirpActionDelete:
-		err := c.publishDeleteChirp(msg)
-		if err != nil {
-			return xerrors.Errorf("failed to delete chirp: %v", err)
-		}
-	default:
-		return answer.NewInvalidActionError(action)
-	}
+	//data := msg.Data
+	//
+	//jsonData, err := base64.URLEncoding.DecodeString(data)
+	//if err != nil {
+	//	return xerrors.Errorf(failedToDecodeData, err)
+	//}
+	//
+	//object, action, err := messagedata.GetObjectAndAction(jsonData)
+	//if err != nil {
+	//	return xerrors.Errorf("failed to get object and action from message data: %v", err)
+	//}
+	//
+	//if object != messagedata.ChirpObject {
+	//	return xerrors.Errorf("object should be 'chirp' but is %s", object)
+	//}
+	//
+	//switch action {
+	//case messagedata.ChirpActionAdd:
+	//	err := c.publishAddChirp(msg)
+	//	if err != nil {
+	//		return xerrors.Errorf("failed to publish chirp: %v", err)
+	//	}
+	//case messagedata.ChirpActionDelete:
+	//	err := c.publishDeleteChirp(msg)
+	//	if err != nil {
+	//		return xerrors.Errorf("failed to delete chirp: %v", err)
+	//	}
+	//default:
+	//	return answer.NewInvalidActionError(action)
+	//}
+	c.inbox.StoreMessage(msg)
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
@@ -299,26 +314,33 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) publishAddChirp(msg message.Message) error {
-	err := c.verifyAddChirpMessage(msg)
+func (c *Channel) publishAddChirp(msg message.Message, msgData interface{}) error {
+	data, ok := msgData.(messagedata.ChirpAdd)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
+	}
+
+	err := c.verifyAddChirpMessage(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
-	c.inbox.StoreMessage(msg)
 	return nil
 }
 
-func (c *Channel) publishDeleteChirp(msg message.Message) error {
-	err := c.verifyDeleteChirpMessage(msg)
+func (c *Channel) publishDeleteChirp(msg message.Message, msgData interface{}) error {
+	data, ok := msgData.(messagedata.ChirpDelete)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
+	}
+
+	err := c.verifyDeleteChirpMessage(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete chirp message: %v", err)
 	}
-	c.inbox.StoreMessage(msg)
 	return nil
 }
 
-func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
-	var chirpMsg messagedata.ChirpAdd
+func (c *Channel) verifyAddChirpMessage(msg message.Message, chirpMsg messagedata.ChirpAdd) error {
 
 	err := msg.UnmarshalData(&chirpMsg)
 	if err != nil {
@@ -348,8 +370,7 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) verifyDeleteChirpMessage(msg message.Message) error {
-	var chirpMsg messagedata.ChirpDelete
+func (c *Channel) verifyDeleteChirpMessage(msg message.Message, chirpMsg messagedata.ChirpDelete) error {
 
 	err := msg.UnmarshalData(&chirpMsg)
 	if err != nil {

@@ -13,6 +13,18 @@ type ChirpDelete struct {
 	Timestamp int64  `json:"timestamp"`
 }
 
+func (ChirpDelete) GetObject() string {
+	return ChirpObject
+}
+
+func (ChirpDelete) GetAction() string {
+	return ChirpActionDelete
+}
+
+func (ChirpDelete) NewEmpty() MessageData {
+	return &ChirpDelete{}
+}
+
 // Verify verifies that the ChirpDelete message is correct
 func (message ChirpDelete) Verify() error {
 	// verify that Timestamp is positive
