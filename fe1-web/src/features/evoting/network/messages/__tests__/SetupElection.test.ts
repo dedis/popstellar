@@ -163,8 +163,8 @@ describe('SetupElection', () => {
   describe('constructor', () => {
     it('should throw an error if id is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
+          id: undefined as unknown as Hash,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -178,9 +178,9 @@ describe('SetupElection', () => {
 
     it('should throw an error if lao is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
           id: electionId,
+          lao: undefined as unknown as Hash,
           name: mockLaoName,
           version: VERSION,
           created_at: TIMESTAMP,
@@ -193,10 +193,10 @@ describe('SetupElection', () => {
 
     it('should throw an error if name is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
           id: electionId,
           lao: mockLaoIdHash,
+          name: undefined as unknown as string,
           version: VERSION,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
@@ -208,11 +208,11 @@ describe('SetupElection', () => {
 
     it('should throw an error if version is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
+          version: undefined as unknown as string,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,
@@ -223,12 +223,12 @@ describe('SetupElection', () => {
 
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
+          created_at: undefined as unknown as Timestamp,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,
           questions: [mockQuestionObject1, mockQuestionObject2],
@@ -238,13 +238,13 @@ describe('SetupElection', () => {
 
     it('should throw an error if start_time is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
           id: electionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
           created_at: TIMESTAMP,
+          start_time: undefined as unknown as Timestamp,
           end_time: CLOSE_TIMESTAMP,
           questions: [mockQuestionObject1, mockQuestionObject2],
         });
@@ -253,7 +253,6 @@ describe('SetupElection', () => {
 
     it('should throw an error if end_time is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
           id: electionId,
           lao: mockLaoIdHash,
@@ -261,6 +260,7 @@ describe('SetupElection', () => {
           version: VERSION,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
+          end_time: undefined as unknown as Timestamp,
           questions: [mockQuestionObject1, mockQuestionObject2],
         });
       expect(createWrongObj).toThrow(ProtocolError);
@@ -268,7 +268,6 @@ describe('SetupElection', () => {
 
     it('should throw an error if questions is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new SetupElection({
           id: electionId,
           lao: mockLaoIdHash,
@@ -277,6 +276,7 @@ describe('SetupElection', () => {
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,
+          questions: undefined as unknown as Question[],
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -314,7 +314,6 @@ describe('SetupElection', () => {
 
   it('should ignore passed object and action parameters', () => {
     const msg = new SetupElection({
-      // @ts-ignore. Here we pass additional fields to the constructor that should not be set
       object: ObjectType.CHIRP,
       action: ActionType.NOTIFY_ADD,
       id: electionId,
@@ -325,7 +324,7 @@ describe('SetupElection', () => {
       start_time: TIMESTAMP,
       end_time: CLOSE_TIMESTAMP,
       questions: [mockQuestionObject1, mockQuestionObject2],
-    });
+    } as MessageDataProperties<SetupElection>);
 
     expect(msg.object).toEqual(ObjectType.ELECTION);
     expect(msg.action).toEqual(ActionType.SETUP);

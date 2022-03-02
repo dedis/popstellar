@@ -176,9 +176,9 @@ describe('CastVote', () => {
   describe('constructor', () => {
     it('should throw an error if election is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new CastVote({
           lao: mockLaoIdHash,
+          election: undefined as unknown as Hash,
           created_at: TIMESTAMP,
           votes: [mockVoteObject1, mockVoteObject2],
         });
@@ -187,8 +187,8 @@ describe('CastVote', () => {
 
     it('should throw an error if lao is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new CastVote({
+          lao: undefined as unknown as Hash,
           election: electionId,
           created_at: TIMESTAMP,
           votes: [mockVoteObject1, mockVoteObject2],
@@ -198,36 +198,35 @@ describe('CastVote', () => {
 
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new CastVote({
           lao: mockLaoIdHash,
           election: electionId,
           votes: [mockVoteObject1, mockVoteObject2],
+          created_at: undefined as unknown as Timestamp,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
-    it('should throw an error if questions is undefined', () => {
+    it('should throw an error if votes is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new CastVote({
           lao: mockLaoIdHash,
           election: electionId,
           created_at: TIMESTAMP,
+          votes: undefined as unknown as Vote[],
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should ignore passed object and action parameters', () => {
       const msg = new CastVote({
-        // @ts-ignore. Here we pass additional fields to the constructor that should not be set
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
         lao: mockLaoIdHash,
         election: electionId,
         created_at: TIMESTAMP,
         votes: [mockVoteObject1, mockVoteObject2],
-      });
+      } as MessageDataProperties<CastVote>);
       expect(msg.object).toEqual(ObjectType.ELECTION);
       expect(msg.action).toEqual(ActionType.CAST_VOTE);
     });

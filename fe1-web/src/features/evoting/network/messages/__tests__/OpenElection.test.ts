@@ -95,9 +95,9 @@ describe('OpenElection', () => {
   describe('constructor', () => {
     it('should throw an error if election is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new OpenElection({
           lao: mockLaoIdHash,
+          election: undefined as unknown as Hash,
           opened_at: TIMESTAMP,
         });
       expect(createWrongObj).toThrow(ProtocolError);
@@ -105,8 +105,8 @@ describe('OpenElection', () => {
 
     it('should throw an error if lao is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new OpenElection({
+          lao: undefined as unknown as Hash,
           election: electionId,
           opened_at: TIMESTAMP,
         });
@@ -115,23 +115,22 @@ describe('OpenElection', () => {
 
     it('should throw an error if opened_at is undefined', () => {
       const createWrongObj = () =>
-        // @ts-ignore. Here was pass data to the constructor that is missing a field even though ts would require it
         new OpenElection({
           election: electionId,
           lao: mockLaoIdHash,
+          opened_at: undefined as unknown as Timestamp,
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
 
     it('should ignore passed object and action parameters', () => {
       const msg = new OpenElection({
-        // @ts-ignore. Here we pass additional fields to the constructor that should not be set
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
         election: electionId,
         lao: mockLaoIdHash,
         opened_at: TIMESTAMP,
-      });
+      } as MessageDataProperties<OpenElection>);
 
       expect(msg.object).toEqual(ObjectType.ELECTION);
       expect(msg.action).toEqual(ActionType.OPEN);
