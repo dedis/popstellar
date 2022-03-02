@@ -17,7 +17,7 @@ import STRINGS from 'resources/strings';
 import { Election, ElectionStatus, Question, Vote } from '../../../objects';
 import { CastVote } from '../CastVote';
 
-// #region test data initialization
+// region test data initialization
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const VERSION = STRINGS.election_version_identifier;
@@ -118,7 +118,7 @@ const CastVoteJson: string = `{
   "votes": ${JSON.stringify(mockVotes)}
 }`;
 
-// #endregion
+// endregion
 
 beforeAll(() => {
   configureTestFeatures();

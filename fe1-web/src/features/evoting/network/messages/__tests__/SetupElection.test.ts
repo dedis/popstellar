@@ -17,7 +17,7 @@ import { MessageDataProperties } from 'core/types';
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 
-// #region test data initialization
+// region test data initialization
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const VERSION = STRINGS.election_version_identifier;
@@ -94,7 +94,7 @@ const setupElectionJson: string = `{
   "questions": ${JSON.stringify(mockQuestions)}
 }`;
 
-// #endregion
+// endregion
 
 beforeAll(() => {
   configureTestFeatures();

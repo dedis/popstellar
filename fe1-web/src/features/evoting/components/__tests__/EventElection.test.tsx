@@ -13,7 +13,7 @@ import {
 } from 'features/evoting/objects';
 import EventElection from '../EventElection';
 
-// #region test data initialization
+// region test data initialization
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
@@ -136,7 +136,7 @@ const undefinedElection = new Election({
   questionResult: [questionResult],
 });
 
-// #endregion
+// endregion
 
 // mocks
 const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
