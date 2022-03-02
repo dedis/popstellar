@@ -56,6 +56,9 @@ const mockMessageData = {
   witness_signatures: [],
 };
 
+// mocks
+const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
 beforeAll(() => {
   configureTestFeatures();
 });
@@ -65,12 +68,13 @@ beforeEach(() => {
   dispatch({ type: 'CLEAR_STORAGE', value: {} });
 });
 
+afterEach(() => {
+  warn.mockClear();
+});
+
 describe('ElectionHandler', () => {
   describe('election#open', () => {
     it('should return false if the object is not "election"', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
       expect(
         handleElectionOpenMessage({
           ...mockMessageData,
@@ -81,14 +85,11 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
 
-      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(mockFn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
     });
     it('should return false if the action is not "open"', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
       expect(
         handleElectionOpenMessage({
           ...mockMessageData,
@@ -99,14 +100,11 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
 
-      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(mockFn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
     });
     it('should return false if there is no active LAO', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
       expect(
         handleElectionOpenMessage({
           ...mockMessageData,
@@ -117,15 +115,12 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
 
-      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(mockFn.mock.calls[0][0]).toMatch(/LAO/i);
+      expect(warn.mock.calls[0][0]).toMatch(/LAO/i);
     });
 
     it('should return false if the election has not previously been stored', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
       dispatch(connectToLao(mockLaoState));
 
       expect(
@@ -140,15 +135,12 @@ describe('ElectionHandler', () => {
         }),
       ).toBeFalse();
 
-      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(mockFn.mock.calls[0][0]).toMatch(/election/i);
+      expect(warn.mock.calls[0][0]).toMatch(/election/i);
     });
 
     it('should update the election status', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
       dispatch(connectToLao(mockLaoState));
       dispatch(addEvent(mockLaoId, election.toState()));
 
@@ -169,7 +161,7 @@ describe('ElectionHandler', () => {
       ).toBeTrue();
 
       // no warning should have been printed
-      expect(mockFn).toHaveBeenCalledTimes(0);
+      expect(warn).toHaveBeenCalledTimes(0);
 
       // check if the status was changed correctly
       const e = getEventFromId(store.getState(), mockElectionId) as Election;

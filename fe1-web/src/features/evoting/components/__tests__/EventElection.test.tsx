@@ -138,6 +138,13 @@ const undefinedElection = new Election({
 
 // #endregion
 
+// mocks
+const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+afterEach(() => {
+  warn.mockClear();
+});
+
 describe('EventElection', () => {
   describe('Not started election', () => {
     it('renders correctly for an organizer', () => {
@@ -205,27 +212,21 @@ describe('EventElection', () => {
 
   describe('Undefined election status', () => {
     it('renders null for an organizer', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
       const component = render(<EventElection election={undefinedElection} isOrganizer />).toJSON();
       expect(component).toMatchSnapshot();
 
-      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(mockFn.mock.calls[0][0]).toMatch(/undefined/i);
+      expect(warn.mock.calls[0][0]).toMatch(/undefined/i);
     });
 
     it('renders null for an attendee', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
       const component = render(<EventElection election={undefinedElection} />).toJSON();
       expect(component).toMatchSnapshot();
 
-      expect(mockFn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(mockFn.mock.calls[0][0]).toMatch(/undefined/i);
+      expect(warn.mock.calls[0][0]).toMatch(/undefined/i);
     });
   });
 });
