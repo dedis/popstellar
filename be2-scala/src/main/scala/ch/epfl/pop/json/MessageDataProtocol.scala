@@ -11,9 +11,11 @@ import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
+import ch.epfl.pop.pubsub.MessageRegistry
 import spray.json._
 
 import scala.collection.immutable.ListMap
+import scala.util.Try
 
 object MessageDataProtocol extends DefaultJsonProtocol {
 
@@ -36,6 +38,19 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     override def write(obj: ActionType): JsValue = JsString(obj.toString)
   }
 
+
+  // ------------------------------- METADATA UTILITY -------------------------------------- //
+  // retrieve information from the header if it is correct.
+  //
+  // Succeeds if both 'object' and 'action' are present and are strings
+  def parseHeader(data: String): Try[(ObjectType, ActionType)] =
+    Try {
+      data.parseJson.asJsObject.getFields("object", "action") match {
+        case Seq(objectString @ JsString(_), actionString @ JsString(_)) =>
+          (objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
+        case _ => throw new IllegalArgumentException("parseHeader: header fields not found")
+      }
+    }
 
   // ------------------------------- DATA FORMATTERS UTILITY ------------------------------- //
 
