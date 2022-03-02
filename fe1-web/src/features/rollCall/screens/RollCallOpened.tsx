@@ -73,6 +73,7 @@ const RollCallOpened = () => {
 
   const handleError = (err: any) => {
     console.error(err);
+    // The "err" object might be an exception, take the message property if it exists
     toast.show(err?.message || err, {
       type: 'danger',
       placement: 'top',
