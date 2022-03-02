@@ -85,7 +85,7 @@ const EventRollCall = (props: IPropTypes) => {
             <Text>Not Open yet</Text>
             <Text>Be sure to have set up your Wallet</Text>
             {isOrganizer && (
-              <WideButtonView title="Open Roll Call" onPress={() => onOpenRollCall(false)} />
+              <WideButtonView title={STRINGS.roll_call_open} onPress={() => onOpenRollCall(false)} />
             )}
           </>
         );
@@ -100,7 +100,7 @@ const EventRollCall = (props: IPropTypes) => {
               </>
             )}
             {isOrganizer && (
-              <WideButtonView title="Scan Attendees" onPress={() => onScanAttendees()} />
+              <WideButtonView title={STRINGS.roll_call_scan_attendees} onPress={() => onScanAttendees()} />
             )}
           </>
         );
@@ -113,7 +113,7 @@ const EventRollCall = (props: IPropTypes) => {
               <Text key={attendee.valueOf()}>{attendee}</Text>
             ))}
             {isOrganizer && (
-              <WideButtonView title="Re-open Roll Call" onPress={() => onOpenRollCall(true)} />
+              <WideButtonView title={STRINGS.roll_call_reopen} onPress={() => onOpenRollCall(true)} />
             )}
           </>
         );
