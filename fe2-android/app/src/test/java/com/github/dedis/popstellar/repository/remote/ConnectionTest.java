@@ -50,7 +50,6 @@ public class ConnectionTest {
     connection.observeMessage();
 
     verify(service).observeMessage();
-    verify(service).observeMessage();
     verifyNoMoreInteractions(service);
   }
 

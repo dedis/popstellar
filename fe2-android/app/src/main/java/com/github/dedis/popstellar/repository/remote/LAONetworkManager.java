@@ -133,6 +133,11 @@ public class LAONetworkManager implements MessageSender {
     return request(subscribe)
         // This is used when reconnecting after a lost connection
         .doOnSuccess(answer -> subscribedChannels.add(channel))
+        // Catchup already sent messages after the subscription to the channel is complete
+        // || TODO This should be used instead of the two next uncommented lines as it allows the
+        // || returned Completable to complete only when both subscribe and catchup are complete.
+        // || But right now, the LAO creation need this specific behavior.
+        // .flatMapCompletable(answer -> catchup(channel))
         .doAfterSuccess(answer -> catchup(channel).subscribe())
         .ignoreElement();
   }
