@@ -48,22 +48,21 @@ const election = new Election({
 const mockMessageData = {
   receivedAt: TIMESTAMP,
   laoId: mockLaoIdHash,
-  data: Base64UrlData.encode(''),
+  data: Base64UrlData.encode('some data'),
   sender: mockKeyPair.publicKey,
-  signature: Base64UrlData.encode('') as Signature,
+  signature: Base64UrlData.encode('some data') as Signature,
   channel: '',
-  message_id: Hash.fromString(''),
+  message_id: Hash.fromString('some string'),
   witness_signatures: [],
-};
-
-const initializeData = () => {
-  // clear data in the redux store
-  dispatch({ type: 'CLEAR_STORAGE', value: {} });
 };
 
 beforeAll(() => {
   configureTestFeatures();
-  initializeData();
+});
+
+beforeEach(() => {
+  // clear data in the redux store
+  dispatch({ type: 'CLEAR_STORAGE', value: {} });
 });
 
 describe('ElectionHandler', () => {
@@ -122,27 +121,6 @@ describe('ElectionHandler', () => {
       // check if the printed warning message contains substring
       expect(mockFn.mock.calls[0][0]).toMatch(/LAO/i);
     });
-    it('should return false if there the message LAO does not match the current LAO', () => {
-      const mockFn = jest.fn();
-      console.warn = mockFn;
-
-      dispatch(connectToLao(mockLaoState));
-
-      expect(
-        handleElectionOpenMessage({
-          ...mockMessageData,
-          laoId: Hash.fromString('some garbage id'),
-          messageData: {
-            object: ObjectType.ELECTION,
-            action: ActionType.OPEN,
-          },
-        }),
-      ).toBeFalse();
-
-      expect(mockFn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(mockFn.mock.calls[0][0]).toMatch(/current LAO/i);
-    });
 
     it('should return false if the election has not previously been stored', () => {
       const mockFn = jest.fn();
@@ -195,7 +173,7 @@ describe('ElectionHandler', () => {
 
       // check if the status was changed correctly
       const e = getEventFromId(store.getState(), mockElectionId) as Election;
-      expect(e.electionStatus).toEqual(ElectionStatus.RUNNING);
+      expect(e.electionStatus).toEqual(ElectionStatus.OPENED);
     });
   });
 });

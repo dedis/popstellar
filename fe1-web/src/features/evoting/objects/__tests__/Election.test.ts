@@ -14,7 +14,7 @@ import {
   RegisteredVote,
   Vote,
 } from '../Election';
-import { ElectionState } from '..';
+import { ElectionState } from '../index';
 
 let question1: Question;
 let question2: Question;

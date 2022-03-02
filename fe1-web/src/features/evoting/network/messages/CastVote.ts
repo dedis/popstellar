@@ -93,7 +93,7 @@ export class CastVote implements MessageData {
   }
 
   /**
-   * Coverts an object of type SelectedBallots to an array of votes ready to be passed to a CastVote message
+   * Converts an object of type SelectedBallots to an array of votes ready to be passed to a CastVote message
    * @param election The election for which these votes are cast
    * @param selectedBallots The selected ballot options
    * @returns An array of votes that can be passed to a CastVote message

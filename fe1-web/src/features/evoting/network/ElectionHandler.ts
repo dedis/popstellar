@@ -88,10 +88,7 @@ export function handleElectionOpenMessage(msg: ProcessableMessage) {
     console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
-  if (laoId !== msg.laoId.valueOf()) {
-    console.warn(makeErr('LaoId of message does not match the current LAO'));
-    return false;
-  }
+
   const ElectionOpenMsg = msg.messageData as OpenElection;
   const election = getEventFromId(storeState, ElectionOpenMsg.election) as Election;
   if (!election) {
@@ -100,7 +97,7 @@ export function handleElectionOpenMessage(msg: ProcessableMessage) {
   }
 
   // Change election status here such that it will change the election display in the event list
-  election.electionStatus = ElectionStatus.RUNNING;
+  election.electionStatus = ElectionStatus.OPENED;
   dispatch(updateEvent(msg.laoId, election.toState()));
   return true;
 }

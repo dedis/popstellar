@@ -17,38 +17,34 @@ import { OpenElection } from '../OpenElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 
-let electionId: Hash;
+const electionId: Hash = Hash.fromStringArray(
+  'Election',
+  mockLaoId,
+  TIMESTAMP.toString(),
+  mockLaoName,
+);
 
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
-let sampleOpenElection: Partial<OpenElection>;
-
-let openElectionJson: string;
-
-const initializeData = () => {
-  electionId = Hash.fromStringArray('Election', mockLaoId, TIMESTAMP.toString(), mockLaoName);
-
-  sampleOpenElection = {
-    object: ObjectType.ELECTION,
-    action: ActionType.OPEN,
-    election: electionId,
-    lao: mockLaoIdHash,
-    opened_at: TIMESTAMP,
-  };
-
-  openElectionJson = `{
-    "object": "${ObjectType.ELECTION}",
-    "action": "${ActionType.OPEN}",
-    "election": "${electionId}",
-    "lao": "${mockLaoIdHash}",
-    "opened_at": ${TIMESTAMP}
-  }`;
+const sampleOpenElection: Partial<OpenElection> = {
+  object: ObjectType.ELECTION,
+  action: ActionType.OPEN,
+  election: electionId,
+  lao: mockLaoIdHash,
+  opened_at: TIMESTAMP,
 };
+
+const openElectionJson: string = `{
+  "object": "${ObjectType.ELECTION}",
+  "action": "${ActionType.OPEN}",
+  "election": "${electionId}",
+  "lao": "${mockLaoIdHash}",
+  "opened_at": ${TIMESTAMP}
+}`;
 
 beforeAll(() => {
   configureTestFeatures();
-  initializeData();
   OpenedLaoStore.store(mockLao);
 });
 

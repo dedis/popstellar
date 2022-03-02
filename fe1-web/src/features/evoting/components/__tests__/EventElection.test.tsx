@@ -13,6 +13,8 @@ import {
 } from 'features/evoting/objects';
 import EventElection from '../EventElection';
 
+// #region test data initialization
+
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 
@@ -76,7 +78,7 @@ const runningElection = new Election({
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
   questions: [question],
-  electionStatus: ElectionStatus.RUNNING,
+  electionStatus: ElectionStatus.OPENED,
   registeredVotes: [registeredVote],
 });
 
@@ -129,13 +131,12 @@ const undefinedElection = new Election({
   start: TIMESTAMP,
   end: CLOSE_TIMESTAMP,
   questions: [question],
-  // @ts-ignore: Sonarcloud wants high test coverage, this is to hit the default case
-  electionStatus: 'undefined',
+  electionStatus: 'undefined' as ElectionStatus,
   registeredVotes: [registeredVote],
   questionResult: [questionResult],
 });
 
-beforeEach(() => {});
+// #endregion
 
 describe('EventElection', () => {
   describe('Not started election', () => {
@@ -145,10 +146,9 @@ describe('EventElection', () => {
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
+
     it('renders correctly for an attendee', () => {
-      const component = render(
-        <EventElection election={notStartedElection} isOrganizer={false} />,
-      ).toJSON();
+      const component = render(<EventElection election={notStartedElection} />).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
@@ -158,10 +158,9 @@ describe('EventElection', () => {
       const component = render(<EventElection election={runningElection} isOrganizer />).toJSON();
       expect(component).toMatchSnapshot();
     });
+
     it('renders correctly for an attendee', () => {
-      const component = render(
-        <EventElection election={runningElection} isOrganizer={false} />,
-      ).toJSON();
+      const component = render(<EventElection election={runningElection} />).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
@@ -173,10 +172,9 @@ describe('EventElection', () => {
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
+
     it('renders correctly for an attendee', () => {
-      const component = render(
-        <EventElection election={terminatedElection} isOrganizer={false} />,
-      ).toJSON();
+      const component = render(<EventElection election={terminatedElection} />).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
@@ -186,10 +184,9 @@ describe('EventElection', () => {
       const component = render(<EventElection election={finishedElection} isOrganizer />).toJSON();
       expect(component).toMatchSnapshot();
     });
+
     it('renders correctly for an attendee', () => {
-      const component = render(
-        <EventElection election={finishedElection} isOrganizer={false} />,
-      ).toJSON();
+      const component = render(<EventElection election={finishedElection} />).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
@@ -199,10 +196,9 @@ describe('EventElection', () => {
       const component = render(<EventElection election={resultElection} isOrganizer />).toJSON();
       expect(component).toMatchSnapshot();
     });
+
     it('renders correctly for an attendee', () => {
-      const component = render(
-        <EventElection election={resultElection} isOrganizer={false} />,
-      ).toJSON();
+      const component = render(<EventElection election={resultElection} />).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
@@ -219,13 +215,12 @@ describe('EventElection', () => {
       // check if the printed warning message contains substring
       expect(mockFn.mock.calls[0][0]).toMatch(/undefined/i);
     });
+
     it('renders null for an attendee', () => {
       const mockFn = jest.fn();
       console.warn = mockFn;
 
-      const component = render(
-        <EventElection election={undefinedElection} isOrganizer={false} />,
-      ).toJSON();
+      const component = render(<EventElection election={undefinedElection} />).toJSON();
       expect(component).toMatchSnapshot();
 
       expect(mockFn).toHaveBeenCalledTimes(1);

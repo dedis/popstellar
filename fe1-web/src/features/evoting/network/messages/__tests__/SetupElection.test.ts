@@ -17,85 +17,87 @@ import { MessageDataProperties } from 'core/types';
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 
+// #region test data initialization
+
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const VERSION = STRINGS.election_version_identifier;
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 
-let electionId: Hash;
-let mockQuestionObject1: Question;
-let mockQuestionObject2: Question;
+const electionId: Hash = Hash.fromStringArray(
+  'Election',
+  mockLaoId,
+  TIMESTAMP.toString(),
+  mockLaoName,
+);
+
+const mockQuestion1: string = 'Mock Question 1';
+const mockQuestion2 = 'Mock Question 2';
+
+const mockQuestionId1: Hash = Hash.fromStringArray(
+  EventTags.QUESTION,
+  electionId.toString(),
+  mockQuestion1,
+);
+const mockQuestionId2 = Hash.fromStringArray(
+  EventTags.QUESTION,
+  electionId.toString(),
+  mockQuestion2,
+);
+
+const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
+
+const mockQuestionObject1: Question = {
+  id: mockQuestionId1.toString(),
+  question: mockQuestion1,
+  voting_method: STRINGS.election_method_Plurality,
+  ballot_options: mockBallotOptions,
+  write_in: false,
+};
+
+const mockQuestionObject2: Question = {
+  id: mockQuestionId2.toString(),
+  question: mockQuestion2,
+  voting_method: STRINGS.election_method_Approval,
+  ballot_options: mockBallotOptions,
+  write_in: true,
+};
+
+const mockQuestions = [mockQuestionObject1];
 
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
-let sampleSetupElection: Partial<SetupElection>;
-
-let setupElectionJson: string;
-let mockQuestion1: string;
-let mockQuestionId1: Hash;
-let mockBallotOptions: string[];
-
-const initializeData = () => {
-  electionId = Hash.fromStringArray('Election', mockLaoId, TIMESTAMP.toString(), mockLaoName);
-  mockQuestion1 = 'Mock Question 1';
-  const mockQuestion2 = 'Mock Question 2';
-  mockQuestionId1 = Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), mockQuestion1);
-  const mockQuestionId2 = Hash.fromStringArray(
-    EventTags.QUESTION,
-    electionId.toString(),
-    mockQuestion2,
-  );
-  mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
-
-  mockQuestionObject1 = {
-    id: mockQuestionId1.toString(),
-    question: mockQuestion1,
-    voting_method: STRINGS.election_method_Plurality,
-    ballot_options: mockBallotOptions,
-    write_in: false,
-  };
-
-  mockQuestionObject2 = {
-    id: mockQuestionId2.toString(),
-    question: mockQuestion2,
-    voting_method: STRINGS.election_method_Approval,
-    ballot_options: mockBallotOptions,
-    write_in: true,
-  };
-
-  const mockQuestions = [mockQuestionObject1];
-
-  sampleSetupElection = {
-    object: ObjectType.ELECTION,
-    action: ActionType.SETUP,
-    id: electionId,
-    lao: mockLaoIdHash,
-    name: mockLaoName,
-    version: VERSION,
-    created_at: TIMESTAMP,
-    start_time: TIMESTAMP,
-    end_time: CLOSE_TIMESTAMP,
-    questions: mockQuestions,
-  };
-
-  setupElectionJson = `{
-    "object": "${ObjectType.ELECTION}",
-    "action": "${ActionType.SETUP}",
-    "id": "${electionId}",
-    "lao": "${mockLaoIdHash}",
-    "name": "${mockLaoName}",
-    "version": "${VERSION}",
-    "created_at": ${TIMESTAMP},
-    "start_time": ${TIMESTAMP},
-    "end_time": ${CLOSE_TIMESTAMP},
-    "questions": ${JSON.stringify(mockQuestions)}
-  }`;
+const sampleSetupElection: Partial<SetupElection> = {
+  object: ObjectType.ELECTION,
+  action: ActionType.SETUP,
+  id: electionId,
+  lao: mockLaoIdHash,
+  name: mockLaoName,
+  version: VERSION,
+  created_at: TIMESTAMP,
+  start_time: TIMESTAMP,
+  end_time: CLOSE_TIMESTAMP,
+  questions: mockQuestions,
 };
+
+const setupElectionJson: string = `{
+  "object": "${ObjectType.ELECTION}",
+  "action": "${ActionType.SETUP}",
+  "id": "${electionId}",
+  "lao": "${mockLaoIdHash}",
+  "name": "${mockLaoName}",
+  "version": "${VERSION}",
+  "created_at": ${TIMESTAMP},
+  "start_time": ${TIMESTAMP},
+  "end_time": ${CLOSE_TIMESTAMP},
+  "questions": ${JSON.stringify(mockQuestions)}
+}`;
+
+// #endregion
 
 beforeAll(() => {
   configureTestFeatures();
-  initializeData();
   OpenedLaoStore.store(mockLao);
 });
 

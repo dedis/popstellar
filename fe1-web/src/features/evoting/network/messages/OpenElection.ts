@@ -4,7 +4,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 import { MessageDataProperties } from 'core/types';
 
-/** Data sent to end an Election event */
+/** Data sent to open an Election event */
 export class OpenElection implements MessageData {
   public readonly object: ObjectType = ObjectType.ELECTION;
 

@@ -86,7 +86,7 @@ const EventElection = (props: IPropTypes) => {
             renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
           />
         );
-      case ElectionStatus.RUNNING:
+      case ElectionStatus.OPENED:
         return (
           <>
             {questions.map((q, idx) => (
@@ -154,9 +154,12 @@ const EventElection = (props: IPropTypes) => {
 
 const propTypes = {
   election: PropTypes.instanceOf(Election).isRequired,
-  isOrganizer: PropTypes.bool.isRequired,
+  isOrganizer: PropTypes.bool,
 };
 EventElection.propTypes = propTypes;
+EventElection.defaultProps = {
+  isOrganizer: false,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 

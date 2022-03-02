@@ -17,6 +17,8 @@ import { Election, ElectionStatus, Question } from 'features/evoting/objects';
 import STRINGS from 'resources/strings';
 import { EndElection } from '../EndElection';
 
+// #region test data initialization
+
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 
@@ -56,11 +58,11 @@ const election = new Election({
   registeredVotes: [
     {
       createdAt: 0,
-      messageId: '1',
+      messageId: '0',
       sender: '',
       votes: [
-        { id: '', question: '', vote: [0] },
-        { id: '', question: '', vote: [0] },
+        { id: 'id1', question: 'q1', vote: [0] },
+        { id: 'id2', question: 'q2', vote: [0] },
       ],
     },
     {
@@ -68,8 +70,8 @@ const election = new Election({
       messageId: '1',
       sender: '',
       votes: [
-        { id: '', question: '', vote: [0] },
-        { id: '', question: '', vote: [0] },
+        { id: 'id3', question: 'q3', vote: [0] },
+        { id: 'id4', question: 'q4', vote: [0] },
       ],
     },
   ],
@@ -78,40 +80,38 @@ const election = new Election({
 const mockVoteId = 'x';
 const mockElectionResultHash = Hash.fromStringArray(mockVoteId);
 
-let electionId: Hash;
+const electionId: Hash = Hash.fromStringArray(
+  'Election',
+  mockLaoId,
+  TIMESTAMP.toString(),
+  mockLaoName,
+);
 
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
 // as this will catch more issues at runtime. (Defensive programming)
-let sampleEndElection: Partial<EndElection>;
-
-let endElectionJson: string;
-
-const initializeData = () => {
-  electionId = Hash.fromStringArray('Election', mockLaoId, TIMESTAMP.toString(), mockLaoName);
-
-  sampleEndElection = {
-    object: ObjectType.ELECTION,
-    action: ActionType.END,
-    election: electionId,
-    lao: mockLaoIdHash,
-    created_at: TIMESTAMP,
-    registered_votes: mockElectionResultHash,
-  };
-
-  endElectionJson = `{
-    "object": "${ObjectType.ELECTION}",
-    "action": "${ActionType.END}",
-    "election": "${electionId}",
-    "lao": "${mockLaoIdHash}",
-    "created_at": ${TIMESTAMP},
-    "registered_votes": "${mockElectionResultHash}"
-  }`;
+const sampleEndElection: Partial<EndElection> = {
+  object: ObjectType.ELECTION,
+  action: ActionType.END,
+  election: electionId,
+  lao: mockLaoIdHash,
+  created_at: TIMESTAMP,
+  registered_votes: mockElectionResultHash,
 };
+
+const endElectionJson: string = `{
+  "object": "${ObjectType.ELECTION}",
+  "action": "${ActionType.END}",
+  "election": "${electionId}",
+  "lao": "${mockLaoIdHash}",
+  "created_at": ${TIMESTAMP},
+  "registered_votes": "${mockElectionResultHash}"
+}`;
+
+// #endregion
 
 beforeAll(() => {
   configureTestFeatures();
-  initializeData();
   OpenedLaoStore.store(mockLao);
 });
 
@@ -228,5 +228,6 @@ describe('EndElection', () => {
     // we would simply write the same code here again?
     const fn = () => EndElection.computeRegisteredVotesHash(election);
     expect(fn).not.toThrow();
+    expect(fn().valueOf()).toEqual('eYH10agf4Jvfs-rihA-9pG1j0lFPHnYeI9e9Vx-GQ6Q=');
   });
 });
