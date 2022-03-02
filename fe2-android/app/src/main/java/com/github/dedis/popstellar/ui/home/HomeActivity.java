@@ -35,8 +35,8 @@ import java.util.function.Supplier;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** HomeActivity represents the entry point for the application. */
-@AndroidEntryPoint(AppCompatActivity.class)
-public class HomeActivity extends Hilt_HomeActivity {
+@AndroidEntryPoint
+public class HomeActivity extends AppCompatActivity {
 
   private final String TAG = HomeActivity.class.getSimpleName();
   public static final int LAO_DETAIL_REQUEST_CODE = 0;

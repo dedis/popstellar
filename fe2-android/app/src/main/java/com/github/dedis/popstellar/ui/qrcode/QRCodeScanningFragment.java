@@ -33,8 +33,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment handling the QR code scanning */
-@AndroidEntryPoint(Fragment.class)
-public final class QRCodeScanningFragment extends Hilt_QRCodeScanningFragment {
+@AndroidEntryPoint
+public final class QRCodeScanningFragment extends Fragment {
 
   public static final String TAG = QRCodeScanningFragment.class.getSimpleName();
   private static final int HANDLE_GMS = 9001;

@@ -26,8 +26,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the content wallet UI */
-@AndroidEntryPoint(Fragment.class)
-public class ContentWalletFragment extends Hilt_ContentWalletFragment {
+@AndroidEntryPoint
+public class ContentWalletFragment extends Fragment {
 
   public static final String TAG = ContentWalletFragment.class.getSimpleName();
 
