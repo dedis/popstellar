@@ -1,0 +1,37 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EventRollCall should correctly render 1`] = `
+Array [
+  <Text>
+    Roll Call
+  </Text>,
+  <Text>
+    Closed
+  </Text>,
+  <Text>
+    Attendees are:
+  </Text>,
+  <Text>
+    a
+    t
+    t
+    e
+    n
+    d
+    e
+    e
+    1
+  </Text>,
+  <Text>
+    a
+    t
+    t
+    e
+    n
+    d
+    e
+    e
+    2
+  </Text>,
+]
+`;
