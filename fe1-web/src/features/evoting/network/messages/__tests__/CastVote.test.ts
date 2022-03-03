@@ -153,7 +153,7 @@ describe('CastVote', () => {
       action: ActionType.NOTIFY_ADD,
       lao: mockLaoIdHash.toString(),
       election: electionId.toString(),
-      created_at: parseInt(TIMESTAMP.toString(), 10),
+      created_at: TIMESTAMP.valueOf(),
       votes: [mockVoteObject1, mockVoteObject2],
     };
     const createFromJson = () => CastVote.fromJson(obj);
@@ -166,7 +166,7 @@ describe('CastVote', () => {
       action: ActionType.CAST_VOTE,
       lao: mockLaoIdHash.toString(),
       election: electionId.toString(),
-      created_at: parseInt(TIMESTAMP.toString(), 10),
+      created_at: TIMESTAMP.valueOf(),
       votes: [mockVoteObject1, mockVoteObject2],
     };
     const createFromJson = () => CastVote.fromJson(obj);

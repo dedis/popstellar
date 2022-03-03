@@ -134,9 +134,9 @@ describe('SetupElection', () => {
       lao: mockLaoIdHash.toString(),
       name: mockLaoName,
       version: VERSION,
-      created_at: parseInt(TIMESTAMP.toString(), 10),
-      start_time: parseInt(TIMESTAMP.toString(), 10),
-      end_time: parseInt(CLOSE_TIMESTAMP.toString(), 10),
+      created_at: TIMESTAMP.valueOf(),
+      start_time: TIMESTAMP.valueOf(),
+      end_time: CLOSE_TIMESTAMP.valueOf(),
       questions: [mockQuestionObject1, mockQuestionObject2],
     };
     const createFromJson = () => SetupElection.fromJson(obj);
@@ -151,9 +151,9 @@ describe('SetupElection', () => {
       lao: mockLaoIdHash.toString(),
       name: mockLaoName,
       version: VERSION,
-      created_at: parseInt(TIMESTAMP.toString(), 10),
-      start_time: parseInt(TIMESTAMP.toString(), 10),
-      end_time: parseInt(CLOSE_TIMESTAMP.toString(), 10),
+      created_at: TIMESTAMP.valueOf(),
+      start_time: TIMESTAMP.valueOf(),
+      end_time: CLOSE_TIMESTAMP.valueOf(),
       questions: [mockQuestionObject1, mockQuestionObject2],
     };
     const createFromJson = () => SetupElection.fromJson(obj);

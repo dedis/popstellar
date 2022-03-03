@@ -142,7 +142,7 @@ describe('EndElection', () => {
       action: ActionType.NOTIFY_ADD,
       election: electionId.toString(),
       lao: mockLaoIdHash.toString(),
-      created_at: parseInt(TIMESTAMP.toString(), 10),
+      created_at: TIMESTAMP.valueOf(),
       registered_votes: mockElectionResultHash,
     };
     const createFromJson = () => EndElection.fromJson(obj);
@@ -155,7 +155,7 @@ describe('EndElection', () => {
       action: ActionType.OPEN,
       election: electionId.toString(),
       lao: mockLaoIdHash.toString(),
-      created_at: parseInt(TIMESTAMP.toString(), 10),
+      created_at: TIMESTAMP.valueOf(),
       registered_votes: mockElectionResultHash,
     };
     const createFromJson = () => EndElection.fromJson(obj);

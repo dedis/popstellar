@@ -74,7 +74,7 @@ describe('OpenElection', () => {
       action: ActionType.NOTIFY_ADD,
       election: electionId.toString(),
       lao: mockLaoIdHash.toString(),
-      opened_at: parseInt(TIMESTAMP.toString(), 10),
+      opened_at: TIMESTAMP.valueOf(),
     };
     const createFromJson = () => OpenElection.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);
@@ -86,7 +86,7 @@ describe('OpenElection', () => {
       action: ActionType.OPEN,
       election: electionId.toString(),
       lao: mockLaoIdHash.toString(),
-      opened_at: parseInt(TIMESTAMP.toString(), 10),
+      opened_at: TIMESTAMP.valueOf(),
     };
     const createFromJson = () => OpenElection.fromJson(obj);
     expect(createFromJson).toThrow(ProtocolError);
