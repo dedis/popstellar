@@ -9,6 +9,7 @@ GOTO error
 :build
 	CALL :protocol
 	go build -o pop ./cli/
+	REN pop pop.exe
 	GOTO :EOF
 
 :lint
@@ -38,6 +39,7 @@ GOTO error
 
 :clean
 	RMDIR /S /Q validation\protocol\
+	DEL pop.exe
 	GOTO :EOF
 	
 :error

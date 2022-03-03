@@ -84,6 +84,16 @@ sudo apt-get install build-essential # Ubuntu/Debian
 You may build the `pop` CLI to interact with the server by executing `make
 build` on Linux/OSX or `make.bat build` in Windows.
 
+> Special Note for Windows:
+>
+> To use the command `.\make.bat build`  you should first install GCC compiler 64 bits.
+>
+> After having looked on the internet a while we recommend [TDM-GCC](https://jmeubank.github.io/tdm-gcc/), using the tdm64-gcc-%VERSION%.exe that contains MinGW-w64.
+>
+> Then verify that the path of `gcc` exists (by typing gcc in the terminal)
+>
+> You will be able to compile using `.\make.bat build` which will create `pop.exe` that you will be able to execute from the terminal. 
+
 You can see the CLI usage with the `-h` flag.
 
 ```bash
