@@ -19,8 +19,8 @@ import javax.inject.Inject;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint(Fragment.class)
-public class SettingsFragment extends Hilt_SettingsFragment {
+@AndroidEntryPoint
+public class SettingsFragment extends Fragment {
 
   private final String TAG = SettingsFragment.class.getSimpleName();
 

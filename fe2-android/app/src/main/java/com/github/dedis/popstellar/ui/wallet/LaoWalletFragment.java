@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint(Fragment.class)
-public class LaoWalletFragment extends Hilt_LaoWalletFragment {
+@AndroidEntryPoint
+public class LaoWalletFragment extends Fragment {
 
   public static final String TAG = LaoWalletFragment.class.getSimpleName();
 

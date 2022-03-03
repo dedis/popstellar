@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint(Fragment.class)
-public class WitnessMessageFragment extends Hilt_WitnessMessageFragment {
+@AndroidEntryPoint
+public class WitnessMessageFragment extends Fragment {
 
   public static final String TAG = WitnessMessageFragment.class.getSimpleName();
   private WitnessMessageFragmentBinding mWitnessMessageFragBinding;
