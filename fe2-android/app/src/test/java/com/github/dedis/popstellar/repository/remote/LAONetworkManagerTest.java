@@ -44,7 +44,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.TestScheduler;
@@ -271,6 +274,69 @@ public class LAONetworkManagerTest {
     events.onNext(new WebSocket.Event.OnConnectionOpened<>(mock(WebSocket.class)));
     testScheduler.advanceTimeBy(5, TimeUnit.SECONDS);
 
+    networkManager.dispose();
+
+    verify(connection, times(2)).sendMessage(any(Subscribe.class));
+    verify(connection, times(2)).sendMessage(any(Catchup.class));
+    verify(connection, atLeastOnce()).observeMessage();
+    verify(connection).observeConnectionEvents();
+    verify(connection).close();
+    verifyNoMoreInteractions(connection);
+  }
+
+  @Test
+  public void multipleRequestsAtATimeShouldAllSucceed() {
+    TestSchedulerProvider schedulerProvider = new TestSchedulerProvider();
+    TestScheduler testScheduler = schedulerProvider.getTestScheduler();
+    LAONetworkManager networkManager =
+        new LAONetworkManager(
+            laoRepository,
+            handler,
+            connection,
+            JsonModule.provideGson(DataRegistryModule.provideDataRegistry()),
+            schedulerProvider);
+
+    // Set a response that stores requested ids
+    Set<Integer> requests = new HashSet<>();
+    Set<Integer> catchups = new HashSet<>();
+
+    // Setup mock answer
+    Answer<?> answer =
+        args -> {
+          Query query = args.getArgument(0); // Retrieve subscribe object
+          if (query instanceof Catchup) catchups.add(query.getRequestId());
+          else requests.add(query.getRequestId());
+          return null;
+        };
+    doAnswer(answer).when(connection).sendMessage(any());
+
+    // Actual test
+    // Create
+    AtomicBoolean sub1Called = new AtomicBoolean(false);
+    AtomicBoolean sub2Called = new AtomicBoolean(false);
+
+    Disposable disposable1 =
+        networkManager.subscribe(CHANNEL).subscribe(() -> sub1Called.set(true));
+
+    Disposable disposable2 =
+        networkManager.subscribe(CHANNEL).subscribe(() -> sub2Called.set(true));
+
+    testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+    // Responses for subscribes
+    requests.forEach(id -> messages.onNext(new Result(id)));
+    testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+    // Expect catchups to be sent now
+    testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+    // Responses to catchups
+    catchups.forEach(id -> messages.onNext(new ResultMessages(id, Collections.emptyList())));
+    testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+    // Make sure the subscription succeed
+    assertTrue(sub1Called.get());
+    assertTrue(sub2Called.get());
+
+    disposable1.dispose();
+    disposable2.dispose();
     networkManager.dispose();
 
     verify(connection, times(2)).sendMessage(any(Subscribe.class));
