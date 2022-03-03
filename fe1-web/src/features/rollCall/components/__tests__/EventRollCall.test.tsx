@@ -8,7 +8,7 @@ import { mockLao } from '__tests__/utils/TestUtils';
 import {
   requestOpenRollCall,
   requestReopenRollCall,
-} from 'features/rollCall/network/RollCallMessageApi';
+} from 'features/rollCall/network';
 import EventRollCall from '../EventRollCall';
 import { EventTypeRollCall, RollCall, RollCallStatus } from '../../objects';
 
@@ -42,7 +42,7 @@ const mockRenderRollCall = (rollCall: RollCall, isOrganizer: boolean) => {
 };
 
 jest.mock('@react-navigation/core');
-jest.mock('features/rollCall/network/RollCallMessageApi');
+jest.mock('features/rollCall/network');
 
 let mockSelector: jest.SpyInstance<
   unknown,
@@ -55,8 +55,8 @@ let mockSelector: jest.SpyInstance<
 beforeEach(() => {
   jest.resetAllMocks();
   mockSelector = jest.spyOn(reactRedux, 'useSelector').mockReturnValueOnce(mockLao);
-  (requestOpenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
-  (requestReopenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
+  (requestOpenRollCall as any).mockImplementation(() => Promise.resolve());
+  (requestReopenRollCall as any).mockImplementation(() => Promise.resolve());
 });
 
 describe('EventRollCall', () => {
