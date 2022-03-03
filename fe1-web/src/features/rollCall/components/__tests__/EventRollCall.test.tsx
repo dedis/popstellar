@@ -5,10 +5,7 @@ import { Hash, Timestamp } from 'core/objects';
 
 import * as reactRedux from 'react-redux';
 import { mockLao } from '__tests__/utils/TestUtils';
-import {
-  requestOpenRollCall,
-  requestReopenRollCall,
-} from 'features/rollCall/network';
+import { requestOpenRollCall, requestReopenRollCall } from 'features/rollCall/network';
 import EventRollCall from '../EventRollCall';
 import { EventTypeRollCall, RollCall, RollCallStatus } from '../../objects';
 
