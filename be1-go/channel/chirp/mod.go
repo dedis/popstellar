@@ -29,8 +29,7 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 	generalChannel channel.Broadcastable, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "chirp").Logger()
-
-	return Channel{
+	newChannel := Channel{
 		sockets:        channel.NewSockets(),
 		inbox:          inbox.NewInbox(channelPath),
 		channelID:      channelPath,
@@ -39,13 +38,14 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 		hub:            hub,
 		log:            log,
 	}
+	newChannel.registry = newChannel.NewChirpRegistry()
+	return newChannel
 }
 
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 	registry.Register(messagedata.ChirpAdd{}, c.publishAddChirp)
 	registry.Register(messagedata.ChirpDelete{}, c.publishDeleteChirp)
-	//	registry.Register(messagedata.ChirpBroadcast{}, c.Broadcast)
 	return registry
 }
 
@@ -315,12 +315,12 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 }
 
 func (c *Channel) publishAddChirp(msg message.Message, msgData interface{}) error {
-	data, ok := msgData.(messagedata.ChirpAdd)
+	data, ok := msgData.(*messagedata.ChirpAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
 	}
 
-	err := c.verifyAddChirpMessage(msg, data)
+	err := c.verifyAddChirpMessage(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
@@ -328,12 +328,12 @@ func (c *Channel) publishAddChirp(msg message.Message, msgData interface{}) erro
 }
 
 func (c *Channel) publishDeleteChirp(msg message.Message, msgData interface{}) error {
-	data, ok := msgData.(messagedata.ChirpDelete)
+	data, ok := msgData.(*messagedata.ChirpDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
 	}
 
-	err := c.verifyDeleteChirpMessage(msg, data)
+	err := c.verifyDeleteChirpMessage(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete chirp message: %v", err)
 	}

@@ -439,7 +439,6 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 
 // processConsensusElect processes an elect action.
 func (c *Channel) processConsensusElect(message message.Message, msgData interface{}) error {
-
 	data, ok := msgData.(*messagedata.ConsensusElect)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#elect message", msgData)
