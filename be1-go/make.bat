@@ -39,7 +39,6 @@ GOTO error
 
 :clean
 	RMDIR /S /Q validation\protocol\
-	DEL pop.exe
 	GOTO :EOF
 	
 :error
