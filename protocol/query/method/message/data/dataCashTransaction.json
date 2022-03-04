@@ -13,37 +13,37 @@
     "transaction": {
       "Version": {
         "type": "integer",
-        "$comment": "The version of the transaction inputs"
+        "description": "The version of the transaction inputs"
       },
       "TxIn": {
         "type": "array",
-        "$comment": "[Array[Objects]] array of output transactions to use as inputs",
+        "description": "[Array[Objects]] array of output transactions to use as inputs",
         "items": {
           "type": "object",
-          "$comment": "Object representing a transaction output to use as an input for this transaction",
+          "description": "Object representing a transaction output to use as an input for this transaction",
           "properties": {
             "TxOutHash": {
               "type": "string",
               "contentEncoding": "base64",
-              "$comment": "Previous (to-be-used) transaction hash"
+              "description": "Previous (to-be-used) transaction hash"
             },
             "TxOutIndex": {
               "type": "bytes",
               "length": "4",
-              "$comment": "index of the previous to-be-used transaction"
+              "description": "index of the previous to-be-used transaction"
             },
             "Script": {
               "type": "object",
-              "$comment": "The script describing the TxOut unlock mechanism",
+              "description": "The script describing the TxOut unlock mechanism",
               "properties": {
                 "Type": {
                   "type": "string",
-                  "$comment": "Type of script"
+                  "description": "Type of script"
                 },
                 "PubkeyHash": {
                   "type": "string",
                   "contentEncoding": "base64",
-                  "$comment": "Hash of the recipient’s public key"
+                  "description": "Hash of the recipient’s public key"
                 }
               }
             },
@@ -57,33 +57,33 @@
       },
       "TxOut": {
         "type": "array",
-        "$comment": "[Array[Objects]] array of outputs from this transactions",
+        "description": "[Array[Objects]] array of outputs from this transactions",
         "items": {
           "type": "object",
-          "$comment": "Object representing an output of this transaction",
+          "description": "Object representing an output of this transaction",
           "properties": {
             "Value": {
               "type": "bytes",
               "length": "8",
-              "$comment": "the value of the output transaction, expressed in miniLAOs"
+              "description": "the value of the output transaction, expressed in miniLAOs"
             },
             "Script": {
               "type": "object",
-              "$comment": "The script describing the unlock mechanism",
+              "description": "The script describing the unlock mechanism",
               "properties": {
                 "Type": {
                   "type": "string",
-                  "$comment": "Type of script"
+                  "description": "Type of script"
                 },
                 "PubkeyHash": {
                   "type": "string",
                   "contentEncoding": "base64",
-                  "$comment": "Hash of the recipient’s public key"
+                  "description": "Hash of the recipient’s public key"
                 },
                 "Sig": {
                   "type": "string",
                   "contentEncoding": "basae64",
-                  "$comment": "Signature on all txins and txouts using the recipient's private key"
+                  "description": "Signature on all txins and txouts using the recipient's private key"
                 }
               }
             }
