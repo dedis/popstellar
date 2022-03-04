@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataPostTransaction.json",
-  "description": "Post a digital cash transaction",
+  "title": "Post a digital cash transaction",
   "type": "object",
   "properties": {
     "object": {
@@ -23,9 +23,9 @@
           "$comment": "Object representing a transaction output to use as an input for this transaction",
           "properties": {
             "TxOutHash": {
-              "type": "bytes",
-              "length": "32",
-              "$comment": "previous (to-be-used) transaction hash"
+              "type": "string",
+              "contentEncoding": "base64",
+              "$comment": "Previous (to-be-used) transaction hash"
             },
             "TxOutIndex": {
               "type": "bytes",
@@ -41,7 +41,8 @@
                   "$comment": "Type of script"
                 },
                 "PubkeyHash": {
-                  "type": "hash",
+                  "type": "string",
+                  "contentEncoding": "base64",
                   "$comment": "Hash of the recipient’s public key"
                 }
               }
@@ -75,11 +76,13 @@
                   "$comment": "Type of script"
                 },
                 "PubkeyHash": {
-                  "type": "hash",
+                  "type": "string",
+                  "contentEncoding": "base64",
                   "$comment": "Hash of the recipient’s public key"
                 },
                 "Sig": {
-                  "type": "??",
+                  "type": "string",
+                  "contentEncoding": "basae64",
                   "$comment": "Signature on all txins and txouts using the recipient's private key"
                 }
               }
