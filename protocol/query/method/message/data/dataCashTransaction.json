@@ -82,7 +82,7 @@
                 },
                 "Sig": {
                   "type": "string",
-                  "contentEncoding": "basae64",
+                  "contentEncoding": "base64",
                   "description": "Signature on all txins and txouts using the recipient's private key"
                 }
               }
