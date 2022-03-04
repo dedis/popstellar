@@ -42,6 +42,8 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 	return newChannel
 }
 
+//NewChirpRegistry creates a new registry for a general chirping channel and
+//populates the registry with the actions of the channel.
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 	registry.Register(messagedata.ChirpAdd{}, c.publishAddChirp)
@@ -88,36 +90,7 @@ func (c *Channel) handleMessage(msg message.Message) error {
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
 	}
-	//data := msg.Data
-	//
-	//jsonData, err := base64.URLEncoding.DecodeString(data)
-	//if err != nil {
-	//	return xerrors.Errorf(failedToDecodeData, err)
-	//}
-	//
-	//object, action, err := messagedata.GetObjectAndAction(jsonData)
-	//if err != nil {
-	//	return xerrors.Errorf("failed to get object and action from message data: %v", err)
-	//}
-	//
-	//if object != messagedata.ChirpObject {
-	//	return xerrors.Errorf("object should be 'chirp' but is %s", object)
-	//}
-	//
-	//switch action {
-	//case messagedata.ChirpActionAdd:
-	//	err := c.publishAddChirp(msg)
-	//	if err != nil {
-	//		return xerrors.Errorf("failed to publish chirp: %v", err)
-	//	}
-	//case messagedata.ChirpActionDelete:
-	//	err := c.publishDeleteChirp(msg)
-	//	if err != nil {
-	//		return xerrors.Errorf("failed to delete chirp: %v", err)
-	//	}
-	//default:
-	//	return answer.NewInvalidActionError(action)
-	//}
+
 	c.inbox.StoreMessage(msg)
 
 	err = c.broadcastToAllClients(msg)
