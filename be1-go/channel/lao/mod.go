@@ -217,11 +217,11 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
-	hub.NotifyNewChannel(generalChannelPath, &generalChirpingChannel, socket)
+	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
 
-	return &generalChirpingChannel
+	return generalChirpingChannel.(*generalChirping.Channel)
 }
 
 // rollCallState denotes the state of the roll call.
@@ -536,8 +536,7 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	chirpingChannelPath := c.channelID + social + publicKey
 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
-
-	c.hub.NotifyNewChannel(chirpingChannelPath, &cha, socket)
+	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
