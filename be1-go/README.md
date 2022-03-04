@@ -87,7 +87,7 @@ sudo apt-get install build-essential # Ubuntu/Debian
 
 To build the `pop.exe` CLI on Windows devices, you need to execute the  `.\make.bat build` command.
 
-You should first install GCC compiler 64 bits. After having looked on the internet for a while we recommend [TDM-GCC](https://jmeubank.github.io/tdm-gcc/), using the tdm64-gcc-%VERSION%.exe that contains MinGW-w64. 
+You should first install GCC compiler 64 bits. After having looked on the internet for a while we recommend [TDM-GCC](https://jmeubank.github.io/tdm-gcc/), using the tdm64-gcc-%VERSION%.exe that contains MinGW-w64. (As of March 2022)
 
 Then, you will be able to compile using `.\make.bat build` which will create `pop.exe` that you will be able to execute from the terminal. 
 
