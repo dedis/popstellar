@@ -93,6 +93,5 @@
       }
     }
   },
-  "additionalProperties": false,
-  "required": ["object", "action", "lao", "election", "created_at", "votes"]
+  "required": ["object", "action", "transaction"]
 }
