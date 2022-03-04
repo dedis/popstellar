@@ -37,10 +37,10 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized chirping channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
 	log = log.With().Str("channel", "general chirp").Logger()
 
-	newChannel := Channel{
+	newChannel := &Channel{
 		sockets:     channel.NewSockets(),
 		inbox:       inbox.NewInbox(channelPath),
 		channelPath: channelPath,

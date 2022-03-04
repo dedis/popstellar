@@ -26,7 +26,7 @@ const failedToDecodeData = "failed to decode message data: %v"
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-	generalChannel channel.Broadcastable, log zerolog.Logger) Channel {
+	generalChannel channel.Broadcastable, log zerolog.Logger) channel.Channel {
 
 	log = log.With().Str("channel", "chirp").Logger()
 	newChannel := &Channel{
@@ -39,16 +39,16 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 		log:            log,
 	}
 	newChannel.registry = newChannel.NewChirpRegistry()
-	return *newChannel
+	return newChannel
 }
 
 //NewChirpRegistry creates a new registry for a general chirping channel and
 //populates the registry with the actions of the channel.
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
-	registry := registry.NewMessageRegistry()
-	registry.Register(messagedata.ChirpAdd{}, c.publishAddChirp)
-	registry.Register(messagedata.ChirpDelete{}, c.publishDeleteChirp)
-	return registry
+	newRegistry := registry.NewMessageRegistry()
+	newRegistry.Register(messagedata.ChirpAdd{}, c.publishAddChirp)
+	newRegistry.Register(messagedata.ChirpDelete{}, c.publishDeleteChirp)
+	return newRegistry
 }
 
 // Channel is used to handle chirp messages.

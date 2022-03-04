@@ -34,6 +34,8 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
+	chirpChannel, ok := channel.(*Channel)
+	require.True(t, ok)
 
 	file := filepath.Join(protocolRelativePath, "examples", "query", "subscribe", "subscribe.json")
 	buf, err := os.ReadFile(file)
@@ -48,7 +50,7 @@ func Test_General_Channel_Subscribe(t *testing.T) {
 	err = channel.Subscribe(socket, message)
 	require.NoError(t, err)
 
-	require.True(t, channel.sockets.Delete("socket"))
+	require.True(t, chirpChannel.sockets.Delete("socket"))
 }
 
 // Tests that the channel works correctly when it receives an unsubscribe
@@ -59,6 +61,8 @@ func Test_General_Channel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	channel := NewChannel("channel0", fakeHub, nolog)
+	chirpChannel, ok := channel.(*Channel)
+	require.True(t, ok)
 
 	file := filepath.Join(protocolRelativePath, "examples", "query", "unsubscribe", "unsubscribe.json")
 	buf, err := os.ReadFile(file)
@@ -69,12 +73,12 @@ func Test_General_Channel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	socket := &fakeSocket{id: "socket"}
-	channel.sockets.Upsert(socket)
+	chirpChannel.sockets.Upsert(socket)
 
 	err = channel.Unsubscribe("socket", message)
 	require.NoError(t, err)
 
-	require.False(t, channel.sockets.Delete("socket"))
+	require.False(t, chirpChannel.sockets.Delete("socket"))
 }
 
 // Test that the channel throws an error when it receives an unsubscribe from a
@@ -113,6 +117,8 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 
 	// Create the channel
 	channel := NewChannel("channel0", fakeHub, nolog)
+	chirpChannel, ok := channel.(*Channel)
+	require.True(t, ok)
 
 	for i := 0; i < numMessages; i++ {
 		// Create a new message containing only an id
@@ -120,7 +126,7 @@ func Test_Consensus_Channel_Catchup(t *testing.T) {
 		messages[i] = message
 
 		// Store the message in the inbox
-		channel.inbox.StoreMessage(message)
+		chirpChannel.inbox.StoreMessage(message)
 
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
