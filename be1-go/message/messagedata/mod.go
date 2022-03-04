@@ -69,6 +69,8 @@ type MessageData interface {
 	NewEmpty() MessageData
 }
 
+// VerifiableMessageData extends MessageData and represents a message that must implement the Verify function
+// for use with registry
 type VerifiableMessageData interface {
 	MessageData
 	Verify() error
