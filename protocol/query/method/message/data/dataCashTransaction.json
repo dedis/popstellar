@@ -34,16 +34,21 @@
             },
             "Script": {
               "type": "object",
-              "description": "The script describing the TxOut unlock mechanism",
+              "description": "The script describing the unlock mechanism",
               "properties": {
                 "Type": {
                   "type": "string",
                   "description": "Type of script"
                 },
-                "PubkeyHash": {
+                "Pubkey": {
                   "type": "string",
                   "contentEncoding": "base64",
-                  "description": "Hash of the recipient’s public key"
+                  "description": "The recipient’s public key"
+                },
+                "Sig": {
+                  "type": "string",
+                  "contentEncoding": "base64",
+                  "description": "Signature on all txins and txouts using the recipient's private key"
                 }
               }
             },
@@ -69,7 +74,7 @@
             },
             "Script": {
               "type": "object",
-              "description": "The script describing the unlock mechanism",
+              "description": "The script describing the TxOut unlock mechanism",
               "properties": {
                 "Type": {
                   "type": "string",
@@ -79,11 +84,6 @@
                   "type": "string",
                   "contentEncoding": "base64",
                   "description": "Hash of the recipient’s public key"
-                },
-                "Sig": {
-                  "type": "string",
-                  "contentEncoding": "base64",
-                  "description": "Signature on all txins and txouts using the recipient's private key"
                 }
               }
             }
