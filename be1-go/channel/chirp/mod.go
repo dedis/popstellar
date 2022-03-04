@@ -29,7 +29,7 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 	generalChannel channel.Broadcastable, log zerolog.Logger) Channel {
 
 	log = log.With().Str("channel", "chirp").Logger()
-	newChannel := Channel{
+	newChannel := &Channel{
 		sockets:        channel.NewSockets(),
 		inbox:          inbox.NewInbox(channelPath),
 		channelID:      channelPath,
@@ -39,7 +39,7 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 		log:            log,
 	}
 	newChannel.registry = newChannel.NewChirpRegistry()
-	return newChannel
+	return *newChannel
 }
 
 //NewChirpRegistry creates a new registry for a general chirping channel and
