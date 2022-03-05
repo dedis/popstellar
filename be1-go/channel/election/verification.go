@@ -2,11 +2,12 @@ package election
 
 import (
 	"encoding/base64"
-	"github.com/rs/zerolog/log"
-	"golang.org/x/xerrors"
 	"popstellar/message/messagedata"
 	"sort"
 	"strings"
+
+	"github.com/rs/zerolog/log"
+	"golang.org/x/xerrors"
 )
 
 // verifyMessageCastVote checks the election#cast_vote message data is valid.
@@ -71,9 +72,9 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	c.log.Info().Msgf("verifying election#end message of election with id %s", electionEnd.Election)
 
 	// verify lao id is base64URL encoded
-	_, err := base64.URLEncoding.DecodeString(electionEnd.LAO)
+	_, err := base64.URLEncoding.DecodeString(electionEnd.Lao)
 	if err != nil {
-		return xerrors.Errorf("lao id is %s, should be base64URL encoded", electionEnd.LAO)
+		return xerrors.Errorf("lao id is %s, should be base64URL encoded", electionEnd.Lao)
 	}
 
 	// verify election id is base64URL encoded
@@ -92,8 +93,8 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	electionId := IDs[1]
 
 	// verify if lao id is the same as the channel
-	if electionEnd.LAO != laoId {
-		return xerrors.Errorf("lao id is %s, should be %s", laoId, electionEnd.LAO)
+	if electionEnd.Lao != laoId {
+		return xerrors.Errorf("lao id is %s, should be %s", laoId, electionEnd.Lao)
 	}
 
 	// verify if election id is the same as the channel

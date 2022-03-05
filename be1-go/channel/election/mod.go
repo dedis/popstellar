@@ -84,7 +84,6 @@ func (c *Channel) NewElectionRegistry() registry.MessageRegistry {
 	registry.Register(messagedata.ElectionEnd{}, c.processElectionEnd)
 	registry.Register(messagedata.ElectionResult{}, c.processElectionResult)
 	registry.Register(messagedata.VoteCastVote{}, c.processCastVote)
-	registry.Register(messagedata.VoteCastWriteIn{}, c.processCastVote)
 
 	return registry
 }
@@ -301,17 +300,12 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 func (c *Channel) processCastVote(msg message.Message, msgData interface{}) error {
 
-	data, ok := msgData.(*messagedata.VoteCastVote)
+	_, ok := msgData.(*messagedata.VoteCastVote)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a election#cast_vote message", msgData)
 	}
 
 	c.log.Info().Msg("received a election#cast_vote message")
-
-	err := data.Verify()
-	if err != nil {
-		return xerrors.Errorf("invalid election#cast_vote message: %v", err)
-	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
@@ -355,17 +349,12 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 
 func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) error {
 
-	data, ok := msgData.(*messagedata.VoteCastVote)
+	_, ok := msgData.(*messagedata.ElectionEnd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a election#end message", msgData)
 	}
 
 	c.log.Info().Msg("received a election#end message")
-
-	err := data.Verify()
-	if err != nil {
-		return xerrors.Errorf("invalid election#end message: %v", err)
-	}
 
 	sender := msg.Sender
 	senderBuf, err := base64.URLEncoding.DecodeString(sender)
@@ -413,16 +402,19 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 }
 
 func (c *Channel) processElectionResult(msg message.Message, msgData interface{}) error {
-	data, ok := msgData.(*messagedata.VoteCastVote)
+	data, ok := msgData.(*messagedata.ElectionResult)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a election#result message", msgData)
 	}
 
 	c.log.Info().Msg("received a election#result message")
 
-	err := data.Verify()
-	if err != nil {
-		return xerrors.Errorf("invalid election#result message: %v", err)
+	// verify that the question ids are base64URL encoded
+	for i, q := range data.Questions {
+		_, err := base64.URLEncoding.DecodeString(q.ID)
+		if err != nil {
+			return xerrors.Errorf("invalid election#result message: question id %d %s, should be a base64URL encoded", i, q.ID)
+		}
 	}
 
 	return nil
