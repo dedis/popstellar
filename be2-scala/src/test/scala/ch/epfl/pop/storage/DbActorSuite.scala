@@ -6,7 +6,7 @@ import akka.testkit.{ImplicitSender, TestKit}
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
+import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
@@ -34,7 +34,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("write can WRITE in an existing channel") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -54,7 +54,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("write can WRITE in a non-existing channel") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -69,7 +69,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("write behaves normally for multiple WRITE requests") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     val channelName1 = CHANNEL_NAME
     val channelName2 = s"${CHANNEL_NAME}2"
@@ -126,7 +126,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("createChannel effectively creates a new channel") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)), "r")
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)), "r")
 
     storage.size should equal (0)
 
@@ -139,7 +139,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("createChannel does not overwrite channels on duplicates") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -157,7 +157,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("createChannelsFromList creates multiple channels") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -171,7 +171,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("createChannelsFromList does not overwrite channels on duplicates (duplicates already created)") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -191,7 +191,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("createChannelsFromList does not overwrite channels on duplicates (duplicates in the list)") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -205,7 +205,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("createChannelsFromList works for 0 or 1 element") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -224,7 +224,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("checkChannelExistence does not detect a non-existing channel") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -241,7 +241,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
 
   test("checkChannelExistence succeeds on the detection of an existing channel") {
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     storage.size should equal (0)
 
@@ -260,7 +260,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
   test("writeLaoData succeeds for both new and updated data"){
     // arrange
     val storage: InMemoryStorage = InMemoryStorage()
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, storage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), storage)))
 
     val messageLao: Message = MessageExample.MESSAGE_CREATELAO_SIMPLIFIED
 
@@ -288,7 +288,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((laoDataKey, laoData.toJsonString))
-    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
+    val dbActor: ActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
     dbActor ! DbActor.WriteLaoData(Channel(CHANNEL_NAME), messageRollCall); sleep()
@@ -313,7 +313,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val laoDataKey: String = s"$CHANNEL_NAME${Channel.LAO_DATA_LOCATION}"
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((laoDataKey, laoData.toJsonString))
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
     val ask = dbActor ? DbActor.ReadLaoData(channelName1)
@@ -334,7 +334,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val channelName1: Channel = Channel(CHANNEL_NAME)
     val initialStorage: InMemoryStorage = InMemoryStorage()
     initialStorage.write((s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString))
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
     val ask = dbActor ? DbActor.Read(channelName1, MESSAGE.message_id)
@@ -352,7 +352,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     // arrange
     val channelName1: Channel = Channel(CHANNEL_NAME)
     val initialStorage: InMemoryStorage = InMemoryStorage()
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
     val ask = dbActor ? DbActor.Read(channelName1, MESSAGE.message_id)
@@ -369,7 +369,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
     val initialStorage: InMemoryStorage = InMemoryStorage()
     val channelData: ChannelData = ChannelData(ObjectType.LAO, Nil)
     initialStorage.write((CHANNEL_NAME, channelData.toJsonString))
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
     val ask = dbActor ? DbActor.ReadChannelData(channelName1)
@@ -394,7 +394,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
       (s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString),
       (s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${message2.message_id}", message2.toJsonString),
     )
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
     val ask = dbActor ? DbActor.Catchup(Channel(CHANNEL_NAME))
@@ -421,7 +421,7 @@ class DbActorSuite extends TestKit(ActorSystem("DbActorSuiteActorSystem")) with 
       (CHANNEL_NAME, channelData.toJsonString),
       (s"$CHANNEL_NAME${Channel.DATA_SEPARATOR}${MESSAGE.message_id}", MESSAGE.toJsonString),
     )
-    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, initialStorage)))
+    val dbActor: AskableActorRef = system.actorOf(Props(DbActor(mediatorRef, MessageRegistry(), initialStorage)))
 
     // act
     val ask = dbActor ? DbActor.Catchup(channelName1)

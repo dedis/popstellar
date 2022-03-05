@@ -7,13 +7,14 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.graph.ErrorCodes
-import ch.epfl.pop.pubsub.{PubSubMediator, PublishSubscribe}
+import ch.epfl.pop.pubsub.{MessageRegistry, PubSubMediator, PublishSubscribe}
 import ch.epfl.pop.storage.DbActor._
 
 import scala.util.{Failure, Success, Try}
 
 final case class DbActor(
                        private val mediatorRef: ActorRef,
+                       private val registry: MessageRegistry,
                        private val storage: Storage = new DiskStorage()
                      ) extends Actor with ActorLogging {
 

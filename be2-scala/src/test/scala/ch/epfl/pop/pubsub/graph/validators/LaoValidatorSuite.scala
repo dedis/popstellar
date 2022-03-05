@@ -7,7 +7,7 @@ import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
-import ch.epfl.pop.pubsub.{AskPatternConstants, PubSubMediator}
+import ch.epfl.pop.pubsub.{AskPatternConstants, MessageRegistry, PubSubMediator}
 
 //import util.examples.MessageExample._
 import java.io.File
@@ -28,7 +28,7 @@ class LaoValidatorSuite extends TestKit(ActorSystem("laoValidatorTestActorSystem
   final val DB_TEST_FOLDER: String = "databaseLaoTest"
 
   val pubSubMediatorRef: ActorRef = system.actorOf(PubSubMediator.props, "PubSubMediator")
-  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, InMemoryStorage())), "DbActor")
+  val dbActorRef: AskableActorRef = system.actorOf(Props(DbActor(pubSubMediatorRef, MessageRegistry(), InMemoryStorage())), "DbActor")
 
   override def afterAll(): Unit = {
     // Stops the test actor system
