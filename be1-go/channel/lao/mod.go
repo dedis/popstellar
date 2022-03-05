@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"go.dedis.ch/kyber/v3"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
@@ -12,6 +13,7 @@ import (
 	"popstellar/channel/election"
 	"popstellar/channel/generalChirping"
 	"popstellar/channel/reaction"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/inbox"
@@ -29,7 +31,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
@@ -72,6 +73,8 @@ type Channel struct {
 	attendees map[string]struct{}
 
 	log zerolog.Logger
+
+	registry registry.MessageRegistry
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
@@ -94,7 +97,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
-	return &Channel{
+	newChannel := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           box,
@@ -107,6 +110,29 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		attendees:       make(map[string]struct{}),
 		log:             log,
 	}
+
+	newChannel.registry = newChannel.NewLAORegistry()
+
+	return newChannel
+}
+
+// NewConsensusRegistry creates a new registry for the consensus channel
+func (c *Channel) NewLAORegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
+
+	//registry.Register(messagedata.LaoCreate{}, _)
+	registry.Register(messagedata.LaoState{}, c.processLaoState)
+	//registry.Register(messagedata.LaoUpdate{}, _)
+	/*
+		registry.Register(messagedata.MeetingObject{}, c.processMeetingObject)
+		registry.Register(messagedata.MessageObject{}, c.processMessageObject)
+		registry.Register(messagedata.RollCallObject{}, c.processRollCallObject)
+		registry.Register(messagedata.ElectionObject{}, c.processElectionObject)
+		//registry.Register(messagedata.ConsensusElectAccept{}, c.processConsensusElectAccept)
+
+	*/
+
+	return registry
 }
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -162,7 +188,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) {
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.log.Info().
 		Str(msgID, msg.MessageID).
 		Msg("broadcasting message to all clients")
@@ -185,10 +211,12 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		c.log.Err(err).Msg("failed to marshal broadcast query")
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
 	}
 
 	c.sockets.SendToAll(buf)
+
+	return nil
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
@@ -216,12 +244,12 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
-	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger) //TODO HAS BEEN MODIFIED BY JOHANN
 	hub.NotifyNewChannel(generalChannelPath, &generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
 
-	return &generalChirpingChannel
+	return &generalChirpingChannel //.(*generalChirping.Channel)
 }
 
 // rollCallState denotes the state of the roll call.
@@ -266,40 +294,22 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	err := c.registry.Process(msg)
 	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
+	c.inbox.StoreMessage(msg) // TODO in comparison of consensus\mod.go it was not here before should it be added ?
+
+	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to get the action or the object: %v", err)
+		return xerrors.Errorf("failed to broadcast message: %v", err)
 	}
-
-	switch object {
-	case messagedata.LAOObject:
-		err = c.processLaoObject(action, msg)
-	case messagedata.MeetingObject:
-		err = c.processMeetingObject(action, msg)
-	case messagedata.MessageObject:
-		err = c.processMessageObject(action, msg)
-	case messagedata.RollCallObject:
-		err = c.processRollCallObject(action, msg, socket)
-	case messagedata.ElectionObject:
-		err = c.processElectionObject(action, msg, socket)
-	default:
-		err = xerrors.Errorf("object not accepted in a LAO channel.")
-	}
-
-	if err != nil {
-		return xerrors.Errorf("failed to process %q object: %w", object, err)
-	}
-
-	c.broadcastToAllClients(msg)
 
 	return nil
 }
 
+/* TODO can be removed
 // processLaoObject processes a LAO object.
 func (c *Channel) processLaoObject(action string, msg message.Message) error {
 	switch action {
@@ -329,9 +339,18 @@ func (c *Channel) processLaoObject(action string, msg message.Message) error {
 
 	return nil
 }
+*/
 
 // processLaoState processes a lao state action.
-func (c *Channel) processLaoState(data messagedata.LaoState) error {
+func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{}) error {
+
+	data, ok := msgData.(*messagedata.LaoState)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a lao#lao_state message", msgData)
+	}
+
+	c.log.Info().Msg("received a lao#lao_state message")
+
 	// Check if we have the update message
 	msg, ok := c.inbox.GetMessage(data.ModificationID)
 
@@ -382,7 +401,7 @@ func (c *Channel) processLaoState(data messagedata.LaoState) error {
 		}
 	}
 
-	err = compareLaoUpdateAndState(updateMsgData, data)
+	err = compareLaoUpdateAndState(updateMsgData, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to compare lao/update and existing state: %w", err)
 	}
