@@ -120,13 +120,20 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	//registry.Register(messagedata.LaoCreate{}, _)
+	//registry.Register(messagedata.LaoCreate{}, _) should not be needed
 	registry.Register(messagedata.LaoState{}, c.processLaoState)
-	//registry.Register(messagedata.LaoUpdate{}, _)
+	registry.Register(messagedata.LaoUpdate{}, c.emptyFun)
+	registry.Register(messagedata.MeetingCreate{}, c.emptyFun)
+	registry.Register(messagedata.MeetingState{}, c.emptyFun)
+	registry.Register(messagedata.MessageWitness{}, c.processMessageObject)
+	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
+	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
+	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
+	//registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
+
 	/*
-		registry.Register(messagedata.MeetingObject{}, c.processMeetingObject)
-		registry.Register(messagedata.MessageObject{}, c.processMessageObject)
-		registry.Register(messagedata.RollCallObject{}, c.processRollCallObject)
+
+
 		registry.Register(messagedata.ElectionObject{}, c.processElectionObject)
 		//registry.Register(messagedata.ConsensusElectAccept{}, c.processConsensusElectAccept)
 
@@ -443,6 +450,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
+/*
 // processMeetingObject handles a meeting object.
 func (c *Channel) processMeetingObject(action string, msg message.Message) error {
 
@@ -457,34 +465,32 @@ func (c *Channel) processMeetingObject(action string, msg message.Message) error
 	return nil
 }
 
+*/
+
 // processMessageObject handles a message object.
-func (c *Channel) processMessageObject(action string, msg message.Message) error {
+func (c *Channel) processMessageObject(msg message.Message, msgData interface{}) error {
 
-	switch action {
-	case messagedata.MessageActionWitness:
-		var witnessData messagedata.MessageWitness
+	var witnessData messagedata.MessageWitness
 
-		err := msg.UnmarshalData(&witnessData)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal witness data: %v", err)
-		}
+	err := msg.UnmarshalData(&witnessData)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
+	}
 
-		err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
-		if err != nil {
-			return answer.NewError(-4, "invalid witness signature")
-		}
+	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
+	if err != nil {
+		return answer.NewError(-4, "invalid witness signature")
+	}
 
-		err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-		if err != nil {
-			return xerrors.Errorf("failed to add witness signature: %w", err)
-		}
-	default:
-		return answer.NewInvalidActionError(action)
+	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+	if err != nil {
+		return xerrors.Errorf("failed to add witness signature: %w", err)
 	}
 
 	return nil
 }
 
+/*
 // processRollCallObject handles a roll call object.
 func (c *Channel) processRollCallObject(action string, msg message.Message, socket socket.Socket) error {
 	sender := msg.Sender
@@ -550,6 +556,8 @@ func (c *Channel) processRollCallObject(action string, msg message.Message, sock
 
 	return nil
 }
+
+*/
 
 func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) {
 	chirpingChannelPath := c.channelID + social + publicKey
@@ -635,37 +643,37 @@ func (c *Channel) createElection(msg message.Message,
 }
 
 // processRollCallCreate processes a roll call creation object.
-func (c *Channel) processRollCallCreate(msg messagedata.RollCallCreate) error {
+func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}) error {
+
+	data, ok := msgData.(*messagedata.RollCallCreate)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a rollcall#close message", msgData)
+	}
 
 	// Check that data is correct
-	err := c.verifyMessageRollCallCreate(msg)
+	err := c.verifyMessageRollCallCreate(*data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
-	if msg.ProposedStart > msg.ProposedEnd {
-		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", msg.ProposedStart, msg.ProposedEnd)
+	if data.ProposedStart > data.ProposedEnd {
+		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", data.ProposedStart, data.ProposedEnd)
 	}
 
-	c.rollCall.id = string(msg.ID)
+	c.rollCall.id = string(data.ID)
 	c.rollCall.state = Created
 	return nil
 }
 
 // processRollCallOpen processes an open roll call object.
-func (c *Channel) processRollCallOpen(msg message.Message, action string) error {
-	if action == messagedata.RollCallActionOpen {
-		// If the action is an OpenRollCallAction,
-		// the previous roll call action should be a CreateRollCallAction
-		if c.rollCall.state != Created {
-			return answer.NewError(-1, "The roll call cannot be opened since it does not exist")
-		}
-	} else {
-		// If the action is an RepenRollCallAction,
-		// the previous roll call action should be a CloseRollCallAction
-		if c.rollCall.state != Closed {
-			return answer.NewError(-1, "The roll call cannot be reopened since it has not been closed")
+func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}) error {
+
+	_, ok := msgData.(*messagedata.RollCallOpen)
+	if !ok {
+		_, ok2 := msgData.(*messagedata.RollCallReOpen)
+		if !ok2 {
+			return xerrors.Errorf("message %v isn't a rollcall#open/reopen message", msgData)
 		}
 	}
 
@@ -694,10 +702,15 @@ func (c *Channel) processRollCallOpen(msg message.Message, action string) error 
 }
 
 // processRollCallClose processes a close roll call message.
-func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket socket.Socket) error {
+func (c *Channel) processRollCallClose(msg message.Message, msgData interface{}) error {
+
+	data, ok := msgData.(*messagedata.RollCallClose)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a rollcall#close message", msgData)
+	}
 
 	// check that data is correct
-	err := c.verifyMessageRollCallClose(msg)
+	err := c.verifyMessageRollCallClose(*data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
@@ -706,11 +719,11 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
 
-	if !c.rollCall.checkPrevID([]byte(msg.Closes)) {
+	if !c.rollCall.checkPrevID([]byte(data.Closes)) {
 		return answer.NewError(-4, "The field `closes` does not correspond to the id of the previous roll call message")
 	}
 
-	c.rollCall.id = msg.UpdateID
+	c.rollCall.id = data.UpdateID
 	c.rollCall.state = Closed
 
 	var db *sql.DB
@@ -725,10 +738,10 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		}
 	}
 
-	for _, attendee := range msg.Attendees {
+	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		c.createChirpingChannel(attendee, socket)
+		//c.createChirpingChannel(attendee, c.sockets) TODO should implement that part
 
 		c.reactions.AddAttendee(attendee)
 
@@ -899,4 +912,8 @@ func getWitnessChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
 	}
 
 	return result, nil
+}
+
+func (c *Channel) emptyFun(message.Message, interface{}) error { //TODO DO NOT KNOW IF SHOULD BE HERE
+	return nil
 }
