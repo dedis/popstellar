@@ -76,7 +76,7 @@ type Channel struct {
 
 	registry registry.MessageRegistry
 
-	socket socket.Socket
+	socket socket.Socket //TODO see if socket trick is clean enough
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
@@ -118,29 +118,20 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	return newChannel
 }
 
-// NewConsensusRegistry creates a new registry for the consensus channel
+// NewLAORegistry creates a new registry for the LAO channel
 func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	//registry.Register(messagedata.LaoCreate{}, _) should not be needed
 	registry.Register(messagedata.LaoState{}, c.processLaoState)
-	registry.Register(messagedata.LaoUpdate{}, c.emptyFun)
-	registry.Register(messagedata.MeetingCreate{}, c.emptyFun)
-	registry.Register(messagedata.MeetingState{}, c.emptyFun)
+	registry.Register(messagedata.LaoUpdate{}, c.processEmptyFun)
+	registry.Register(messagedata.MeetingCreate{}, c.processEmptyFun)
+	registry.Register(messagedata.MeetingState{}, c.processEmptyFun)
 	registry.Register(messagedata.MessageWitness{}, c.processMessageObject)
 	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
 	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
 	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
 	registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
 	registry.Register(messagedata.ElectionSetup{}, c.processElectionObject)
-
-	/*
-
-
-		registry.Register(messagedata.ElectionObject{}, c.processElectionObject)
-		//registry.Register(messagedata.ConsensusElectAccept{}, c.processConsensusElectAccept)
-
-	*/
 
 	return registry
 }
@@ -320,38 +311,6 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 	return nil
 }
 
-/* TODO can be removed
-// processLaoObject processes a LAO object.
-func (c *Channel) processLaoObject(action string, msg message.Message) error {
-	switch action {
-	case messagedata.LAOActionUpdate:
-	case messagedata.LAOActionState:
-		var laoState messagedata.LaoState
-
-		err := msg.UnmarshalData(&laoState)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
-		}
-
-		err = c.verifyMessageLaoState(laoState)
-		if err != nil {
-			return xerrors.Errorf("invalid lao#state message: %v", err)
-		}
-
-		err = c.processLaoState(laoState)
-		if err != nil {
-			return xerrors.Errorf("failed to process state action: %w", err)
-		}
-	default:
-		return answer.NewInvalidActionError(action)
-	}
-
-	c.inbox.StoreMessage(msg)
-
-	return nil
-}
-*/
-
 // processLaoState processes a lao state action.
 func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{}) error {
 
@@ -454,23 +413,6 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-/*
-// processMeetingObject handles a meeting object.
-func (c *Channel) processMeetingObject(action string, msg message.Message) error {
-
-	// Nothing to do ...🤷‍♂️
-	switch action {
-	case messagedata.MeetingActionCreate:
-	case messagedata.MeetingActionState:
-	}
-
-	c.inbox.StoreMessage(msg)
-
-	return nil
-}
-
-*/
-
 // processMessageObject handles a message object.
 func (c *Channel) processMessageObject(msg message.Message, msgData interface{}) error {
 
@@ -493,75 +435,6 @@ func (c *Channel) processMessageObject(msg message.Message, msgData interface{})
 
 	return nil
 }
-
-/*
-// processRollCallObject handles a roll call object.
-func (c *Channel) processRollCallObject(action string, msg message.Message, socket socket.Socket) error {
-	sender := msg.Sender
-
-	senderBuf, err := base64.URLEncoding.DecodeString(sender)
-	if err != nil {
-		return xerrors.Errorf(keyDecodeError, err)
-	}
-
-	// Check if the sender of the roll call message is the organizer
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewErrorf(-4, keyUnmarshalError, err)
-	}
-
-	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
-	}
-
-	switch action {
-	case messagedata.RollCallActionCreate:
-		var rollCallCreate messagedata.RollCallCreate
-
-		err := msg.UnmarshalData(&rollCallCreate)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
-		}
-
-		err = c.processRollCallCreate(rollCallCreate)
-		if err != nil {
-			return xerrors.Errorf("failed to process roll call create: %v", err)
-		}
-
-	case messagedata.RollCallActionOpen, messagedata.RollCallActionReopen:
-		err := c.processRollCallOpen(msg, action)
-		if err != nil {
-			return xerrors.Errorf("failed to process open roll call: %v", err)
-		}
-
-	case messagedata.RollCallActionClose:
-		var rollCallClose messagedata.RollCallClose
-
-		err := msg.UnmarshalData(&rollCallClose)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
-		}
-
-		err = c.processRollCallClose(rollCallClose, socket)
-		if err != nil {
-			return xerrors.Errorf("failed to process close roll call: %v", err)
-		}
-
-	default:
-		return answer.NewInvalidActionError(action)
-	}
-
-	if err != nil {
-		return xerrors.Errorf("failed to process roll call action: %s %w", action, err)
-	}
-
-	c.inbox.StoreMessage(msg)
-
-	return nil
-}
-
-*/
 
 func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) {
 	chirpingChannelPath := c.channelID + social + publicKey
@@ -739,7 +612,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{})
 	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		c.createChirpingChannel(attendee, c.socket) //TODO should implement that part
+		c.createChirpingChannel(attendee, c.socket)
 
 		c.reactions.AddAttendee(attendee)
 
@@ -753,6 +626,10 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{})
 		}
 	}
 
+	return nil
+}
+
+func (c *Channel) processEmptyFun(message.Message, interface{}) error { //TODO DO NOT KNOW IF SHOULD BE HERE
 	return nil
 }
 
@@ -910,8 +787,4 @@ func getWitnessChannelFromDB(db *sql.DB, channelPath string) ([]string, error) {
 	}
 
 	return result, nil
-}
-
-func (c *Channel) emptyFun(message.Message, interface{}) error { //TODO DO NOT KNOW IF SHOULD BE HERE
-	return nil
 }
