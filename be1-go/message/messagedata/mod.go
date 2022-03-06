@@ -69,13 +69,6 @@ type MessageData interface {
 	NewEmpty() MessageData
 }
 
-// VerifiableMessageData extends MessageData and represents a message that must implement the Verify function
-// for use with registry
-type VerifiableMessageData interface {
-	MessageData
-	Verify() error
-}
-
 // GetObjectAndAction returns the object and action of a JSON RPC message.
 func GetObjectAndAction(buf []byte) (string, string, error) {
 	var objmap map[string]json.RawMessage

@@ -14,7 +14,6 @@ type ChirpNotifyAdd struct {
 }
 
 // Verify verifies that the ChirpNotifyDelete message is correct
-// Verify implements VerifiableMessageData
 func (message ChirpNotifyAdd) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {

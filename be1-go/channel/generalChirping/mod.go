@@ -193,7 +193,7 @@ func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
 		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
 	}
 
-	err := c.verifyChirpBroadcastMessage(msg, *data)
+	err := c.verifyNotifyAddChirp(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
 	}
@@ -208,7 +208,7 @@ func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
 		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
 	}
 
-	err := c.verifyChirpBroadcastMessage(msg, *data)
+	err := c.verifyNotifyDeleteChirp(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)
 	}
@@ -216,12 +216,41 @@ func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
 	return nil
 }
 
-// verifyChirpBroadcastMessage verify a chirp broadcast message
-func (c *Channel) verifyChirpBroadcastMessage(msg message.Message, chirpMsg messagedata.VerifiableMessageData) error {
-
+func (c *Channel) verifyNotifyAddChirp(msg message.Message, chirpMsg messagedata.ChirpNotifyAdd) error {
 	err := msg.UnmarshalData(&chirpMsg)
 	if err != nil {
-		return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
+		return xerrors.Errorf("failed to unmarshal chirp message %v", err)
+	}
+
+	err = chirpMsg.Verify()
+	if err != nil {
+		return xerrors.Errorf("invalid chirp broadcast message: %v", err)
+	}
+
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return xerrors.Errorf("failed to decode sender key: %v", err)
+	}
+
+	senderPoint := crypto.Suite.Point()
+	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		return answer.NewError(-4, "invalid sender public key")
+	}
+
+	ok := c.hub.GetPubKeyServ().Equal(senderPoint)
+	if !ok {
+		return answer.NewError(-4, "only the server can broadcast the chirp messages")
+	}
+
+	return nil
+}
+
+// verifyChirpBroadcastMessage verify a chirp broadcast message
+func (c *Channel) verifyNotifyDeleteChirp(msg message.Message, chirpMsg messagedata.ChirpNotifyDelete) error {
+	err := msg.UnmarshalData(&chirpMsg)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal chirp message %v", err)
 	}
 
 	err = chirpMsg.Verify()
