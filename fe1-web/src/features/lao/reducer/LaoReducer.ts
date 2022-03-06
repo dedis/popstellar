@@ -195,8 +195,8 @@ export function makeLao(id: string | undefined = undefined) {
   );
 }
 
-export const selectCurrentLaoId = createSelector(
-  // SecoFirstnd input: current LAO id
+export const getCurrentLaoId = createSelector(
+  // First input: current LAO id
   (state) => getLaosState(state).currentId,
   (currentId: string | undefined): string | undefined => currentId,
 );

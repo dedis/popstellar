@@ -1,16 +1,9 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import {
-  mockLao,
-  mockLaoId,
-  mockLaoIdHash,
-  mockLaoName,
-  configureTestFeatures,
-} from '__tests__/utils';
+import { mockLaoId, mockLaoIdHash, mockLaoName, configureTestFeatures } from '__tests__/utils';
 
 import { Hash, Timestamp, ProtocolError, EventTags } from 'core/objects';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { OpenedLaoStore } from 'features/lao/store';
 
 import { MessageDataProperties } from 'core/types';
 import { Election, ElectionStatus, Question } from 'features/evoting/objects';
@@ -112,7 +105,6 @@ const endElectionJson: string = `{
 
 beforeAll(() => {
   configureTestFeatures();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('EndElection', () => {

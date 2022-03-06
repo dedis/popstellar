@@ -149,25 +149,31 @@ describe('EventElection', () => {
   describe('Not started election', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
-        <EventElection election={notStartedElection} isOrganizer />,
+        <EventElection laoId={mockLaoIdHash} election={notStartedElection} isOrganizer />,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
-      const component = render(<EventElection election={notStartedElection} />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={notStartedElection} />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
 
   describe('Running election', () => {
     it('renders correctly for an organizer', () => {
-      const component = render(<EventElection election={runningElection} isOrganizer />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={runningElection} isOrganizer />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
-      const component = render(<EventElection election={runningElection} />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={runningElection} />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
@@ -175,44 +181,56 @@ describe('EventElection', () => {
   describe('Terminated election where the results are not yet available', () => {
     it('renders correctly for an organizer', () => {
       const component = render(
-        <EventElection election={terminatedElection} isOrganizer />,
+        <EventElection laoId={mockLaoIdHash} election={terminatedElection} isOrganizer />,
       ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
-      const component = render(<EventElection election={terminatedElection} />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={terminatedElection} />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
 
   describe('Finished election where the results are not yet available', () => {
     it('renders correctly for an organizer', () => {
-      const component = render(<EventElection election={finishedElection} isOrganizer />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={finishedElection} isOrganizer />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
-      const component = render(<EventElection election={finishedElection} />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={finishedElection} />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
 
   describe('Finished election where the results are available', () => {
     it('renders correctly for an organizer', () => {
-      const component = render(<EventElection election={resultElection} isOrganizer />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={resultElection} isOrganizer />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
 
     it('renders correctly for an attendee', () => {
-      const component = render(<EventElection election={resultElection} />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={resultElection} />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
     });
   });
 
   describe('Undefined election status', () => {
     it('renders null for an organizer', () => {
-      const component = render(<EventElection election={undefinedElection} isOrganizer />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={undefinedElection} isOrganizer />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
 
       expect(warn).toHaveBeenCalledTimes(1);
@@ -221,7 +239,9 @@ describe('EventElection', () => {
     });
 
     it('renders null for an attendee', () => {
-      const component = render(<EventElection election={undefinedElection} />).toJSON();
+      const component = render(
+        <EventElection laoId={mockLaoIdHash} election={undefinedElection} />,
+      ).toJSON();
       expect(component).toMatchSnapshot();
 
       expect(warn).toHaveBeenCalledTimes(1);

@@ -9,6 +9,7 @@ import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
 
+import { Hash } from 'core/objects';
 import { castVote, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
@@ -33,8 +34,8 @@ const styles = StyleSheet.create({
 });
 
 const EventElection = (props: IPropTypes) => {
-  const { election } = props;
-  const { isOrganizer } = props;
+  const { laoId, election, isOrganizer } = props;
+
   const toast = useToast();
   const questions = useMemo(
     () => election.questions.map((q) => ({ title: q.question, data: q.ballot_options })),
@@ -44,7 +45,7 @@ const EventElection = (props: IPropTypes) => {
   const [hasVoted, setHasVoted] = useState(0);
 
   const onCastVote = () => {
-    castVote(election, selectedBallots)
+    castVote(laoId, election, selectedBallots)
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
@@ -58,7 +59,7 @@ const EventElection = (props: IPropTypes) => {
 
   const onTerminateElection = () => {
     console.log('Terminating Election');
-    terminateElection(election)
+    terminateElection(laoId, election)
       .then(() => console.log('Election Terminated'))
       .catch((err) => {
         console.error('Could not terminate election, error:', err);
@@ -153,6 +154,7 @@ const EventElection = (props: IPropTypes) => {
 };
 
 const propTypes = {
+  laoId: PropTypes.instanceOf(Hash).isRequired,
   election: PropTypes.instanceOf(Election).isRequired,
   isOrganizer: PropTypes.bool,
 };
