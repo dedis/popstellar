@@ -80,7 +80,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 
 	err = c.registry.Process(msg)
 	if err != nil {
-		xerrors.Errorf("failed to process message: %w", err)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
 	c.inbox.StoreMessage(msg)
