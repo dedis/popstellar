@@ -5,7 +5,7 @@ import ch.epfl.pop.model.network.Parsable
 import ch.epfl.pop.model.objects.Channel
 import spray.json._
 
-case class Unsubscribe(override val channel: Channel) extends Params(channel)
+final case class Unsubscribe(override val channel: Channel) extends Params(channel)
 
 object Unsubscribe extends Parsable {
   def apply(channel: Channel): Unsubscribe = {

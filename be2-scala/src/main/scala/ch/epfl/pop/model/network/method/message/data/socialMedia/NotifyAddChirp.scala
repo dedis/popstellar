@@ -8,11 +8,11 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Channel, Hash, Timestamp}
 import spray.json._
 
-case class NotifyAddChirp(
-                           chirp_id: Hash,
-                           channel: Channel,
-                           timestamp: Timestamp
-                         ) extends MessageData {
+final case class NotifyAddChirp(
+                                 chirp_id: Hash,
+                                 channel: Channel,
+                                 timestamp: Timestamp
+                               ) extends MessageData {
   override val _object: ObjectType = ObjectType.CHIRP
   override val action: ActionType = ActionType.NOTIFY_ADD
 }

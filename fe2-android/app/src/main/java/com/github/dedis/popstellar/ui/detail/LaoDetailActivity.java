@@ -44,8 +44,8 @@ import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint(AppCompatActivity.class)
-public class LaoDetailActivity extends Hilt_LaoDetailActivity {
+@AndroidEntryPoint
+public class LaoDetailActivity extends AppCompatActivity {
 
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
   private LaoDetailViewModel mViewModel;

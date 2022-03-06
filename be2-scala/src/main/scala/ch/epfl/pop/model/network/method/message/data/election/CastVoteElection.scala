@@ -8,12 +8,12 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
-case class CastVoteElection(
-                             lao: Hash,
-                             election: Hash,
-                             created_at: Timestamp,
-                             votes: List[VoteElection]
-                           ) extends MessageData {
+final case class CastVoteElection(
+                                   lao: Hash,
+                                   election: Hash,
+                                   created_at: Timestamp,
+                                   votes: List[VoteElection]
+                                 ) extends MessageData {
   override val _object: ObjectType = ObjectType.ELECTION
   override val action: ActionType = ActionType.CAST_VOTE
 }

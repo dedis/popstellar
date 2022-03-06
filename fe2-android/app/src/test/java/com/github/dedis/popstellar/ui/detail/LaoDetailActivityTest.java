@@ -34,7 +34,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
@@ -74,7 +74,7 @@ public class LaoDetailActivityTest {
   private static final Lao LAO = new Lao("LAO", Base64DataUtils.generatePublicKey(), 10223421);
   private static final String LAO_ID = LAO.getId();
 
-  @Inject LAORequestFactory requestFactory;
+  @Inject GlobalNetworkManager networkManager;
   @Inject Gson gson;
 
   @BindValue @Mock LAORepository laoRepository;
@@ -136,7 +136,7 @@ public class LaoDetailActivityTest {
 
     propertiesLayout().check(matches(isDisplayed()));
 
-    String expectedQRCode = gson.toJson(new ConnectToLao(requestFactory.getUrl(), LAO_ID));
+    String expectedQRCode = gson.toJson(new ConnectToLao(networkManager.getCurrentUrl(), LAO_ID));
     connectQrCode().check(matches(withQrCode(expectedQRCode)));
   }
 
