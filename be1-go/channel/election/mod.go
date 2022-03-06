@@ -230,7 +230,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 		return xerrors.Errorf("failed to get object and action from message data: %v", err)
 	}
 
-	if (object == messagedata.ElectionObject) {
+	if object == messagedata.ElectionObject {
 		err = c.handleMessage(broadcast.Params.Message)
 		if err != nil {
 			return xerrors.Errorf("failed to handle broadcast message: %v", err)
