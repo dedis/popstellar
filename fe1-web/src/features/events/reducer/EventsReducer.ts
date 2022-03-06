@@ -106,15 +106,14 @@ const eventsSlice = createSlice({
 
     // Update an Event in the list of known Events
     updateEvent: {
-      prepare(laoId: Hash | string, event: LaoEventState, alias?: Hash | string): any {
-        return { payload: { laoId: laoId.valueOf(), event: event, alias: alias?.valueOf() } };
+      prepare(laoId: Hash | string, event: LaoEventState): any {
+        return { payload: { laoId: laoId.valueOf(), event: event } };
       },
       reducer(
         state,
         action: PayloadAction<{
           laoId: string;
           event: LaoEventState;
-          alias?: string;
         }>,
       ) {
         const { laoId, event } = action.payload;

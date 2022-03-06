@@ -4,9 +4,12 @@ import { addReducers } from 'core/redux';
 import STRINGS from '../resources/strings';
 
 import * as events from './events';
+import { getEventFromId } from './events/network/EventHandlerUtils';
+import { addEvent, updateEvent } from './events/reducer';
 import * as evoting from './evoting';
 import * as home from './home';
 import * as lao from './lao';
+import { getCurrentLaoId, makeCurrentLao } from './lao/reducer';
 import * as meeting from './meeting';
 import * as rollCall from './rollCall';
 import * as social from './social';
@@ -17,10 +20,19 @@ export function configureFeatures() {
   const messageRegistry = new MessageRegistry();
   const keyPairRegistry = new KeyPairRegistry();
 
+  const getCurrentLao = makeCurrentLao();
+
   // configure features
   const laoConfig = lao.configure(messageRegistry);
   const homeConfig = home.configure();
-  evoting.configure(messageRegistry);
+  evoting.configure({
+    getCurrentLao: getCurrentLao,
+    getCurrentLaoId: getCurrentLaoId,
+    addEvent: addEvent,
+    getEventFromId: getEventFromId,
+    updateEvent: updateEvent,
+    messageRegistry,
+  });
   meeting.configure(messageRegistry);
   rollCall.configure(messageRegistry);
   const socialConfig = social.configure(messageRegistry);

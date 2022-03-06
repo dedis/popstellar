@@ -1,11 +1,18 @@
-import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { configureNetwork } from './network';
+import { EvotingConfiguration } from './objects';
 
 /**
  * Configures the e-voting feature
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param config - A evoting configuration object
  */
-export function configure(registry: MessageRegistry) {
-  configureNetwork(registry);
+export function configure(config: EvotingConfiguration) {
+  configureNetwork(
+    config.getCurrentLao,
+    config.getCurrentLaoId,
+    config.getEventFromId,
+    config.addEvent,
+    config.updateEvent,
+    config.messageRegistry,
+  );
 }

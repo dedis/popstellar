@@ -5,11 +5,10 @@ import STRINGS from 'resources/strings';
 import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
 
-import { LaoEventType } from 'features/events/objects';
 import {
   Election,
   ElectionStatus,
-  EventTypeElection,
+  ELECTION_EVENT_TYPE,
   Question,
   RegisteredVote,
   Vote,
@@ -55,7 +54,7 @@ const initializeData = () => {
 
   electionState = {
     id: 'electionId',
-    eventType: LaoEventType.ELECTION,
+    eventType: ELECTION_EVENT_TYPE,
     lao: 'MyLao',
     name: 'MyElection',
     version: 'version',
@@ -91,7 +90,7 @@ describe('Election object', () => {
     const election = Election.fromState(electionState);
     const expectedState = {
       id: ELECTION_ID.valueOf(),
-      eventType: EventTypeElection,
+      eventType: ELECTION_EVENT_TYPE,
       lao: mockLaoName,
       name: NAME,
       version: VERSION,

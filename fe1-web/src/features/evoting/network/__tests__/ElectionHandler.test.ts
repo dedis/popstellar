@@ -6,21 +6,15 @@ import {
   mockLaoName,
   configureTestFeatures,
   mockKeyPair,
-  mockLaoState,
 } from '__tests__/utils';
 
 import { Hash, Timestamp, Base64UrlData, Signature } from 'core/objects';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 
 import STRINGS from 'resources/strings';
-import { getStore, dispatch } from 'core/redux';
-import { connectToLao } from 'features/lao/reducer';
-import { addEvent } from 'features/events/reducer';
-import { getEventFromId } from 'features/events/network/EventHandlerUtils';
-import { Election, ElectionStatus } from 'features/evoting/objects';
+import { dispatch } from 'core/redux';
+import { Election, ElectionStatus, EvotingConfiguration } from 'features/evoting/objects';
 import { handleElectionOpenMessage } from '../ElectionHandler';
-
-const store = getStore();
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
@@ -56,6 +50,17 @@ const mockMessageData = {
   witness_signatures: [],
 };
 
+const mockReduxAction = {
+  type: '',
+  payload: undefined,
+};
+
+const getUndefinedLaoId: EvotingConfiguration['getCurrentLaoId'] = () => undefined;
+const getMockLaoId: EvotingConfiguration['getCurrentLaoId'] = () => mockLaoId;
+
+const getEventFromIdDummy: EvotingConfiguration['getEventFromId'] = () => undefined;
+const updateEventDummy: EvotingConfiguration['updateEvent'] = () => mockReduxAction;
+
 // mocks
 const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
@@ -76,7 +81,11 @@ describe('ElectionHandler', () => {
   describe('election#open', () => {
     it('should return false if the object is not "election"', () => {
       expect(
-        handleElectionOpenMessage({
+        handleElectionOpenMessage(
+          getUndefinedLaoId,
+          getEventFromIdDummy,
+          updateEventDummy,
+        )({
           ...mockMessageData,
           messageData: {
             object: ObjectType.CHIRP,
@@ -91,7 +100,11 @@ describe('ElectionHandler', () => {
     });
     it('should return false if the action is not "open"', () => {
       expect(
-        handleElectionOpenMessage({
+        handleElectionOpenMessage(
+          getUndefinedLaoId,
+          getEventFromIdDummy,
+          updateEventDummy,
+        )({
           ...mockMessageData,
           messageData: {
             object: ObjectType.ELECTION,
@@ -106,7 +119,11 @@ describe('ElectionHandler', () => {
     });
     it('should return false if there is no active LAO', () => {
       expect(
-        handleElectionOpenMessage({
+        handleElectionOpenMessage(
+          getUndefinedLaoId,
+          getEventFromIdDummy,
+          updateEventDummy,
+        )({
           ...mockMessageData,
           messageData: {
             object: ObjectType.ELECTION,
@@ -121,10 +138,12 @@ describe('ElectionHandler', () => {
     });
 
     it('should return false if the election has not previously been stored', () => {
-      dispatch(connectToLao(mockLaoState));
-
       expect(
-        handleElectionOpenMessage({
+        handleElectionOpenMessage(
+          getMockLaoId,
+          getEventFromIdDummy,
+          updateEventDummy,
+        )({
           ...mockMessageData,
           messageData: {
             object: ObjectType.ELECTION,
@@ -141,20 +160,29 @@ describe('ElectionHandler', () => {
     });
 
     it('should update the election status', () => {
-      dispatch(connectToLao(mockLaoState));
-      dispatch(addEvent(mockLaoId, election.toState()));
+      let storedElection = election.toState();
 
-      expect((getEventFromId(store.getState(), mockElectionId) as Election).electionStatus).toEqual(
-        ElectionStatus.NOT_STARTED,
-      );
+      const getEventFromId = jest.fn().mockImplementation(() => Election.fromState(storedElection));
+      const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
+        storedElection = eventState;
+
+        // Return a redux action, should be an action creator
+        return mockReduxAction;
+      });
+
+      expect(storedElection.electionStatus).toEqual(ElectionStatus.NOT_STARTED);
 
       expect(
-        handleElectionOpenMessage({
+        handleElectionOpenMessage(
+          getMockLaoId,
+          getEventFromId,
+          updateEvent,
+        )({
           ...mockMessageData,
           messageData: {
             object: ObjectType.ELECTION,
             action: ActionType.OPEN,
-            election: mockElectionId.valueOf(),
+            election: mockElectionId,
             opened_at: TIMESTAMP,
           } as MessageData,
         }),
@@ -163,9 +191,18 @@ describe('ElectionHandler', () => {
       // no warning should have been printed
       expect(warn).toHaveBeenCalledTimes(0);
 
+      // check whether getEventFromId has been called correctly
+      expect(getEventFromId.mock.calls[0][1]).toEqual(mockElectionId);
+      expect(getEventFromId).toHaveBeenCalledTimes(1);
+
+      // check whether updateEvent has been called correctly
+      expect(updateEvent.mock.calls[0][0]).toEqual(mockLaoIdHash);
+      expect(updateEvent.mock.calls[0][1]).toHaveProperty('id', election.id.valueOf());
+      expect(updateEvent.mock.calls[0][1]).toHaveProperty('electionStatus', ElectionStatus.OPENED);
+      expect(updateEvent).toHaveBeenCalledTimes(1);
+
       // check if the status was changed correctly
-      const e = getEventFromId(store.getState(), mockElectionId) as Election;
-      expect(e.electionStatus).toEqual(ElectionStatus.OPENED);
+      expect(storedElection.electionStatus).toEqual(ElectionStatus.OPENED);
     });
   });
 });
