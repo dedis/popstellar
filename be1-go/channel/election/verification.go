@@ -32,17 +32,17 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	if len(IDs) != 2 {
 		return xerrors.Errorf("election channel id is %s, should be formatted as /root/laoID/electionID", c.channelID)
 	}
-	laoId := IDs[0]
-	electionId := IDs[1]
+	laoID := IDs[0]
+	electionID := IDs[1]
 
 	// verify if lao id is the same as the channel
-	if castVote.Lao != laoId {
-		return xerrors.Errorf("lao id is %s, should be %s", laoId, castVote.Lao)
+	if castVote.Lao != laoID {
+		return xerrors.Errorf("lao id is %s, should be %s", laoID, castVote.Lao)
 	}
 
 	// verify if election id is the same as the channel
-	if castVote.Election != electionId {
-		return xerrors.Errorf("election id is %s, should be %s", electionId, castVote.Election)
+	if castVote.Election != electionID {
+		return xerrors.Errorf("election id is %s, should be %s", electionID, castVote.Election)
 	}
 
 	// verify created at is positive
@@ -89,17 +89,17 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	if len(IDs) != 2 {
 		return xerrors.Errorf("election channel id is %s, should be formatted as /root/laoID/electionID", c.channelID)
 	}
-	laoId := IDs[0]
-	electionId := IDs[1]
+	laoID := IDs[0]
+	electionID := IDs[1]
 
 	// verify if lao id is the same as the channel
-	if electionEnd.Lao != laoId {
-		return xerrors.Errorf("lao id is %s, should be %s", laoId, electionEnd.Lao)
+	if electionEnd.Lao != laoID {
+		return xerrors.Errorf("lao id is %s, should be %s", laoID, electionEnd.Lao)
 	}
 
 	// verify if election id is the same as the channel
-	if electionEnd.Election != electionId {
-		return xerrors.Errorf("election id is %s, should be %s", electionId, electionEnd.Election)
+	if electionEnd.Election != electionID {
+		return xerrors.Errorf("election id is %s, should be %s", electionID, electionEnd.Election)
 	}
 
 	// verify created at is positive

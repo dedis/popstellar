@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -25,10 +26,10 @@ const msgID = "msg id"
 const failedToDecodeData = "failed to decode message data: %v"
 
 // NewChannel returns a new initialized reaction channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
 	log = log.With().Str("channel", "reaction").Logger()
 
-	return Channel{
+	newChannel := &Channel{
 		sockets:   channel.NewSockets(),
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
@@ -36,6 +37,20 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 		hub:       hub,
 		log:       log,
 	}
+
+	newChannel.registry = newChannel.NewReactionRegistry()
+
+	return newChannel
+}
+
+// NewReactionRegistry creates a new registry for the consensus channel
+func (c *Channel) NewReactionRegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
+
+	registry.Register(messagedata.ReactionAdd{}, c.processReactionAdd)
+	registry.Register(messagedata.ReactionDelete{}, c.processReactionDelete)
+
+	return registry
 }
 
 // Channel is used to handle reaction messages.
@@ -49,6 +64,8 @@ type Channel struct {
 
 	hub channel.HubFunctionalities
 	log zerolog.Logger
+
+	registry registry.MessageRegistry
 }
 
 // Publish is used to handle publish messages in the reaction channel.
@@ -126,38 +143,16 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message) error {
 
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	err := c.registry.Process(msg)
 	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get object and action from message data: %v", err)
-	}
-
-	if object != messagedata.ReactionObject {
-		return xerrors.Errorf("object should be 'reaction' but is %s", object)
-	}
-
-	switch action {
-	case messagedata.ReactionActionAdd:
-		err := c.publishAddReaction(msg)
-		if err != nil {
-			return xerrors.Errorf("failed to publish reaction: %v", err)
-		}
-	case messagedata.ReactionActionDelete:
-		err := c.publishDeleteReaction(msg)
-		if err != nil {
-			return xerrors.Errorf("failed to delete reaction: %v", err)
-		}
-	default:
-		return answer.NewInvalidActionError(action)
-	}
+	c.inbox.StoreMessage(msg)
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to broadcast to all clients: %v", err)
+		return xerrors.Errorf("failed to broadcast message: %v", err)
 	}
 
 	return nil
@@ -215,24 +210,20 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) publishAddReaction(msg message.Message) error {
+func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}) error {
 	err := c.verifyAddReactionMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to verify add reaction message: %v", err)
 	}
 
-	c.inbox.StoreMessage(msg)
-
 	return nil
 }
 
-func (c *Channel) publishDeleteReaction(msg message.Message) error {
+func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}) error {
 	err := c.verifyDeleteReactionMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete reaction message: %v", err)
 	}
-
-	c.inbox.StoreMessage(msg)
 
 	return nil
 }
@@ -286,7 +277,7 @@ func (c *Channel) verifyDeleteReactionMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to decode sender key: %v", err)
 	}
 
-	react, b := c.inbox.GetMessage(delReactMsg.ReactionId)
+	react, b := c.inbox.GetMessage(delReactMsg.ReactionID)
 	if !b {
 		return xerrors.Errorf("the message to be deleted was not found")
 	}

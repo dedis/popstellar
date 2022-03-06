@@ -46,6 +46,8 @@ func TestReactionChannel_Subscribe(t *testing.T) {
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+	channel, ok := cha.(*Channel)
+	require.True(t, ok)
 
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "subscribe")
@@ -60,10 +62,10 @@ func TestReactionChannel_Subscribe(t *testing.T) {
 
 	socket := &fakeSocket{id: "socket"}
 
-	err = cha.Subscribe(socket, message)
+	err = channel.Subscribe(socket, message)
 	require.NoError(t, err)
 
-	require.True(t, cha.sockets.Delete("socket"))
+	require.True(t, channel.sockets.Delete("socket"))
 }
 
 // Tests that the channel works correctly when it receives an unsubscribe from a
@@ -77,6 +79,8 @@ func TestReactionChannel_Unsubscribe(t *testing.T) {
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+	channel, ok := cha.(*Channel)
+	require.True(t, ok)
 
 	relativePath := filepath.Join(protocolRelativePath,
 		"examples", "query", "unsubscribe")
@@ -90,15 +94,15 @@ func TestReactionChannel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	socket := &fakeSocket{id: "socket"}
-	cha.sockets.Upsert(socket)
+	channel.sockets.Upsert(socket)
 
-	require.NoError(t, cha.Unsubscribe("socket", message))
+	require.NoError(t, channel.Unsubscribe("socket", message))
 
 	// we check that the socket has been deleted
-	require.False(t, cha.sockets.Delete("socket"))
+	require.False(t, channel.sockets.Delete("socket"))
 
 	// unsubscribing two times with the same socket must fail
-	require.Error(t, cha.Unsubscribe("socket", message))
+	require.Error(t, channel.Unsubscribe("socket", message))
 }
 
 // Test that the channel throws an error when it receives an unsubscribe from a
@@ -138,11 +142,13 @@ func TestReactionChannel_Broadcast(t *testing.T) {
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+	channel, ok := cha.(*Channel)
+	require.True(t, ok)
 
-	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+	channel.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
 
 	fakeSock := &fakeSocket{id: "socket"}
-	cha.sockets.Upsert(fakeSock)
+	channel.sockets.Upsert(fakeSock)
 
 	// Create the message
 	relativePath := filepath.Join(protocolRelativePath,
@@ -180,10 +186,10 @@ func TestReactionChannel_Broadcast(t *testing.T) {
 
 		Method: "broadcast",
 	}
-	message.Params.Channel = cha.channelID
+	message.Params.Channel = channel.channelID
 	message.Params.Message = m
 
-	require.NoError(t, cha.Broadcast(message, nil))
+	require.NoError(t, channel.Broadcast(message, nil))
 
 	// Checks that the broadcast message is broadcast to the sockets
 	bufBroad, err := json.Marshal(message)
@@ -202,8 +208,10 @@ func Test_Catchup(t *testing.T) {
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+	channel, ok := cha.(*Channel)
+	require.True(t, ok)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
@@ -219,7 +227,7 @@ func Test_Catchup(t *testing.T) {
 		messages[i] = message
 
 		// Store the message in the inbox
-		cha.inbox.StoreMessage(message)
+		channel.inbox.StoreMessage(message)
 
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
@@ -227,7 +235,7 @@ func Test_Catchup(t *testing.T) {
 	}
 
 	// Compute the catchup method
-	catchupAnswer := cha.Catchup(method.Catchup{ID: 0})
+	catchupAnswer := channel.Catchup(method.Catchup{ID: 0})
 
 	// Check that the order of the messages is the same in `messages` and in
 	// `catchupAnswer`
@@ -247,12 +255,14 @@ func Test_SendReaction(t *testing.T) {
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+	channel, ok := cha.(*Channel)
+	require.True(t, ok)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
-	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+	channel.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
 
 	// Create the message
 	relativePath := filepath.Join(protocolRelativePath,
@@ -287,7 +297,7 @@ func Test_SendReaction(t *testing.T) {
 	message.Params.Message = m
 	message.Params.Channel = reactionChannelName
 
-	require.NoError(t, cha.Publish(message, socket.ClientSocket{}))
+	require.NoError(t, channel.Publish(message, socket.ClientSocket{}))
 }
 
 // Tests that the channel throws an error when it receives a delete reaction
@@ -301,12 +311,14 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+	channel, ok := cha.(*Channel)
+	require.True(t, ok)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
-	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+	channel.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
 
 	// Create delete reaction message
 	relativePath := filepath.Join(protocolRelativePath,
@@ -354,12 +366,14 @@ func Test_DeleteReaction(t *testing.T) {
 
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
+	channel, ok := cha.(*Channel)
+	require.True(t, ok)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
-	cha.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
+	channel.AddAttendee("M5ZychEi5rwm22FjwjNuljL1qMJWD2sE7oX9fcHNMDU=")
 
 	// First we send a reaction to be deleted
 	relativePath := filepath.Join(protocolRelativePath,
@@ -397,7 +411,7 @@ func Test_DeleteReaction(t *testing.T) {
 	pub.Params.Channel = reactionChannelName
 
 	// We publish the reaction to be deleted
-	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+	require.NoError(t, channel.Publish(pub, socket.ClientSocket{}))
 
 	// Create delete reaction message
 	file = filepath.Join(relativePath, "reaction_delete", "reaction_delete.json")
@@ -410,7 +424,7 @@ func Test_DeleteReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	// We set the reactionId with the ID obtain above
-	del.ReactionId = addReactionID
+	del.ReactionID = addReactionID
 
 	buf, err = json.Marshal(del)
 	require.NoError(t, err)
@@ -425,7 +439,7 @@ func Test_DeleteReaction(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	deleteReactionId := m.MessageID
+	deleteReactionID := m.MessageID
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -438,11 +452,11 @@ func Test_DeleteReaction(t *testing.T) {
 	time.Sleep(time.Millisecond)
 
 	// If there is no error, the delete request has been properly received
-	require.NoError(t, cha.Publish(pub, socket.ClientSocket{}))
+	require.NoError(t, channel.Publish(pub, socket.ClientSocket{}))
 
 	// Check that the messages are stored in the inbox
-	require.Equal(t, addReactionID, cha.inbox.GetSortedMessages()[0].MessageID)
-	require.Equal(t, deleteReactionId, cha.inbox.GetSortedMessages()[1].MessageID)
+	require.Equal(t, addReactionID, channel.inbox.GetSortedMessages()[0].MessageID)
+	require.Equal(t, deleteReactionID, channel.inbox.GetSortedMessages()[1].MessageID)
 }
 
 // -----------------------------------------------------------------------------

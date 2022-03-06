@@ -88,7 +88,9 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	reactionPath := fmt.Sprintf("%s/social/reactions", channelID)
 	reactionCh := reaction.NewChannel(reactionPath, hub, log)
-	hub.NotifyNewChannel(reactionPath, &reactionCh, socket)
+	reactionChan, _ := reactionCh.(*reaction.Channel)
+	
+	hub.NotifyNewChannel(reactionPath, reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
@@ -99,7 +101,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		sockets:         channel.NewSockets(),
 		inbox:           box,
 		general:         generalCh,
-		reactions:       &reactionCh,
+		reactions:       reactionChan,
 		organizerPubKey: organizerPubKey,
 		witnesses:       make(map[string]struct{}),
 		hub:             hub,

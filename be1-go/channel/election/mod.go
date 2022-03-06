@@ -156,7 +156,7 @@ type validVote struct {
 }
 
 // Publish is used to handle publish messages in the election channel.
-func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
+func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -167,7 +167,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 			"election channel: %w", err)
 	}
 
-	err = c.handleMessage(publish.Params.Message, socket)
+	err = c.handleMessage(publish.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to handle a publish message: %v", err)
 	}
@@ -210,23 +210,38 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 	err := c.verifyMessage(broadcast.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on an "+
 			"election channel: %w", err)
 	}
 
-	err = c.handleMessage(broadcast.Params.Message, socket)
+	msg := broadcast.Params.Message
+	data := msg.Data
+
+	jsonData, err := base64.URLEncoding.DecodeString(data)
 	if err != nil {
-		return xerrors.Errorf("failed to handle broadcast message: %v", err)
+		return xerrors.Errorf("failed to decode message data: %v", err)
+	}
+
+	object, _, err := messagedata.GetObjectAndAction(jsonData)
+	if err != nil {
+		return xerrors.Errorf("failed to get object and action from message data: %v", err)
+	}
+
+	if (object == messagedata.ElectionObject) {
+		err = c.handleMessage(broadcast.Params.Message)
+		if err != nil {
+			return xerrors.Errorf("failed to handle broadcast message: %v", err)
+		}
 	}
 
 	return nil
 }
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
+func (c *Channel) handleMessage(msg message.Message) error {
 
 	err := c.registry.Process(msg)
 	if err != nil {
@@ -341,9 +356,6 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 		xerrors.Errorf("failed to update vote: %v", err)
 	}
 
-	c.inbox.StoreMessage(msg)
-	c.broadcastToAllClients(msg)
-
 	return nil
 }
 
@@ -388,9 +400,6 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 	if err != nil {
 		return xerrors.Errorf("invalid election#end message: %v", err)
 	}
-
-	c.inbox.StoreMessage(msg)
-	c.broadcastToAllClients(msg)
 
 	// broadcast election result message
 	err = c.broadcastElectionResult()

@@ -259,7 +259,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	err = json.Unmarshal(dataBuf, &result)
 	require.NoError(t, err)
 
-	require.Equal(t, "result", result.Action)
+	require.Equal(t, "end", result.Action)
 	require.Equal(t, "election", result.Object)
 }
 
