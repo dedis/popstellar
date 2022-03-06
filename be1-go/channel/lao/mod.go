@@ -75,6 +75,8 @@ type Channel struct {
 	log zerolog.Logger
 
 	registry registry.MessageRegistry
+
+	socket socket.Socket
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
@@ -129,7 +131,8 @@ func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
 	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
 	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
-	//registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
+	registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
+	registry.Register(messagedata.ElectionSetup{}, c.processElectionObject)
 
 	/*
 
@@ -301,6 +304,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
+	c.socket = socket
 	err := c.registry.Process(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -569,13 +573,7 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(action string, msg message.Message,
-	socket socket.Socket) error {
-	expectedAction := messagedata.ElectionActionSetup
-
-	if action != expectedAction {
-		return answer.NewErrorf(-4, "invalid action %s, should be %s)", action, expectedAction)
-	}
+func (c *Channel) processElectionObject(msg message.Message, msgData interface{}) error {
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
@@ -606,7 +604,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message,
 		return xerrors.Errorf("invalid election#setup message: %v", err)
 	}
 
-	err = c.createElection(msg, electionSetup, socket)
+	err = c.createElection(msg, electionSetup, c.socket)
 	if err != nil {
 		return xerrors.Errorf("failed to create election: %w", err)
 	}
@@ -741,7 +739,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{})
 	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		//c.createChirpingChannel(attendee, c.sockets) TODO should implement that part
+		c.createChirpingChannel(attendee, c.socket) //TODO should implement that part
 
 		c.reactions.AddAttendee(attendee)
 
