@@ -28,7 +28,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
   const initWallet = async () => {
     try {
       await Wallet.importMnemonic(seed);
-      navigation.navigate(STRINGS.navigation_synced_wallet);
+      navigation.navigate(STRINGS.navigation_wallet_home_tab);
     } catch {
       navigation.navigate(STRINGS.navigation_wallet_error);
     }
@@ -42,10 +42,10 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
         onChangeText={(input: string) => setSeed(input)}
       />
       <View style={styles.smallPadding} />
-      <WideButtonView title={STRINGS.setup_wallet} onPress={() => initWallet()} />
+      <WideButtonView title={STRINGS.save_seed_and_connect} onPress={() => initWallet()} />
       <WideButtonView
-        title={STRINGS.back_to_wallet_home}
-        onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
+        title={STRINGS.back_to_wallet_setup}
+        onPress={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
       />
     </View>
   );

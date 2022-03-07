@@ -40,11 +40,13 @@ const STRINGS = {
   organizer_navigation_creation_election: 'Create election',
 
   /* --- Wallet Navigation Strings --- */
-  navigation_home_tab_wallet: 'Wallet Home',
-  navigation_insert_seed_tab_wallet: 'Wallet Setup',
-  navigation_show_seed_wallet: 'New Wallet',
-  navigation_synced_wallet: 'My Wallet',
+  navigation_wallet_home_tab: 'Wallet Home',
+  navigation_wallet_setup_tab: 'Wallet Setup',
+  navigation_wallet_insert_seed: 'Wallet Recovery',
+  navigation_wallet_show_seed: 'New Wallet',
+  navigation_wallet_synced: 'My Wallet',
   navigation_wallet_error: 'Error',
+  navigation_wallet_create_seed: 'Wallet Seed Creation',
 
   /* --- Social Media Navigation Strings --- */
   social_media_navigation_tab_home: 'Home',
@@ -197,6 +199,8 @@ const STRINGS = {
   wallet_public_key_id: 'Public Encryption Key',
   wallet_private_key: 'private',
   wallet_public_key: 'public',
+  wallet_title: 'Digital Wallet',
+  wallet_balance: 'Your balance:',
   welcome_to_wallet_display: 'Welcome to your wallet !',
   info_to_set_wallet: 'You may import your seed if you own one or create a new wallet',
   caution_information_on_seed:
@@ -211,7 +215,10 @@ const STRINGS = {
     'example:   grape  sock  height  they  tiny  voyage  kid  young  domain  trumpet  three  patrol',
   wallet_synced_info: 'Your digital wallet is synced !',
   setup_wallet: 'SETUP WALLET',
+  save_seed_and_connect: 'SAVE SEED AND CONNECT',
   back_to_wallet_home: 'BACK TO WALLET HOME',
+  back_to_wallet_setup: 'BACK TO WALLET SETUP',
+  connect_with_this_seed: 'CONNECT WITH THIS SEED',
   logout_from_wallet: 'LOGOUT',
   show_tokens_title: 'SHOW POP TOKENS',
   show_public_keys: 'SHOW PUBLIC KEYS',
