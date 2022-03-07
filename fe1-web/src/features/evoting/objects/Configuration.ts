@@ -1,7 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash } from 'core/objects';
-import { RootState } from 'core/redux';
+import { Hash, Timestamp } from 'core/objects';
 import { EvotingFeature } from './Feature';
 
 export interface EvotingConfiguration {
@@ -12,17 +11,15 @@ export interface EvotingConfiguration {
 
   /**
    * Given the current redux state, this function returns the currently active lao
-   * @param state - The current redux state
-   * @returns The current lao or undefined if there is none
+   * @returns The current lao
    */
-  getCurrentLao: (state: RootState) => EvotingFeature.Lao | undefined;
+  getCurrentLao: () => EvotingFeature.Lao;
 
   /**
    * Given the current redux state, this function returns the currently active lao id
-   * @param state - The current redux state
-   * @returns The current lao id or undefined if there is none
+   * @returns The current lao id
    */
-  getCurrentLaoId: (state: RootState) => string | undefined;
+  getCurrentLaoId: () => Hash;
 
   /* Event related functions */
 
@@ -48,9 +45,29 @@ export interface EvotingConfiguration {
    * Given the redux state and an event id, this function looks in the active
    * lao for an event with a matching id, creates an instance of the corresponding type
    * and returns it
-   * @param state - The redux state where the data should be retrieved from
    * @param id - The id of the event
    * @returns The event or undefined if none was found
    */
-  getEventFromId: (state: RootState, id: Hash) => EvotingFeature.Event | undefined;
+  getEventFromId: (id: Hash) => EvotingFeature.Event | undefined;
+
+  /**
+   * Function called when the user confirms an event creation. If the end is in the past, it will tell
+   * the user and cancel the creation. If the event starts more than 5 minutes in the past, it will
+   * ask if it can start now. Otherwise, the event will simply be created.
+   *
+   * @param start - The start time of the event
+   * @param end - The end time of the event
+   * @param createEvent - The function which creates the event
+   * @param setStartModalIsVisible - The function which sets the visibility of the modal on starting
+   * time being in past
+   * @param setEndModalIsVisible - The function which sets the visibility of the modal on ending time
+   * being in past
+   */
+  onConfirmEventCreation: (
+    start: Timestamp,
+    end: Timestamp,
+    createEvent: Function,
+    setStartModalIsVisible: Function,
+    setEndModalIsVisible: Function,
+  ) => void;
 }

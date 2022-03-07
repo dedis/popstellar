@@ -38,3 +38,8 @@ export const mockLaoState: LaoState = {
 export const mockLao = Lao.fromState(mockLaoState);
 
 export const defaultMessageDataFields = ['object', 'action'];
+
+export const mockReduxAction = {
+  type: '',
+  payload: undefined,
+};

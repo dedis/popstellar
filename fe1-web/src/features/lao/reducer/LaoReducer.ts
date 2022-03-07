@@ -198,7 +198,8 @@ export function makeLao(id: string | undefined = undefined) {
 export const getCurrentLaoId = createSelector(
   // First input: current LAO id
   (state) => getLaosState(state).currentId,
-  (currentId: string | undefined): string | undefined => currentId,
+  (currentId: string | undefined): Hash | undefined =>
+    currentId ? new Hash(currentId) : undefined,
 );
 
 export const makeCurrentLao = () => makeLao();

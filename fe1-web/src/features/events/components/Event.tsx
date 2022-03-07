@@ -14,8 +14,6 @@ import { Meeting } from 'features/meeting/objects';
 import { Election } from 'features/evoting/objects';
 import { RollCall } from 'features/rollCall/objects';
 
-import { OpenedLaoStore } from 'features/lao/store';
-import { Lao } from 'features/lao/objects';
 import eventViewStyles from '../styles/eventViewStyles';
 
 /**
@@ -27,7 +25,6 @@ const Event = (props: IPropTypes) => {
 
   const isOrganizerSelect = useMemo(makeIsLaoOrganizer, []);
   const isOrganizer = useSelector(isOrganizerSelect);
-  const currentLao: Lao = OpenedLaoStore.get();
 
   const buildEvent = () => {
     if (event instanceof Meeting) {
@@ -37,7 +34,7 @@ const Event = (props: IPropTypes) => {
       return <EventRollCall event={event} isOrganizer={isOrganizer} />;
     }
     if (event instanceof Election) {
-      return <EventElection laoId={currentLao.id} election={event} isOrganizer={isOrganizer} />;
+      return <EventElection election={event} isOrganizer={isOrganizer} />;
     }
     return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
   };

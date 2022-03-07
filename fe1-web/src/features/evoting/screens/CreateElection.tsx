@@ -18,13 +18,11 @@ import {
   WideButtonView,
 } from 'core/components';
 import { Hash, Timestamp, EventTags } from 'core/objects';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 import { FOUR_SECONDS } from 'resources/const';
-import { onConfirmPress } from 'features/events/screens/CreateEvent';
 
 import { requestCreateElection } from '../network/ElectionMessageApi';
 import { Question } from '../objects';
+import { EvotingHooks } from '../hooks';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
@@ -44,12 +42,15 @@ const CreateElection = ({ route }: any) => {
   const [electionName, setElectionName] = useState('');
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
-  const currentLao: Lao = OpenedLaoStore.get();
+
   const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
   const [questions, setQuestions] = useState([emptyQuestion]);
   const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
   const time = Timestamp.EpochNow();
+
+  const currentLao = EvotingHooks.useCurrentLao();
+  const onConfirmEventCreation = EvotingHooks.useOnConfirmEventCreation();
 
   const buildDatePickerWeb = () => {
     const startDate = startTime.toDate();
@@ -173,7 +174,7 @@ const CreateElection = ({ route }: any) => {
         <WideButtonView
           title={STRINGS.general_button_confirm}
           onPress={() =>
-            onConfirmPress(
+            onConfirmEventCreation(
               startTime,
               endTime,
               createElection,

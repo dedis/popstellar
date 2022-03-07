@@ -1,15 +1,17 @@
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { addReducers } from 'core/redux';
+import { Hash } from 'core/objects';
+import { addReducers, getStore } from 'core/redux';
 import STRINGS from '../resources/strings';
 
 import * as events from './events';
-import { getEventFromId } from './events/network/EventHandlerUtils';
+import { getEventFromId as getEventFromIdUnbound } from './events/network/EventHandlerUtils';
 import { addEvent, updateEvent } from './events/reducer';
+import { onConfirmPress } from './events/screens/CreateEvent';
 import * as evoting from './evoting';
 import * as home from './home';
 import * as lao from './lao';
-import { getCurrentLaoId, makeCurrentLao } from './lao/reducer';
+import { getCurrentLaoId as getCurrentLaoIdUnbound, makeCurrentLao } from './lao/reducer';
 import * as meeting from './meeting';
 import * as rollCall from './rollCall';
 import * as social from './social';
@@ -20,17 +22,47 @@ export function configureFeatures() {
   const messageRegistry = new MessageRegistry();
   const keyPairRegistry = new KeyPairRegistry();
 
-  const getCurrentLao = makeCurrentLao();
+  const getCurrentLaoUnboound = makeCurrentLao();
+
+  /**
+   * Returns the current lao and throws an error if there is none
+   * @returns The current lao
+   */
+  const getCurrentLao = () => {
+    const currentLao = getCurrentLaoUnboound(getStore().getState());
+
+    if (!currentLao) {
+      throw new Error('Error encountered while accessing storage : no currently opened LAO');
+    }
+
+    return currentLao;
+  };
+
+  /**
+   * Returns the current lao id and throws an error if there is none
+   * @returns The current lao id
+   */
+  const getCurrentLaoId = () => {
+    const currentLaoId = getCurrentLaoIdUnbound(getStore().getState());
+
+    if (!currentLaoId) {
+      throw new Error('Error encountered while accessing storage : no currently opened LAO');
+    }
+
+    return currentLaoId;
+  };
+  const getEventFromId = (id: Hash) => getEventFromIdUnbound(getStore().getState(), id);
 
   // configure features
   const laoConfig = lao.configure(messageRegistry);
   const homeConfig = home.configure();
   evoting.configure({
-    getCurrentLao: getCurrentLao,
-    getCurrentLaoId: getCurrentLaoId,
-    addEvent: addEvent,
-    getEventFromId: getEventFromId,
-    updateEvent: updateEvent,
+    getCurrentLao,
+    getCurrentLaoId,
+    addEvent,
+    getEventFromId,
+    updateEvent,
+    onConfirmEventCreation: onConfirmPress,
     messageRegistry,
   });
   meeting.configure(messageRegistry);
