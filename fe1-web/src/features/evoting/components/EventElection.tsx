@@ -9,7 +9,7 @@ import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
 
-import { castVote, terminateElection } from '../network/ElectionMessageApi';
+import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
 import { EvotingHooks } from '../hooks';
@@ -58,6 +58,20 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
+  const onOpenElection = () => {
+    console.log('Opening Election');
+    openElection(laoId, election)
+      .then(() => console.log('Election Opened'))
+      .catch((err) => {
+        console.error('Could not open election, error:', err);
+        toast.show(`Could not open election, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      });
+  };
+
   const onTerminateElection = () => {
     console.log('Terminating Election');
     terminateElection(laoId, election)
@@ -79,14 +93,17 @@ const EventElection = (props: IPropTypes) => {
     switch (status) {
       case ElectionStatus.NOT_STARTED:
         return (
-          <SectionList
-            sections={questions}
-            keyExtractor={(item, index) => item + index}
-            renderSectionHeader={({ section: { title } }) => (
-              <Text style={styles.textQuestions}>{title}</Text>
-            )}
-            renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
-          />
+          <>
+            <SectionList
+              sections={questions}
+              keyExtractor={(item, index) => item + index}
+              renderSectionHeader={({ section: { title } }) => (
+                <Text style={styles.textQuestions}>{title}</Text>
+              )}
+              renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
+            />
+            {isOrganizer && <WideButtonView title="Open election" onPress={onOpenElection} />}
+          </>
         );
       case ElectionStatus.OPENED:
         return (

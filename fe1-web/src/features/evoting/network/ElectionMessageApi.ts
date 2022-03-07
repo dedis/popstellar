@@ -3,6 +3,7 @@ import { publish } from 'core/network';
 
 import { CastVote, EndElection, SetupElection } from './messages';
 import { Election, Question, SelectedBallots } from '../objects';
+import { OpenElection } from './messages/OpenElection';
 
 /**
  * Contains all functions to send election related messages.
@@ -41,6 +42,24 @@ export function requestCreateElection(
 
   // publish on the general LAO channel
   return publish(channelFromIds(laoId), message);
+}
+
+/**
+ * Sends a query to open an election.
+ *
+ * @param laoId - The id of the lao in which the given election should be terminated
+ * @param election - The election that should be terminated
+ */
+export function openElection(laoId: Hash, election: Election): Promise<void> {
+  const time: Timestamp = Timestamp.EpochNow();
+  const message = new OpenElection({
+    lao: laoId,
+    election: election.id,
+    opened_at: time,
+  });
+
+  // publish on the LAO channel specific to this election
+  return publish(channelFromIds(laoId, election.id), message);
 }
 
 /**
