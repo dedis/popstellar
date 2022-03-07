@@ -34,7 +34,7 @@ const WalletSetup = () => {
 
   return (
     <View style={containerStyles.centered}>
-      <TextBlock bold text={STRINGS.welcome_to_wallet_display} />
+      <TextBlock bold text={STRINGS.wallet_welcome} />
       <View style={styles.smallPadding} />
       <TextBlock text={STRINGS.info_to_set_wallet} />
       <TextBlock text={STRINGS.caution_information_on_seed} />

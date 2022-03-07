@@ -86,13 +86,6 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       <TextBlock text={STRINGS.no_tokens_in_wallet} />
       <View style={styles.largePadding} />
       <WideButtonView title={STRINGS.back_to_wallet_home} onPress={() => setShowTokens(false)} />
-      <WideButtonView
-        title={STRINGS.logout_from_wallet}
-        onPress={() => {
-          Wallet.forget();
-          navigation.navigate(STRINGS.navigation_wallet_setup_tab);
-        }}
-      />
     </View>
   );
 
@@ -129,21 +122,23 @@ const WalletHome = ({ navigation }: IPropTypes) => {
             setShowTokens(true);
           }}
         />
-        <WideButtonView
-          title={STRINGS.logout_from_wallet}
-          onPress={() => {
-            Wallet.forget();
-            navigation.navigate(STRINGS.navigation_wallet_setup_tab);
-          }}
-        />
       </View>
     );
   }
 
   return (
     <View style={containerStyles.centered}>
+      <TextBlock bold text={STRINGS.wallet_welcome} />
+      <View style={styles.smallPadding} />
       {!showTokens && recoverTokens()}
       {showTokens && displayTokens()}
+      <WideButtonView
+        title={STRINGS.logout_from_wallet}
+        onPress={() => {
+          Wallet.forget();
+          navigation.navigate(STRINGS.navigation_wallet_setup_tab);
+        }}
+      />
     </View>
   );
 };

@@ -199,9 +199,9 @@ const STRINGS = {
   wallet_public_key_id: 'Public Encryption Key',
   wallet_private_key: 'private',
   wallet_public_key: 'public',
-  wallet_title: 'Digital Wallet',
-  wallet_balance: 'Your balance:',
-  welcome_to_wallet_display: 'Welcome to your wallet !',
+  wallet_welcome: 'Welcome to your Digital Wallet',
+  wallet_balance: 'Your balance: ',
+  wallet_your_pk: 'Your public key: ',
   info_to_set_wallet: 'You may import your seed if you own one or create a new wallet',
   caution_information_on_seed:
     'ATTENTION: if you create a new wallet remember to write down the given seed ' +
