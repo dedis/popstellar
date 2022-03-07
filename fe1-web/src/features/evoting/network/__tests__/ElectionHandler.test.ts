@@ -90,6 +90,14 @@ beforeEach(() => {
 
 afterEach(() => {
   warn.mockClear();
+  (channelFromIds as jest.Mock).mockClear();
+  (subscribeToChannel as jest.Mock).mockClear();
+});
+
+afterAll(() => {
+  (channelFromIds as jest.Mock).mockReset();
+  (subscribeToChannel as jest.Mock).mockReset();
+  warn.mockReset();
 });
 
 describe('ElectionHandler', () => {

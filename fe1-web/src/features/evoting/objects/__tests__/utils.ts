@@ -17,7 +17,7 @@ export const mockElectionId = Hash.fromStringArray(
   mockElectionName,
 );
 
-export const mockQuestion1: string = 'Mock Question 1';
+export const mockQuestion1 = 'Mock Question 1';
 export const mockQuestion2 = 'Mock Question 2';
 
 export const mockQuestionId1: Hash = Hash.fromStringArray(
@@ -25,6 +25,7 @@ export const mockQuestionId1: Hash = Hash.fromStringArray(
   mockElectionId.toString(),
   mockQuestion1,
 );
+
 export const mockQuestionId2 = Hash.fromStringArray(
   EventTags.QUESTION,
   mockElectionId.toString(),
