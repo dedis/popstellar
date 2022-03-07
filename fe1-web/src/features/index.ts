@@ -56,7 +56,7 @@ export function configureFeatures() {
   // configure features
   const laoConfig = lao.configure(messageRegistry);
   const homeConfig = home.configure();
-  evoting.configure({
+  const evotingInterface = evoting.configure({
     getCurrentLao,
     getCurrentLaoId,
     addEvent,
@@ -99,6 +99,9 @@ export function configureFeatures() {
           component: laoConfig.navigation.LaoNavigation,
         },
       ],
+    },
+    context: {
+      [evotingInterface.identifier]: evotingInterface.context,
     },
   };
 }

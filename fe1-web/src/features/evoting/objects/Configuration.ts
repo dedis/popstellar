@@ -1,6 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, Timestamp } from 'core/objects';
+import FeatureInterface from 'core/objects/FeatureInterface';
 import { EvotingFeature } from './Feature';
 
 export interface EvotingConfiguration {
@@ -70,4 +71,26 @@ export interface EvotingConfiguration {
     setStartModalIsVisible: Function,
     setEndModalIsVisible: Function,
   ) => void;
+}
+
+/**
+ * The type of the context that is provided to react evoting components
+ */
+export type EvotingReactContext = Pick<
+  EvotingConfiguration,
+  /* lao */
+  | 'getCurrentLao'
+  | 'getCurrentLaoId'
+  /* events */
+  | 'getEventFromId'
+  | 'addEvent'
+  | 'updateEvent'
+  | 'onConfirmEventCreation'
+>;
+
+/**
+ * The interface the evoting feature exposes
+ */
+export interface EvotingInterface extends FeatureInterface {
+  context: EvotingReactContext;
 }

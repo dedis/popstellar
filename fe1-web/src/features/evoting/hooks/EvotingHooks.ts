@@ -1,12 +1,23 @@
-import { getEvotingConfig } from '../index';
+import FeatureContext from 'core/contexts/FeatureContext';
+import { useContext } from 'react';
+import { EVOTING_FEATURE_IDENTIFIER } from '../index';
+import { EvotingReactContext } from '../objects';
 
 export namespace EvotingHooks {
+  export const useEvotingContext = (): EvotingReactContext => {
+    const featureContext = useContext(FeatureContext);
+    // assert that the evoting context exists
+    if (!(EVOTING_FEATURE_IDENTIFIER in featureContext)) {
+      throw new Error('Evoting context could not be found!');
+    }
+    return featureContext[EVOTING_FEATURE_IDENTIFIER] as EvotingReactContext;
+  };
   /**
    * Gets the current lao id
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => {
-    return getEvotingConfig().getCurrentLaoId();
+    return useEvotingContext().getCurrentLaoId();
   };
 
   /**
@@ -14,7 +25,7 @@ export namespace EvotingHooks {
    * @returns The current lao
    */
   export const useCurrentLao = () => {
-    return getEvotingConfig().getCurrentLao();
+    return useEvotingContext().getCurrentLao();
   };
 
   /**
@@ -22,6 +33,6 @@ export namespace EvotingHooks {
    * @returns The onConfirmEventCreation function
    */
   export const useOnConfirmEventCreation = () => {
-    return getEvotingConfig().onConfirmEventCreation;
+    return useEvotingContext().onConfirmEventCreation;
   };
 }
