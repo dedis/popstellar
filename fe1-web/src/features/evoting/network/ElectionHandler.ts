@@ -122,17 +122,19 @@ export const handleCastVoteMessage =
     }
 
     const castVoteMsg = msg.messageData as CastVote;
+
+    const election = getEventFromId(castVoteMsg.election) as Election;
+    if (!election) {
+      console.warn(makeErr('No active election to register vote '));
+      return false;
+    }
+
     const currentVote: RegisteredVote = {
       createdAt: castVoteMsg.created_at.valueOf(),
       sender: msg.sender.valueOf(),
       votes: castVoteMsg.votes,
       messageId: msg.message_id.valueOf(),
     };
-    const election = getEventFromId(castVoteMsg.election) as Election;
-    if (!election) {
-      console.warn(makeErr('No active election to register vote '));
-      return false;
-    }
 
     if (election.registeredVotes.some((votes) => votes.sender === currentVote.sender)) {
       // Update the vote if the person has already voted before
@@ -144,7 +146,7 @@ export const handleCastVoteMessage =
     } else {
       election.registeredVotes = [...election.registeredVotes, currentVote];
     }
-    dispatch(updateEvent(lao.id, election.toState()));
+    dispatch(updateEvent(msg.laoId, election.toState()));
     return true;
   };
 
@@ -210,14 +212,14 @@ export const handleElectionResultMessage =
       return false;
     }
     const electionId = getLastPartOfChannel(msg.channel);
-    const ElectionResultMsg = msg.messageData as ElectionResult;
+    const electionResultMessage = msg.messageData as ElectionResult;
     const election = getEventFromId(electionId) as Election;
     if (!election) {
       console.warn(makeErr('No active election for the result'));
       return false;
     }
 
-    election.questionResult = ElectionResultMsg.questions.map((q) => ({
+    election.questionResult = electionResultMessage.questions.map((q) => ({
       id: q.id,
       result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
     }));

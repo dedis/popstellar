@@ -10,7 +10,6 @@ export const ELECTION_EVENT_TYPE = 'ELECTION';
 export enum ElectionStatus {
   NOT_STARTED = 'not started',
   OPENED = 'opened',
-  FINISHED = 'finished', // When the time is over
   TERMINATED = 'terminated', // When manually terminated by organizer
   RESULT = 'result', // When result is available
 }
