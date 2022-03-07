@@ -39,10 +39,10 @@ const mockRollCallCreated = RollCall.fromState(createStateWithStatus(RollCallSta
 const mockRollCallOpened = RollCall.fromState(createStateWithStatus(RollCallStatus.OPENED));
 
 jest.mock('@react-navigation/native');
-jest.mock('features/rollCall/network');
-
-(requestOpenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
-(requestReopenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
+jest.mock('features/rollCall/network', () => ({
+  requestOpenRollCall: jest.fn(() => Promise.resolve()),
+  requestReopenRollCall: jest.fn(() => Promise.resolve()),
+}));
 
 let mockSelector: any;
 
