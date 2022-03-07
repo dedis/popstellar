@@ -108,7 +108,7 @@ public class HomeActivity extends AppCompatActivity {
         .observe(
             this,
             stringEvent -> {
-              HomeViewModel.HOMEVIEWACTION action = stringEvent.getContentIfNotHandled();
+              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 switch (action) {
                     case  SCAN:
