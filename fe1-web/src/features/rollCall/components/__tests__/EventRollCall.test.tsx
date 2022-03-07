@@ -1,14 +1,15 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import * as reactRedux from 'react-redux';
+
 import STRINGS from 'resources/strings';
 import { Hash, Timestamp } from 'core/objects';
-import { useNavigation } from '@react-navigation/native';
-
-import * as reactRedux from 'react-redux';
 import { mockLao } from '__tests__/utils/TestUtils';
-import { requestOpenRollCall, requestReopenRollCall } from 'features/rollCall/network';
-import EventRollCall from '../EventRollCall';
+import { mockNavigate } from '__mocks__/useNavigationMock';
+
 import { EventTypeRollCall, RollCall, RollCallStatus } from '../../objects';
+import EventRollCall from '../EventRollCall';
+import { requestOpenRollCall, requestReopenRollCall } from '../../network';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';
@@ -16,7 +17,8 @@ const LOCATION = 'location';
 const TIMESTAMP_START = new Timestamp(1620255600);
 const TIMESTAMP_END = new Timestamp(1620357600);
 const ATTENDEES = ['attendee1', 'attendee2'];
-const rollCallState: any = (mockStatus: RollCallStatus) => {
+
+const createStateWithStatus: any = (mockStatus: RollCallStatus) => {
   return {
     id: ID.valueOf(),
     eventType: EventTypeRollCall,
@@ -32,66 +34,54 @@ const rollCallState: any = (mockStatus: RollCallStatus) => {
   };
 };
 
-const mockRollCallClosed = RollCall.fromState(rollCallState(RollCallStatus.CLOSED));
-const mockRollCallCreated = RollCall.fromState(rollCallState(RollCallStatus.CREATED));
-const mockRollCallOpened = RollCall.fromState(rollCallState(RollCallStatus.OPENED));
-
-const mockRenderRollCall = (rollCall: RollCall, isOrganizer: boolean) => {
-  return render(<EventRollCall event={rollCall} isOrganizer={isOrganizer} />);
-};
+const mockRollCallClosed = RollCall.fromState(createStateWithStatus(RollCallStatus.CLOSED));
+const mockRollCallCreated = RollCall.fromState(createStateWithStatus(RollCallStatus.CREATED));
+const mockRollCallOpened = RollCall.fromState(createStateWithStatus(RollCallStatus.OPENED));
 
 jest.mock('@react-navigation/native');
 jest.mock('features/rollCall/network');
-const mockNavigate = jest.fn();
 
-let mockSelector: jest.SpyInstance<
-  unknown,
-  [
-    selector: (state: unknown) => unknown,
-    equalityFn?: ((left: unknown, right: unknown) => boolean) | undefined,
-  ]
->;
+(requestOpenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
+(requestReopenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
+
+let mockSelector: any;
 
 beforeEach(() => {
-  jest.resetAllMocks();
+  jest.clearAllMocks();
   mockSelector = jest.spyOn(reactRedux, 'useSelector').mockReturnValueOnce(mockLao);
-  (useNavigation as jest.Mock).mockImplementation(() => {
-    return {
-      navigate: mockNavigate,
-    };
-  });
-  (requestOpenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
-  (requestReopenRollCall as jest.Mock).mockImplementation(() => Promise.resolve());
 });
 
 describe('EventRollCall', () => {
   it('should correctly render', () => {
     mockSelector.mockReturnValueOnce(mockRollCallCreated);
-    const obj = mockRenderRollCall(mockRollCallCreated, false);
+    const obj = render(<EventRollCall event={mockRollCallCreated} isOrganizer={false} />);
     expect(obj.toJSON()).toMatchSnapshot();
   });
+
   it('should call requestOpenRollCall when the open button is clicked', () => {
     const usedMockRollCall = mockRollCallCreated;
     mockSelector.mockReturnValueOnce(usedMockRollCall);
-    const obj = mockRenderRollCall(usedMockRollCall, true);
+    const obj = render(<EventRollCall event={usedMockRollCall} isOrganizer />);
     const openRollCallButton = obj.getByText(STRINGS.roll_call_open);
     fireEvent.press(openRollCallButton);
-    expect(requestOpenRollCall).toHaveBeenCalled();
+    expect(requestOpenRollCall).toHaveBeenCalledTimes(1);
   });
+
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
     const usedMockRollCall = mockRollCallClosed;
     mockSelector.mockReturnValueOnce(usedMockRollCall);
-    const obj = mockRenderRollCall(usedMockRollCall, true);
+    const obj = render(<EventRollCall event={usedMockRollCall} isOrganizer />);
     const reopenRollCallButton = obj.getByText(STRINGS.roll_call_reopen);
     fireEvent.press(reopenRollCallButton);
-    expect(requestReopenRollCall).toHaveBeenCalled();
+    expect(requestReopenRollCall).toHaveBeenCalledTimes(1);
   });
+
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
     const usedMockRollCall = mockRollCallOpened;
     mockSelector.mockReturnValueOnce(usedMockRollCall);
-    const obj = mockRenderRollCall(usedMockRollCall, true);
+    const obj = render(<EventRollCall event={usedMockRollCall} isOrganizer />);
     const scanAttendeesButton = obj.getByText(STRINGS.roll_call_scan_attendees);
     fireEvent.press(scanAttendeesButton);
-    expect(mockNavigate).toHaveBeenCalled();
+    expect(mockNavigate).toHaveBeenCalledTimes(1);
   });
 });
