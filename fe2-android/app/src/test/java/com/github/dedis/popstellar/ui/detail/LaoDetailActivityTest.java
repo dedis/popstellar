@@ -149,12 +149,6 @@ public class LaoDetailActivityTest {
     fragmentContainer().check(matches(withChild(withId(witnessFragmentId()))));
   }
 
-  @Test
-  public void OpenQRSCanningSetsValueCorrectly(){
-    HomeViewModel.HOMEVIEWACTION scan = HomeViewModel.HOMEVIEWACTION.SCAN;
-    HomeViewModel.HOMEVIEWACTION cameraPermission = HomeViewModel.HOMEVIEWACTION.REQUEST_CAMERA_PERMISSION;
-    //TODO: create an instance of HomeViewModel and check if event is well set
-  }
 
   // Matches an ImageView containing a QRCode with expected content
   private Matcher<? super View> withQrCode(String expectedContent) {
