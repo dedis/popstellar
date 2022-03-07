@@ -103,19 +103,6 @@ const terminatedElection = new Election({
   registeredVotes: [registeredVote],
 });
 
-const finishedElection = new Election({
-  lao: mockLaoIdHash,
-  id: mockElectionId,
-  name: 'An election',
-  version: STRINGS.election_version_identifier,
-  createdAt: TIMESTAMP,
-  start: TIMESTAMP,
-  end: CLOSE_TIMESTAMP,
-  questions: [question],
-  electionStatus: ElectionStatus.FINISHED,
-  registeredVotes: [registeredVote],
-});
-
 const resultElection = new Election({
   lao: mockLaoIdHash,
   id: mockElectionId,
@@ -160,6 +147,7 @@ beforeAll(() => {
     onConfirmEventCreation: () => undefined,
   });
 });
+
 afterEach(() => {
   warn.mockClear();
 });
@@ -201,18 +189,6 @@ describe('EventElection', () => {
 
     it('renders correctly for an attendee', () => {
       const component = render(<EventElection election={terminatedElection} />).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-  });
-
-  describe('Finished election where the results are not yet available', () => {
-    it('renders correctly for an organizer', () => {
-      const component = render(<EventElection election={finishedElection} isOrganizer />).toJSON();
-      expect(component).toMatchSnapshot();
-    });
-
-    it('renders correctly for an attendee', () => {
-      const component = render(<EventElection election={finishedElection} />).toJSON();
       expect(component).toMatchSnapshot();
     });
   });

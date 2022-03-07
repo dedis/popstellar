@@ -68,7 +68,7 @@ describe('LaoEventBuilder', () => {
       start: 12345,
       end: 16345,
       questions: [question1],
-      electionStatus: ElectionStatus.FINISHED,
+      electionStatus: ElectionStatus.TERMINATED,
       registeredVotes: [registeredVotes],
     };
     expect(eventFromState(election)).toBeInstanceOf(Election);

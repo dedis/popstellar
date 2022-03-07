@@ -62,7 +62,7 @@ const initializeData = () => {
     start: 1520255600,
     end: 1520275600,
     questions: [question1, question2],
-    electionStatus: ElectionStatus.FINISHED,
+    electionStatus: ElectionStatus.TERMINATED,
     registeredVotes: [registeredVotes],
   };
 
@@ -99,7 +99,7 @@ describe('Election object', () => {
       end: TIMESTAMP_PAST2.valueOf(),
       questions: [question1, question2],
       registeredVotes: [registeredVotes],
-      electionStatus: ElectionStatus.FINISHED,
+      electionStatus: ElectionStatus.TERMINATED,
     };
     expect(election.toState()).toStrictEqual(expectedState);
   });

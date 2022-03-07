@@ -128,18 +128,6 @@ const EventElection = (props: IPropTypes) => {
             )}
           </>
         );
-      case ElectionStatus.FINISHED:
-        return (
-          <>
-            <Text style={styles.text}>Election finished</Text>
-            {isOrganizer && (
-              <WideButtonView
-                title="Terminate Election / Tally Votes"
-                onPress={onTerminateElection}
-              />
-            )}
-          </>
-        );
       case ElectionStatus.TERMINATED:
         return (
           <>
