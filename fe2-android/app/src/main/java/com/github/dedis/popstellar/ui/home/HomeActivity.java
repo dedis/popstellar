@@ -108,13 +108,13 @@ public class HomeActivity extends AppCompatActivity {
         .observe(
             this,
             stringEvent -> {
-              String action = stringEvent.getContentIfNotHandled();
+              HomeViewModel.HOMEVIEWACTION action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 switch (action) {
-                  case HomeViewModel.SCAN:
+                    case  SCAN:
                     setupScanFragment();
                     break;
-                  case HomeViewModel.REQUEST_CAMERA_PERMISSION:
+                  case  REQUEST_CAMERA_PERMISSION:
                     setupCameraPermissionFragment();
                     break;
                   default:

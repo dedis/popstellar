@@ -108,7 +108,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenNewRollCallEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenRollCallEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewModel.HOMEVIEWACTION>> mOpenRollCallEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenRollCallTokenEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenAttendeesListEvent =
@@ -121,7 +121,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mElectionCreatedEvent =
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenCastVotesEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenAddWitness = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewModel.HOMEVIEWACTION>> mOpenAddWitness = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
   private final MutableLiveData<SingleEvent<Boolean>> mReceivedElectionResultsEvent =
@@ -807,11 +807,11 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mWitnessMessages;
   }
 
-  public LiveData<SingleEvent<String>> getOpenRollCallEvent() {
+  public LiveData<SingleEvent<HomeViewModel.HOMEVIEWACTION>> getOpenRollCallEvent() {
     return mOpenRollCallEvent;
   }
 
-  public LiveData<SingleEvent<String>> getOpenAddWitness() {
+  public LiveData<SingleEvent<HomeViewModel.HOMEVIEWACTION>> getOpenAddWitness() {
     return mOpenAddWitness;
   }
 
@@ -956,7 +956,7 @@ public class LaoDetailViewModel extends AndroidViewModel
       return;
     }
     witnesses = new HashSet<>(lao.getWitnesses());
-    mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.SCAN));
+    mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.HOMEVIEWACTION.SCAN));
   }
 
   public void toggleShowHideProperties() {
@@ -1137,16 +1137,16 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   public void openQrCodeScanningRollCall() {
-    mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.SCAN));
+    mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.HOMEVIEWACTION.SCAN));
     mNbAttendeesEvent.postValue(
         new SingleEvent<>(attendees.size())); // this to display the initial number of attendees
   }
 
   public void openCameraPermission() {
     if (scanningAction == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
-      mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
+      mOpenRollCallEvent.setValue(new SingleEvent<>(HomeViewModel.HOMEVIEWACTION.REQUEST_CAMERA_PERMISSION));
     } else if (scanningAction == ScanningAction.ADD_WITNESS) {
-      mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.REQUEST_CAMERA_PERMISSION));
+      mOpenAddWitness.setValue(new SingleEvent<>(HomeViewModel.HOMEVIEWACTION.REQUEST_CAMERA_PERMISSION));
     }
   }
 
