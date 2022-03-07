@@ -11,7 +11,6 @@ let evotingConfig: EvotingConfiguration;
 export const configure = (config: EvotingConfiguration) => {
   configureNetwork(
     config.getCurrentLao,
-    config.getCurrentLaoId,
     config.getEventFromId,
     config.addEvent,
     config.updateEvent,

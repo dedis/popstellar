@@ -13,7 +13,6 @@ import { EvotingConfiguration } from '../objects';
 /**
  * Configures the network callbacks in a MessageRegistry.
  * @param getCurrentLao - A function returning the current load
- * @param getCurrentLaoId - A function returning the current loa id
  * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
  * @param addEvent - A function creating a redux action to add a new event to the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
@@ -21,7 +20,6 @@ import { EvotingConfiguration } from '../objects';
  */
 export const configureNetwork = (
   getCurrentLao: EvotingConfiguration['getCurrentLao'],
-  getCurrentLaoId: EvotingConfiguration['getCurrentLaoId'],
   getEventFromId: EvotingConfiguration['getEventFromId'],
   addEvent: EvotingConfiguration['addEvent'],
   updateEvent: EvotingConfiguration['updateEvent'],
