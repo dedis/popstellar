@@ -6,6 +6,7 @@ import {
   mockLaoName,
   configureTestFeatures,
   mockKeyPair,
+  mockReduxAction,
 } from '__tests__/utils';
 
 import { Hash, Timestamp, Base64UrlData, Signature } from 'core/objects';
@@ -50,14 +51,6 @@ const mockMessageData = {
   witness_signatures: [],
 };
 
-const mockReduxAction = {
-  type: '',
-  payload: undefined,
-};
-
-const getUndefinedLaoId: EvotingConfiguration['getCurrentLaoId'] = () => undefined;
-const getMockLaoId: EvotingConfiguration['getCurrentLaoId'] = () => mockLaoId;
-
 const getEventFromIdDummy: EvotingConfiguration['getEventFromId'] = () => undefined;
 const updateEventDummy: EvotingConfiguration['updateEvent'] = () => mockReduxAction;
 
@@ -82,7 +75,6 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionOpenMessage(
-          getUndefinedLaoId,
           getEventFromIdDummy,
           updateEventDummy,
         )({
@@ -101,7 +93,6 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "open"', () => {
       expect(
         handleElectionOpenMessage(
-          getUndefinedLaoId,
           getEventFromIdDummy,
           updateEventDummy,
         )({
@@ -117,30 +108,10 @@ describe('ElectionHandler', () => {
       // check if the printed warning message contains substring
       expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
     });
-    it('should return false if there is no active LAO', () => {
-      expect(
-        handleElectionOpenMessage(
-          getUndefinedLaoId,
-          getEventFromIdDummy,
-          updateEventDummy,
-        )({
-          ...mockMessageData,
-          messageData: {
-            object: ObjectType.ELECTION,
-            action: ActionType.OPEN,
-          },
-        }),
-      ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/LAO/i);
-    });
 
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionOpenMessage(
-          getMockLaoId,
           getEventFromIdDummy,
           updateEventDummy,
         )({
@@ -174,7 +145,6 @@ describe('ElectionHandler', () => {
 
       expect(
         handleElectionOpenMessage(
-          getMockLaoId,
           getEventFromId,
           updateEvent,
         )({
@@ -192,7 +162,7 @@ describe('ElectionHandler', () => {
       expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventFromId has been called correctly
-      expect(getEventFromId.mock.calls[0][1]).toEqual(mockElectionId);
+      expect(getEventFromId.mock.calls[0][0]).toEqual(mockElectionId);
       expect(getEventFromId).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly

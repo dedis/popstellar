@@ -30,13 +30,13 @@ export const configureNetwork = (
   registry.add(
     ObjectType.ELECTION,
     ActionType.SETUP,
-    handleElectionSetupMessage(getCurrentLao, addEvent),
+    handleElectionSetupMessage(addEvent),
     SetupElection.fromJson,
   );
   registry.add(
     ObjectType.ELECTION,
     ActionType.OPEN,
-    handleElectionOpenMessage(getCurrentLaoId, getEventFromId, updateEvent),
+    handleElectionOpenMessage(getEventFromId, updateEvent),
     OpenElection.fromJson,
   );
   registry.add(
@@ -48,13 +48,13 @@ export const configureNetwork = (
   registry.add(
     ObjectType.ELECTION,
     ActionType.END,
-    handleElectionEndMessage(getCurrentLao, getEventFromId, updateEvent),
+    handleElectionEndMessage(getEventFromId, updateEvent),
     EndElection.fromJson,
   );
   registry.add(
     ObjectType.ELECTION,
     ActionType.RESULT,
-    handleElectionResultMessage(getCurrentLao, getEventFromId, updateEvent),
+    handleElectionResultMessage(getEventFromId, updateEvent),
     ElectionResult.fromJson,
   );
 };

@@ -1,10 +1,9 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { channelFromIds, getLastPartOfChannel } from 'core/objects';
 import { subscribeToChannel } from 'core/network';
-import { dispatch, getStore } from 'core/redux';
+import { dispatch } from 'core/redux';
 import { KeyPairStore } from 'core/keypair';
 
-import STRINGS from 'resources/strings';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, EvotingConfiguration, RegisteredVote } from '../objects';
 import { OpenElection } from './messages/OpenElection';
@@ -16,29 +15,16 @@ import { OpenElection } from './messages/OpenElection';
 /**
  * Returns a function that handles an ElectionSetup message by setting up the election in the current Lao.
  *
- * @param getCurrentLao - A function returning the current load
  * @param addEvent - A function creating a redux action to add a new event to the store of the currently active lao
  */
 export const handleElectionSetupMessage =
-  (
-    getCurrentLao: EvotingConfiguration['getCurrentLao'],
-    addEvent: EvotingConfiguration['addEvent'],
-  ) =>
+  (addEvent: EvotingConfiguration['addEvent']) =>
   (msg: ProcessableMessage): boolean => {
     if (
       msg.messageData.object !== ObjectType.ELECTION ||
       msg.messageData.action !== ActionType.SETUP
     ) {
       console.warn('handleElectionSetupMessage was called to process an unsupported message', msg);
-      return false;
-    }
-
-    const makeErr = (err: string) => `election/setup was not processed: ${err}`;
-
-    const storeState = getStore().getState();
-    const lao = getCurrentLao(storeState);
-    if (!lao) {
-      console.warn(makeErr(STRINGS.no_active_lao));
       return false;
     }
 
@@ -64,20 +50,18 @@ export const handleElectionSetupMessage =
       console.error('Could not subscribe to Election channel, error:', err);
     });
 
-    dispatch(addEvent(lao.id, election.toState()));
+    dispatch(addEvent(msg.laoId, election.toState()));
     return true;
   };
 
 /**
  * Returns a function that handles an ElectionOpen message by opening the election.
  *
- * @param getCurrentLaoId - A function returning the current loa id
  * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleElectionOpenMessage =
   (
-    getCurrentLaoId: EvotingConfiguration['getCurrentLaoId'],
     getEventFromId: EvotingConfiguration['getEventFromId'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
@@ -91,15 +75,9 @@ export const handleElectionOpenMessage =
       return false;
     }
     const makeErr = (err: string) => `election/open was not processed: ${err}`;
-    const storeState = getStore().getState();
-    const laoId = getCurrentLaoId(storeState);
-    if (!laoId) {
-      console.warn(makeErr(STRINGS.no_active_lao));
-      return false;
-    }
 
     const electionOpenMsg = msg.messageData as OpenElection;
-    const election = getEventFromId(storeState, electionOpenMsg.election) as Election;
+    const election = getEventFromId(electionOpenMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to end'));
       return false;
@@ -133,12 +111,8 @@ export const handleCastVoteMessage =
       return false;
     }
     const makeErr = (err: string) => `election/cast-vote was not processed: ${err}`;
-    const storeState = getStore().getState();
-    const lao = getCurrentLao(storeState);
-    if (!lao) {
-      console.warn(makeErr(STRINGS.no_active_lao));
-      return false;
-    }
+    const lao = getCurrentLao();
+
     const myPublicKey = KeyPairStore.getPublicKey();
     const isOrganizer = lao.organizer.equals(myPublicKey);
     const isWitness = lao.witnesses.some((w) => w.equals(myPublicKey));
@@ -154,7 +128,7 @@ export const handleCastVoteMessage =
       votes: castVoteMsg.votes,
       messageId: msg.message_id.valueOf(),
     };
-    const election = getEventFromId(storeState, castVoteMsg.election) as Election;
+    const election = getEventFromId(castVoteMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to register vote '));
       return false;
@@ -177,13 +151,11 @@ export const handleCastVoteMessage =
 /**
  * Returns a function that handles an ElectionEnd message by ending the election.
  *
- * @param getCurrentLao - A function returning the current lao
  * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleElectionEndMessage =
   (
-    getCurrentLao: EvotingConfiguration['getCurrentLao'],
     getEventFromId: EvotingConfiguration['getEventFromId'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
@@ -197,14 +169,9 @@ export const handleElectionEndMessage =
       return false;
     }
     const makeErr = (err: string) => `election/end was not processed: ${err}`;
-    const storeState = getStore().getState();
-    const lao = getCurrentLao(storeState);
-    if (!lao) {
-      console.warn(makeErr(STRINGS.no_active_lao));
-      return false;
-    }
+
     const ElectionEndMsg = msg.messageData as EndElection;
-    const election = getEventFromId(storeState, ElectionEndMsg.election) as Election;
+    const election = getEventFromId(ElectionEndMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to end'));
       return false;
@@ -212,20 +179,18 @@ export const handleElectionEndMessage =
 
     // Change election status here such that it will change the election display in the event list
     election.electionStatus = ElectionStatus.TERMINATED;
-    dispatch(updateEvent(lao.id, election.toState()));
+    dispatch(updateEvent(msg.laoId, election.toState()));
     return true;
   };
 
 /**
  * Returns a function that handles an ElectionResult message by updating the election's state with its results.
  *
- * @param getCurrentLao - A function returning the current lao
  * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleElectionResultMessage =
   (
-    getCurrentLao: EvotingConfiguration['getCurrentLao'],
     getEventFromId: EvotingConfiguration['getEventFromId'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
@@ -237,20 +202,16 @@ export const handleElectionResultMessage =
       console.warn('handleElectionResultMessage was called to process an unsupported message', msg);
       return false;
     }
+
     const makeErr = (err: string) => `election/Result was not processed: ${err}`;
-    const storeState = getStore().getState();
-    const lao = getCurrentLao(storeState);
-    if (!lao) {
-      console.warn(makeErr(STRINGS.no_active_lao));
-      return false;
-    }
+
     if (!msg.channel) {
       console.warn(makeErr('No channel found in message'));
       return false;
     }
     const electionId = getLastPartOfChannel(msg.channel);
     const ElectionResultMsg = msg.messageData as ElectionResult;
-    const election = getEventFromId(storeState, electionId) as Election;
+    const election = getEventFromId(electionId) as Election;
     if (!election) {
       console.warn(makeErr('No active election for the result'));
       return false;
@@ -262,7 +223,6 @@ export const handleElectionResultMessage =
     }));
 
     election.electionStatus = ElectionStatus.RESULT;
-    dispatch(updateEvent(lao.id, election.toState()));
-    console.log('received election Result message: ', ElectionResultMsg);
+    dispatch(updateEvent(msg.laoId, election.toState()));
     return true;
   };
