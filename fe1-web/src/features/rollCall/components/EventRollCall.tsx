@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications';
 
 import { QRCode, WideButtonView } from 'core/components';
 import { makeEventGetter } from 'features/events/reducer';
@@ -12,6 +13,7 @@ import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
+import { FOUR_SECONDS } from '../../../resources/const';
 
 /**
  * Component used to display a RollCall event in the LAO event list
@@ -23,6 +25,7 @@ const EventRollCall = (props: IPropTypes) => {
   const lao = useSelector(laoSelect);
   // FIXME: use a more specific navigation
   const navigation = useNavigation<any>();
+  const toast = useToast();
 
   const rollCallSelect = useMemo(() => makeEventGetter(lao?.id, event?.id), [lao, event]);
   const rollCall = useSelector(rollCallSelect) as RollCall | undefined;
@@ -48,28 +51,38 @@ const EventRollCall = (props: IPropTypes) => {
     return null;
   }
 
-  const onOpenRollCall = (reopen: boolean) => {
-    if (reopen) {
-      if (!event.idAlias) {
-        console.debug(
-          'Unable to send roll call re-open request, the event does not have an idAlias',
-        );
-        return;
-      }
-      requestReopenRollCall(event.idAlias).catch((e) =>
-        console.debug('Unable to send Roll call re-open request', e),
-      );
-    } else {
-      requestOpenRollCall(event.id).catch((e) =>
-        console.debug('Unable to send Roll call open request', e),
-      );
+  const makeToastErr = (error: string) => {
+    toast.show(error, {
+      type: 'danger',
+      placement: 'bottom',
+      duration: FOUR_SECONDS,
+    });
+  };
+
+  const onOpenRollCall = () => {
+    requestOpenRollCall(event.id).catch((e) => {
+      makeToastErr('Unable to send roll call open request');
+      console.debug('Unable to send Roll call open request', e);
+    });
+  };
+
+  const onReopenRollCall = () => {
+    if (!event.idAlias) {
+      makeToastErr('Unable to send roll call re-open request, the event does not have an idAlias');
+      console.debug('Unable to send roll call re-open request, the event does not have an idAlias');
+      return;
     }
+    requestReopenRollCall(event.idAlias).catch((e) => {
+      makeToastErr('Unable to send Roll call re-open request');
+      console.debug('Unable to send Roll call re-open request', e);
+    });
   };
 
   // Scanning attendees should be available only when the Roll Call is in state opened or reopened => idAlias is defined
   const onScanAttendees = () => {
     if (!event.idAlias) {
-      console.error('Unable to scan attendees, the event does not have an idAlias');
+      makeToastErr('Unable to scan attendees, the event does not have an idAlias');
+      console.debug('Unable to scan attendees, the event does not have an idAlias');
       return;
     }
     navigation.navigate(STRINGS.roll_call_open, {
@@ -85,10 +98,7 @@ const EventRollCall = (props: IPropTypes) => {
             <Text>Not Open yet</Text>
             <Text>Be sure to have set up your Wallet</Text>
             {isOrganizer && (
-              <WideButtonView
-                title={STRINGS.roll_call_open}
-                onPress={() => onOpenRollCall(false)}
-              />
+              <WideButtonView title={STRINGS.roll_call_open} onPress={() => onOpenRollCall()} />
             )}
           </>
         );
@@ -119,10 +129,7 @@ const EventRollCall = (props: IPropTypes) => {
               <Text key={attendee.valueOf()}>{attendee}</Text>
             ))}
             {isOrganizer && (
-              <WideButtonView
-                title={STRINGS.roll_call_reopen}
-                onPress={() => onOpenRollCall(true)}
-              />
+              <WideButtonView title={STRINGS.roll_call_reopen} onPress={() => onReopenRollCall()} />
             )}
           </>
         );
