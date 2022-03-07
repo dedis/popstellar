@@ -2,7 +2,14 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 
 import { EventTags, Hash, Timestamp } from 'core/objects';
-import { mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
+import {
+  mockLao,
+  mockLaoId,
+  mockLaoIdHash,
+  mockLaoName,
+  mockMessageRegistry,
+  mockReduxAction,
+} from '__tests__/utils';
 import STRINGS from 'resources/strings';
 import {
   Election,
@@ -143,7 +150,15 @@ const undefinedElection = new Election({
 const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 beforeAll(() => {
-  configure({ addEvent: () => undefined });
+  configure({
+    getCurrentLao: () => mockLao,
+    getCurrentLaoId: () => mockLaoIdHash,
+    addEvent: () => mockReduxAction,
+    updateEvent: () => mockReduxAction,
+    getEventFromId: () => undefined,
+    messageRegistry: mockMessageRegistry,
+    onConfirmEventCreation: () => undefined,
+  });
 });
 afterEach(() => {
   warn.mockClear();
