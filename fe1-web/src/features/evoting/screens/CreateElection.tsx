@@ -97,7 +97,6 @@ const CreateElection = ({ route }: any) => {
   const buttonsVisibility: boolean = electionName !== '' && !getQuestionObjects().some(isInvalid);
 
   const createElection = () => {
-    console.log(getQuestionObjects());
     requestCreateElection(
       electionName,
       STRINGS.election_version_identifier,

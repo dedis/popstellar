@@ -3,12 +3,14 @@ import { channelFromIds, getLastPartOfChannel } from 'core/objects';
 import { subscribeToChannel } from 'core/network';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { makeCurrentLao, selectCurrentLaoId } from 'features/lao/reducer';
 import { dispatch, getStore } from 'core/redux';
 import { KeyPairStore } from 'core/keypair';
 
+import STRINGS from 'resources/strings';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, RegisteredVote } from '../objects';
+import { OpenElection } from './messages/OpenElection';
 
 /**
  * Handles all election related messages coming from the network.
@@ -35,7 +37,7 @@ export function handleElectionSetupMessage(msg: ProcessableMessage): boolean {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
 
@@ -51,6 +53,7 @@ export function handleElectionSetupMessage(msg: ProcessableMessage): boolean {
     start: elecMsg.start_time,
     end: elecMsg.end_time,
     questions: elecMsg.questions,
+    electionStatus: ElectionStatus.NOT_STARTED,
     registeredVotes: [],
   });
 
@@ -61,6 +64,41 @@ export function handleElectionSetupMessage(msg: ProcessableMessage): boolean {
   });
 
   dispatch(addEvent(lao.id, election.toState()));
+  return true;
+}
+
+/**
+ * Handles an ElectionOpen message by opening the election.
+ *
+ * @param msg - The extended message for opening an election
+ */
+export function handleElectionOpenMessage(msg: ProcessableMessage) {
+  console.log('Handling Election open message');
+  if (
+    msg.messageData.object !== ObjectType.ELECTION ||
+    msg.messageData.action !== ActionType.OPEN
+  ) {
+    console.warn('handleElectionOpenMessage was called to process an unsupported message', msg);
+    return false;
+  }
+  const makeErr = (err: string) => `election/open was not processed: ${err}`;
+  const storeState = getStore().getState();
+  const laoId = selectCurrentLaoId(storeState);
+  if (!laoId) {
+    console.warn(makeErr(STRINGS.no_active_lao));
+    return false;
+  }
+
+  const ElectionOpenMsg = msg.messageData as OpenElection;
+  const election = getEventFromId(storeState, ElectionOpenMsg.election) as Election;
+  if (!election) {
+    console.warn(makeErr('No active election to end'));
+    return false;
+  }
+
+  // Change election status here such that it will change the election display in the event list
+  election.electionStatus = ElectionStatus.OPENED;
+  dispatch(updateEvent(msg.laoId, election.toState()));
   return true;
 }
 
@@ -81,7 +119,7 @@ export function handleCastVoteMessage(msg: ProcessableMessage): boolean {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
   const myPublicKey = KeyPairStore.getPublicKey();
@@ -134,7 +172,7 @@ export function handleElectionEndMessage(msg: ProcessableMessage) {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
   const ElectionEndMsg = msg.messageData as EndElection;
@@ -167,7 +205,7 @@ export function handleElectionResultMessage(msg: ProcessableMessage) {
   const storeState = getStore().getState();
   const lao = getCurrentLao(storeState);
   if (!lao) {
-    console.warn(makeErr('no LAO is currently active'));
+    console.warn(makeErr(STRINGS.no_active_lao));
     return false;
   }
   if (!msg.channel) {
@@ -182,7 +220,11 @@ export function handleElectionResultMessage(msg: ProcessableMessage) {
     return false;
   }
 
-  election.questionResult = ElectionResultMsg.questions;
+  election.questionResult = ElectionResultMsg.questions.map((q) => ({
+    id: q.id,
+    result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
+  }));
+
   election.electionStatus = ElectionStatus.RESULT;
   dispatch(updateEvent(lao.id, election.toState()));
   console.log('received election Result message: ', ElectionResultMsg);

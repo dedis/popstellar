@@ -8,6 +8,7 @@ import dataOpenRollCall from 'protocol/query/method/message/data/dataOpenRollCal
 import dataCloseRollCall from 'protocol/query/method/message/data/dataCloseRollCall.json';
 import dataWitnessMessage from 'protocol/query/method/message/data/dataWitnessMessage.json';
 import dataSetupElection from 'protocol/query/method/message/data/dataSetupElection.json';
+import dataOpenElection from 'protocol/query/method/message/data/dataOpenElection.json';
 import dataCastVote from 'protocol/query/method/message/data/dataCastVote.json';
 import dataEndElection from 'protocol/query/method/message/data/dataEndElection.json';
 import dataResultElection from 'protocol/query/method/message/data/dataResultElection.json';
@@ -30,6 +31,7 @@ const dataSchemas = [
   dataCloseRollCall,
 
   dataSetupElection,
+  dataOpenElection,
   dataCastVote,
   dataEndElection,
   dataResultElection,
