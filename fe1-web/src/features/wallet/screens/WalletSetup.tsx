@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,6 +7,7 @@ import STRINGS from 'resources/strings';
 import { TextBlock, WideButtonView } from 'core/components';
 
 import { WalletStore } from '../store';
+import { useIsFocused } from "@react-navigation/core";
 
 const styles = StyleSheet.create({
   smallPadding: {
@@ -23,10 +24,17 @@ const styles = StyleSheet.create({
 const WalletSetup = () => {
   // FIXME: Navigation should use a defined type here (instead of any)
   const navigation = useNavigation<any>();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (WalletStore.hasSeed() && isFocused) {
+      navigation.navigate(STRINGS.navigation_wallet_home_tab);
+    }
+  }, [isFocused, navigation]);
 
   function importSeed() {
     if (WalletStore.hasSeed()) {
-      navigation.navigate(STRINGS.navigation_wallet_synced);
+      navigation.navigate(STRINGS.navigation_wallet_home_tab);
     } else {
       navigation.navigate(STRINGS.navigation_wallet_insert_seed);
     }

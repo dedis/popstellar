@@ -47,6 +47,8 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     Wallet.recoverWalletPoPTokens()
       .then((kp) => {
         setTokensByLao(kp);
+        setTokensByLao(kp);
+        console.debug(kp);
       })
       .catch((err) => console.debug(err));
   }, [rollCalls]);
@@ -91,6 +93,12 @@ const WalletHome = ({ navigation }: IPropTypes) => {
 
   function displayTokens() {
     if (!tokensByLao || !hasTokens(tokensByLao)) {
+      if (tokensByLao) {
+        Object.values(tokensByLao).forEach((tokens) => {
+          console.log(tokens);
+        });
+        console.log('NOOOOOOO');
+      }
       return displayNoTokens;
     }
 
