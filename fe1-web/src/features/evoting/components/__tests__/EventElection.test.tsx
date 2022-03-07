@@ -18,7 +18,7 @@ import {
   QuestionResult,
   RegisteredVote,
 } from 'features/evoting/objects';
-import { configure, EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
 import FeatureContext from 'core/contexts/FeatureContext';
 import EventElection from '../EventElection';
 
