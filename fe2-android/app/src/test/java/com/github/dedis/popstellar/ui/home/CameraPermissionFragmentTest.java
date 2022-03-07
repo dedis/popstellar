@@ -70,6 +70,11 @@ public class CameraPermissionFragmentTest {
     assertFalse("A response was received when none was expected", receiver.received());
   }
 
+  @Test
+  public void openAddWitnessSetsWitnessOnLAO(){
+
+  }
+
   /** Permission request will be allowed after this call */
   private void setupAllowPermission() {
     mockRegistry.setResultProvider(r -> true);
