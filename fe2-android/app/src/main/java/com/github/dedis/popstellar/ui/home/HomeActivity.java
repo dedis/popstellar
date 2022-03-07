@@ -117,8 +117,6 @@ public class HomeActivity extends AppCompatActivity {
                   case  REQUEST_CAMERA_PERMISSION:
                     setupCameraPermissionFragment();
                     break;
-                  default:
-                    throw new IllegalStateException("You should be only be allowed to scan or request camera permission");
                 }
               }
             });

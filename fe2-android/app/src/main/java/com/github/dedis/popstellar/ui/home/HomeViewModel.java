@@ -47,10 +47,8 @@ public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
-//  public static final String SCAN = "SCAN";
-//  public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
 
-  public static enum HOMEVIEWACTION {SCAN, REQUEST_CAMERA_PERMISSION}
+  public enum HOMEVIEWACTION {SCAN, REQUEST_CAMERA_PERMISSION}
 
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
