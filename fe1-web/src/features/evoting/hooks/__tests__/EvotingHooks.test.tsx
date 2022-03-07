@@ -1,12 +1,15 @@
+import React from 'react';
 import { describe } from '@jest/globals';
-import { configure } from 'features/evoting';
+import FeatureContext from 'core/contexts/FeatureContext';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
 import { mockLao, mockLaoIdHash, mockMessageRegistry, mockReduxAction } from '__tests__/utils';
+import { renderHook } from '@testing-library/react-hooks';
 import { EvotingHooks } from '../index';
 
 const onConfirmEventCreation = jest.fn();
 
-beforeAll(() => {
-  configure({
+const contextValue = {
+  [EVOTING_FEATURE_IDENTIFIER]: {
     getCurrentLao: () => mockLao,
     getCurrentLaoId: () => mockLaoIdHash,
     addEvent: () => mockReduxAction,
@@ -14,25 +17,32 @@ beforeAll(() => {
     getEventFromId: () => undefined,
     messageRegistry: mockMessageRegistry,
     onConfirmEventCreation,
-  });
-});
+  },
+};
+
+const wrapper = ({ children }: { children: React.ReactChildren }) => (
+  <FeatureContext.Provider value={contextValue}>{children}</FeatureContext.Provider>
+);
 
 describe('E-Voting hooks', () => {
   describe('EvotingHooks.useCurrentLao', () => {
     it('should return the current lao', () => {
-      expect(EvotingHooks.useCurrentLao()).toEqual(mockLao);
+      const { result } = renderHook(() => EvotingHooks.useCurrentLao(), { wrapper });
+      expect(result.current).toEqual(mockLao);
     });
   });
 
   describe('EvotingHooks.useCurrentLaoId', () => {
     it('should return the current lao id', () => {
-      expect(EvotingHooks.useCurrentLaoId()).toEqual(mockLaoIdHash);
+      const { result } = renderHook(() => EvotingHooks.useCurrentLaoId(), { wrapper });
+      expect(result.current).toEqual(mockLaoIdHash);
     });
   });
 
   describe('EvotingHooks.useOnConfirmEventCreation', () => {
     it('should return the onConfirmEventCreation config option', () => {
-      expect(EvotingHooks.useOnConfirmEventCreation()).toEqual(onConfirmEventCreation);
+      const { result } = renderHook(() => EvotingHooks.useOnConfirmEventCreation(), { wrapper });
+      expect(result.current).toEqual(onConfirmEventCreation);
     });
   });
 });
