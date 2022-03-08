@@ -13,6 +13,7 @@ import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';
 import { RollCall } from 'features/rollCall/objects';
 
+import { useMockWalletState } from '../objects/__mocks__/mockWallet';
 import * as Wallet from '../objects';
 
 const styles = StyleSheet.create({
@@ -39,16 +40,17 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   const [showTokens, setShowTokens] = useState(false);
   const [showQRPublicKey, setShowQRPublicKey] = useState(false);
   const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
+  const [isDebug, setIsDebug] = useState(false);
 
   const rollCalls = useSelector(rollCallSelector);
   const laos = useSelector(laoSelector);
+
+  const mock = useMockWalletState();
 
   useEffect(() => {
     Wallet.recoverWalletPoPTokens()
       .then((kp) => {
         setTokensByLao(kp);
-        setTokensByLao(kp);
-        console.debug(kp);
       })
       .catch((err) => console.debug(err));
   }, [rollCalls]);
@@ -145,6 +147,15 @@ const WalletHome = ({ navigation }: IPropTypes) => {
         onPress={() => {
           Wallet.forget();
           navigation.navigate(STRINGS.navigation_wallet_setup_tab);
+        }}
+      />
+      <WideButtonView
+        title={isDebug ? 'Set debug mode off' : 'Set debug mode on'}
+        onPress={() => {
+          setIsDebug(!isDebug);
+          if (isDebug) mock.clearMock();
+          else mock.useMock();
+          console.debug('Debug mode is '.concat(isDebug ? 'off' : 'on'));
         }}
       />
     </View>
