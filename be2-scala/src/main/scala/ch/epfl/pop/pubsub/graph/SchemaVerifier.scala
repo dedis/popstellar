@@ -38,11 +38,9 @@ object SchemaVerifier {
   }
 
   private def verifySchema(schema: JsonSchema, jsonString: JsonString): Try[Unit] = {
-    // creation of a JsonNode containing the information from the input JSON string
     try {
-      //in case of invalid JsonString, we catch the exception thrown by the parser and answer with an error
-      val test = jsonString.parseJson
-
+      //in case of invalid JsonString, we catch the exception thrown by the readTree and answer with an error
+      // creation of a JsonNode containing the information from the input JSON string
       val jsonNode: JsonNode = objectMapper.readTree(jsonString)
       // validation of the input, the result is a set of errors (if no errors, the set is empty)
       // Note: the library is written in Java, thus we convert the Java Set<T> into a Scala Set[T]
@@ -52,7 +50,7 @@ object SchemaVerifier {
         case _ => Failure(new ProtocolException(errors.mkString("; "))) // concatenate all schema validation errors into one
       }
     } catch {
-      case e: Exception => Failure(new ProtocolException("invalid object detected, JSON object expected"))
+      case e: Exception => Failure(new ProtocolException("Invalid object detected, JSON object expected."))
     }
   }
 
