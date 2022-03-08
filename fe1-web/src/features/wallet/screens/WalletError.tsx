@@ -21,8 +21,8 @@ const WalletError = ({ navigation }: IPropTypes) => (
     <TextBlock text={STRINGS.wallet_error} />
     <View style={styles.largePadding} />
     <WideButtonView
-      title={STRINGS.back_to_wallet_setup}
-      onPress={() => navigation.navigate(STRINGS.navigation_wallet_setup_tab)}
+      title={STRINGS.back_to_wallet_home}
+      onPress={() => navigation.navigate(STRINGS.navigation_home_tab_wallet)}
     />
   </View>
 );
