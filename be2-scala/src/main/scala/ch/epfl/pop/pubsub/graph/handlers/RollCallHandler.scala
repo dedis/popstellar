@@ -46,37 +46,36 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
     rpcRequest.getParamsMessage match {
       case Some(message: Message) =>
         val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
-        // we are using the lao id instead of the message_id at lao creation
+        // we are using the rollcall id instead of the message_id at rollcall creation
         val rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
         val combined = for {
-          // check whether the lao already exists in db
+          // check whether the rollcall already exists in db
           _ <- {
             (dbActor ? DbActor.ChannelExists(rollCallChannel)).transformWith {
               case Success(_) => Future {
-                throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "lao already exists in db")
+                throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollcall already exists in db")
               }
               case _ => Future {
                 ()
               }
             }
           }
-          // create lao channels
+          // create rollcall channel
           _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
-          // write lao creation message
+          // write rollcall creation message
           _ <- dbActor ? DbActor.Write(rollCallChannel, message)
-          // write lao data
-          _ <- dbActor ? DbActor.WriteLaoData(rollCallChannel, message)
+          // write rollcall data
         } yield ()
 
         Await.ready(combined, duration).value.get match {
           case Success(_) => Left(rpcRequest)
-          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateLao failed : ${ex.message}", rpcRequest.getId))
-          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateLao failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateRollCall failed : ${ex.message}", rpcRequest.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
         }
 
       case _ => Right(PipelineError(
         ErrorCodes.SERVER_ERROR.id,
-        s"Unable to handle lao message $rpcRequest. Not a Publish/Broadcast message",
+        s"Unable to handle rollcall message $rpcRequest. Not a Publish/Broadcast message",
         rpcRequest.id
       ))
     }
