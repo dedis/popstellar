@@ -1,4 +1,5 @@
 import { Hash, Timestamp } from 'core/objects';
+
 import { EvotingFeature } from './Feature';
 
 /**

@@ -1,18 +1,17 @@
+import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
+import { Spacing, Typography } from 'core/styles';
+import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
-import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
-
-import { Spacing, Typography } from 'core/styles';
-import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
-import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
+import { EvotingHooks } from '../hooks';
 import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
-import { EvotingHooks } from '../hooks';
 
 /**
  * Component used to display a Election event in the LAO event list

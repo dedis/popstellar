@@ -1,19 +1,18 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import QrReader from 'react-qr-reader';
-import { Badge } from 'react-native-elements';
-import { useRoute, useNavigation } from '@react-navigation/core';
-import { useToast } from 'react-native-toast-notifications';
-import { useSelector } from 'react-redux';
-
-import { Spacing } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
+import { useNavigation, useRoute } from '@react-navigation/core';
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { EventTags, Hash, PublicKey } from 'core/objects';
+import { Spacing } from 'core/styles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { makeCurrentLao } from 'features/lao/reducer';
-import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
+import React, { useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { Badge } from 'react-native-elements';
+import { useToast } from 'react-native-toast-notifications';
+import QrReader from 'react-qr-reader';
+import { useSelector } from 'react-redux';
+import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
 import { requestCloseRollCall } from '../network';
 

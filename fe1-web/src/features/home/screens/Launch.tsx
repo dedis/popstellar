@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
-
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
-import { requestCreateLao } from 'features/lao/network';
-import STRINGS from 'resources/strings';
-import PROPS_TYPE from 'resources/Props';
-
+import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
+import { KeyPairStore } from 'core/keypair';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel, Hash, Timestamp } from 'core/objects';
-import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { KeyPairStore } from 'core/keypair';
 import { dispatch } from 'core/redux';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { requestCreateLao } from 'features/lao/network';
+import { Lao } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 /**
  * Manages the Launch screen, where the user enters a name and an address to launch and connect

@@ -1,8 +1,9 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { configureNetwork } from './network';
+
 import { PublicComponents } from './components';
 import * as hooks from './hooks';
 import * as navigation from './navigation';
+import { configureNetwork } from './network';
 import { laoReducer } from './reducer';
 
 /**

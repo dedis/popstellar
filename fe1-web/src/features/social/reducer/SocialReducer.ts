@@ -4,7 +4,6 @@
  */
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { getLaosState } from 'features/lao/reducer/LaoReducer';
 

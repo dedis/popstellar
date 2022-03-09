@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useToast } from 'react-native-toast-notifications';
-
+import { ProfileIcon, WideButtonView } from 'core/components';
+import { subscribeToChannel } from 'core/network';
 import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
 import { gray } from 'core/styles/colors';
-import STRINGS from 'resources/strings';
-import { subscribeToChannel } from 'core/network';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'resources/const';
-import { ProfileIcon, WideButtonView } from 'core/components';
+import STRINGS from 'resources/strings';
 
 /**
  * Component that shows a user's profile picture, his public key and two buttons:

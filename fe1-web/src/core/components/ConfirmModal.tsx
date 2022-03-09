@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { View, Modal, Text } from 'react-native';
-
+import React, { useState } from 'react';
+import { Modal, Text, View } from 'react-native';
 import STRINGS from 'resources/strings';
 
 import modalStyles from '../styles/stylesheets/modalStyles';
-import WideButtonView from './WideButtonView';
 import TextInputLine from './TextInputLine';
+import WideButtonView from './WideButtonView';
 
 /**
  * A modal used to ask for the confirmation or cancellation of the user.

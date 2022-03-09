@@ -1,12 +1,11 @@
-import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
-import { useSelector } from 'react-redux';
-
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+import React from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { useSelector } from 'react-redux';
 
-import { makeLaosList } from '../reducer';
 import { Lao } from '../objects';
+import { makeLaosList } from '../reducer';
 import LaoItem from './LaoItem';
 
 const styles = StyleSheet.create({

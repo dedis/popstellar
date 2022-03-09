@@ -1,7 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-
 import { ParagraphBlock, TimeDisplay } from 'core/components';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import { Meeting } from '../objects';
 

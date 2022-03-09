@@ -3,11 +3,10 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
-
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash, PublicKey } from 'core/objects';
-import { RollCall } from 'features/rollCall/objects';
 import { getLaosState } from 'features/lao/reducer/LaoReducer';
+import { RollCall } from 'features/rollCall/objects';
 
 import { eventFromState, LaoEvent, LaoEventState } from '../objects';
 

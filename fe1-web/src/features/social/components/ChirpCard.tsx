@@ -1,18 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import { StyleSheet, ViewStyle, View, TextStyle, Text, Pressable } from 'react-native';
-import PropTypes from 'prop-types';
-import TimeAgo from 'react-timeago';
 import { Ionicons } from '@expo/vector-icons';
+import { ConfirmModal, ProfileIcon } from 'core/components';
+import { PublicKey } from 'core/objects';
+import { gray } from 'core/styles/colors';
+import PropTypes from 'prop-types';
+import React, { useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
-
-import { PublicKey } from 'core/objects';
+import TimeAgo from 'react-timeago';
 import STRINGS from 'resources/strings';
-import { gray } from 'core/styles/colors';
-import { ConfirmModal, ProfileIcon } from 'core/components';
 
-import { Chirp } from '../objects';
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';
+import { Chirp } from '../objects';
 import { makeReactionsList } from '../reducer';
 
 /**

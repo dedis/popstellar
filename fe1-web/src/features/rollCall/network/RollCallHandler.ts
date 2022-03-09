@@ -1,14 +1,14 @@
+import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'core/redux';
-import { subscribeToChannel } from 'core/network';
-import { addEvent, updateEvent } from 'features/events/reducer';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
-import * as Wallet from 'features/wallet/objects';
+import { addEvent, updateEvent } from 'features/events/reducer';
 import { makeCurrentLao, setLaoLastRollCall } from 'features/lao/reducer';
+import * as Wallet from 'features/wallet/objects';
 
-import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
 import { RollCall, RollCallStatus } from '../objects';
+import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
 
 /**
  * Handles all incoming roll call messages.

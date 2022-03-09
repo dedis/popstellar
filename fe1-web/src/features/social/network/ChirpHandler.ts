@@ -1,10 +1,10 @@
-import { ProcessableMessage, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'core/redux';
 import { makeCurrentLao } from 'features/lao/reducer';
 
 import { Chirp } from '../objects';
-import { AddChirp, DeleteChirp } from './messages/chirp';
 import { addChirp, deleteChirp } from '../reducer';
+import { AddChirp, DeleteChirp } from './messages/chirp';
 
 /**
  * Handler for social media chirp

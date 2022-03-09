@@ -1,9 +1,7 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-
-import STRINGS from 'resources/strings';
-
 import { ConnectConfirm, ConnectEnableCamera, ConnectOpenScan } from 'features/connect/screens';
+import React from 'react';
+import STRINGS from 'resources/strings';
 
 /**
  * Define the connect panel stack navigation

@@ -1,11 +1,9 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { mockLaoIdHash, mockLaoName, configureTestFeatures } from '__tests__/utils';
 
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { configureTestFeatures, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import STRINGS from 'resources/strings';
-
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 import {
   mockBallotOptions,
@@ -15,6 +13,8 @@ import {
   mockQuestionObject2,
   mockQuestions,
 } from 'features/evoting/objects/__tests__/utils';
+import STRINGS from 'resources/strings';
+
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 

@@ -1,6 +1,5 @@
-import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
-
 import { gray } from 'core/styles/colors';
+import { StyleSheet, TextStyle, ViewStyle } from 'react-native';
 
 const socialMediaProfileStyles = StyleSheet.create({
   viewCenter: {

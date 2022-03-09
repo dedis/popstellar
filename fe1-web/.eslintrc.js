@@ -27,6 +27,7 @@ module.exports = {
 
   plugins: [
     'import',
+    'simple-import-sort'
   ],
 
   settings: {
@@ -57,6 +58,10 @@ module.exports = {
           '**/__mocks__/**/*',
           'jest/**/*.js'
       ]}],
+
+    // automatically sort imports with --fix. unfortunately eslint does not support this out of the box
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
 
     // allow JSX code only in files with the correct extensions
     'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],

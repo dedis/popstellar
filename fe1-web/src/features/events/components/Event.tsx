@@ -1,18 +1,17 @@
-import React, { useMemo } from 'react';
-import { View } from 'react-native';
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-
-import { makeIsLaoOrganizer } from 'features/lao/reducer';
-import { Spacing } from 'core/styles';
 import { ParagraphBlock, TextBlock } from 'core/components';
 import { Hash, Timestamp } from 'core/objects';
-import { EventMeeting } from 'features/meeting/components';
+import { Spacing } from 'core/styles';
 import { EventElection } from 'features/evoting/components';
-import { EventRollCall } from 'features/rollCall/components';
-import { Meeting } from 'features/meeting/objects';
 import { Election } from 'features/evoting/objects';
+import { makeIsLaoOrganizer } from 'features/lao/reducer';
+import { EventMeeting } from 'features/meeting/components';
+import { Meeting } from 'features/meeting/objects';
+import { EventRollCall } from 'features/rollCall/components';
 import { RollCall } from 'features/rollCall/objects';
+import PropTypes from 'prop-types';
+import React, { useMemo } from 'react';
+import { View } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import eventViewStyles from '../styles/eventViewStyles';
 

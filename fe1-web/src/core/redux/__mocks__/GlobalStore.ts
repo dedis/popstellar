@@ -1,7 +1,6 @@
-import { applyMiddleware, Store, createStore, combineReducers } from 'redux';
-import thunkMiddleware from 'redux-thunk';
-
 import { walletReducer } from 'features/wallet/reducer';
+import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
+import thunkMiddleware from 'redux-thunk';
 
 const reducers = combineReducers({
   ...walletReducer,

@@ -1,7 +1,6 @@
-import React from 'react';
-import { fireEvent, render } from '@testing-library/react-native';
-
 import { mockNavigate } from '__mocks__/useNavigationMock';
+import { fireEvent, render } from '@testing-library/react-native';
+import React from 'react';
 
 import BackButton from '../BackButton';
 

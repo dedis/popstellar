@@ -1,17 +1,16 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
-
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
 import { CopiableTextInput, QRCode, TextBlock, WideButtonView } from 'core/components';
 import { PopToken } from 'core/objects';
-import PROPS_TYPE from 'resources/Props';
-import { makeLaosMap } from 'features/lao/reducer';
-import { makeEventByTypeSelector } from 'features/events/reducer';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { LaoEventType } from 'features/events/objects';
+import { makeEventByTypeSelector } from 'features/events/reducer';
+import { makeLaosMap } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
+import PropTypes from 'prop-types';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
+import { useSelector } from 'react-redux';
+import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
 

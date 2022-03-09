@@ -1,2 +1,2 @@
-export * from './TestUtils';
 export * from './TestFeatures';
+export * from './TestUtils';

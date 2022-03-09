@@ -1,10 +1,9 @@
+import { useNavigation } from '@react-navigation/native';
+import { TextBlock, WideButtonView } from 'core/components';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import { TextBlock, WideButtonView } from 'core/components';
 
 import { WalletStore } from '../store';
 

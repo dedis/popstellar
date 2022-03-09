@@ -1,11 +1,11 @@
+import { KeyPairStore } from 'core/keypair';
+import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { channelFromIds, getLastPartOfChannel } from 'core/objects';
-import { subscribeToChannel } from 'core/network';
 import { dispatch } from 'core/redux';
-import { KeyPairStore } from 'core/keypair';
 
-import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { Election, ElectionStatus, EvotingConfiguration, RegisteredVote } from '../objects';
+import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { OpenElection } from './messages/OpenElection';
 
 /**

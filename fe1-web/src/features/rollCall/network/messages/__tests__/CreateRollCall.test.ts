@@ -1,9 +1,9 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
 
+import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 
 import { CreateRollCall } from '../CreateRollCall';

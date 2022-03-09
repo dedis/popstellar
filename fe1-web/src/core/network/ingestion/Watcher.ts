@@ -1,7 +1,8 @@
 import { Store } from 'redux';
+
 import { MessageRegistry } from '../jsonrpc/messages';
 import { ExtendedMessage } from './ExtendedMessage';
-import { processMessages, getMessagesState } from './MessageReducer';
+import { getMessagesState, processMessages } from './MessageReducer';
 
 export function makeMessageStoreWatcher(store: Store, messageRegistry: MessageRegistry) {
   let previousValue: string[] | undefined;

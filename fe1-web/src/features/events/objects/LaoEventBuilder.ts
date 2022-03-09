@@ -1,5 +1,5 @@
-import { Meeting, MeetingState } from 'features/meeting/objects';
 import { Election, ElectionState } from 'features/evoting/objects';
+import { Meeting, MeetingState } from 'features/meeting/objects';
 import { RollCall, RollCallState } from 'features/rollCall/objects';
 
 import { LaoEvent, LaoEventState, LaoEventType } from './LaoEvent';

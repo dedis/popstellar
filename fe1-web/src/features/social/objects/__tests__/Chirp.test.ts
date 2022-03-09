@@ -1,6 +1,6 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
+
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { Chirp, ChirpState } from '../Chirp';

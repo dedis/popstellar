@@ -1,7 +1,5 @@
 import 'jest-extended';
 
-import STRINGS from 'resources/strings';
-import { Meeting, MeetingState } from 'features/meeting/objects';
 import {
   Election,
   ElectionState,
@@ -9,7 +7,9 @@ import {
   Question,
   RegisteredVote,
 } from 'features/evoting/objects';
+import { Meeting, MeetingState } from 'features/meeting/objects';
 import { RollCall, RollCallState, RollCallStatus } from 'features/rollCall/objects';
+import STRINGS from 'resources/strings';
 
 import { LaoEventState, LaoEventType } from '../LaoEvent';
 import { eventFromState } from '../LaoEventBuilder';

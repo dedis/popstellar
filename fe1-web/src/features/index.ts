@@ -2,8 +2,8 @@ import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash } from 'core/objects';
 import { addReducers, getStore } from 'core/redux';
-import STRINGS from '../resources/strings';
 
+import STRINGS from '../resources/strings';
 import * as events from './events';
 import { getEventFromId as getEventFromIdUnbound } from './events/network/EventHandlerUtils';
 import { addEvent, updateEvent } from './events/reducer';

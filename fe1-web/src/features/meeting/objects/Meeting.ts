@@ -1,5 +1,5 @@
-import { LaoEventState } from 'features/events/objects/LaoEvent';
 import { Hash, Timestamp } from 'core/objects';
+import { LaoEventState } from 'features/events/objects/LaoEvent';
 
 /**
  * Object to represent a meeting.

@@ -1,6 +1,5 @@
-import { StyleSheet } from 'react-native';
-
 import { Spacing } from 'core/styles';
+import { StyleSheet } from 'react-native';
 
 const eventViewStyles = StyleSheet.create({
   default: {

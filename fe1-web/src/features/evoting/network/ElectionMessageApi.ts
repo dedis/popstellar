@@ -1,8 +1,8 @@
-import { channelFromIds, EventTags, Hash, Timestamp } from 'core/objects';
 import { publish } from 'core/network';
+import { channelFromIds, EventTags, Hash, Timestamp } from 'core/objects';
 
-import { CastVote, EndElection, SetupElection } from './messages';
 import { Election, Question, SelectedBallots } from '../objects';
+import { CastVote, EndElection, SetupElection } from './messages';
 import { OpenElection } from './messages/OpenElection';
 
 /**

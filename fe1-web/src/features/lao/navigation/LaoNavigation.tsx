@@ -1,15 +1,14 @@
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { getKeyPairState } from 'core/keypair';
+import { PublicKey } from 'core/objects';
+import { getStore } from 'core/redux';
+import { Home } from 'features/home/screens';
+import { SocialMediaNavigation } from 'features/social/navigation';
+import { WalletNavigation } from 'features/wallet/navigation';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
-import { getKeyPairState } from 'core/keypair';
-import { getStore } from 'core/redux';
-import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
-import { SocialMediaNavigation } from 'features/social/navigation';
-import { WalletNavigation } from 'features/wallet/navigation';
-import { Home } from 'features/home/screens';
 
 import { makeCurrentLao } from '../reducer';
 import { AttendeeScreen, Identity } from '../screens';

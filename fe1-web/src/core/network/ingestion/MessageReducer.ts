@@ -5,6 +5,7 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Hash, WitnessSignatureState } from 'core/objects';
+
 import { ExtendedMessage, ExtendedMessageState, markMessageAsProcessed } from './ExtendedMessage';
 
 /**

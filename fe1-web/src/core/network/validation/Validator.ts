@@ -1,13 +1,13 @@
 import Ajv from 'ajv';
 import addFormats from 'ajv-formats';
-
+import answerSchema from 'core/network/validation/schemas/answerSchemas';
+import dataSchema from 'core/network/validation/schemas/dataSchemas';
+import messageSchema from 'core/network/validation/schemas/messageSchemas';
+import querySchema from 'core/network/validation/schemas/querySchemas';
 import jsonRPC from 'protocol/jsonRPC.json';
 import connectToLaoSchema from 'protocol/qrcode/connect_to_lao.json';
-import querySchema from 'core/network/validation/schemas/querySchemas';
-import messageSchema from 'core/network/validation/schemas/messageSchemas';
-import dataSchema from 'core/network/validation/schemas/dataSchemas';
-import answerSchema from 'core/network/validation/schemas/answerSchemas';
-import { ObjectType, ActionType } from '../jsonrpc/messages';
+
+import { ActionType, ObjectType } from '../jsonrpc/messages';
 
 const ajv = new Ajv({ strict: false });
 addFormats(ajv);

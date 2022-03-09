@@ -2,7 +2,6 @@ import { addMessageWitnessSignature } from 'core/network/ingestion';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Hash, WitnessSignature } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
-
 import { makeLaosMap } from 'features/lao/reducer';
 
 import { WitnessMessage } from './messages';

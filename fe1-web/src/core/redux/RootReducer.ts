@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { wrapWithClearStorageReducer } from 'core/redux/ClearStorageReducer';
 import { Reducer } from 'redux';
 import { persistCombineReducers } from 'redux-persist';
-
-import { wrapWithClearStorageReducer } from 'core/redux/ClearStorageReducer';
 
 const persistConfig = {
   key: 'root',

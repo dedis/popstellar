@@ -1,7 +1,8 @@
+import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+
 import { Election, ElectionStatus, Question, RegisteredVote, Vote } from '../Election';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021

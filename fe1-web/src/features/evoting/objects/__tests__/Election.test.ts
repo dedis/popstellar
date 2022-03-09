@@ -1,14 +1,14 @@
 import 'jest-extended';
-
 import '__tests__/utils/matchers';
-import STRINGS from 'resources/strings';
+
 import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
+import STRINGS from 'resources/strings';
 
 import {
   Election,
-  ElectionStatus,
   ELECTION_EVENT_TYPE,
+  ElectionStatus,
   Question,
   RegisteredVote,
   Vote,

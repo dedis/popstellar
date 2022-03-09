@@ -1,11 +1,10 @@
-import React from 'react';
-import { View } from 'react-native';
-import PropTypes from 'prop-types';
-
-import STRINGS from 'resources/strings';
-import PROPS_TYPE from 'resources/Props';
 import { TextBlock, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { View } from 'react-native';
+import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 /**
  * ConnectEnableCamera pane asks for the user to enable camera access in order to scan QR codes

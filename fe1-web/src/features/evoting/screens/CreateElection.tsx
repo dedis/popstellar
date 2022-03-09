@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { View, Platform, ScrollView } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
-import { useNavigation } from '@react-navigation/native';
-import { useToast } from 'react-native-toast-notifications';
 
-import STRINGS from 'resources/strings';
-import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
+import { useNavigation } from '@react-navigation/native';
 import {
   ConfirmModal,
   DatePicker,
   DismissModal,
   DropdownSelector,
+  ParagraphBlock,
   TextBlock,
   TextInputLine,
   TextInputList,
-  ParagraphBlock,
   WideButtonView,
 } from 'core/components';
-import { Hash, Timestamp, EventTags } from 'core/objects';
+import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import { EventTags, Hash, Timestamp } from 'core/objects';
+import React, { useState } from 'react';
+import { Platform, ScrollView, View } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
+import { EvotingHooks } from '../hooks';
 import { requestCreateElection } from '../network/ElectionMessageApi';
 import { Question } from '../objects';
-import { EvotingHooks } from '../hooks';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 

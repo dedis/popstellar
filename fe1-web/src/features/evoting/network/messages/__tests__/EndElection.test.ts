@@ -1,15 +1,15 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { mockLaoId, mockLaoIdHash, mockLaoName, configureTestFeatures } from '__tests__/utils';
 
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { configureTestFeatures, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 import {
   mockElectionOpened,
   mockElectionResultHash,
 } from 'features/evoting/objects/__tests__/utils';
+
 import { EndElection } from '../EndElection';
 
 // region test data initialization

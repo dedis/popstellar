@@ -1,7 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { View, Modal, Text } from 'react-native';
-
+import React from 'react';
+import { Modal, Text, View } from 'react-native';
 import STRINGS from 'resources/strings';
 
 import modalStyles from '../styles/stylesheets/modalStyles';

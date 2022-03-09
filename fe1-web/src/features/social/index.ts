@@ -1,4 +1,5 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+
 import { configureNetwork } from './network';
 import { socialReducer } from './reducer';
 

@@ -2,6 +2,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, Timestamp } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+
 import { EvotingFeature } from './Feature';
 
 export interface EvotingConfiguration {

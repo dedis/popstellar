@@ -1,9 +1,10 @@
-import React from 'react';
+import { mockLao, mockLaoIdHash, mockMessageRegistry, mockReduxAction } from '__tests__/utils';
 import { describe } from '@jest/globals';
+import { renderHook } from '@testing-library/react-hooks';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
-import { mockLao, mockLaoIdHash, mockMessageRegistry, mockReduxAction } from '__tests__/utils';
-import { renderHook } from '@testing-library/react-hooks';
+import React from 'react';
+
 import { EvotingHooks } from '../index';
 
 const onConfirmEventCreation = jest.fn();

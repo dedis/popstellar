@@ -1,10 +1,9 @@
-import React from 'react';
-import { Platform, StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
-import STRINGS from 'resources/strings';
 import { ConnectNavigation } from 'features/connect/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
+import React from 'react';
+import { Platform, StyleSheet } from 'react-native';
+import STRINGS from 'resources/strings';
 
 import { Home, Launch } from '../screens';
 

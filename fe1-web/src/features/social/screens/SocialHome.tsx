@@ -1,17 +1,16 @@
+import { TextBlock } from 'core/components';
+import { PublicKey } from 'core/objects';
+import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { useToast } from 'react-native-toast-notifications';
-
-import { TextBlock } from 'core/components';
-import STRINGS from 'resources/strings';
-import { PublicKey } from 'core/objects';
+import { useSelector } from 'react-redux';
 import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
 import { ChirpCard, TextInputChirp } from '../components';
-import { Chirp, ChirpState } from '../objects';
 import { requestAddChirp } from '../network/SocialMessageApi';
+import { Chirp, ChirpState } from '../objects';
 import { makeChirpsList } from '../reducer';
 
 /**

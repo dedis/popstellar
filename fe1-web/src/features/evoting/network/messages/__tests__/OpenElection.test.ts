@@ -1,12 +1,12 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { mockLaoIdHash, configureTestFeatures } from '__tests__/utils';
 
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { configureTestFeatures, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 import { mockElectionId } from 'features/evoting/objects/__tests__/utils';
+
 import { OpenElection } from '../OpenElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
