@@ -245,7 +245,7 @@ describe('EventElection', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/undefined/i));
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/undefined/i), expect.anything());
     });
 
     it('renders null for an attendee', () => {
@@ -258,7 +258,7 @@ describe('EventElection', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/undefined/i));
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/undefined/i), expect.anything());
     });
   });
 });
