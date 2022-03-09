@@ -43,7 +43,7 @@ The project is organized into different modules as follows
 │   ├── generalChirping # channel implementation for a universal post channel
 │   ├── lao             # channel implementation for a LAO channel
 │   ├── reaction        # channel implementation for a reaction channel
-│   └── registry        # helper for registry
+│   └── newRegistry        # helper for newRegistry
 ├── cli                 # command line interface
 ├── crypto              # defines the cryptographic suite 
 ├── db                  # persistance module

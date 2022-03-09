@@ -47,8 +47,6 @@ func Test_Chirp_Channel_Subscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
-	chirpChannel, ok := cha.(*Channel)
-	require.True(t, ok)
 
 	file := filepath.Join(relativeQueryExamplePath, "subscribe", "subscribe.json")
 	buf, err := os.ReadFile(file)
@@ -64,7 +62,7 @@ func Test_Chirp_Channel_Subscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	// Delete returns false if the socket is not present in the store
-	require.True(t, chirpChannel.sockets.Delete("socket"))
+	require.True(t, cha.sockets.Delete("socket"))
 }
 
 // Tests that the channel works correctly when it receives an unsubscribe from a
@@ -76,8 +74,6 @@ func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	cha := NewChannel(chirpChannelName, sender, fakeHub, nil, nolog)
-	chirpChannel, ok := cha.(*Channel)
-	require.True(t, ok)
 
 	file := filepath.Join(relativeQueryExamplePath, "unsubscribe", "unsubscribe.json")
 	buf, err := os.ReadFile(file)
@@ -88,13 +84,13 @@ func Test_Chirp_Channel_Unsubscribe(t *testing.T) {
 	require.NoError(t, err)
 
 	fakeSock := &fakeSocket{id: "socket", sockType: socket.ClientSocketType}
-	chirpChannel.sockets.Upsert(fakeSock)
+	cha.sockets.Upsert(fakeSock)
 
 	err = cha.Unsubscribe("socket", msg)
 	require.NoError(t, err)
 
 	// Delete returns false if the socket is not present in the store
-	require.False(t, chirpChannel.sockets.Delete("socket"))
+	require.False(t, cha.sockets.Delete("socket"))
 }
 
 // Test that the channel throws an error when it receives an unsubscribe from a
@@ -129,15 +125,11 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	generalChirpCha, ok := generalCha.(*generalChirping.Channel)
-	require.True(t, ok)
 
-	cha := NewChannel(chirpChannelName, sender, fakeHub, generalChirpCha, nolog)
-	chirpChannel, ok := cha.(*Channel)
-	require.True(t, ok)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
 
-	fakeHub.RegisterNewChannel(generalName, generalChirpCha)
-	fakeHub.RegisterNewChannel(chirpChannelName, chirpChannel)
+	fakeHub.RegisterNewChannel(generalName, generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, cha)
 
 	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
@@ -155,7 +147,7 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 		messages[i] = msg
 
 		// Store the message in the inbox
-		chirpChannel.inbox.StoreMessage(msg)
+		cha.inbox.StoreMessage(msg)
 
 		// Wait before storing a new message to be able to have an unique
 		// timestamp for each message
@@ -183,14 +175,10 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	generalChirpCha, ok := generalCha.(*generalChirping.Channel)
-	require.True(t, ok)
-	cha := NewChannel(chirpChannelName, sender, fakeHub, generalChirpCha, nolog)
-	chirpChannel, ok := cha.(*Channel)
-	require.True(t, ok)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
 
 	fakeSock := &fakeSocket{id: "fakeSock"}
-	chirpChannel.sockets.Upsert(fakeSock)
+	cha.sockets.Upsert(fakeSock)
 
 	// Create the message
 	file := filepath.Join(relativeMsgDataExamplePath, "chirp_add_publish",
@@ -222,7 +210,7 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 		},
 		Method: "broadcast",
 	}
-	msg.Params.Channel = chirpChannel.channelID
+	msg.Params.Channel = cha.channelID
 	msg.Params.Message = m
 
 	require.NoError(t, cha.Broadcast(msg, nil))
@@ -243,14 +231,10 @@ func Test_Send_Chirp(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	generalChirpCha, ok := generalCha.(*generalChirping.Channel)
-	require.True(t, ok)
-	cha := NewChannel(chirpChannelName, sender, fakeHub, generalChirpCha, nolog)
-	chirpChannel, ok := cha.(*Channel)
-	require.True(t, ok)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
 
-	fakeHub.RegisterNewChannel(generalName, generalChirpCha)
-	fakeHub.RegisterNewChannel(chirpChannelName, chirpChannel)
+	fakeHub.RegisterNewChannel(generalName, generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, cha)
 	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
 	_, found = fakeHub.channelByID[generalName]
@@ -318,14 +302,10 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	generalChirpCha, ok := generalCha.(*generalChirping.Channel)
-	require.True(t, ok)
-	cha := NewChannel(chirpChannelName, sender, fakeHub, generalChirpCha, nolog)
-	chirpChannel, ok := cha.(*Channel)
-	require.True(t, ok)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
 
-	fakeHub.RegisterNewChannel(generalName, generalChirpCha)
-	fakeHub.RegisterNewChannel(chirpChannelName, chirpChannel)
+	fakeHub.RegisterNewChannel(generalName, generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, cha)
 	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
 	_, found = fakeHub.channelByID[generalName]

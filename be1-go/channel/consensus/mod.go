@@ -96,7 +96,7 @@ type ConsensusInstance struct {
 	electInstances map[string]*ElectInstance
 }
 
-// Store the state of a consensus dependant on the elect message
+// ElectInstance stores the state of a consensus dependent on the elect message
 type ElectInstance struct {
 	timeoutChan chan string
 

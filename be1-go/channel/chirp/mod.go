@@ -26,9 +26,10 @@ const failedToDecodeData = "failed to decode message data: %v"
 
 // NewChannel returns a new initialized individual chirping channel
 func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalities,
-	generalChannel channel.Broadcastable, log zerolog.Logger) channel.Channel {
+	generalChannel channel.Broadcastable, log zerolog.Logger) *Channel {
 
 	log = log.With().Str("channel", "chirp").Logger()
+
 	newChannel := &Channel{
 		sockets:        channel.NewSockets(),
 		inbox:          inbox.NewInbox(channelPath),
@@ -38,7 +39,9 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 		hub:            hub,
 		log:            log,
 	}
+
 	newChannel.registry = newChannel.NewChirpRegistry()
+
 	return newChannel
 }
 
@@ -46,8 +49,10 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 //populates the registry with the actions of the channel.
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
+
 	newRegistry.Register(messagedata.ChirpAdd{}, c.publishAddChirp)
 	newRegistry.Register(messagedata.ChirpDelete{}, c.publishDeleteChirp)
+
 	return newRegistry
 }
 
@@ -86,6 +91,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message) error {
+
 	err := c.registry.Process(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -293,7 +299,7 @@ func (c *Channel) publishAddChirp(msg message.Message, msgData interface{}) erro
 		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
 	}
 
-	err := c.verifyAddChirpMessage(msg, *data)
+	err := c.verifyChirpMessage(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
@@ -306,21 +312,21 @@ func (c *Channel) publishDeleteChirp(msg message.Message, msgData interface{}) e
 		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
 	}
 
-	err := c.verifyDeleteChirpMessage(msg, *data)
+	err := c.verifyChirpMessage(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete chirp message: %v", err)
 	}
+
+	_, b := c.inbox.GetMessage(data.ChirpId)
+	if !b {
+		return xerrors.Errorf("the message to be deleted was not found")
+	}
+
 	return nil
 }
 
-func (c *Channel) verifyAddChirpMessage(msg message.Message, chirpMsg messagedata.ChirpAdd) error {
-
-	err := msg.UnmarshalData(&chirpMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal: %v", err)
-	}
-
-	err = chirpMsg.Verify()
+func (c *Channel) verifyChirpMessage(msg message.Message, chirpMsg messagedata.VerifiableMessageData) error {
+	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid add chirp message: %v", err)
 	}
@@ -338,41 +344,6 @@ func (c *Channel) verifyAddChirpMessage(msg message.Message, chirpMsg messagedat
 
 	if msg.Sender != c.owner {
 		return answer.NewError(-4, "only the owner of the channel can post chirps")
-	}
-
-	return nil
-}
-
-func (c *Channel) verifyDeleteChirpMessage(msg message.Message, chirpMsg messagedata.ChirpDelete) error {
-
-	err := msg.UnmarshalData(&chirpMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal: %v", err)
-	}
-
-	err = chirpMsg.Verify()
-	if err != nil {
-		return xerrors.Errorf("invalid delete chirp message: %v", err)
-	}
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
-	}
-
-	_, b := c.inbox.GetMessage(chirpMsg.ChirpId)
-	if !b {
-		return xerrors.Errorf("the message to be deleted was not found")
-	}
-
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
-	}
-
-	if msg.Sender != c.owner {
-		return answer.NewError(-4, "only the owner of the channel can delete chirps")
 	}
 
 	return nil

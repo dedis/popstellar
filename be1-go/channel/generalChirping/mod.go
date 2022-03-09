@@ -37,7 +37,7 @@ type Channel struct {
 }
 
 // NewChannel returns a new initialized chirping channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) *Channel {
 	log = log.With().Str("channel", "general chirp").Logger()
 
 	newChannel := &Channel{
@@ -47,17 +47,21 @@ func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.
 		hub:         hub,
 		log:         log,
 	}
+
 	newChannel.registry = newChannel.NewGeneralChirpingRegistry()
+
 	return newChannel
 }
 
 //NewGeneralChirpingRegistry creates a new registry for a general chirping channel and
 //populates the registry with the actions of the channel.
 func (c *Channel) NewGeneralChirpingRegistry() registry.MessageRegistry {
-	registry := registry.NewMessageRegistry()
-	registry.Register(messagedata.ChirpNotifyAdd{}, c.addChirp)
-	registry.Register(messagedata.ChirpNotifyDelete{}, c.deleteChirp)
-	return registry
+	newRegistry := registry.NewMessageRegistry()
+
+	newRegistry.Register(messagedata.ChirpNotifyAdd{}, c.addChirp)
+	newRegistry.Register(messagedata.ChirpNotifyDelete{}, c.deleteChirp)
+
+	return newRegistry
 }
 
 // Publish is used to handle a publish message.
@@ -186,14 +190,14 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	return nil
 }
 
-// AddChirp checks and stores an add chirp message
+// addChirp checks and stores an add chirp message
 func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
 	data, ok := msgData.(*messagedata.ChirpNotifyAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
 	}
 
-	err := c.verifyNotifyAddChirp(msg, *data)
+	err := c.verifyNotifyChirp(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
 	}
@@ -201,14 +205,14 @@ func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
 	return nil
 }
 
-// DeleteChirp checks and stores a delete chirp message
+// deleteChirp checks and stores a delete chirp message
 func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
 	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
 	}
 
-	err := c.verifyNotifyDeleteChirp(msg, *data)
+	err := c.verifyNotifyChirp(msg, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)
 	}
@@ -216,44 +220,8 @@ func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
 	return nil
 }
 
-func (c *Channel) verifyNotifyAddChirp(msg message.Message, chirpMsg messagedata.ChirpNotifyAdd) error {
-	err := msg.UnmarshalData(&chirpMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal chirp message %v", err)
-	}
-
-	err = chirpMsg.Verify()
-	if err != nil {
-		return xerrors.Errorf("invalid chirp broadcast message: %v", err)
-	}
-
-	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
-	if err != nil {
-		return xerrors.Errorf("failed to decode sender key: %v", err)
-	}
-
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
-	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
-	}
-
-	ok := c.hub.GetPubKeyServ().Equal(senderPoint)
-	if !ok {
-		return answer.NewError(-4, "only the server can broadcast the chirp messages")
-	}
-
-	return nil
-}
-
-// verifyChirpBroadcastMessage verify a chirp broadcast message
-func (c *Channel) verifyNotifyDeleteChirp(msg message.Message, chirpMsg messagedata.ChirpNotifyDelete) error {
-	err := msg.UnmarshalData(&chirpMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal chirp message %v", err)
-	}
-
-	err = chirpMsg.Verify()
+func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.VerifiableMessageData) error {
+	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp broadcast message: %v", err)
 	}

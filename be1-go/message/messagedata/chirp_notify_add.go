@@ -5,12 +5,15 @@ import (
 	"golang.org/x/xerrors"
 )
 
+// ChirpNotifyAdd defines a message data
 type ChirpNotifyAdd struct {
-	Object    string `json:"object"`
-	Action    string `json:"action"`
-	ChirpId   string `json:"chirp_id"`
-	Channel   string `json:"channel"`
-	Timestamp int64  `json:"timestamp"`
+	Object  string `json:"object"`
+	Action  string `json:"action"`
+	ChirpId string `json:"chirp_id"`
+	Channel string `json:"channel"`
+
+	//Timestamp is a Unix timestamp
+	Timestamp int64 `json:"timestamp"`
 }
 
 // Verify verifies that the ChirpNotifyDelete message is correct
@@ -29,19 +32,17 @@ func (message ChirpNotifyAdd) Verify() error {
 	return nil
 }
 
-//GetObject implements MessageData
+// GetObject implements MessageData
 func (ChirpNotifyAdd) GetObject() string {
 	return ChirpObject
-
 }
 
-//GetAction implements MessageData
+// GetAction implements MessageData
 func (ChirpNotifyAdd) GetAction() string {
 	return ChirpActionNotifyAdd
 }
 
-//NewEmpty implements MessageData
+// NewEmpty implements MessageData
 func (ChirpNotifyAdd) NewEmpty() MessageData {
 	return &ChirpNotifyAdd{}
-
 }

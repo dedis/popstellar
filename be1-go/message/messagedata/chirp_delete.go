@@ -7,25 +7,16 @@ import (
 
 // ChirpDelete defines a message data
 type ChirpDelete struct {
-	Object    string `json:"object"`
-	Action    string `json:"action"`
-	ChirpId   string `json:"chirp_id"`
-	Timestamp int64  `json:"timestamp"`
-}
+	Object  string `json:"object"`
+	Action  string `json:"action"`
+	ChirpId string `json:"chirp_id"`
 
-func (ChirpDelete) GetObject() string {
-	return ChirpObject
-}
-
-func (ChirpDelete) GetAction() string {
-	return ChirpActionDelete
-}
-
-func (ChirpDelete) NewEmpty() MessageData {
-	return &ChirpDelete{}
+	//Timestamp is a Unix timestamp
+	Timestamp int64 `json:"timestamp"`
 }
 
 // Verify verifies that the ChirpDelete message is correct
+// Implements VerifiableMessageData
 func (message ChirpDelete) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {
@@ -39,4 +30,19 @@ func (message ChirpDelete) Verify() error {
 	}
 
 	return nil
+}
+
+// GetObject implements MessageData
+func (ChirpDelete) GetObject() string {
+	return ChirpObject
+}
+
+// GetAction implements MessageData
+func (ChirpDelete) GetAction() string {
+	return ChirpActionDelete
+}
+
+// NewEmpty implements MessageData
+func (ChirpDelete) NewEmpty() MessageData {
+	return &ChirpDelete{}
 }
