@@ -9,7 +9,14 @@ import {
   mockPopToken,
 } from '__tests__/utils';
 
-import { Hash, Timestamp, Base64UrlData, Signature, channelFromIds } from 'core/objects';
+import {
+  Hash,
+  Timestamp,
+  Base64UrlData,
+  Signature,
+  channelFromIds,
+  getLastPartOfChannel,
+} from 'core/objects';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { dispatch } from 'core/redux';
@@ -89,15 +96,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  warn.mockClear();
-  (channelFromIds as jest.Mock).mockClear();
-  (subscribeToChannel as jest.Mock).mockClear();
+  jest.clearAllMocks();
 });
 
 afterAll(() => {
-  (channelFromIds as jest.Mock).mockReset();
-  (subscribeToChannel as jest.Mock).mockReset();
-  warn.mockReset();
+  jest.restoreAllMocks();
 });
 
 describe('ElectionHandler', () => {
@@ -117,7 +120,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
     it('should return false if the action is not "setup"', () => {
       const addEvent = jest.fn();
@@ -134,7 +140,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
 
     it('should create the election', () => {
@@ -179,16 +188,16 @@ describe('ElectionHandler', () => {
       expect(subscribeToChannel).toHaveBeenCalledWith(mockChannelId);
 
       // check whether updateEvent has been called correctly
-      expect(addEvent.mock.calls[0][0]).toEqual(mockLaoIdHash);
-      expect(addEvent.mock.calls[0][1]).toHaveProperty('id', mockElectionNotStarted.id.valueOf());
-      expect(addEvent.mock.calls[0][1]).toHaveProperty(
-        'electionStatus',
-        ElectionStatus.NOT_STARTED,
-      );
+      const newElectionState = {
+        ...mockElectionNotStarted.toState(),
+        electionStatus: ElectionStatus.NOT_STARTED,
+      };
+
+      expect(addEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
       expect(addEvent).toHaveBeenCalledTimes(1);
 
       // check if the status was changed correctly
-      expect(storedElection?.electionStatus).toEqual(ElectionStatus.NOT_STARTED);
+      expect(storedElection).toEqual(newElectionState);
     });
   });
 
@@ -209,7 +218,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
     it('should return false if the action is not "open"', () => {
       expect(
@@ -227,7 +239,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
 
     it('should return false if the election has not previously been stored', () => {
@@ -248,7 +263,7 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/election/i);
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('should update the election status', () => {
@@ -282,20 +297,20 @@ describe('ElectionHandler', () => {
       expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventFromId has been called correctly
-      expect(getEventFromId.mock.calls[0][0]).toEqual(mockElectionId);
+      expect(getEventFromId).toHaveBeenCalledWith(mockElectionId);
       expect(getEventFromId).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
-      expect(updateEvent.mock.calls[0][0]).toEqual(mockLaoIdHash);
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty(
-        'id',
-        mockElectionNotStarted.id.valueOf(),
-      );
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty('electionStatus', ElectionStatus.OPENED);
+      const newElectionState = {
+        ...mockElectionNotStarted.toState(),
+        electionStatus: ElectionStatus.OPENED,
+      };
+
+      expect(updateEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
       expect(updateEvent).toHaveBeenCalledTimes(1);
 
       // check if the status was changed correctly
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.OPENED);
+      expect(storedElection).toEqual(newElectionState);
     });
   });
 
@@ -317,7 +332,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
     it('should return false if the action is not "cast_vote"', () => {
       expect(
@@ -336,7 +354,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
 
     it('for attendees should return false if the election has not previously been stored', () => {
@@ -382,7 +403,7 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/election/i);
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('for attendees should update election.registeredVotes', () => {
@@ -468,22 +489,8 @@ describe('ElectionHandler', () => {
       expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventFromId has been called correctly
-      expect(getEventFromId.mock.calls[0][0]).toEqual(mockElectionId);
+      expect(getEventFromId).toHaveBeenCalledWith(mockElectionId);
       expect(getEventFromId).toHaveBeenCalledTimes(1);
-
-      // check whether updateEvent has been called correctly
-      expect(updateEvent.mock.calls[0][0]).toEqual(mockLaoIdHash);
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty(
-        'id',
-        mockElectionNotStarted.id.valueOf(),
-      );
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty('electionStatus', ElectionStatus.OPENED);
-      expect(updateEvent).toHaveBeenCalledTimes(1);
-
-      // check whether the status was not changed
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.OPENED);
-
-      // check whether the registered votes have been updated
 
       const newVote: RegisteredVote = {
         createdAt: castVoteMessage.created_at.valueOf(),
@@ -492,10 +499,18 @@ describe('ElectionHandler', () => {
         messageId: mockMessageData.message_id.valueOf(),
       };
 
-      expect(storedElection.registeredVotes).toEqual([
-        ...mockElectionOpened.registeredVotes,
-        newVote,
-      ]);
+      const newRegisteredVotes = [...mockElectionOpened.registeredVotes, newVote];
+
+      // check whether updateEvent has been called correctly
+      const newElectionState = {
+        ...mockElectionOpened.toState(),
+        registeredVotes: newRegisteredVotes,
+      };
+
+      expect(updateEvent).toHaveBeenLastCalledWith(mockLaoIdHash, newElectionState);
+
+      // check if the stored election was correctly updated
+      expect(storedElection).toEqual(newElectionState);
     });
   });
 
@@ -516,7 +531,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
     it('should return false if the action is not "end"', () => {
       expect(
@@ -534,7 +552,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
 
     it('should return false if the election has not previously been stored', () => {
@@ -546,7 +567,7 @@ describe('ElectionHandler', () => {
           ...mockMessageData,
           messageData: {
             object: ObjectType.ELECTION,
-            action: ActionType.OPEN,
+            action: ActionType.END,
             election: mockElectionId.valueOf(),
             created_at: TIMESTAMP,
           } as MessageData,
@@ -555,7 +576,7 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/election/i);
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('should update the election status', () => {
@@ -590,23 +611,20 @@ describe('ElectionHandler', () => {
       expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventFromId has been called correctly
-      expect(getEventFromId.mock.calls[0][0]).toEqual(mockElectionId);
+      expect(getEventFromId).toHaveBeenCalledWith(mockElectionId);
       expect(getEventFromId).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
-      expect(updateEvent.mock.calls[0][0]).toEqual(mockLaoIdHash);
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty(
-        'id',
-        mockElectionNotStarted.id.valueOf(),
-      );
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty(
-        'electionStatus',
-        ElectionStatus.TERMINATED,
-      );
+      const newElectionState = {
+        ...mockElectionOpened.toState(),
+        electionStatus: ElectionStatus.TERMINATED,
+      };
+
+      expect(updateEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
       expect(updateEvent).toHaveBeenCalledTimes(1);
 
       // check if the status was changed correctly
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.TERMINATED);
+      expect(storedElection).toEqual(newElectionState);
     });
   });
 
@@ -627,7 +645,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
 
     it('should return false if the action is not "result"', () => {
@@ -646,7 +667,10 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/unsupported message/i);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/unsupported message/i),
+        expect.anything(),
+      );
     });
 
     it('should return false if the message data does not contain a channel', () => {
@@ -666,7 +690,7 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/No channel/i);
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/No channel/i));
     });
 
     it('should return false if the election has not previously been stored', () => {
@@ -678,7 +702,7 @@ describe('ElectionHandler', () => {
           ...mockMessageData,
           messageData: {
             object: ObjectType.ELECTION,
-            action: ActionType.OPEN,
+            action: ActionType.RESULT,
             election: mockElectionId.valueOf(),
             created_at: TIMESTAMP,
           } as MessageData,
@@ -687,7 +711,7 @@ describe('ElectionHandler', () => {
 
       expect(warn).toHaveBeenCalledTimes(1);
       // check if the printed warning message contains substring
-      expect(warn.mock.calls[0][0]).toMatch(/election/i);
+      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('should update the election status and store results', () => {
@@ -719,28 +743,23 @@ describe('ElectionHandler', () => {
       expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventFromId has been called correctly
-      expect(getEventFromId.mock.calls[0][0].valueOf()).toEqual(mockElectionId.valueOf());
+      expect(getEventFromId).toHaveBeenCalledWith(getLastPartOfChannel(mockMessageData.channel));
       expect(getEventFromId).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
-      expect(updateEvent.mock.calls[0][0]).toEqual(mockLaoIdHash);
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty(
-        'id',
-        mockElectionNotStarted.id.valueOf(),
-      );
-      expect(updateEvent.mock.calls[0][1]).toHaveProperty('electionStatus', ElectionStatus.RESULT);
-      expect(updateEvent).toHaveBeenCalledTimes(1);
-
-      // check if the status was changed correctly
-      expect(storedElection.electionStatus).toEqual(ElectionStatus.RESULT);
-
-      // check if the results were correctly stored
-      expect(storedElection.questionResult).toEqual(
-        mockElectionResultQuestions.map((q) => ({
+      const newElectionState = {
+        ...mockElectionTerminated.toState(),
+        electionStatus: ElectionStatus.RESULT,
+        questionResult: mockElectionResultQuestions.map((q) => ({
           id: q.id,
           result: q.result.map((r) => ({ ballotOption: r.ballot_option, count: r.count })),
         })),
-      );
+      };
+
+      expect(updateEvent).toHaveBeenCalledWith(mockLaoIdHash, newElectionState);
+
+      // check if the results were correctly stored
+      expect(storedElection).toEqual(newElectionState);
     });
   });
 });

@@ -12,47 +12,37 @@ import { EvotingConfiguration } from '../objects';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
- * @param getCurrentLao - A function returning the current load
- * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
- * @param addEvent - A function creating a redux action to add a new event to the store of the currently active lao
- * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param config - An evoting config object
  */
-export const configureNetwork = (
-  getCurrentLao: EvotingConfiguration['getCurrentLao'],
-  getEventFromId: EvotingConfiguration['getEventFromId'],
-  addEvent: EvotingConfiguration['addEvent'],
-  updateEvent: EvotingConfiguration['updateEvent'],
-  registry: EvotingConfiguration['messageRegistry'],
-) => {
-  registry.add(
+export const configureNetwork = (config: EvotingConfiguration) => {
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.SETUP,
-    handleElectionSetupMessage(addEvent),
+    handleElectionSetupMessage(config.addEvent),
     SetupElection.fromJson,
   );
-  registry.add(
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.OPEN,
-    handleElectionOpenMessage(getEventFromId, updateEvent),
+    handleElectionOpenMessage(config.getEventFromId, config.updateEvent),
     OpenElection.fromJson,
   );
-  registry.add(
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.CAST_VOTE,
-    handleCastVoteMessage(getCurrentLao, getEventFromId, updateEvent),
+    handleCastVoteMessage(config.getCurrentLao, config.getEventFromId, config.updateEvent),
     CastVote.fromJson,
   );
-  registry.add(
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.END,
-    handleElectionEndMessage(getEventFromId, updateEvent),
+    handleElectionEndMessage(config.getEventFromId, config.updateEvent),
     EndElection.fromJson,
   );
-  registry.add(
+  config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.RESULT,
-    handleElectionResultMessage(getEventFromId, updateEvent),
+    handleElectionResultMessage(config.getEventFromId, config.updateEvent),
     ElectionResult.fromJson,
   );
 };

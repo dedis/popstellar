@@ -33,12 +33,10 @@ jest.mock('core/network', () => {
 });
 
 afterEach(() => {
-  (channelFromIds as jest.Mock).mockClear();
-  (publish as jest.Mock).mockClear();
+  jest.clearAllMocks();
 });
 afterAll(() => {
-  (channelFromIds as jest.Mock).mockReset();
-  (publish as jest.Mock).mockReset();
+  jest.restoreAllMocks();
 });
 
 describe('mockElectionNotStarted.id', () => {
@@ -57,36 +55,18 @@ describe('mockElectionNotStarted.id', () => {
       expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash);
       expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-      expect((publish as jest.Mock).mock.calls[0][0]).toEqual(mockChannelId);
+      const setupElectionMessage = new SetupElection({
+        lao: mockElectionNotStarted.lao,
+        id: mockElectionNotStarted.id,
+        name: mockElectionNotStarted.name,
+        version: mockElectionNotStarted.version,
+        created_at: mockElectionNotStarted.createdAt,
+        start_time: mockElectionNotStarted.start,
+        end_time: mockElectionNotStarted.end,
+        questions: mockElectionNotStarted.questions,
+      });
 
-      expect((publish as jest.Mock).mock.calls[0][1]).toBeInstanceOf(SetupElection);
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).id).toEqual(
-        mockElectionNotStarted.id,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).lao).toEqual(
-        mockElectionNotStarted.lao,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).name).toEqual(
-        mockElectionNotStarted.name,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).version).toEqual(
-        mockElectionNotStarted.version,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).start_time).toEqual(
-        mockElectionNotStarted.start,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).end_time).toEqual(
-        mockElectionNotStarted.end,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).version).toEqual(
-        mockElectionNotStarted.version,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).questions).toEqual(
-        mockElectionNotStarted.questions,
-      );
-      expect(((publish as jest.Mock).mock.calls[0][1] as SetupElection).created_at).toEqual(
-        mockElectionNotStarted.createdAt,
-      );
+      expect(publish).toHaveBeenLastCalledWith(mockChannelId, setupElectionMessage);
       expect(publish).toHaveBeenCalledTimes(1);
     });
   });
@@ -98,18 +78,17 @@ describe('mockElectionNotStarted.id', () => {
       expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
       expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-      expect((publish as jest.Mock).mock.calls[0][0]).toEqual(mockChannelId);
+      // cannot directly match the openElection message here as openedAt is set inside the openElection function
+      expect(publish).toHaveBeenCalledWith(mockChannelId, expect.anything());
 
-      expect((publish as jest.Mock).mock.calls[0][1]).toBeInstanceOf(OpenElection);
-      expect(((publish as jest.Mock).mock.calls[0][1] as OpenElection).election).toEqual(
-        mockElectionNotStarted.id,
+      // of the first call [0] to publish, extract the second argument [1]
+      const openElectionMessage = (publish as jest.Mock).mock.calls[0][1];
+      expect(openElectionMessage).toBeInstanceOf(OpenElection);
+      expect(openElectionMessage.election).toEqual(mockElectionNotStarted.id);
+      expect(openElectionMessage.lao).toEqual(mockElectionNotStarted.lao);
+      expect(openElectionMessage.opened_at.valueOf()).toBeLessThanOrEqual(
+        Timestamp.EpochNow().valueOf(),
       );
-      expect(((publish as jest.Mock).mock.calls[0][1] as OpenElection).lao).toEqual(
-        mockElectionNotStarted.lao,
-      );
-      expect(
-        ((publish as jest.Mock).mock.calls[0][1] as OpenElection).opened_at.valueOf(),
-      ).toBeLessThanOrEqual(Timestamp.EpochNow().valueOf());
 
       expect(publish).toHaveBeenCalledTimes(1);
     });
@@ -124,18 +103,18 @@ describe('mockElectionNotStarted.id', () => {
       expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionNotStarted.id);
       expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-      expect((publish as jest.Mock).mock.calls[0][0]).toEqual(mockChannelId);
-      expect((publish as jest.Mock).mock.calls[0][1]).toBeInstanceOf(CastVote);
-      expect(((publish as jest.Mock).mock.calls[0][1] as CastVote).election).toEqual(
-        mockElectionNotStarted.id,
+      // cannot directly match the openElection message here as created_at is set inside the openElection function
+      expect(publish).toHaveBeenCalledWith(mockChannelId, expect.anything());
+
+      // of the first call [0] to publish, extract the second argument [1]
+      const castVoteMessage = (publish as jest.Mock).mock.calls[0][1] as CastVote;
+      expect(castVoteMessage).toBeInstanceOf(CastVote);
+      expect(castVoteMessage.election).toEqual(mockElectionNotStarted.id);
+      expect(castVoteMessage.lao).toEqual(mockElectionNotStarted.lao);
+      expect(castVoteMessage.created_at.valueOf()).toBeLessThanOrEqual(
+        Timestamp.EpochNow().valueOf(),
       );
-      expect(((publish as jest.Mock).mock.calls[0][1] as CastVote).lao).toEqual(
-        mockElectionNotStarted.lao,
-      );
-      expect(
-        ((publish as jest.Mock).mock.calls[0][1] as CastVote).created_at.valueOf(),
-      ).toBeLessThanOrEqual(Timestamp.EpochNow().valueOf());
-      expect(((publish as jest.Mock).mock.calls[0][1] as CastVote).votes).toEqual(
+      expect(castVoteMessage.votes).toEqual(
         CastVote.selectedBallotsToVotes(mockElectionNotStarted, selectedBallots),
       );
 
@@ -150,19 +129,19 @@ describe('mockElectionNotStarted.id', () => {
       expect(channelFromIds).toHaveBeenCalledWith(mockLaoIdHash, mockElectionOpened.id);
       expect(channelFromIds).toHaveBeenCalledTimes(1);
 
-      expect((publish as jest.Mock).mock.calls[0][0]).toEqual(mockChannelId);
+      // cannot directly match the openElection message here as created_at is set inside the openElection function
+      expect(publish).toHaveBeenCalledWith(mockChannelId, expect.anything());
+
+      // of the first call [0] to publish, extract the second argument [1]
+      const endElectionMessage = (publish as jest.Mock).mock.calls[0][1] as EndElection;
 
       expect((publish as jest.Mock).mock.calls[0][1]).toBeInstanceOf(EndElection);
-      expect(((publish as jest.Mock).mock.calls[0][1] as EndElection).election).toEqual(
-        mockElectionOpened.id,
+      expect(endElectionMessage.election).toEqual(mockElectionOpened.id);
+      expect(endElectionMessage.lao).toEqual(mockElectionOpened.lao);
+      expect(endElectionMessage.created_at.valueOf()).toBeLessThanOrEqual(
+        Timestamp.EpochNow().valueOf(),
       );
-      expect(((publish as jest.Mock).mock.calls[0][1] as EndElection).lao).toEqual(
-        mockElectionOpened.lao,
-      );
-      expect(
-        ((publish as jest.Mock).mock.calls[0][1] as EndElection).created_at.valueOf(),
-      ).toBeLessThanOrEqual(Timestamp.EpochNow().valueOf());
-      expect(((publish as jest.Mock).mock.calls[0][1] as EndElection).registered_votes).toEqual(
+      expect(endElectionMessage.registered_votes).toEqual(
         EndElection.computeRegisteredVotesHash(mockElectionOpened),
       );
 
