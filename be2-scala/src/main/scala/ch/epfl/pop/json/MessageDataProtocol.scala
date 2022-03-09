@@ -9,7 +9,7 @@ import ch.epfl.pop.model.network.method.message.data.meeting._
 import ch.epfl.pop.model.network.method.message.data.rollCall._
 import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness._
-import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
+import ch.epfl.pop.model.network.method.message.data.{MessageData, ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.MessageRegistry
 import spray.json._
@@ -18,6 +18,8 @@ import scala.collection.immutable.ListMap
 import scala.util.Try
 
 object MessageDataProtocol extends DefaultJsonProtocol {
+  final private val PARAM_OBJECT = "object"
+  final private val PARAM_ACTION = "action"
 
   // ----------------------------------- ENUM FORMATTERS ----------------------------------- //
   implicit object objectTypeFormat extends RootJsonFormat[ObjectType] {
@@ -45,7 +47,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   // Succeeds if both 'object' and 'action' are present and are strings
   def parseHeader(data: String): Try[(ObjectType, ActionType)] =
     Try {
-      data.parseJson.asJsObject.getFields("object", "action") match {
+      data.parseJson.asJsObject.getFields(PARAM_OBJECT, PARAM_ACTION) match {
         case Seq(objectString @ JsString(_), actionString @ JsString(_)) =>
           (objectString.convertTo[ObjectType], actionString.convertTo[ActionType])
         case _ => throw new IllegalArgumentException("parseHeader: header fields not found")
@@ -53,6 +55,17 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
 
   // ------------------------------- DATA FORMATTERS UTILITY ------------------------------- //
+
+  // Decorate a JsonFormat to add the header fields when serializing.
+  private def annotateHeader[T <: MessageData](fmt: RootJsonFormat[T]): RootJsonFormat[T] =
+    new RootJsonFormat[T] {
+      val inner = fmt
+      override def read(json: JsValue): T = inner.read(json)
+      override def write(obj: T): JsValue = inner.write(obj) match {
+        case JsObject(fields) => JsObject(fields.updated(PARAM_OBJECT,obj._object.toJson).updated(PARAM_ACTION,obj.action.toJson))
+        case _ => throw new IllegalArgumentException("annotateHeader: inner format must produce an object")
+      }
+    }
 
   implicit object VoteElectionFormat extends RootJsonFormat[VoteElection] {
     final private val PARAM_ID: String = "id"
@@ -113,9 +126,9 @@ object MessageDataProtocol extends DefaultJsonProtocol {
    * argument type and name
    */
 
-  implicit val createLaoFormat: JsonFormat[CreateLao] = jsonFormat[Hash, String, Timestamp, PublicKey, List[PublicKey], CreateLao](CreateLao.apply, "id", "name", "creation", "organizer", "witnesses")
-  implicit val stateLaoFormat: JsonFormat[StateLao] = jsonFormat[Hash, String, Timestamp, Timestamp, PublicKey, List[PublicKey], Hash, List[WitnessSignaturePair], StateLao](StateLao.apply, "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures")
-  implicit val updateLaoFormat: JsonFormat[UpdateLao] = jsonFormat[Hash, String, Timestamp, List[PublicKey], UpdateLao](UpdateLao.apply, "id", "name", "last_modified", "witnesses")
+  implicit val createLaoFormat: JsonFormat[CreateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, PublicKey, List[PublicKey], CreateLao](CreateLao.apply, "id", "name", "creation", "organizer", "witnesses"))
+  implicit val stateLaoFormat: JsonFormat[StateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, Timestamp, PublicKey, List[PublicKey], Hash, List[WitnessSignaturePair], StateLao](StateLao.apply, "id", "name", "creation", "last_modified", "organizer", "witnesses", "modification_id", "modification_signatures"))
+  implicit val updateLaoFormat: JsonFormat[UpdateLao] = annotateHeader(jsonFormat[Hash, String, Timestamp, List[PublicKey], UpdateLao](UpdateLao.apply, "id", "name", "last_modified", "witnesses"))
 
   implicit object CreateMeetingFormat extends RootJsonFormat[CreateMeeting] {
     final private val PARAM_ID: String = "id"
@@ -154,8 +167,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
     override def write(obj: CreateMeeting): JsValue = {
       var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
-        "object" -> JsString(obj._object.toString),
-        "action" -> JsString(obj.action.toString),
+        PARAM_OBJECT -> JsString(obj._object.toString),
+        PARAM_ACTION -> JsString(obj.action.toString),
         PARAM_ID -> obj.id.toJson,
         PARAM_NAME -> obj.name.toJson,
         PARAM_CREATION -> obj.creation.toJson,
@@ -213,8 +226,8 @@ object MessageDataProtocol extends DefaultJsonProtocol {
 
     override def write(obj: StateMeeting): JsValue = {
       var jsObjectContent: ListMap[String, JsValue] = ListMap[String, JsValue](
-        "object" -> JsString(obj._object.toString),
-        "action" -> JsString(obj.action.toString),
+        PARAM_OBJECT -> JsString(obj._object.toString),
+        PARAM_ACTION -> JsString(obj.action.toString),
         PARAM_ID -> obj.id.toJson,
         PARAM_NAME -> obj.name.toJson,
         PARAM_CREATION -> obj.creation.toJson,
@@ -232,25 +245,25 @@ object MessageDataProtocol extends DefaultJsonProtocol {
     }
   }
 
-  implicit val closeRollCallFormat: JsonFormat[CloseRollCall] = jsonFormat[Hash, Hash, Timestamp, List[PublicKey], CloseRollCall](CloseRollCall.apply, "update_id", "closes", "closed_at", "attendees")
-  implicit val createRollCallFormat: JsonFormat[CreateRollCall] = jsonFormat[Hash, String, Timestamp, Timestamp, Timestamp, String, Option[String], CreateRollCall](CreateRollCall.apply, "id", "name", "creation", "proposed_start", "proposed_end", "location", "roll_call_description")
-  implicit val openRollCallFormat: JsonFormat[OpenRollCall] = jsonFormat[Hash, Hash, Timestamp, OpenRollCall](OpenRollCall.apply, "update_id", "opens", "opened_at")
-  implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = jsonFormat[Hash, Hash, Timestamp, ReopenRollCall](ReopenRollCall.apply, "update_id", "opens", "opened_at")
+  implicit val closeRollCallFormat: JsonFormat[CloseRollCall] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, List[PublicKey], CloseRollCall](CloseRollCall.apply, "update_id", "closes", "closed_at", "attendees"))
+  implicit val createRollCallFormat: JsonFormat[CreateRollCall] = annotateHeader(jsonFormat[Hash, String, Timestamp, Timestamp, Timestamp, String, Option[String], CreateRollCall](CreateRollCall.apply, "id", "name", "creation", "proposed_start", "proposed_end", "location", "roll_call_description"))
+  implicit val openRollCallFormat: JsonFormat[OpenRollCall] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, OpenRollCall](OpenRollCall.apply, "update_id", "opens", "opened_at"))
+  implicit val reopenRollCallFormat: JsonFormat[ReopenRollCall] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, ReopenRollCall](ReopenRollCall.apply, "update_id", "opens", "opened_at"))
 
-  implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature")
+  implicit val witnessMessageFormat: JsonFormat[WitnessMessage] = annotateHeader(jsonFormat[Hash, Signature, WitnessMessage](WitnessMessage.apply, "message_id", "signature"))
 
-  implicit val castVoteElectionFormat: JsonFormat[CastVoteElection] = jsonFormat[Hash, Hash, Timestamp, List[VoteElection], CastVoteElection](CastVoteElection.apply, "lao", "election", "created_at", "votes")
-  implicit val setupElectionFormat: JsonFormat[SetupElection] = jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions")
-  implicit val resultElectionFormat: JsonFormat[ResultElection] = jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures")
-  implicit val endElectionFormat: JsonFormat[EndElection] = jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes")
+  implicit val castVoteElectionFormat: JsonFormat[CastVoteElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, List[VoteElection], CastVoteElection](CastVoteElection.apply, "lao", "election", "created_at", "votes"))
+  implicit val setupElectionFormat: JsonFormat[SetupElection] = annotateHeader(jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"))
+  implicit val resultElectionFormat: JsonFormat[ResultElection] = annotateHeader(jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures"))
+  implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
 
-  implicit val addChirpFormat: JsonFormat[AddChirp] = jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp")
-  implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp")
-  implicit val deleteChirpFormat: JsonFormat[DeleteChirp] = jsonFormat[Hash, Timestamp, DeleteChirp](DeleteChirp.apply, "chirp_id", "timestamp")
-  implicit val notifyDeleteChirpFormat: JsonFormat[NotifyDeleteChirp] = jsonFormat[Hash, Channel, Timestamp, NotifyDeleteChirp](NotifyDeleteChirp.apply, "chirp_id", "channel", "timestamp")
+  implicit val addChirpFormat: JsonFormat[AddChirp] = annotateHeader(jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp"))
+  implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp"))
+  implicit val deleteChirpFormat: JsonFormat[DeleteChirp] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteChirp](DeleteChirp.apply, "chirp_id", "timestamp"))
+  implicit val notifyDeleteChirpFormat: JsonFormat[NotifyDeleteChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyDeleteChirp](NotifyDeleteChirp.apply, "chirp_id", "channel", "timestamp"))
 
-  implicit val addReactionFormat: JsonFormat[AddReaction] = jsonFormat[String, Hash, Timestamp, AddReaction](AddReaction.apply, "reaction_codepoint", "chirp_id", "timestamp")
-  implicit val deleteReactionFormat: JsonFormat[DeleteReaction] = jsonFormat[Hash, Timestamp, DeleteReaction](DeleteReaction.apply, "reaction_id", "timestamp")
+  implicit val addReactionFormat: JsonFormat[AddReaction] = annotateHeader(jsonFormat[String, Hash, Timestamp, AddReaction](AddReaction.apply, "reaction_codepoint", "chirp_id", "timestamp"))
+  implicit val deleteReactionFormat: JsonFormat[DeleteReaction] = annotateHeader(jsonFormat[Hash, Timestamp, DeleteReaction](DeleteReaction.apply, "reaction_id", "timestamp"))
 
   implicit object ChannelDataFormat extends JsonFormat[ChannelData] {
     final private val PARAM_CHANNEL_TYPE: String = "channelType"
