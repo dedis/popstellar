@@ -53,7 +53,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
         setTokensByLao(kp);
       })
       .catch((err) => console.debug(err));
-  }, [rollCalls]);
+  }, [rollCalls, isDebug]);
 
   function displayOneToken(laoId: string, rollCallId: string): ReactNode {
     if (!tokensByLao) {
@@ -95,14 +95,10 @@ const WalletHome = ({ navigation }: IPropTypes) => {
 
   function displayTokens() {
     if (!tokensByLao || !hasTokens(tokensByLao)) {
-      if (tokensByLao) {
-        Object.values(tokensByLao).forEach((tokens) => {
-          console.log(tokens);
-        });
-        console.log('NOOOOOOO');
-      }
       return displayNoTokens;
     }
+    console.debug('Is debug is '.concat(isDebug ? 'on' : 'off'));
+    console.debug(tokensByLao);
 
     return (
       <ScrollView>
@@ -136,6 +132,16 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     );
   }
 
+  const setDebug = (isOn: boolean) => {
+    if (isOn) {
+      mock.clearMock();
+      setTokensByLao(undefined);
+      setIsDebug(false);
+    } else {
+      mock.useMock().then(() => setIsDebug(true));
+    }
+  };
+
   return (
     <View style={containerStyles.centered}>
       <TextBlock bold text={STRINGS.wallet_welcome} />
@@ -151,12 +157,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       />
       <WideButtonView
         title={isDebug ? 'Set debug mode off' : 'Set debug mode on'}
-        onPress={() => {
-          setIsDebug(!isDebug);
-          if (isDebug) mock.clearMock();
-          else mock.useMock();
-          console.debug('Debug mode is '.concat(isDebug ? 'off' : 'on'));
-        }}
+        onPress={() => setDebug(isDebug)}
       />
     </View>
   );
