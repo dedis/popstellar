@@ -1,9 +1,10 @@
+import React from 'react';
+import { View } from 'react-native';
+
 import { TextBlock } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { LaoList } from 'features/lao/components';
 import { useLaoList } from 'features/lao/hooks';
-import React from 'react';
-import { View } from 'react-native';
 import STRINGS from 'resources/strings';
 
 /**

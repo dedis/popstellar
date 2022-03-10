@@ -1,7 +1,8 @@
 import 'jest-extended';
 
-import { mockKeyPair } from '__tests__/utils';
 import { AnyAction } from 'redux';
+
+import { mockKeyPair } from '__tests__/utils';
 
 import { keyPairReduce, setKeyPair } from '../KeyPairReducer';
 

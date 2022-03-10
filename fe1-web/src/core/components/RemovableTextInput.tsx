@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+
 import STRINGS from 'resources/strings';
 
 import { Spacing, Typography, Views } from '../styles';

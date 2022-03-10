@@ -1,12 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
-import { ProfileIcon, WideButtonView } from 'core/components';
-import { subscribeToChannel } from 'core/network';
-import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
-import { gray } from 'core/styles/colors';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+
+import { ProfileIcon, WideButtonView } from 'core/components';
+import { subscribeToChannel } from 'core/network';
+import { getUserSocialChannel, Hash, PublicKey } from 'core/objects';
+import { gray } from 'core/styles/colors';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 

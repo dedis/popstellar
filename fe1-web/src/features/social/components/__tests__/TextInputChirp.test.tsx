@@ -1,6 +1,7 @@
 import { fireEvent, render } from '@testing-library/react-native';
-import { PublicKey } from 'core/objects';
 import React from 'react';
+
+import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
 
 import TextInputChirp from '../TextInputChirp';

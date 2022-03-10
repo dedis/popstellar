@@ -1,13 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ConfirmModal, ProfileIcon } from 'core/components';
-import { PublicKey } from 'core/objects';
-import { gray } from 'core/styles/colors';
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import TimeAgo from 'react-timeago';
+
+import { gray } from 'core/styles/colors';
+import { PublicKey } from 'core/objects';
+import { ConfirmModal, ProfileIcon } from 'core/components';
 import STRINGS from 'resources/strings';
 
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';

@@ -1,10 +1,11 @@
-import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
-import { Spacing, Typography } from 'core/styles';
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
+
+import { Spacing, Typography } from 'core/styles';
+import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 

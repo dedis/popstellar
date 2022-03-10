@@ -1,5 +1,8 @@
 import 'jest-extended';
 
+import { describe } from '@jest/globals';
+import { AnyAction } from 'redux';
+
 import {
   mockLaoCreationTime,
   mockLaoId,
@@ -8,9 +11,7 @@ import {
   mockLaoState,
   org,
 } from '__tests__/utils/TestUtils';
-import { describe } from '@jest/globals';
 import { Hash, Timestamp } from 'core/objects';
-import { AnyAction } from 'redux';
 
 import { Lao, LaoState } from '../../objects';
 import {

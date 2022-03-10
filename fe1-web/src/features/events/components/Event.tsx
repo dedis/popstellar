@@ -1,3 +1,8 @@
+import PropTypes from 'prop-types';
+import React, { useMemo } from 'react';
+import { View } from 'react-native';
+import { useSelector } from 'react-redux';
+
 import { ParagraphBlock, TextBlock } from 'core/components';
 import { Hash, Timestamp } from 'core/objects';
 import { Spacing } from 'core/styles';
@@ -8,10 +13,6 @@ import { EventMeeting } from 'features/meeting/components';
 import { Meeting } from 'features/meeting/objects';
 import { EventRollCall } from 'features/rollCall/components';
 import { RollCall } from 'features/rollCall/objects';
-import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
-import { View } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import eventViewStyles from '../styles/eventViewStyles';
 

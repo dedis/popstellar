@@ -1,10 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
-import { TextBlock } from 'core/components';
-import { Spacing, Typography } from 'core/styles';
-import { useIsLaoOrganizer } from 'features/lao/hooks';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
+
+import { TextBlock } from 'core/components';
+import { Spacing, Typography } from 'core/styles';
+import { useIsLaoOrganizer } from 'features/lao/hooks';
 import STRINGS from 'resources/strings';
 
 import { eventPropTypes } from './Event';

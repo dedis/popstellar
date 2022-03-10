@@ -1,10 +1,11 @@
-import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
-import { Spacing } from 'core/styles';
-import { ConnectToLao } from 'features/connect/objects';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
+
+import { ConnectToLao } from 'features/connect/objects';
+import { Spacing } from 'core/styles';
+import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 
 import { Lao } from '../objects';
 import { makeCurrentLao } from '../reducer';

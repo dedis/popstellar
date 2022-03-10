@@ -1,10 +1,11 @@
-import { TextBlock } from 'core/components';
-import { PublicKey } from 'core/objects';
 import PropTypes from 'prop-types';
 import React, { useMemo, useState } from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, TextStyle, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
+
+import { PublicKey } from 'core/objects';
+import { TextBlock } from 'core/components';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 

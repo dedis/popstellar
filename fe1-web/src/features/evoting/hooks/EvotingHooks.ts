@@ -1,5 +1,6 @@
-import FeatureContext from 'core/contexts/FeatureContext';
 import { useContext } from 'react';
+
+import FeatureContext from 'core/contexts/FeatureContext';
 
 import { EVOTING_FEATURE_IDENTIFIER } from '../index';
 import { EvotingReactContext } from '../objects';

@@ -1,8 +1,9 @@
-import { CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
+
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 

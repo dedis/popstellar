@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ProfileIcon, TextBlock } from 'core/components';
-import { PublicKey } from 'core/objects';
-import { gray, red } from 'core/styles/colors';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { Button, StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
+
+import { ProfileIcon, TextBlock } from 'core/components';
+import { PublicKey } from 'core/objects';
+import { gray, red } from 'core/styles/colors';
 import STRINGS from 'resources/strings';
 
 const MAX_CHIRP_CHARS = 300;

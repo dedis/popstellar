@@ -1,3 +1,6 @@
+import { render } from '@testing-library/react-native';
+import React from 'react';
+
 import {
   mockLao,
   mockLaoId,
@@ -6,10 +9,8 @@ import {
   mockMessageRegistry,
   mockReduxAction,
 } from '__tests__/utils';
-import { render } from '@testing-library/react-native';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, Timestamp } from 'core/objects';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
 import {
   Election,
   ElectionStatus,
@@ -17,8 +18,8 @@ import {
   QuestionResult,
   RegisteredVote,
 } from 'features/evoting/objects';
-import React from 'react';
 import STRINGS from 'resources/strings';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
 
 import EventElection from '../EventElection';
 

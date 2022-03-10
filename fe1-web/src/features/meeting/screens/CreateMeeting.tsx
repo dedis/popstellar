@@ -1,6 +1,10 @@
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Platform, View } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
+
 import {
   ConfirmModal,
   DatePicker,
@@ -13,9 +17,6 @@ import {
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
 import { Timestamp } from 'core/objects';
 import { onConfirmPress } from 'features/events/screens/CreateEvent';
-import React, { useState } from 'react';
-import { Platform, View } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 

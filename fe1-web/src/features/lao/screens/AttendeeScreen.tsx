@@ -1,11 +1,12 @@
 import { useRoute } from '@react-navigation/core';
+import React, { useState } from 'react';
+import { ScrollView } from 'react-native';
+import { useSelector } from 'react-redux';
+
 import { Timestamp } from 'core/objects';
 import EventListCollapsible from 'features/events/components/EventListCollapsible';
 import { LaoEvent } from 'features/events/objects';
 import { makeEventsList } from 'features/events/reducer';
-import React, { useState } from 'react';
-import { ScrollView } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import { LaoProperties } from '../components';
 

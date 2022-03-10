@@ -1,15 +1,16 @@
 import { useRoute } from '@react-navigation/core';
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useToast } from 'react-native-toast-notifications';
+import { useDispatch } from 'react-redux';
+
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel, channelFromIds, Hash } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { setLaoServerAddress } from 'features/lao/reducer';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useToast } from 'react-native-toast-notifications';
-import { useDispatch } from 'react-redux';
 import { FOUR_SECONDS } from 'resources/const';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';

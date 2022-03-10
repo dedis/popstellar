@@ -1,9 +1,10 @@
 import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
+
 import { CreateEvent } from 'features/events/screens';
 import { CreateElection } from 'features/evoting/screens';
 import { CreateMeeting } from 'features/meeting/screens';
 import { CreateRollCall, RollCallOpened } from 'features/rollCall/screens';
-import React from 'react';
 import STRINGS from 'resources/strings';
 
 import { OrganizerScreen } from '../screens';

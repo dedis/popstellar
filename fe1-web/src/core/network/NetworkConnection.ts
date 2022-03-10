@@ -1,5 +1,6 @@
-import { ProtocolError } from 'core/objects';
 import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
+
+import { ProtocolError } from 'core/objects';
 
 import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from './jsonrpc';
 import { NetworkError } from './NetworkError';

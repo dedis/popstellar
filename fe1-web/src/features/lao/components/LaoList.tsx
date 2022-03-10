@@ -1,8 +1,9 @@
-import { Spacing } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
+
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { Spacing } from 'core/styles';
 
 import { Lao } from '../objects';
 import { makeLaosList } from '../reducer';

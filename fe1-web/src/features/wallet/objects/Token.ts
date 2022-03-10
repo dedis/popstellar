@@ -1,5 +1,6 @@
-import { Base64UrlData, Hash, PopToken, PrivateKey, PublicKey } from 'core/objects';
 import { derivePath, getPublicKey } from 'ed25519-hd-key';
+
+import { Base64UrlData, Hash, PopToken, PrivateKey, PublicKey } from 'core/objects';
 import { EventStore } from 'features/events/store';
 import { OpenedLaoStore } from 'features/lao/store';
 import { RollCall } from 'features/rollCall/objects';

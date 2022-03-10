@@ -18,7 +18,6 @@ module.exports = {
     'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:prettier/recommended',
-
     // The following rule set is desirable but requires significant adaptations to the code base.
     // Consider adding it once (1) all previous rules are already satisfied an
     // (2) `any`s have been removed from the code base in favor of typed values and `unknown`s
@@ -27,7 +26,6 @@ module.exports = {
 
   plugins: [
     'import',
-    'simple-import-sort'
   ],
 
   settings: {
@@ -59,9 +57,12 @@ module.exports = {
           'jest/**/*.js'
       ]}],
 
-    // automatically sort imports with --fix. unfortunately eslint does not support this out of the box
-    'simple-import-sort/imports': 'error',
-    'simple-import-sort/exports': 'error',
+    'import/order': [
+      'error', {
+        'groups': ['builtin', 'external', 'internal', ['parent', 'sibling', 'index'], 'type', 'object'],
+        'newlines-between': 'always'
+      }
+    ],
 
     // allow JSX code only in files with the correct extensions
     'react/jsx-filename-extension': ['error', { extensions: ['.jsx', '.tsx'] }],

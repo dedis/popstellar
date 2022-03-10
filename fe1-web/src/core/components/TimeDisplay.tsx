@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TextStyle, View } from 'react-native';
 import TimeAgo from 'react-timeago';
+
 import STRINGS from 'resources/strings';
 
 import { Spacing } from '../styles';

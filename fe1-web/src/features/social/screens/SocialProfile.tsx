@@ -1,10 +1,11 @@
-import { ProfileIcon, TextBlock } from 'core/components';
-import { PublicKey } from 'core/objects';
 import PropTypes from 'prop-types';
 import * as React from 'react';
 import { useMemo } from 'react';
 import { FlatList, ListRenderItemInfo, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
+
+import { PublicKey } from 'core/objects';
+import { ProfileIcon, TextBlock } from 'core/components';
 import STRINGS from 'resources/strings';
 
 import { ChirpCard } from '../components';

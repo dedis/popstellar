@@ -1,12 +1,13 @@
+import PropTypes from 'prop-types';
+import * as React from 'react';
+import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
+import { useSelector } from 'react-redux';
+
 import { TextBlock } from 'core/components';
 import { PublicKey } from 'core/objects';
 import { gray } from 'core/styles/colors';
 import { makeRollCallAttendeesList } from 'features/events/reducer';
 import { makeCurrentLao } from 'features/lao/reducer';
-import PropTypes from 'prop-types';
-import * as React from 'react';
-import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
-import { useSelector } from 'react-redux';
 import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';

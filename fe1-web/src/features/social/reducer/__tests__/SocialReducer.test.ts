@@ -1,9 +1,10 @@
 import 'jest-extended';
 
-import { mockLaoId } from '__tests__/utils/TestUtils';
 import { describe } from '@jest/globals';
-import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { AnyAction } from 'redux';
+
+import { mockLaoId } from '__tests__/utils/TestUtils';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 
 import { Chirp, ChirpState, Reaction, ReactionState } from '../../objects';
 import {

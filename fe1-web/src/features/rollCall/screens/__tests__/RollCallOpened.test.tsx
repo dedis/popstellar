@@ -1,14 +1,15 @@
-import { mockLao, mockLaoId, mockLaoName, mockPopToken } from '__tests__/utils/TestUtils';
 import { useNavigation, useRoute } from '@react-navigation/core';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import { Hash, PublicKey, Timestamp } from 'core/objects';
-import * as token from 'features/wallet/objects/Token';
 import React from 'react';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
 import * as reactRedux from 'react-redux';
-import STRINGS from 'resources/strings';
 import keyPair from 'test_data/keypair.json';
+
+import STRINGS from 'resources/strings';
+import * as token from 'features/wallet/objects/Token';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
+import { mockLao, mockLaoId, mockLaoName, mockPopToken } from '__tests__/utils/TestUtils';
 
 import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
 import RollCallOpened from '../RollCallOpened';

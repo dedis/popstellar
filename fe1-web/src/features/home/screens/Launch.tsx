@@ -1,3 +1,7 @@
+import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { StyleSheet, View, ViewStyle } from 'react-native';
+
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { KeyPairStore } from 'core/keypair';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
@@ -7,9 +11,6 @@ import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { requestCreateLao } from 'features/lao/network';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 

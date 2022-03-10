@@ -1,7 +1,8 @@
+import testKeyPair from 'test_data/keypair.json';
+
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
-import testKeyPair from 'test_data/keypair.json';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
