@@ -16,7 +16,7 @@ const Home = () => {
   return laos && laos.length > 0 ? (
     <LaoList />
   ) : (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />

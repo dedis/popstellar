@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
  * Wallet synchronization error screen
  */
 const WalletError = ({ navigation }: IPropTypes) => (
-  <View style={containerStyles.centered}>
+  <View style={containerStyles.centeredY}>
     <TextBlock text={STRINGS.wallet_error} />
     <View style={styles.largePadding} />
     <WideButtonView

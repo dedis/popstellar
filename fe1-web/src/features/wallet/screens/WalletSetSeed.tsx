@@ -36,7 +36,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
   };
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <TextBlock text={STRINGS.type_seed_info} />
       <TextInputLine
         placeholder={STRINGS.type_seed_example}
