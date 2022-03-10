@@ -25,8 +25,7 @@ type ValuePromise struct {
 	PromisedTry   int64 `json:"promised_try"`
 }
 
-// Verify verifies that the ConsensusPromise message is correct
-// Verify implements Verifiable
+// Verify implements Verifiable. It verifies that the ConsensusPromise message is correct
 func (message ConsensusPromise) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)

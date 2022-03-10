@@ -18,8 +18,7 @@ type ConsensusElect struct {
 	Value string `json:"value"`
 }
 
-// Verify verifies that the ConsensusElect message is correct
-// Verify implements Verifiable
+// Verify implements Verifiable. It verifies that the ConsensusElect message is correct
 func (message ConsensusElect) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)

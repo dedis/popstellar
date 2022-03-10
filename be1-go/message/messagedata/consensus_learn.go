@@ -25,8 +25,7 @@ type ValueLearn struct {
 	Decision bool `json:"decision"`
 }
 
-// Verify verifies that the ConsensusLearn message is correct
-// Verify implements Verifiable
+// Verify implements Verifiable. It verifies that the ConsensusLearn message is correct
 func (message ConsensusLearn) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)

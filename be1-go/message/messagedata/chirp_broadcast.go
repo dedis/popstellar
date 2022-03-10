@@ -17,7 +17,6 @@ type ChirpBroadcast struct {
 }
 
 // Verify verifies that the ChirpBroadcast message is correct
-// Verify implements Verifiable
 func (message ChirpBroadcast) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {
