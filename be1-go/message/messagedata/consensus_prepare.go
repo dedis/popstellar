@@ -24,6 +24,7 @@ type ValuePrepare struct {
 }
 
 // Verify that the ConsensusPrepare message is correct
+// Verify implements Verifiable
 func (message ConsensusPrepare) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)

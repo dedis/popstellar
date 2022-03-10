@@ -26,6 +26,7 @@ type ValueLearn struct {
 }
 
 // Verify verifies that the ConsensusLearn message is correct
+// Verify implements Verifiable
 func (message ConsensusLearn) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)

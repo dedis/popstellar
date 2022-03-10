@@ -16,7 +16,7 @@ type ChirpDelete struct {
 }
 
 // Verify verifies that the ChirpDelete message is correct
-// Implements VerifiableMessageData
+// Verify implements Verifiable
 func (message ChirpDelete) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {

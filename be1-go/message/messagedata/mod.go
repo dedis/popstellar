@@ -69,8 +69,8 @@ type MessageData interface {
 	NewEmpty() MessageData
 }
 
-// VerifiableMessageData defines a MessageData that offers message verification
-type VerifiableMessageData interface {
+// Verifiable defines a MessageData that offers message verification
+type Verifiable interface {
 	MessageData
 	Verify() error
 }

@@ -18,6 +18,7 @@ type ConsensusFailure struct {
 }
 
 // Verify verifies that the ConsensusLearn message is correct
+// Verify implements Verifiable
 func (message ConsensusFailure) Verify() error {
 
 	// verify that the instance id is base64URL encoded

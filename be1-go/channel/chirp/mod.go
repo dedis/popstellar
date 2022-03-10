@@ -312,7 +312,7 @@ func (c *Channel) publishDeleteChirp(msg message.Message, msgData interface{}) e
 		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
 	}
 
-	err := c.verifyChirpMessage(msg, *data)
+	err := c.verifyChirpMessage(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete chirp message: %v", err)
 	}
@@ -325,7 +325,7 @@ func (c *Channel) publishDeleteChirp(msg message.Message, msgData interface{}) e
 	return nil
 }
 
-func (c *Channel) verifyChirpMessage(msg message.Message, chirpMsg messagedata.VerifiableMessageData) error {
+func (c *Channel) verifyChirpMessage(msg message.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid add chirp message: %v", err)

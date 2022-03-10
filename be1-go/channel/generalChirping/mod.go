@@ -220,7 +220,7 @@ func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
 	return nil
 }
 
-func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.VerifiableMessageData) error {
+func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp broadcast message: %v", err)

@@ -15,7 +15,7 @@ type ChirpAdd struct {
 }
 
 // Verify verifies that the ChirpAdd message is correct
-// Implements VerifiableMessageData
+// Verify Implements Verifiable
 func (message ChirpAdd) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {
