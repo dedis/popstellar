@@ -1374,7 +1374,7 @@ If write-in is allowed for the election then the vote has to have a write-in.
                             "id": {
                                 "type": "string",
                                 "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must use delimiter"
+                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
                             },
                             "question": {
                                 "type": "string",
