@@ -97,8 +97,6 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     if (!tokensByLao || !hasTokens(tokensByLao)) {
       return displayNoTokens;
     }
-    console.debug('Is debug is '.concat(isDebug ? 'on' : 'off'));
-    console.debug(tokensByLao);
 
     return (
       <ScrollView>
