@@ -60,15 +60,8 @@ export class CastVote implements MessageData {
       if (!vote.question) {
         throw new ProtocolError("Undefined 'question id' parameter encountered during 'CastVote'");
       }
-      if (!vote.vote && !vote.writeIn) {
-        throw new ProtocolError(
-          "Undefined 'vote or write in' parameters encountered during 'CastVote'",
-        );
-      }
-      if (vote.vote && vote.writeIn) {
-        throw new ProtocolError(
-          "Defined both 'vote' and 'write_in' parameters, only 1 is allowed, encountered during 'CastVote'",
-        );
+      if (!vote.vote) {
+        throw new ProtocolError("Undefined 'vote' parameters encountered during 'CastVote'");
       }
     });
   }
