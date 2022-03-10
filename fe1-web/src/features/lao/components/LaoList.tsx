@@ -26,7 +26,7 @@ const useLaoList = (): Lao[] => useSelector(makeLaosList());
 const LaoList = () => {
   const laos = useLaoList();
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <FlatList
         data={laos}
         keyExtractor={(item) => item.id.toString()}
