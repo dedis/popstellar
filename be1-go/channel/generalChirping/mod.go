@@ -197,7 +197,7 @@ func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
 		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
 	}
 
-	err := c.verifyNotifyChirp(msg, *data)
+	err := c.verifyNotifyChirp(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
 	}
@@ -212,7 +212,7 @@ func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
 		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
 	}
 
-	err := c.verifyNotifyChirp(msg, *data)
+	err := c.verifyNotifyChirp(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)
 	}

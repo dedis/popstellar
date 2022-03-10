@@ -299,7 +299,7 @@ func (c *Channel) publishAddChirp(msg message.Message, msgData interface{}) erro
 		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
 	}
 
-	err := c.verifyChirpMessage(msg, *data)
+	err := c.verifyChirpMessage(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
