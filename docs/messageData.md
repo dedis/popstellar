@@ -1287,6 +1287,10 @@ A member of the LAO can cast a vote by publishing an election/cast_vote message 
 election’s channel. Each member may cast multiple votes, only the last one will be counted.
 If write-in is allowed for the election then the vote has to have a write-in.
 
+For the generated vote ids, it has to be made sure that the hash is unique and consistent across all subsystems. The hash is computed based on the list of ballot option indices. To disambiguated between `[1, 0]` and `[10]`, the usage of the comma delimiter `,` in between the indices is mandatory and to make the hash unique, the list of indicies should be sorted in ascending order (from small numbers/indicies to bigger ones, from left to right). Last but not least, it must be made sure that this list does not contain any duplicates, i.e. represents a set of indices. (Each ballot option can only be selected once).
+
+For example if the user select the ballot options with indices 5 and 2, then the hash function should be applied only to the string `2,5`, not to `2,2,5`, `5,2`, `25`, `[2,5]` or `2, 5` (note the additional space).
+
 <details>
 <summary>
 💡 See some examples
