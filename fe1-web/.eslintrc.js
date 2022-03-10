@@ -60,7 +60,8 @@ module.exports = {
     'import/order': [
       'error', {
         'groups': ['builtin', 'external', 'internal', ['parent', 'sibling', 'index'], 'type', 'object'],
-        'newlines-between': 'always'
+        'newlines-between': 'always',
+        'alphabetize': { order: 'asc', caseInsensitive: true }
       }
     ],
 

@@ -4,9 +4,9 @@ import { ActivityIndicator, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { Colors } from 'core/styles';
 import { WideButtonView } from 'core/components';
+import { Colors } from 'core/styles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';

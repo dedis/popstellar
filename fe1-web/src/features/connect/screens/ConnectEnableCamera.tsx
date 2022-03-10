@@ -2,8 +2,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { View } from 'react-native';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { TextBlock, WideButtonView } from 'core/components';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
