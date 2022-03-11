@@ -152,7 +152,7 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 	err = json.Unmarshal(buf, &broadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, electChannel.Broadcast(broadcast, nil))
+	require.Error(t, electChannel.Broadcast(broadcast, nil))
 }
 
 // Tests that the channel works correctly when it receives a cast vote and
@@ -259,7 +259,7 @@ func Test_Publish_Cast_Vote_And_End_Election(t *testing.T) {
 	err = json.Unmarshal(dataBuf, &result)
 	require.NoError(t, err)
 
-	require.Equal(t, "end", result.Action)
+	require.Equal(t, "result", result.Action)
 	require.Equal(t, "election", result.Object)
 }
 

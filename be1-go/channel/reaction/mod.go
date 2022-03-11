@@ -26,7 +26,7 @@ const msgID = "msg id"
 const failedToDecodeData = "failed to decode message data: %v"
 
 // NewChannel returns a new initialized reaction channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) channel.Channel {
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) *Channel {
 	log = log.With().Str("channel", "reaction").Logger()
 
 	newChannel := &Channel{
@@ -210,6 +210,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
+// processReactionAdd is the callback that processes reaction#add messages
 func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}) error {
 	err := c.verifyAddReactionMessage(msg)
 	if err != nil {
@@ -219,6 +220,7 @@ func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}) e
 	return nil
 }
 
+// processReactionDelete is the callback that processes reaction#delete messages
 func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}) error {
 	err := c.verifyDeleteReactionMessage(msg)
 	if err != nil {

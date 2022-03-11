@@ -44,7 +44,8 @@ func (a *attendees) isPresent(key string) bool {
 
 // NewChannel returns a new initialized election channel
 func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
+	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger, 
+	organizerPubKey kyber.Point) channel.Channel {
 
 	log = log.With().Str("channel", "election").Logger()
 
@@ -211,30 +212,17 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 
 // Broadcast is used to handle a broadcast message.
 func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
+	c.log.Info().Msg("received a broadcast")
+
 	err := c.verifyMessage(broadcast.Params.Message)
 	if err != nil {
 		return xerrors.Errorf("failed to verify broadcast message on an "+
 			"election channel: %w", err)
 	}
 
-	msg := broadcast.Params.Message
-	data := msg.Data
-
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err = c.handleMessage(broadcast.Params.Message)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
-	}
-
-	object, _, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get object and action from message data: %v", err)
-	}
-
-	if object == messagedata.ElectionObject {
-		err = c.handleMessage(broadcast.Params.Message)
-		if err != nil {
-			return xerrors.Errorf("failed to handle broadcast message: %v", err)
-		}
+		return xerrors.Errorf("failed to handle broadcast message: %v", err)
 	}
 
 	return nil
@@ -249,11 +237,6 @@ func (c *Channel) handleMessage(msg message.Message) error {
 	}
 
 	c.inbox.StoreMessage(msg)
-
-	err = c.broadcastToAllClients(msg)
-	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
-	}
 
 	return nil
 }
@@ -313,6 +296,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
+// processCastVote is the callback that processes election#cast_vote messages
 func (c *Channel) processCastVote(msg message.Message, msgData interface{}) error {
 
 	_, ok := msgData.(*messagedata.VoteCastVote)
@@ -356,9 +340,15 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 		xerrors.Errorf("failed to update vote: %v", err)
 	}
 
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
+
 	return nil
 }
 
+// processElectionEnd is the callback that processes election#end messages
 func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) error {
 
 	_, ok := msgData.(*messagedata.ElectionEnd)
@@ -401,6 +391,11 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 		return xerrors.Errorf("invalid election#end message: %v", err)
 	}
 
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
+
 	// broadcast election result message
 	err = c.broadcastElectionResult()
 	if err != nil {
@@ -410,6 +405,7 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 	return nil
 }
 
+// processElectionResult is the callback that processes election#result messages
 func (c *Channel) processElectionResult(msg message.Message, msgData interface{}) error {
 	data, ok := msgData.(*messagedata.ElectionResult)
 	if !ok {
@@ -422,13 +418,15 @@ func (c *Channel) processElectionResult(msg message.Message, msgData interface{}
 	for i, q := range data.Questions {
 		_, err := base64.URLEncoding.DecodeString(q.ID)
 		if err != nil {
-			return xerrors.Errorf("invalid election#result message: question id %d %s, should be a base64URL encoded", i, q.ID)
+			return xerrors.Errorf("invalid election#result message: question id %d %s, " + 
+				"should be a base64URL encoded", i, q.ID)
 		}
 	}
 
 	return nil
 }
 
+// broadcastElectionResult gathers and broadcasts the results of an election
 func (c *Channel) broadcastElectionResult() error {
 
 	resultElection, err := gatherResults(c.questions, c.log)
