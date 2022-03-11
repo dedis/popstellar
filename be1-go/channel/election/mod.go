@@ -44,8 +44,7 @@ func (a *attendees) isPresent(key string) bool {
 
 // NewChannel returns a new initialized election channel
 func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger, 
-	organizerPubKey kyber.Point) channel.Channel {
+	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
 
 	log = log.With().Str("channel", "election").Logger()
 
@@ -418,8 +417,8 @@ func (c *Channel) processElectionResult(msg message.Message, msgData interface{}
 	for i, q := range data.Questions {
 		_, err := base64.URLEncoding.DecodeString(q.ID)
 		if err != nil {
-			return xerrors.Errorf("invalid election#result message: question id %d %s, " + 
-				"should be a base64URL encoded", i, q.ID)
+			return xerrors.Errorf("invalid election#result message: question "+
+				"id %d %s, should be a base64URL encoded", i, q.ID)
 		}
 	}
 
