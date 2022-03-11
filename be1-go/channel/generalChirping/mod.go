@@ -205,7 +205,7 @@ func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
 	return nil
 }
 
-// deleteChirp checks and stores a delete chirp message
+// deleteChirp checks a delete chirp message
 func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
 	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
 	if !ok {
