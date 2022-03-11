@@ -12,7 +12,7 @@ type ChirpBroadcast struct {
 	ChirpId string `json:"chirp_id"`
 	Channel string `json:"channel"`
 
-	//Timestamp is a Unix timestamp
+	// Timestamp is a Unix timestamp
 	Timestamp int64 `json:"timestamp"`
 }
 

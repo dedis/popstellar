@@ -17,7 +17,8 @@ type ConsensusFailure struct {
 	CreatedAt int64 `json:"created_at"`
 }
 
-// Verify implements Verifiable. It verifies that the ConsensusLearn message is correct
+// Verify implements Verifiable. It verifies that the ConsensusLearn message is
+// correct
 func (message ConsensusFailure) Verify() error {
 
 	// verify that the instance id is base64URL encoded

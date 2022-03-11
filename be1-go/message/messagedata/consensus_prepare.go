@@ -23,7 +23,8 @@ type ValuePrepare struct {
 	ProposedTry int64 `json:"proposed_try"`
 }
 
-// Verify implements Verifiable. It verifies that the ConsensusPrepare message is correct
+// Verify implements Verifiable. It verifies that the ConsensusPrepare message
+// is correct
 func (message ConsensusPrepare) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)

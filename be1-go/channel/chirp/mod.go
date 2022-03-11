@@ -45,8 +45,8 @@ func NewChannel(channelPath string, ownerKey string, hub channel.HubFunctionalit
 	return newChannel
 }
 
-//NewChirpRegistry creates a new registry for a general chirping channel and
-//populates the registry with the actions of the channel.
+// NewChirpRegistry creates a new registry for a general chirping channel and
+// populates the registry with the actions of the channel.
 func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	newRegistry := registry.NewMessageRegistry()
 

@@ -10,11 +10,12 @@ type ChirpAdd struct {
 	Action string `json:"action"`
 	Text   string `json:"text"`
 
-	//Timestamp is a Unix timestamp
+	// Timestamp is a Unix timestamp
 	Timestamp int64 `json:"timestamp"`
 }
 
-// Verify implements Verifiable. It verifies that the ChirpAdd message is correct
+// Verify implements Verifiable. It verifies that the ChirpAdd message is
+// correct
 func (message ChirpAdd) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {

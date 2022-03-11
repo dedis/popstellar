@@ -213,7 +213,8 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-// createGeneralChirpingChannel creates a new general chirping channel and returns it
+// createGeneralChirpingChannel creates a new general chirping channel
+// and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)

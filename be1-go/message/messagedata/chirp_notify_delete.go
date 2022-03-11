@@ -12,11 +12,12 @@ type ChirpNotifyDelete struct {
 	ChirpId string `json:"chirp_id"`
 	Channel string `json:"channel"`
 
-	//Timestamp is a Unix timestamp
+	// Timestamp is a Unix timestamp
 	Timestamp int64 `json:"timestamp"`
 }
 
-// Verify implements Verifiable. It verifies that the ChirpNotifyDelete message is correct
+// Verify implements Verifiable. It verifies that the ChirpNotifyDelete message
+// is correct
 func (message ChirpNotifyDelete) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {
