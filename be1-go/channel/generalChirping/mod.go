@@ -190,7 +190,7 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	return nil
 }
 
-// addChirp checks and stores an add chirp message
+// addChirp checks an add chirp message
 func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
 	data, ok := msgData.(*messagedata.ChirpNotifyAdd)
 	if !ok {
