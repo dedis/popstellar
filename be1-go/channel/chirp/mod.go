@@ -328,7 +328,7 @@ func (c *Channel) publishDeleteChirp(msg message.Message, msgData interface{}) e
 func (c *Channel) verifyChirpMessage(msg message.Message, chirpMsg messagedata.Verifiable) error {
 	err := chirpMsg.Verify()
 	if err != nil {
-		return xerrors.Errorf("invalid add chirp message: %v", err)
+		return xerrors.Errorf("invalid chirp message: %v", err)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
