@@ -7,39 +7,27 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
+import com.github.dedis.popstellar.model.objects.Transaction;
 
 import java.util.Optional;
 
 /** Data sent to add a Chirp to the user channel */
 public class AddTransaction extends Data {
 
-  private final String text;
-
-  @SerializedName("parent_id")
-  @Nullable
-  private final MessageID parentId;
-
-  private final long timestamp;
+  private final Transaction transaction;
 
   /**
-   * Constructor for a data Add Chirp
+   * Constructor for a data Post Transaction
    *
-   * @param text text of the chirp
-   * @param parentId message ID of parent chirp, can be null
-   * @param timestamp UNIX timestamp in UTC
+   * @param transaction is the transaction which is posted
    */
-  public AddTransaction(String text, @Nullable MessageID parentId, long timestamp) {
-    if (text.length() > MAX_CHIRP_CHARS) {
-      throw new IllegalArgumentException("the text exceed the maximum numbers of characters");
-    }
-    this.text = text;
-    this.parentId = parentId;
-    this.timestamp = timestamp;
+  public AddTransaction(Transaction transaction) {
+    this.transaction = transaction;
   }
 
   @Override
   public String getObject() {
-    return Objects.CHIRP.getObject();
+    return Objects.TRANSACTION.getObject();
   }
 
   @Override
@@ -47,16 +35,8 @@ public class AddTransaction extends Data {
     return Action.ADD.getAction();
   }
 
-  public String getText() {
-    return text;
-  }
-
-  public Optional<MessageID> getParentId() {
-    return Optional.ofNullable(parentId);
-  }
-
-  public long getTimestamp() {
-    return timestamp;
+  public Transaction getTransaction() {
+    return transaction;
   }
 
   @Override
@@ -68,27 +48,18 @@ public class AddTransaction extends Data {
       return false;
     }
     AddTransaction that = (AddTransaction) o;
-    return java.util.Objects.equals(getText(), that.getText())
-        && java.util.Objects.equals(getParentId(), that.getParentId())
-        && java.util.Objects.equals(getTimestamp(), that.getTimestamp());
+    return java.util.Objects.equals(getTransaction(), that.getTransaction());
   }
 
   @Override
   public int hashCode() {
-    return java.util.Objects.hash(getText(), getParentId(), getTimestamp());
+    return java.util.Objects.hash(getTransaction());
   }
 
   @Override
   public String toString() {
-    return "AddChirp{"
-        + "text='"
-        + text
-        + '\''
-        + ", parentId='"
-        + parentId
-        + '\''
-        + ", timestamp='"
-        + timestamp
+    return "AddTransaction{"
+        + "transaction="
         + '\''
         + '}';
   }
