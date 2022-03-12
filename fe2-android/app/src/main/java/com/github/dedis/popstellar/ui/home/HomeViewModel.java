@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
@@ -312,7 +314,7 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openConnect() {
-    if (ActivityCompat.checkSelfPermission(
+    if (checkSelfPermission(
             getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       openQrCodeScanning();
