@@ -99,7 +99,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         .observe(
             this,
             stringEvent -> {
-              String action = stringEvent.getContentIfNotHandled();
+              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 openScanning(action);
               }
@@ -304,7 +304,7 @@ public class LaoDetailActivity extends AppCompatActivity {
         .observe(
             this,
             stringEvent -> {
-              String action = stringEvent.getContentIfNotHandled();
+              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 openScanning(action);
               }
@@ -330,8 +330,8 @@ public class LaoDetailActivity extends AppCompatActivity {
         () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
   }
 
-  private void openScanning(String action) {
-    if (action.equals(HomeViewModel.SCAN)) {
+  private void openScanning(HomeViewModel.HomeViewAction action) {
+    if (action.equals(HomeViewModel.HomeViewAction.SCAN)) {
       if (mViewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
         setupScanFragmentRollCall();
       } else {

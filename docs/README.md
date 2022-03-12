@@ -9,7 +9,7 @@
 `cd` where you want to have your project located and then clone the project using the following commands
 
 ```bash
-git clone https://github.com/dedis/popstellar.git [folderProjectName]
+git clone git@github.com:dedis/popstellar.git [folderProjectName]
 ```
 
 We then want to navigate to the `be2-scala` subfolder
