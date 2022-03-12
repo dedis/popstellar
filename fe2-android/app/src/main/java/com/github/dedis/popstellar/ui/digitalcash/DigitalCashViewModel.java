@@ -44,19 +44,21 @@ public class DigitalCashViewModel extends AndroidViewModel {
   public static final String TAG = DigitalCashViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
-  private static final String SOCIAL = "social";
-  public static final Integer MAX_CHAR_NUMBERS = 300;
+  private static final String TRANSACTION = "transaction";
+  /* Add some List to keep track of history*/
+  /*TODO : Should there be a max amount */
 
   /*
    * LiveData objects for capturing events
    */
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiveEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSendEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSearchEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenFollowingEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenProfileEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mSendNewChirpEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<MessageID>> mDeleteChirpEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenWitnessEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenHistoryEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mSendTransactionEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<MessageID>> mReceiveTransactionEvent = new MutableLiveData<>();
 
   private final MutableLiveData<Integer> mNumberCharsLeft = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
@@ -100,36 +102,36 @@ public class DigitalCashViewModel extends AndroidViewModel {
   /*
    * Getters for MutableLiveData instances declared above
    */
-  public LiveData<SingleEvent<Boolean>> getOpenHomeEvent() {
-    return mOpenHomeEvent;
-  }
-
   public LiveData<SingleEvent<Boolean>> getOpenSendEvent() {
     return mOpenSendEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenSearchEvent() {
-    return mOpenSearchEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenReceiveEvent() {
+    return mOpenReceiveEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenFollowingEvent() {
-    return mOpenFollowingEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenReceiptEvent() {
+    return mOpenReceiptEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenProfileEvent() {
-    return mOpenProfileEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenWitnessEvent() {
+    return mOpenWitnessEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getSendNewChirpEvent() {
-    return mSendNewChirpEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenIssueEvent() {
+    return mOpenIssueEvent;
   }
 
-  public LiveData<SingleEvent<MessageID>> getDeleteChirpEvent() {
-    return mDeleteChirpEvent;
+  public LiveData<SingleEvent<Boolean>> getOpenHistoryEvent() {
+    return mOpenHistoryEvent;
   }
 
-  public LiveData<Integer> getNumberCharsLeft() {
-    return mNumberCharsLeft;
+  public LiveData<SingleEvent<Boolean>> getSendTransactionEvent() {
+    return mSendTransactionEvent;
+  }
+
+  public LiveData<SingleEvent<MessageID>> getReceiveTransactionEvent() {
+    return mReceiveTransactionEvent;
   }
 
   public LiveData<List<Lao>> getLAOs() {
@@ -147,37 +149,31 @@ public class DigitalCashViewModel extends AndroidViewModel {
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
-  public void openHome() {
-    mOpenHomeEvent.postValue(new SingleEvent<>(true));
+  public void openReceive() {
+    mOpenReceiveEvent.postValue(new SingleEvent<>(true));
   }
 
   public void openSend() {
     mOpenSendEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openSearch() {
-    mOpenSearchEvent.postValue(new SingleEvent<>(true));
+  public void openReceipt() {
+    mOpenReceiptEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openFollowing() {
-    mOpenFollowingEvent.postValue(new SingleEvent<>(true));
+  public void openWitness() {
+    mOpenWitnessEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void openProfile() {
-    mOpenProfileEvent.postValue(new SingleEvent<>(true));
+  public void openHistory() {
+    mOpenHistoryEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void sendNewChirpEvent() {
-    mSendNewChirpEvent.postValue(new SingleEvent<>(true));
+  public void sendTransactionEvent() {
+    mSendTransactionEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void deleteChirpEvent(MessageID chirpId) {
-    mDeleteChirpEvent.postValue(new SingleEvent<>(chirpId));
-  }
-
-  public void setNumberCharsLeft(Integer numberChars) {
-    mNumberCharsLeft.setValue(numberChars);
-  }
+  public void receiveTransactionEvent(MessageID transactionId) { mReceiveTransactionEvent.postValue(new SingleEvent<>(transactionId));}
 
   public void setLaoId(String laoId) {
     mLaoId.setValue(laoId);
@@ -188,16 +184,16 @@ public class DigitalCashViewModel extends AndroidViewModel {
   }
 
   /**
-   * Send a chirp to your own channel.
+   * Send a coin to your own channel.
    *
-   * <p>Publish a MessageGeneral containing AddChirp data.
+   * <p>Publish a MessageGeneral containing CashTransaction data.
    *
    * @param text the text written in the chirp
    * @param parentId the id of the chirp to which you replied
    * @param timestamp the time at which you sent the chirp
    */
-  public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
-    Log.d(TAG, "Sending a chirp");
+  public void sendTransaction(String text, @Nullable MessageID parentId, long timestamp) {
+    Log.d(TAG, "Sending a Transaction");
     Lao lao = getCurrentLao();
     if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
