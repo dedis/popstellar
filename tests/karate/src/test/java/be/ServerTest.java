@@ -9,4 +9,9 @@ public class ServerTest {
   Karate testCreateLAO() {
     return Karate.run("classpath:be/createLAO");
   }
+
+//  @Karate.Test
+//  Karate testCreateElection() {
+//    return Karate.run("classpath:be/election");
+//  }
 }

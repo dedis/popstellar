@@ -10,7 +10,7 @@ Background:
         # * karate.set(varName, newValue)
   * call read('classpath:be/utils/server.feature')
   * def createLAO = read('classpath:be/createLAO/create.feature@name=createLAO')
-  * def lao_id = ""
+  * def lao_id = "p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
   * def createElectionReq =
           """
             JSON.stringify(
@@ -18,7 +18,7 @@ Background:
                 "method": "publish",
                 "id": 2,
                 "params": {
-                    "channel": "/root/" + lao_id,
+                    "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
                     "message": {
                         "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
                         "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
