@@ -603,7 +603,7 @@ func (c *Channel) createElection(msg message.Message,
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime,
+	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false,
 		setupMsg.Questions, c.attendees, c.hub, c.log, c.organizerPubKey)
 
 	// Saving the election channel creation message on the lao channel

@@ -13,6 +13,7 @@ import (
 func TestVerify_CastVote(t *testing.T) {
 	// create the election channel
 	electChannel, _ := newFakeChannel(t)
+	electChannel.started = true
 
 	// read the valid example file
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
@@ -70,6 +71,7 @@ func TestVerify_CastVote(t *testing.T) {
 func TestVerify_ElectionEnd(t *testing.T) {
 	// create the election channel
 	electChannel, _ := newFakeChannel(t)
+	electChannel.started = true
 
 	// read the valid example file
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
