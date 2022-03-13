@@ -336,7 +336,7 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 
 	err = updateVote(msg.MessageID, msg.Sender, castVote, c.questions)
 	if err != nil {
-		xerrors.Errorf("failed to update vote: %v", err)
+		return xerrors.Errorf("failed to update vote: %v", err)
 	}
 
 	err = c.broadcastToAllClients(msg)
