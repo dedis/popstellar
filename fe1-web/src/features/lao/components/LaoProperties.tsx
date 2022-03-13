@@ -9,7 +9,7 @@ import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/com
 
 import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 import { Lao } from '../objects';
-import { makeCurrentLao } from '../reducer';
+import { selectCurrentLao } from '../reducer';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.toDateString();
@@ -27,10 +27,8 @@ function renderProperties(lao: Lao, url: string) {
   );
 }
 
-const laoSelect = makeCurrentLao();
-
 const LaoProperties = ({ url }: IPropTypes) => {
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 

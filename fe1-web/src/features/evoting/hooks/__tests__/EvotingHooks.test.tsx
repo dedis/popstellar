@@ -10,11 +10,11 @@ const onConfirmEventCreation = jest.fn();
 
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
-    getCurrentLao: () => mockLao,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLao: () => mockLao,
+    useCurrentLaoId: () => mockLaoIdHash,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
-    getEventFromId: () => undefined,
+    getEventById: () => undefined,
     messageRegistry: mockMessageRegistry,
     onConfirmEventCreation,
   },

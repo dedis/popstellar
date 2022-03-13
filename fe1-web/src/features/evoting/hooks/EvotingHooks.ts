@@ -1,7 +1,7 @@
 import FeatureContext from 'core/contexts/FeatureContext';
 import { useContext } from 'react';
 import { EVOTING_FEATURE_IDENTIFIER } from '../index';
-import { EvotingReactContext } from '../objects';
+import { EvotingReactContext } from '../interface';
 
 export namespace EvotingHooks {
   export const useEvotingContext = (): EvotingReactContext => {
@@ -17,7 +17,7 @@ export namespace EvotingHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => {
-    return useEvotingContext().getCurrentLaoId();
+    return useEvotingContext().useCurrentLaoId();
   };
 
   /**
@@ -25,7 +25,7 @@ export namespace EvotingHooks {
    * @returns The current lao
    */
   export const useCurrentLao = () => {
-    return useEvotingContext().getCurrentLao();
+    return useEvotingContext().useCurrentLao();
   };
 
   /**

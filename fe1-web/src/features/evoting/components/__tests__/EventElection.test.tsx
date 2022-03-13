@@ -139,11 +139,11 @@ const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
-    getCurrentLao: () => mockLao,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLao: () => mockLao,
+    useCurrentLaoId: () => mockLaoIdHash,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
-    getEventFromId: () => undefined,
+    getEventById: () => undefined,
     messageRegistry: mockMessageRegistry,
     onConfirmEventCreation: () => undefined,
   },

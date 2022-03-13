@@ -8,7 +8,7 @@ import {
   handleElectionOpenMessage,
 } from './ElectionHandler';
 import { OpenElection } from './messages/OpenElection';
-import { EvotingConfiguration } from '../objects';
+import { EvotingConfiguration } from '../interface';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
@@ -24,25 +24,25 @@ export const configureNetwork = (config: EvotingConfiguration) => {
   config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.OPEN,
-    handleElectionOpenMessage(config.getEventFromId, config.updateEvent),
+    handleElectionOpenMessage(config.getEventById, config.updateEvent),
     OpenElection.fromJson,
   );
   config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.CAST_VOTE,
-    handleCastVoteMessage(config.getCurrentLao, config.getEventFromId, config.updateEvent),
+    handleCastVoteMessage(config.getCurrentLao, config.getEventById, config.updateEvent),
     CastVote.fromJson,
   );
   config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.END,
-    handleElectionEndMessage(config.getEventFromId, config.updateEvent),
+    handleElectionEndMessage(config.getEventById, config.updateEvent),
     EndElection.fromJson,
   );
   config.messageRegistry.add(
     ObjectType.ELECTION,
     ActionType.RESULT,
-    handleElectionResultMessage(config.getEventFromId, config.updateEvent),
+    handleElectionResultMessage(config.getEventById, config.updateEvent),
     ElectionResult.fromJson,
   );
 };
