@@ -291,7 +291,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 		return xerrors.Errorf("failed to verify broadcast message: %w", err)
 	}
 
-	err = c.handleMessage(broadcast.Params.Message)
+	err = c.handleMessage(broadcast.Params.Message, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to handle broadcast message: %v", err)
 	}
@@ -300,9 +300,9 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 }
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message) error {
+func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
-	err := c.registry.Process(msg)
+	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
 	}
@@ -348,7 +348,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 }
 
 // Publish handles publish messages for the consensus channel
-func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -358,7 +358,7 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 		return xerrors.Errorf("failed to verify publish message: %w", err)
 	}
 
-	err = c.handleMessage(publish.Params.Message)
+	err = c.handleMessage(publish.Params.Message, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to handle publish message: %v", err)
 	}
@@ -438,7 +438,7 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 }
 
 // processConsensusElect processes an elect action.
-func (c *Channel) processConsensusElect(message message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusElect(message message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusElect)
 	if !ok {
@@ -542,7 +542,7 @@ func (c *Channel) electAcceptFailure(instance *ConsensusInstance, messageID stri
 }
 
 // processConsensusElectAccept processes an elect accept action.
-func (c *Channel) processConsensusElectAccept(message message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusElectAccept(message message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusElectAccept)
 	if !ok {
@@ -616,7 +616,7 @@ func (c *Channel) processConsensusElectAccept(message message.Message, msgData i
 }
 
 // processConsensusPrepare processes a prepare action.
-func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusPrepare)
 	if !ok {
@@ -676,7 +676,7 @@ func (c *Channel) processConsensusPrepare(_ message.Message, msgData interface{}
 }
 
 // processConsensusPromise processes a promise action.
-func (c *Channel) processConsensusPromise(msg message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusPromise(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusPromise)
 	if !ok {
@@ -752,7 +752,7 @@ func (c *Channel) processConsensusPromise(msg message.Message, msgData interface
 }
 
 // processConsensusPropose processes a propose action.
-func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusPropose)
 	if !ok {
@@ -819,7 +819,7 @@ func (c *Channel) processConsensusPropose(_ message.Message, msgData interface{}
 }
 
 // processConsensusAccept proccesses an accept action.
-func (c *Channel) processConsensusAccept(msg message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusAccept(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusAccept)
 	if !ok {
@@ -894,7 +894,7 @@ func (c *Channel) processConsensusAccept(msg message.Message, msgData interface{
 }
 
 // processConsensusLearn processes a learn action.
-func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusLearn)
 	if !ok {
@@ -936,7 +936,7 @@ func (c *Channel) processConsensusLearn(_ message.Message, msgData interface{}) 
 }
 
 // processConsensusFailure processes a failure action
-func (c *Channel) processConsensusFailure(_ message.Message, msgData interface{}) error {
+func (c *Channel) processConsensusFailure(_ message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ConsensusFailure)
 	if !ok {

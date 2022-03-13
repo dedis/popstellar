@@ -75,8 +75,6 @@ type Channel struct {
 	log zerolog.Logger
 
 	registry registry.MessageRegistry
-
-	socket socket.Socket //TODO see if socket trick is clean enough
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
@@ -245,7 +243,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
-	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger) //TODO HAS BEEN MODIFIED BY JOHANN
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger) // TODO HAS BEEN MODIFIED BY JOHANN
 	hub.NotifyNewChannel(generalChannelPath, &generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
@@ -295,13 +293,12 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
-	c.socket = socket
-	err := c.registry.Process(msg)
+	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
-	c.inbox.StoreMessage(msg) // TODO in comparison of consensus\mod.go it was not here before should it be added ?
+	c.inbox.StoreMessage(msg)
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
@@ -312,14 +309,14 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 }
 
 // processLaoState processes a lao state action.
-func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{}) error {
+func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{}, sender socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.LaoState)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a lao#lao_state message", msgData)
+		return xerrors.Errorf("message %v isn't a lao#state message", msgData)
 	}
 
-	c.log.Info().Msg("received a lao#lao_state message")
+	c.log.Info().Msg("received a lao#state message")
 
 	// Check if we have the update message
 	msg, ok := c.inbox.GetMessage(data.ModificationID)
@@ -414,7 +411,12 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 }
 
 // processMessageObject handles a message object.
-func (c *Channel) processMessageObject(msg message.Message, msgData interface{}) error {
+func (c *Channel) processMessageObject(msg message.Message, msgData interface{}, _ socket.Socket) error {
+
+	_, ok := msgData.(*messagedata.MessageWitness)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
+	}
 
 	var witnessData messagedata.MessageWitness
 
@@ -446,7 +448,12 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(msg message.Message, msgData interface{}) error {
+func (c *Channel) processElectionObject(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
+
+	_, ok := msgData.(*messagedata.ElectionSetup)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
+	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
@@ -477,7 +484,7 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 		return xerrors.Errorf("invalid election#setup message: %v", err)
 	}
 
-	err = c.createElection(msg, electionSetup, c.socket)
+	err = c.createElection(msg, electionSetup, senderSocket)
 	if err != nil {
 		return xerrors.Errorf("failed to create election: %w", err)
 	}
@@ -514,11 +521,11 @@ func (c *Channel) createElection(msg message.Message,
 }
 
 // processRollCallCreate processes a roll call creation object.
-func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}) error {
+func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.RollCallCreate)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a rollcall#close message", msgData)
+		return xerrors.Errorf("message %v isn't a rollcall#create message", msgData)
 	}
 
 	// Check that data is correct
@@ -538,7 +545,7 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 }
 
 // processRollCallOpen processes an open roll call object.
-func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}) error {
+func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.RollCallOpen)
 	if !ok {
@@ -573,7 +580,7 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}) 
 }
 
 // processRollCallClose processes a close roll call message.
-func (c *Channel) processRollCallClose(msg message.Message, msgData interface{}) error {
+func (c *Channel) processRollCallClose(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.RollCallClose)
 	if !ok {
@@ -612,7 +619,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{})
 	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		c.createChirpingChannel(attendee, c.socket)
+		c.createChirpingChannel(attendee, senderSocket)
 
 		c.reactions.AddAttendee(attendee)
 
@@ -629,7 +636,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{})
 	return nil
 }
 
-func (c *Channel) processEmptyFun(message.Message, interface{}) error { //TODO DO NOT KNOW IF SHOULD BE HERE
+func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error { //TODO DO NOT KNOW IF SHOULD BE HERE
 	return nil
 }
 
