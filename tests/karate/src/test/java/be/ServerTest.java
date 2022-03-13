@@ -8,5 +8,9 @@ public class ServerTest {
   @Karate.Test
   Karate testCreateLAO() {
     return Karate.run("classpath:be/createLAO");
-  }
+    }
+//  @Karate.Test
+//  Karate testCreateElection() {
+//    return Karate.run("classpath:be/election");
+//  }
 }
