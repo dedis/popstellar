@@ -66,6 +66,7 @@ export class MessageRegistry {
 
     // Election
     [k(ELECTION, SETUP), { signature: KEYPAIR }],
+    [k(ELECTION, OPEN), { signature: KEYPAIR }],
     [k(ELECTION, CAST_VOTE), { signature: POP_TOKEN }],
     [k(ELECTION, END), { signature: KEYPAIR }],
     [k(ELECTION, RESULT), { signature: KEYPAIR }],

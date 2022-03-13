@@ -19,6 +19,7 @@
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
   - [Elections (introduction)](#elections-introduction)
   - [Setting up an Election (election#setup)](#setting-up-an-election-electionsetup)
+  - [Opening an Election (election#open)](#opening-an-election-electionopen)
   - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
   - [Ending an Election (election#end)](#ending-an-election-electionend)
   - [Sending the results of an Election (election#result)](#sending-the-results-of-an-election-electionresult)
@@ -1048,9 +1049,10 @@ the organizer forgets to scan an attendee’s public key.
 
 An election has the following phases:
 
-Setup → Cast vote(s) → End → Result
+Setup → Open → Cast vote(s) → End → Result
 
 **Setup**: This phase consists of the organizer creating a new election.
+**Open**: This state consists of the organizer opening the election.
 **Cast vote(s)**: This phase consists of the members of the LAO casting a vote.  
 **End**: This phase consists of the organizer ending the election. No new votes are accepted from now on.
 **Result**: This phase consists of the organizer determining the outcome of the election and retrieving the **witness* signatures on it.
@@ -1210,6 +1212,71 @@ The election may allow write-in or have ballot options.
 }
 
 ```
+
+## Opening an Election (election#open)
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*election#open*)
+
+The election can be opened by publishing an election/open message on the election channel. This message indicates when votes begin to be valid. Until consensus or other changes are implemented, this message is manually sent by the organizer or witnesses, at their discretion, though normally before or soon after the start_time.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_open.json
+{
+    "object": "election",
+    "action": "open",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "opened_at": 1633099883
+}
+```
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataOpenElection.json
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenElection.json",
+    "description": "Match an OpenElection query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "open"
+        },
+        "lao": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the LAO"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "ID of the election"
+        },
+        "opened_at": {
+            "description": "[Timestamp] start time",
+            "type": "integer",
+            "minimum": 0
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "object",
+        "action",
+        "lao",
+        "election",
+        "opened_at"
+    ]
+}
+```
+</details>
 
 ## Casting a vote (election#cast_vote)
 

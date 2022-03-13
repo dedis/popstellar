@@ -47,8 +47,9 @@ public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
-  public static final String SCAN = "SCAN";
-  public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
+
+  public enum HomeViewAction {SCAN, REQUEST_CAMERA_PERMISSION}
+
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   /*
@@ -58,7 +59,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenConnectEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
@@ -235,7 +236,7 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenConnectingEvent;
   }
 
-  public LiveData<SingleEvent<String>> getOpenConnectEvent() {
+  public LiveData<SingleEvent<HomeViewAction>> getOpenConnectEvent() {
     return mOpenConnectEvent;
   }
 
@@ -322,11 +323,11 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openQrCodeScanning() {
-    mOpenConnectEvent.setValue(new SingleEvent<>(SCAN));
+    mOpenConnectEvent.setValue(new SingleEvent<>(HomeViewAction.SCAN));
   }
 
   public void openCameraPermission() {
-    mOpenConnectEvent.setValue(new SingleEvent<>(REQUEST_CAMERA_PERMISSION));
+    mOpenConnectEvent.setValue(new SingleEvent<>(HomeViewAction.REQUEST_CAMERA_PERMISSION));
   }
 
   public void openLaunch() {
