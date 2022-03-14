@@ -1,6 +1,6 @@
 # POPstellar - Proof-of-Personhood System Demonstrator
 
-[![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)]
+
 
 The main work in this repository is to be done
 in the context of the following folders:
@@ -9,7 +9,7 @@ in the context of the following folders:
 
 * [fe2-android](https://github.com/dedis/popstellar/tree/master/fe2-android): Android native front-end implementation in Java
 
-* [be1-go](https://github.com/dedis/popstellar/tree/master/be1-go): Back-end implementation in Go
+* [![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_be1)[be1-go](https://github.com/dedis/popstellar/tree/master/be1-go): Back-end implementation in Go
 
 * [be2-scala](https://github.com/dedis/popstellar/tree/master/be2-scala): Back-end implementation in Scala
 
@@ -19,7 +19,7 @@ in the context of the following folders:
 
 * [tests](https://github.com/dedis/popstellar/tree/master/tests): (Future) the system-wide, cross-implementation tests
 
-[![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_be1)
+
 
 
 ## Branch organization
