@@ -5,13 +5,13 @@
 The main work in this repository is to be done
 in the context of the following folders:
 
-* [fe1-web](https://github.com/dedis/popstellar/tree/master/fe1-web): Web-based front-end implementation in TypeScript/ReactJS
+* [fe1-web](https://github.com/dedis/popstellar/tree/master/fe1-web): Web-based front-end implementation in TypeScript/ReactJS [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_fe1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_fe1)
 
-* [fe2-android](https://github.com/dedis/popstellar/tree/master/fe2-android): Android native front-end implementation in Java
+* [fe2-android](https://github.com/dedis/popstellar/tree/master/fe2-android): Android native front-end implementation in Java [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_fe2&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_fe2)
 
-* [![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_be1)[be1-go](https://github.com/dedis/popstellar/tree/master/be1-go): Back-end implementation in Go
+* [be1-go](https://github.com/dedis/popstellar/tree/master/be1-go): Back-end implementation in Go [![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_be1)
 
-* [be2-scala](https://github.com/dedis/popstellar/tree/master/be2-scala): Back-end implementation in Scala
+* [be2-scala](https://github.com/dedis/popstellar/tree/master/be2-scala): Back-end implementation in Scala [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be2&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_be2)
 
 * [protocol](https://github.com/dedis/popstellar/tree/master/protocol): The protocol definition in JSON-Schema
 
