@@ -1,6 +1,6 @@
 # POPstellar - Proof-of-Personhood System Demonstrator
 
-[![build]]
+[![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)]
 
 The main work in this repository is to be done
 in the context of the following folders:
@@ -19,7 +19,7 @@ in the context of the following folders:
 
 * [tests](https://github.com/dedis/popstellar/tree/master/tests): (Future) the system-wide, cross-implementation tests
 
-* [![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_be1)
+[![Coverage Go](https://sonarcloud.io/api/project_badges/measure?project=dedis_popstellar_be1&metric=coverage)](https://sonarcloud.io/summary/new_code?id=dedis_popstellar_be1)
 
 
 ## Branch organization
