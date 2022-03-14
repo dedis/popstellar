@@ -288,15 +288,15 @@ jobs:
     - name: Run test
       run: |
         npm run test
-    karate:
-        name: karate tests
-        runs-on: ubuntu-latest
+  karate:
+    - name: karate tests
+      runs-on: ubuntu-latest
 
-        defaults:
-          run:
-            working-directory: ./tests/karate
+      defaults:
+      run:
+        working-directory: ./tests/karate
 
-        steps:
+      steps:
         - name: Setup repo
           uses: actions/checkout@v2
           with:
