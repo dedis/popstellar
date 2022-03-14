@@ -1,5 +1,7 @@
 # POPstellar - Proof-of-Personhood System Demonstrator
 
+[![build]]
+
 The main work in this repository is to be done
 in the context of the following folders:
 
@@ -36,3 +38,5 @@ if I need a branch to develop the ballot casting feature.
 
 
 This project is licensed under the terms of the AGPL licence. If this license is not suitable for your project, please contact us to discuss licensing terms.
+
+
