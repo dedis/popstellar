@@ -304,3 +304,12 @@ jobs:
       - name: Run test
         run: |
           npm run test
+  karate:
+    name: karate tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./tests/karate
+
+    steps:
