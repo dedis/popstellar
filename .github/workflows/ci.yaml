@@ -289,7 +289,7 @@ jobs:
       run: |
         npm run test
   karate:
-    - name: karate-tests
+    - name: Karate-Tests
       runs-on: ubuntu-latest
 
       defaults:
