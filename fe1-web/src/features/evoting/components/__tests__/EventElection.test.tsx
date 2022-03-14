@@ -18,8 +18,8 @@ import {
   QuestionResult,
   RegisteredVote,
 } from 'features/evoting/objects';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
 import FeatureContext from 'core/contexts/FeatureContext';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 import EventElection from '../EventElection';
 
 // region test data initialization

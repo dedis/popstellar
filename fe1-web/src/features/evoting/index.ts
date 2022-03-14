@@ -1,7 +1,5 @@
 import { configureNetwork } from './network';
-import { EvotingConfiguration, EvotingInterface } from './interface';
-
-export const EVOTING_FEATURE_IDENTIFIER = 'evoting';
+import { EvotingConfiguration, EvotingInterface, EVOTING_FEATURE_IDENTIFIER } from './interface';
 
 /**
  * Configures the e-voting feature

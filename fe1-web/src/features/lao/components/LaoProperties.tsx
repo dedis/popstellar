@@ -4,28 +4,25 @@ import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
 import { Spacing } from 'core/styles';
-import { ConnectToLao } from 'features/connect/objects';
 import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 
 import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 import { Lao } from '../objects';
 import { selectCurrentLao } from '../reducer';
+import { LaoHooks } from '../hooks';
 
-function renderProperties(lao: Lao, url: string) {
+const Properties = ({ lao, url }: { lao: Lao; url: string }) => {
   const creationDateString = lao.creation.toDateString();
-  const connectToLao = new ConnectToLao({
-    server: url,
-    lao: lao.id.toString(),
-  });
+  const encodedLaoConnection = LaoHooks.useEncodedLaoConnectionForQRCode(url, lao.id.toString());
 
   return (
     <>
       <ParagraphBlock text={`Lao name: ${lao.name}`} />
       <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
-      <QRCode value={JSON.stringify(connectToLao)} visibility />
+      <QRCode value={encodedLaoConnection} visibility />
     </>
   );
-}
+};
 
 const LaoProperties = ({ url }: IPropTypes) => {
   const lao = useSelector(selectCurrentLao);
@@ -42,7 +39,7 @@ const LaoProperties = ({ url }: IPropTypes) => {
           <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
         </TouchableOpacity>
 
-        {toggleChildrenVisible && lao && renderProperties(lao, url)}
+        {toggleChildrenVisible && lao && <Properties lao={lao} url={url} />}
       </View>
     </>
   );

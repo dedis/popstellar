@@ -5,11 +5,11 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import { TextBlock } from 'core/components';
 import { Spacing, Typography } from 'core/styles';
-import { useIsLaoOrganizer } from 'features/lao/hooks';
 import STRINGS from 'resources/strings';
 
 import { Event } from './index';
 import { eventPropTypes } from './Event';
+import { EventsHooks } from '../hooks';
 
 const styles = StyleSheet.create({
   flexBox: {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
 const EventListCollapsible = (props: IPropTypes) => {
   const { data } = props;
 
-  const isOrganizer = useIsLaoOrganizer();
+  const isOrganizer = EventsHooks.useIsLaoOrganizer();
 
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
