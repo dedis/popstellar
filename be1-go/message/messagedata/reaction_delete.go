@@ -2,6 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
+
 	"golang.org/x/xerrors"
 )
 
@@ -10,7 +11,9 @@ type ReactionDelete struct {
 	Object     string `json:"object"`
 	Action     string `json:"action"`
 	ReactionID string `json:"reaction_id"`
-	Timestamp  int64  `json:"timestamp"`
+
+	// Timestamp is a Unix timestamp
+	Timestamp int64 `json:"timestamp"`
 }
 
 // Verify verifies that the ReactionDelete message is correct

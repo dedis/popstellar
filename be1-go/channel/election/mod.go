@@ -269,6 +269,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	}
 
 	c.sockets.SendToAll(buf)
+
 	return nil
 }
 
@@ -517,6 +518,7 @@ func gatherOptionCounts(count []int, options []string) []messagedata.ElectionRes
 			Count:        count[i],
 		})
 	}
+
 	return questionResults
 }
 
@@ -527,6 +529,7 @@ func checkMethodProperties(method string, length int) error {
 	if method == "Approval" && length != 1 {
 		return answer.NewError(-4, "Cannot choose multiple ballot options on approval voting method")
 	}
+
 	return nil
 }
 
@@ -563,6 +566,7 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, 
 		// other votes can now change the list of valid votes
 		qs.validVotesMu.Unlock()
 	}
+
 	return nil
 }
 
@@ -583,5 +587,6 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 			method:        q.VotingMethod,
 		}
 	}
+
 	return qs
 }
