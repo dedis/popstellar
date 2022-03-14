@@ -2,6 +2,7 @@ import { AnyAction } from 'redux';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, Timestamp } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import React from 'react';
 import { EvotingFeature } from './Feature';
 
 export const EVOTING_FEATURE_IDENTIFIER = 'evoting';
@@ -103,5 +104,14 @@ export type EvotingReactContext = Pick<
  * The interface the evoting feature exposes
  */
 export interface EvotingInterface extends FeatureInterface {
+  screens: {
+    CreateElection: React.ComponentType<any>;
+  };
+
+  eventTypeComponents: {
+    isOfType: (event: unknown) => boolean;
+    Component: React.ComponentType<{ event: unknown; isOrganizer: boolean | null | undefined }>;
+  }[];
+
   context: EvotingReactContext;
 }

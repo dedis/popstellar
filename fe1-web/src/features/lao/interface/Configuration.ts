@@ -15,6 +15,10 @@ export interface LaoConfiguration {
 }
 
 export interface LaoCompositionConfiguration {
+  /* events */
+
+  EventList: React.ComponentType<any>;
+
   /* connect */
 
   /**
@@ -28,7 +32,12 @@ export interface LaoCompositionConfiguration {
   /**
    * The screens that should additionally be included in the lao navigation
    */
-  laoNavigationScreens: LaoFeature.LaoScreen[];
+  laoNavigationScreens: LaoFeature.Screen[];
+
+  /**
+   * The screens that should additionally be included in the lao navigation
+   */
+  organizerNavigationScreens: LaoFeature.Screen[];
 }
 
 /**
@@ -38,6 +47,11 @@ export interface LaoConfigurationInterface extends FeatureInterface {
   /* components */
   components: {
     LaoList: React.ComponentType<unknown>;
+  };
+
+  /* action creators */
+  actionCreators: {
+    setLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
   };
 
   /* hooks */
@@ -109,10 +123,13 @@ export interface LaoConfigurationInterface extends FeatureInterface {
  */
 export type LaoReactContext = Pick<
   LaoCompositionConfiguration,
+  /* events */
+  | 'EventList'
   /* connect */
   | 'encodeLaoConnectionForQRCode'
   /* navigation screens */
   | 'laoNavigationScreens'
+  | 'organizerNavigationScreens'
 >;
 
 export interface LaoCompositionInterface extends FeatureInterface {

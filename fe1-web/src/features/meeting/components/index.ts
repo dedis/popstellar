@@ -1,1 +1,1 @@
-export { default as EventMeeting } from './EventMeeting';
+export { default as EventMeeting, MeetingEventTypeComponent } from './EventMeeting';

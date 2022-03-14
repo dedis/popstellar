@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { View } from 'react-native';
 
 import { TextBlock } from 'core/components';
@@ -11,7 +11,7 @@ import { HomeHooks } from '../hooks';
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
  * is displayed, otherwise a list available previously connected LAOs is displayed instead
  */
-const Home = () => {
+const Home: FunctionComponent = () => {
   const laos = HomeHooks.useLaoList();
   const LaoList = HomeHooks.useLaoListComponent();
 

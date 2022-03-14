@@ -19,10 +19,10 @@ export function configureFeatures() {
   const keyPairRegistry = new KeyPairRegistry();
 
   // configure features
-  const connectConfiguration = connect.configure();
+  const eventsConfiguration = events.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
-  const eventsConfiguration = events.configure({
-    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+  const connectConfiguration = connect.configure({
+    setLaoServerAddress: laoConfiguration.actionCreators.setLaoServerAddress,
   });
 
   const evotingConfiguration = evoting.configure({
@@ -43,8 +43,8 @@ export function configureFeatures() {
     /* other dependencies */
     messageRegistry,
   });
-  meeting.configure(messageRegistry);
-  rollCall.configure(messageRegistry);
+  const meetingConfiguration = meeting.configure(messageRegistry);
+  const rollCallConfiguration = rollCall.configure(messageRegistry);
   const socialConfiguration = social.configure(messageRegistry);
   witness.configure(messageRegistry);
   const walletConfiguration = wallet.configure(keyPairRegistry);
@@ -72,9 +72,61 @@ export function configureFeatures() {
     ],
   });
 
+  const eventsComposition = events.compose({
+    eventTypeComponents: [
+      ...meetingConfiguration.eventTypeComponents,
+      ...rollCallConfiguration.eventTypeComponents,
+      ...evotingConfiguration.eventTypeComponents,
+    ],
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+  });
+
   const laoComposition = lao.compose({
+    /* events */
+    EventList: eventsConfiguration.components.EventList,
+    /* connect */
     encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionInQRCode,
-    laoNavigationScreens: [],
+    /* navigation */
+    laoNavigationScreens: [
+      { name: STRINGS.navigation_tab_home, Component: homeComposition.screens.Home, order: 0 },
+      {
+        name: STRINGS.navigation_tab_social_media,
+        Component: socialConfiguration.navigation.SocialMediaNavigation,
+        order: 1,
+      },
+      {
+        name: STRINGS.navigation_tab_wallet,
+        Component: walletConfiguration.navigation.WalletNavigation,
+        order: 4,
+      },
+    ],
+    organizerNavigationScreens: [
+      {
+        name: STRINGS.organizer_navigation_tab_create_event,
+        Component: eventsConfiguration.screens.CreateEvent,
+        order: 0,
+      },
+      {
+        name: STRINGS.organizer_navigation_creation_meeting,
+        Component: meetingConfiguration.screens.CreateMeeting,
+        order: 1,
+      },
+      {
+        name: STRINGS.organizer_navigation_creation_roll_call,
+        Component: rollCallConfiguration.screens.CreateRollCall,
+        order: 2,
+      },
+      {
+        name: STRINGS.organizer_navigation_creation_election,
+        Component: evotingConfiguration.screens.CreateElection,
+        order: 3,
+      },
+      {
+        name: STRINGS.roll_call_open,
+        Component: rollCallConfiguration.screens.RollCallOpened,
+        order: 4,
+      },
+    ],
   });
 
   // verify configuration
@@ -106,7 +158,8 @@ export function configureFeatures() {
       ],
     },
     context: {
-      [eventsConfiguration.identifier]: eventsConfiguration.context,
+      [connectConfiguration.identifier]: connectConfiguration.context,
+      [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,

@@ -6,7 +6,7 @@ import {
   HOME_FEATURE_IDENTIFIER,
 } from './interface';
 import * as navigation from './navigation';
-import { Launch } from './screens';
+import * as screens from './screens';
 
 /**
  * Configures the Home feature
@@ -15,6 +15,7 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
   return {
     identifier: HOME_FEATURE_IDENTIFIER,
     navigation,
+    screens,
     context: {
       createLao: config.createLao,
       connectToTestLao: config.connectToTestLao,
@@ -25,7 +26,7 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
         // add launch screen to the navigation
         {
           name: STRINGS.navigation_tab_launch,
-          Component: Launch,
+          Component: screens.Launch,
           order: 1,
         } as HomeFeature.MainNavigationScreen,
       ],

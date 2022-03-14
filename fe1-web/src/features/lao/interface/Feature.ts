@@ -1,9 +1,9 @@
 import React from 'react';
 
 export namespace LaoFeature {
-  export interface LaoScreen {
+  export interface Screen {
     name: string;
-    component: React.ComponentType<unknown>;
+    Component: React.ComponentType<unknown>;
     order: number;
   }
 

@@ -16,7 +16,11 @@ export namespace EventsHooks {
    * Gets whether the current user is organizer of the current lao
    * @returns Whether the current user is organizer of the current lao
    */
-  export const useIsLaoOrganizer = () => {
-    return useEventsContext().useIsLaoOrganizer();
-  };
+  export const useIsLaoOrganizer = () => useEventsContext().useIsLaoOrganizer();
+
+  /**
+   * Gets the list of registrered event type components
+   * @returns The list of registered event type components
+   */
+  export const useEventTypeComponents = () => useEventsContext().eventTypeComponents;
 }

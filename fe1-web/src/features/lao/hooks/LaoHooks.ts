@@ -16,12 +16,18 @@ export namespace LaoHooks {
 
   export const useLaoContext = (): LaoReactContext => {
     const featureContext = useContext(FeatureContext);
-    // assert that the evoting context exists
+    // assert that the lao context exists
     if (!(LAO_FEATURE_IDENTIFIER in featureContext)) {
       throw new Error('Lao context could not be found!');
     }
     return featureContext[LAO_FEATURE_IDENTIFIER] as LaoReactContext;
   };
+
+  /**
+   * Gets the event list component
+   * @returns The event list component
+   */
+  export const useEventList = () => useLaoContext().EventList;
 
   /**
    * Gets the lao connection encoded in a way that can be shown in a QR code
@@ -31,7 +37,20 @@ export namespace LaoHooks {
     ...args: Parameters<LaoReactContext['encodeLaoConnectionForQRCode']>
   ) => useLaoContext().encodeLaoConnectionForQRCode(...args);
 
+  /**
+   * Gets the lao navigation screens
+   * @returns The lao navigation screens
+   */
+  export const useLaoNavigationScreens = () => useLaoContext().laoNavigationScreens;
+
+  /**
+   * Gets the organizer navigation screens
+   * @returns The organizer navigation screens
+   */
+  export const useOrganizerNavigationScreens = () => useLaoContext().organizerNavigationScreens;
+
   /** Hooks defined by the lao feature */
+
   /**
    * Retrieves a list of all the LAOs known to the system
    */

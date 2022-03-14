@@ -1,29 +1,13 @@
 import { Hash, Timestamp } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
+import React from 'react';
 import { AnyAction, Reducer } from 'redux';
 import { LaoEvent, LaoEventState } from '../objects';
 import { EventLaoReducerState, EVENT_REDUCER_PATH } from '../reducer';
 
 export const EVENTS_FEATURE_IDENTIFIER = 'events';
 
-export interface EventsConfiguration {
-  /* lao */
-
-  /**
-   * Gets whether the current user is organizer of the current lao
-   * @returns Whether the current user is organizer of the current lao
-   */
-  useIsLaoOrganizer: () => boolean;
-}
-
-/**
- * The type of the context that is provided to react evoting components
- */
-export type EventsReactContext = Pick<
-  EventsConfiguration,
-  /* lao */
-  'useIsLaoOrganizer'
->;
+export interface EventsConfiguration {}
 
 /**
  * The interface the evoting feature exposes
@@ -60,6 +44,14 @@ export interface EventsInterface extends FeatureInterface {
     ) => void;
   };
 
+  components: {
+    EventList: React.ComponentType<any>;
+  };
+
+  screens: {
+    CreateEvent: React.ComponentType<any>;
+  };
+
   /* action creators */
   actionCreators: {
     addEvent: (laoId: string | Hash, event: LaoEventState) => AnyAction;
@@ -72,7 +64,36 @@ export interface EventsInterface extends FeatureInterface {
   reducers: {
     [EVENT_REDUCER_PATH]: Reducer<EventLaoReducerState, AnyAction>;
   };
+}
 
+export interface EventsCompositionConfiguration {
+  /* lao */
+
+  /**
+   * Gets whether the current user is organizer of the current lao
+   * @returns Whether the current user is organizer of the current lao
+   */
+  useIsLaoOrganizer: () => boolean;
+
+  /* other */
+  eventTypeComponents: {
+    isOfType: (event: unknown) => boolean;
+    Component: React.ComponentType<{ event: unknown; isOrganizer: boolean | null | undefined }>;
+  }[];
+}
+
+/**
+ * The type of the context that is provided to react components
+ */
+export type EventsReactContext = Pick<
+  EventsCompositionConfiguration,
+  /* lao */
+  | 'useIsLaoOrganizer'
+  /* other */
+  | 'eventTypeComponents'
+>;
+
+export interface EventsCompositionInterface extends FeatureInterface {
   /* context */
   context: EventsReactContext;
 }

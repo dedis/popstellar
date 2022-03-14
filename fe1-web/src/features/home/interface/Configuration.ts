@@ -52,7 +52,11 @@ export type HomeReactContext = Pick<
 export interface HomeInterface extends FeatureInterface {
   /* navigation */
   navigation: {
-    MainNavigation: React.ComponentType<unknown>;
+    MainNavigation: React.ComponentType<any>;
+  };
+  screens: {
+    Home: React.ComponentType<any>;
+    Launch: React.ComponentType<any>;
   };
   /* context */
   context: HomeReactContext;

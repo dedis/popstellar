@@ -1,9 +1,15 @@
+import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 import React from 'react';
-
-export interface ConnectConfiguration {}
+import { AnyAction } from 'redux';
 
 export const CONNECT_FEATURE_IDENTIFIER = 'connect';
+
+export interface ConnectConfiguration {
+  setLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
+}
+
+export type ConnectReactContext = Pick<ConnectConfiguration, 'setLaoServerAddress'>;
 
 /**
  * The interface the evoting feature exposes
@@ -19,4 +25,5 @@ export interface ConnectInterface extends FeatureInterface {
      */
     encodeLaoConnectionInQRCode: (server: string, laoId: string) => string;
   };
+  context: ConnectReactContext;
 }

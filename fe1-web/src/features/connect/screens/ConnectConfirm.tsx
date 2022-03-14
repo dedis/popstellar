@@ -15,8 +15,7 @@ import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 import PROPS_TYPE from 'resources/Props';
 import { FOUR_SECONDS } from 'resources/const';
-
-import { setLaoServerAddress } from 'features/lao/reducer';
+import { ConnectHooks } from '../hooks';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -73,6 +72,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
   const [laoId, setLaoId] = useState(laoIdIn);
   const toast = useToast();
   const dispatch = useDispatch();
+  const setLaoServerAddress = ConnectHooks.useSetLaoServerAddress();
 
   const onButtonConfirm = async () => {
     if (!connectTo(serverUrl)) {

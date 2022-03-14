@@ -1,5 +1,7 @@
 import { configureNetwork } from './network';
 import { EvotingConfiguration, EvotingInterface, EVOTING_FEATURE_IDENTIFIER } from './interface';
+import * as screens from './screens';
+import { ElectionEventTypeComponent } from './components';
 
 /**
  * Configures the e-voting feature
@@ -22,6 +24,8 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
   return {
     /* this context will be used to pass the properties to react components */
     identifier: EVOTING_FEATURE_IDENTIFIER,
+    screens,
+    eventTypeComponents: [ElectionEventTypeComponent],
     context: {
       /* lao */
       useCurrentLao,
