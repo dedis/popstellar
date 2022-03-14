@@ -5,19 +5,20 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// ChirpDelete defines a message data
-type ChirpDelete struct {
+// ChirpNotifyDelete defines a message data
+type ChirpNotifyDelete struct {
 	Object  string `json:"object"`
 	Action  string `json:"action"`
 	ChirpId string `json:"chirp_id"`
+	Channel string `json:"channel"`
 
 	// Timestamp is a Unix timestamp
 	Timestamp int64 `json:"timestamp"`
 }
 
-// Verify implements Verifiable. It verifies that the ChirpDelete message
+// Verify implements Verifiable. It verifies that the ChirpNotifyDelete message
 // is correct
-func (message ChirpDelete) Verify() error {
+func (message ChirpNotifyDelete) Verify() error {
 	// verify that Timestamp is positive
 	if message.Timestamp < 0 {
 		return xerrors.Errorf("timestamp is %d, should be minimum 0", message.Timestamp)
@@ -33,16 +34,16 @@ func (message ChirpDelete) Verify() error {
 }
 
 // GetObject implements MessageData
-func (ChirpDelete) GetObject() string {
+func (ChirpNotifyDelete) GetObject() string {
 	return ChirpObject
 }
 
 // GetAction implements MessageData
-func (ChirpDelete) GetAction() string {
-	return ChirpActionDelete
+func (ChirpNotifyDelete) GetAction() string {
+	return ChirpActionNotifyDelete
 }
 
 // NewEmpty implements MessageData
-func (ChirpDelete) NewEmpty() MessageData {
-	return &ChirpDelete{}
+func (ChirpNotifyDelete) NewEmpty() MessageData {
+	return &ChirpNotifyDelete{}
 }
