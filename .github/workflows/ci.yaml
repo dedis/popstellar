@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - work-karate-tesa-changingErrorCode
 
   pull_request:
     types:
@@ -52,11 +53,9 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-
     - name: Setup npm dependencies
       run: |
         npm install
-
     - name: Check npm security issues
       run: npm audit fix
       continue-on-error: true
@@ -84,17 +83,13 @@ jobs:
       run: |
         npm install -g sonarqube-scanner
         sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN_FE1 }}
-
     - name: Verify expo project health
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
         expo doctor
-
     - name: Build expo web project
       run: |
         expo build:web
-
-
   be1-go:
     name: Be1-Go
     strategy:
@@ -132,7 +127,6 @@ jobs:
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
         restore-keys: |
           ${{ runner.os }}-go-
-
     - name: Format
       if: ${{ matrix.platform == 'ubuntu-latest' }}
       run: make check-fmt ; if [ "$(gofmt -s -l ./ | wc -l)" -gt 0 ]; then exit 1; fi
@@ -140,16 +134,13 @@ jobs:
     - name: Run check target
       run: |
         make check
-
     - name: Run go vet
       run: |
         make vet
-
     - name: Build
       if: ${{ always() }}  # execute even if previous steps failed
       run: |
         make build
-
     - name: Run code analysis
       if: ${{ matrix.platform == 'ubuntu-latest' }}  # execute even if previous steps failed
       uses: SonarSource/sonarcloud-github-action@master
@@ -193,7 +184,6 @@ jobs:
       - name: Grant execute permission for gradlew
         run: |
           chmod +x ./gradlew
-
       - name: Build App and Run Tests
         shell: bash
         run: |
@@ -207,7 +197,6 @@ jobs:
           # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
           # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
           ( set -o pipefail; ./gradlew jacocoTestReport --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
-
       - name: Cache SonarCloud packages
         uses: actions/cache@v2
         with:
@@ -223,7 +212,6 @@ jobs:
           # use grep to remove log spam due to jetifier transformation, c.f. https://stackoverflow.com/a/52353446
           # use set -o pipefail to keep error code from gradle, c.f. https://stackoverflow.com/a/37128767
           ( set -o pipefail; ./gradlew sonarqube --parallel --build-cache --info | grep -vE "^Transforming (.*) with (.*)Transform" )
-
   be2-scala:
     name: Be2-Scala
     runs-on: ubuntu-latest
@@ -291,15 +279,34 @@ jobs:
           ${{ runner.os }}-build-${{ env.cache-name }}-
           ${{ runner.os }}-build-
           ${{ runner.os }}-
-
     - name: Setup npm dependencies
       run: |
         npm install
-
     - name: Check npm security issues
       run: |
         npm audit fix
-
     - name: Run test
       run: |
         npm run test
+    karate:
+        name: karate tests
+        runs-on: ubuntu-latest
+
+        defaults:
+          run:
+            working-directory: ./tests/karate
+
+        steps:
+        - name: Setup repo
+          uses: actions/checkout@v2
+          with:
+            fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of Sonar analysis
+
+        - name: Setup JDK 11
+          uses: actions/setup-java@v1
+          with:
+            java-version: 11.0.10
+
+        - name: Server tests with Go
+          run: |
+            mvn test -DargLine="-Dkarate.env=go"
