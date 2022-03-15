@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import { TextBlock, WideButtonView } from 'core/components';
+import { QRCode, TextBlock, WideButtonView } from "core/components";
 import PROPS_TYPE from 'resources/Props';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';
@@ -83,7 +83,6 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       return (
         <>
           <WideButtonView title="Send tokens" onPress={() => {}} />
-          <WideButtonView title="Show QR code" onPress={() => {}} />
         </>
       );
     }
@@ -98,6 +97,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
         )}
         {tokenInfos()}
       </View>
+      {selectedToken && <QRCode value={selectedToken.token.publicKey.valueOf()} visibility />}
       <View style={styles.smallPadding} />
       {tokenActions()}
       <WideButtonView
