@@ -375,7 +375,8 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
 		electionSetup.Questions, attendees, fakeHub, nolog, keypair.public)
 
-	channelElec := channel.(*Channel)
+	channelElec, ok := channel.(*Channel)
+	require.True(t, ok)
 
 	fakeHub.NotifyNewChannel(channelElec.channelID, channel, &fakeSocket{id: "socket"})
 
