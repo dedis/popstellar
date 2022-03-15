@@ -2,11 +2,12 @@ package election
 
 import (
 	"encoding/json"
-	"github.com/stretchr/testify/require"
 	"os"
 	"path/filepath"
 	"popstellar/message/messagedata"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestVerify_CastVote(t *testing.T) {

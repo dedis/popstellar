@@ -88,7 +88,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	reactionPath := fmt.Sprintf("%s/social/reactions", channelID)
 	reactionCh := reaction.NewChannel(reactionPath, hub, log)
-	hub.NotifyNewChannel(reactionPath, &reactionCh, socket)
+	hub.NotifyNewChannel(reactionPath, reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
@@ -99,7 +99,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		sockets:         channel.NewSockets(),
 		inbox:           box,
 		general:         generalCh,
-		reactions:       &reactionCh,
+		reactions:       reactionCh,
 		organizerPubKey: organizerPubKey,
 		witnesses:       make(map[string]struct{}),
 		hub:             hub,
@@ -610,7 +610,7 @@ func (c *Channel) createElection(msg message.Message,
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
+	c.hub.NotifyNewChannel(channelPath, electionCh, socket)
 
 	return nil
 }
