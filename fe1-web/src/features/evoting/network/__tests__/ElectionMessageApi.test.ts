@@ -25,18 +25,10 @@ jest.mock('core/objects', () => {
   };
 });
 
-jest.mock('core/network', () => {
-  return {
-    ...jest.requireActual('core/network'),
-    publish: jest.fn().mockImplementation(() => Promise.resolve()),
-  };
-});
+jest.mock('core/network');
 
 afterEach(() => {
   jest.clearAllMocks();
-});
-afterAll(() => {
-  jest.restoreAllMocks();
 });
 
 describe('mockElectionNotStarted.id', () => {
