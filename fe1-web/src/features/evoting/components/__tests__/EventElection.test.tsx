@@ -11,6 +11,7 @@ import {
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
 import { EventTags, Hash, Timestamp } from 'core/objects';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
 import {
   Election,
   ElectionStatus,
@@ -19,7 +20,6 @@ import {
   RegisteredVote,
 } from 'features/evoting/objects';
 import STRINGS from 'resources/strings';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
 
 import EventElection from '../EventElection';
 
@@ -140,11 +140,11 @@ const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
-    getCurrentLao: () => mockLao,
-    getCurrentLaoId: () => mockLaoIdHash,
+    useCurrentLao: () => mockLao,
+    useCurrentLaoId: () => mockLaoIdHash,
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
-    getEventFromId: () => undefined,
+    getEventById: () => undefined,
     messageRegistry: mockMessageRegistry,
     onConfirmEventCreation: () => undefined,
   },

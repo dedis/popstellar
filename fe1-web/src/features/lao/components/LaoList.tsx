@@ -2,11 +2,10 @@ import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { Spacing } from 'core/styles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 
-import { Lao } from '../objects';
-import { makeLaosList } from '../reducer';
+import { selectLaosList } from '../reducer';
 import LaoItem from './LaoItem';
 
 const styles = StyleSheet.create({
@@ -15,8 +14,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const useLaoList = (): Lao[] => useSelector(makeLaosList());
-
 /**
  * Display a list available of previously connected LAOs
  *
@@ -24,7 +21,7 @@ const useLaoList = (): Lao[] => useSelector(makeLaosList());
  *  some organizer server if needed
  */
 const LaoList = () => {
-  const laos = useLaoList();
+  const laos = useSelector(selectLaosList);
   return (
     <View style={containerStyles.centeredY}>
       <FlatList

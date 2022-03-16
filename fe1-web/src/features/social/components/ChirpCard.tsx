@@ -6,9 +6,9 @@ import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 import TimeAgo from 'react-timeago';
 
-import { gray } from 'core/styles/colors';
-import { PublicKey } from 'core/objects';
 import { ConfirmModal, ProfileIcon } from 'core/components';
+import { PublicKey } from 'core/objects';
+import { gray } from 'core/styles/colors';
 import STRINGS from 'resources/strings';
 
 import { requestAddReaction, requestDeleteChirp } from '../network/SocialMessageApi';

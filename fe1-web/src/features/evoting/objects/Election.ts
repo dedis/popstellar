@@ -1,6 +1,6 @@
 import { Hash, Timestamp } from 'core/objects';
 
-import { EvotingFeature } from './Feature';
+import { EvotingFeature } from '../interface/Feature';
 
 /**
  * Object to represent an election and all its components.

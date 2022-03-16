@@ -4,7 +4,8 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { channelFromIds, getLastPartOfChannel } from 'core/objects';
 import { dispatch } from 'core/redux';
 
-import { Election, ElectionStatus, EvotingConfiguration, RegisteredVote } from '../objects';
+import { EvotingConfiguration } from '../interface';
+import { Election, ElectionStatus, RegisteredVote } from '../objects';
 import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { OpenElection } from './messages/OpenElection';
 
@@ -57,12 +58,12 @@ export const handleElectionSetupMessage =
 /**
  * Returns a function that handles an ElectionOpen message by opening the election.
  *
- * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
+ * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleElectionOpenMessage =
   (
-    getEventFromId: EvotingConfiguration['getEventFromId'],
+    getEventById: EvotingConfiguration['getEventById'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -77,7 +78,7 @@ export const handleElectionOpenMessage =
     const makeErr = (err: string) => `election/open was not processed: ${err}`;
 
     const electionOpenMsg = msg.messageData as OpenElection;
-    const election = getEventFromId(electionOpenMsg.election) as Election;
+    const election = getEventById(electionOpenMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to end'));
       return false;
@@ -93,13 +94,13 @@ export const handleElectionOpenMessage =
  * Returns a function that handles a CastVote message being sent during an election.
  *
  * @param getCurrentLao - A function returning the current lao
- * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
+ * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleCastVoteMessage =
   (
     getCurrentLao: EvotingConfiguration['getCurrentLao'],
-    getEventFromId: EvotingConfiguration['getEventFromId'],
+    getEventById: EvotingConfiguration['getEventById'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage): boolean => {
@@ -123,7 +124,7 @@ export const handleCastVoteMessage =
 
     const castVoteMsg = msg.messageData as CastVote;
 
-    const election = getEventFromId(castVoteMsg.election) as Election;
+    const election = getEventById(castVoteMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to register vote '));
       return false;
@@ -153,12 +154,12 @@ export const handleCastVoteMessage =
 /**
  * Returns a function that handles an ElectionEnd message by ending the election.
  *
- * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
+ * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleElectionEndMessage =
   (
-    getEventFromId: EvotingConfiguration['getEventFromId'],
+    getEventById: EvotingConfiguration['getEventById'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage) => {
@@ -173,7 +174,7 @@ export const handleElectionEndMessage =
     const makeErr = (err: string) => `election/end was not processed: ${err}`;
 
     const ElectionEndMsg = msg.messageData as EndElection;
-    const election = getEventFromId(ElectionEndMsg.election) as Election;
+    const election = getEventById(ElectionEndMsg.election) as Election;
     if (!election) {
       console.warn(makeErr('No active election to end'));
       return false;
@@ -188,12 +189,12 @@ export const handleElectionEndMessage =
 /**
  * Returns a function that handles an ElectionResult message by updating the election's state with its results.
  *
- * @param getEventFromId - A function retrieving an event with matching id from the store of the currently active lao
+ * @param getEventById - A function retrieving an event with matching id from the store of the currently active lao
  * @param updateEvent - A function returning a redux action for update an event in the currently active lao store
  */
 export const handleElectionResultMessage =
   (
-    getEventFromId: EvotingConfiguration['getEventFromId'],
+    getEventById: EvotingConfiguration['getEventById'],
     updateEvent: EvotingConfiguration['updateEvent'],
   ) =>
   (msg: ProcessableMessage) => {
@@ -213,7 +214,7 @@ export const handleElectionResultMessage =
     }
     const electionId = getLastPartOfChannel(msg.channel);
     const electionResultMessage = msg.messageData as ElectionResult;
-    const election = getEventFromId(electionId) as Election;
+    const election = getEventById(electionId) as Election;
     if (!election) {
       console.warn(makeErr('No active election for the result'));
       return false;
