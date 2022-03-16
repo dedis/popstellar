@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
   viewCenter: {
     flex: 8,
     justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     margin: Spacing.xs,
   } as ViewStyle,

@@ -33,7 +33,7 @@ const WalletHome = () => {
   }
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.welcome_to_wallet_display} />
       <View style={styles.smallPadding} />
       <TextBlock text={STRINGS.info_to_set_wallet} />

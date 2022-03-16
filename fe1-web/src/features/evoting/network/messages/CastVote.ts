@@ -138,7 +138,6 @@ export class CastVote implements MessageData {
       // Important: A standardized order is required, otherwise the hash cannot be verified
       // Even more important: A standardized delimiter has to be used to disambiguate [1,0] from [10]
       // See https://github.com/dedis/popstellar/issues/843 for details
-      // TODO: Update after discussion in #843 is finished
       [...selectionOptions]
         // sort in ascending order
         .sort((a, b) => a - b)

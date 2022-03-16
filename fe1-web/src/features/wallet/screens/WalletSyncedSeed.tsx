@@ -61,7 +61,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
     return (
-      <View style={containerStyles.centered} key={`token-${laoId}-${rollCallId}`}>
+      <View style={containerStyles.centeredY} key={`token-${laoId}-${rollCallId}`}>
         <View style={styles.smallPadding} />
         <TextBlock bold text={`${STRINGS.lao_name}: ${lao.name}`} />
         <TextBlock bold text={`${STRINGS.roll_call_name}: ${rollCall.name}`} />
@@ -141,7 +141,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   }
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       {!showTokens && recoverTokens()}
       {showTokens && displayTokens()}
     </View>
