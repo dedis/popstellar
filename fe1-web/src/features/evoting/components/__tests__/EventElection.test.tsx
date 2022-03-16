@@ -149,10 +149,6 @@ const contextValue = {
   },
 };
 
-afterEach(() => {
-  warn.mockClear();
-});
-
 describe('EventElection', () => {
   describe('Not started election', () => {
     it('renders correctly for an organizer', () => {
