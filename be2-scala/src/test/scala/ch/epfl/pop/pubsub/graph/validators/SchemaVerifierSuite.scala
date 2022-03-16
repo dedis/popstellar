@@ -24,17 +24,9 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
 
   /* ----------------------------- Test invalid JSON requests ----------------------------- */
   test("Invalid jsonString - string instead of JSON object") {
-    val stringTest = "hey"
+    val invalidJSON = "wrond JSON string"
 
-    verifyRpcSchema(stringTest) shouldBe a[Right[_, PipelineError]]
-  }
-
-  test("Invalid jsonString - invalid object instead of JSON object") {
-    class hey {}
-    val objectTest = new hey
-    intercept[Exception] {
-      verifyRpcSchema(objectTest.asInstanceOf[String]) 
-    }
+    verifyRpcSchema(invalidJSON) shouldBe a[Right[_, PipelineError]]
   }
 
   /* ----------------------------- High-level (JSON-rpc) tests ----------------------------- */
