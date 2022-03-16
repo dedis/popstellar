@@ -26,6 +26,9 @@ import { EvotingHooks } from '../hooks';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
+// for now only plurality voting is supported (2022-03-16, Tyratox)
+const VOTING_METHOD = STRINGS.election_method_Plurality;
+
 /**
  * UI to create an Election Event
  */
@@ -43,7 +46,7 @@ const CreateElection = ({ route }: any) => {
   const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
 
-  const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
+  const emptyQuestion = { question: '', voting_method: VOTING_METHOD, ballot_options: [''] };
   const [questions, setQuestions] = useState([emptyQuestion]);
   const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
@@ -88,6 +91,7 @@ const CreateElection = ({ route }: any) => {
     questions.map((item) => ({
       ...item,
       id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
+      // for now the write_in feature is disabled (2022-03-16, Tyratox)
       write_in: false,
     }));
 
