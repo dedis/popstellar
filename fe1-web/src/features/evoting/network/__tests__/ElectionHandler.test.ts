@@ -61,9 +61,6 @@ const getMockLao: EvotingConfiguration['getCurrentLao'] = () => mockLao;
 const getEventByIdDummy: EvotingConfiguration['getEventById'] = () => undefined;
 const updateEventDummy: EvotingConfiguration['updateEvent'] = () => mockReduxAction;
 
-// mocks
-const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
 // mock channelFromIds and subscribeToChannel (spyOn does not work)
 const mockChannelId = 'someChannelId';
 
@@ -112,13 +109,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
     it('should return false if the action is not "setup"', () => {
       const addEvent = jest.fn();
@@ -132,13 +122,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
 
     it('should create the election', () => {
@@ -168,9 +151,6 @@ describe('ElectionHandler', () => {
           }),
         }),
       ).toBeTrue();
-
-      // no warning should have been printed
-      expect(warn).toHaveBeenCalledTimes(0);
 
       // it should have been subscripted to the election channel
       expect(channelFromIds).toHaveBeenCalledTimes(1);
@@ -210,13 +190,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
     it('should return false if the action is not "open"', () => {
       expect(
@@ -231,13 +204,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
 
     it('should return false if the election has not previously been stored', () => {
@@ -255,10 +221,6 @@ describe('ElectionHandler', () => {
           } as MessageData,
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('should update the election status', () => {
@@ -287,9 +249,6 @@ describe('ElectionHandler', () => {
           }),
         }),
       ).toBeTrue();
-
-      // no warning should have been printed
-      expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventById has been called correctly
       expect(getEventById).toHaveBeenCalledWith(mockElectionId);
@@ -324,13 +283,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
     it('should return false if the action is not "cast_vote"', () => {
       expect(
@@ -346,13 +298,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
 
     it('for attendees should return false if the election has not previously been stored', () => {
@@ -395,10 +340,6 @@ describe('ElectionHandler', () => {
           } as MessageData,
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('for attendees should update election.registeredVotes', () => {
@@ -434,9 +375,6 @@ describe('ElectionHandler', () => {
           messageData: castVoteMessage,
         }),
       ).toBeTrue();
-
-      // no warning should have been printed
-      expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventById and updateEvent have been not been
       expect(getEventById).toHaveBeenCalledTimes(0);
@@ -480,9 +418,6 @@ describe('ElectionHandler', () => {
         }),
       ).toBeTrue();
 
-      // no warning should have been printed
-      expect(warn).toHaveBeenCalledTimes(0);
-
       // check whether getEventById has been called correctly
       expect(getEventById).toHaveBeenCalledWith(mockElectionId);
       expect(getEventById).toHaveBeenCalledTimes(1);
@@ -523,13 +458,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
     it('should return false if the action is not "end"', () => {
       expect(
@@ -544,13 +472,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
 
     it('should return false if the election has not previously been stored', () => {
@@ -568,10 +489,6 @@ describe('ElectionHandler', () => {
           } as MessageData,
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('should update the election status', () => {
@@ -601,9 +518,6 @@ describe('ElectionHandler', () => {
           }),
         }),
       ).toBeTrue();
-
-      // no warning should have been printed
-      expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventById has been called correctly
       expect(getEventById).toHaveBeenCalledWith(mockElectionId);
@@ -637,13 +551,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
 
     it('should return false if the action is not "result"', () => {
@@ -659,13 +566,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/unsupported message/i),
-        expect.anything(),
-      );
     });
 
     it('should return false if the message data does not contain a channel', () => {
@@ -682,10 +582,6 @@ describe('ElectionHandler', () => {
           },
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/No channel/i));
     });
 
     it('should return false if the election has not previously been stored', () => {
@@ -703,10 +599,6 @@ describe('ElectionHandler', () => {
           } as MessageData,
         }),
       ).toBeFalse();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/election/i));
     });
 
     it('should update the election status and store results', () => {
@@ -733,9 +625,6 @@ describe('ElectionHandler', () => {
           }),
         }),
       ).toBeTrue();
-
-      // no warning should have been printed
-      expect(warn).toHaveBeenCalledTimes(0);
 
       // check whether getEventById has been called correctly
       expect(getEventById).toHaveBeenCalledWith(getLastPartOfChannel(mockMessageData.channel));
