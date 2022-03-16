@@ -47,8 +47,8 @@ export function requestCreateElection(
 /**
  * Sends a query to open an election.
  *
- * @param laoId - The id of the lao in which the given election should be terminated
- * @param election - The election that should be terminated
+ * @param laoId - The id of the lao in which the given election should be opened
+ * @param election - The election that should be opened
  */
 export function openElection(laoId: Hash, election: Election): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
