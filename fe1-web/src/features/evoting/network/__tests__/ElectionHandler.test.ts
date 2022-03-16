@@ -21,13 +21,8 @@ import {
   Timestamp,
 } from 'core/objects';
 import { dispatch } from 'core/redux';
-import {
-  Election,
-  ElectionState,
-  ElectionStatus,
-  EvotingConfiguration,
-  RegisteredVote,
-} from 'features/evoting/objects';
+import { EvotingConfiguration } from 'features/evoting/interface';
+import { Election, ElectionState, ElectionStatus, RegisteredVote } from 'features/evoting/objects';
 import {
   mockElectionId,
   mockElectionNotStarted,
@@ -63,7 +58,7 @@ const mockMessageData = {
 };
 
 const getMockLao: EvotingConfiguration['getCurrentLao'] = () => mockLao;
-const getEventFromIdDummy: EvotingConfiguration['getEventFromId'] = () => undefined;
+const getEventByIdDummy: EvotingConfiguration['getEventById'] = () => undefined;
 const updateEventDummy: EvotingConfiguration['updateEvent'] = () => mockReduxAction;
 
 // mocks
@@ -205,7 +200,7 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionOpenMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -226,7 +221,7 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "open"', () => {
       expect(
         handleElectionOpenMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -248,7 +243,7 @@ describe('ElectionHandler', () => {
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionOpenMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -269,7 +264,7 @@ describe('ElectionHandler', () => {
     it('should update the election status', () => {
       let storedElection = mockElectionNotStarted.toState();
 
-      const getEventFromId = jest.fn().mockImplementation(() => Election.fromState(storedElection));
+      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
       const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
         storedElection = eventState;
 
@@ -281,7 +276,7 @@ describe('ElectionHandler', () => {
 
       expect(
         handleElectionOpenMessage(
-          getEventFromId,
+          getEventById,
           updateEvent,
         )({
           ...mockMessageData,
@@ -296,9 +291,9 @@ describe('ElectionHandler', () => {
       // no warning should have been printed
       expect(warn).toHaveBeenCalledTimes(0);
 
-      // check whether getEventFromId has been called correctly
-      expect(getEventFromId).toHaveBeenCalledWith(mockElectionId);
-      expect(getEventFromId).toHaveBeenCalledTimes(1);
+      // check whether getEventById has been called correctly
+      expect(getEventById).toHaveBeenCalledWith(mockElectionId);
+      expect(getEventById).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
       const newElectionState = {
@@ -319,7 +314,7 @@ describe('ElectionHandler', () => {
       expect(
         handleCastVoteMessage(
           getMockLao,
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -341,7 +336,7 @@ describe('ElectionHandler', () => {
       expect(
         handleCastVoteMessage(
           getMockLao,
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -367,7 +362,7 @@ describe('ElectionHandler', () => {
       expect(
         handleCastVoteMessage(
           getMockLao,
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -388,7 +383,7 @@ describe('ElectionHandler', () => {
       expect(
         handleCastVoteMessage(
           getMockLao,
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -412,7 +407,7 @@ describe('ElectionHandler', () => {
 
       let storedElection = mockElectionOpened.toState();
 
-      const getEventFromId = jest.fn().mockImplementation(() => Election.fromState(storedElection));
+      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
       const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
         storedElection = eventState;
 
@@ -432,7 +427,7 @@ describe('ElectionHandler', () => {
       expect(
         handleCastVoteMessage(
           getMockLao,
-          getEventFromId,
+          getEventById,
           updateEvent,
         )({
           ...mockMessageData,
@@ -443,8 +438,8 @@ describe('ElectionHandler', () => {
       // no warning should have been printed
       expect(warn).toHaveBeenCalledTimes(0);
 
-      // check whether getEventFromId and updateEvent have been not been
-      expect(getEventFromId).toHaveBeenCalledTimes(0);
+      // check whether getEventById and updateEvent have been not been
+      expect(getEventById).toHaveBeenCalledTimes(0);
       expect(updateEvent).toHaveBeenCalledTimes(0);
 
       // verify that the stored election was not changed
@@ -457,7 +452,7 @@ describe('ElectionHandler', () => {
 
       let storedElection = mockElectionOpened.toState();
 
-      const getEventFromId = jest.fn().mockImplementation(() => Election.fromState(storedElection));
+      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
       const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
         storedElection = eventState;
 
@@ -477,7 +472,7 @@ describe('ElectionHandler', () => {
       expect(
         handleCastVoteMessage(
           getMockLao,
-          getEventFromId,
+          getEventById,
           updateEvent,
         )({
           ...mockMessageData,
@@ -488,9 +483,9 @@ describe('ElectionHandler', () => {
       // no warning should have been printed
       expect(warn).toHaveBeenCalledTimes(0);
 
-      // check whether getEventFromId has been called correctly
-      expect(getEventFromId).toHaveBeenCalledWith(mockElectionId);
-      expect(getEventFromId).toHaveBeenCalledTimes(1);
+      // check whether getEventById has been called correctly
+      expect(getEventById).toHaveBeenCalledWith(mockElectionId);
+      expect(getEventById).toHaveBeenCalledTimes(1);
 
       const newVote: RegisteredVote = {
         createdAt: castVoteMessage.created_at.valueOf(),
@@ -518,7 +513,7 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionEndMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -539,7 +534,7 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "end"', () => {
       expect(
         handleElectionEndMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -561,7 +556,7 @@ describe('ElectionHandler', () => {
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionEndMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -582,7 +577,7 @@ describe('ElectionHandler', () => {
     it('should update the election status', () => {
       let storedElection = mockElectionOpened.toState();
 
-      const getEventFromId = jest.fn().mockImplementation(() => Election.fromState(storedElection));
+      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
       const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
         storedElection = eventState;
 
@@ -594,7 +589,7 @@ describe('ElectionHandler', () => {
 
       expect(
         handleElectionEndMessage(
-          getEventFromId,
+          getEventById,
           updateEvent,
         )({
           ...mockMessageData,
@@ -610,9 +605,9 @@ describe('ElectionHandler', () => {
       // no warning should have been printed
       expect(warn).toHaveBeenCalledTimes(0);
 
-      // check whether getEventFromId has been called correctly
-      expect(getEventFromId).toHaveBeenCalledWith(mockElectionId);
-      expect(getEventFromId).toHaveBeenCalledTimes(1);
+      // check whether getEventById has been called correctly
+      expect(getEventById).toHaveBeenCalledWith(mockElectionId);
+      expect(getEventById).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
       const newElectionState = {
@@ -632,7 +627,7 @@ describe('ElectionHandler', () => {
     it('should return false if the object is not "election"', () => {
       expect(
         handleElectionResultMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -654,7 +649,7 @@ describe('ElectionHandler', () => {
     it('should return false if the action is not "result"', () => {
       expect(
         handleElectionResultMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -676,7 +671,7 @@ describe('ElectionHandler', () => {
     it('should return false if the message data does not contain a channel', () => {
       expect(
         handleElectionResultMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -696,7 +691,7 @@ describe('ElectionHandler', () => {
     it('should return false if the election has not previously been stored', () => {
       expect(
         handleElectionResultMessage(
-          getEventFromIdDummy,
+          getEventByIdDummy,
           updateEventDummy,
         )({
           ...mockMessageData,
@@ -717,7 +712,7 @@ describe('ElectionHandler', () => {
     it('should update the election status and store results', () => {
       let storedElection = mockElectionTerminated.toState();
 
-      const getEventFromId = jest.fn().mockImplementation(() => Election.fromState(storedElection));
+      const getEventById = jest.fn().mockImplementation(() => Election.fromState(storedElection));
       const updateEvent = jest.fn().mockImplementation((laoId, eventState) => {
         storedElection = eventState;
 
@@ -729,7 +724,7 @@ describe('ElectionHandler', () => {
 
       expect(
         handleElectionResultMessage(
-          getEventFromId,
+          getEventById,
           updateEvent,
         )({
           ...mockMessageData,
@@ -742,9 +737,9 @@ describe('ElectionHandler', () => {
       // no warning should have been printed
       expect(warn).toHaveBeenCalledTimes(0);
 
-      // check whether getEventFromId has been called correctly
-      expect(getEventFromId).toHaveBeenCalledWith(getLastPartOfChannel(mockMessageData.channel));
-      expect(getEventFromId).toHaveBeenCalledTimes(1);
+      // check whether getEventById has been called correctly
+      expect(getEventById).toHaveBeenCalledWith(getLastPartOfChannel(mockMessageData.channel));
+      expect(getEventById).toHaveBeenCalledTimes(1);
 
       // check whether updateEvent has been called correctly
       const newElectionState = {

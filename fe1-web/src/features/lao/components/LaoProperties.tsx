@@ -8,7 +8,7 @@ import { Spacing } from 'core/styles';
 import { ConnectToLao } from 'features/connect/objects';
 
 import { Lao } from '../objects';
-import { makeCurrentLao } from '../reducer';
+import { selectCurrentLao } from '../reducer';
 import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 
 function renderProperties(lao: Lao, url: string) {
@@ -27,10 +27,8 @@ function renderProperties(lao: Lao, url: string) {
   );
 }
 
-const laoSelect = makeCurrentLao();
-
 const LaoProperties = ({ url }: IPropTypes) => {
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 

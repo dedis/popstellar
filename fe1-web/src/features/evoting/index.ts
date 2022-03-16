@@ -1,5 +1,5 @@
+import { EvotingConfiguration, EvotingInterface } from './interface';
 import { configureNetwork } from './network';
-import { EvotingConfiguration, EvotingInterface } from './objects';
 
 export const EVOTING_FEATURE_IDENTIFIER = 'evoting';
 
@@ -11,9 +11,9 @@ export const EVOTING_FEATURE_IDENTIFIER = 'evoting';
  */
 export const configure = (config: EvotingConfiguration): EvotingInterface => {
   const {
-    getCurrentLao,
-    getCurrentLaoId,
-    getEventFromId,
+    useCurrentLao,
+    useCurrentLaoId,
+    getEventById,
     addEvent,
     updateEvent,
     onConfirmEventCreation,
@@ -26,10 +26,10 @@ export const configure = (config: EvotingConfiguration): EvotingInterface => {
     identifier: EVOTING_FEATURE_IDENTIFIER,
     context: {
       /* lao */
-      getCurrentLao,
-      getCurrentLaoId,
+      useCurrentLao,
+      useCurrentLaoId,
       /* event */
-      getEventFromId,
+      getEventById,
       addEvent,
       updateEvent,
       onConfirmEventCreation,

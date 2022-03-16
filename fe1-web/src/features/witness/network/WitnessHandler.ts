@@ -2,13 +2,11 @@ import { addMessageWitnessSignature } from 'core/network/ingestion';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { Hash, WitnessSignature } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
-import { makeLaosMap } from 'features/lao/reducer';
+import { selectLaosMap } from 'features/lao/reducer';
 
 import { WitnessMessage } from './messages';
 
-const getLaos = makeLaosMap();
-
-const getLao = (laoId: Hash | string) => getLaos(getStore().getState())[laoId.valueOf()];
+const getLao = (laoId: Hash | string) => selectLaosMap(getStore().getState())[laoId.valueOf()];
 
 export function handleWitnessMessage(msg: ProcessableMessage): boolean {
   if (

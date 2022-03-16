@@ -13,16 +13,28 @@ export interface EvotingConfiguration {
   /* LAO related functions */
 
   /**
-   * Given the current redux state, this function returns the currently active lao
+   * Returns the currently active lao. Should be used outside react components
    * @returns The current lao
    */
   getCurrentLao: () => EvotingFeature.Lao;
 
   /**
-   * Given the current redux state, this function returns the currently active lao id
+   * Returns the currently active lao. Should be used inside react components
+   * @returns The current lao
+   */
+  useCurrentLao: () => EvotingFeature.Lao;
+
+  /**
+   * Returns the currently active lao id. Should be used outside react components
    * @returns The current lao id
    */
   getCurrentLaoId: () => Hash;
+
+  /**
+   * Returns the currently active lao id. Should be used inside react components
+   * @returns The current lao id
+   */
+  useCurrentLaoId: () => Hash;
 
   /* Event related functions */
 
@@ -51,7 +63,7 @@ export interface EvotingConfiguration {
    * @param id - The id of the event
    * @returns The event or undefined if none was found
    */
-  getEventFromId: (id: Hash) => EvotingFeature.Event | undefined;
+  getEventById: (id: Hash) => EvotingFeature.Event | undefined;
 
   /**
    * Function called when the user confirms an event creation. If the end is in the past, it will tell
@@ -81,10 +93,10 @@ export interface EvotingConfiguration {
 export type EvotingReactContext = Pick<
   EvotingConfiguration,
   /* lao */
-  | 'getCurrentLao'
-  | 'getCurrentLaoId'
+  | 'useCurrentLao'
+  | 'useCurrentLaoId'
   /* events */
-  | 'getEventFromId'
+  | 'getEventById'
   | 'addEvent'
   | 'updateEvent'
   | 'onConfirmEventCreation'

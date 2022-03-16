@@ -1,29 +1,60 @@
-import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 import { Lao } from './objects';
-import { makeIsLaoOrganizer, makeLaosList, makeLaosMap } from './reducer';
+import {
+  selectIsLaoOrganizer,
+  selectLaosList,
+  selectLaosMap,
+  selectCurrentLao,
+  selectCurrentLaoId,
+} from './reducer';
 
 /**
  * Retrieves a list of all the LAOs known to the system
  */
 export const useLaoList = (): Lao[] => {
-  const laosList = useMemo(makeLaosList, []);
-  return useSelector(laosList);
+  return useSelector(selectLaosList);
 };
 
 /**
  * Indicates whether we're organizers of the current LAO
  */
 export const useIsLaoOrganizer = (): boolean => {
-  const isLaoOrg = useMemo(makeIsLaoOrganizer, []);
-  return useSelector(isLaoOrg);
+  return useSelector(selectIsLaoOrganizer);
 };
 
 /**
  * Retrieve a map of the LAOs
  */
 export const useLaoMap = (): Record<string, Lao> => {
-  const laosMap = useMemo(makeLaosMap, []);
-  return useSelector(laosMap);
+  return useSelector(selectLaosMap);
+};
+
+/**
+ * Returns the current lao and throws an error if there is none
+ * @returns The current lao
+ */
+
+export const useCurrentLao = () => {
+  const currentLao = useSelector(selectCurrentLao);
+
+  if (!currentLao) {
+    throw new Error('Error encountered while accessing storage : no currently opened LAO');
+  }
+
+  return currentLao;
+};
+
+/**
+ * Returns the current lao id and throws an error if there is none
+ * @returns The current lao id
+ */
+export const useCurrentLaoId = () => {
+  const currentLaoId = useSelector(selectCurrentLaoId);
+
+  if (!currentLaoId) {
+    throw new Error('Error encountered while accessing storage : no currently opened LAO');
+  }
+
+  return currentLaoId;
 };

@@ -1,5 +1,5 @@
 import { useNavigation, useRoute } from '@react-navigation/core';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { Badge } from 'react-native-elements';
 import { useToast } from 'react-native-toast-notifications';
@@ -10,7 +10,7 @@ import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { EventTags, Hash, PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -41,8 +41,7 @@ const RollCallOpened = () => {
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
-  const laoSelect = useMemo(makeCurrentLao, []);
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   if (!lao) {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');

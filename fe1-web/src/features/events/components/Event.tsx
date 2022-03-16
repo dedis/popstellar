@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 
@@ -8,7 +8,7 @@ import { Hash, Timestamp } from 'core/objects';
 import { Spacing } from 'core/styles';
 import { EventElection } from 'features/evoting/components';
 import { Election } from 'features/evoting/objects';
-import { makeIsLaoOrganizer } from 'features/lao/reducer';
+import { selectIsLaoOrganizer } from 'features/lao/reducer';
 import { EventMeeting } from 'features/meeting/components';
 import { Meeting } from 'features/meeting/objects';
 import { EventRollCall } from 'features/rollCall/components';
@@ -23,8 +23,7 @@ import eventViewStyles from '../styles/eventViewStyles';
 const Event = (props: IPropTypes) => {
   const { event } = props;
 
-  const isOrganizerSelect = useMemo(makeIsLaoOrganizer, []);
-  const isOrganizer = useSelector(isOrganizerSelect);
+  const isOrganizer = useSelector(selectIsLaoOrganizer);
 
   const buildEvent = () => {
     if (event instanceof Meeting) {
