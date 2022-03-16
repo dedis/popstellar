@@ -21,8 +21,6 @@ import {
   Timestamp,
 } from 'core/objects';
 import { dispatch } from 'core/redux';
-import { EvotingConfiguration } from 'features/evoting/interface';
-import { Election, ElectionState, ElectionStatus, RegisteredVote } from 'features/evoting/objects';
 import {
   mockElectionId,
   mockElectionNotStarted,
@@ -32,7 +30,9 @@ import {
   mockRegistedVotesHash,
   mockVote1,
   mockVote2,
-} from 'features/evoting/objects/__tests__/utils';
+} from 'features/evoting/__tests__/utils';
+import { EvotingConfiguration } from 'features/evoting/interface';
+import { Election, ElectionState, ElectionStatus, RegisteredVote } from 'features/evoting/objects';
 
 import {
   handleCastVoteMessage,
