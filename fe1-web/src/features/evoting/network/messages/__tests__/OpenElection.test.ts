@@ -6,7 +6,8 @@ import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { MessageDataProperties } from 'core/types';
-import { mockElectionId } from 'features/evoting/objects/__tests__/utils';
+import { mockElectionId } from 'features/evoting/__tests__/utils';
+
 import { OpenElection } from '../OpenElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021

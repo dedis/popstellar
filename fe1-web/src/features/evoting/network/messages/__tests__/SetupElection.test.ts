@@ -14,7 +14,8 @@ import {
   mockQuestionObject1,
   mockQuestionObject2,
   mockQuestions,
-} from 'features/evoting/objects/__tests__/utils';
+} from 'features/evoting/__tests__/utils';
+
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
 

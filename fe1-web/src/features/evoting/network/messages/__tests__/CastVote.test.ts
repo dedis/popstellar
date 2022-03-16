@@ -6,12 +6,8 @@ import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { MessageDataProperties } from 'core/types';
-import {
-  mockElectionId,
-  mockVote1,
-  mockVote2,
-  mockVotes,
-} from 'features/evoting/objects/__tests__/utils';
+import { mockElectionId, mockVote1, mockVote2, mockVotes } from 'features/evoting/__tests__/utils';
+
 import { Vote } from '../../../objects';
 import { CastVote } from '../CastVote';
 

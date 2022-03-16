@@ -20,7 +20,6 @@ import {
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { dispatch } from 'core/redux';
-import { Election, ElectionState, ElectionStatus, RegisteredVote } from 'features/evoting/objects';
 import {
   mockElectionNotStarted,
   mockElectionId,
@@ -30,10 +29,12 @@ import {
   mockRegistedVotesHash,
   mockElectionTerminated,
   mockElectionResultQuestions,
-} from 'features/evoting/objects/__tests__/utils';
+} from 'features/evoting/__tests__/utils';
 import { subscribeToChannel } from 'core/network';
 import { KeyPairStore } from 'core/keypair';
-import { EvotingConfiguration } from 'features/evoting/interface';
+import { EvotingConfiguration } from '../../interface';
+import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../../objects';
+
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,

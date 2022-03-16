@@ -6,10 +6,8 @@ import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
 import { MessageDataProperties } from 'core/types';
-import {
-  mockElectionOpened,
-  mockElectionResultHash,
-} from 'features/evoting/objects/__tests__/utils';
+import { mockElectionOpened, mockElectionResultHash } from 'features/evoting/__tests__/utils';
+
 import { EndElection } from '../EndElection';
 
 // region test data initialization
