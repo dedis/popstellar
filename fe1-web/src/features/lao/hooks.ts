@@ -34,7 +34,6 @@ export const useLaoMap = (): Record<string, Lao> => {
  * Returns the current lao and throws an error if there is none
  * @returns The current lao
  */
-
 export const useCurrentLao = () => {
   const currentLao = useSelector(selectCurrentLao);
 
