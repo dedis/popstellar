@@ -138,8 +138,6 @@ export const mockVotes = [mockVote1];
 
 export const mockElectionResultHash = Hash.fromStringArray(mockVoteId1.valueOf());
 
-// id: string; result: { ballot_option: string; count: number }[]
-
 export const mockElectionResultQuestions: ElectionResult['questions'] = [
   {
     id: mockQuestionId1.valueOf(),
