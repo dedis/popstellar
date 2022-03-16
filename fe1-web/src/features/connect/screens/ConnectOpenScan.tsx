@@ -5,7 +5,6 @@ import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
 
 import { WideButtonView } from 'core/components';
-import { Colors } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
 import PROPS_TYPE from 'resources/Props';
