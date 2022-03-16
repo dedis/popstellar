@@ -26,7 +26,7 @@ import { Question } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
 
-// for now only plurality voting is supported
+// for now only plurality voting is supported (2022-03-16, Tyratox)
 const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 /**
@@ -90,7 +90,7 @@ const CreateElection = ({ route }: any) => {
     questions.map((item) => ({
       ...item,
       id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
-      // for now the write_in feature is disabled
+      // for now the write_in feature is disabled (2022-03-16, Tyratox)
       write_in: false,
     }));
 
