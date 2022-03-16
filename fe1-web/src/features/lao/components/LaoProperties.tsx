@@ -9,6 +9,7 @@ import { ConnectToLao } from 'features/connect/objects';
 
 import { Lao } from '../objects';
 import { selectCurrentLao } from '../reducer';
+import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.toDateString();

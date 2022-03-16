@@ -3,7 +3,6 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { PublicComponents } from './components';
 import * as functions from './functions';
 import * as hooks from './hooks';
-import * as functions from './functions';
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
 import { laoReducer } from './reducer';
