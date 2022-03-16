@@ -91,10 +91,6 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-afterAll(() => {
-  jest.restoreAllMocks();
-});
-
 describe('ElectionHandler', () => {
   describe('election#setup', () => {
     it('should return false if the object is not "election"', () => {
