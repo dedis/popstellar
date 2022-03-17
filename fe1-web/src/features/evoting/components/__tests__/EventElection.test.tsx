@@ -136,7 +136,6 @@ const undefinedElection = new Election({
 // endregion
 
 // mocks
-const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 const contextValue = {
   [EVOTING_FEATURE_IDENTIFIER]: {
@@ -149,10 +148,6 @@ const contextValue = {
     onConfirmEventCreation: () => undefined,
   },
 };
-
-afterEach(() => {
-  warn.mockClear();
-});
 
 describe('EventElection', () => {
   describe('Not started election', () => {
@@ -243,10 +238,6 @@ describe('EventElection', () => {
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/undefined/i), expect.anything());
     });
 
     it('renders null for an attendee', () => {
@@ -256,10 +247,6 @@ describe('EventElection', () => {
         </FeatureContext.Provider>,
       ).toJSON();
       expect(component).toMatchSnapshot();
-
-      expect(warn).toHaveBeenCalledTimes(1);
-      // check if the printed warning message contains substring
-      expect(warn).toHaveBeenCalledWith(expect.stringMatching(/undefined/i), expect.anything());
     });
   });
 });

@@ -3,7 +3,7 @@ import { EventTags, Hash, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
 
-import { Election, ElectionStatus, Question, RegisteredVote, Vote } from '../Election';
+import { Election, ElectionStatus, Question, RegisteredVote, Vote } from '../objects/Election';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const VERSION = STRINGS.election_version_identifier;
@@ -137,8 +137,6 @@ export const mockVote2: Vote = {
 export const mockVotes = [mockVote1];
 
 export const mockElectionResultHash = Hash.fromStringArray(mockVoteId1.valueOf());
-
-// id: string; result: { ballot_option: string; count: number }[]
 
 export const mockElectionResultQuestions: ElectionResult['questions'] = [
   {

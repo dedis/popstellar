@@ -3,11 +3,8 @@ import 'jest-extended';
 import { mockLaoIdHash } from '__tests__/utils';
 import { publish } from 'core/network';
 import { channelFromIds, Timestamp } from 'core/objects';
+import { mockElectionNotStarted, mockElectionOpened } from 'features/evoting/__tests__/utils';
 import { SelectedBallots } from 'features/evoting/objects';
-import {
-  mockElectionNotStarted,
-  mockElectionOpened,
-} from 'features/evoting/objects/__tests__/utils';
 
 import {
   castVote,
@@ -27,18 +24,10 @@ jest.mock('core/objects', () => {
   };
 });
 
-jest.mock('core/network', () => {
-  return {
-    ...jest.requireActual('core/network'),
-    publish: jest.fn().mockImplementation(() => Promise.resolve()),
-  };
-});
+jest.mock('core/network');
 
 afterEach(() => {
   jest.clearAllMocks();
-});
-afterAll(() => {
-  jest.restoreAllMocks();
 });
 
 describe('mockElectionNotStarted.id', () => {
