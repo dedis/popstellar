@@ -32,7 +32,7 @@ export class w3cwebsocket {
     this.onclose(event);
   }
 
-  public mockOnError = (error: Error) {
+  public mockOnError(error: Error) {
     this.onerror(error);
   }
 
