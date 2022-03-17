@@ -104,11 +104,11 @@ export async function catchup(channel: Channel): Promise<Generator<Message, void
   });
 
   // do not catch, as it needs to be handled on a higher level
-  const response: JsonRpcResponse = await getNetworkManager().sendPayload(request);
-  if (typeof response.result === 'number') {
+  const responses: JsonRpcResponse[] = await getNetworkManager().sendPayload(request);
+  if (responses.find((r) => typeof r.result === 'number')) {
     throw new Error('FIXME number in result. Should it be here?');
   }
 
-  const msgs = response.result as any[];
+  const msgs = [].concat(...responses.map((r) => r.result as any));
   return messageGenerator(msgs, channel);
 }
