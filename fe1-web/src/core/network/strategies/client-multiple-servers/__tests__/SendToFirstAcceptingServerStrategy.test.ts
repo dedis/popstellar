@@ -1,21 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { MockNetworkConnection } from 'core/network/__tests__/MockNetworkConnection';
-import { JsonRpcMethod, JsonRpcRequest } from 'core/network/jsonrpc';
-import { JsonRpcParams } from 'core/network/jsonrpc/JsonRpcParams';
+import { mockJsonRpcPayload } from 'core/network/__tests__/utils';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 
 import { sendToFirstAcceptingServerStrategy } from '../SendToFirstAcceptingServerStrategy';
 
-const mockChannelId = 'some channel';
 const mockAddress = 'some address';
-
-const mockPayload = new JsonRpcRequest({
-  id: 1,
-  jsonrpc: '',
-  method: JsonRpcMethod.PUBLISH,
-  params: new JsonRpcParams({ channel: mockChannelId }),
-});
 
 describe('SendToFirstAcceptingServerStrategy', () => {
   it('Should send the payload over the first connection if it succeeds', async () => {
@@ -28,12 +19,12 @@ describe('SendToFirstAcceptingServerStrategy', () => {
 
     await expect(
       sendToFirstAcceptingServerStrategy(
-        mockPayload,
+        mockJsonRpcPayload,
         mockConnections as unknown as NetworkConnection[],
       ),
     ).resolves.toEqual([responses[0]]);
 
-    expect(c1.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c1.sendPayload).toHaveBeenCalledTimes(1);
 
     expect(c2.sendPayload).toHaveBeenCalledTimes(0);
@@ -51,15 +42,15 @@ describe('SendToFirstAcceptingServerStrategy', () => {
 
     await expect(
       sendToFirstAcceptingServerStrategy(
-        mockPayload,
+        mockJsonRpcPayload,
         mockConnections as unknown as NetworkConnection[],
       ),
     ).resolves.toEqual([responses[1]]);
 
-    expect(c1.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c1.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c2.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c2.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c2.sendPayload).toHaveBeenCalledTimes(1);
 
     expect(c3.sendPayload).toHaveBeenCalledTimes(0);
@@ -76,18 +67,18 @@ describe('SendToFirstAcceptingServerStrategy', () => {
 
     await expect(
       sendToFirstAcceptingServerStrategy(
-        mockPayload,
+        mockJsonRpcPayload,
         mockConnections as unknown as NetworkConnection[],
       ),
     ).resolves.toEqual([responses[2]]);
 
-    expect(c1.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c1.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c2.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c2.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c2.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c3.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c3.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c3.sendPayload).toHaveBeenCalledTimes(1);
   });
 
@@ -102,18 +93,18 @@ describe('SendToFirstAcceptingServerStrategy', () => {
 
     await expect(
       sendToFirstAcceptingServerStrategy(
-        mockPayload,
+        mockJsonRpcPayload,
         mockConnections as unknown as NetworkConnection[],
       ),
     ).rejects.toHaveProperty('message', errors[2]);
 
-    expect(c1.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c1.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c2.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c2.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c2.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c3.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c3.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c3.sendPayload).toHaveBeenCalledTimes(1);
   });
 });

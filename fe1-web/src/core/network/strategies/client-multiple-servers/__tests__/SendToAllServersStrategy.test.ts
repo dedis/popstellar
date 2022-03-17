@@ -1,21 +1,13 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { MockNetworkConnection } from 'core/network/__tests__/MockNetworkConnection';
-import { JsonRpcMethod, JsonRpcRequest } from 'core/network/jsonrpc';
-import { JsonRpcParams } from 'core/network/jsonrpc/JsonRpcParams';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 
 import { sendToAllServersStrategy } from '../SendToAllServersStrategy';
+import { mockJsonRpcPayload } from 'core/network/__tests__/utils';
 
-const mockChannelId = 'some channel';
+
 const mockAddress = 'some address';
-
-const mockPayload = new JsonRpcRequest({
-  id: 1,
-  jsonrpc: '',
-  method: JsonRpcMethod.PUBLISH,
-  params: new JsonRpcParams({ channel: mockChannelId }),
-});
 
 describe('SendToAllServersStrategy', () => {
   it('Should send the payload to all connections', async () => {
@@ -27,18 +19,18 @@ describe('SendToAllServersStrategy', () => {
     const mockConnections = [c1, c2, c3];
 
     await expect(sendToAllServersStrategy(
-      mockPayload,
+      mockJsonRpcPayload,
       mockConnections as unknown as NetworkConnection[],
     )).resolves.toEqual(responses);
 
     // make sure send was called on all connections
-    expect(c1.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c1.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c2.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c2.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c2.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c3.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c3.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c3.sendPayload).toHaveBeenCalledTimes(1);
   });
 
@@ -52,18 +44,18 @@ describe('SendToAllServersStrategy', () => {
     const mockConnections = [c1, c2, c3];
 
     await expect(sendToAllServersStrategy(
-      mockPayload,
+      mockJsonRpcPayload,
       mockConnections as unknown as NetworkConnection[],
     )).rejects.toHaveProperty('message', errors[2]);
 
     // make sure send was called on all connections
-    expect(c1.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c1.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c2.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c2.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c2.sendPayload).toHaveBeenCalledTimes(1);
 
-    expect(c3.sendPayload).toHaveBeenCalledWith(mockPayload);
+    expect(c3.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c3.sendPayload).toHaveBeenCalledTimes(1);
   });
 });

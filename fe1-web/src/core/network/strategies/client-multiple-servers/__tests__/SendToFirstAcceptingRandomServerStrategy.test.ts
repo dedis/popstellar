@@ -2,21 +2,12 @@ import { describe, expect, it } from '@jest/globals';
 
 import * as arrayFunctions from 'core/functions/arrays';
 import { MockNetworkConnection } from 'core/network/__tests__/MockNetworkConnection';
-import { JsonRpcMethod, JsonRpcRequest } from 'core/network/jsonrpc';
-import { JsonRpcParams } from 'core/network/jsonrpc/JsonRpcParams';
+import { mockJsonRpcPayload } from 'core/network/__tests__/utils';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 
 import { sendToFirstAcceptingRandomServerStrategy } from '../SendToFirstAcceptingRandomServerStrategy';
 
-const mockChannelId = 'some channel';
 const mockAddress = 'some address';
-
-const mockPayload = new JsonRpcRequest({
-  id: 1,
-  jsonrpc: '',
-  method: JsonRpcMethod.PUBLISH,
-  params: new JsonRpcParams({ channel: mockChannelId }),
-});
 
 const shuffleArray = jest.spyOn(arrayFunctions, 'shuffleArray');
 
@@ -40,7 +31,7 @@ describe('SendToFirstAcceptingRandomServerStrategy', () => {
 
     await expect(
       sendToFirstAcceptingRandomServerStrategy(
-        mockPayload,
+        mockJsonRpcPayload,
         mockConnections as unknown as NetworkConnection[],
       ),
     ).resolves.toEqual(expect.anything());
