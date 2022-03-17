@@ -8,7 +8,7 @@ Feature: Create a Roll Call
         # * call wait <timeout>
         # * karate.set(varName, newValue)
     * call read('classpath:be/utils/server.feature')
-    * call read('classpath:be/createLAO/create.feature@name=valid_lao')
+#    * call read('classpath:be/createLAO/create.feature@name=valid_lao')
 
 
 #  Scenario: Create Roll call on root channel should fail
@@ -21,8 +21,15 @@ Feature: Create a Roll Call
 #    * karate.log('Answer received is '+ err)
 #    Then match err contains deep {jsonrpc: '2.0', id: 3, error: {code: -6, description: '#string'}}
   Scenario: Valid Roll Call
-    Given string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
+    Given string rollCallReq  = read('classpath:data/lao/bad_lao_create_empty_name.json')
     * karate.log('Create Request = ' + rollCallReq)
+    * def newLogg =
+            """
+              function() {
+                var Logg = Java.type('com.intuit.karate.Logger')
+                return new Logg()
+              }
+            """
     * def newBuffer =
             """
               function() {
@@ -30,20 +37,36 @@ Feature: Create a Roll Call
                 return new Queue()
               }
             """
+    * def multiOptions =
+            """
+              function(){
+                var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+                return new WebSocketOptions(wsURL)
+              }
+            """
     * def buffer = call newBuffer
+    * def logge = call newLogg
+    * def multi = call multiOptions
     * def getMultiMsgSocket =
               """
                 function(){
-                  var MultiMsg = Java.type("common.net.MultiMsgWebSocketClient")
-                  return new MultiMsgWebSocketClient(wsURL,handle,buffer)
-
+                  var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
+                  var Logg = Java.type('com.intuit.karate.Logger')
+                  var logg =  new Logg()
+                  var Queue = Java.type("common.net.MessageQueue")
+                  var q =  new Queue()
+                  var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
+                  var wso =  new WebSocketOptions(wsURL)
+                  return new MultiMsg(wso,logg,q)
                 }
               """
-    * def multiSocket = getMultiMsgSocket()
-    When eval multiSocket.send()
+    * karate.log('defining multiSocket')
+    * def multiSocket = call getMultiMsgSocket
+    When eval multiSocket.send(rollCallReq)
     * karate.log('Request for roll call sent')
-    * json lao = buffer.takeTimeout(timeout)
-    * json roll = buffer.takeTimeout(timeout)
+    * def buffer2 = multiSocket.getBuffer()
+    And json lao = multiSocket.listen(timeout)
+    And json roll = buffer.takeTimeout(timeout)
     * karate.log("lao is "+ lao+ " and roll "+ roll)
 
 
