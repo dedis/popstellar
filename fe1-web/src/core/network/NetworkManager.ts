@@ -1,7 +1,8 @@
 import { JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { NetworkConnection } from './NetworkConnection';
-import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
+import { SendingStrategy } from './strategies/client-multiple-servers/ClientMultipleServerStrategy';
+import { sendToFirstAcceptingServerStrategy } from './strategies/client-multiple-servers/SendToFirstAcceptingServerStrategy';
 
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
@@ -10,8 +11,11 @@ class NetworkManager {
 
   private rpcHandler: JsonRpcHandler = defaultRpcHandler;
 
-  public constructor() {
+  private sendingStrategy: SendingStrategy;
+
+  public constructor(sendingStrategy: SendingStrategy) {
     this.connections = [];
+    this.sendingStrategy = sendingStrategy;
   }
 
   private getConnectionByAddress(address: string): NetworkConnection | undefined {
@@ -72,24 +76,11 @@ class NetworkManager {
    *
    * @param payload The JsonRpcRequest you want to send
    *
-   * @returns a Promise being resolved with the response,
+   * @returns List of a promises being resolved with the responses,
    * or rejected with an error if the payload could not be delivered or was rejected by the server
    */
-  public sendPayload(payload: JsonRpcRequest): Promise<JsonRpcResponse> {
-    // For now, we only have 1 connection opened at a time: the organizer server
-
-    if (this.connections.length === 0) {
-      return Promise.reject(
-        new NetworkError('Cannot send payload: no websocket connection available'),
-      );
-    }
-
-    return this.connections[0].sendPayload(payload).catch((error) => {
-      // Some day, we will want to retry from a different network connection,
-      // before throwing an error to the caller
-      console.error('Could not send payload due to failure:', error);
-      throw error;
-    });
+  public sendPayload(payload: JsonRpcRequest): Promise<JsonRpcResponse[]> {
+    return this.sendingStrategy(payload, this.connections);
   }
 
   public setRpcHandler(handler: JsonRpcHandler): void {
@@ -100,7 +91,8 @@ class NetworkManager {
 
 export function getNetworkManager(): NetworkManager {
   if (NETWORK_MANAGER_INSTANCE === undefined) {
-    NETWORK_MANAGER_INSTANCE = new NetworkManager();
+    // TODO: decide what the desired strategy is
+    NETWORK_MANAGER_INSTANCE = new NetworkManager(sendToFirstAcceptingServerStrategy);
   }
   return NETWORK_MANAGER_INSTANCE;
 }
