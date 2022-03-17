@@ -8,15 +8,15 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
-case class CreateRollCall(
-                           id: Hash,
-                           name: String,
-                           creation: Timestamp,
-                           proposed_start: Timestamp,
-                           proposed_end: Timestamp,
-                           location: String,
-                           roll_call_description: Option[String]
-                         ) extends MessageData {
+final case class CreateRollCall(
+                                 id: Hash,
+                                 name: String,
+                                 creation: Timestamp,
+                                 proposed_start: Timestamp,
+                                 proposed_end: Timestamp,
+                                 location: String,
+                                 roll_call_description: Option[String]
+                               ) extends MessageData {
   override val _object: ObjectType = ObjectType.ROLL_CALL
   override val action: ActionType = ActionType.CREATE
 }

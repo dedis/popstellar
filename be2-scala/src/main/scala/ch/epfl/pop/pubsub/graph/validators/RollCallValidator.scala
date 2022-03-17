@@ -10,7 +10,7 @@ import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
 
 case object RollCallValidator extends MessageDataContentValidator with EventValidator {
-  override def EVENT_HASH_PREFIX: String = "R"
+  override val EVENT_HASH_PREFIX: String = "R"
 
   //remark: in all the validation functions, the channel type is ObjectType.LAO, which is the default ObjectType for all other messages apart from social media and elections
 

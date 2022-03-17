@@ -21,7 +21,7 @@ import java.util.Set;
 public final class ElectInstance {
 
   private final MessageID messageId;
-  private final String channel;
+  private final Channel channel;
   private final PublicKey proposer;
   private final ConsensusElect elect;
   private final Set<PublicKey> nodes;
@@ -32,7 +32,7 @@ public final class ElectInstance {
 
   public ElectInstance(
       @NonNull MessageID messageId,
-      @NonNull String channel,
+      @NonNull Channel channel,
       @NonNull PublicKey proposer,
       @NonNull Set<PublicKey> nodes,
       @NonNull ConsensusElect elect) {
@@ -50,7 +50,7 @@ public final class ElectInstance {
     return messageId;
   }
 
-  public String getChannel() {
+  public Channel getChannel() {
     return channel;
   }
 

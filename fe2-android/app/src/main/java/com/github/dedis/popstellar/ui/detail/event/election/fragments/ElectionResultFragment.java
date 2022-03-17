@@ -22,8 +22,8 @@ import com.github.dedis.popstellar.ui.detail.event.election.adapters.ElectionRes
 import dagger.hilt.android.AndroidEntryPoint;
 import me.relex.circleindicator.CircleIndicator3;
 
-@AndroidEntryPoint(Fragment.class)
-public class ElectionResultFragment extends Hilt_ElectionResultFragment {
+@AndroidEntryPoint
+public class ElectionResultFragment extends Fragment {
 
   private LaoDetailViewModel mLaoDetailViewModel;
 

@@ -41,7 +41,7 @@ object Validator {
       "Unsupported action: MethodValidator was given a response message",
       jsonRpcResponse.id
     ))
-    case graphMessage@_ => graphMessage
+    case _ => graphMessage
   }
 
   private def validateMessageContent(graphMessage: GraphMessage): GraphMessage = graphMessage match {

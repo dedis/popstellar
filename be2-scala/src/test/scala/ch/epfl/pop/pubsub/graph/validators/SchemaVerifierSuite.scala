@@ -3,13 +3,13 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.method.message.data.{ActionType, ObjectType}
 import ch.epfl.pop.pubsub.MessageRegistry
 import ch.epfl.pop.pubsub.graph.PipelineError
-import ch.epfl.pop.pubsub.graph.SchemaValidator._
+import ch.epfl.pop.pubsub.graph.SchemaVerifier._
 import org.scalatest.{FunSuite, Matchers}
 
 import scala.io.Source
 import scala.util.{Failure, Success}
 
-object SchemaValidatorSuite {
+object SchemaVerifierSuite {
   def getJsonStringFromFile(filePath: String): String = {
     val source = Source.fromFile(filePath)
     val jsonStr = source.getLines().mkString
@@ -18,30 +18,30 @@ object SchemaValidatorSuite {
   }
 }
 
-class SchemaValidatorSuite extends FunSuite with Matchers {
+class SchemaVerifierSuite extends FunSuite with Matchers {
 
-  import SchemaValidatorSuite._
+  import SchemaVerifierSuite._
 
   /* ----------------------------- High-level (JSON-rpc) tests ----------------------------- */
   test("Correct subscribe JSON-RPC query") {
     val subscribePath = "../protocol/examples/query/subscribe/subscribe.json"
     val subscribeJson = getJsonStringFromFile(subscribePath)
 
-    validateRpcSchema(subscribeJson) should be(Left(subscribeJson))
+    verifyRpcSchema(subscribeJson) should be(Left(subscribeJson))
   }
 
   test("Incorrect subscribe query: additional params") {
     val subscribePath = "../protocol/examples/query/subscribe/wrong_subscribe__additional_params.json"
     val subscribeJson = getJsonStringFromFile(subscribePath)
 
-    validateRpcSchema(subscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(subscribeJson) shouldBe a[Right[_, PipelineError]]
   }
 
   test("Incorrect subscribe query: missing channel") {
     val subscribePath = "../protocol/examples/query/subscribe/wrong_subscribe_missing_channel.json"
     val subscribeJson = getJsonStringFromFile(subscribePath)
 
-    validateRpcSchema(subscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(subscribeJson) shouldBe a[Right[_, PipelineError]]
   }
 
   /* Test broadcast query with message format */
@@ -49,49 +49,49 @@ class SchemaValidatorSuite extends FunSuite with Matchers {
     val broadcastPath = "../protocol/examples/query/broadcast/broadcast.json"
     val broadcastJson = getJsonStringFromFile(broadcastPath)
 
-    validateRpcSchema(broadcastJson) should be(Left(broadcastJson))
+    verifyRpcSchema(broadcastJson) should be(Left(broadcastJson))
   }
 
   test("Incorrect broadcast query: additional params") {
     val broadcastPath = "../protocol/examples/query/broadcast/wrong_broadcast_additional_params.json"
     val broadcastJson = getJsonStringFromFile(broadcastPath)
 
-    validateRpcSchema(broadcastJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(broadcastJson) shouldBe a[Right[_, PipelineError]]
   }
 
   test("Incorrect broadcast query: missing message") {
     val broadcastPath = "../protocol/examples/query/broadcast/wrong_broadcast_missing_message.json"
     val broadcastJson = getJsonStringFromFile(broadcastPath)
 
-    validateRpcSchema(broadcastJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(broadcastJson) shouldBe a[Right[_, PipelineError]]
   }
 
   test("Correct unsubscribe JSON-RPC query") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/unsubscribe.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    validateRpcSchema(unsubscribeJson) should be(Left(unsubscribeJson))
+    verifyRpcSchema(unsubscribeJson) should be(Left(unsubscribeJson))
   }
 
   test("Incorrect unsubscribe query: additional params") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe__additional_params.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    validateRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
   }
 
   test("Incorrect unsubscribe query: missing channel") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe_missing_channel.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    validateRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
   }
 
   test("Incorrect unsubscribe query: wrong channel") {
     val unsubscribePath = "../protocol/examples/query/unsubscribe/wrong_unsubscribe_channel.json"
     val unsubscribeJson = getJsonStringFromFile(unsubscribePath)
 
-    validateRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
+    verifyRpcSchema(unsubscribeJson) shouldBe a[Right[_, PipelineError]]
   }
 
 
@@ -99,7 +99,7 @@ class SchemaValidatorSuite extends FunSuite with Matchers {
   test("Correct CreateLao data") {
     val examplePath = "../protocol/examples/messageData/lao_create/lao_create.json"
     val exampleJson = getJsonStringFromFile(examplePath)
-    val validator = MessageRegistry.apply().getSchemaValidator(ObjectType.LAO, ActionType.CREATE).get
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.LAO, ActionType.CREATE).get
 
     validator(exampleJson) should be (Success((): Unit))
   }
@@ -107,7 +107,7 @@ class SchemaValidatorSuite extends FunSuite with Matchers {
   test("Incorrect CreateLao data: negative timestamp") {
     val examplePath = "../protocol/examples/messageData/lao_create/bad_lao_create_creation_negative.json"
     val exampleJson = getJsonStringFromFile(examplePath)
-    val validator = MessageRegistry.apply().getSchemaValidator(ObjectType.LAO, ActionType.CREATE).get
+    val validator = MessageRegistry.apply().getSchemaVerifier(ObjectType.LAO, ActionType.CREATE).get
 
     validator(exampleJson) shouldBe a[Failure[_]]
   }

@@ -8,11 +8,11 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
-case class AddReaction(
-                        reaction_codepoint: String,
-                        chirp_id: Hash,
-                        timestamp: Timestamp
-                      ) extends MessageData {
+final case class AddReaction(
+                              reaction_codepoint: String,
+                              chirp_id: Hash,
+                              timestamp: Timestamp
+                            ) extends MessageData {
   override val _object: ObjectType = ObjectType.REACTION
   override val action: ActionType = ActionType.ADD
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"popstellar/channel"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
@@ -31,20 +32,36 @@ type Channel struct {
 	// channel path
 	channelPath string
 
-	log zerolog.Logger
+	log      zerolog.Logger
+	registry registry.MessageRegistry
 }
 
 // NewChannel returns a new initialized chirping channel
-func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) Channel {
+func NewChannel(channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) *Channel {
 	log = log.With().Str("channel", "general chirp").Logger()
 
-	return Channel{
+	newChannel := &Channel{
 		sockets:     channel.NewSockets(),
 		inbox:       inbox.NewInbox(channelPath),
 		channelPath: channelPath,
 		hub:         hub,
 		log:         log,
 	}
+
+	newChannel.registry = newChannel.NewGeneralChirpingRegistry()
+
+	return newChannel
+}
+
+// NewGeneralChirpingRegistry creates a new registry for a general chirping
+// channel and populates the registry with the actions of the channel.
+func (c *Channel) NewGeneralChirpingRegistry() registry.MessageRegistry {
+	newRegistry := registry.NewMessageRegistry()
+
+	newRegistry.Register(messagedata.ChirpNotifyAdd{}, c.addChirp)
+	newRegistry.Register(messagedata.ChirpNotifyDelete{}, c.deleteChirp)
+
+	return newRegistry
 }
 
 // Publish is used to handle a publish message.
@@ -64,35 +81,13 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 	}
 
 	msg := broadcast.Params.Message
-	data := msg.Data
 
-	jsonData, err := base64.URLEncoding.DecodeString(data)
+	err = c.registry.Process(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to decode message data: %v", err)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get object and action from message data: %v", err)
-	}
-
-	if object == messagedata.ChirpObject {
-
-		switch action {
-		case messagedata.ChirpActionNotifyAdd:
-			err := c.addChirp(msg)
-			if err != nil {
-				return xerrors.Errorf("failed to add a chirp to general: %v", err)
-			}
-		case messagedata.ChirpActionNotifyDelete:
-			err := c.deleteChirp(msg)
-			if err != nil {
-				return xerrors.Errorf("failed to delete the chirp from general: %v", err)
-			}
-		default:
-			return answer.NewInvalidActionError(action)
-		}
-	}
+	c.inbox.StoreMessage(msg)
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
@@ -195,38 +190,38 @@ func (c *Channel) VerifyBroadcastMessage(broadcast method.Broadcast) error {
 	return nil
 }
 
-// AddChirp checks and stores an add chirp message
-func (c *Channel) addChirp(msg message.Message) error {
-	err := c.verifyChirpBroadcastMessage(msg)
+// addChirp checks an add chirp message
+func (c *Channel) addChirp(msg message.Message, msgData interface{}) error {
+	data, ok := msgData.(*messagedata.ChirpNotifyAdd)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a chirp#notifyAdd message", msgData)
+	}
+
+	err := c.verifyNotifyChirp(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify add chirp message: %v", err)
 	}
-	c.inbox.StoreMessage(msg)
 
 	return nil
 }
 
-// DeleteChirp checks and stores a delete chirp message
-func (c *Channel) deleteChirp(msg message.Message) error {
-	err := c.verifyChirpBroadcastMessage(msg)
+// deleteChirp checks a delete chirp message
+func (c *Channel) deleteChirp(msg message.Message, msgData interface{}) error {
+	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
+	}
+
+	err := c.verifyNotifyChirp(msg, data)
 	if err != nil {
 		return xerrors.Errorf("failed to get and verify delete chirp message: %v", err)
 	}
-	c.inbox.StoreMessage(msg)
 
 	return nil
 }
 
-// verifyChirpBroadcastMessage verify a chirp broadcast message
-func (c *Channel) verifyChirpBroadcastMessage(msg message.Message) error {
-	var chirpMsg messagedata.ChirpBroadcast
-
-	err := msg.UnmarshalData(&chirpMsg)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal cast vote: %v", err)
-	}
-
-	err = chirpMsg.Verify()
+func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Verifiable) error {
+	err := chirpMsg.Verify()
 	if err != nil {
 		return xerrors.Errorf("invalid chirp broadcast message: %v", err)
 	}

@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.utility.scheduler;
 import javax.inject.Inject;
 
 import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
 public class ProdSchedulerProvider implements SchedulerProvider {
@@ -26,5 +27,10 @@ public class ProdSchedulerProvider implements SchedulerProvider {
   @Override
   public Scheduler newThread() {
     return Schedulers.newThread();
+  }
+
+  @Override
+  public Scheduler mainThread() {
+    return AndroidSchedulers.mainThread();
   }
 }

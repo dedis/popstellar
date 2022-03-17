@@ -6,7 +6,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.objects.Channel
 import spray.json._
 
-case class Publish(override val channel: Channel, override val message: Message) extends ParamsWithMessage(channel, message)
+final case class Publish(override val channel: Channel, override val message: Message) extends ParamsWithMessage(channel, message)
 
 object Publish extends Parsable {
   def apply(channel: Channel, message: Message): Publish = {
