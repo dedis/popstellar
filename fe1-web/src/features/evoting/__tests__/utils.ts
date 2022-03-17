@@ -50,7 +50,7 @@ export const mockQuestionObject2: Question = {
   question: mockQuestion2,
   voting_method: STRINGS.election_method_Approval,
   ballot_options: mockBallotOptions,
-  write_in: true,
+  write_in: false,
 };
 
 export const mockQuestions: Question[] = [mockQuestionObject1, mockQuestionObject2];

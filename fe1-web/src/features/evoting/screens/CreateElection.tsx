@@ -9,7 +9,6 @@ import {
   ConfirmModal,
   DatePicker,
   DismissModal,
-  DropdownSelector,
   ParagraphBlock,
   TextBlock,
   TextInputLine,
@@ -44,7 +43,6 @@ const CreateElection = ({ route }: any) => {
     Timestamp.EpochNow().addSeconds(DEFAULT_ELECTION_DURATION),
   );
   const [electionName, setElectionName] = useState('');
-  const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
 
   const emptyQuestion = { question: '', voting_method: VOTING_METHOD, ballot_options: [''] };
@@ -147,17 +145,6 @@ const CreateElection = ({ route }: any) => {
               )
             }
           />
-          <View style={[styles.view, { marginHorizontal: 150 }]}>
-            <ParagraphBlock text={STRINGS.election_voting_method} />
-            <DropdownSelector
-              values={votingMethods}
-              onChange={(method: string) =>
-                setQuestions((prev) =>
-                  prev.map((item, id) => (id === idx ? { ...item, voting_method: method } : item)),
-                )
-              }
-            />
-          </View>
           <TextInputList
             onChange={(ballot_options: string[]) =>
               setQuestions((prev) =>

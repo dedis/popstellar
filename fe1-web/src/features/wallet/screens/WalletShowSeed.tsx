@@ -30,7 +30,7 @@ const WalletShowSeed = ({ navigation }: IPropTypes) => {
   }, []);
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.show_seed_info} />
       <View style={styles.smallPadding} />
       <CopiableTextInput text={seed} />

@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 const LaoList = () => {
   const laos = useSelector(selectLaosList);
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <FlatList
         data={laos}
         keyExtractor={(item) => item.id.toString()}
