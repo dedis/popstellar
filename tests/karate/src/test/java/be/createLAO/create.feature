@@ -75,3 +75,13 @@ Feature: Create a pop LAO
       And  json err = socket.listen(timeout)
       *  karate.log('Received: '+ karate.pretty(err) )
       Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+
+  Scenario: Create Lao with different public key from the organizer should fail with error response
+    Given string invalidIdLao = read('classpath:data/lao/bad_lao_create_sender_not_organizer.json')
+    And   def socket = karate.webSocket(wsURL,handle)
+    When  eval socket.send(invalidIdLao)
+    *  karate.log('Sent: '+ karate.pretty(invalidIdLao))
+    And  json err = socket.listen(timeout)
+    *  karate.log('Received: '+ karate.pretty(err) )
+    Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+
