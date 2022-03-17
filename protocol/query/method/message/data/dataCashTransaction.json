@@ -59,8 +59,10 @@
                 "length": "4",
                 "$comment": "Set as 0xFFFFFFFF"
               }
-            }
-          }
+            },
+            "required": ["TxOutHash", "TxOutIndex", "Script", "Sequence"]
+          },
+          "minItems": 1
         },
         "TxOut": {
           "type": "array",
@@ -86,16 +88,20 @@
                     "contentEncoding": "base64",
                     "description": "Hash of the recipient’s public key"
                   }
-                }
+                },
+                "required": ["Type", "PubkeyHash"]
               }
-            }
-          }
+            },
+            "required": ["Value", "Script"]
+          },
+          "minItems": 1
         },
         "LockTime": {
           "type": "integer",
           "description": "Timestamp"
         }
-      }
+      },
+      "required": ["Version", "TxIn", "TxOut", "LockTime"]
     }
   },
   "required": ["object", "action", "transaction"]
