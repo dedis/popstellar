@@ -41,12 +41,8 @@ public class ErrorUtils {
 
     //This makes it so that the toast is run on the UI thread
     //Otherwise it would crash
-    new Handler(context.getMainLooper()).post(new Runnable() {
-      @Override
-      public void run() {
-        Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show();
-      }
-    });
+    new Handler(context.getMainLooper()).post(
+            () -> Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show());
   }
 
   private static String getLocalizedMessage(
