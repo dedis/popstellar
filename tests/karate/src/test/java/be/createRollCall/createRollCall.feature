@@ -11,16 +11,9 @@ Feature: Create a Roll Call
 #    * call read('classpath:be/createLAO/create.feature@name=valid_lao')
 
 
-#  Scenario: Create Roll call on root channel should fail
-#    Given string badChannelReq = read('classpath:data/rollCall/bad_roll_call_create_wrong_channel.json')
-#    And def socket = karate.webSocket(wsURL,handle)
-#    * karate.log('bad request is created')
-#    When eval socket.send(badChannelReq)
-#    * karate.log('Request for bad roll call sent')
-#    And json err = socket.listen(timeout)
-#    * karate.log('Answer received is '+ err)
-#    Then match err contains deep {jsonrpc: '2.0', id: 3, error: {code: -6, description: '#string'}}
+
   Scenario: Valid Roll Call
+#    Given string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
     Given string rollCallReq  = read('classpath:data/lao/bad_lao_create_empty_name.json')
     * karate.log('Create Request = ' + rollCallReq)
     * def newLogg =
@@ -62,11 +55,26 @@ Feature: Create a Roll Call
               """
     * karate.log('defining multiSocket')
     * def multiSocket = call getMultiMsgSocket
+    * def socket = karate.webSocket(wsURL,handle)
     When eval multiSocket.send(rollCallReq)
     * karate.log('Request for roll call sent')
     * def buffer2 = multiSocket.getBuffer()
-    And json lao = multiSocket.listen(timeout)
-    And json roll = buffer.takeTimeout(timeout)
-    * karate.log("lao is "+ lao+ " and roll "+ roll)
+    * json lao =  buffer2.takeTimeout(timeout)
+    * json roll = buffer2.takeTimeout(timeout)
+    * karate.log("lao is "+ lao+ " and roll " + roll)
+
+
+
+
+    ############## INVALID ROLL CALL MESSAGE TEST ####################
+  #  Scenario: Create Roll call on root channel should fail
+#    Given string badChannelReq = read('classpath:data/rollCall/bad_roll_call_create_wrong_channel.json')
+#    And def socket = karate.webSocket(wsURL,handle)
+#    * karate.log('bad request is created')
+#    When eval socket.send(badChannelReq)
+#    * karate.log('Request for bad roll call sent')
+#    And json err = socket.listen(timeout)
+#    * karate.log('Answer received is '+ err)
+#    Then match err contains deep {jsonrpc: '2.0', id: 3, error: {code: -6, description: '#string'}}
 
 
