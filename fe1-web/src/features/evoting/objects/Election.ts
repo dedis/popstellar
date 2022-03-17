@@ -1,21 +1,20 @@
 import { Hash, Timestamp } from 'core/objects';
-import { LaoEventState } from 'features/events/objects/LaoEvent';
+import { EvotingFeature } from '../interface/Feature';
 
 /**
  * Object to represent an election and all its components.
  */
 
-export const EventTypeElection = 'ELECTION';
+export const ELECTION_EVENT_TYPE = 'ELECTION';
 
 export enum ElectionStatus {
   NOT_STARTED = 'not started',
   OPENED = 'opened',
-  FINISHED = 'finished', // When the time is over
   TERMINATED = 'terminated', // When manually terminated by organizer
   RESULT = 'result', // When result is available
 }
 
-export interface ElectionState extends LaoEventState {
+export interface ElectionState extends EvotingFeature.EventState {
   lao: string;
   name: string;
   version: string;
@@ -165,7 +164,7 @@ export class Election {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
-      eventType: EventTypeElection,
+      eventType: ELECTION_EVENT_TYPE,
     };
   }
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import QrReader from 'react-qr-reader';
 import { Badge } from 'react-native-elements';
@@ -11,10 +11,10 @@ import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { EventTags, Hash, PublicKey } from 'core/objects';
-import { makeCurrentLao } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import * as Wallet from 'features/wallet/objects';
 
+import { selectCurrentLao } from 'features/lao/reducer';
 import { requestCloseRollCall } from '../network';
 
 /**
@@ -41,8 +41,7 @@ const RollCallOpened = () => {
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
-  const laoSelect = useMemo(makeCurrentLao, []);
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   if (!lao) {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
