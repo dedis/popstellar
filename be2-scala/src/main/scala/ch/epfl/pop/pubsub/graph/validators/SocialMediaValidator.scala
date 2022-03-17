@@ -15,7 +15,7 @@ object SocialMediaValidator extends MessageDataContentValidator with EventValida
 
   val socialMediaValidator = new SocialMediaValidator(DbActor.getInstance)
 
-  override def EVENT_HASH_PREFIX: String = socialMediaValidator.EVENT_HASH_PREFIX
+  override val EVENT_HASH_PREFIX: String = socialMediaValidator.EVENT_HASH_PREFIX
 
   def validateAddChirp(rpcMessage: JsonRpcRequest): GraphMessage = socialMediaValidator.validateAddChirp(rpcMessage)
 
@@ -32,7 +32,7 @@ object SocialMediaValidator extends MessageDataContentValidator with EventValida
 
 sealed class SocialMediaValidator(dbActorRef: => AskableActorRef) extends MessageDataContentValidator with EventValidator {
 
-  override def EVENT_HASH_PREFIX: String = s"${Channel.CHANNEL_SEPARATOR}posts"
+  override val EVENT_HASH_PREFIX: String = s"${Channel.CHANNEL_SEPARATOR}posts"
 
   private val CHIRP_TEXT_LENGTH = 300
 

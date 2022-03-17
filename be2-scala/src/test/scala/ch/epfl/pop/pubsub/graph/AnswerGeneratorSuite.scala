@@ -8,7 +8,7 @@ import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject}
 import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite._
+import ch.epfl.pop.pubsub.graph.validators.SchemaVerifierSuite._
 import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample

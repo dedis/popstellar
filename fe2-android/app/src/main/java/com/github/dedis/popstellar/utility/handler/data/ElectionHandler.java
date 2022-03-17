@@ -12,6 +12,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
@@ -41,16 +42,16 @@ public final class ElectionHandler {
    */
   public static void handleElectionSetup(HandlerContext context, ElectionSetup electionSetup) {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
 
-    if (laoRepository.isLaoChannel(channel)) {
+    if (channel.isLaoChannel()) {
       Lao lao = laoRepository.getLaoByChannel(channel);
       Log.d(TAG, "handleElectionSetup: channel " + channel + " name " + electionSetup.getName());
 
       Election election =
           new Election(lao.getId(), electionSetup.getCreation(), electionSetup.getName());
-      election.setChannel(channel + "/" + election.getId());
+      election.setChannel(channel.subChannel(election.getId()));
       election.setElectionQuestions(electionSetup.getQuestions());
 
       election.setStart(electionSetup.getStartTime());
@@ -58,7 +59,7 @@ public final class ElectionHandler {
       election.setEventState(OPENED);
 
       // Once the election is created, we subscribe to the election channel
-      laoRepository.sendSubscribe(election.getChannel());
+      context.getMessageSender().subscribe(election.getChannel()).subscribe();
       Log.d(TAG, "election id " + election.getId());
       lao.updateElection(election.getId(), election);
 
@@ -75,7 +76,7 @@ public final class ElectionHandler {
   public static void handleElectionResult(HandlerContext context, ElectionResult electionResult)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
 
     Log.d(TAG, "handling election result");
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -100,7 +101,7 @@ public final class ElectionHandler {
   @SuppressWarnings("unused")
   public static void handleElectionEnd(HandlerContext context, ElectionEnd electionEnd) {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
 
     Log.d(TAG, "handleElectionEnd: channel " + channel);
     Lao lao = laoRepository.getLaoByChannel(channel);
@@ -117,7 +118,7 @@ public final class ElectionHandler {
    */
   public static void handleCastVote(HandlerContext context, CastVote castVote) {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 

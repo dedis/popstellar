@@ -4,28 +4,25 @@ import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyP
 import static com.github.dedis.popstellar.utility.handler.data.LaoHandler.updateLaoNameWitnessMessage;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.WitnessMessage;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
-import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -41,64 +38,43 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.Completable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LaoHandlerTest {
 
-  @Mock LAORemoteDataSource remoteDataSource;
-  @Mock LAOLocalDataSource localDataSource;
-  @Mock KeyManager keyManager;
-
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
-  private static final MessageHandler messageHandler =
-      new MessageHandler(DataRegistryModule.provideDataRegistry());
-
-  private static final int REQUEST_ID = 42;
-  private static final int RESPONSE_DELAY = 1000;
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final String CHANNEL = "/root";
-  private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
+  private static final Channel LAO_CHANNEL = Channel.getLaoChannel(CREATE_LAO.getId());
+
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+
+  private LAORepository laoRepository;
+  private MessageHandler messageHandler;
 
   private Lao lao;
-  private LAORepository laoRepository;
   private MessageGeneral createLaoMessage;
+
+  @Mock MessageSender messageSender;
+  @Mock KeyManager keyManager;
 
   @Before
   public void setup() throws GeneralSecurityException, IOException {
-    SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
-
-    // Simulate a network response from the server after the response delay
-    Observable<GenericMessage> upstream =
-        Observable.fromArray((GenericMessage) new Result(REQUEST_ID))
-            .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
-
-    when(remoteDataSource.observeMessage()).thenReturn(upstream);
-    when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
-
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
-    laoRepository =
-        new LAORepository(
-            remoteDataSource,
-            localDataSource,
-            keyManager,
-            messageHandler,
-            GSON,
-            testSchedulerProvider);
+    when(messageSender.subscribe(any())).then(args -> Completable.complete());
+
+    laoRepository = new LAORepository();
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
     // Create one LAO and add it to the LAORepository
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
     lao.setLastModified(lao.getCreation());
-    laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
+    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
     laoRepository.setAllLaoSubject();
 
     // Add the CreateLao message to the LAORepository
@@ -123,7 +99,7 @@ public class LaoHandlerTest {
         updateLaoNameWitnessMessage(message.getMessageId(), updateLao, lao);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the WitnessMessage has been created
     Optional<WitnessMessage> witnessMessage =
@@ -149,7 +125,7 @@ public class LaoHandlerTest {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, stateLao, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the LAO last modification time and ID was updated
     assertEquals(

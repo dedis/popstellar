@@ -9,6 +9,7 @@ GOTO error
 :build
 	CALL :protocol
 	go build -o pop ./cli/
+	REN pop pop.exe
 	GOTO :EOF
 
 :lint

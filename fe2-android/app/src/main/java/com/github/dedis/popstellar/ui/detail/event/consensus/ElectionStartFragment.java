@@ -41,8 +41,8 @@ import io.reactivex.observers.DisposableObserver;
  * A simple {@link Fragment} subclass. Use the {@link ElectionStartFragment#newInstance} factory
  * method to create an instance of this fragment.
  */
-@AndroidEntryPoint(Fragment.class)
-public class ElectionStartFragment extends Hilt_ElectionStartFragment {
+@AndroidEntryPoint
+public class ElectionStartFragment extends Fragment {
 
   private static final String TAG = ElectionStartFragment.class.getSimpleName();
 

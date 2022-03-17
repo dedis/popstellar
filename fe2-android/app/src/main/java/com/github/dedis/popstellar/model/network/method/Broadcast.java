@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.model.network.method;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.objects.Channel;
 
 import java.util.Objects;
 
@@ -20,7 +21,7 @@ public final class Broadcast extends Message {
    * @param message the message to broadcast
    * @throws IllegalArgumentException if any parameter is null
    */
-  public Broadcast(String channel, MessageGeneral message) {
+  public Broadcast(Channel channel, MessageGeneral message) {
     super(channel);
     if (message == null) {
       throw new IllegalArgumentException("Trying to broadcast a null message");

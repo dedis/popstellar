@@ -18,3 +18,18 @@ type ElectionResultQuestionResult struct {
 	BallotOption string `json:"ballot_option"`
 	Count        int    `json:"count"`
 }
+
+// GetObject implements MessageData
+func (ElectionResult) GetObject() string {
+	return ElectionObject
+}
+
+// GetAction implements MessageData
+func (ElectionResult) GetAction() string {
+	return ElectionActionResult
+}
+
+// NewEmpty implements MessageData
+func (ElectionResult) NewEmpty() MessageData {
+	return &ElectionResult{}
+}

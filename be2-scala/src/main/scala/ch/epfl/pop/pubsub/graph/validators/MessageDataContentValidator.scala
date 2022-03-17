@@ -9,18 +9,6 @@ import ch.epfl.pop.storage.DbActor
 trait MessageDataContentValidator extends ContentValidator with AskPatternConstants {
   implicit lazy val dbActor: AskableActorRef = DbActor.getInstance
 
-  /**
-   * Creates a validation error message for reason <reason> that happened in
-   * validator module <validator> with optional error code <errorCode>
-   *
-   * @param reason    the reason of the validation error
-   * @param validator validator module where the error occurred
-   * @param errorCode error code related to the error
-   * @return a description of the error and where it occurred
-   */
-  override def validationError(reason: String, validator: String, rpcId: Option[Int], errorCode: ErrorCodes.ErrorCodes = ErrorCodes.INVALID_DATA): PipelineError =
-    super.validationError(reason, validator, rpcId, errorCode)
-
   def validationErrorNoMessage(rpcId: Option[Int]): PipelineError = PipelineError(ErrorCodes.INVALID_DATA.id, s"RPC-params does not contain any message", rpcId)
 
   // Lower bound for a timestamp to not be stale

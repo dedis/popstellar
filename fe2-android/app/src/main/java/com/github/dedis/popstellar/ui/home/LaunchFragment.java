@@ -14,8 +14,8 @@ import com.github.dedis.popstellar.databinding.LaunchFragmentBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the Launch UI */
-@AndroidEntryPoint(Fragment.class)
-public final class LaunchFragment extends Hilt_LaunchFragment {
+@AndroidEntryPoint
+public final class LaunchFragment extends Fragment {
 
   public static final String TAG = LaunchFragment.class.getSimpleName();
 

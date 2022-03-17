@@ -3,7 +3,7 @@ package ch.epfl.pop.model.objects
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-sealed case class Base64Data(data: String) {
+final case class Base64Data(data: String) {
   val DECODER: Base64.Decoder = Base64.getUrlDecoder
 
   def decodeToString(): String = new String(this.decode(), StandardCharsets.UTF_8)
@@ -14,7 +14,7 @@ sealed case class Base64Data(data: String) {
 
   def equals(that: Base64Data): Boolean = data == that.data
 
-  override def toString: String = data.toString
+  override def toString: String = data
 
   try {
     DECODER.decode(data)

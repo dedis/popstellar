@@ -8,10 +8,10 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.Signature
 import spray.json._
 
-case class ResultElection(
-                           questions: List[ElectionQuestionResult],
-                           witness_signatures: List[Signature]
-                         ) extends MessageData {
+final case class ResultElection(
+                                 questions: List[ElectionQuestionResult],
+                                 witness_signatures: List[Signature]
+                               ) extends MessageData {
   override val _object: ObjectType = ObjectType.ELECTION
   override val action: ActionType = ActionType.RESULT
 }
