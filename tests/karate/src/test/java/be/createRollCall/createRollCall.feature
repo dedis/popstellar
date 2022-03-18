@@ -8,61 +8,57 @@ Feature: Create a Roll Call
         # * call wait <timeout>
         # * karate.set(varName, newValue)
     * call read('classpath:be/utils/server.feature')
+    * call read('classpath:be/mockFrontEnd.feature')
 #    * call read('classpath:be/createLAO/create.feature@name=valid_lao')
 
 
+#  Scenario: Valid Roll Call 2:
+#    Given string laoCreateReq = read('classpath:data/rollCall/valid_roll_call_create.json')
+#    And string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
+#    And   def socket = karate.webSocket(wsURL,handle)
+#    * karate.log('Create Request = ' + laoCreateReq)
+#    When  eval socket.send(laoCreateReq)
+#    *  karate.log('Sent: '+ karate.pretty(laoCreateReq))
+#    And   string answer = socket.listen(timeout)
+#    * karate.log("The received answer before sending roll call is "+ answer)
+#    Then   def socket = karate.webSocket(wsURL,handle)
+#    And socket.send(rollCallReq)
+#    * karate.log("Roll call Request sent")
+#    When eval socket.send(rollCallReq)
+#    And   string answer2 = socket.listen(timeout)
+#    * karate.log("The received after sending roll call is "+ answer2)
+
 
   Scenario: Valid Roll Call
-#    Given string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
-    Given string rollCallReq  = read('classpath:data/lao/bad_lao_create_empty_name.json')
-    * karate.log('Create Request = ' + rollCallReq)
-    * def newLogg =
-            """
-              function() {
-                var Logg = Java.type('com.intuit.karate.Logger')
-                return new Logg()
-              }
-            """
-    * def newBuffer =
-            """
-              function() {
-                var Queue = Java.type("common.net.MessageQueue")
-                return new Queue()
-              }
-            """
-    * def multiOptions =
-            """
-              function(){
-                var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-                return new WebSocketOptions(wsURL)
-              }
-            """
-    * def buffer = call newBuffer
-    * def logge = call newLogg
-    * def multi = call multiOptions
-    * def getMultiMsgSocket =
-              """
-                function(){
-                  var MultiMsg = Java.type('common.net.MultiMsgWebSocketClient')
-                  var Logg = Java.type('com.intuit.karate.Logger')
-                  var logg =  new Logg()
-                  var Queue = Java.type("common.net.MessageQueue")
-                  var q =  new Queue()
-                  var WebSocketOptions = Java.type('com.intuit.karate.http.WebSocketOptions')
-                  var wso =  new WebSocketOptions(wsURL)
-                  return new MultiMsg(wso,logg,q)
-                }
-              """
-    * karate.log('defining multiSocket')
-    * def multiSocket = call getMultiMsgSocket
-    * def socket = karate.webSocket(wsURL,handle)
-    When eval multiSocket.send(rollCallReq)
-    * karate.log('Request for roll call sent')
-    * def buffer2 = multiSocket.getBuffer()
-    * json lao =  buffer2.takeTimeout(timeout)
-    * json roll = buffer2.takeTimeout(timeout)
-    * karate.log("lao is "+ lao+ " and roll " + roll)
+    Given string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
 
+    When eval frontend.send(laoCreateReq)
+    * karate.log('Request for roll call sent')
+    * frontend_buffer.takeTimeout(timeout)
+    Then eval frontend.send(rollCallReq)
+    * json roll = frontend_buffer.takeTimeout(timeout)
+    * karate.log(roll)
+
+  Scenario: Roll Call Creation with empty name should return an error code
+    Given string badRollCallReq  = read('classpath:data/rollCall/bad_roll_call_create_empty_data_but_same_messageId_as_valid_roll_call.json')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * string validRollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
+
+    When eval frontend.send(validRollCallReq)
+    * karate.log('Request for roll call sent')
+    * frontend_buffer.takeTimeout(timeout)
+
+    Then eval frontend.send(badRollCallReq)
+    * json roll_err = frontend_buffer.takeTimeout(timeout)
+    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+
+  Scenario: Roll Call Creation with non-organizer as sender should return an error
+    Given string badRollCallReq = read('classpath:data/rollCall/bad_create_roll_call_not_organizer_sender.json')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    When eval frontend.send(badRollCallReq)
+    * json roll_err = frontend_buffer.takeTimeout(timeout)
+    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
 
 
 
