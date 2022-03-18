@@ -15,7 +15,6 @@ import { useMockWalletState } from '../objects/__mocks__/mockWallet';
 import * as Wallet from '../objects';
 import { RollCallToken } from '../objects/RollCallToken';
 import RollCallTokensDropDown from '../components/RollCallTokensDropDown';
-import SendModal from '../components/SendModal';
 
 const styles = StyleSheet.create({
   homeContainer: {
@@ -25,7 +24,6 @@ const styles = StyleSheet.create({
   smallPadding: {
     padding: '1rem',
   } as ViewStyle,
-
   largePadding: {
     padding: '2rem',
   } as ViewStyle,
@@ -48,7 +46,6 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedToken, setSelectedToken] = useState<RollCallToken>();
   const [isDebug, setIsDebug] = useState(false);
-  const [isSendVisible, setIsSendVisible] = useState(false);
 
   const rollCalls = useSelector(rollCallSelector);
   const mock = useMockWalletState();
@@ -89,23 +86,6 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     return <TextBlock text="You currently possess no roll call tokens" />;
   };
 
-  const tokenActions = () => {
-    if (selectedToken) {
-      return (
-        <>
-          <WideButtonView
-            title="Send tokens"
-            onPress={() => {
-              setIsSendVisible(true);
-            }}
-          />
-          <WideButtonView title="Witness" onPress={() => {}} />
-          <WideButtonView title="Transactions history" onPress={() => {}} />
-        </>
-      );
-    }
-    return null;
-  };
   return (
     <View style={styles.homeContainer}>
       <TextBlock bold text={STRINGS.wallet_welcome} />
@@ -116,15 +96,6 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       </View>
       {selectedToken && tokenInfos()}
       <View style={styles.smallPadding} />
-      {selectedToken && (
-        <SendModal
-          balance={'0'}
-          popToken={selectedToken.token}
-          visible={isSendVisible}
-          setVisible={setIsSendVisible}
-        />
-      )}
-      {tokenActions()}
       <WideButtonView
         title={STRINGS.logout_from_wallet}
         onPress={() => {
