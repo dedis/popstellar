@@ -57,6 +57,11 @@ export class NetworkConnection {
     this.ws.close();
   }
 
+  public reconnect() {
+    this.disconnect();
+    this.ws = this.establishConnection(this.address);
+  }
+
   private onOpen(): void {
     console.info(`Initiating web socket : ${this.address}`);
   }
@@ -92,7 +97,7 @@ export class NetworkConnection {
     // only retry a certain number of times and add a wait before retrying
     if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
       setTimeout(() => {
-        this.ws = this.establishConnection(this.address);
+        this.reconnect();
       }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT);
     }
   }

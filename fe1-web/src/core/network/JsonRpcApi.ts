@@ -1,6 +1,6 @@
 import { KeyPairRegistry } from 'core/keypair';
 import { getNetworkManager } from 'core/network/NetworkManager';
-import { Channel, KeyPair } from 'core/objects';
+import { Channel, KeyPair, ROOT_CHANNEL } from 'core/objects';
 
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
 import { configureMessages, Message, MessageData, MessageRegistry } from './jsonrpc/messages';
@@ -16,19 +16,6 @@ let messageRegistry: MessageRegistry;
  * A local reference to the global KeyPairRegistry object
  */
 let keyPairRegistry: KeyPairRegistry;
-
-/**
- * Configure the JSON-RPC interface with its dependencies
- *
- * @param messageReg - The MessageRegistry to be injected
- * @param keyPairReg - The KeyPairRegistry to be injected
- */
-export function configureJsonRpcApi(messageReg: MessageRegistry, keyPairReg: KeyPairRegistry) {
-  messageRegistry = messageReg;
-  keyPairRegistry = keyPairReg;
-
-  configureMessages(messageReg);
-}
 
 /**
  * Get the keypair with which to sign the MessageData
@@ -104,6 +91,8 @@ export async function catchup(channel: Channel): Promise<Generator<Message, void
   });
 
   // do not catch, as it needs to be handled on a higher level
+  // A JsonRpcResponse can have r.result being of type number or of Message[]
+  // But in the case of a catchup we always expect Message[]
   const responses: JsonRpcResponse[] = await getNetworkManager().sendPayload(request);
   if (responses.find((r) => typeof r.result === 'number')) {
     throw new Error('FIXME number in result. Should it be here?');
@@ -111,4 +100,20 @@ export async function catchup(channel: Channel): Promise<Generator<Message, void
 
   const msgs = [].concat(...responses.map((r) => r.result as any));
   return messageGenerator(msgs, channel);
+}
+
+/**
+ * Configure the JSON-RPC interface with its dependencies
+ *
+ * @param messageReg - The MessageRegistry to be injected
+ * @param keyPairReg - The KeyPairRegistry to be injected
+ */
+export function configureJsonRpcApi(messageReg: MessageRegistry, keyPairReg: KeyPairRegistry) {
+  messageRegistry = messageReg;
+  keyPairRegistry = keyPairReg;
+
+  configureMessages(messageReg);
+
+  // in case of a reconnection, send a catchup message on the root channel
+  getNetworkManager().addReconnectionHandler(() => catchup(ROOT_CHANNEL));
 }

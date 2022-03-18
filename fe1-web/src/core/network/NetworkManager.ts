@@ -1,3 +1,6 @@
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
+import { AppState, AppStateStatus } from 'react-native';
+
 import { JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { NetworkConnection } from './NetworkConnection';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
@@ -6,6 +9,8 @@ import { sendToFirstAcceptingServerStrategy } from './strategies/client-multiple
 
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
+type ReconnectionHandler = () => void;
+
 class NetworkManager {
   private connections: NetworkConnection[];
 
@@ -13,9 +18,69 @@ class NetworkManager {
 
   private sendingStrategy: SendingStrategy;
 
+  private isOnline: boolean;
+
+  private isFocused: boolean;
+
+  private reconnectionHandlers: ReconnectionHandler[] = [];
+
   public constructor(sendingStrategy: SendingStrategy) {
     this.connections = [];
     this.sendingStrategy = sendingStrategy;
+    this.isOnline = true;
+    this.isFocused = true;
+
+    // fetch initial network status
+    NetInfo.fetch().then(this.onNetworkChange.bind(this));
+    // listen to network change events
+    NetInfo.addEventListener(this.onNetworkChange.bind(this));
+
+    // reconnect when the application is re-focused
+    AppState.addEventListener('change', this.onAppStateChange.bind(this));
+  }
+
+  private onNetworkChange(state: NetInfoState): void {
+    const isOnline = state.isConnected || false;
+    if (!this.isOnline && isOnline) {
+      // if we were disconnected before and are now reconnected to the network
+      // then try to reconnect all connections
+      this.reconnect();
+    }
+
+    this.isOnline = isOnline;
+  }
+
+  private onAppStateChange(status: AppStateStatus) {
+    const isFocused = status === 'active';
+    if (!this.isFocused && isFocused) {
+      // if we were backgrounded and become active again, the websocket
+      // connections are very likely to be broken
+      this.reconnect();
+    }
+
+    this.isFocused = isFocused;
+  }
+
+  public addReconnectionHandler(handler: ReconnectionHandler) {
+    this.reconnectionHandlers.push(handler);
+  }
+
+  public removeReconnectionHandler(handler: ReconnectionHandler) {
+    this.reconnectionHandlers = this.reconnectionHandlers.filter((h) => h !== handler);
+  }
+
+  public removeAllReconnectionHandler() {
+    this.reconnectionHandlers = [];
+  }
+
+  private reconnect() {
+    console.info('Reconnecting to all websockets..');
+    for (const connection of this.connections) {
+      connection.reconnect();
+    }
+    for (const handler of this.reconnectionHandlers) {
+      handler();
+    }
   }
 
   private getConnectionByAddress(address: string): NetworkConnection | undefined {
