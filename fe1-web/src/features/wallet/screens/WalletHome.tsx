@@ -78,13 +78,17 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       const rollCallId = 'Roll Call id: '.concat(selectedToken.rollCallId.valueOf());
       return (
         <View style={styles.rowContainer}>
-          <TextBlock size={20} text={laoId} />
-          <TextBlock size={20} text={rollCallId} />
+          <View style={styles.homeContainer}>
+            <TextBlock size={20} text={laoId} />
+            <TextBlock size={20} text={rollCallId} />
+          </View>
+          <QRCode value={selectedToken.token.publicKey.valueOf()} visibility />
         </View>
       );
     }
     return <TextBlock text="You currently possess no roll call tokens" />;
   };
+
   const tokenActions = () => {
     if (selectedToken) {
       return (
@@ -109,9 +113,8 @@ const WalletHome = ({ navigation }: IPropTypes) => {
         {tokens && tokens.length > 0 && (
           <RollCallTokensDropDown rollCallTokens={tokens} onTokenChange={setSelectedToken} />
         )}
-        {tokenInfos()}
       </View>
-      {selectedToken && <QRCode value={selectedToken.token.publicKey.valueOf()} visibility />}
+      {selectedToken && tokenInfos()}
       <View style={styles.smallPadding} />
       {selectedToken && (
         <SendModal

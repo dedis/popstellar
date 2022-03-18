@@ -1,17 +1,18 @@
 import React, { useMemo } from 'react';
-import { StyleSheet, View, ViewStyle } from "react-native";
+import { StyleSheet } from 'react-native';
 
-import { DropdownSelector } from 'core/components';
 import PropTypes from 'prop-types';
+import { Picker } from '@react-native-picker/picker';
 import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
-  container: {
-    maxHeight: 'fit-content',
-    maxWidth: 'fit-content',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-  } as ViewStyle,
+  pickerStyle: {
+    height: 40,
+    width: 'fit-content',
+    fontSize: 22,
+    textAlign: 'center',
+    margin: 'auto',
+  },
 });
 const RollCallTokensDropDown = (props: IPropTypes) => {
   const { onTokenChange } = props;
@@ -19,14 +20,20 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
   const onChange = (pk: string) => {
     onTokenChange(rollCallTokens.find((rct) => rct?.token.publicKey.valueOf() === pk));
   };
-  const rctPublicKeys = useMemo(
-    () => rollCallTokens.map((rct) => rct?.token.publicKey.valueOf()),
-    [rollCallTokens],
-  );
+  const options = useMemo(() => {
+    return rollCallTokens.map((rc) => {
+      const value = rc?.token.publicKey.valueOf() || '';
+      return <Picker.Item key={value} label={value} />;
+    });
+  }, [rollCallTokens]);
+
   return (
-    <View style={styles.container}>
-      <DropdownSelector onChange={onChange} values={rctPublicKeys} selected={rctPublicKeys[0]} />
-    </View>
+    <Picker
+      selectedValue={options[0]}
+      onValueChange={(val: any) => onChange(val)}
+      style={styles.pickerStyle}>
+      {options}
+    </Picker>
   );
 };
 
