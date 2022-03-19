@@ -17,7 +17,7 @@ Feature: Create a pop LAO
     *  karate.log('Sent: '+ karate.pretty(emptyNameReq))
     And  json err = socket.listen(timeout)
     * karate.log('Received: '+ err )
-    Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+    Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -6, description: '#string'}}
 
   Scenario: Create Lao with negative time should fail with an error response
       Given string negTimeLao = read('classpath:data/lao/bad_lao_create_negative.json')
@@ -26,7 +26,7 @@ Feature: Create a pop LAO
       *  karate.log('Sent: '+ karate.pretty(negTimeLao))
       And  json err = socket.listen(timeout)
       *  karate.log('Received: '+ karate.pretty(err) )
-      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -6, description: '#string'}}
 
   Scenario: Create Lao with invalid id hash should fail with an error response
       Given string invalidIdLao = read('classpath:data/lao/bad_lao_create_id_invalid_hash.json')
@@ -35,7 +35,7 @@ Feature: Create a pop LAO
       *  karate.log('Sent: '+ karate.pretty(invalidIdLao))
       And  json err = socket.listen(timeout)
       *  karate.log('Received: '+ karate.pretty(err) )
-      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -6, description: '#string'}}
 
   @name=valid_lao
   Scenario: Create should succeed with a valid creation request
