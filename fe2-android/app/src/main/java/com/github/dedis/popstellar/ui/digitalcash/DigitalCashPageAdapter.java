@@ -15,11 +15,21 @@ public class DigitalCashPageAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        Fragment send_fragment = new DigitalCashSend();
+        Fragment fragment;
         Bundle args = new Bundle();
-        args.putInt(DigitalCashSend.ARG, position+1);
-        send_fragment.setArguments(args);
-        return send_fragment;
+        switch (position){
+            case 1 :
+                fragment = new DigitalCashReceive();
+                args.putInt(DigitalCashReceive.ARG, position+1);
+                fragment.setArguments(args);
+                return fragment;
+            default :
+                fragment = new DigitalCashSend();
+                args.putInt(DigitalCashSend.ARG, position+1);
+                fragment.setArguments(args);
+        }
+
+        return fragment;
     }
 
     @Override

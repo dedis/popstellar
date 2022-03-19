@@ -4,7 +4,7 @@
   android:id="@+id/send_digitalcash"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context=".ui.digitalcash.DigitalCashSend">
+  tools:context=".ui.digitalcash.DigitalCashReceive">
 
   <LinearLayout
     android:layout_width="match_parent"
@@ -12,15 +12,14 @@
     android:orientation="vertical">
 
     <TextView
-      android:id="@+id/title_Send_msg"
+      android:id="@+id/title_Receive_msg"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_alignParentTop="true"
       android:layout_centerHorizontal="true"
-      android:layout_marginTop="12dp"
       android:layout_marginLeft="8dp"
-      android:fontFamily="@font/arimo"
-      android:text="@string/digital_cash_send"
+      android:layout_marginTop="12dp"
+      android:text="@string/digital_cash_receive"
       android:textSize="24sp"
       android:textStyle="bold" />
 
@@ -31,14 +30,11 @@
       android:layout_alignParentTop="true"
       android:layout_centerHorizontal="true"
       android:layout_marginTop="35dp"
-      android:text="@string/digital_cash_dummieMsg" />
+      android:text="@string/nothing"
+      android:textAlignment="center"
+      android:textSize="16sp"
+      android:textStyle="bold" />
 
-    <Button
-      android:id="@+id/button"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_alignParentBottom="true"
-      android:layout_centerHorizontal="true"
-      android:text="@string/digital_cash_send" />
+
   </LinearLayout>
 </FrameLayout>
