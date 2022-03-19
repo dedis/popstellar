@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class DigitalCashMain extends FragmentActivity {
     DigitalCashPageAdapter digitalCashPageAdapter;
-    private final DigitalCashViewModel;
+    //private final DigitalCashViewModel;
     ViewPager viewPager;
 
     @Override

@@ -20,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint;
  */
 @AndroidEntryPoint
 public class DigitalCashHome extends Fragment {
-    private final DigitalCashViewModel;
+    //private final DigitalCashViewModel;
     public static final String ARG = "param";
 
     public DigitalCashHome() {
