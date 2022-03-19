@@ -12,11 +12,16 @@ public class ServerTest {
 //
 //  @Karate.Test
 //  Karate testCreateRollCall() {
-//    return Karate.run("classpath:be/createRollCall");
+//    return Karate.run("classpath:be/createRollCall/createRollCall.feature");
 //  }
 
   @Karate.Test
   Karate testOpenRollCall() {
     return Karate.run("classpath:be/createRollCall/openRollCall.feature");
   }
+
+//  @Karate.Test
+//  Karate testCloseRollCall() {
+//    return Karate.run("classpath:be/createRollCall/closeRollCall.feature");
+//  }
 }

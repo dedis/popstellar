@@ -70,3 +70,10 @@ Feature: Create a Roll Call
     When eval frontend.send(badRollCallReq)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
     Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+
+  Scenario: Roll Call Creation with invalid roll_call id should return an error
+    Given string badRollCallReq = read('classpath:data/rollCall/bad_roll_call_create_invalid_roll_call_id.json')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    When eval frontend.send(badRollCallReq)
+    * json roll_err = frontend_buffer.takeTimeout(timeout)
+    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}

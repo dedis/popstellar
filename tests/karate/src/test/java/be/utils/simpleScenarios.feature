@@ -48,3 +48,10 @@
       * def roll_call = frontend_buffer.takeTimeout(timeout)
       * karate.log("roll call create message received : "+roll_call)
 
+    @name=open_roll_call
+    Scenario: Opens a valid Roll Call
+      * string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open.json')
+      * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+      * eval frontend.send(rollCallOpenReq)
+      * json create_roll_broadcast = frontend_buffer.takeTimeout(timeout)
+      * json open_roll = frontend_buffer.takeTimeout(timeout)
