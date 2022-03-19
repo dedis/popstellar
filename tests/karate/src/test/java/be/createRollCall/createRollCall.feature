@@ -15,8 +15,8 @@ Feature: Create a Roll Call
     Given string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
 
-    When eval frontend.send(laoCreateReq)
-    * karate.log('Request for roll call sent')
+#    When eval frontend.send(laoCreateReq)
+    * karate.log('Request for lao creation sent')
     * frontend_buffer.takeTimeout(timeout)
     Then eval frontend.send(rollCallReq)
     * json roll = frontend_buffer.takeTimeout(timeout)

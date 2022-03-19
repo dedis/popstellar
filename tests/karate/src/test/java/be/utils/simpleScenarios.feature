@@ -35,7 +35,16 @@
           })
       """
       * frontend.send(catchup)
-      * def cath = frontend_buffer.takeTimeout(timeout)
-      * karate.log("catchup message received : " + cath)
+      * def catchup_response = frontend_buffer.takeTimeout(timeout)
+      * karate.log("catchup message received : " + catchup_response)
 
+    @name=valid_roll_call
+    Scenario: Creates a valid Roll Call
+      * string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+
+      * frontend_buffer.takeTimeout(timeout)
+      * eval frontend.send(rollCallReq)
+      * def roll_call = frontend_buffer.takeTimeout(timeout)
+      * karate.log("roll call create message received : "+roll_call)
 
