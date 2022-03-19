@@ -252,4 +252,10 @@
   <string name="no_rollcall_exception">no rollcall exist in the LAO</string>
   <string name="seed_validation_exception">unable to validate seed</string>
   <string name="uninitialized_wallet_exception">the wallet is not initialized</string>
+
+
+  <!-- Digital Cash -->
+  <string name="digital_cash_send">SEND</string>
+  <string name="digital_cash_dummieMsg">Hi ! First Message</string>
+
 </resources>
