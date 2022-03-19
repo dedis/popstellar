@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  tools:showIn="navigation_view">
+  <group android:checkableBehavior="single"
+    >
+    <item
+      android:id="@+id/send_coin_m"
+      android:icon="@drawable/ic_send_coin"
+      android:title="SEND"
+      />
+    <item
+      android:id="@+id/receive_coin_m"
+      android:icon="@drawable/ic_receive_coin"
+      android:title="RECEIVE"
+      />
+  </group>
+
+  <item android:title="MY HISTORY">
+    <menu>
+      <item
+        android:id="@+id/history_coin"
+        android:icon="@drawable/ic_history_coin"
+        android:title="HISTORY"
+        />
+    </menu>
+  </item>
+
+  <item android:title="ORGANIZER RIGHTS ">
+    <menu>
+      <item
+        android:id="@+id/issue_coin"
+        android:icon="@drawable/ic_issue_money"
+        android:title="ISSUE"
+        />
+    </menu>
+  </item>
+
+</menu>

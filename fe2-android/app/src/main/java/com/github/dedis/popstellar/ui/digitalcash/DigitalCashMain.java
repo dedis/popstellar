@@ -11,8 +11,12 @@ import android.os.Bundle;
 
 import com.github.dedis.popstellar.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class DigitalCashMain extends FragmentActivity {
     DigitalCashPageAdapter digitalCashPageAdapter;
+    private final DigitalCashViewModel;
     ViewPager viewPager;
 
     @Override

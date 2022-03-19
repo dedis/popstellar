@@ -12,10 +12,13 @@ import android.widget.TextView;
 
 import com.github.dedis.popstellar.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A simple {@link Fragment} subclass.
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class DigitalCashSend extends Fragment {
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

@@ -10,19 +10,24 @@ import android.view.ViewGroup;
 
 import com.github.dedis.popstellar.R;
 
+import javax.annotation.Nullable;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link DigitalCashHome#newInstance} factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 public class DigitalCashHome extends Fragment {
-
+    private final DigitalCashViewModel;
     public static final String ARG = "param";
 
     public DigitalCashHome() {
         // Required empty public constructor
     }
 
+    @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
