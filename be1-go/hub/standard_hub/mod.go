@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
+	"github.com/rs/zerolog/log"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
@@ -146,7 +147,6 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
 	hubType hub.HubType) (*Hub, error) {
-
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
@@ -539,6 +539,13 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	err = senderPubKey.UnmarshalBinary(senderBuf)
 	if err != nil {
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+	}
+	println("from message is ", senderPubKey)
+	println("from terminal is ", h.GetPubKeyOwner())
+	log.Logger.Error().Msg("from message" + senderPubKey.String())
+	log.Logger.Error().Msg("From cli " + h.GetPubKeyOwner().String())
+	if !h.GetPubKeyOwner().Equal(senderPubKey) {
+		return xerrors.Errorf("Only an organizer may create an Lao")
 	}
 
 	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
