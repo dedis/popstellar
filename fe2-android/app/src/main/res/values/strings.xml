@@ -256,8 +256,11 @@
   <!-- Digital Cash -->
   <string name="digital_cash_send">SEND</string>
   <string name="digital_cash_receive">RECEIVE</string>
-  <string name="digital_cash_dummieMsg">Hi ! First Message</string>
+  <string name="digital_cash_home">HOME</string>
+  <string name="digital_cash_amount">LAO COIN</string>
 
+  <string name="digital_cash_dummieMsg">Hi ! First Message</string>
   <string name="nothing">Sorry got Nothing</string>
+
 
 </resources>

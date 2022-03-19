@@ -18,7 +18,12 @@ public class DigitalCashPageAdapter extends FragmentStatePagerAdapter {
         Fragment fragment;
         Bundle args = new Bundle();
         switch (position){
-            case 1 :
+            case 0:
+                fragment = new DigitalCashHome();
+                args.putInt(DigitalCashReceive.ARG, position+1);
+                fragment.setArguments(args);
+                return fragment;
+            case 1:
                 fragment = new DigitalCashReceive();
                 args.putInt(DigitalCashReceive.ARG, position+1);
                 fragment.setArguments(args);
@@ -34,7 +39,7 @@ public class DigitalCashPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 2;
+        return 3;
     }
 
     @Override
