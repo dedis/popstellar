@@ -74,12 +74,15 @@ class NetworkManager {
   }
 
   private reconnect() {
-    console.info('Reconnecting to all websockets..');
-    for (const connection of this.connections) {
-      connection.reconnect();
-    }
-    for (const handler of this.reconnectionHandlers) {
-      handler();
+    // the sending strategy will fail if we have no connection
+    if (this.connections.length > 0) {
+      console.info('Reconnecting to all websockets..');
+      for (const connection of this.connections) {
+        connection.reconnect();
+      }
+      for (const handler of this.reconnectionHandlers) {
+        handler();
+      }
     }
   }
 

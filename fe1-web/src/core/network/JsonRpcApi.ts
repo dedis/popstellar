@@ -113,7 +113,4 @@ export function configureJsonRpcApi(messageReg: MessageRegistry, keyPairReg: Key
   keyPairRegistry = keyPairReg;
 
   configureMessages(messageReg);
-
-  // in case of a reconnection, send a catchup message on the root channel
-  getNetworkManager().addReconnectionHandler(() => catchup(ROOT_CHANNEL));
 }
