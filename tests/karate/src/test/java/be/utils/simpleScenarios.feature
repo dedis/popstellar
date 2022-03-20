@@ -45,7 +45,9 @@
 
       * frontend_buffer.takeTimeout(timeout)
       * eval frontend.send(rollCallReq)
+      * def roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
       * def roll_call = frontend_buffer.takeTimeout(timeout)
+      * karate.log("roll call create broadcast message received : "+roll_call_broadcast)
       * karate.log("roll call create message received : "+roll_call)
 
     @name=open_roll_call

@@ -10,20 +10,22 @@ Feature: Join a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
 
-#  Scenario: Open a valid Roll Call
-#    Given string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open.json')
-#    * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-#    When eval frontend.send(rollCallOpenReq)
-#    * karate.log("Open request has been sent : "+ rollCallOpenReq)
-#    * json create_roll_broadcast = frontend_buffer.takeTimeout(timeout)
-#    * json open_roll = frontend_buffer.takeTimeout(timeout)
-#    Then match open_roll contains deep {jsonrpc: '2.0', id: 32, result: 0}
-
-  Scenario: Opening a Roll Call that does not exist should return an error
+  Scenario: Open a valid Roll Call
     Given string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open.json')
-    * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(rollCallOpenReq)
     * karate.log("Open request has been sent : "+ rollCallOpenReq)
-    #* json create_roll_broadcast = frontend_buffer.takeTimeout(timeout)
+    * json open_roll_broadcast = frontend_buffer.takeTimeout(timeout)
+    * karate.log("Received an open roll call result message : ")
+    * karate.log(open_roll_broadcast)
     * json open_roll = frontend_buffer.takeTimeout(timeout)
+    * karate.log(open_roll)
     Then match open_roll contains deep {jsonrpc: '2.0', id: 32, result: 0}
+
+#  Scenario: Opening a Roll Call that does not exist should return an error
+#    Given string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open.json')
+#    * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+#    When eval frontend.send(rollCallOpenReq)
+#    * karate.log("Open request has been sent : "+ rollCallOpenReq)
+#    * json err_open = frontend_buffer.takeTimeout(timeout)
+#    Then match err_open contains deep {jsonrpc: '2.0', id: 32, error: {code: -4, description: '#string'}}

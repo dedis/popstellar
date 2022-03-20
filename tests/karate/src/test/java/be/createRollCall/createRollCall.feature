@@ -15,12 +15,12 @@ Feature: Create a Roll Call
     Given string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
 
-#    When eval frontend.send(laoCreateReq)
     * karate.log('Request for lao creation sent')
     * frontend_buffer.takeTimeout(timeout)
     Then eval frontend.send(rollCallReq)
-    * json roll = frontend_buffer.takeTimeout(timeout)
-    Then match roll contains deep {jsonrpc: '2.0', id: 3, result: 0}
+    * json roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
+    * json roll_call_result = frontend_buffer.takeTimeout(timeout)
+    Then match roll_call_result contains deep {jsonrpc: '2.0', id: 3, result: 0}
 
   Scenario: Roll Call Creation with empty name should return an error code
     Given string badRollCallReq  = read('classpath:data/rollCall/bad_roll_call_create_empty_data_but_same_messageId_as_valid_roll_call.json')
