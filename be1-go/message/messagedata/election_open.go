@@ -6,6 +6,9 @@ type ElectionOpen struct {
 	Action   string `json:"action"`
 	Lao      string `json:"lao"`
 	Election string `json:"election"`
+
+	// OpenedAt is a Unix timestamp
+	OpenedAt int64 `json:opened_at`
 }
 
 // GetObject implements MessageData

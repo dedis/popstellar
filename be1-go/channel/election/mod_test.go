@@ -341,6 +341,155 @@ func Test_Cast_Vote_And_Gather_Result(t *testing.T) {
 	require.Equal(t, expectedRes[1].BallotOption, res[1].BallotOption)
 }
 
+func Test_Unopened_Election(t *testing.T) {
+
+	//create election channel: election with one question
+	electChannel, pkOrganizer := newFakeChannel(t)
+
+	// create a fakeSocket that is listening to the channel
+	fakeSock := &fakeSocket{id: "socket"}
+	electChannel.sockets.Upsert(fakeSock)
+
+	// check the created election has only one question
+	require.Equal(t, 1, len(electChannel.questions))
+
+	file := filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote", "vote_cast_vote.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var castVote messagedata.VoteCastVote
+	err = json.Unmarshal(buf, &castVote)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	// wrap the cast vote in a message
+	m := message.Message{
+		Data:              buf64,
+		Sender:            pkOrganizer,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	// wrap the message in a publish
+	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = electChannel.channelID
+
+	require.Error(t, electChannel.Publish(pub, socket.ClientSocket{}))
+
+	// get end election message data
+	file = filepath.Join(relativeMsgDataExamplePath, "election_end", "election_end.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var endElect messagedata.ElectionEnd
+	err = json.Unmarshal(buf, &endElect)
+	require.NoError(t, err)
+
+	buf64 = base64.URLEncoding.EncodeToString(buf)
+
+	// wrap the end election in a message
+	m = message.Message{
+		Data:              buf64,
+		Sender:            pkOrganizer,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	// wrap the message in a publish
+	pub.Params.Message = m
+
+	require.Error(t, electChannel.Publish(pub, socket.ClientSocket{}))
+}
+
+func Test_Already_Closed_Election(t *testing.T) {
+
+	//create election channel: election with one question
+	electChannel, pkOrganizer := newFakeChannel(t)
+	electChannel.terminated = true
+
+	// create a fakeSocket that is listening to the channel
+	fakeSock := &fakeSocket{id: "socket"}
+	electChannel.sockets.Upsert(fakeSock)
+
+	// check the created election has only one question
+	require.Equal(t, 1, len(electChannel.questions))
+
+	file := filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote", "vote_cast_vote.json")
+	buf, err := os.ReadFile(file)
+	require.NoError(t, err)
+
+	var castVote messagedata.VoteCastVote
+	err = json.Unmarshal(buf, &castVote)
+	require.NoError(t, err)
+
+	buf64 := base64.URLEncoding.EncodeToString(buf)
+
+	// wrap the cast vote in a message
+	m := message.Message{
+		Data:              buf64,
+		Sender:            pkOrganizer,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	// wrap the message in a publish
+	relativePathCreatePub := filepath.Join(relativeQueryExamplePath, "publish")
+
+	fileCreatePub := filepath.Join(relativePathCreatePub, "publish.json")
+	bufCreatePub, err := os.ReadFile(fileCreatePub)
+	require.NoError(t, err)
+
+	var pub method.Publish
+
+	err = json.Unmarshal(bufCreatePub, &pub)
+	require.NoError(t, err)
+
+	pub.Params.Message = m
+	pub.Params.Channel = electChannel.channelID
+
+	require.Error(t, electChannel.Publish(pub, socket.ClientSocket{}))
+
+	// get end election message data
+	file = filepath.Join(relativeMsgDataExamplePath, "election_end", "election_end.json")
+	buf, err = os.ReadFile(file)
+	require.NoError(t, err)
+
+	var endElect messagedata.ElectionEnd
+	err = json.Unmarshal(buf, &endElect)
+	require.NoError(t, err)
+
+	buf64 = base64.URLEncoding.EncodeToString(buf)
+
+	// wrap the end election in a message
+	m = message.Message{
+		Data:              buf64,
+		Sender:            pkOrganizer,
+		Signature:         "h",
+		MessageID:         messagedata.Hash(buf64, "h"),
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	// wrap the message in a publish
+	pub.Params.Message = m
+
+	require.Error(t, electChannel.Publish(pub, socket.ClientSocket{}))
+}
+
 // -----------------------------------------------------------------------------
 // Utility functions
 

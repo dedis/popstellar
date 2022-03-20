@@ -98,6 +98,16 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		return xerrors.Errorf("election id is %s, should be %s", electionID, castVote.Election)
 	}
 
+	// verify if election is not open
+	if !c.started {
+		return xerrors.Errorf("cast vote created at is %d, but the election is not started", castVote.CreatedAt)
+	}
+
+	//verify if election is terminated
+	if c.terminated {
+		return xerrors.Errorf("cast vote created at is %d, but the election is terminated", castVote.CreatedAt)
+	}
+
 	// verify created at is positive
 	if castVote.CreatedAt < 0 {
 		return xerrors.Errorf("cast vote created at is %d, should be minimum 0", castVote.CreatedAt)
