@@ -12,7 +12,7 @@ Feature: Join a Roll Call
 
   Scenario: Open a valid Roll Call
     Given string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open.json')
-    * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(rollCallOpenReq)
     * karate.log("Open request has been sent : "+ rollCallOpenReq)
     * json open_roll_broadcast = frontend_buffer.takeTimeout(timeout)
@@ -24,7 +24,7 @@ Feature: Join a Roll Call
 
   Scenario: Opening a Roll Call that does not exist should return an error
     Given string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open_2.json')
-    * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(rollCallOpenReq)
     * karate.log("Open request has been sent without create beforehand: "+ rollCallOpenReq)
     * json err_open = frontend_buffer.takeTimeout(timeout)
@@ -33,7 +33,7 @@ Feature: Join a Roll Call
 
   Scenario: Opening a Roll Call with invalid update_id should return an error
     Given string rollCallOpenReq  = read('classpath:data/rollCall/open/bad_roll_call_open_invalid_update_id.json')
-    * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+    * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(rollCallOpenReq)
     * karate.log("Open request has been sent for invalid update id: "+ rollCallOpenReq)
     * json err_open = frontend_buffer.takeTimeout(timeout)
