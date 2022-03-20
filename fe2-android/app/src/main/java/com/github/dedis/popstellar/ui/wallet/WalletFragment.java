@@ -25,8 +25,8 @@ import java.security.GeneralSecurityException;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the wallet UI */
-@AndroidEntryPoint(Fragment.class)
-public class WalletFragment extends Hilt_WalletFragment {
+@AndroidEntryPoint
+public class WalletFragment extends Fragment {
 
   public static final String TAG = WalletFragment.class.getSimpleName();
 

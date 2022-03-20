@@ -3,6 +3,7 @@ package com.github.dedis.popstellar.model.network.method.message.data.socialmedi
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.google.gson.annotations.SerializedName;
 
@@ -12,7 +13,7 @@ public class NotifyAddChirp extends Data {
   @SerializedName("chirp_id")
   private final MessageID chirpId;
 
-  private final String channel;
+  private final Channel channel;
   private final long timestamp;
 
   /**
@@ -20,7 +21,7 @@ public class NotifyAddChirp extends Data {
    * @param channel channel where the post is located
    * @param timestamp UNIX timestamp in UTC
    */
-  public NotifyAddChirp(MessageID chirpId, String channel, long timestamp) {
+  public NotifyAddChirp(MessageID chirpId, Channel channel, long timestamp) {
     this.chirpId = chirpId;
     this.channel = channel;
     this.timestamp = timestamp;
@@ -40,7 +41,7 @@ public class NotifyAddChirp extends Data {
     return chirpId;
   }
 
-  public String getChannel() {
+  public Channel getChannel() {
     return channel;
   }
 

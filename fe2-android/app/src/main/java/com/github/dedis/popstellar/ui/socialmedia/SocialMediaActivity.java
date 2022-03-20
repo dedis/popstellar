@@ -25,8 +25,8 @@ import java.util.function.Supplier;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Activity for the social media */
-@AndroidEntryPoint(AppCompatActivity.class)
-public class SocialMediaActivity extends Hilt_SocialMediaActivity {
+@AndroidEntryPoint
+public class SocialMediaActivity extends AppCompatActivity {
   private SocialMediaViewModel mViewModel;
   public static final String OPENED_FROM = "OPENED_FROM";
   public static final String LAO_ID = "LAO_ID";

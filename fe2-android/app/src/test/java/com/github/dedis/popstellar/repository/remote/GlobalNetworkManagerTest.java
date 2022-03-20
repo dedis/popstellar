@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.handler.MessageHandler;
 import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
@@ -39,7 +40,7 @@ public class GlobalNetworkManagerTest {
         new GlobalNetworkManager(repository, handler, factory, gson, new TestSchedulerProvider());
     verify(factory).createConnection(anyString());
 
-    networkManager.getMessageSender().unsubscribe("channel");
+    networkManager.getMessageSender().unsubscribe(Channel.ROOT);
     verify(firstConnection).sendMessage(any());
   }
 

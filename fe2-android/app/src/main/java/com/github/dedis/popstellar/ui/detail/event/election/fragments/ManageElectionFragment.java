@@ -31,8 +31,8 @@ import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint(Fragment.class)
-public class ManageElectionFragment extends Hilt_ManageElectionFragment {
+@AndroidEntryPoint
+public class ManageElectionFragment extends Fragment {
 
   public static final String TAG = ManageElectionFragment.class.getSimpleName();
   protected final SimpleDateFormat DATE_FORMAT =

@@ -29,7 +29,8 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
     try {
       await Wallet.importMnemonic(seed);
       navigation.navigate(STRINGS.navigation_synced_wallet);
-    } catch {
+    } catch (e) {
+      console.error(e);
       navigation.navigate(STRINGS.navigation_wallet_error);
     }
   };
