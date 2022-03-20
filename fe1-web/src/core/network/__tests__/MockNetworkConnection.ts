@@ -1,7 +1,5 @@
 import { jest } from '@jest/globals';
 
-import { NetworkError } from '..';
-
 export class MockNetworkConnection {
   public readonly address: string;
 

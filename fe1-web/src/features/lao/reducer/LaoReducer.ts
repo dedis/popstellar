@@ -90,7 +90,7 @@ const laosSlice = createSlice({
     },
 
     // Set the LAO server address
-    setLaoServerAddress: {
+    addLaoServerAddress: {
       prepare(laoId: Hash | string, serverAddress: string) {
         return {
           payload: {
@@ -113,7 +113,10 @@ const laosSlice = createSlice({
           return;
         }
 
-        state.byId[laoId].server_address = serverAddress;
+        // if not already in the list, add the new address
+        if (!state.byId[laoId].server_addresses.find((a) => a === serverAddress)) {
+          state.byId[laoId].server_addresses.push(serverAddress);
+        }
       },
     },
 
@@ -173,7 +176,7 @@ export const {
   connectToLao,
   disconnectFromLao,
   setLaoLastRollCall,
-  setLaoServerAddress,
+  addLaoServerAddress,
 } = laosSlice.actions;
 
 export const getLaosState = (state: any): LaoReducerState => state[laoReducerPath];

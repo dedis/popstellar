@@ -1,17 +1,25 @@
+import { useNavigation } from '@react-navigation/core';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
-import { TouchableOpacity, View, ViewStyle } from 'react-native';
+import React from 'react';
+import { Button, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
-import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
-import { Spacing } from 'core/styles';
+import { CollapsibleContainer, ParagraphBlock, QRCode } from 'core/components';
 import { ConnectToLao } from 'features/connect/objects';
+import STRINGS from 'resources/strings';
 
-import { Lao } from '../objects';
 import { selectCurrentLao } from '../reducer';
 import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 
-function renderProperties(lao: Lao, url: string) {
+const LaoProperties = ({ url }: IPropTypes) => {
+  const lao = useSelector(selectCurrentLao);
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
+
+  if (!lao) {
+    return null;
+  }
+
   const creationDateString = lao.creation.toDateString();
   const connectToLao = new ConnectToLao({
     server: url,
@@ -20,29 +28,20 @@ function renderProperties(lao: Lao, url: string) {
 
   return (
     <>
-      <ParagraphBlock text={`Lao name: ${lao.name}`} />
-      <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
-      <QRCode value={JSON.stringify(connectToLao)} visibility />
-    </>
-  );
-}
-
-const LaoProperties = ({ url }: IPropTypes) => {
-  const lao = useSelector(selectCurrentLao);
-
-  const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
-
-  const toggleChildren = () => setToggleChildrenVisible(!toggleChildrenVisible);
-
-  return (
-    <>
-      <TextBlock bold text="Lao Properties" />
-      <View style={[laoPropertiesStyles.default, { marginTop: Spacing.s }]}>
-        <TouchableOpacity onPress={toggleChildren} style={{ textAlign: 'right' } as ViewStyle}>
-          <ListCollapsibleIcon isOpen={toggleChildrenVisible} />
-        </TouchableOpacity>
-
-        {toggleChildrenVisible && lao && renderProperties(lao, url)}
+      <View style={laoPropertiesStyles.default}>
+        <CollapsibleContainer title="Lao Properties">
+          <ParagraphBlock text={`Lao name: ${lao.name}`} />
+          <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
+          <QRCode value={JSON.stringify(connectToLao)} visibility />
+          <Button
+            title="Add connection"
+            onPress={() =>
+              navigation.navigate(STRINGS.navigation_tab_connect, {
+                screen: STRINGS.connect_scanning_title,
+              })
+            }
+          />
+        </CollapsibleContainer>
       </View>
     </>
   );

@@ -31,7 +31,7 @@ const LaoItem = ({ LAO }: IPropTypes) => {
   const handlePress = () => {
     navigation.navigate(STRINGS.connect_confirm_title, {
       laoIdIn: LAO.id.valueOf(),
-      url: LAO.server_address,
+      url: LAO.server_addresses[0],
     });
   };
 

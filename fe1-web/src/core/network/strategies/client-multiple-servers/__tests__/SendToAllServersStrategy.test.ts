@@ -1,11 +1,10 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { MockNetworkConnection } from 'core/network/__tests__/MockNetworkConnection';
+import { mockJsonRpcPayload } from 'core/network/__tests__/utils';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 
 import { sendToAllServersStrategy } from '../SendToAllServersStrategy';
-import { mockJsonRpcPayload } from 'core/network/__tests__/utils';
-
 
 const mockAddress = 'some address';
 
@@ -18,10 +17,12 @@ describe('SendToAllServersStrategy', () => {
     const c3 = new MockNetworkConnection(mockAddress, true, responses[2]);
     const mockConnections = [c1, c2, c3];
 
-    await expect(sendToAllServersStrategy(
-      mockJsonRpcPayload,
-      mockConnections as unknown as NetworkConnection[],
-    )).resolves.toEqual(responses);
+    await expect(
+      sendToAllServersStrategy(
+        mockJsonRpcPayload,
+        mockConnections as unknown as NetworkConnection[],
+      ),
+    ).resolves.toEqual(responses);
 
     // make sure send was called on all connections
     expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
@@ -43,10 +44,12 @@ describe('SendToAllServersStrategy', () => {
     const c3 = new MockNetworkConnection(mockAddress, false, responses[2], errors[2]);
     const mockConnections = [c1, c2, c3];
 
-    await expect(sendToAllServersStrategy(
-      mockJsonRpcPayload,
-      mockConnections as unknown as NetworkConnection[],
-    )).rejects.toHaveProperty('message', errors[2]);
+    await expect(
+      sendToAllServersStrategy(
+        mockJsonRpcPayload,
+        mockConnections as unknown as NetworkConnection[],
+      ),
+    ).rejects.toHaveProperty('message', errors[2]);
 
     // make sure send was called on all connections
     expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);

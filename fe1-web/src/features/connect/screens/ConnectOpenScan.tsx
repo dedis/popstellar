@@ -3,9 +3,11 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
+import { useSelector } from 'react-redux';
 
 import { WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { selectCurrentLaoId } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
@@ -18,8 +20,12 @@ import { ConnectToLao } from '../objects';
 const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   // Remove the user to go back to the ConnectEnableCamera as he has already given
   // his permission to use the camera
+
+  // this is needed as otherwise the camera will stay turned on
   const [QrWasScanned, setQrWasScanned] = useState(false);
   const toast = useToast();
+
+  const laoId = useSelector(selectCurrentLaoId);
 
   const handleError = (err: string) => {
     console.error(err);
@@ -35,11 +41,25 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
       return;
     }
 
-    console.log(data);
-    setQrWasScanned(true);
     try {
       const obj = JSON.parse(data);
       const connectToLao = ConnectToLao.fromJson(obj);
+
+      // if we are already connected to a LAO, then only allow new connections
+      // to servers for the same LAO id
+      if (laoId && connectToLao.lao !== laoId.valueOf()) {
+        toast.show(
+          `The scanned QR code is for a different LAO than the one currently connected to`,
+          {
+            type: 'warning',
+            placement: 'top',
+            duration: FOUR_SECONDS,
+          },
+        );
+        return;
+      }
+
+      setQrWasScanned(true);
       navigation.navigate(STRINGS.connect_confirm_title, {
         laoIdIn: connectToLao.lao,
         url: connectToLao.server,

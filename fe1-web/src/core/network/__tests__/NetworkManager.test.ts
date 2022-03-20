@@ -149,6 +149,9 @@ describe('NetworkManager', () => {
   });
 
   it('correctly calls the reconnection handlers', () => {
+    // have to add some connection, otherwise no reconnection happens
+    networkManager.connect('some address');
+
     const handler = jest.fn();
     const handler2 = jest.fn();
 
@@ -162,6 +165,9 @@ describe('NetworkManager', () => {
   });
 
   it('triggers reconnect() after being reconnected to the network', () => {
+    // have to add some connection, otherwise no reconnection happens
+    networkManager.connect('some address');
+
     // mock disconnection
     networkManager['onNetworkChange']({ isConnected: false } as NetInfoState);
 
@@ -177,6 +183,9 @@ describe('NetworkManager', () => {
   });
 
   it('triggers reconnect() after becoming active again', () => {
+    // have to add some connection, otherwise no reconnection happens
+    networkManager.connect('some address');
+
     // mock backgrounding
     networkManager['onAppStateChange']('background');
 

@@ -143,12 +143,16 @@ class NetworkManager {
   /** Sends a JsonRpcRequest over the network to any relevant server.
    *
    * @param payload The JsonRpcRequest you want to send
+   * @param connections - An optional list of network connection if the message should only be sent on a subset of connections
    *
    * @returns List of a promises being resolved with the responses,
    * or rejected with an error if the payload could not be delivered or was rejected by the server
    */
-  public sendPayload(payload: JsonRpcRequest): Promise<JsonRpcResponse[]> {
-    return this.sendingStrategy(payload, this.connections);
+  public sendPayload(
+    payload: JsonRpcRequest,
+    connections?: NetworkConnection[],
+  ): Promise<JsonRpcResponse[]> {
+    return this.sendingStrategy(payload, connections || this.connections);
   }
 
   public setRpcHandler(handler: JsonRpcHandler): void {

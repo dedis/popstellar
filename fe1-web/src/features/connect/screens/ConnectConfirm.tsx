@@ -7,10 +7,11 @@ import { useDispatch } from 'react-redux';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
+import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Channel, channelFromIds, Hash } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { setLaoServerAddress } from 'features/lao/reducer';
+import { addLaoServerAddress } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
@@ -35,15 +36,14 @@ const styles = StyleSheet.create({
  *
  * @param serverUrl
  */
-export function connectTo(serverUrl: string): boolean {
+export function connectTo(serverUrl: string): NetworkConnection | undefined {
   try {
     const { href } = new URL(serverUrl); // validate
-    getNetworkManager().connect(href);
+    return getNetworkManager().connect(href);
   } catch (err) {
     console.error(`Cannot connect to '${serverUrl}' as it is an invalid URL`, err);
-    return false;
+    return undefined;
   }
-  return true;
 }
 
 /**
@@ -68,11 +68,13 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
   const url = route.params?.url || 'ws://localhost:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(url);
   const [laoId, setLaoId] = useState(laoIdIn);
+
   const toast = useToast();
   const dispatch = useDispatch();
 
   const onButtonConfirm = async () => {
-    if (!connectTo(serverUrl)) {
+    const connection = connectTo(serverUrl);
+    if (!connection) {
       return;
     }
 
@@ -82,8 +84,11 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
     }
 
     try {
-      await subscribeToChannel(channel);
-      dispatch(setLaoServerAddress(laoId, serverUrl));
+      // subscribe to the lao channel on the new connection
+      await subscribeToChannel(channel, [connection]);
+      // add the new server address to the store
+      dispatch(addLaoServerAddress(laoId, serverUrl));
+
       navigation.navigate(STRINGS.app_navigation_tab_organizer, {
         screen: STRINGS.organization_navigation_tab_organizer,
         params: {

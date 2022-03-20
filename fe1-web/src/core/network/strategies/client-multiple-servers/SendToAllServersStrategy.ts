@@ -15,4 +15,4 @@ export const sendToAllServersStrategy: SendingStrategy = async (payload, connect
     console.error('Could not send payload due to failure:', error);
     throw error;
   }
-}
+};

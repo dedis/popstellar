@@ -4,10 +4,11 @@ import { Spacing } from 'core/styles';
 
 const laoPropertiesStyles = StyleSheet.create({
   default: {
-    marginHorizontal: Spacing.s,
     borderWidth: 1,
     borderRadius: 5,
-    paddingHorizontal: Spacing.xs,
+    padding: Spacing.xs,
+    marginHorizontal: Spacing.s,
+    marginTop: Spacing.xs,
     marginBottom: Spacing.xs,
   },
 });
