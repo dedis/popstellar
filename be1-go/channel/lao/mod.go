@@ -243,7 +243,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
-	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger) // TODO HAS BEEN MODIFIED BY JOHANN
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
 	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
@@ -635,7 +635,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	return nil
 }
 
-func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error { //TODO DO NOT KNOW IF SHOULD BE HERE
+func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error {
 	return nil
 }
 
