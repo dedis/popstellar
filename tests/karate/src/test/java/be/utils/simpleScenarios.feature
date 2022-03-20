@@ -51,8 +51,15 @@
 
     @name=open_roll_call
     Scenario: Opens a valid Roll Call
-      * string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open.json')
-      * def roll_call = call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
-      * eval frontend.send(rollCallOpenReq)
+      * string rollCallCreateReq  = read('classpath:data/rollCall/valid_roll_call_create_3.json')
+      * string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open_3.json')
+      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+      * eval frontend.send(rollCallCreateReq)
       * json create_roll_broadcast = frontend_buffer.takeTimeout(timeout)
-      * json open_roll = frontend_buffer.takeTimeout(timeout)
+      * json create_roll_result = frontend_buffer.takeTimeout(timeout)
+      * eval frontend.send(rollCallOpenReq)
+      * json open_roll_broadcast = frontend_buffer.takeTimeout(timeout)
+      * json open_roll_result = frontend_buffer.takeTimeout(timeout)
+      * karate.log("Received in simple scenarios open roll call :")
+      * karate.log("----------------------*****---------**----------")
+      * karate.log(open_roll_result)

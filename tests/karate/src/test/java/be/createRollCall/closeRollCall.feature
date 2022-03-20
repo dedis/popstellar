@@ -10,9 +10,16 @@ Feature: Close a Roll Call
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
 
-  Scenario: Close a valid roll cad
+  Scenario: Close a valid roll should succeed
     Given string rol_call_close = read('classpath:data/rollCall/close/valid_roll_call_close.json')
-    * def roll_call_open = call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
-    Then  eval frontend.send(rol_call_close)
-    Then json close_roll_result = frontend_buffer.takeTimeout(timeout)
-    * match close_roll_result contains deep {jsonrpc: '2.0', id: 33, result: 0}
+    * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
+    And  eval frontend.send(rol_call_close)
+    * json close_roll_broadcast = frontend_buffer.takeTimeout(timeout)
+    * json close_roll_result = frontend_buffer.takeTimeout(timeout)
+    Then match close_roll_result contains deep {jsonrpc: '2.0', id: 33, result: 0}
+
+  Scenario: Close a valid roll call with wrong update_id should return an error message
+    Given string rol_call_close = read('classpath:data/rollCall/close/bad_roll_call_close_invalid_update_id.json')
+    And  eval frontend.send(rol_call_close)
+    * json close_roll_err = frontend_buffer.takeTimeout(timeout)
+    Then  match close_roll_err contains deep {jsonrpc: '2.0', id: 33, error: {code: -4, description: '#string'}}
