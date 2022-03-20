@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  >
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="500dp"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="124"
+      android:background="@color/mint_cream"
+      android:orientation="horizontal">
+
+      <ImageView
+        android:layout_width="45dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginTop="14dp"
+        android:src="@drawable/ic_send_coin" />
+
+      <TextView
+        android:id="@+id/title_Send_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/arimo"
+        android:text="@string/digital_cash_send"
+        android:textColor="@color/colorPrimary"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <Button
+      android:id="@+id/button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="100dp"
+      android:layout_marginLeft="80dp"
+      android:layout_marginRight="80dp"
+      android:textColor="@color/colorPrimary"
+      android:fontFamily="@font/arimo"
+      android:text="@string/digital_cash_send"
+      android:background="@color/mint_cream"/>
+  </LinearLayout>
+</RelativeLayout>
