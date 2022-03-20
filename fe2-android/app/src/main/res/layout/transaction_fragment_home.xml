@@ -17,29 +17,29 @@
       android:orientation="horizontal">
 
       <ImageView
-        android:layout_width="45dp"
+        android:layout_width="34dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="14dp"
-        android:src="@drawable/ic_send_coin" />
+        android:src="@drawable/ic_social_media_home_foreground" />
 
       <TextView
-        android:id="@+id/title_Send_msg"
+        android:id="@+id/title_home_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="45dp"
         android:fontFamily="@font/arimo"
-        android:text="@string/digital_cash_send"
+        android:text="@string/digital_cash_home"
         android:textColor="@color/colorPrimary"
         android:textSize="30sp"
         android:textStyle="bold" />
 
     </LinearLayout>
 
-    <Button
-      android:id="@+id/button"
+    <TextView
+      android:id="@+id/hello"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="100dp"
@@ -47,7 +47,7 @@
       android:layout_marginRight="80dp"
       android:textColor="@color/colorPrimary"
       android:fontFamily="@font/arimo"
-      android:text="@string/digital_cash_send"
+      android:text="HELLO"
       android:background="@color/mint_cream"/>
   </LinearLayout>
 </RelativeLayout>
