@@ -14,6 +14,7 @@ import AppNavigation from 'core/navigation/AppNavigation';
 import { configureNetwork } from 'core/network';
 import { configureFeatures } from 'features';
 import { configureKeyPair } from 'core/keypair';
+import FeatureContext from 'core/contexts/FeatureContext';
 
 /*
  * The starting point of the app.
@@ -25,7 +26,7 @@ import { configureKeyPair } from 'core/keypair';
  * The Platform.OS is to put the statusBar in IOS in black, otherwise it is not readable
  */
 function App() {
-  const { messageRegistry, keyPairRegistry, navigationOpts } = configureFeatures();
+  const { messageRegistry, keyPairRegistry, navigationOpts, context } = configureFeatures();
   configureKeyPair();
   configureNetwork(messageRegistry, keyPairRegistry);
 
@@ -35,14 +36,18 @@ function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persist}>
-        <NavigationContainer ref={navigationRef}>
-          <SafeAreaProvider>
-            {Platform.OS === 'ios' && <StatusBar barStyle="dark-content" backgroundColor="white" />}
-            <ToastProvider>
-              <AppNavigation screens={navigationOpts.screens} />
-            </ToastProvider>
-          </SafeAreaProvider>
-        </NavigationContainer>
+        <FeatureContext.Provider value={context}>
+          <NavigationContainer ref={navigationRef}>
+            <SafeAreaProvider>
+              {Platform.OS === 'ios' && (
+                <StatusBar barStyle="dark-content" backgroundColor="white" />
+              )}
+              <ToastProvider>
+                <AppNavigation screens={navigationOpts.screens} />
+              </ToastProvider>
+            </SafeAreaProvider>
+          </NavigationContainer>
+        </FeatureContext.Provider>
       </PersistGate>
     </Provider>
   );

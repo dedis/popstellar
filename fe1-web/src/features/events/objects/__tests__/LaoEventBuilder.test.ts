@@ -2,7 +2,13 @@ import 'jest-extended';
 
 import STRINGS from 'resources/strings';
 import { Meeting, MeetingState } from 'features/meeting/objects';
-import { Election, ElectionState, Question, RegisteredVote } from 'features/evoting/objects';
+import {
+  Election,
+  ElectionState,
+  ElectionStatus,
+  Question,
+  RegisteredVote,
+} from 'features/evoting/objects';
 import { RollCall, RollCallState, RollCallStatus } from 'features/rollCall/objects';
 
 import { LaoEventState, LaoEventType } from '../LaoEvent';
@@ -62,6 +68,7 @@ describe('LaoEventBuilder', () => {
       start: 12345,
       end: 16345,
       questions: [question1],
+      electionStatus: ElectionStatus.TERMINATED,
       registeredVotes: [registeredVotes],
     };
     expect(eventFromState(election)).toBeInstanceOf(Election);

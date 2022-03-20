@@ -26,8 +26,8 @@ import dagger.hilt.android.AndroidEntryPoint;
  * code, but in the future, it will be needed to store identity information somewhere to make it
  * dependent of the current user and LAO
  */
-@AndroidEntryPoint(Fragment.class)
-public class IdentityFragment extends Hilt_IdentityFragment {
+@AndroidEntryPoint
+public class IdentityFragment extends Fragment {
 
   public static final String TAG = IdentityFragment.class.getSimpleName();
 

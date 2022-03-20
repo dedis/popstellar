@@ -10,11 +10,13 @@ import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.DataRegistry;
 import com.github.dedis.popstellar.model.network.serializer.JsonAnswerSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonBase64DataSerializer;
+import com.github.dedis.popstellar.model.network.serializer.JsonChannelSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonDataSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonGenericMessageDeserializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageGeneralSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonMessageSerializer;
 import com.github.dedis.popstellar.model.network.serializer.JsonResultSerializer;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.Base64URLData;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
@@ -46,6 +48,7 @@ public class JsonModule {
         .registerTypeAdapter(ResultMessages.class, new JsonResultSerializer())
         .registerTypeAdapter(Answer.class, new JsonAnswerSerializer())
         .registerTypeAdapter(MessageGeneral.class, new JsonMessageGeneralSerializer())
+        .registerTypeAdapter(Channel.class, new JsonChannelSerializer())
         // Base64URLData serializers
         .registerTypeAdapter(
             Base64URLData.class, new JsonBase64DataSerializer<>(Base64URLData::new))

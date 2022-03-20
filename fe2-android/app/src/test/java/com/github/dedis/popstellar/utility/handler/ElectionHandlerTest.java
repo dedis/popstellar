@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -55,8 +56,7 @@ public class ElectionHandlerTest extends TestCase {
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final String CHANNEL = "/root";
-  private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
+  private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(CREATE_LAO.getId());
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
@@ -100,7 +100,7 @@ public class ElectionHandlerTest extends TestCase {
     election = new Election(lao.getId(), Instant.now().getEpochSecond(), "election 1");
     election.setStart(Instant.now().getEpochSecond());
     election.setEnd(Instant.now().getEpochSecond() + 20L);
-    election.setChannel(lao.getChannel() + "/" + election.getId());
+    election.setChannel(lao.getChannel().subChannel(election.getId()));
     electionQuestion =
         new ElectionQuestion(
             "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
@@ -113,7 +113,7 @@ public class ElectionHandlerTest extends TestCase {
         });
 
     // Add the LAO to the LAORepository
-    laoRepository.getLaoByChannel().put(LAO_CHANNEL, new LAOState(lao));
+    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
     laoRepository.setAllLaoSubject();
 
     // Add the CreateLao message to the LAORepository
@@ -172,7 +172,7 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL + "/" + election.getId(), message);
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
     // Check the Election is present with state RESULTS_READY and the results
     Optional<Election> electionOpt =
@@ -191,7 +191,7 @@ public class ElectionHandlerTest extends TestCase {
 
     // Call the message handler
     messageHandler.handleMessage(
-        laoRepository, messageSender, LAO_CHANNEL + "/" + election.getId(), message);
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
     // Check the Election is present with state CLOSED and the results
     Optional<Election> electionOpt =

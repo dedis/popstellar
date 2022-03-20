@@ -9,6 +9,8 @@ GOTO error
 :build
 	CALL :protocol
 	go build -o pop ./cli/
+	IF EXIST pop.exe DEL pop.exe
+	REN pop pop.exe
 	GOTO :EOF
 
 :lint

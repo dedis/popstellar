@@ -7,6 +7,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusElectAccept;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusFailure;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusLearn;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.ElectInstance;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -35,7 +36,7 @@ public final class ConsensusHandler {
    */
   public static void handleElect(HandlerContext context, ConsensusElect consensusElect) {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
@@ -53,7 +54,7 @@ public final class ConsensusHandler {
       HandlerContext context, ConsensusElectAccept consensusElectAccept)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
@@ -81,7 +82,7 @@ public final class ConsensusHandler {
   public static void handleLearn(HandlerContext context, ConsensusLearn consensusLearn)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(consensusLearn.getMessageId());
@@ -103,7 +104,7 @@ public final class ConsensusHandler {
   public static void handleConsensusFailure(HandlerContext context, ConsensusFailure failure)
       throws InvalidMessageIdException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
     Optional<ElectInstance> electInstanceOpt = lao.getElectInstance(failure.getMessageId());

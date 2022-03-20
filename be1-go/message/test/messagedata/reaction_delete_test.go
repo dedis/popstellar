@@ -28,7 +28,7 @@ func Test_Reaction_Delete(t *testing.T) {
 
 	require.Equal(t, "reaction", msg.Object)
 	require.Equal(t, "delete", msg.Action)
-	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ReactionId)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ReactionID)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
 
 	err = msg.Verify()
@@ -54,7 +54,7 @@ func Test_Reaction_Delete_Negative_Timestamp(t *testing.T) {
 
 	require.Equal(t, "reaction", msg.Object)
 	require.Equal(t, "delete", msg.Action)
-	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ReactionId)
+	require.Equal(t, "ONYYu9Q2kGdAVpfbGwdmgBPf4QBznjt-JQO2gGCL3iI=", msg.ReactionID)
 	require.Equal(t, int64(-1), msg.Timestamp)
 
 	err = msg.Verify()
@@ -80,7 +80,7 @@ func Test_Chirp_Delete_Not_Base64_Message(t *testing.T) {
 
 	require.Equal(t, "reaction", msg.Object)
 	require.Equal(t, "delete", msg.Action)
-	require.Equal(t, "@@@", msg.ReactionId)
+	require.Equal(t, "@@@", msg.ReactionID)
 	require.Equal(t, int64(1634760180), msg.Timestamp)
 
 	err = msg.Verify()

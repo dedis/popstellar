@@ -28,6 +28,9 @@
         {
             "$ref": "dataSetupElection.json"
         },
+		{
+			"$ref": "dataOpenElection.json"
+		},
         {
             "$ref": "dataOpenRollCall.json"
         },

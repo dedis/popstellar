@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 import android.Manifest;
 import android.app.Application;
 import android.content.pm.PackageManager;
@@ -7,7 +9,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
@@ -16,6 +17,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.Wallet;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
@@ -46,8 +48,9 @@ public class HomeViewModel extends AndroidViewModel
     implements CameraPermissionViewModel, QRCodeScanningViewModel {
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
-  public static final String SCAN = "SCAN";
-  public static final String REQUEST_CAMERA_PERMISSION = "REQUEST_CAMERA_PERMISSION";
+
+  public enum HomeViewAction {SCAN, REQUEST_CAMERA_PERMISSION}
+
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
   /*
@@ -57,7 +60,7 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<String>> mOpenConnectEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
@@ -139,19 +142,18 @@ public class HomeViewModel extends AndroidViewModel
     }
 
     networkManager.connect(data.server);
-    String channel = "/root/" + data.lao;
+    Lao lao = new Lao(data.lao);
     disposables.add(
         networkManager
             .getMessageSender()
-            .subscribe(channel)
+            .subscribe(lao.getChannel())
             .doFinally(this::openHome)
             .subscribe(
                 () -> {
-                  Log.d(TAG, "subscribing to LAO with id " + channel);
+                  Log.d(TAG, "subscribing to LAO with id " + lao.getId());
 
                   // Create the new LAO and add it to the LAORepository LAO lists
-                  Lao lao = new Lao(data.lao);
-                  laoRepository.getLaoByChannel().put(channel, new LAOState(lao));
+                  laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
                   laoRepository.setAllLaoSubject();
 
                   Log.d(TAG, "got success result for subscribe to lao");
@@ -160,7 +162,7 @@ public class HomeViewModel extends AndroidViewModel
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_subscribe_lao)));
 
-    setConnectingLao(channel);
+    setConnectingLao(lao.getId());
     openConnecting();
   }
 
@@ -186,10 +188,18 @@ public class HomeViewModel extends AndroidViewModel
     disposables.add(
         networkManager
             .getMessageSender()
-            .publish(keyManager.getMainKeyPair(), "/root", createLao)
+            .publish(keyManager.getMainKeyPair(), Channel.ROOT, createLao)
             .subscribe(
                 () -> {
                   Log.d(TAG, "got success result for create lao");
+                  // Create new LAO and add it to the LAORepository LAO lists
+                  Lao lao = new Lao(createLao.getId());
+                  laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
+                  laoRepository.setAllLaoSubject();
+
+                  // Send subscribe and catchup after creating a LAO
+                  networkManager.getMessageSender().subscribe(lao.getChannel()).subscribe();
+
                   openHome();
                 },
                 error ->
@@ -227,7 +237,7 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenConnectingEvent;
   }
 
-  public LiveData<SingleEvent<String>> getOpenConnectEvent() {
+  public LiveData<SingleEvent<HomeViewAction>> getOpenConnectEvent() {
     return mOpenConnectEvent;
   }
 
@@ -304,7 +314,7 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openConnect() {
-    if (ActivityCompat.checkSelfPermission(
+    if (checkSelfPermission(
             getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       openQrCodeScanning();
@@ -314,11 +324,11 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openQrCodeScanning() {
-    mOpenConnectEvent.setValue(new SingleEvent<>(SCAN));
+    mOpenConnectEvent.setValue(new SingleEvent<>(HomeViewAction.SCAN));
   }
 
   public void openCameraPermission() {
-    mOpenConnectEvent.setValue(new SingleEvent<>(REQUEST_CAMERA_PERMISSION));
+    mOpenConnectEvent.setValue(new SingleEvent<>(HomeViewAction.REQUEST_CAMERA_PERMISSION));
   }
 
   public void openLaunch() {
