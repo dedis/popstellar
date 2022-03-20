@@ -167,6 +167,7 @@
   <string name="show_results">Show results</string>
 
   <!-- Consensus -->
+  <string name="start">Start</string>
   <string name="start_election">Start Election</string>
   <string name="election_start">Election Start</string>
 

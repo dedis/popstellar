@@ -4,7 +4,6 @@ import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTU
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
-import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
@@ -321,35 +320,63 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
-    viewModel.setCurrentElection(election);
-    viewModel
-        .getEndElectionEvent()
-        .observe(
-            lifecycleOwner,
-            end -> {
-              electionBinding.electionActionButton.setText(R.string.election_ended);
-              electionBinding.electionActionButton.setEnabled(false);
+
+    boolean isOrganizer = viewModel.isOrganizer().getValue();
+    boolean isNode = isOrganizer || viewModel.isWitness().getValue();
+
+    // detailsButton is shown and disabled by default
+    electionBinding.electionActionButton.setEnabled(false);
+    electionBinding.electionActionButton.setVisibility(View.VISIBLE);
+
+    // detailsButton is hidden and disabled by default
+    electionBinding.detailsButton.setEnabled(false);
+    electionBinding.detailsButton.setVisibility(View.GONE);
+
+    switch (election.getState()) {
+      case CREATED:
+        // electionActionButton is hidden and disabled
+        // detailsButton is enabled for nodes a consensus to start
+        electionBinding.electionActionButton.setVisibility(View.GONE);
+        electionBinding.detailsButton.setText(R.string.start);
+        electionBinding.detailsButton.setEnabled(isNode);
+        electionBinding.detailsButton.setVisibility(isNode ? View.VISIBLE : View.GONE);
+        electionBinding.detailsButton.setOnClickListener(
+            clicked -> {
+              viewModel.setCurrentElection(election);
+              viewModel.openStartElection(true);
             });
+        break;
 
-    if (category == PRESENT) {
-      electionBinding.electionActionButton.setText(R.string.cast_vote);
-      electionBinding.electionActionButton.setEnabled(true);
-      electionBinding.electionActionButton.setOnClickListener(
-          clicked -> {
-            viewModel.setCurrentElection(election);
-            viewModel.openCastVotes();
-          });
-    } else if (category == PAST) {
+      case OPENED:
+        // electionActionButton is enabled for casting votes
+        // detailsButton is enabled for organizer to end the election
+        // In the future, this could be changed to a consensus to end
+        electionBinding.electionActionButton.setText(R.string.cast_vote);
+        electionBinding.electionActionButton.setEnabled(true);
+        electionBinding.electionActionButton.setOnClickListener(
+            clicked -> {
+              viewModel.setCurrentElection(election);
+              viewModel.openCastVotes();
+            });
+        electionBinding.detailsButton.setText(R.string.tally_votes);
+        electionBinding.detailsButton.setEnabled(isOrganizer);
+        electionBinding.detailsButton.setVisibility(isOrganizer ? View.VISIBLE : View.GONE);
+        electionBinding.detailsButton.setOnClickListener(
+            clicked -> {
+              viewModel.setCurrentElection(election);
+              viewModel.endElection(election);
+            });
+        break;
 
-      electionBinding.electionActionButton.setEnabled(true);
-      if (!viewModel.isOrganizer().getValue()) {
-        electionBinding.electionActionButton.setEnabled(false);
-      }
-
-      if (election.getState() == CLOSED) {
+      case CLOSED:
+        // electionActionButton is disabled
+        // detailsButton is hidden and disabled
         electionBinding.electionActionButton.setText(R.string.election_ended);
-        electionBinding.electionActionButton.setEnabled(false);
-      } else if (election.getState() == RESULTS_READY) {
+        break;
+
+      case RESULTS_READY:
+        // electionActionButton is enabled for showing the results
+        // detailsButton is hidden and disabled
         electionBinding.electionActionButton.setText(R.string.show_results);
         electionBinding.electionActionButton.setEnabled(true);
         electionBinding.electionActionButton.setOnClickListener(
@@ -357,27 +384,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
               viewModel.setCurrentElection(election);
               viewModel.openElectionResults(true);
             });
-      } else {
-        electionBinding.electionActionButton.setText(R.string.tally_votes);
-        electionBinding.electionActionButton.setOnClickListener(
-            clicked -> {
-              viewModel.setCurrentElection(election);
-              viewModel.endElection(election);
-            });
-      }
+        break;
     }
     electionBinding.electionEditButton.setOnClickListener(
         clicked -> {
           viewModel.setCurrentElection(election);
           viewModel.openManageElection(true);
         });
-
-    electionBinding.detailsButton.setOnClickListener(
-        clicked -> {
-          viewModel.setCurrentElection(election);
-          viewModel.openStartElection(true);
-        });
-    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
 
     electionBinding.setEventCategory(category);
     electionBinding.setViewModel(viewModel);

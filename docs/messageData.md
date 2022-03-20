@@ -1217,20 +1217,33 @@ The election may allow write-in or have ballot options.
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
 **Mid Level** > **High level** (*election#open*)
 
+<<<<<<< HEAD
 The election can be opened by publishing an election/open message on the election channel. This message indicates when votes begin to be valid. Until consensus or other changes are implemented, this message is manually sent by the organizer or witnesses, at their discretion, though normally before or soon after the start_time.
 
 <details>
 <summary>
 💡 See an example
+=======
+After the consensus to start an election is reached, the election can be opened by publishing an election/open message on the election channel. This message indicates when votes begin to be valid.
+
+<details>
+<summary>
+💡 See some examples
+>>>>>>> origin/work-fe2-arnauds5-add-openelection
 </summary>
 
 ```json5
 // ../protocol/examples/messageData/election_open.json
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/work-fe2-arnauds5-add-openelection
 {
     "object": "election",
     "action": "open",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+<<<<<<< HEAD
     "opened_at": 1633099883
 }
 ```
@@ -1241,6 +1254,19 @@ The election can be opened by publishing an election/open message on the electio
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenElection.json",
+=======
+    "created_at": 1633099883
+}
+
+```
+</details>
+```json5
+// ../protocol/query/method/message/data/dataOpenElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataOpenElection.json",
+>>>>>>> origin/work-fe2-arnauds5-add-openelection
     "description": "Match an OpenElection query",
     "type": "object",
     "properties": {
@@ -1275,8 +1301,13 @@ The election can be opened by publishing an election/open message on the electio
         "opened_at"
     ]
 }
+<<<<<<< HEAD
 ```
 </details>
+=======
+
+```
+>>>>>>> origin/work-fe2-arnauds5-add-openelection
 
 ## Casting a vote (election#cast_vote)
 

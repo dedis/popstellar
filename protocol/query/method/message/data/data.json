@@ -32,6 +32,9 @@
 			"$ref": "dataOpenElection.json"
 		},
         {
+            "$ref": "dataOpenElection.json"
+        },
+        {
             "$ref": "dataOpenRollCall.json"
         },
         {
