@@ -40,15 +40,14 @@
 
     @name=valid_roll_call
     Scenario: Creates a valid Roll Call
-      * string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
+      * string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create_2.json')
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
 
       * frontend_buffer.takeTimeout(timeout)
       * eval frontend.send(rollCallReq)
       * def roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
       * def roll_call = frontend_buffer.takeTimeout(timeout)
-      * karate.log("roll call create broadcast message received : "+roll_call_broadcast)
-      * karate.log("roll call create message received : "+roll_call)
+      * karate.log("roll call create : "+roll_call_broadcast)
 
     @name=open_roll_call
     Scenario: Opens a valid Roll Call
