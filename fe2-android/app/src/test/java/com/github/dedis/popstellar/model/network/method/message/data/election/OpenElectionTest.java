@@ -9,6 +9,7 @@ import org.junit.Test;
 
 public class OpenElectionTest {
 
+  //Hardcoded strings for election
   private static final String laoId = "laoId";
   private static final String electionId = "electionId";
   private static final long openedAt = 1633099883;

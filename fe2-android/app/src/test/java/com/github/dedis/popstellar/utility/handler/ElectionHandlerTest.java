@@ -212,10 +212,6 @@ public class ElectionHandlerTest extends TestCase {
     OpenElection openElection = new OpenElection(lao.getId(), election.getId(), openedAt);
     MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, GSON);
 
-    //MessageGeneral message =
-    //    new MessageGeneral(
-    //    Base64.getUrlDecoder().decode(CREATE_LAO.getOrganizer()), openElection, signer, GSON);
-
     for (EventState state : EventState.values()) {
       election.setEventState(state);
 

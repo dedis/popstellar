@@ -1,10 +1,6 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-<<<<<<< HEAD
     "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataOpenElection.json",
-=======
-    "$id": "https://raw.githubusercontent.com/dedis/student_21_pop/master/protocol/query/method/message/data/dataOpenElection.json",
->>>>>>> origin/work-fe2-arnauds5-add-openelection
     "description": "Match an OpenElection query",
     "type": "object",
     "properties": {
@@ -38,8 +34,4 @@
         "election",
         "opened_at"
     ]
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/work-fe2-arnauds5-add-openelection
