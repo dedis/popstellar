@@ -603,13 +603,8 @@ func (c *Channel) createElection(msg message.Message,
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-<<<<<<< HEAD
 	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime,
 		setupMsg.Questions, c.attendees, c.hub, c.log, c.organizerPubKey)
-=======
-	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime, false, false,
-		setupMsg.Questions, c.attendees, c.hub, c.log)
->>>>>>> origin/work-fe2-arnauds5-add-openelection
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)

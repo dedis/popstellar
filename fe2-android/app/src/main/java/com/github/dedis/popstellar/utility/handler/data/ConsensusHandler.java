@@ -99,6 +99,7 @@ public final class ConsensusHandler {
     }
     lao.updateElectInstance(electInstance);
     laoRepository.updateNodes(lao.getChannel());
+
   }
 
   public static void handleConsensusFailure(HandlerContext context, ConsensusFailure failure)

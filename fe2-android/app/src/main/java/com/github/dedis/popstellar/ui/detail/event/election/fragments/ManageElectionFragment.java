@@ -279,7 +279,6 @@ public class ManageElectionFragment extends Fragment {
     editQuestionBuilder.create();
 
     // On click, edit new name button
-
     editName.setOnClickListener(
         v -> {
           inputName.setText(null); // we make sure the text is blank when we reclick the button
@@ -292,7 +291,6 @@ public class ManageElectionFragment extends Fragment {
         });
 
     // On click, edit new question button
-
     editQuestion.setOnClickListener(
         v -> {
           inputQuestion.setText(null); // we make sure the text is blank when we click the button
