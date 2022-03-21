@@ -2,8 +2,7 @@ import { useContext } from 'react';
 
 import FeatureContext from 'core/contexts/FeatureContext';
 
-import { EVOTING_FEATURE_IDENTIFIER } from '../index';
-import { EvotingReactContext } from '../interface';
+import { EvotingReactContext, EVOTING_FEATURE_IDENTIFIER } from '../interface';
 
 export namespace EvotingHooks {
   export const useEvotingContext = (): EvotingReactContext => {

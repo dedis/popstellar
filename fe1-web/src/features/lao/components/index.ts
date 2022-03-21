@@ -5,5 +5,5 @@ import LaoProperties from './LaoProperties';
 export { LaoItem, LaoList, LaoProperties };
 
 export const PublicComponents = {
-  LaoList: LaoList,
+  LaoList,
 };

@@ -1,19 +1,14 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { ParagraphBlock, TextBlock } from 'core/components';
 import { Hash, Timestamp } from 'core/objects';
 import { Spacing } from 'core/styles';
-import { EventElection } from 'features/evoting/components';
-import { Election } from 'features/evoting/objects';
 import { selectIsLaoOrganizer } from 'features/lao/reducer';
-import { EventMeeting } from 'features/meeting/components';
-import { Meeting } from 'features/meeting/objects';
-import { EventRollCall } from 'features/rollCall/components';
-import { RollCall } from 'features/rollCall/objects';
 
+import { EventsHooks } from '../hooks';
 import eventViewStyles from '../styles/eventViewStyles';
 
 /**
@@ -24,24 +19,20 @@ const Event = (props: IPropTypes) => {
   const { event } = props;
 
   const isOrganizer = useSelector(selectIsLaoOrganizer);
+  const eventTypeComponents = EventsHooks.useEventTypeComponents();
 
-  const buildEvent = () => {
-    if (event instanceof Meeting) {
-      return <EventMeeting event={event} />;
-    }
-    if (event instanceof RollCall) {
-      return <EventRollCall event={event} isOrganizer={isOrganizer} />;
-    }
-    if (event instanceof Election) {
-      return <EventElection election={event} isOrganizer={isOrganizer} />;
-    }
-    return <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />;
-  };
+  const Component = useMemo(() => {
+    return eventTypeComponents.find((c) => c.isOfType(event))?.Component;
+  }, [event, eventTypeComponents]);
 
   return (
     <View style={[eventViewStyles.default, { marginTop: Spacing.s }]}>
       <TextBlock text={event.name} />
-      {buildEvent()}
+      {Component ? (
+        <Component event={event} isOrganizer={isOrganizer} />
+      ) : (
+        <ParagraphBlock text={`${event.name} (default event => no mapping in Event.tsx)`} />
+      )}
     </View>
   );
 };

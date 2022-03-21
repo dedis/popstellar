@@ -5,9 +5,9 @@ import { Button, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { CollapsibleContainer, ParagraphBlock, QRCode } from 'core/components';
-import { ConnectToLao } from 'features/connect/objects';
 import STRINGS from 'resources/strings';
 
+import { LaoHooks } from '../hooks';
 import { selectCurrentLao } from '../reducer';
 import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 
@@ -16,23 +16,15 @@ const LaoProperties = ({ url }: IPropTypes) => {
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
 
-  if (!lao) {
-    return null;
-  }
+  const encodeLaoConnection = LaoHooks.useEncodeLaoConnectionForQRCode();
 
-  const creationDateString = lao.creation.toDateString();
-  const connectToLao = new ConnectToLao({
-    server: url,
-    lao: lao.id.toString(),
-  });
-
-  return (
+  return lao ? (
     <>
       <View style={laoPropertiesStyles.default}>
         <CollapsibleContainer title="Lao Properties">
           <ParagraphBlock text={`Lao name: ${lao.name}`} />
-          <ParagraphBlock text={`Lao creation: ${creationDateString}`} />
-          <QRCode value={JSON.stringify(connectToLao)} visibility />
+          <ParagraphBlock text={`Lao creation: ${lao.creation.toDateString()}`} />
+          <QRCode value={encodeLaoConnection(url, lao.id.toString())} visibility />
           <Button
             title="Add connection"
             onPress={() =>
@@ -44,7 +36,7 @@ const LaoProperties = ({ url }: IPropTypes) => {
         </CollapsibleContainer>
       </View>
     </>
-  );
+  ) : null;
 };
 
 const propTypes = {

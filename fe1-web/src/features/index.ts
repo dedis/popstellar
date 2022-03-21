@@ -3,6 +3,7 @@ import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { addReducers } from 'core/redux';
 
 import STRINGS from '../resources/strings';
+import * as connect from './connect';
 import * as events from './events';
 import * as evoting from './evoting';
 import * as home from './home';
@@ -18,33 +19,115 @@ export function configureFeatures() {
   const keyPairRegistry = new KeyPairRegistry();
 
   // configure features
-  const laoConfig = lao.configure(messageRegistry);
-  const eventsConfig = events.configure();
+  const eventsConfiguration = events.configure();
+  const laoConfiguration = lao.configure({ registry: messageRegistry });
+  const connectConfiguration = connect.configure({
+    setLaoServerAddress: laoConfiguration.actionCreators.setLaoServerAddress,
+  });
 
-  const homeConfig = home.configure();
-  const evotingInterface = evoting.configure({
+  const evotingConfiguration = evoting.configure({
     /* LAO FEATURE */
     /* lao: functions */
-    getCurrentLao: laoConfig.functions.getCurrentLao,
-    useCurrentLao: laoConfig.hooks.useCurrentLao,
+    getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     /* lao: hooks */
-    getCurrentLaoId: laoConfig.functions.getCurrentLaoId,
-    useCurrentLaoId: laoConfig.hooks.useCurrentLaoId,
+    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     /* EVENTS FEATURE */
     /* events: action creators */
-    addEvent: eventsConfig.actionCreators.addEvent,
-    updateEvent: eventsConfig.actionCreators.updateEvent,
+    addEvent: eventsConfiguration.actionCreators.addEvent,
+    updateEvent: eventsConfiguration.actionCreators.updateEvent,
     /* events: functions */
-    getEventById: eventsConfig.functions.getEventById,
-    onConfirmEventCreation: eventsConfig.functions.onConfirmPress,
+    getEventById: eventsConfiguration.functions.getEventById,
+    onConfirmEventCreation: eventsConfiguration.functions.onConfirmPress,
     /* other dependencies */
     messageRegistry,
   });
-  meeting.configure(messageRegistry);
-  rollCall.configure(messageRegistry);
-  const socialConfig = social.configure(messageRegistry);
+  const meetingConfiguration = meeting.configure(messageRegistry);
+  const rollCallConfiguration = rollCall.configure(messageRegistry);
+  const socialConfiguration = social.configure(messageRegistry);
   witness.configure(messageRegistry);
-  const walletConfig = wallet.configure(keyPairRegistry);
+  const walletConfiguration = wallet.configure(keyPairRegistry);
+
+  // compose features
+
+  const homeComposition = home.compose({
+    /* functions */
+    connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
+    createLao: laoConfiguration.functions.createLao,
+    /* hoosk */
+    useLaoList: laoConfiguration.hooks.useLaoList,
+    LaoList: laoConfiguration.components.LaoList,
+    mainNavigationScreens: [
+      {
+        name: STRINGS.navigation_tab_connect,
+        Component: connectConfiguration.navigation.ConnectNavigation,
+        order: 0,
+      },
+      {
+        name: STRINGS.navigation_tab_wallet,
+        Component: walletConfiguration.navigation.WalletNavigation,
+        order: 3,
+      },
+    ],
+  });
+
+  const eventsComposition = events.compose({
+    eventTypeComponents: [
+      ...meetingConfiguration.eventTypeComponents,
+      ...rollCallConfiguration.eventTypeComponents,
+      ...evotingConfiguration.eventTypeComponents,
+    ],
+    useIsLaoOrganizer: laoConfiguration.hooks.useIsLaoOrganizer,
+  });
+
+  const laoComposition = lao.compose({
+    /* events */
+    EventList: eventsConfiguration.components.EventList,
+    /* connect */
+    encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionInQRCode,
+    /* navigation */
+    laoNavigationScreens: [
+      { name: STRINGS.navigation_tab_home, Component: homeComposition.screens.Home, order: 0 },
+      {
+        name: STRINGS.navigation_tab_social_media,
+        Component: socialConfiguration.navigation.SocialMediaNavigation,
+        order: 1,
+      },
+      {
+        name: STRINGS.navigation_tab_wallet,
+        Component: walletConfiguration.navigation.WalletNavigation,
+        order: 4,
+      },
+    ],
+    organizerNavigationScreens: [
+      {
+        name: STRINGS.organizer_navigation_tab_create_event,
+        Component: eventsConfiguration.screens.CreateEvent,
+        order: 0,
+      },
+      {
+        name: STRINGS.organizer_navigation_creation_meeting,
+        Component: meetingConfiguration.screens.CreateMeeting,
+        order: 1,
+      },
+      {
+        name: STRINGS.organizer_navigation_creation_roll_call,
+        Component: rollCallConfiguration.screens.CreateRollCall,
+        order: 2,
+      },
+      {
+        name: STRINGS.organizer_navigation_creation_election,
+        Component: evotingConfiguration.screens.CreateElection,
+        order: 3,
+      },
+      {
+        name: STRINGS.roll_call_open,
+        Component: rollCallConfiguration.screens.RollCallOpened,
+        order: 4,
+      },
+    ],
+  });
 
   // verify configuration
   messageRegistry.verifyEntries();
@@ -52,10 +135,10 @@ export function configureFeatures() {
 
   // setup all reducers
   addReducers({
-    ...laoConfig.reducers,
-    ...socialConfig.reducers,
-    ...eventsConfig.reducers,
-    ...walletConfig.reducers,
+    ...laoConfiguration.reducers,
+    ...socialConfiguration.reducers,
+    ...eventsConfiguration.reducers,
+    ...walletConfiguration.reducers,
   });
 
   return {
@@ -66,16 +149,20 @@ export function configureFeatures() {
       screens: [
         {
           name: STRINGS.app_navigation_tab_home,
-          component: homeConfig.navigation.MainNavigation,
+          component: homeComposition.navigation.MainNavigation,
         },
         {
           name: STRINGS.app_navigation_tab_organizer,
-          component: laoConfig.navigation.LaoNavigation,
+          component: laoComposition.navigation.LaoNavigation,
         },
       ],
     },
     context: {
-      [evotingInterface.identifier]: evotingInterface.context,
+      [connectConfiguration.identifier]: connectConfiguration.context,
+      [eventsComposition.identifier]: eventsComposition.context,
+      [laoComposition.identifier]: laoComposition.context,
+      [homeComposition.identifier]: homeComposition.context,
+      [evotingConfiguration.identifier]: evotingConfiguration.context,
     },
   };
 }

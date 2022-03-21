@@ -11,10 +11,11 @@ import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Channel, channelFromIds, Hash } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { addLaoServerAddress } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
+
+import { ConnectHooks } from '../hooks';
 
 /**
  * Ask for confirmation to connect to a specific LAO
@@ -71,6 +72,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
 
   const toast = useToast();
   const dispatch = useDispatch();
+  const addLaoServerAddress = ConnectHooks.useAddLaoServerAddress();
 
   const onButtonConfirm = async () => {
     const connection = connectTo(serverUrl);

@@ -1,22 +1,31 @@
 import { catchup, getNetworkManager, subscribeToChannel } from 'core/network';
-import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { getStore } from 'core/redux';
 import { validateLaoId } from 'features/connect/screens/ConnectConfirm';
+import STRINGS from 'resources/strings';
 
 import { PublicComponents } from './components';
 import * as functions from './functions';
 import * as hooks from './hooks';
+import {
+  LaoCompositionConfiguration,
+  LaoCompositionInterface,
+  LaoConfiguration,
+  LaoConfigurationInterface,
+  LAO_FEATURE_IDENTIFIER,
+} from './interface';
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
-import { laoReducer, selectCurrentLaoId } from './reducer';
+import { selectCurrentLaoId, laoReducer, addLaoServerAddress } from './reducer';
+import { Identity } from './screens';
 
 /**
  * Configures the LAO feature
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param config - The configuration object
  */
-export function configure(registry: MessageRegistry) {
-  configureNetwork(registry);
+
+export const configure = (config: LaoConfiguration): LaoConfigurationInterface => {
+  configureNetwork(config.registry);
 
   // in case of a reconnection, send a catchup message on the root channel
   getNetworkManager().addReconnectionHandler(async () => {
@@ -37,12 +46,37 @@ export function configure(registry: MessageRegistry) {
   });
 
   return {
+    identifier: LAO_FEATURE_IDENTIFIER,
     components: PublicComponents,
-    hooks,
+    actionCreators: {
+      addLaoServerAddress,
+    },
+    hooks: {
+      useLaoList: hooks.LaoHooks.useLaoList,
+      useIsLaoOrganizer: hooks.LaoHooks.useIsLaoOrganizer,
+      useLaoMap: hooks.LaoHooks.useLaoMap,
+      useCurrentLao: hooks.LaoHooks.useCurrentLao,
+      useCurrentLaoId: hooks.LaoHooks.useCurrentLaoId,
+    },
     functions,
-    navigation,
     reducers: {
       ...laoReducer,
     },
   };
-}
+};
+
+export const compose = (config: LaoCompositionConfiguration): LaoCompositionInterface => {
+  return {
+    identifier: LAO_FEATURE_IDENTIFIER,
+    navigation,
+    context: {
+      EventList: config.EventList,
+      encodeLaoConnectionForQRCode: config.encodeLaoConnectionForQRCode,
+      laoNavigationScreens: [
+        ...config.laoNavigationScreens,
+        { name: STRINGS.organization_navigation_tab_identity, Component: Identity, order: 2 },
+      ],
+      organizerNavigationScreens: config.organizerNavigationScreens,
+    },
+  };
+};

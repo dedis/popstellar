@@ -1,18 +1,16 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
-import { KeyPairStore } from 'core/keypair';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Channel, Hash, Timestamp } from 'core/objects';
+import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { requestCreateLao } from 'features/lao/network';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
+
+import { HomeHooks } from '../hooks';
 
 /**
  * Manages the Launch screen, where the user enters a name and an address to launch and connect
@@ -28,9 +26,12 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const Launch = ({ navigation }: IPropTypes) => {
+const Launch: FunctionComponent<IPropTypes> = ({ navigation }) => {
   const [inputLaoName, setInputLaoName] = useState('');
   const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
+
+  const connectToTestLao = HomeHooks.useConnectToTestLao();
+  const createLao = HomeHooks.useCreateLao();
 
   const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
@@ -38,7 +39,7 @@ const Launch = ({ navigation }: IPropTypes) => {
     }
 
     getNetworkManager().connect(inputAddress);
-    requestCreateLao(laoName)
+    createLao(laoName)
       .then((channel: Channel) =>
         subscribeToChannel(channel).then(() => {
           // navigate to the newly created LAO
@@ -52,27 +53,6 @@ const Launch = ({ navigation }: IPropTypes) => {
         }),
       )
       .catch((reason) => console.debug(`Failed to establish lao connection: ${reason}`));
-  };
-
-  const onTestOpenConnection = () => {
-    const nc = getNetworkManager().connect('ws://127.0.0.1:9000/organizer/client');
-    nc.setRpcHandler(() => {
-      console.info('Using custom test rpc handler: does nothing');
-    });
-
-    const org = KeyPairStore.getPublicKey();
-    const time = new Timestamp(1609455600);
-    const sampleLao: Lao = new Lao({
-      name: 'name de la Lao',
-      id: new Hash('myLaoId'), // Hash.fromStringArray(org.toString(), time.toString(), 'name')
-      creation: time,
-      last_modified: time,
-      organizer: org,
-      witnesses: [],
-    });
-
-    OpenedLaoStore.store(sampleLao);
-    console.info('Stored test lao in storage : ', sampleLao);
   };
 
   const onTestClearStorage = () => dispatch({ type: 'CLEAR_STORAGE', value: {} });
@@ -99,7 +79,7 @@ const Launch = ({ navigation }: IPropTypes) => {
         />
         <WideButtonView
           title="[TEST] Connect to LocalMockServer.ts (use 'npm run startServer')"
-          onPress={onTestOpenConnection}
+          onPress={connectToTestLao}
         />
         <WideButtonView title="[TEST] Clear (persistent) storage" onPress={onTestClearStorage} />
       </View>

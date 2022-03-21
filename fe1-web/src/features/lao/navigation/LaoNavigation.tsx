@@ -1,18 +1,17 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { getKeyPairState } from 'core/keypair';
 import { PublicKey } from 'core/objects';
 import { getStore } from 'core/redux';
-import { Home } from 'features/home/screens';
-import { SocialMediaNavigation } from 'features/social/navigation';
-import { WalletNavigation } from 'features/wallet/navigation';
 import STRINGS from 'resources/strings';
 
+import { LaoHooks } from '../hooks';
+import { LaoFeature } from '../interface';
 import { selectCurrentLao } from '../reducer';
-import { AttendeeScreen, Identity } from '../screens';
+import { AttendeeScreen } from '../screens';
 import OrganizerNavigation from './OrganizerNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
@@ -39,7 +38,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function getLaoTabName(isOrganizer: boolean, isWitness: boolean): string {
+const getLaoTabName = (isOrganizer: boolean, isWitness: boolean): string => {
   if (isOrganizer) {
     return STRINGS.organization_navigation_tab_organizer;
   }
@@ -49,20 +48,7 @@ function getLaoTabName(isOrganizer: boolean, isWitness: boolean): string {
   }
 
   return STRINGS.organization_navigation_tab_attendee;
-}
-
-function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
-  const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  let component;
-
-  if (isOrganizer || isWitness) {
-    component = OrganizerNavigation;
-  } else {
-    component = AttendeeScreen;
-  }
-
-  return <OrganizationTopTabNavigator.Screen name={tabName} component={component} />;
-}
+};
 
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
@@ -70,6 +56,7 @@ const DummyComponent = () => null;
 
 const LaoNavigation: React.FC = () => {
   const lao = useSelector(selectCurrentLao);
+  const passedScreens = LaoHooks.useLaoNavigationScreens();
 
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
@@ -80,6 +67,21 @@ const LaoNavigation: React.FC = () => {
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
   const laoName: string = lao ? lao.name : STRINGS.unused;
 
+  // add the organizer or attendee screen depeding on the user
+  const screens: LaoFeature.Screen[] = useMemo(() => {
+    const screenName = getLaoTabName(isOrganizer, isWitness);
+
+    let Component: React.ComponentType<any>;
+
+    if (isOrganizer || isWitness) {
+      Component = OrganizerNavigation;
+    } else {
+      Component = AttendeeScreen;
+    }
+
+    return [...passedScreens, { name: screenName, Component, order: 2 }];
+  }, [passedScreens, isOrganizer, isWitness]);
+
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
@@ -87,24 +89,11 @@ const LaoNavigation: React.FC = () => {
       screenOptions={{
         swipeEnabled: false,
       }}>
-      <OrganizationTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_social_media}
-        component={SocialMediaNavigation}
-      />
-
-      {buildTabComponent(isOrganizer, isWitness)}
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.organization_navigation_tab_identity}
-        component={Identity}
-      />
-
-      <OrganizationTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_wallet}
-        component={WalletNavigation}
-      />
+      {screens
+        .sort((a, b) => a.order - b.order)
+        .map(({ name, Component }) => (
+          <OrganizationTopTabNavigator.Screen key={name} name={name} component={Component} />
+        ))}
 
       <OrganizationTopTabNavigator.Screen
         name={laoName}
