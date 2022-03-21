@@ -1,11 +1,12 @@
-import { MessageRegistry, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 import {
   handleRollCallCloseMessage,
   handleRollCallCreateMessage,
   handleRollCallOpenMessage,
   handleRollCallReopenMessage,
 } from './RollCallHandler';
-import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 
 export * from './RollCallMessageApi';
 

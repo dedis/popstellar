@@ -1,12 +1,13 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { configureTestFeatures } from '__tests__/utils';
+
 import keyPair from 'test_data/keypair.json';
 
-import { OpenedLaoStore } from 'features/lao/store';
+import { configureTestFeatures } from '__tests__/utils';
+import { Base64UrlData, Hash, PrivateKey, PublicKey, ROOT_CHANNEL } from 'core/objects';
 import { CreateLao } from 'features/lao/network/messages';
 import { Lao } from 'features/lao/objects';
-import { Base64UrlData, Hash, PrivateKey, PublicKey, ROOT_CHANNEL } from 'core/objects';
+import { OpenedLaoStore } from 'features/lao/store';
 
 import { JsonRpcMethod, JsonRpcRequest } from '../index';
 import { JsonRpcParamsWithMessage } from '../JsonRpcParamsWithMessage';

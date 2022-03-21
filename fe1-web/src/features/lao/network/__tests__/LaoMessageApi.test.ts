@@ -1,5 +1,6 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
+
 import {
   configureTestFeatures,
   defaultMessageDataFields,
@@ -7,15 +8,14 @@ import {
   mockLaoId,
   mockLaoName,
 } from '__tests__/utils';
-
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { KeyPairStore } from 'core/keypair';
-import { Hash } from 'core/objects';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { publish as mockPublish } from 'core/network/JsonRpcApi';
+import { Hash } from 'core/objects';
 
-import { CreateLao, StateLao, UpdateLao } from '../messages';
 import { OpenedLaoStore } from '../../store';
 import * as msApi from '../LaoMessageApi';
+import { CreateLao, StateLao, UpdateLao } from '../messages';
 
 jest.mock('core/network/JsonRpcApi');
 const publishMock = mockPublish as jest.Mock;

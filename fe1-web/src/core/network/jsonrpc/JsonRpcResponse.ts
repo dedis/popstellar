@@ -1,5 +1,5 @@
-import { ProtocolError } from 'core/objects';
 import { validateJsonRpcResponse } from 'core/network/validation';
+import { ProtocolError } from 'core/objects';
 
 import { Message } from './messages';
 

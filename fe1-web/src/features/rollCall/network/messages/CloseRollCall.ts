@@ -1,9 +1,9 @@
-import { Hash, Timestamp, PublicKey, EventTags, ProtocolError } from 'core/objects';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
+import { checkAttendees, checkTimestampStaleness } from 'core/network/validation/Checker';
+import { EventTags, Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { checkTimestampStaleness, checkAttendees } from 'core/network/validation/Checker';
 
 /** Data sent to close a Roll-Call event */
 export class CloseRollCall implements MessageData {

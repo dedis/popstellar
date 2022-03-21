@@ -1,20 +1,21 @@
-import { registerRootComponent } from 'expo';
 import 'react-native-gesture-handler';
-import React from 'react';
-import { StatusBar, Platform } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+
 import { useReduxDevToolsExtension } from '@react-navigation/devtools';
-import { PersistGate } from 'redux-persist/integration/react';
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native';
+import { registerRootComponent } from 'expo';
+import React from 'react';
+import { Platform, StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ToastProvider } from 'react-native-toast-notifications';
 import { Provider } from 'react-redux';
-import { store, persist } from 'core/redux';
+import { PersistGate } from 'redux-persist/integration/react';
 
+import FeatureContext from 'core/contexts/FeatureContext';
+import { configureKeyPair } from 'core/keypair';
 import AppNavigation from 'core/navigation/AppNavigation';
 import { configureNetwork } from 'core/network';
+import { persist, store } from 'core/redux';
 import { configureFeatures } from 'features';
-import { configureKeyPair } from 'core/keypair';
-import FeatureContext from 'core/contexts/FeatureContext';
 
 /*
  * The starting point of the app.

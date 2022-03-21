@@ -1,4 +1,5 @@
 import 'jest-extended';
+
 // @ts-ignore
 import testKeyPair from 'test_data/keypair.json';
 

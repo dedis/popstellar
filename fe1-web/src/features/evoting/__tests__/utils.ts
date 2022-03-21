@@ -1,7 +1,8 @@
+import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { CastVote, ElectionResult, EndElection } from 'features/evoting/network/messages';
 import STRINGS from 'resources/strings';
-import { mockLaoId, mockLaoIdHash } from '__tests__/utils';
+
 import { Election, ElectionStatus, Question, RegisteredVote, Vote } from '../objects/Election';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
@@ -49,7 +50,7 @@ export const mockQuestionObject2: Question = {
   question: mockQuestion2,
   voting_method: STRINGS.election_method_Approval,
   ballot_options: mockBallotOptions,
-  write_in: true,
+  write_in: false,
 };
 
 export const mockQuestions: Question[] = [mockQuestionObject1, mockQuestionObject2];

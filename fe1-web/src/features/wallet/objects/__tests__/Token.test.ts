@@ -1,10 +1,9 @@
 import { configureTestFeatures } from '__tests__/utils';
-
 import { Base64UrlData, Hash } from 'core/objects';
 
 import { WalletStore } from '../../store';
-import * as Seed from '../Seed';
 import * as Wallet from '../index';
+import * as Seed from '../Seed';
 import * as Token from '../Token';
 
 jest.mock('core/platform/Storage');

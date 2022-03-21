@@ -2,10 +2,10 @@ import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
 
 import { ProtocolError } from 'core/objects';
 
-import { RpcOperationError } from './RpcOperationError';
+import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from './jsonrpc';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
-import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from './jsonrpc';
+import { RpcOperationError } from './RpcOperationError';
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;

@@ -1,4 +1,5 @@
 import { sha256 } from 'js-sha256';
+
 import { Base64UrlData } from './Base64Url';
 
 /** Enumeration of all possible event tags used in hash creation */
