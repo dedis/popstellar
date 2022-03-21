@@ -1,13 +1,14 @@
 package com.github.dedis.popstellar.model.network.method;
 
 import com.github.dedis.popstellar.model.network.GenericMessage;
+import com.github.dedis.popstellar.model.objects.Channel;
 
 import java.util.Objects;
 
 /** An abstract low level message that is sent over a specific channel */
 public abstract class Message extends GenericMessage {
 
-  private final String channel;
+  private final Channel channel;
 
   /**
    * Constructor for a Message
@@ -15,7 +16,7 @@ public abstract class Message extends GenericMessage {
    * @param channel the channel over which the message is sent
    * @throws IllegalArgumentException if channel is null
    */
-  protected Message(String channel) {
+  protected Message(Channel channel) {
     if (channel == null) {
       throw new IllegalArgumentException("Trying to create a message with a null channel");
     }
@@ -25,8 +26,8 @@ public abstract class Message extends GenericMessage {
   /** Return the Message method */
   public abstract String getMethod();
 
-  /** Returnss the message channel */
-  public String getChannel() {
+  /** Returns the message channel */
+  public Channel getChannel() {
     return channel;
   }
 

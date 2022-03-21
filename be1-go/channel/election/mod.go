@@ -44,7 +44,9 @@ func (a *attendees) isPresent(key string) bool {
 
 // NewChannel returns a new initialized election channel
 func NewChannel(channelPath string, start, end int64, started bool, questions []messagedata.ElectionSetupQuestion,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
+	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger,
+  organizerPubKey kyber.Point) channel.Channel {
+
 
 	log = log.With().Str("channel", "election").Logger()
 
@@ -237,7 +239,7 @@ func (c *Channel) handleMessage(msg message.Message) error {
 
 	err := c.registry.Process(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to process message: %w", err)
+		return xerrors.Errorf("failed to process message: %v", err)
 	}
 
 	c.inbox.StoreMessage(msg)
@@ -274,6 +276,7 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	}
 
 	c.sockets.SendToAll(buf)
+
 	return nil
 }
 
@@ -352,7 +355,7 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 
 	_, ok := msgData.(*messagedata.VoteCastVote)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a election#cast_vote message", msgData)
+		return xerrors.Errorf("message '%T' isn't a election#cast_vote message", msgData)
 	}
 
 	c.log.Info().Msg("received a election#cast_vote message")
@@ -388,7 +391,7 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 
 	err = updateVote(msg.MessageID, msg.Sender, castVote, c.questions)
 	if err != nil {
-		xerrors.Errorf("failed to update vote: %v", err)
+		return xerrors.Errorf("failed to update vote: %v", err)
 	}
 
 	err = c.broadcastToAllClients(msg)
@@ -404,7 +407,7 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 
 	_, ok := msgData.(*messagedata.ElectionEnd)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a election#end message", msgData)
+		return xerrors.Errorf("message '%T' isn't a election#end message", msgData)
 	}
 
 	c.log.Info().Msg("received a election#end message")
@@ -463,7 +466,7 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 func (c *Channel) processElectionResult(msg message.Message, msgData interface{}) error {
 	data, ok := msgData.(*messagedata.ElectionResult)
 	if !ok {
-		return xerrors.Errorf("message %v isn't a election#result message", msgData)
+		return xerrors.Errorf("message '%T' isn't a election#result message", msgData)
 	}
 
 	c.log.Info().Msg("received a election#result message")
@@ -473,7 +476,7 @@ func (c *Channel) processElectionResult(msg message.Message, msgData interface{}
 		_, err := base64.URLEncoding.DecodeString(q.ID)
 		if err != nil {
 			return xerrors.Errorf("invalid election#result message: question "+
-				"id %d %s, should be a base64URL encoded", i, q.ID)
+				"id %d %s, should be base64URL encoded", i, q.ID)
 		}
 	}
 
@@ -572,6 +575,7 @@ func gatherOptionCounts(count []int, options []string) []messagedata.ElectionRes
 			Count:        count[i],
 		})
 	}
+
 	return questionResults
 }
 
@@ -582,6 +586,7 @@ func checkMethodProperties(method string, length int) error {
 	if method == "Approval" && length != 1 {
 		return answer.NewError(-4, "Cannot choose multiple ballot options on approval voting method")
 	}
+
 	return nil
 }
 
@@ -618,6 +623,7 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, 
 		// other votes can now change the list of valid votes
 		qs.validVotesMu.Unlock()
 	}
+
 	return nil
 }
 
@@ -638,5 +644,6 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 			method:        q.VotingMethod,
 		}
 	}
+
 	return qs
 }

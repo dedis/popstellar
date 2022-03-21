@@ -1,9 +1,10 @@
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { Hash, Timestamp, ProtocolError, EventTags } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
-import { Vote } from '../../objects';
+import { MessageDataProperties } from 'core/types';
+import { Election, SelectedBallots, Vote } from '../../objects';
 
 /** Data sent to cast a vote */
 export class CastVote implements MessageData {
@@ -19,7 +20,7 @@ export class CastVote implements MessageData {
 
   public readonly votes: Vote[];
 
-  constructor(msg: Partial<CastVote>) {
+  constructor(msg: MessageDataProperties<CastVote>) {
     if (!msg.election) {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'CastVote'");
     }
@@ -89,5 +90,69 @@ export class CastVote implements MessageData {
       election: new Hash(obj.election),
       lao: new Hash(obj.lao),
     });
+  }
+
+  /**
+   * Converts an object of type SelectedBallots to an array of votes ready to be passed to a CastVote message
+   * @param election The election for which these votes are cast
+   * @param selectedBallots The selected ballot options
+   * @returns An array of votes that can be passed to a CastVote message
+   */
+  public static selectedBallotsToVotes(
+    election: Election,
+    selectedBallots: SelectedBallots,
+  ): Vote[] {
+    // Convert object to array
+    const ballotArray = Object.entries(selectedBallots).map(([idx, selectionOptions]) => ({
+      index: parseInt(idx, 10),
+      selectionOptions,
+    }));
+
+    // sort the answers by index
+    ballotArray.sort((a, b) => a.index - b.index);
+
+    return (
+      ballotArray
+        // and add an id to all votes as well as the matching question id
+        .map<Vote>(({ index, selectionOptions }) => ({
+          // generate the vote id
+          id: CastVote.computeVoteId(election, index, selectionOptions).valueOf(),
+          // find matching question id from the election
+          question: election.questions[index].id,
+          // convert the set to an array and sort votes in ascending order
+          vote: [...selectionOptions].sort((a, b) => a - b),
+        }))
+    );
+  }
+
+  /**
+   * Generates a vote id as described in
+   * https://github.com/dedis/popstellar/blob/master/protocol/query/method/message/data/dataCastVote.json
+   * HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must use delimiter
+   * @param election The election for which this vote id is generated
+   * @param questionIndex The index of the question in the given election, this vote is cast for
+   * @param selectionOptions The selected answers for the given question in the given eeleciton
+   */
+  public static computeVoteId(
+    election: Election,
+    questionIndex: number,
+    selectionOptions: Set<number>,
+  ): Hash {
+    return Hash.fromStringArray(
+      EventTags.VOTE,
+      election.id.toString(),
+      election.questions[questionIndex].id,
+      // Important: A standardized order is required, otherwise the hash cannot be verified
+      // Even more important: A standardized delimiter has to be used to disambiguate [1,0] from [10]
+      // See https://github.com/dedis/popstellar/issues/843 for details
+      // TODO: Update after discussion in #843 is finished
+      [...selectionOptions]
+        // sort in ascending order
+        .sort((a, b) => a - b)
+        // convert to strings
+        .map((idx) => idx.toString())
+        // concatenate and add delimiter in between strings
+        .join(','),
+    );
   }
 }

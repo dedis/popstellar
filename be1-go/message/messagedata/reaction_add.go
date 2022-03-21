@@ -12,7 +12,9 @@ type ReactionAdd struct {
 	Action            string `json:"action"`
 	ReactionCodepoint string `json:"reaction_codepoint"`
 	ChirpID           string `json:"chirp_id"`
-	Timestamp         int64  `json:"timestamp"`
+
+	// Timestamp is a Unix timestamp
+	Timestamp int64 `json:"timestamp"`
 }
 
 // Verify verifies that the ReactionAdd message is correct

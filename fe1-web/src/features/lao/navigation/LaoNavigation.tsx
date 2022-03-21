@@ -11,9 +11,9 @@ import { SocialMediaNavigation } from 'features/social/navigation';
 import { WalletNavigation } from 'features/wallet/navigation';
 import { Home } from 'features/home/screens';
 
-import { makeCurrentLao } from '../reducer';
 import { AttendeeScreen, Identity } from '../screens';
 import OrganizerNavigation from './OrganizerNavigation';
+import { selectCurrentLao } from '../reducer';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -67,10 +67,9 @@ function buildTabComponent(isOrganizer: boolean, isWitness: boolean) {
 // Cannot omit the "component" attribute in Screen
 // Moreover, cannot use a lambda in "component"
 const DummyComponent = () => null;
-const laoSelect = makeCurrentLao();
 
 const LaoNavigation: React.FC = () => {
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;

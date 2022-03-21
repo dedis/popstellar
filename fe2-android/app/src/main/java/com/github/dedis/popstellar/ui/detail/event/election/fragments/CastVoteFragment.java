@@ -30,8 +30,8 @@ import me.relex.circleindicator.CircleIndicator3;
  * A simple {@link Fragment} subclass. Use the {@link CastVoteFragment#newInstance} factory method
  * to create an instance of this fragment.
  */
-@AndroidEntryPoint(Fragment.class)
-public class CastVoteFragment extends Hilt_CastVoteFragment {
+@AndroidEntryPoint
+public class CastVoteFragment extends Fragment {
 
   private Button voteButton;
   private LaoDetailViewModel mLaoDetailViewModel;

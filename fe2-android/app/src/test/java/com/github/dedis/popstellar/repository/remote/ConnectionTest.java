@@ -3,11 +3,13 @@ package com.github.dedis.popstellar.repository.remote;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
+import com.github.dedis.popstellar.model.network.GenericMessage;
 import com.github.dedis.popstellar.model.network.method.Message;
 import com.github.dedis.popstellar.model.network.method.Subscribe;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.tinder.scarlet.Lifecycle;
 import com.tinder.scarlet.ShutdownReason;
 
@@ -20,20 +22,27 @@ public class ConnectionTest {
   @Test
   public void sendMessageDelegatesToService() {
     LAOService service = mock(LAOService.class);
+    BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
+    when(service.observeMessage()).thenReturn(messages);
+
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
     Connection connection = new Connection(service, manualState);
-    Message msg = new Subscribe("channel", 12);
+    Message msg = new Subscribe(Channel.ROOT, 12);
 
     connection.sendMessage(msg);
 
     verify(service).sendMessage(msg);
+    verify(service).observeMessage();
     verifyNoMoreInteractions(service);
   }
 
   @Test
   public void observeMessageDelegatesToService() {
     LAOService service = mock(LAOService.class);
+    BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
+    when(service.observeMessage()).thenReturn(messages);
+
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
     Connection connection = new Connection(service, manualState);
@@ -47,6 +56,9 @@ public class ConnectionTest {
   @Test
   public void observeWebsocketDelegatesToService() {
     LAOService service = mock(LAOService.class);
+    BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
+    when(service.observeMessage()).thenReturn(messages);
+
     BehaviorSubject<Lifecycle.State> manualState = BehaviorSubject.create();
 
     Connection connection = new Connection(service, manualState);
@@ -54,12 +66,16 @@ public class ConnectionTest {
     connection.observeConnectionEvents();
 
     verify(service).observeWebsocket();
+    verify(service).observeMessage();
     verifyNoMoreInteractions(service);
   }
 
   @Test
   public void connectionClosesGracefully() {
     LAOService service = mock(LAOService.class);
+    BehaviorSubject<GenericMessage> messages = BehaviorSubject.create();
+    when(service.observeMessage()).thenReturn(messages);
+
     BehaviorSubject<Lifecycle.State> manualState =
         BehaviorSubject.createDefault(Lifecycle.State.Started.INSTANCE);
 
@@ -69,6 +85,7 @@ public class ConnectionTest {
     assertEquals(
         new Lifecycle.State.Stopped.WithReason(ShutdownReason.GRACEFUL), manualState.getValue());
 
-    verifyNoInteractions(service);
+    verify(service).observeMessage();
+    verifyNoMoreInteractions(service);
   }
 }
