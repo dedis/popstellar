@@ -2,12 +2,12 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
 import { Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
-import { selectLaosMap } from 'features/lao/reducer';
-import { addEvent, updateEvent } from 'features/events/reducer';
 import { selectEventById } from 'features/events/network/EventHandlerUtils';
+import { addEvent, updateEvent } from 'features/events/reducer';
+import { selectLaosMap } from 'features/lao/reducer';
 
-import { CreateMeeting, StateMeeting } from './messages';
 import { Meeting } from '../objects';
+import { CreateMeeting, StateMeeting } from './messages';
 
 /**
  * Handles all meeting related messages that are received.

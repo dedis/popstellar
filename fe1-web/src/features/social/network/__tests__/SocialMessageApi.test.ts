@@ -2,12 +2,12 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import testKeyPair from 'test_data/keypair.json';
+
+import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { publish as mockPublish } from 'core/network/JsonRpcApi';
 import { Hash, PublicKey } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { publish as mockPublish } from 'core/network/JsonRpcApi';
-
-import { mockLao, mockLaoId, configureTestFeatures } from '__tests__/utils';
 
 import { AddChirp } from '../messages/chirp';
 import * as msApi from '../SocialMessageApi';

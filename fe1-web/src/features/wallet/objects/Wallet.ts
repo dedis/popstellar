@@ -1,9 +1,8 @@
 import { Hash, PopToken } from 'core/objects';
 import { getStore } from 'core/redux';
-
-import { RollCall } from 'features/rollCall/objects';
 import { LaoEventType } from 'features/events/objects/LaoEvent';
 import { makeEventByTypeSelector } from 'features/events/reducer';
+import { RollCall } from 'features/rollCall/objects';
 
 import { generateToken } from './Token';
 

@@ -1,7 +1,7 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import QRCodeDisplay from 'react-qr-code';
+import React from 'react';
 import { View } from 'react-native';
+import QRCodeDisplay from 'react-qr-code';
 
 import containerStyles from '../styles/stylesheets/containerStyles';
 

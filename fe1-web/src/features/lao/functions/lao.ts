@@ -1,4 +1,5 @@
 import { getStore } from 'core/redux';
+
 import { selectCurrentLao, selectCurrentLaoId } from '../reducer';
 
 /**

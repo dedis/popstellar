@@ -1,16 +1,16 @@
+import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text } from 'react-native';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 
-import { Timestamp } from 'core/objects';
 import { QRCode, WideButtonView } from 'core/components';
+import { Timestamp } from 'core/objects';
 import { makeEventGetter } from 'features/events/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
-import { selectCurrentLao } from 'features/lao/reducer';
 import { requestOpenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
 

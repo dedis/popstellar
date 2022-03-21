@@ -12,6 +12,7 @@ exports[`RollCallOpened renders correctly when no scan 1`] = `
   <View
     style={
       Object {
+        "alignItems": "center",
         "borderWidth": 1,
         "flex": 8,
         "justifyContent": "center",
@@ -387,6 +388,7 @@ exports[`RollCallOpened renders correctly when scanning attendees 1`] = `
   <View
     style={
       Object {
+        "alignItems": "center",
         "borderWidth": 1,
         "flex": 8,
         "justifyContent": "center",

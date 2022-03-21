@@ -1,9 +1,9 @@
-import { Hash, Timestamp, ProtocolError, EventTags } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
-
+import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+
 import { Election, SelectedBallots, Vote } from '../../objects';
 
 /** Data sent to cast a vote */
@@ -60,15 +60,8 @@ export class CastVote implements MessageData {
       if (!vote.question) {
         throw new ProtocolError("Undefined 'question id' parameter encountered during 'CastVote'");
       }
-      if (!vote.vote && !vote.writeIn) {
-        throw new ProtocolError(
-          "Undefined 'vote or write in' parameters encountered during 'CastVote'",
-        );
-      }
-      if (vote.vote && vote.writeIn) {
-        throw new ProtocolError(
-          "Defined both 'vote' and 'write_in' parameters, only 1 is allowed, encountered during 'CastVote'",
-        );
+      if (!vote.vote) {
+        throw new ProtocolError("Undefined 'vote' parameters encountered during 'CastVote'");
       }
     });
   }
@@ -145,7 +138,6 @@ export class CastVote implements MessageData {
       // Important: A standardized order is required, otherwise the hash cannot be verified
       // Even more important: A standardized delimiter has to be used to disambiguate [1,0] from [10]
       // See https://github.com/dedis/popstellar/issues/843 for details
-      // TODO: Update after discussion in #843 is finished
       [...selectionOptions]
         // sort in ascending order
         .sort((a, b) => a - b)

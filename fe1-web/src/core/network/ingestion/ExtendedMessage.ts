@@ -1,13 +1,13 @@
 import {
+  Base64UrlData,
+  Channel,
+  getLaoIdFromChannel,
   Hash,
   PublicKey,
-  Base64UrlData,
   Signature,
   Timestamp,
-  Channel,
   WitnessSignature,
   WitnessSignatureState,
-  getLaoIdFromChannel,
 } from 'core/objects';
 
 import { Message, ProcessableMessage } from '../jsonrpc/messages';

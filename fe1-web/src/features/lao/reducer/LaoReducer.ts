@@ -3,11 +3,11 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, createSelector, PayloadAction, Draft } from '@reduxjs/toolkit';
+import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 import { REHYDRATE } from 'redux-persist';
 
-import { Hash } from 'core/objects';
 import { getKeyPairState } from 'core/keypair';
+import { Hash } from 'core/objects';
 
 import { Lao, LaoState } from '../objects';
 

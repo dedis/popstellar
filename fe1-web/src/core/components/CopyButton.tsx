@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Image, Pressable, ImageStyle } from 'react-native';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { Image, ImageStyle, Pressable, StyleSheet } from 'react-native';
 
 import { getNavigator } from '../platform/Navigator';
 
