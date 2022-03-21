@@ -190,6 +190,14 @@ public class HomeViewModel extends AndroidViewModel
             .subscribe(
                 () -> {
                   Log.d(TAG, "got success result for create lao");
+                  // Create new LAO and add it to the LAORepository LAO lists
+                  Lao lao = new Lao(createLao.getId());
+                  laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
+                  laoRepository.setAllLaoSubject();
+
+                  // Send subscribe and catchup after creating a LAO
+                  networkManager.getMessageSender().subscribe(lao.getChannel()).subscribe();
+
                   openHome();
                 },
                 error ->

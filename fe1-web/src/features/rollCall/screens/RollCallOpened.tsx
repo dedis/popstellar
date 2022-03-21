@@ -71,13 +71,18 @@ const RollCallOpened = () => {
     addOwnToken().catch((e) => console.error(e));
   }, [lao, rollCallID, toast]);
 
-  const handleError = (err: string) => {
+  const handleError = (err: any) => {
     console.error(err);
-    toast.show(err, {
-      type: 'danger',
-      placement: 'top',
-      duration: FOUR_SECONDS,
-    });
+    // The "err" object might be an exception, take the message property if it exists
+    toast.show(
+      err?.message ||
+        (typeof err === 'string' ? err : 'Unkown error, please check the console and report it!'),
+      {
+        type: 'danger',
+        placement: 'top',
+        duration: FOUR_SECONDS,
+      },
+    );
   };
 
   const addAttendeeAndShowToast = (attendee: string, toastMessage: string) => {

@@ -11,6 +11,7 @@ import ch.epfl.pop.storage.DbActor
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
+import java.security.Timestamp
 
 object ElectionHandler extends MessageHandler {
 
@@ -32,6 +33,11 @@ object ElectionHandler extends MessageHandler {
     }
   }
 
+  def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
+
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // no need to propagate here, hence the use of dbAskWrite
     val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
@@ -42,7 +48,9 @@ object ElectionHandler extends MessageHandler {
     PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
   )
 
-  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
-    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle EndElection messages yet", rpcMessage.id)
-  )
+  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    //no need to propagate the results, we only need to write the results in the db 
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
 }

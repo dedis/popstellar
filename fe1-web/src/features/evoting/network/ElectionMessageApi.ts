@@ -4,7 +4,7 @@ import { Lao } from 'features/lao/objects';
 import { publish } from 'core/network';
 
 import { CastVote, EndElection, SetupElection } from './messages';
-import { Question, Vote } from '../objects';
+import { Election, Question, SelectedBallots } from '../objects';
 
 /**
  * Contains all functions to send election related messages.
@@ -41,46 +41,46 @@ export function requestCreateElection(
     questions: questions,
   });
 
-  const laoCh = channelFromIds(currentLao.id);
-  return publish(laoCh, message);
+  // publish on the general LAO channel
+  return publish(channelFromIds(currentLao.id), message);
 }
 
 /**
  * Sends a query to cast a vote during an election.
  *
- * @param election_id - The id of the ongoing election
- * @param votes - The votes to be added
+ * @param election - The election for which the vote should be casted
+ * @param selectedBallots - The votes to be added, a map from question index to the set of selected answer indices
  */
-export function castVote(election_id: Hash, votes: Vote[]): Promise<void> {
+export function castVote(election: Election, selectedBallots: SelectedBallots): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const message = new CastVote({
     lao: currentLao.id,
-    election: election_id,
+    election: election.id,
     created_at: time,
-    votes: votes,
+    // Convert object to array
+    votes: CastVote.selectedBallotsToVotes(election, selectedBallots),
   });
 
-  const elecCh = channelFromIds(currentLao.id, election_id);
-  return publish(elecCh, message);
+  // publish on the LAO channel specific to this election
+  return publish(channelFromIds(currentLao.id, election.id), message);
 }
 
 /**
  * Sends a query to terminate an election.
  *
- * @param electionId - The id of the election
- * @param registeredVotes - The registered votes of the election
+ * @param election - The election that should be terminated
  */
-export function terminateElection(electionId: Hash, registeredVotes: Hash): Promise<void> {
+export function terminateElection(election: Election): Promise<void> {
   const time: Timestamp = Timestamp.EpochNow();
   const currentLao: Lao = OpenedLaoStore.get();
   const message = new EndElection({
     lao: currentLao.id,
-    election: electionId,
+    election: election.id,
     created_at: time,
-    registered_votes: registeredVotes,
+    registered_votes: EndElection.computeRegisteredVotesHash(election),
   });
 
-  const elecCh = channelFromIds(currentLao.id, electionId);
-  return publish(elecCh, message);
+  // publish on the LAO channel specific to this election
+  return publish(channelFromIds(currentLao.id, election.id), message);
 }

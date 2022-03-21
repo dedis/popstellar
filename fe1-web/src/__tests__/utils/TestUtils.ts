@@ -4,11 +4,14 @@ import { Lao, LaoState } from 'features/lao/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
-export const mockPublicKey2 = testKeyPair.publicKey2;
 export const mockKeyPair = KeyPair.fromState({
-  publicKey: testKeyPair.publicKey,
-  privateKey: testKeyPair.privateKey,
+  publicKey: mockPublicKey,
+  privateKey: mockPrivateKey,
 });
+
+export const mockPublicKey2 = testKeyPair.publicKey2;
+export const mockPrivateKey2 = testKeyPair.privateKey2;
+
 export const mockPopToken = PopToken.fromState({
   publicKey: testKeyPair.publicKey2,
   privateKey: testKeyPair.privateKey2,
