@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/core';
 import React, { FunctionComponent, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
@@ -7,7 +7,6 @@ import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel, getLaoIdFromChannel } from 'core/objects';
 import { dispatch } from 'core/redux';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import { HomeHooks } from '../hooks';
@@ -26,7 +25,10 @@ const styles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const Launch: FunctionComponent<IPropTypes> = ({ navigation }) => {
+const Launch = () => {
+  // FIXME: use proper navigation type
+  const navigation = useNavigation<any>();
+
   const [inputLaoName, setInputLaoName] = useState('');
   const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
 
@@ -87,12 +89,5 @@ const Launch: FunctionComponent<IPropTypes> = ({ navigation }) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-Launch.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default Launch;
