@@ -23,15 +23,16 @@ export function configureFeatures() {
   const laoConfiguration = lao.configure({ registry: messageRegistry });
   const connectConfiguration = connect.configure({
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
+    getLaoChannel: laoConfiguration.functions.getLaoChannel,
+    useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
   });
 
   const evotingConfiguration = evoting.configure({
     /* LAO FEATURE */
     /* lao: functions */
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
-    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     /* lao: hooks */
-    getCurrentLaoId: laoConfiguration.functions.getCurrentLaoId,
+    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     useCurrentLaoId: laoConfiguration.hooks.useCurrentLaoId,
     /* EVENTS FEATURE */
     /* events: action creators */
@@ -55,7 +56,9 @@ export function configureFeatures() {
     /* functions */
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
     createLao: laoConfiguration.functions.createLao,
-    /* hoosk */
+    /* action creators */
+    addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
+    /* hooks */
     useLaoList: laoConfiguration.hooks.useLaoList,
     LaoList: laoConfiguration.components.LaoList,
     mainNavigationScreens: [

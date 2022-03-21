@@ -1,6 +1,5 @@
 import { catchup, getNetworkManager, subscribeToChannel } from 'core/network';
 import { getStore } from 'core/redux';
-import { validateLaoId } from 'features/connect/screens/ConnectConfirm';
 import STRINGS from 'resources/strings';
 
 import { PublicComponents } from './components';
@@ -37,7 +36,7 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
     }
 
     // if yes - then subscribe to the LAO channel and send a catchup
-    const channel = validateLaoId(laoId.valueOf());
+    const channel = functions.getLaoChannel(laoId.valueOf());
     if (!channel) {
       throw new Error(`Cannot find the channel corresponding to the LAO id ${laoId.valueOf()}`);
     }

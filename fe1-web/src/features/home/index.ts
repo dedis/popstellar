@@ -19,6 +19,7 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
     screens,
     context: {
       createLao: config.createLao,
+      addLaoServerAddress: config.addLaoServerAddress,
       connectToTestLao: config.connectToTestLao,
       useLaoList: config.useLaoList,
       LaoList: config.LaoList,

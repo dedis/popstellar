@@ -1,5 +1,4 @@
 import { useNavigation } from '@react-navigation/core';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Button, View } from 'react-native';
 import { useSelector } from 'react-redux';

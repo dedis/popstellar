@@ -7,7 +7,6 @@ import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { Channel, getLaoIdFromChannel } from 'core/objects';
 import { dispatch } from 'core/redux';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { addLaoServerAddress } from 'features/lao/reducer';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
@@ -33,6 +32,7 @@ const Launch: FunctionComponent<IPropTypes> = ({ navigation }) => {
 
   const connectToTestLao = HomeHooks.useConnectToTestLao();
   const createLao = HomeHooks.useCreateLao();
+  const addLaoServerAddress = HomeHooks.useAddLaoServerAddress();
 
   const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {

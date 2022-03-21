@@ -13,6 +13,8 @@ export const configure = (config: ConnectConfiguration): ConnectInterface => {
     functions,
     context: {
       addLaoServerAddress: config.addLaoServerAddress,
+      getLaoChannel: config.getLaoChannel,
+      useCurrentLaoId: config.useCurrentLaoId,
     },
   };
 };

@@ -22,9 +22,15 @@ export namespace HomeHooks {
 
   /**
    * Gets the function that creates a new lao
-   * @returns The function
+   * @returns The function to create a lao
    */
   export const useCreateLao = () => useHomeContext().createLao;
+
+  /**
+   * Gets the function to add a server address to a lao
+   * @returns The function to add a server address
+   */
+  export const useAddLaoServerAddress = () => useHomeContext().addLaoServerAddress;
 
   /**
    * Gets the current lao list

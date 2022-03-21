@@ -84,9 +84,9 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
     /**
      * Gets the current lao id
-     * @returns The current lao id
+     * @returns The current lao id or undefined if there is none
      */
-    useCurrentLaoId: () => Hash;
+    useCurrentLaoId: () => Hash | undefined;
   };
 
   /* functions */
@@ -99,9 +99,9 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
     /**
      * Gets the current lao id
-     * @returns The current lao id
+     * @returns The current lao id or undefined if there is none
      */
-    getCurrentLaoId: () => Hash;
+    getCurrentLaoId: () => Hash | undefined;
 
     /**
      * Creates a new lao
@@ -112,6 +112,13 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * Opens a lao test connection
      */
     openLaoTestConnection: () => void;
+
+    /**
+     * Get a LAOs channel by its id
+     * @param laoId The id of the lao whose channel should be returned
+     * @returns The channel related to the passed lao id or undefined it the lao id is invalid
+     */
+    getLaoChannel: (laoId: string) => Channel | undefined;
   };
 
   /* reducers */

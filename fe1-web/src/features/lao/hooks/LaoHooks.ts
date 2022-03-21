@@ -82,16 +82,8 @@ export namespace LaoHooks {
   };
 
   /**
-   * Returns the current lao id and throws an error if there is none
+   * Returns the current lao id or undefined if there is none
    * @returns The current lao id
    */
-  export const useCurrentLaoId = () => {
-    const currentLaoId = useSelector(selectCurrentLaoId);
-
-    if (!currentLaoId) {
-      throw new Error('Error encountered while accessing storage : no currently opened LAO');
-    }
-
-    return currentLaoId;
-  };
+  export const useCurrentLaoId = () => useSelector(selectCurrentLaoId);
 }

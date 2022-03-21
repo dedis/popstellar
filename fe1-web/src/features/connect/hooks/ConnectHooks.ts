@@ -15,8 +15,20 @@ export namespace ConnectHooks {
   };
 
   /**
-   * Returns a function from the contaxt that allows adding a lao server address
+   * Returns a function from the context that allows adding a lao server address
    * @returns A function for adding a lao address
    */
   export const useAddLaoServerAddress = () => useConnectContext().addLaoServerAddress;
+
+  /**
+   * Returns a function from the context for obtaining the channel for a given lao
+   * @returns A function for getting the channel by lao id
+   */
+  export const useGetLaoChannel = () => useConnectContext().getLaoChannel;
+
+  /**
+   * Gets the current lao id
+   * @returns The current lao id
+   */
+  export const useCurrentLaoId = () => useConnectContext().useCurrentLaoId;
 }

@@ -8,7 +8,6 @@ import { useDispatch } from 'react-redux';
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
 import { NetworkConnection } from 'core/network/NetworkConnection';
-import { Channel, channelFromIds, Hash } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
@@ -47,21 +46,6 @@ export function connectTo(serverUrl: string): NetworkConnection | undefined {
   }
 }
 
-/**
- * Checks if the LAO exists by trying to find its id in created channels.
- *
- * @param laoId the id of the LAO we want to validate
- */
-export function validateLaoId(laoId: string): Channel | undefined {
-  try {
-    const h = new Hash(laoId);
-    return channelFromIds(h);
-  } catch (err) {
-    console.error(`Cannot connect to LAO '${laoId}' as it is an invalid LAO ID`, err);
-  }
-  return undefined;
-}
-
 const ConnectConfirm = ({ navigation }: IPropTypes) => {
   // FIXME: route should use proper type
   const route = useRoute<any>();
@@ -73,6 +57,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
   const toast = useToast();
   const dispatch = useDispatch();
   const addLaoServerAddress = ConnectHooks.useAddLaoServerAddress();
+  const getLaoChannel = ConnectHooks.useGetLaoChannel();
 
   const onButtonConfirm = async () => {
     const connection = connectTo(serverUrl);
@@ -80,7 +65,7 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
       return;
     }
 
-    const channel = validateLaoId(laoId);
+    const channel = getLaoChannel(laoId);
     if (channel === undefined) {
       return;
     }

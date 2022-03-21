@@ -18,7 +18,13 @@ export namespace EvotingHooks {
    * @returns The current lao id
    */
   export const useCurrentLaoId = () => {
-    return useEvotingContext().useCurrentLaoId();
+    const laoId = useEvotingContext().useCurrentLaoId();
+
+    if (!laoId) {
+      throw new Error('Error encountered while obtaining current lao id: no active LAO');
+    }
+
+    return laoId;
   };
 
   /**

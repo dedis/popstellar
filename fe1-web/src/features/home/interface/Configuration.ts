@@ -1,6 +1,7 @@
 import React from 'react';
+import { AnyAction } from 'redux';
 
-import { Channel } from 'core/objects';
+import { Channel, Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { HomeFeature } from './Feature';
@@ -12,9 +13,10 @@ export interface HomeCompositionConfiguration {
 
   /* functions */
   createLao: (laoName: string) => Promise<Channel>;
+  connectToTestLao: () => void;
 
   /* action creators */
-  connectToTestLao: () => void;
+  addLaoServerAddress: (laoId: Hash, address: string) => AnyAction;
 
   /* hooks */
 
@@ -45,7 +47,12 @@ export interface HomeCompositionConfiguration {
 export type HomeReactContext = Pick<
   HomeCompositionConfiguration,
   /* lao */
-  'createLao' | 'connectToTestLao' | 'useLaoList' | 'LaoList' | 'mainNavigationScreens'
+  | 'createLao'
+  | 'addLaoServerAddress'
+  | 'connectToTestLao'
+  | 'useLaoList'
+  | 'LaoList'
+  | 'mainNavigationScreens'
 >;
 
 /**

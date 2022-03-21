@@ -3,15 +3,14 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
-import { useSelector } from 'react-redux';
 
 import { WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { selectCurrentLaoId } from 'features/lao/reducer';
 import { FOUR_SECONDS } from 'resources/const';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
+import { ConnectHooks } from '../hooks';
 import { ConnectToLao } from '../objects';
 
 /**
@@ -25,7 +24,7 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   const [QrWasScanned, setQrWasScanned] = useState(false);
   const toast = useToast();
 
-  const laoId = useSelector(selectCurrentLaoId);
+  const laoId = ConnectHooks.useCurrentLaoId();
 
   const handleError = (err: string) => {
     console.error(err);

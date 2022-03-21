@@ -28,16 +28,10 @@ export interface EvotingConfiguration {
   useCurrentLao: () => EvotingFeature.Lao;
 
   /**
-   * Returns the currently active lao id. Should be used outside react components
-   * @returns The current lao id
-   */
-  getCurrentLaoId: () => Hash;
-
-  /**
    * Returns the currently active lao id. Should be used inside react components
    * @returns The current lao id
    */
-  useCurrentLaoId: () => Hash;
+  useCurrentLaoId: () => Hash | undefined;
 
   /* Event related functions */
 
