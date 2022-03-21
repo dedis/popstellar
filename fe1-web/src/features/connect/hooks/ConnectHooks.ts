@@ -30,5 +30,5 @@ export namespace ConnectHooks {
    * Gets the current lao id
    * @returns The current lao id
    */
-  export const useCurrentLaoId = () => useConnectContext().useCurrentLaoId;
+  export const useCurrentLaoId = () => useConnectContext().useCurrentLaoId();
 }

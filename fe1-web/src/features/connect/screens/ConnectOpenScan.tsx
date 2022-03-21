@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import QrReader from 'react-qr-reader';
@@ -21,7 +21,18 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   // his permission to use the camera
 
   // this is needed as otherwise the camera will stay turned on
-  const [QrWasScanned, setQrWasScanned] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
+  // re-enable scanner on focus events
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      // The screen is focused, set QrWasScanned to false (i.e. allow scanner to be reused)
+      setShowScanner(true);
+    });
+
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return unsubscribe;
+  }, [navigation]);
+
   const toast = useToast();
 
   const laoId = ConnectHooks.useCurrentLaoId();
@@ -58,7 +69,7 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
         return;
       }
 
-      setQrWasScanned(true);
+      setShowScanner(false);
       navigation.navigate(STRINGS.connect_confirm_title, {
         laoIdIn: connectToLao.lao,
         url: connectToLao.server,
@@ -72,19 +83,28 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     }
   };
 
-  return QrWasScanned ? (
-    <View style={containerStyles.centeredY} />
-  ) : (
+  return showScanner ? (
     <View style={containerStyles.centeredXY}>
       <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '30%' }} />
       <WideButtonView
         title={STRINGS.general_button_cancel}
         onPress={() => {
-          setQrWasScanned(true);
-          navigation.navigate(STRINGS.connect_unapproved_title);
+          setShowScanner(false);
+
+          // if we have an active lao, this was an additional connection and thus we navigate (back)
+          // to the organization user screen
+          if (laoId) {
+            navigation.navigate(STRINGS.app_navigation_tab_user, {
+              screen: STRINGS.organization_navigation_tab_user,
+            });
+          } else {
+            navigation.navigate(STRINGS.connect_unapproved_title);
+          }
         }}
       />
     </View>
+  ) : (
+    <View style={containerStyles.centeredY} />
   );
 };
 
