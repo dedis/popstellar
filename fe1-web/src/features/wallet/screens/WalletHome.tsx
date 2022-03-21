@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import { QRCode, TextBlock, WideButtonView } from "core/components";
+import { QRCode, TextBlock, WideButtonView } from 'core/components';
 import PROPS_TYPE from 'resources/Props';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { LaoEventType } from 'features/events/objects';
@@ -96,7 +96,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
         }}
       />
       <WideButtonView
-        title={isDebug ? 'Set debug mode off' : 'Set debug mode on'}
+        title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
         onPress={() => setDebug(isDebug)}
       />
     </View>
