@@ -5,7 +5,7 @@ import { JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { NetworkConnection } from './NetworkConnection';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 import { SendingStrategy } from './strategies/client-multiple-servers/ClientMultipleServerStrategy';
-import { sendToFirstAcceptingServerStrategy } from './strategies/client-multiple-servers/SendToFirstAcceptingServerStrategy';
+import { sendToAllServersStrategy } from './strategies/client-multiple-servers/SendToAllServersStrategy';
 
 let NETWORK_MANAGER_INSTANCE: NetworkManager;
 
@@ -164,7 +164,7 @@ class NetworkManager {
 export function getNetworkManager(): NetworkManager {
   if (NETWORK_MANAGER_INSTANCE === undefined) {
     // TODO: decide what the desired strategy is
-    NETWORK_MANAGER_INSTANCE = new NetworkManager(sendToFirstAcceptingServerStrategy);
+    NETWORK_MANAGER_INSTANCE = new NetworkManager(sendToAllServersStrategy);
   }
   return NETWORK_MANAGER_INSTANCE;
 }
