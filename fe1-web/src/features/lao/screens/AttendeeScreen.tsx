@@ -1,7 +1,6 @@
 import { useRoute } from '@react-navigation/core';
 import React, { useState } from 'react';
 import { ScrollView } from 'react-native';
-import { useSelector } from 'react-redux';
 
 import { LaoProperties } from '../components';
 import { LaoHooks } from '../hooks';

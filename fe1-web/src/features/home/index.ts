@@ -1,4 +1,5 @@
 import STRINGS from 'resources/strings';
+
 import {
   HomeCompositionConfiguration,
   HomeFeature,

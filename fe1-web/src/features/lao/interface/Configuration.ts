@@ -1,8 +1,10 @@
+import React from 'react';
+import { AnyAction, Reducer } from 'redux';
+
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Channel, Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
-import React from 'react';
-import { AnyAction, Reducer } from 'redux';
+
 import { Lao } from '../objects';
 import { LaoReducerState, LAO_REDUCER_PATH } from '../reducer';
 import { LaoFeature } from './Feature';
@@ -51,7 +53,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
   /* action creators */
   actionCreators: {
-    setLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
+    addLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
   };
 
   /* hooks */

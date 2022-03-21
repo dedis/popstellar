@@ -1,6 +1,8 @@
+import React from 'react';
+
 import { Channel } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
-import React from 'react';
+
 import { HomeFeature } from './Feature';
 
 export const HOME_FEATURE_IDENTIFIER = 'home';

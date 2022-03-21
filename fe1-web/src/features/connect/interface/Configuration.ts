@@ -1,15 +1,16 @@
-import { Hash } from 'core/objects';
-import FeatureInterface from 'core/objects/FeatureInterface';
 import React from 'react';
 import { AnyAction } from 'redux';
+
+import { Hash } from 'core/objects';
+import FeatureInterface from 'core/objects/FeatureInterface';
 
 export const CONNECT_FEATURE_IDENTIFIER = 'connect';
 
 export interface ConnectConfiguration {
-  setLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
+  addLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
 }
 
-export type ConnectReactContext = Pick<ConnectConfiguration, 'setLaoServerAddress'>;
+export type ConnectReactContext = Pick<ConnectConfiguration, 'addLaoServerAddress'>;
 
 /**
  * The interface the evoting feature exposes

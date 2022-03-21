@@ -1,17 +1,17 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback } from 'react';
 import { SectionList, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 import { TextBlock } from 'core/components';
+import { Timestamp } from 'core/objects';
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
-import { useSelector } from 'react-redux';
-import { Timestamp } from 'core/objects';
-import Event from './Event';
 import { EventsHooks } from '../hooks';
-import { selectEventsList } from '../reducer';
 import { LaoEvent } from '../objects';
+import { selectEventsList } from '../reducer';
+import Event from './Event';
 
 const styles = StyleSheet.create({
   flexBox: {

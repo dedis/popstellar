@@ -1,6 +1,8 @@
-import FeatureContext from 'core/contexts/FeatureContext';
 import { useContext } from 'react';
 import { useSelector } from 'react-redux';
+
+import FeatureContext from 'core/contexts/FeatureContext';
+
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from '../interface';
 import { Lao } from '../objects';
 import {
@@ -30,12 +32,10 @@ export namespace LaoHooks {
   export const useEventList = () => useLaoContext().EventList;
 
   /**
-   * Gets the lao connection encoded in a way that can be shown in a QR code
-   * @returns The encoded lao connection ready to be rendered as a QR code
+   * Gets the function that can encode a lao connection ready to be rendered as a QR code
+   * @returns The function to encode a lao connection
    */
-  export const useEncodedLaoConnectionForQRCode = (
-    ...args: Parameters<LaoReactContext['encodeLaoConnectionForQRCode']>
-  ) => useLaoContext().encodeLaoConnectionForQRCode(...args);
+  export const useEncodeLaoConnectionForQRCode = () => useLaoContext().encodeLaoConnectionForQRCode;
 
   /**
    * Gets the lao navigation screens

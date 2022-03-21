@@ -1,8 +1,8 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 
+import * as navigation from './navigation';
 import { configureNetwork } from './network';
 import { socialReducer } from './reducer';
-import * as navigation from './navigation';
 
 /**
  * Configures the social media feature

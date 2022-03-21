@@ -1,5 +1,7 @@
-import FeatureContext from 'core/contexts/FeatureContext';
 import { useContext } from 'react';
+
+import FeatureContext from 'core/contexts/FeatureContext';
+
 import { EventsReactContext, EVENTS_FEATURE_IDENTIFIER } from '../interface';
 
 export namespace EventsHooks {

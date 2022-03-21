@@ -1,9 +1,9 @@
 import { KeyPairRegistry } from 'core/keypair/KeyPairRegistry';
 import { SignatureType } from 'core/network/jsonrpc/messages';
 
+import * as navigation from './navigation';
 import { getCurrentPopTokenFromStore } from './objects';
 import { walletReducer } from './reducer';
-import * as navigation from './navigation';
 
 /**
  * Configures the wallet feature

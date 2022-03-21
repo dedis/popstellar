@@ -22,7 +22,7 @@ export function configureFeatures() {
   const eventsConfiguration = events.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
   const connectConfiguration = connect.configure({
-    setLaoServerAddress: laoConfiguration.actionCreators.setLaoServerAddress,
+    addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
   });
 
   const evotingConfiguration = evoting.configure({

@@ -1,6 +1,6 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { MeetingEventTypeComponent } from './components';
 
+import { MeetingEventTypeComponent } from './components';
 import { configureNetwork } from './network';
 import * as screens from './screens';
 

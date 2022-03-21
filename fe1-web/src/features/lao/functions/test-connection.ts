@@ -2,6 +2,7 @@ import { KeyPairStore } from 'core/keypair';
 import { getNetworkManager } from 'core/network';
 import { Hash, Timestamp } from 'core/objects';
 import { dispatch } from 'core/redux';
+
 import { Lao } from '../objects';
 import { connectToLao } from '../reducer';
 

@@ -1,6 +1,5 @@
-import * as functions from './functions';
-import * as screens from './screens';
 import { publicComponents } from './components';
+import * as functions from './functions';
 import {
   EventsCompositionConfiguration,
   EventsCompositionInterface,
@@ -8,6 +7,7 @@ import {
   EVENTS_FEATURE_IDENTIFIER,
 } from './interface';
 import { eventsReducer, addEvent, updateEvent, removeEvent, clearAllEvents } from './reducer';
+import * as screens from './screens';
 
 /**
  * Configures the events feature

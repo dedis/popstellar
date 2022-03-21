@@ -1,10 +1,10 @@
+import * as functions from './functions';
 import {
   ConnectConfiguration,
   ConnectInterface,
   CONNECT_FEATURE_IDENTIFIER,
 } from './interface/Configuration';
 import * as navigation from './navigation';
-import * as functions from './functions';
 
 export const configure = (config: ConnectConfiguration): ConnectInterface => {
   return {
@@ -12,7 +12,7 @@ export const configure = (config: ConnectConfiguration): ConnectInterface => {
     navigation,
     functions,
     context: {
-      setLaoServerAddress: config.setLaoServerAddress,
+      addLaoServerAddress: config.addLaoServerAddress,
     },
   };
 };

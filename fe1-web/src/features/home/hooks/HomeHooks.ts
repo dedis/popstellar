@@ -1,5 +1,7 @@
-import FeatureContext from 'core/contexts/FeatureContext';
 import { useContext } from 'react';
+
+import FeatureContext from 'core/contexts/FeatureContext';
+
 import { HomeReactContext, HOME_FEATURE_IDENTIFIER } from '../interface';
 
 export namespace HomeHooks {

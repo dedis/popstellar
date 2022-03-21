@@ -1,7 +1,9 @@
-import { Hash, Timestamp } from 'core/objects';
-import FeatureInterface from 'core/objects/FeatureInterface';
 import React from 'react';
 import { AnyAction, Reducer } from 'redux';
+
+import { Hash, Timestamp } from 'core/objects';
+import FeatureInterface from 'core/objects/FeatureInterface';
+
 import { LaoEvent, LaoEventState } from '../objects';
 import { EventLaoReducerState, EVENT_REDUCER_PATH } from '../reducer';
 
