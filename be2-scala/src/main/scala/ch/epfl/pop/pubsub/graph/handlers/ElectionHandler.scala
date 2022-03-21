@@ -44,13 +44,13 @@ object ElectionHandler extends MessageHandler {
     Await.result(ask, duration)
   }
 
-   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = Right(
-    PipelineError(ErrorCodes.SERVER_ERROR.id, "NOT IMPLEMENTED: ElectionHandler cannot handle ResultElection messages yet", rpcMessage.id)
-  )
+   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+     
+     val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
+   }
 
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //no need to propagate the results, we only need to write the results in the db 
-    val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }
 }

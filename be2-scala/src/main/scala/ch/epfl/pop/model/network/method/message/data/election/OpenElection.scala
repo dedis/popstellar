@@ -25,3 +25,4 @@ object OpenElection extends Parsable {
            ): OpenElection = new OpenElection(lao, election, opened_at)
 
   override def buildFromJson(payload: String): OpenElection = payload.parseJson.asJsObject.convertTo[OpenElection]
+}

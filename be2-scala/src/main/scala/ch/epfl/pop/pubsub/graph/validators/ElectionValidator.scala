@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection, OpenElection}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
@@ -119,20 +119,21 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
 
-        val questionsId: List[Hash] = {
+       /* val questionsId: List[Hash] = {
           var sig = 0
           var hash = List()
           for (sig <- data.witness_signatures) {
-            hash = hash :: sig
+            hash = sig :: hash 
           }
-        }
+        }*/
 
         if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a ResultElection message on a wrong type of channel $channel"))
-        } else if (!validateWitnessSignatures(data.witness_signatures, questionsId)) {
-          Right(validationError("witness signatures are not valid for the results id"))
+          //trying to validate the signatures of the witness
+        /*} else if (!validateWitnessSignatures(data.witness_signatures, questionsId)) {
+          Right(validationError("witness signatures are not valid for the results id"))*/
         } else {
           Left(rpcMessage)
         }
