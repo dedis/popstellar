@@ -55,8 +55,7 @@
                 }
               },
               "Sequence": {
-                "type": "bytes",
-                "length": "4",
+                "type": "integer",
                 "$comment": "Set as 0xFFFFFFFF"
               }
             },
