@@ -74,16 +74,14 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       const laoId = 'Lao id: '.concat(selectedToken.laoId.valueOf());
       const rollCallId = 'Roll Call id: '.concat(selectedToken.rollCallId.valueOf());
       return (
-        <View style={styles.rowContainer}>
-          <View style={styles.homeContainer}>
-            <TextBlock size={20} text={laoId} />
-            <TextBlock size={20} text={rollCallId} />
-          </View>
+        <View style={containerStyles.centered}>
+          <TextBlock size={18} text={laoId} />
+          <TextBlock size={18} text={rollCallId} />
           <QRCode value={selectedToken.token.publicKey.valueOf()} visibility />
         </View>
       );
     }
-    return <TextBlock text="You currently possess no roll call tokens" />;
+    return <TextBlock text={STRINGS.no_tokens_in_wallet} />;
   };
 
   return (

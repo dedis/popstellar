@@ -7,9 +7,10 @@ import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
   pickerStyle: {
-    height: 40,
+    maxHeight: 40,
     width: 'fit-content',
-    fontSize: 22,
+    maxWidth: '90%',
+    fontSize: 20,
     textAlign: 'center',
     margin: 'auto',
   },
