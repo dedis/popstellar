@@ -74,9 +74,7 @@ android {
             resources.srcDirs = []
         }
     }
-    buildFeatures {
-        viewBinding true
-    }
+
 }
 
 // Jacoco configuration - This configures jacoco for each test task

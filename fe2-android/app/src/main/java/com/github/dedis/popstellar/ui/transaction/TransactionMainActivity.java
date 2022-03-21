@@ -35,7 +35,7 @@ public class TransactionMainActivity extends AppCompatActivity implements Naviga
         nav.setNavigationItemSelectedListener(this);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,drawer,toolbar,
-                "Open", "Close"
+                R.string.open, R.string.close
                 );
         drawer.addDrawerListener(toggle);
         toggle.syncState();
