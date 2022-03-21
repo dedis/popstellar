@@ -28,12 +28,6 @@ export const getCurrentLaoId = () => selectCurrentLaoId(getStore().getState());
  * @param laoId The id of the lao whose channel should be returned
  * @returns The channel related to the passed lao id or undefined it the lao id is invalid
  */
-export function getLaoChannel(laoId: string): Channel | undefined {
-  try {
-    const h = new Hash(laoId);
-    return channelFromIds(h);
-  } catch (err) {
-    console.error(`Cannot connect to LAO '${laoId}' as it is an invalid LAO ID`, err);
-  }
-  return undefined;
+export function getLaoChannel(laoId: string): Channel {
+  return channelFromIds(new Hash(laoId));
 }

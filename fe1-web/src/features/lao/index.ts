@@ -37,9 +37,7 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
 
     // if yes - then subscribe to the LAO channel and send a catchup
     const channel = functions.getLaoChannel(laoId.valueOf());
-    if (!channel) {
-      throw new Error(`Cannot find the channel corresponding to the LAO id ${laoId.valueOf()}`);
-    }
+
     await subscribeToChannel(channel);
     catchup(channel);
   });

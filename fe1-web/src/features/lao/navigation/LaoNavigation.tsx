@@ -1,7 +1,7 @@
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useStore } from 'react-redux';
 
 import { getKeyPairState } from 'core/keypair';
 import { PublicKey } from 'core/objects';
@@ -58,7 +58,9 @@ const LaoNavigation: React.FC = () => {
   const lao = useSelector(selectCurrentLao);
   const passedScreens = LaoHooks.useLaoNavigationScreens();
 
-  const publicKeyRaw = getKeyPairState(getStore().getState()).keyPair?.publicKey;
+  const store = useStore();
+
+  const publicKeyRaw = getKeyPairState(store.getState()).keyPair?.publicKey;
   const publicKey = publicKeyRaw ? new PublicKey(publicKeyRaw) : undefined;
 
   const isOrganizer = !!(lao && publicKey && publicKey.equals(lao.organizer));

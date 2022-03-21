@@ -118,7 +118,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * @param laoId The id of the lao whose channel should be returned
      * @returns The channel related to the passed lao id or undefined it the lao id is invalid
      */
-    getLaoChannel: (laoId: string) => Channel | undefined;
+    getLaoChannel: (laoId: string) => Channel;
   };
 
   /* reducers */

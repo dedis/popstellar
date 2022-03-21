@@ -20,7 +20,7 @@ export interface ConnectConfiguration {
    * @param laoId The id of the lao whose channel should be returned
    * @returns The channel related to the passed lao id or undefined it the lao id is invalid
    */
-  getLaoChannel(laoId: string): Channel | undefined;
+  getLaoChannel(laoId: string): Channel;
 
   /**
    * A hook returning the current lao id
@@ -49,7 +49,7 @@ export interface ConnectInterface extends FeatureInterface {
      * @param laoId The lao id
      * @returns The encoded data
      */
-    encodeLaoConnectionInQRCode: (server: string, laoId: string) => string;
+    encodeLaoConnectionForQRCode: (server: string, laoId: string) => string;
   };
   context: ConnectReactContext;
 }

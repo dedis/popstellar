@@ -11,7 +11,7 @@ import { LaoHooks } from '../hooks';
  * TODO: use the data receive by the organization server
  */
 const AttendeeScreen = () => {
-  const EventList = LaoHooks.useEventList();
+  const EventList = LaoHooks.useEventListComponent();
 
   return (
     <ScrollView>

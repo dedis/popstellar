@@ -88,7 +88,7 @@ export function configureFeatures() {
     /* events */
     EventList: eventsConfiguration.components.EventList,
     /* connect */
-    encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionInQRCode,
+    encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
       { id: STRINGS.navigation_tab_home, Component: homeComposition.screens.Home, order: 0 },

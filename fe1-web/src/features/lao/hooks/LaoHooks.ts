@@ -29,7 +29,7 @@ export namespace LaoHooks {
    * Gets the event list component
    * @returns The event list component
    */
-  export const useEventList = () => useLaoContext().EventList;
+  export const useEventListComponent = () => useLaoContext().EventList;
 
   /**
    * Gets the function that can encode a lao connection ready to be rendered as a QR code

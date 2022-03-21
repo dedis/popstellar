@@ -66,9 +66,6 @@ const ConnectConfirm = () => {
     }
 
     const channel = getLaoChannel(laoId);
-    if (channel === undefined) {
-      return;
-    }
 
     try {
       // add the new server address to the store

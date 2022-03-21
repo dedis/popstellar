@@ -1,14 +1,25 @@
 import { useNavigation } from '@react-navigation/core';
 import React from 'react';
-import { Button, View } from 'react-native';
+import { Button, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { CollapsibleContainer, ParagraphBlock, QRCode } from 'core/components';
+import { Spacing } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';
 import { selectCurrentLao } from '../reducer';
-import laoPropertiesStyles from '../styles/laoPropertiesStyles';
+
+const laoPropertiesStyles = StyleSheet.create({
+  default: {
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: Spacing.xs,
+    marginHorizontal: Spacing.s,
+    marginTop: Spacing.xs,
+    marginBottom: Spacing.xs,
+  },
+});
 
 const LaoProperties = () => {
   const lao = useSelector(selectCurrentLao);

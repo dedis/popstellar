@@ -24,28 +24,28 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const LaoItem = ({ LAO }: IPropTypes) => {
+const LaoItem = ({ lao }: IPropTypes) => {
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
 
   const handlePress = () => {
     navigation.navigate(STRINGS.connect_confirm_title, {
-      laoIdIn: LAO.id.valueOf(),
-      url: LAO.server_addresses[0],
+      laoIdIn: lao.id.valueOf(),
+      url: lao.server_addresses[0],
     });
   };
 
   return (
     <View style={styles.view}>
       <TouchableOpacity onPress={() => handlePress()}>
-        <Text style={styles.text}>{LAO.name}</Text>
+        <Text style={styles.text}>{lao.name}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const propTypes = {
-  LAO: PropTypes.instanceOf(Lao).isRequired,
+  lao: PropTypes.instanceOf(Lao).isRequired,
 };
 LaoItem.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

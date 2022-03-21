@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { KeyPairStore } from 'core/keypair';
 import { getNetworkManager } from 'core/network';
 import { Hash, Timestamp } from 'core/objects';
