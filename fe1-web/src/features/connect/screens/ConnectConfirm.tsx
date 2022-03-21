@@ -1,5 +1,4 @@
-import { useRoute } from '@react-navigation/core';
-import PropTypes from 'prop-types';
+import { useNavigation, useRoute } from '@react-navigation/core';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -11,7 +10,6 @@ import { NetworkConnection } from 'core/network/NetworkConnection';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import { ConnectHooks } from '../hooks';
@@ -46,9 +44,11 @@ export function connectTo(serverUrl: string): NetworkConnection | undefined {
   }
 }
 
-const ConnectConfirm = ({ navigation }: IPropTypes) => {
+const ConnectConfirm = () => {
   // FIXME: route should use proper type
+  const navigation = useNavigation<any>();
   const route = useRoute<any>();
+
   const laoIdIn = route.params?.laoIdIn || '';
   const url = route.params?.url || 'ws://localhost:9000/organizer/client';
   const [serverUrl, setServerUrl] = useState(url);
@@ -113,13 +113,5 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
     </View>
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-
-ConnectConfirm.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ConnectConfirm;

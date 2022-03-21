@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
@@ -7,7 +7,6 @@ import QrReader from 'react-qr-reader';
 import { WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
-import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
 import { ConnectHooks } from '../hooks';
@@ -16,7 +15,10 @@ import { ConnectToLao } from '../objects';
 /**
  * Starts a QR code scan
  */
-const ConnectOpenScan = ({ navigation }: IPropTypes) => {
+const ConnectOpenScan = () => {
+  // FIXME: route should use proper type
+  const navigation = useNavigation<any>();
+
   // Remove the user to go back to the ConnectEnableCamera as he has already given
   // his permission to use the camera
 
@@ -107,12 +109,5 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
     <View style={containerStyles.centeredY} />
   );
 };
-
-const propTypes = {
-  navigation: PROPS_TYPE.navigation.isRequired,
-};
-ConnectOpenScan.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default ConnectOpenScan;
