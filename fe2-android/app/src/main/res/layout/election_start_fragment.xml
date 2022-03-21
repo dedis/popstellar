@@ -57,6 +57,16 @@
         android:textStyle="bold"
         android:textSize="@dimen/size_body"
         tools:text="Scheduled start time, or start button" />
+
+      <Button
+        android:id="@+id/election_start_now"
+        android:layout_marginHorizontal="@dimen/margin_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:textSize="@dimen/size_body"
+        tools:text="Click here to start now" />
     </LinearLayout>
 
     <GridView
