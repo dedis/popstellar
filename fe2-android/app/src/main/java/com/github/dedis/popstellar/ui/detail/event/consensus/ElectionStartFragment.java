@@ -95,7 +95,7 @@ public class ElectionStartFragment extends Fragment {
     electionStart.setText(getString(R.string.election_scheduled, scheduledDate));
     electionStart.setEnabled(false);
 
-    //setupTimerUpdate(election);
+    setupTimerUpdate(election);
 
     setupButtonListeners(binding, mLaoDetailViewModel, electionId);
 
@@ -146,8 +146,7 @@ public class ElectionStartFragment extends Fragment {
     return Instant.now().getEpochSecond() >= election.getStartTimestamp();
   }
 
-  //TODO: remove the timer setup
-  /**private void setupTimerUpdate(Election election) {
+  private void setupTimerUpdate(Election election) {
     // Check every seconds until the scheduled time, then show the "election start" button
     Disposable disposable =
         Observable.interval(0, 1, TimeUnit.SECONDS)
@@ -175,7 +174,7 @@ public class ElectionStartFragment extends Fragment {
                   }
                 });
     disposables.add(disposable);
-  }**/
+  }
 
   private void setupButtonListeners(
       ElectionStartFragmentBinding binding,

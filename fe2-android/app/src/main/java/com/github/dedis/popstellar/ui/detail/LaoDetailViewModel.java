@@ -24,6 +24,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Ca
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionVote;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.message.WitnessMessageSignature;
@@ -124,6 +125,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<HomeViewModel.HomeViewAction>> mOpenAddWitness = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mEndElectionEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
+
   private final MutableLiveData<SingleEvent<Boolean>> mReceivedElectionResultsEvent =
       new MutableLiveData<>(new SingleEvent<>(false));
 
@@ -257,6 +259,44 @@ public class LaoDetailViewModel extends AndroidViewModel
   protected void onCleared() {
     super.onCleared();
     disposables.dispose();
+  }
+
+  /**
+   * Opens the election and publish
+   * @param e election to be opened
+   */
+  public void openElection(Election e){
+    Log.d(TAG, "opening election with name : " + e.getName());
+    Lao lao = getCurrentLaoValue();
+    if (lao == null) {
+      Log.d(TAG, LAO_FAILURE_MESSAGE);
+      return;
+    }
+
+    Channel channel = e.getChannel();
+    String laoId = lao.getId();
+
+    //The time will have to be modified
+    OpenElection openElection =
+        new OpenElection(e.getId(), laoId, e.getCreation());
+
+    Log.d(TAG, PUBLISH_MESSAGE);
+    Disposable disposable =
+        networkManager
+            .getMessageSender()
+            .publish(keyManager.getMainKeyPair(), channel, openElection)
+            .subscribe(
+                () -> {
+                  Log.d(TAG, "opened election successfully");
+                  //to modify
+                  openStartElection(true);
+                },
+                error ->
+                    //modify the string after
+                    ErrorUtils.logAndShow(
+                        getApplication(), TAG, error, R.string.error_end_election));
+    disposables.add(disposable);
+
   }
 
   public void endElection(Election election) {

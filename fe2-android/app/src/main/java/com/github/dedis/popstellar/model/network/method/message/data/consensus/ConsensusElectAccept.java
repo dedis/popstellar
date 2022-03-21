@@ -77,4 +77,5 @@ public final class ConsensusElectAccept extends Data {
         "ConsensusElectAccept{instance_id='%s', message_id='%s', accept=%b}",
         instanceId, messageId.getEncoded(), accept);
   }
+
 }
