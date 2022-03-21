@@ -108,7 +108,7 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
 
-    //implementation 'com.androidx.appcompat:design:1.4.1'
+    implementation "androidx.drawerlayout:drawerlayout:1.4.1"
 
     // Android others
     implementation "androidx.lifecycle:lifecycle-reactivestreams:2.4.0"

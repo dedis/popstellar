@@ -19,6 +19,7 @@
     android:theme="@style/AppTheme">
     <activity
       android:name="com.github.dedis.popstellar.ui.transaction.TransactionMainActivity"
+      android:theme="@style/AppTheme"
       android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
