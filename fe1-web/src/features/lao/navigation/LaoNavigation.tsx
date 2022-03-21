@@ -5,7 +5,6 @@ import { useSelector, useStore } from 'react-redux';
 
 import { getKeyPairState } from 'core/keypair';
 import { PublicKey } from 'core/objects';
-import { getStore } from 'core/redux';
 import STRINGS from 'resources/strings';
 
 import { LaoHooks } from '../hooks';

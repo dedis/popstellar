@@ -1,13 +1,11 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
-import { Text } from 'react-native';
 import { Provider } from 'react-redux';
 import { combineReducers, createStore } from 'redux';
 
 import MockNavigator from '__tests__/components/MockNavigator';
-import { configureTestFeatures, mockKeyPair, mockLao } from '__tests__/utils';
+import { configureTestFeatures, mockLao } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { keyPairReducer, KeyPairStore, setKeyPair } from 'core/keypair';
 import { dispatch } from 'core/redux';
 import { encodeLaoConnectionForQRCode } from 'features/connect/functions';
 import { LaoReactContext, LAO_FEATURE_IDENTIFIER } from 'features/lao/interface';

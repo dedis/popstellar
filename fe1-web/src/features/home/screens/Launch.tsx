@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/core';
-import React, { FunctionComponent, useState } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
