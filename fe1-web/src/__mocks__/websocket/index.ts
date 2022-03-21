@@ -4,7 +4,7 @@ import { ICloseEvent, IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websoc
 // the name of the mock must match exactly
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export class w3cwebsocket {
-  private url: string;
+  private readonly url: string;
 
   public readyState = 0; // alway ready. 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
 
