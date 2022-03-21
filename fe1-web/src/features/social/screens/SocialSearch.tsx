@@ -1,14 +1,14 @@
+import PropTypes from 'prop-types';
 import * as React from 'react';
 import { FlatList, ListRenderItemInfo, StyleSheet, View, ViewStyle } from 'react-native';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 
-import STRINGS from 'resources/strings';
-import { makeCurrentLao } from 'features/lao/reducer';
-import { PublicKey } from 'core/objects';
 import { TextBlock } from 'core/components';
+import { PublicKey } from 'core/objects';
 import { gray } from 'core/styles/colors';
 import { makeRollCallAttendeesList } from 'features/events/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
+import STRINGS from 'resources/strings';
 
 import { UserListItem } from '../components';
 
@@ -36,8 +36,7 @@ const styles = StyleSheet.create({
 
 const SocialSearch = (props: IPropTypes) => {
   const { currentUserPublicKey } = props;
-  const laoSelect = makeCurrentLao();
-  const currentLao = useSelector(laoSelect);
+  const currentLao = useSelector(selectCurrentLao);
 
   if (!currentLao) {
     throw new Error('Impossible to open Social media Search if you are not connected to a LAO');

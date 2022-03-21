@@ -1,7 +1,8 @@
-import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
+import { MessageDataProperties } from 'core/types';
 
 import { Question } from '../../objects';
 
@@ -27,10 +28,11 @@ export class SetupElection implements MessageData {
 
   public readonly questions: Question[];
 
-  constructor(msg: Partial<SetupElection>) {
+  constructor(msg: MessageDataProperties<SetupElection>) {
     if (!msg.id) {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
     }
+    this.id = msg.id;
 
     if (!msg.lao) {
       throw new ProtocolError("Undefined 'lao' parameter encountered during 'SetupElection'");
@@ -82,8 +84,6 @@ export class SetupElection implements MessageData {
     }
     SetupElection.validateQuestions(msg.questions, msg.id.toString());
     this.questions = msg.questions;
-
-    this.id = msg.id;
   }
 
   /**

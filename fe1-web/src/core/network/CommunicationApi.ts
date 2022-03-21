@@ -1,7 +1,7 @@
 import { Channel } from 'core/objects';
 
-import { catchup, subscribe } from './JsonRpcApi';
 import { storeMessage } from './ingestion';
+import { catchup, subscribe } from './JsonRpcApi';
 
 export async function subscribeToChannel(channel: Channel) {
   if (!channel) {

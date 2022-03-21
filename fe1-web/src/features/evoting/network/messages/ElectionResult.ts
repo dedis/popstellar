@@ -1,8 +1,7 @@
-import { ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-
-import { QuestionResult } from '../../objects';
+import { validateDataObject } from 'core/network/validation';
+import { ProtocolError } from 'core/objects';
+import { MessageDataProperties } from 'core/types';
 
 /** Data sent to ask for the result of an election */
 export class ElectionResult implements MessageData {
@@ -10,9 +9,10 @@ export class ElectionResult implements MessageData {
 
   public readonly action: ActionType = ActionType.RESULT;
 
-  public readonly questions: QuestionResult[];
+  // This is different from QuestionResult, ballot_option and not ballotOption is the key!
+  public readonly questions: { id: string; result: { ballot_option: string; count: number }[] }[];
 
-  constructor(msg: Partial<ElectionResult>) {
+  constructor(msg: MessageDataProperties<ElectionResult>) {
     if (!msg.questions) {
       throw new ProtocolError(
         "Undefined 'questions' parameter encountered during 'ElectionResult'",

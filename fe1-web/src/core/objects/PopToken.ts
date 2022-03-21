@@ -1,8 +1,8 @@
-import { KeyPair, KeyPairState } from './KeyPair';
 import { Base64UrlData } from './Base64Url';
-import { Signature } from './Signature';
-import { PublicKey } from './PublicKey';
+import { KeyPair, KeyPairState } from './KeyPair';
 import { PrivateKey } from './PrivateKey';
+import { PublicKey } from './PublicKey';
+import { Signature } from './Signature';
 
 export class PopToken extends KeyPair {
   /**

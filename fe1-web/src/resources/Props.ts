@@ -1,5 +1,5 @@
-import { shape, func, number, arrayOf, string, oneOf, object } from 'prop-types';
 import { Action } from '@react-navigation/routers/src/CommonActions';
+import { arrayOf, func, number, object, oneOf, shape, string } from 'prop-types';
 
 const PROPS_TYPE = {
   // --- LAO type ---

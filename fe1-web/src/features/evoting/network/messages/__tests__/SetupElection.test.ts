@@ -1,106 +1,74 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import {
-  mockLao,
-  mockLaoId,
-  mockLaoIdHash,
-  mockLaoName,
-  configureTestFeatures,
-} from '__tests__/utils';
 
-import { EventTags, Hash, Timestamp, ProtocolError } from 'core/objects';
+import { configureTestFeatures, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { OpenedLaoStore } from 'features/lao/store';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
+import { MessageDataProperties } from 'core/types';
+import {
+  mockBallotOptions,
+  mockElectionId,
+  mockQuestion1,
+  mockQuestionObject1,
+  mockQuestionObject2,
+  mockQuestions,
+} from 'features/evoting/__tests__/utils';
 import STRINGS from 'resources/strings';
 
 import { Question } from '../../../objects';
 import { SetupElection } from '../SetupElection';
+
+// region test data initialization
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
 const VERSION = STRINGS.election_version_identifier;
 const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
 const TIMESTAMP_BEFORE = new Timestamp(1609445600);
 
-let electionId: Hash;
-let mockQuestionObject1: Question;
-let mockQuestionObject2: Question;
-let sampleSetupElection: Partial<SetupElection>;
-
-let setupElectionJson: string;
-let mockQuestion1: string;
-let mockQuestionId1: Hash;
-let mockBallotOptions: string[];
-
-const initializeData = () => {
-  electionId = Hash.fromStringArray('Election', mockLaoId, TIMESTAMP.toString(), mockLaoName);
-  mockQuestion1 = 'Mock Question 1';
-  const mockQuestion2 = 'Mock Question 2';
-  mockQuestionId1 = Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), mockQuestion1);
-  const mockQuestionId2 = Hash.fromStringArray(
-    EventTags.QUESTION,
-    electionId.toString(),
-    mockQuestion2,
-  );
-  mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
-
-  mockQuestionObject1 = {
-    id: mockQuestionId1.toString(),
-    question: mockQuestion1,
-    voting_method: STRINGS.election_method_Plurality,
-    ballot_options: mockBallotOptions,
-    write_in: false,
-  };
-
-  mockQuestionObject2 = {
-    id: mockQuestionId2.toString(),
-    question: mockQuestion2,
-    voting_method: STRINGS.election_method_Approval,
-    ballot_options: mockBallotOptions,
-    write_in: true,
-  };
-
-  const mockQuestions = [mockQuestionObject1];
-
-  sampleSetupElection = {
-    object: ObjectType.ELECTION,
-    action: ActionType.SETUP,
-    id: electionId,
-    lao: mockLaoIdHash,
-    name: mockLaoName,
-    version: VERSION,
-    created_at: TIMESTAMP,
-    start_time: TIMESTAMP,
-    end_time: CLOSE_TIMESTAMP,
-    questions: mockQuestions,
-  };
-
-  setupElectionJson = `{
-    "object": "${ObjectType.ELECTION}",
-    "action": "${ActionType.SETUP}",
-    "id": "${electionId}",
-    "lao": "${mockLaoIdHash}",
-    "name": "${mockLaoName}",
-    "version": "${VERSION}",
-    "created_at": ${TIMESTAMP},
-    "start_time": ${TIMESTAMP},
-    "end_time": ${CLOSE_TIMESTAMP},
-    "questions": ${JSON.stringify(mockQuestions)}
-  }`;
+// In these tests, we should assume that the input to the messages is
+// just a Partial<> and not a MessageDataProperties<>
+// as this will catch more issues at runtime. (Defensive programming)
+const sampleSetupElection: Partial<SetupElection> = {
+  object: ObjectType.ELECTION,
+  action: ActionType.SETUP,
+  id: mockElectionId,
+  lao: mockLaoIdHash,
+  name: mockLaoName,
+  version: VERSION,
+  created_at: TIMESTAMP,
+  start_time: TIMESTAMP,
+  end_time: CLOSE_TIMESTAMP,
+  questions: mockQuestions,
 };
+
+const setupElectionJson: string = `{
+  "object": "${ObjectType.ELECTION}",
+  "action": "${ActionType.SETUP}",
+  "id": "${mockElectionId}",
+  "lao": "${mockLaoIdHash}",
+  "name": "${mockLaoName}",
+  "version": "${VERSION}",
+  "created_at": ${TIMESTAMP},
+  "start_time": ${TIMESTAMP},
+  "end_time": ${CLOSE_TIMESTAMP},
+  "questions": ${JSON.stringify(mockQuestions)}
+}`;
+
+// endregion
 
 beforeAll(() => {
   configureTestFeatures();
-  initializeData();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('SetupElection', () => {
   it('should be created correctly from Json', () => {
-    expect(new SetupElection(sampleSetupElection)).toBeJsonEqual(sampleSetupElection);
+    expect(
+      new SetupElection(sampleSetupElection as MessageDataProperties<SetupElection>),
+    ).toBeJsonEqual(sampleSetupElection);
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.SETUP,
-      id: electionId,
+      id: mockElectionId,
       lao: mockLaoIdHash,
       name: mockLaoName,
       version: VERSION,
@@ -120,14 +88,31 @@ describe('SetupElection', () => {
   it('fromJson should throw an error if the Json has incorrect action', () => {
     const obj = {
       object: ObjectType.ELECTION,
-      action: ActionType.SETUP,
-      id: electionId,
-      lao: mockLaoIdHash,
+      action: ActionType.NOTIFY_ADD,
+      id: mockElectionId.toString(),
+      lao: mockLaoIdHash.toString(),
       name: mockLaoName,
       version: VERSION,
-      created_at: TIMESTAMP,
-      start_time: TIMESTAMP,
-      end_time: CLOSE_TIMESTAMP,
+      created_at: TIMESTAMP.valueOf(),
+      start_time: TIMESTAMP.valueOf(),
+      end_time: CLOSE_TIMESTAMP.valueOf(),
+      questions: [mockQuestionObject1, mockQuestionObject2],
+    };
+    const createFromJson = () => SetupElection.fromJson(obj);
+    expect(createFromJson).toThrow(ProtocolError);
+  });
+
+  it('fromJson should throw an error if the Json has incorrect object', () => {
+    const obj = {
+      object: ObjectType.CHIRP,
+      action: ActionType.SETUP,
+      id: mockElectionId.toString(),
+      lao: mockLaoIdHash.toString(),
+      name: mockLaoName,
+      version: VERSION,
+      created_at: TIMESTAMP.valueOf(),
+      start_time: TIMESTAMP.valueOf(),
+      end_time: CLOSE_TIMESTAMP.valueOf(),
       questions: [mockQuestionObject1, mockQuestionObject2],
     };
     const createFromJson = () => SetupElection.fromJson(obj);
@@ -138,8 +123,7 @@ describe('SetupElection', () => {
     it('should throw an error if id is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
+          id: undefined as unknown as Hash,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -154,9 +138,8 @@ describe('SetupElection', () => {
     it('should throw an error if lao is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
+          lao: undefined as unknown as Hash,
           name: mockLaoName,
           version: VERSION,
           created_at: TIMESTAMP,
@@ -170,10 +153,9 @@ describe('SetupElection', () => {
     it('should throw an error if name is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
+          name: undefined as unknown as string,
           version: VERSION,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
@@ -186,11 +168,10 @@ describe('SetupElection', () => {
     it('should throw an error if version is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
+          version: undefined as unknown as string,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,
@@ -202,12 +183,11 @@ describe('SetupElection', () => {
     it('should throw an error if created_at is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
+          created_at: undefined as unknown as Timestamp,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,
           questions: [mockQuestionObject1, mockQuestionObject2],
@@ -218,13 +198,12 @@ describe('SetupElection', () => {
     it('should throw an error if start_time is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
           created_at: TIMESTAMP,
+          start_time: undefined as unknown as Timestamp,
           end_time: CLOSE_TIMESTAMP,
           questions: [mockQuestionObject1, mockQuestionObject2],
         });
@@ -234,14 +213,13 @@ describe('SetupElection', () => {
     it('should throw an error if end_time is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
+          end_time: undefined as unknown as Timestamp,
           questions: [mockQuestionObject1, mockQuestionObject2],
         });
       expect(createWrongObj).toThrow(ProtocolError);
@@ -250,15 +228,14 @@ describe('SetupElection', () => {
     it('should throw an error if questions is undefined', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
           created_at: TIMESTAMP,
           start_time: TIMESTAMP,
           end_time: CLOSE_TIMESTAMP,
+          questions: undefined as unknown as Question[],
         });
       expect(createWrongObj).toThrow(ProtocolError);
     });
@@ -266,9 +243,7 @@ describe('SetupElection', () => {
     it('should throw an error if start_time is before created_at', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -283,9 +258,7 @@ describe('SetupElection', () => {
     it('should throw an error if end_time is before start_time', () => {
       const createWrongObj = () =>
         new SetupElection({
-          object: ObjectType.ELECTION,
-          action: ActionType.SETUP,
-          id: electionId,
+          id: mockElectionId,
           lao: mockLaoIdHash,
           name: mockLaoName,
           version: VERSION,
@@ -298,20 +271,22 @@ describe('SetupElection', () => {
     });
   });
 
-  it('should throw an error if id is undefined', () => {
-    const createWrongObj = () =>
-      new SetupElection({
-        object: ObjectType.ELECTION,
-        action: ActionType.SETUP,
-        lao: mockLaoIdHash,
-        name: mockLaoName,
-        version: VERSION,
-        created_at: TIMESTAMP,
-        start_time: TIMESTAMP,
-        end_time: CLOSE_TIMESTAMP,
-        questions: [mockQuestionObject1, mockQuestionObject2],
-      });
-    expect(createWrongObj).toThrow(ProtocolError);
+  it('should ignore passed object and action parameters', () => {
+    const msg = new SetupElection({
+      object: ObjectType.CHIRP,
+      action: ActionType.NOTIFY_ADD,
+      id: mockElectionId,
+      lao: mockLaoIdHash,
+      name: mockLaoName,
+      version: VERSION,
+      created_at: TIMESTAMP,
+      start_time: TIMESTAMP,
+      end_time: CLOSE_TIMESTAMP,
+      questions: [mockQuestionObject1, mockQuestionObject2],
+    } as MessageDataProperties<SetupElection>);
+
+    expect(msg.object).toEqual(ObjectType.ELECTION);
+    expect(msg.action).toEqual(ActionType.SETUP);
   });
 
   describe('validateQuestions', () => {
@@ -324,7 +299,7 @@ describe('SetupElection', () => {
         write_in: false,
       };
       const wrongValidate = () => {
-        SetupElection.validateQuestions([wrongQuestion], electionId.valueOf());
+        SetupElection.validateQuestions([wrongQuestion], mockElectionId.valueOf());
       };
       expect(wrongValidate).toThrow(ProtocolError);
     });

@@ -1,15 +1,15 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { TouchableOpacity, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
+import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 import { Spacing } from 'core/styles';
 import { ConnectToLao } from 'features/connect/objects';
-import { ListCollapsibleIcon, ParagraphBlock, QRCode, TextBlock } from 'core/components';
 
-import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 import { Lao } from '../objects';
-import { makeCurrentLao } from '../reducer';
+import { selectCurrentLao } from '../reducer';
+import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 
 function renderProperties(lao: Lao, url: string) {
   const creationDateString = lao.creation.toDateString();
@@ -27,10 +27,8 @@ function renderProperties(lao: Lao, url: string) {
   );
 }
 
-const laoSelect = makeCurrentLao();
-
 const LaoProperties = ({ url }: IPropTypes) => {
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   const [toggleChildrenVisible, setToggleChildrenVisible] = useState(false);
 

@@ -1,0 +1,16 @@
+modname: popstellar
+overwrite: true
+outfile: graph.dot
+includes:
+  - popstellar/*
+excludes:
+  - popstellar/internal
+  - popstellar/crypto
+  - popstellar/db
+  - popstellar/cli
+  - popstellar/docs
+  - popstellar/message
+  - popstellar$
+interfaces:
+  - hub
+  - channel

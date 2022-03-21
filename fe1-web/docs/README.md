@@ -330,7 +330,7 @@ and look at existing components.
 The root navigation in the application is handled in `core/navigation`.
 All other navigation is setup as part of the `features`.
 
-It should be notd that as of February 2022, the navigation in the application suffers from a few bad implementation choices.
+It should be noted that as of February 2022, the navigation in the application suffers from a few bad implementation choices.
 It would warrant being significantly cleaned.
 
 For more information on managing the navigation in the user interface,

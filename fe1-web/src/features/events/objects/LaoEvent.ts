@@ -13,7 +13,7 @@ export enum LaoEventType {
 
 // Serializable LaoEvent (using primitive types)
 export interface LaoEventState {
-  readonly eventType: LaoEventType;
+  readonly eventType: string;
 
   readonly id: string;
 

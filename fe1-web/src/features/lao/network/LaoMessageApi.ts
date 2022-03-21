@@ -1,10 +1,10 @@
-import { Channel, channelFromIds, Hash, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 import { KeyPairStore } from 'core/keypair';
 import { publish } from 'core/network';
+import { Channel, channelFromIds, Hash, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 
-import { CreateLao, StateLao, UpdateLao } from './messages';
 import { Lao } from '../objects';
 import { OpenedLaoStore } from '../store';
+import { CreateLao, StateLao, UpdateLao } from './messages';
 
 /**
  * Contains all functions to send lao related messages.

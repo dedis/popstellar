@@ -1,7 +1,8 @@
 import { KeyPairRegistry } from 'core/keypair';
+
+import { configureIngestion } from './ingestion';
 import { MessageRegistry } from './jsonrpc/messages';
 import { configureJsonRpcApi } from './JsonRpcApi';
-import { configureIngestion } from './ingestion';
 import { getNetworkManager } from './NetworkManager';
 /**
  * Configures the network with a MessageRegistry and a KeyPairRegistry.

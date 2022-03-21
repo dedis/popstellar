@@ -1,16 +1,14 @@
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { ScrollView } from 'react-native';
 import { useRoute } from '@react-navigation/core';
+import React, { useState } from 'react';
+import { ScrollView } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import { Timestamp } from 'core/objects';
 import EventListCollapsible from 'features/events/components/EventListCollapsible';
 import { LaoEvent } from 'features/events/objects';
-import { makeEventsList } from 'features/events/reducer';
+import { selectEventsList } from 'features/events/reducer';
 
 import { LaoProperties } from '../components';
-
-const eventList = makeEventsList();
 
 /**
  * AttendeeScreen: lists LAO properties and past/ongoing/future events.
@@ -19,7 +17,7 @@ const eventList = makeEventsList();
  * TODO: use the data receive by the organization server
  */
 const AttendeeScreen = () => {
-  const events = useSelector(eventList);
+  const events = useSelector(selectEventsList);
   const now = Timestamp.EpochNow();
   const pastEvents: LaoEvent[] = [];
   const currentEvents: LaoEvent[] = [];

@@ -1,16 +1,15 @@
-import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useEffect, useMemo, useState } from 'react';
 
-import STRINGS from 'resources/strings';
-import { gray, popBlue } from 'core/styles/colors';
 import { PublicKey } from 'core/objects';
-import { generateToken } from 'features/wallet/objects';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { gray, popBlue } from 'core/styles/colors';
 import { makeEventGetter } from 'features/events/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
+import { generateToken } from 'features/wallet/objects';
+import STRINGS from 'resources/strings';
 
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
@@ -50,8 +49,7 @@ const iconSelector =
 const SocialMediaNavigation = () => {
   const [currentUserPublicKey, setCurrentUserPublicKey] = useState(new PublicKey(''));
 
-  const laoSelect = useMemo(makeCurrentLao, []);
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   if (lao === undefined) {
     throw new Error('LAO is currently undefined, impossible to access to Social Media');
