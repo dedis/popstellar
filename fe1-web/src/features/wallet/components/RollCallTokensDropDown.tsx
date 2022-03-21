@@ -1,8 +1,8 @@
+import { Picker } from '@react-native-picker/picker';
+import PropTypes from 'prop-types';
 import React, { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 
-import PropTypes from 'prop-types';
-import { Picker } from '@react-native-picker/picker';
 import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({

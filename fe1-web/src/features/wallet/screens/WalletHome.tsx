@@ -1,24 +1,24 @@
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
 import { QRCode, TextBlock, WideButtonView } from 'core/components';
-import PROPS_TYPE from 'resources/Props';
-import { makeEventByTypeSelector } from 'features/events/reducer';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { LaoEventType } from 'features/events/objects';
+import { makeEventByTypeSelector } from 'features/events/reducer';
 import { RollCall } from 'features/rollCall/objects';
+import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
-import { useMockWalletState } from '../objects/__mocks__/mockWallet';
-import * as Wallet from '../objects';
-import { RollCallToken } from '../objects/RollCallToken';
 import RollCallTokensDropDown from '../components/RollCallTokensDropDown';
+import * as Wallet from '../objects';
+import { useMockWalletState } from '../objects/__mocks__/mockWallet';
+import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
   homeContainer: {
-    ...containerStyles.centered,
+    ...containerStyles.centeredXY,
     padding: '30px',
   } as ViewStyle,
   smallPadding: {
@@ -68,7 +68,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       const laoId = 'Lao id: '.concat(selectedToken.laoId.valueOf());
       const rollCallId = 'Roll Call id: '.concat(selectedToken.rollCallId.valueOf());
       return (
-        <View style={containerStyles.centered}>
+        <View style={containerStyles.centeredXY}>
           <TextBlock size={18} text={laoId} />
           <TextBlock size={18} text={rollCallId} />
           <QRCode value={selectedToken.token.publicKey.valueOf()} visibility />
