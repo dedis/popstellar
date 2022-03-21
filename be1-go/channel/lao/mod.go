@@ -248,7 +248,7 @@ func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, 
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
 
-	return generalChirpingChannel //.(*generalChirping.Channel)
+	return generalChirpingChannel
 }
 
 // rollCallState denotes the state of the roll call.

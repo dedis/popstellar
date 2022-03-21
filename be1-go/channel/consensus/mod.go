@@ -438,7 +438,6 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 }
 
 // processConsensusElect processes an elect action.
-
 func (c *Channel) processConsensusElect(message message.Message, msgData interface{}, _ socket.Socket) error {
 	data, ok := msgData.(*messagedata.ConsensusElect)
 	if !ok {
