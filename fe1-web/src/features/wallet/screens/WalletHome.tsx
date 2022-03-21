@@ -24,12 +24,6 @@ const styles = StyleSheet.create({
   smallPadding: {
     padding: '1rem',
   } as ViewStyle,
-  largePadding: {
-    padding: '2rem',
-  } as ViewStyle,
-  rowContainer: {
-    flexDirection: 'row',
-  } as ViewStyle,
   tokenSelectContainer: {
     flexDirection: 'row',
     marginTop: 30,
