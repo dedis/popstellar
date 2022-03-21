@@ -20,7 +20,7 @@ import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.event.Event;
 import com.github.dedis.popstellar.model.objects.event.EventType;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
-import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.ui.detail.event.EventExpandableListViewAdapter;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessListViewAdapter;
 import com.github.dedis.popstellar.ui.qrcode.ScanningAction;
@@ -35,13 +35,13 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the LAO Detail UI */
-@AndroidEntryPoint(Fragment.class)
-public class LaoDetailFragment extends Hilt_LaoDetailFragment {
+@AndroidEntryPoint
+public class LaoDetailFragment extends Fragment {
 
   public static final String TAG = LaoDetailFragment.class.getSimpleName();
 
   @Inject Gson gson;
-  @Inject LAORequestFactory requestFactory;
+  @Inject GlobalNetworkManager networkManager;
 
   private LaoDetailFragmentBinding mLaoDetailFragBinding;
   private LaoDetailViewModel mLaoDetailViewModel;
@@ -123,7 +123,7 @@ public class LaoDetailFragment extends Hilt_LaoDetailFragment {
         .observe(
             requireActivity(),
             lao -> {
-              ConnectToLao data = new ConnectToLao(requestFactory.getUrl(), lao.getId());
+              ConnectToLao data = new ConnectToLao(networkManager.getCurrentUrl(), lao.getId());
               Bitmap myBitmap = QRCode.from(gson.toJson(data)).bitmap();
               mLaoDetailFragBinding.channelQrCode.setImageBitmap(myBitmap);
             });

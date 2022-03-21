@@ -4,12 +4,14 @@ import android.util.Log;
 
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
+import com.github.dedis.popstellar.utility.error.InvalidMessageIdException;
 
 import java.util.Optional;
 
@@ -30,7 +32,7 @@ public final class ChirpHandler {
    */
   public static void handleChirpAdd(HandlerContext context, AddChirp addChirp) {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
     MessageID messageId = context.getMessageId();
     PublicKey senderPk = context.getSenderPk();
 
@@ -56,7 +58,7 @@ public final class ChirpHandler {
   public static void handleDeleteChirp(HandlerContext context, DeleteChirp deleteChirp)
       throws DataHandlingException {
     LAORepository laoRepository = context.getLaoRepository();
-    String channel = context.getChannel();
+    Channel channel = context.getChannel();
 
     Lao lao = laoRepository.getLaoByChannel(channel);
 
@@ -64,7 +66,7 @@ public final class ChirpHandler {
     Chirp chirp;
 
     if (!chirpOptional.isPresent()) {
-      throw new DataHandlingException(deleteChirp);
+      throw new InvalidMessageIdException(deleteChirp, deleteChirp.getChirpId());
     }
     chirp = chirpOptional.get();
 

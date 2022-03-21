@@ -1,7 +1,7 @@
 import { ProcessableMessage, ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'core/redux';
-import { makeCurrentLao } from 'features/lao/reducer';
 
+import { selectCurrentLao } from 'features/lao/reducer';
 import { Chirp } from '../objects';
 import { AddChirp, DeleteChirp } from './messages/chirp';
 import { addChirp, deleteChirp } from '../reducer';
@@ -9,7 +9,6 @@ import { addChirp, deleteChirp } from '../reducer';
 /**
  * Handler for social media chirp
  */
-const getCurrentLao = makeCurrentLao();
 
 /**
  * Handles an addChirp message by storing the chirp sent.
@@ -25,7 +24,7 @@ export function handleAddChirpMessage(msg: ProcessableMessage): boolean {
   const makeErr = (err: string) => `chirp/add was not processed: ${err}`;
 
   const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+  const lao = selectCurrentLao(storeState);
   if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
     return false;
@@ -61,7 +60,7 @@ export function handleDeleteChirpMessage(msg: ProcessableMessage): boolean {
   const makeErr = (err: string) => `chirp/delete was not processed: ${err}`;
 
   const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+  const lao = selectCurrentLao(storeState);
   if (!lao) {
     console.warn(makeErr('no LAO is currently active'));
     return false;

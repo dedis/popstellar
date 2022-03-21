@@ -3,6 +3,7 @@ import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
+import { MessageDataProperties } from 'core/types';
 import { Question } from '../../objects';
 
 /** Data sent to setup an Election event */
@@ -27,10 +28,11 @@ export class SetupElection implements MessageData {
 
   public readonly questions: Question[];
 
-  constructor(msg: Partial<SetupElection>) {
+  constructor(msg: MessageDataProperties<SetupElection>) {
     if (!msg.id) {
       throw new ProtocolError("Undefined 'id' parameter encountered during 'SetupElection'");
     }
+    this.id = msg.id;
 
     if (!msg.lao) {
       throw new ProtocolError("Undefined 'lao' parameter encountered during 'SetupElection'");
@@ -82,8 +84,6 @@ export class SetupElection implements MessageData {
     }
     SetupElection.validateQuestions(msg.questions, msg.id.toString());
     this.questions = msg.questions;
-
-    this.id = msg.id;
   }
 
   /**

@@ -2,69 +2,29 @@ package com.github.dedis.popstellar.repository;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Answer;
-import com.github.dedis.popstellar.model.network.answer.Error;
-import com.github.dedis.popstellar.model.network.answer.Result;
-import com.github.dedis.popstellar.model.network.method.Catchup;
-import com.github.dedis.popstellar.model.network.method.Publish;
-import com.github.dedis.popstellar.model.network.method.Subscribe;
-import com.github.dedis.popstellar.model.network.method.Unsubscribe;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
-import com.github.dedis.popstellar.model.network.method.message.data.Data;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
-import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.ConsensusNode;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
-import com.github.dedis.popstellar.model.objects.security.PublicKey;
-import com.github.dedis.popstellar.utility.handler.MessageHandler;
-import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
-import com.github.dedis.popstellar.utility.security.KeyManager;
-import com.google.gson.Gson;
-import com.tinder.scarlet.WebSocket;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
-import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.subjects.BehaviorSubject;
-import io.reactivex.subjects.PublishSubject;
-import io.reactivex.subjects.Subject;
 
 @Singleton
 public class LAORepository {
 
   private static final String TAG = LAORepository.class.getSimpleName();
-  private static final String ROOT = "/root/";
-
-  @SuppressWarnings({"Implementation of LAOLocalDataSource is not complete.", "FieldCanBeLocal"})
-  private final LAODataSource.Local mLocalDataSource;
-
-  private final LAODataSource.Remote mRemoteDataSource;
-  private final KeyManager mKeyManager;
-  private final MessageHandler mMessageHandler;
-  private final SchedulerProvider schedulerProvider;
-  private final Gson mGson;
-
-  // A subject that represents unprocessed messages
-  private final Subject<GenericMessage> unprocessed;
 
   // State for LAO
   private final Map<String, LAOState> laoById;
@@ -72,252 +32,18 @@ public class LAORepository {
   // State for Messages
   private final Map<MessageID, MessageGeneral> messageById;
 
-  // Outstanding subscribes
-  private final Map<Integer, String> subscribeRequests;
-
-  // set of subscribed channels
-  private final Set<String> subscribedChannels;
-
-  // Outstanding catchups
-  private final Map<Integer, String> catchupRequests;
-
-  // Outstanding create laos
-  private final Map<Integer, String> createLaoRequests;
-
   // Observable for view models that need access to all LAO Names
   private final BehaviorSubject<List<Lao>> allLaoSubject;
 
   // Observable for view models that need access to all Nodes
-  private Map<String, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject;
-
-  // Observable to subscribe to LAOs on reconnection
-  private final Observable<WebSocket.Event> websocketEvents;
-
-  // Observable to subscribe to the incoming messages
-  private final Observable<GenericMessage> upstream;
-
-  // Disposable of with the lifetime of an LAORepository instance
-  private final Disposable disposables;
+  private final Map<Channel, BehaviorSubject<List<ConsensusNode>>> channelToNodesSubject;
 
   @Inject
-  public LAORepository(
-      @NonNull LAODataSource.Remote remoteDataSource,
-      @NonNull LAODataSource.Local localDataSource,
-      @NonNull KeyManager keyManager,
-      @NonNull MessageHandler messageHandler,
-      @NonNull Gson gson,
-      @NonNull SchedulerProvider schedulerProvider) {
-    mRemoteDataSource = remoteDataSource;
-    mLocalDataSource = localDataSource;
-    mKeyManager = keyManager;
-    mMessageHandler = messageHandler;
-    mGson = gson;
-
+  public LAORepository() {
     laoById = new HashMap<>();
     messageById = new HashMap<>();
-    subscribeRequests = new HashMap<>();
-    catchupRequests = new HashMap<>();
-    createLaoRequests = new HashMap<>();
-
-    unprocessed = PublishSubject.create();
-
     allLaoSubject = BehaviorSubject.create();
-
     channelToNodesSubject = new HashMap<>();
-
-    upstream = mRemoteDataSource.observeMessage().share();
-
-    subscribedChannels = new HashSet<>();
-    websocketEvents = mRemoteDataSource.observeWebsocket();
-
-    this.schedulerProvider = schedulerProvider;
-
-    // subscribe to incoming messages and the unprocessed message queue
-    disposables = new CompositeDisposable(subscribeToUpstream(), subscribeToWebsocketEvents());
-  }
-
-  private Disposable subscribeToWebsocketEvents() {
-    return websocketEvents
-        .subscribeOn(schedulerProvider.io())
-        .filter(event -> event.getClass().equals(WebSocket.Event.OnConnectionOpened.class))
-        .subscribe(event -> subscribedChannels.forEach(this::sendSubscribe));
-  }
-
-  private Disposable subscribeToUpstream() {
-    // We add a delay of 5 seconds to unprocessed messages to allow incoming messages to have a
-    // higher priority
-    return Observable.merge(
-            upstream, unprocessed.delay(5, TimeUnit.SECONDS, schedulerProvider.computation()))
-        .subscribeOn(schedulerProvider.newThread())
-        .subscribe(this::handleGenericMessage);
-  }
-
-  private void handleGenericMessage(GenericMessage genericMessage) {
-    Log.d(TAG, "handling generic msg");
-    if (genericMessage instanceof Error) {
-      mMessageHandler.handleError(
-          genericMessage, subscribeRequests, catchupRequests, createLaoRequests);
-      return;
-    }
-
-    if (genericMessage instanceof Result) {
-      Result result = (Result) genericMessage;
-      int id = result.getId();
-      Log.d(TAG, "request id " + id);
-      if (subscribeRequests.containsKey(id)) {
-        mMessageHandler.handleSubscribe(this, id, subscribeRequests);
-      } else if (catchupRequests.containsKey(id)) {
-        mMessageHandler.handleCatchup(this, id, result, catchupRequests, unprocessed);
-      } else if (createLaoRequests.containsKey(id)) {
-        mMessageHandler.handleCreateLao(this, id, createLaoRequests);
-      }
-      return;
-    }
-
-    Log.d(TAG, "handleGenericMessage: got a broadcast");
-
-    // We've a Broadcast
-    mMessageHandler.handleBroadcast(this, genericMessage, unprocessed);
-  }
-
-  /**
-   * Helper method that sends a StateLao message if we are the organizer
-   *
-   * @param lao Lao of the message being signed
-   * @param msg Object of type MessageGeneral representing the current message being signed
-   * @param messageId Base 64 URL encoded Id of the message to sign
-   * @param channel Represents the channel on which to send the stateLao message
-   */
-  public void sendStateLao(Lao lao, MessageGeneral msg, MessageID messageId, String channel) {
-    if (mKeyManager.getMainPublicKey().equals(lao.getOrganizer())) {
-      UpdateLao updateLao = (UpdateLao) msg.getData();
-      StateLao stateLao =
-          new StateLao(
-              lao.getId(),
-              updateLao.getName(),
-              lao.getCreation(),
-              updateLao.getLastModified(),
-              lao.getOrganizer(),
-              messageId,
-              updateLao.getWitnesses(),
-              msg.getWitnessSignatures());
-
-      MessageGeneral stateLaoMsg =
-          new MessageGeneral(mKeyManager.getMainKeyPair(), stateLao, mGson);
-
-      sendPublish(channel, stateLaoMsg);
-    }
-  }
-
-  public Single<Answer> sendCatchup(String channel) {
-    Log.d(TAG, "sending a catchup to the channel " + channel);
-    int id = mRemoteDataSource.incrementAndGetRequestId();
-    Catchup catchup = new Catchup(channel, id);
-
-    catchupRequests.put(id, channel);
-    Single<Answer> answer = createSingle(id);
-    mRemoteDataSource.sendMessage(catchup);
-    return answer;
-  }
-
-  public Single<Answer> sendPublish(String channel, MessageGeneral message) {
-    Log.d(TAG, "sending a publish " + message.getData().getClass() + " to the channel " + channel);
-    int id = mRemoteDataSource.incrementAndGetRequestId();
-    Single<Answer> answer = createSingle(id);
-
-    Publish publish = new Publish(channel, id, message);
-    if (message.getData() instanceof CreateLao) {
-      CreateLao data = (CreateLao) message.getData();
-      createLaoRequests.put(id, ROOT + data.getId());
-    }
-
-    mRemoteDataSource.sendMessage(publish);
-    return answer;
-  }
-
-  public Single<Answer> sendSubscribe(String channel) {
-    Log.d(TAG, "sending a subscribe to the channel " + channel);
-    int id = mRemoteDataSource.incrementAndGetRequestId();
-    Subscribe subscribe = new Subscribe(channel, id);
-
-    subscribeRequests.put(id, channel);
-
-    Single<Answer> answer = createSingle(id);
-    mRemoteDataSource.sendMessage(subscribe);
-
-    subscribedChannels.add(channel);
-
-    return answer;
-  }
-
-  public Single<Answer> sendUnsubscribe(String channel) {
-    Log.d(TAG, "sending an unsubscribe to the channel " + channel);
-    int id = mRemoteDataSource.incrementAndGetRequestId();
-
-    Unsubscribe unsubscribe = new Unsubscribe(channel, id);
-
-    Single<Answer> answer = createSingle(id);
-    mRemoteDataSource.sendMessage(unsubscribe);
-
-    subscribedChannels.remove(channel);
-
-    return answer;
-  }
-
-  /**
-   * Helper method that looks for the Answer of the given id and creates a Single
-   *
-   * @param id of the answer
-   * @return a single answer
-   */
-  private Single<Answer> createSingle(int id) {
-    return upstream
-        .filter(
-            genericMessage -> {
-              if (genericMessage instanceof Answer) {
-                Log.d(TAG, "request id: " + ((Answer) genericMessage).getId());
-              }
-              return genericMessage instanceof Answer && ((Answer) genericMessage).getId() == id;
-            })
-        .map(Answer.class::cast)
-        .firstOrError()
-        .subscribeOn(schedulerProvider.io())
-        .cache();
-  }
-
-  /**
-   * Publish a MessageGeneral containing the given data.
-   *
-   * @param channel the channel on which the message will be send
-   * @param data the data to encapsulate in the message
-   */
-  public Single<Answer> sendMessageGeneral(String channel, Data data) {
-    MessageGeneral msg = new MessageGeneral(mKeyManager.getMainKeyPair(), data, mGson);
-    return sendPublish(channel, msg);
-  }
-
-  /**
-   * Returns the public key or null if an error occurred.
-   *
-   * @return the public key
-   */
-  public PublicKey getPublicKey() {
-    return mKeyManager.getMainPublicKey();
-  }
-
-  /** @return the KeyManager of the repository */
-  public KeyManager getKeyManager() {
-    return mKeyManager;
-  }
-
-  /**
-   * Checks that a given channel corresponds to a LAO channel, i.e /root/laoId
-   *
-   * @param channel the channel we want to check
-   * @return true if the channel is a lao channel, false otherwise
-   */
-  public boolean isLaoChannel(String channel) {
-    return channel.split("/").length == 3;
   }
 
   /** Set allLaoSubject to contain all LAOs */
@@ -333,14 +59,14 @@ public class LAORepository {
    * @param channel the channel on which the election was created
    * @return the election corresponding to this channel
    */
-  public Election getElectionByChannel(String channel) {
+  public Election getElectionByChannel(Channel channel) {
     Log.d(TAG, "querying election for channel " + channel);
 
-    if (channel.split("/").length < 4)
+    if (!channel.isElectionChannel())
       throw new IllegalArgumentException("invalid channel for an election : " + channel);
 
     Lao lao = getLaoByChannel(channel);
-    Optional<Election> electionOption = lao.getElection(channel.split("/")[3]);
+    Optional<Election> electionOption = lao.getElection(channel.extractElectionId());
     if (!electionOption.isPresent()) {
       throw new IllegalArgumentException("the election should be present when receiving a result");
     }
@@ -353,20 +79,18 @@ public class LAORepository {
    * @param channel the channel on which the Lao was created
    * @return the Lao corresponding to this channel
    */
-  public Lao getLaoByChannel(String channel) {
+  public Lao getLaoByChannel(Channel channel) {
     Log.d(TAG, "querying lao for channel " + channel);
-
-    String[] split = channel.split("/");
-    return laoById.get(ROOT + split[2]).getLao();
+    return laoById.get(channel.extractLaoId()).getLao();
   }
 
   public Observable<List<Lao>> getAllLaos() {
     return allLaoSubject;
   }
 
-  public Observable<Lao> getLaoObservable(String channel) {
+  public Observable<Lao> getLaoObservable(String laoId) {
     Log.d(TAG, "LaoIds we have are: " + laoById.keySet());
-    return laoById.get(channel).getObservable();
+    return laoById.get(laoId).getObservable();
   }
 
   public Map<String, LAOState> getLaoById() {
@@ -379,7 +103,7 @@ public class LAORepository {
    * @param channel the lao channel.
    * @return an Observable to the list of nodes
    */
-  public Observable<List<ConsensusNode>> getNodesByChannel(String channel) {
+  public Observable<List<ConsensusNode>> getNodesByChannel(Channel channel) {
     return channelToNodesSubject.get(channel);
   }
 
@@ -389,7 +113,7 @@ public class LAORepository {
    *
    * @param channel the lao channel
    */
-  public void updateNodes(String channel) {
+  public void updateNodes(Channel channel) {
     List<ConsensusNode> nodes = getLaoByChannel(channel).getNodes();
     channelToNodesSubject.putIfAbsent(channel, BehaviorSubject.create());
     channelToNodesSubject.get(channel).onNext(nodes);
@@ -397,9 +121,5 @@ public class LAORepository {
 
   public Map<MessageID, MessageGeneral> getMessageById() {
     return messageById;
-  }
-
-  public void dispose() {
-    disposables.dispose();
   }
 }

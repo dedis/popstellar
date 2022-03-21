@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.network.method;
 
+import com.github.dedis.popstellar.model.objects.Channel;
+
 import java.util.Objects;
 
 /**
@@ -16,7 +18,7 @@ public abstract class Query extends Message {
    * @param channel name of the channel
    * @param id request ID of the query
    */
-  protected Query(String channel, int id) {
+  protected Query(Channel channel, int id) {
     super(channel);
     this.id = id;
   }

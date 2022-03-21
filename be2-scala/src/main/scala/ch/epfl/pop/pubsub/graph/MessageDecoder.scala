@@ -53,9 +53,9 @@ object MessageDecoder {
       val _object: ObjectType = objectString.convertTo[ObjectType]
       val action: ActionType = actionString.convertTo[ActionType]
 
-      val validated: Try[Unit] = registry.getSchemaValidator(_object, action) match {
+      val validated: Try[Unit] = registry.getSchemaVerifier(_object, action) match {
         // validate the data schema if the registry found a mapping
-        case Some(schemaValidator) => schemaValidator(dataJsonString)
+        case Some(schemaVerifier) => schemaVerifier(dataJsonString)
         case _ => throw new ProtocolException(s"MessageRegistry could not find any schema validator for JsonRpcRequest : $rpcRequest'")
       }
 
@@ -92,12 +92,12 @@ object MessageDecoder {
   def parseData(graphMessage: GraphMessage, registry: MessageRegistry): GraphMessage = graphMessage match {
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getDecodedData match {
       case Some(_) =>
-        println(f"Message was already decoded and of type $graphMessage")
+        println(s"Message was already decoded and of type $graphMessage")
         graphMessage // do nothing if 'data' already decoded
       case _ if !rpcRequest.hasParamsMessage => graphMessage // do nothing if rpc-message doesn't contain any message
       case _ =>
         // json string representation of the 'data' field
-        val jsonString: String = rpcRequest.getEncodedData.get.decodeToString()
+        val jsonString: JsonString = rpcRequest.getEncodedData.fold("")(_.decodeToString())
 
         // Try to extract data header from the json string
         Try(jsonString.parseJson.asJsObject.getFields("object", "action")) match {
@@ -117,6 +117,6 @@ object MessageDecoder {
           ))
         }
     }
-    case graphMessage@_ => graphMessage
+    case _ => graphMessage
   }
 }

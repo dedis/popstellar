@@ -1,13 +1,15 @@
 package ch.epfl.pop.pubsub.graph
 
-import akka.actor.{Actor, ActorSystem, Props}
+import akka.actor.{Actor, ActorSystem, Props, Status}
 import akka.pattern.AskableActorRef
 import akka.testkit.{ImplicitSender, TestKit}
 import akka.util.Timeout
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.{JsonRpcRequest, JsonRpcResponse, ResultObject}
+import ch.epfl.pop.model.objects.DbActorNAckException
 import ch.epfl.pop.pubsub.graph.validators.RpcValidator
-import ch.epfl.pop.pubsub.graph.validators.SchemaValidatorSuite._
+import ch.epfl.pop.pubsub.graph.validators.SchemaVerifierSuite._
+import ch.epfl.pop.storage.DbActor
 import org.scalatest.{BeforeAndAfterAll, FunSuiteLike, Matchers}
 import util.examples.MessageExample
 
@@ -19,7 +21,7 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
   final val pathPublishJson = "../protocol/examples/query/publish/publish.json"
   final val pathBroadcastJson = "../protocol/examples/query/broadcast/broadcast.json"
 
-  // Implicites for system actors
+  // Implicits for system actors
   implicit val duration: FiniteDuration = FiniteDuration(5, "seconds")
   implicit val timeout: Timeout = Timeout(duration)
 
@@ -30,39 +32,36 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
 
   /**
    * Creates and spawns a mocked version of
-   * DBactor with special behavior when receiving Catchup
+   * DbActor with special behavior when receiving Catchup
    *
-   * @param msgs messages to send back as result
-   * @return: Askable mocked Dbactor
+   * @param messages messages to send back as result
+   * @return Askable mocked DbActor
    */
-  def mockDbWithMessages(msgs: List[Message]): AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+  def mockDbWithMessages(messages: List[Message]): AskableActorRef = {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
-        case DbActor.Catchup(channel) =>
-          sender() ! DbActor.DbActorCatchupAck(msgs)
+        case DbActor.Catchup(_) =>
+          sender() ! DbActor.DbActorCatchupAck(messages)
       }
-    }
-    )
-    system.actorOf(mockedDB)
+    })
+    system.actorOf(dbActorMock)
   }
 
   /**
-   * Creates and spawns with NAck response for a
-   * catchup
+   * Creates and spawns with NAck response for a catchup
    *
-   * @param code        : Error code
-   * @param description : a brief desciption of the error
-   * @return Askable mocked Dbactor
+   * @param code error code
+   * @param description a brief description of the error
+   * @return Askable mocked DbActor
    */
   def mockDbWithNack(code: Int, description: String): AskableActorRef = {
-    val mockedDB = Props(new Actor() {
+    val dbActorMock = Props(new Actor() {
       override def receive: Receive = {
         case DbActor.Catchup(_) =>
-          sender() ! DbActor.DbActorNAck(code, description)
+          sender() ! Status.Failure(DbActorNAckException(code, description))
       }
-    }
-    )
-    system.actorOf(mockedDB)
+    })
+    system.actorOf(dbActorMock)
   }
 
   def getJsonRPC(path: String): JsonRpcRequest = {
@@ -115,16 +114,16 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
 
     lazy val dbActorRef =
       mockDbWithNack(ErrorCodes.INVALID_RESOURCE.id,
-        "Database cannot catchup from a channel that does not exist in db")
+        "error (mock)")
 
     val gmsg: GraphMessage = new AnswerGenerator(dbActorRef).generateAnswer(Left(rpcCatchupReq))
-    val expected = Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "Database cannot catchup from a channel that does not exist in db", rpcCatchupReq.id))
+    val expected = Right(PipelineError(ErrorCodes.INVALID_RESOURCE.id, "AnswerGenerator failed : error (mock)", rpcCatchupReq.id))
 
     gmsg should be(expected)
     system.stop(dbActorRef.actorRef)
   }
 
-  test("Broadcast: answer error on brodcast") {
+  test("Broadcast: answer error on broadcast") {
 
     val rpcBroadcastReq = getJsonRPC(pathBroadcastJson)
     val message: GraphMessage = AnswerGenerator.generateAnswer(Left(rpcBroadcastReq))
@@ -136,17 +135,17 @@ class AnswerGeneratorSuite extends TestKit(ActorSystem("Test")) with FunSuiteLik
 
   test("Convert Right Pipeline messages into Error Messages test") {
 
-    val optid = Option(1)
-    val perror = PipelineError(
+    val optId = Option(1)
+    val error = PipelineError(
       ErrorCodes.SERVER_ERROR.id,
       "Server received a Broadcast message which should never happen (broadcast messages are only emitted by server)",
-      optid
+      optId
     )
-    val gmsg = AnswerGenerator.generateAnswer(Right(perror))
-    gmsg shouldBe a[Left[JsonRpcResponse, _]]
-    val msg = gmsg.swap.toOption
+    val gm = AnswerGenerator.generateAnswer(Right(error))
+    gm shouldBe a[Left[JsonRpcResponse, _]]
+    val msg = gm.swap.toOption
     msg.isDefined should be(true)
     msg.get.asInstanceOf[JsonRpcResponse].jsonrpc should be(RpcValidator.JSON_RPC_VERSION)
-    msg.get.asInstanceOf[JsonRpcResponse].id should be(optid)
+    msg.get.asInstanceOf[JsonRpcResponse].id should be(optId)
   }
 }

@@ -44,8 +44,8 @@ import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint(AppCompatActivity.class)
-public class LaoDetailActivity extends Hilt_LaoDetailActivity {
+@AndroidEntryPoint
+public class LaoDetailActivity extends AppCompatActivity {
 
   private static final String TAG = LaoDetailActivity.class.getSimpleName();
   private LaoDetailViewModel mViewModel;
@@ -99,7 +99,7 @@ public class LaoDetailActivity extends Hilt_LaoDetailActivity {
         .observe(
             this,
             stringEvent -> {
-              String action = stringEvent.getContentIfNotHandled();
+              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 openScanning(action);
               }
@@ -304,7 +304,7 @@ public class LaoDetailActivity extends Hilt_LaoDetailActivity {
         .observe(
             this,
             stringEvent -> {
-              String action = stringEvent.getContentIfNotHandled();
+              HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 openScanning(action);
               }
@@ -330,8 +330,8 @@ public class LaoDetailActivity extends Hilt_LaoDetailActivity {
         () -> CameraPermissionFragment.newInstance(getActivityResultRegistry()));
   }
 
-  private void openScanning(String action) {
-    if (action.equals(HomeViewModel.SCAN)) {
+  private void openScanning(HomeViewModel.HomeViewAction action) {
+    if (action.equals(HomeViewModel.HomeViewAction.SCAN)) {
       if (mViewModel.getScanningAction() == ScanningAction.ADD_ROLL_CALL_ATTENDEE) {
         setupScanFragmentRollCall();
       } else {

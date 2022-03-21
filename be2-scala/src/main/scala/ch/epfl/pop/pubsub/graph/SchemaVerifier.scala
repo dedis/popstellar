@@ -12,16 +12,16 @@ import spray.json._
 import scala.jdk.CollectionConverters._
 import scala.util.{Failure, Success, Try}
 
-object SchemaValidator {
+object SchemaVerifier {
   private final val objectMapper: ObjectMapper = new ObjectMapper()
 
   private final val querySchemaPath = "protocol/query/query.json"           // with respect to resources folder
   private final val dataSchemasPath = "protocol/query/method/message/data"  // with respect to resources folder
 
-  private final val querySchema: JsonSchema = setupSchemaValidation(querySchemaPath, objectMapper)
+  private final val querySchema: JsonSchema = setupSchemaVerification(querySchemaPath)
 
 
-  def setupSchemaValidation(jsonPath: String, objectMapper: ObjectMapper): JsonSchema = {
+  def setupSchemaVerification(jsonPath: String): JsonSchema = {
     // get input stream of protocol's query.json file from resources folder
     def queryFile: InputStream = this.getClass.getClassLoader.getResourceAsStream(jsonPath)
 
@@ -37,7 +37,7 @@ object SchemaValidator {
     factory.getSchema(jsonNode)
   }
 
-  private def validateSchema(schema: JsonSchema, jsonString: JsonString): Try[Unit] = {
+  private def verifySchema(schema: JsonSchema, jsonString: JsonString): Try[Unit] = {
     // creation of a JsonNode containing the information from the input JSON string
     val jsonNode: JsonNode = objectMapper.readTree(jsonString)
 
@@ -56,8 +56,8 @@ object SchemaValidator {
    * @param jsonString JSON string representation of the message
    * @return a [[GraphMessage]] containing the input if successful, or a [[PipelineError]] otherwise
    */
-  def validateRpcSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
-    validateSchema(querySchema, jsonString) match {
+  def verifyRpcSchema(jsonString: JsonString): Either[JsonString, PipelineError] = {
+    verifySchema(querySchema, jsonString) match {
       case Success(_) => Left(jsonString)
       case Failure(ex) =>
         val rpcId = Try(jsonString.parseJson.asJsObject.getFields("id")) match {
@@ -69,26 +69,26 @@ object SchemaValidator {
   }
 
   /**
-   * Validates a low-level data json string
+   * Verifies a low-level data json string
    * @note use the MessageRegistry to access this function easily
    *
-   * @param schema schema that should be used to validate the jsonString
+   * @param schema schema that should be used to verify the jsonString
    * @param jsonString JSON string representation of the data field
    * @return a Success or a Failure depending whether the validation succeeded or not
    */
-  def validateDataSchema(schema: JsonSchema)(jsonString: JsonString): Try[Unit] = validateSchema(schema, jsonString)
+  def verifyDataSchema(schema: JsonSchema)(jsonString: JsonString): Try[Unit] = verifySchema(schema, jsonString)
 
   /**
-   * Creates a SchemaValidator function from the corresponding JsonSchema verifier file
-   * @note used by the MessageRegistry to ease the process of schemaValidator functions creation
+   * Creates a SchemaVerifier function from the corresponding JsonSchema verifier file
+   * @note used by the MessageRegistry to ease the process of SchemaVerifier functions creation
    *
    * @param schemaFileName name of the corresponding schema file wrt. dataSchemasPath
    * @return a schema validator taking a json string and returning whether the string is conform to the schema file or not
    */
-  def createSchemaValidator(schemaFileName: String): JsonString => Try[Unit] = validateDataSchema(
-    setupSchemaValidation(s"$dataSchemasPath/$schemaFileName", objectMapper)
+  def createSchemaVerifier(schemaFileName: String): JsonString => Try[Unit] = verifyDataSchema(
+    setupSchemaVerification(s"$dataSchemasPath/$schemaFileName")
   )
 
   // takes a string (json) input and compares it with the JsonSchema
-  val rpcSchemaValidator: Flow[JsonString, Either[JsonString, PipelineError], NotUsed] = Flow[JsonString].map(validateRpcSchema)
+  val rpcSchemaVerifier: Flow[JsonString, Either[JsonString, PipelineError], NotUsed] = Flow[JsonString].map(verifyRpcSchema)
 }

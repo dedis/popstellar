@@ -8,16 +8,16 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp, WitnessSignaturePair}
 import spray.json._
 
-case class StateLao(
-                     id: Hash,
-                     name: String,
-                     creation: Timestamp,
-                     last_modified: Timestamp,
-                     organizer: PublicKey,
-                     witnesses: List[PublicKey],
-                     modification_id: Hash,
-                     modification_signatures: List[WitnessSignaturePair]
-                   ) extends MessageData {
+final case class StateLao(
+                           id: Hash,
+                           name: String,
+                           creation: Timestamp,
+                           last_modified: Timestamp,
+                           organizer: PublicKey,
+                           witnesses: List[PublicKey],
+                           modification_id: Hash,
+                           modification_signatures: List[WitnessSignaturePair]
+                         ) extends MessageData {
   override val _object: ObjectType = ObjectType.LAO
   override val action: ActionType = ActionType.STATE
 }

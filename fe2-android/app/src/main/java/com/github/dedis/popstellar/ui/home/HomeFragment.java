@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the Home UI */
-@AndroidEntryPoint(Fragment.class)
-public final class HomeFragment extends Hilt_HomeFragment {
+@AndroidEntryPoint
+public final class HomeFragment extends Fragment {
 
   public static final String TAG = HomeFragment.class.getSimpleName();
 

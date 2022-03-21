@@ -19,13 +19,31 @@ export function configureFeatures() {
 
   // configure features
   const laoConfig = lao.configure(messageRegistry);
+  const eventsConfig = events.configure();
+
   const homeConfig = home.configure();
-  evoting.configure(messageRegistry);
+  const evotingInterface = evoting.configure({
+    /* LAO FEATURE */
+    /* lao: functions */
+    getCurrentLao: laoConfig.functions.getCurrentLao,
+    useCurrentLao: laoConfig.hooks.useCurrentLao,
+    /* lao: hooks */
+    getCurrentLaoId: laoConfig.functions.getCurrentLaoId,
+    useCurrentLaoId: laoConfig.hooks.useCurrentLaoId,
+    /* EVENTS FEATURE */
+    /* events: action creators */
+    addEvent: eventsConfig.actionCreators.addEvent,
+    updateEvent: eventsConfig.actionCreators.updateEvent,
+    /* events: functions */
+    getEventById: eventsConfig.functions.getEventById,
+    onConfirmEventCreation: eventsConfig.functions.onConfirmPress,
+    /* other dependencies */
+    messageRegistry,
+  });
   meeting.configure(messageRegistry);
   rollCall.configure(messageRegistry);
   const socialConfig = social.configure(messageRegistry);
   witness.configure(messageRegistry);
-  const eventsConfig = events.configure();
   const walletConfig = wallet.configure(keyPairRegistry);
 
   // verify configuration
@@ -55,6 +73,9 @@ export function configureFeatures() {
           component: laoConfig.navigation.LaoNavigation,
         },
       ],
+    },
+    context: {
+      [evotingInterface.identifier]: evotingInterface.context,
     },
   };
 }

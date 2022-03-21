@@ -11,5 +11,5 @@ import dagger.hilt.android.AndroidEntryPoint;
  *
  * <p>The Hilt annotation allows Fragments using Hilt injection to be tested with the activity.
  */
-@AndroidEntryPoint(AppCompatActivity.class)
-public class EmptyHiltActivity extends Hilt_EmptyHiltActivity {}
+@AndroidEntryPoint
+public class EmptyHiltActivity extends AppCompatActivity {}

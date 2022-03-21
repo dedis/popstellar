@@ -8,11 +8,11 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.Timestamp
 import spray.json._
 
-case class AddChirp(
-                     text: String,
-                     parent_id: Option[String],
-                     timestamp: Timestamp
-                   ) extends MessageData {
+final case class AddChirp(
+                           text: String,
+                           parent_id: Option[String],
+                           timestamp: Timestamp
+                         ) extends MessageData {
   override val _object: ObjectType = ObjectType.CHIRP
   override val action: ActionType = ActionType.ADD
 }

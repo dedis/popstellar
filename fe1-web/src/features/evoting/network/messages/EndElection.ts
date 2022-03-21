@@ -2,6 +2,8 @@ import { Hash, Timestamp, ProtocolError } from 'core/objects';
 import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { MessageDataProperties } from 'core/types';
+import { Election } from 'features/evoting/objects';
 
 /** Data sent to end an Election event */
 export class EndElection implements MessageData {
@@ -17,11 +19,7 @@ export class EndElection implements MessageData {
 
   public readonly registered_votes: Hash;
 
-  constructor(msg: Partial<EndElection>) {
-    if (!msg.election) {
-      throw new ProtocolError("Undefined 'id' parameter encountered during 'EndElection'");
-    }
-
+  constructor(msg: MessageDataProperties<EndElection>) {
     if (!msg.lao) {
       throw new ProtocolError("Undefined 'lao' parameter encountered during 'EndElection'");
     }
@@ -64,5 +62,22 @@ export class EndElection implements MessageData {
       election: new Hash(obj.election),
       lao: new Hash(obj.lao),
     });
+  }
+
+  public static computeRegisteredVotesHash(election: Election) {
+    // sort array in-place
+    election.registeredVotes
+      // First sort by timestamp, than by message ID as tiebreaker
+      .sort((a, b) => {
+        const tiebreaker = a.messageId.valueOf() < b.messageId.valueOf() ? -1 : 1;
+        return a !== b ? a.createdAt - b.createdAt : tiebreaker;
+      });
+
+    const sortedVoteIds = election.registeredVotes
+      // Now expand each registered vote to the contained vote ids
+      // flatMap = map + flatten array
+      .flatMap((registeredVote) => registeredVote.votes.map((vote) => vote.id));
+
+    return Hash.fromStringArray(...sortedVoteIds);
   }
 }

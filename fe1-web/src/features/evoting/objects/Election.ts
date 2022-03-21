@@ -1,13 +1,20 @@
 import { Hash, Timestamp } from 'core/objects';
-import { LaoEventState } from 'features/events/objects/LaoEvent';
+import { EvotingFeature } from '../interface/Feature';
 
 /**
  * Object to represent an election and all its components.
  */
 
-export const EventTypeElection = 'ELECTION';
+export const ELECTION_EVENT_TYPE = 'ELECTION';
 
-export interface ElectionState extends LaoEventState {
+export enum ElectionStatus {
+  NOT_STARTED = 'not started',
+  OPENED = 'opened',
+  TERMINATED = 'terminated', // When manually terminated by organizer
+  RESULT = 'result', // When result is available
+}
+
+export interface ElectionState extends EvotingFeature.EventState {
   lao: string;
   name: string;
   version: string;
@@ -15,6 +22,7 @@ export interface ElectionState extends LaoEventState {
   start: number;
   end: number;
   questions: Question[];
+  electionStatus: ElectionStatus;
   registeredVotes: RegisteredVote[];
   questionResult?: QuestionResult[];
 }
@@ -34,6 +42,9 @@ export interface Vote {
   writeIn?: string;
 }
 
+// This type ensures that for each question there is a unique set of option indices
+export type SelectedBallots = { [questionIndex: number]: Set<number> };
+
 export interface RegisteredVote {
   createdAt: number;
   sender: string;
@@ -49,14 +60,6 @@ export interface MajorityResult {
 export interface QuestionResult {
   id: string;
   result: MajorityResult[];
-}
-
-export enum ElectionStatus {
-  NOT_STARTED = 'not started',
-  RUNNING = 'running',
-  FINISHED = 'finished', // When the time is over
-  TERMINATED = 'terminated', // When manually terminated by organizer
-  RESULT = 'result', // When result is available
 }
 
 export class Election {
@@ -112,6 +115,9 @@ export class Election {
     if (obj.questions === undefined) {
       throw new Error("Undefined 'questions' when creating 'Election'");
     }
+    if (obj.electionStatus === undefined) {
+      throw new Error("Undefined 'electionStatus' when creating 'Election'");
+    }
     if (obj.registeredVotes === undefined) {
       this.registeredVotes = [];
     } else {
@@ -127,8 +133,7 @@ export class Election {
     this.end = obj.end;
     this.questions = obj.questions;
     this.questionResult = obj.questionResult;
-    // Sets the election status automatically
-    this.electionStatus = Election.getElectionStatus(obj.start, obj.end);
+    this.electionStatus = obj.electionStatus;
   }
 
   /**
@@ -147,6 +152,8 @@ export class Election {
       end: new Timestamp(electionState.end),
       questions: electionState.questions,
       registeredVotes: electionState.registeredVotes,
+      electionStatus: electionState.electionStatus,
+      questionResult: electionState.questionResult,
     });
   }
 
@@ -157,25 +164,7 @@ export class Election {
     const obj: any = JSON.parse(JSON.stringify(this));
     return {
       ...obj,
-      eventType: EventTypeElection,
+      eventType: ELECTION_EVENT_TYPE,
     };
-  }
-
-  /**
-   * Gets the status of an election by knowing its start and end times.
-   *
-   * @param start - The start time of the election
-   * @param end - The end time of the election
-   * @private
-   */
-  private static getElectionStatus(start: Timestamp, end: Timestamp): ElectionStatus {
-    const now = Timestamp.EpochNow();
-    if (now.before(start)) {
-      return ElectionStatus.NOT_STARTED;
-    }
-    if (now.before(end)) {
-      return ElectionStatus.RUNNING;
-    }
-    return ElectionStatus.FINISHED;
   }
 }

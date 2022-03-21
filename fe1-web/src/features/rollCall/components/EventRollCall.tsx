@@ -7,11 +7,11 @@ import { useToast } from 'react-native-toast-notifications';
 
 import { QRCode, WideButtonView } from 'core/components';
 import { makeEventGetter } from 'features/events/reducer';
-import { makeCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../network';
+import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall, RollCallStatus } from '../objects';
 import { FOUR_SECONDS } from '../../../resources/const';
 
@@ -21,8 +21,7 @@ import { FOUR_SECONDS } from '../../../resources/const';
 const EventRollCall = (props: IPropTypes) => {
   const { event } = props;
   const { isOrganizer } = props;
-  const laoSelect = useMemo(makeCurrentLao, []);
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
   // FIXME: use a more specific navigation
   const navigation = useNavigation<any>();
   const toast = useToast();
@@ -36,7 +35,7 @@ const EventRollCall = (props: IPropTypes) => {
   const [popToken, setPopToken] = useState('');
 
   useEffect(() => {
-    if (!lao || !lao.id || !rollCall || !!rollCall.id) {
+    if (!lao || !lao.id || !rollCall || !rollCall.id) {
       return;
     }
 

@@ -245,12 +245,6 @@ public class LaoTest {
   }
 
   @Test
-  public void getAndSetChannelTest() {
-    LAO_1.setChannel("new channel");
-    assertThat(LAO_1.getChannel(), is("new channel"));
-  }
-
-  @Test
   public void setAndGetModificationIdTest() {
     MessageID id = generateMessageID();
     LAO_1.setModificationId(id);
@@ -271,7 +265,7 @@ public class LaoTest {
 
   @Test
   public void setAndGetId() {
-    LAO_1.setId("New Id");
-    assertThat(LAO_1.getId(), is("New Id"));
+    LAO_1.setId("New_Id");
+    assertThat(LAO_1.getId(), is("New_Id"));
   }
 }

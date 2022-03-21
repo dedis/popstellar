@@ -223,9 +223,33 @@
   <string name="delete_button">delete button</string>
 
   <!-- Error Messages -->
-  <string name="error_pop_token">Could not retrieve PoP Token</string>
-  <string name="error_toast_pop_token">Could not retrieve a valid PoP Token : </string>
-  <string name="error_sending_chirp">Error when sending chirp. Please try again</string>
   <string name="error_no_lao">You are not in a LAO</string>
 
+  <string name="generic_error">An error occurred\n%1$s</string>
+  <string name="error_sending_chirp">Could not send the chirp\n%1$s</string>
+  <string name="error_retrieve_own_token">Could not retrieve your own PoP Token\n%1$s</string>
+  <string name="error_end_election">Could not complete the election\n%1$s</string>
+  <string name="error_send_vote">Could not send the vote\n%1$s</string>
+  <string name="error_create_election">Could not create the election\n%1$s</string>
+  <string name="error_create_rollcall">Could not create the rollcall\n%1$s</string>
+  <string name="error_start_election">Could not start the election\n%1$s</string>
+  <string name="error_consensus_accept">Could not accept the consensus\n%1$s</string>
+  <string name="error_open_rollcall">Could not open the rollcall\n%1$s</string>
+  <string name="error_close_rollcall">Could not close the rollcall\n%1$s</string>
+  <string name="error_sign_message">Could not send message signature\n%1$s</string>
+  <string name="error_update_lao">Could not update the LAO\n%1$s</string>
+  <string name="error_state_lao">Could not send the state of the LAO\n%1$s</string>
+  <string name="error_subscribe_lao">Could not subscribe to the LAO channel\n%1$s</string>
+  <string name="error_create_lao">Could not create the LAO\n%1$s</string>
+  <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
+
+  <!-- Exception -->
+  <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
+  <string name="timeout_exception">a timeout occurred</string>
+  <string name="data_handling_exception">error while handling %1$s message</string>
+  <string name="key_generation_exception">could not generate key</string>
+  <string name="invalid_pop_token_exception">the token %1$s is invalid</string>
+  <string name="no_rollcall_exception">no rollcall exist in the LAO</string>
+  <string name="seed_validation_exception">unable to validate seed</string>
+  <string name="uninitialized_wallet_exception">the wallet is not initialized</string>
 </resources>

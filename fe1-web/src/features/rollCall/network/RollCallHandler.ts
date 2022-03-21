@@ -3,12 +3,14 @@ import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'core/redux';
 import { subscribeToChannel } from 'core/network';
 import { addEvent, updateEvent } from 'features/events/reducer';
-import { getEventFromId } from 'features/events/network/EventHandlerUtils';
+import { selectEventById } from 'features/events/network/EventHandlerUtils';
 import * as Wallet from 'features/wallet/objects';
-import { setLaoLastRollCall } from 'features/lao/reducer';
+
+import { selectCurrentLao, setLaoLastRollCall } from 'features/lao/reducer';
 
 import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 import { RollCall, RollCallStatus } from '../objects';
+
 
 /**
  * Handles a RollCallCreate message by creating a roll call in the current Lao.
@@ -21,6 +23,15 @@ export function handleRollCallCreateMessage(msg: ProcessableMessage): boolean {
     msg.messageData.action !== ActionType.CREATE
   ) {
     console.warn('handleRollCallCreateMessage was called to process an unsupported message', msg);
+    return false;
+  }
+
+  const makeErr = (err: string) => `roll_call/create was not processed: ${err}`;
+
+  const storeState = getStore().getState();
+  const lao = selectCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
     return false;
   }
 
@@ -59,8 +70,14 @@ export function handleRollCallOpenMessage(msg: ProcessableMessage): boolean {
 
   const storeState = getStore().getState();
 
+  const lao = selectCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+  
   const rcMsgData = msg.messageData as OpenRollCall;
-  const oldRC = getEventFromId(storeState, rcMsgData.opens) as RollCall;
+  const oldRC = selectEventById(storeState, rcMsgData.opens) as RollCall;
   if (!oldRC) {
     console.warn(makeErr("no known roll call matching the 'opens' field"));
     return false;
@@ -95,8 +112,14 @@ export function handleRollCallCloseMessage(msg: ProcessableMessage): boolean {
 
   const storeState = getStore().getState();
 
+  const lao = selectCurrentLao(storeState);
+  if (!lao) {
+    console.warn(makeErr('no LAO is currently active'));
+    return false;
+  }
+
   const rcMsgData = msg.messageData as CloseRollCall;
-  const oldRC = getEventFromId(storeState, rcMsgData.closes) as RollCall;
+  const oldRC = selectEventById(storeState, rcMsgData.closes) as RollCall;
   if (!oldRC) {
     console.warn(makeErr("no known roll call matching the 'closes' field"));
     return false;

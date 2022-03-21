@@ -8,17 +8,18 @@ import { Hash, Timestamp } from 'core/objects';
 import {
   Election,
   ElectionStatus,
-  EventTypeElection,
+  ELECTION_EVENT_TYPE,
   Question,
   RegisteredVote,
   Vote,
 } from '../Election';
+import { ElectionState } from '../index';
 
 let question1: Question;
 let question2: Question;
 let vote1: Vote;
 let registeredVotes: RegisteredVote;
-let electionState: any;
+let electionState: ElectionState;
 let QUESTIONS: Question[];
 let REGISTERED_VOTES: RegisteredVote[];
 
@@ -53,7 +54,7 @@ const initializeData = () => {
 
   electionState = {
     id: 'electionId',
-    eventType: EventTypeElection,
+    eventType: ELECTION_EVENT_TYPE,
     lao: 'MyLao',
     name: 'MyElection',
     version: 'version',
@@ -61,6 +62,7 @@ const initializeData = () => {
     start: 1520255600,
     end: 1520275600,
     questions: [question1, question2],
+    electionStatus: ElectionStatus.TERMINATED,
     registeredVotes: [registeredVotes],
   };
 
@@ -70,8 +72,6 @@ const initializeData = () => {
 
 const TIMESTAMP_PAST1 = new Timestamp(1520255600);
 const TIMESTAMP_PAST2 = new Timestamp(1520275600);
-const TIMESTAMP_FUTURE1 = new Timestamp(1620655600);
-const TIMESTAMP_FUTURE2 = new Timestamp(1620755600);
 const ELECTION_ID = new Hash('electionId');
 const NAME = 'MyElection';
 const VERSION = 'version';
@@ -90,7 +90,7 @@ describe('Election object', () => {
     const election = Election.fromState(electionState);
     const expectedState = {
       id: ELECTION_ID.valueOf(),
-      eventType: EventTypeElection,
+      eventType: ELECTION_EVENT_TYPE,
       lao: mockLaoName,
       name: NAME,
       version: VERSION,
@@ -99,7 +99,7 @@ describe('Election object', () => {
       end: TIMESTAMP_PAST2.valueOf(),
       questions: [question1, question2],
       registeredVotes: [registeredVotes],
-      electionStatus: ElectionStatus.FINISHED,
+      electionStatus: ElectionStatus.TERMINATED,
     };
     expect(election.toState()).toStrictEqual(expectedState);
   });
@@ -128,6 +128,7 @@ describe('Election object', () => {
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
           registeredVotes: REGISTERED_VOTES,
+          electionStatus: ElectionStatus.NOT_STARTED,
         });
       expect(createWrongElection).toThrow(Error);
     });
@@ -143,6 +144,7 @@ describe('Election object', () => {
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
           registeredVotes: REGISTERED_VOTES,
+          electionStatus: ElectionStatus.NOT_STARTED,
         });
       expect(createWrongElection).toThrow(Error);
     });
@@ -158,6 +160,7 @@ describe('Election object', () => {
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
           registeredVotes: REGISTERED_VOTES,
+          electionStatus: ElectionStatus.NOT_STARTED,
         });
       expect(createWrongElection).toThrow(Error);
     });
@@ -173,6 +176,7 @@ describe('Election object', () => {
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
           registeredVotes: REGISTERED_VOTES,
+          electionStatus: ElectionStatus.NOT_STARTED,
         });
       expect(createWrongElection).toThrow(Error);
     });
@@ -188,6 +192,7 @@ describe('Election object', () => {
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
           registeredVotes: REGISTERED_VOTES,
+          electionStatus: ElectionStatus.NOT_STARTED,
         });
       expect(createWrongElection).toThrow(Error);
     });
@@ -203,6 +208,7 @@ describe('Election object', () => {
           end: TIMESTAMP_PAST2,
           questions: QUESTIONS,
           registeredVotes: REGISTERED_VOTES,
+          electionStatus: ElectionStatus.NOT_STARTED,
         });
       expect(createWrongElection).toThrow(Error);
     });
@@ -233,6 +239,7 @@ describe('Election object', () => {
           start: TIMESTAMP_PAST1,
           end: TIMESTAMP_PAST2,
           registeredVotes: REGISTERED_VOTES,
+          electionStatus: ElectionStatus.NOT_STARTED,
         });
       expect(createWrongElection).toThrow(Error);
     });
@@ -247,6 +254,7 @@ describe('Election object', () => {
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
         questions: QUESTIONS,
+        electionStatus: ElectionStatus.NOT_STARTED,
       });
       const expected = new Election({
         id: ELECTION_ID,
@@ -256,57 +264,6 @@ describe('Election object', () => {
         createdAt: TIMESTAMP_PAST1,
         start: TIMESTAMP_PAST1,
         end: TIMESTAMP_PAST2,
-        questions: QUESTIONS,
-        registeredVotes: [],
-      });
-      expect(election).toStrictEqual(expected);
-    });
-
-    it('sets correct electionStatus when running', () => {
-      const election = new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST2,
-        start: TIMESTAMP_PAST2,
-        end: TIMESTAMP_FUTURE1,
-        questions: QUESTIONS,
-      });
-      const expected = new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_PAST2,
-        start: TIMESTAMP_PAST2,
-        end: TIMESTAMP_FUTURE1,
-        questions: QUESTIONS,
-        registeredVotes: [],
-        electionStatus: ElectionStatus.RUNNING,
-      });
-      expect(election).toStrictEqual(expected);
-    });
-
-    it('sets correct electionStatus when not started', () => {
-      const election = new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_FUTURE1,
-        start: TIMESTAMP_FUTURE1,
-        end: TIMESTAMP_FUTURE2,
-        questions: QUESTIONS,
-      });
-      const expected = new Election({
-        id: ELECTION_ID,
-        lao: mockLaoIdHash,
-        name: NAME,
-        version: VERSION,
-        createdAt: TIMESTAMP_FUTURE1,
-        start: TIMESTAMP_FUTURE1,
-        end: TIMESTAMP_FUTURE2,
         questions: QUESTIONS,
         registeredVotes: [],
         electionStatus: ElectionStatus.NOT_STARTED,

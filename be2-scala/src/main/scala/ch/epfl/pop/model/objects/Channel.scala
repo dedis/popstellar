@@ -11,7 +11,7 @@ final case class Channel(channel: String) {
    */
   def decodeChannelLaoId: Option[Base64Data] = channel match {
     case _ if channel.startsWith(Channel.ROOT_CHANNEL_PREFIX) =>
-      Try(Base64Data(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.SEPARATOR)(0))) match {
+      Try(Base64Data(channel.substring(Channel.ROOT_CHANNEL_PREFIX.length).split(Channel.CHANNEL_SEPARATOR)(0))) match {
         case Success(value) => Some(value)
         case _ => None
       }
@@ -27,7 +27,7 @@ final case class Channel(channel: String) {
   def extractChildChannel: Hash = {
     //After successful channel creation
     //c cannot be empty
-    val c = channel.split(Channel.SEPARATOR)
+    val c = channel.split(Channel.CHANNEL_SEPARATOR)
     assert(!c.isEmpty)
     Hash(Base64Data(c.last))
   }
@@ -37,7 +37,7 @@ final case class Channel(channel: String) {
   def isSubChannel: Boolean = channel.startsWith(Channel.ROOT_CHANNEL_PREFIX)
 
   override def equals(that: Any): Boolean = that match {
-    case that: Channel => channel == that.channel
+    case t: Channel => channel == t.channel
     case _ => false
   }
 
@@ -45,15 +45,16 @@ final case class Channel(channel: String) {
 }
 
 object Channel {
-  final val SEPARATOR: Char = '/'
-  final val ROOT_CHANNEL: Channel = Channel(s"${SEPARATOR}root")
-  final val ROOT_CHANNEL_PREFIX: String = s"${SEPARATOR}root$SEPARATOR"
+  final val CHANNEL_SEPARATOR: Char = '/'
+  final val DATA_SEPARATOR: Char = '#'
+  final val ROOT_CHANNEL: Channel = Channel(s"${CHANNEL_SEPARATOR}root")
+  final val ROOT_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}root${CHANNEL_SEPARATOR}"
 
-  private final def channelRegex: String = "^/root(/[^/]+)*$"
+  private def channelRegex: String = "^/root(/[^/]+)*$"
 
-  final val LAO_DATA_LOCATION: String = s"${SEPARATOR}data"
+  final val LAO_DATA_LOCATION: String = s"${DATA_SEPARATOR}laodata"
 
-  final val SOCIAL_CHANNEL_PREFIX: String = s"${SEPARATOR}social$SEPARATOR"
+  final val SOCIAL_CHANNEL_PREFIX: String = s"${CHANNEL_SEPARATOR}social${CHANNEL_SEPARATOR}"
   final val SOCIAL_MEDIA_CHIRPS_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}chirps"
   final val REACTIONS_CHANNEL_PREFIX: String = s"${SOCIAL_CHANNEL_PREFIX}reactions"
 
