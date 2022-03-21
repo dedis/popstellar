@@ -34,7 +34,7 @@ const EventRollCall = (props: IPropTypes) => {
   const [popToken, setPopToken] = useState('');
 
   useEffect(() => {
-    if (!lao || !lao.id || !rollCall || !!rollCall.id) {
+    if (!lao || !lao.id || !rollCall || !rollCall.id) {
       return;
     }
 
