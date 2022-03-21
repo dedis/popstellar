@@ -105,6 +105,7 @@ describe('NetworkManager', () => {
 
     // override sending strategy
     const originalSendingStrategy = networkManager['sendingStrategy'];
+    // @ts-ignore
     networkManager['sendingStrategy'] = jest.fn();
 
     networkManager.sendPayload(mockJsonRpcPayload);
@@ -114,6 +115,7 @@ describe('NetworkManager', () => {
     ]);
 
     // restore sending strategy
+    // @ts-ignore
     networkManager['sendingStrategy'] = originalSendingStrategy;
   });
 
