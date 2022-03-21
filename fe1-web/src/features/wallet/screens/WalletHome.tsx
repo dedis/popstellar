@@ -11,7 +11,7 @@ import { RollCall } from 'features/rollCall/objects';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
-import RollCallTokensDropDown from '../components/RollCallTokensDropDown';
+import { RollCallTokensDropDown } from '../components';
 import * as Wallet from '../objects';
 import { useMockWalletState } from '../objects/__mocks__/mockWallet';
 import { RollCallToken } from '../objects/RollCallToken';
@@ -65,12 +65,10 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   };
   const tokenInfos = () => {
     if (selectedToken) {
-      const laoId = 'Lao id: '.concat(selectedToken.laoId.valueOf());
-      const rollCallId = 'Roll Call id: '.concat(selectedToken.rollCallId.valueOf());
+      const rollCallName = 'Roll Call name: '.concat(selectedToken.rollCallId.valueOf());
       return (
         <View style={containerStyles.centeredXY}>
-          <TextBlock size={18} text={laoId} />
-          <TextBlock size={18} text={rollCallId} />
+          <TextBlock size={18} text={rollCallName} />
           <QRCode value={selectedToken.token.publicKey.valueOf()} visibility />
         </View>
       );

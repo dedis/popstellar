@@ -4,8 +4,8 @@ import { LaoEventType } from 'features/events/objects/LaoEvent';
 import { makeEventByTypeSelector } from 'features/events/reducer';
 import { RollCall } from 'features/rollCall/objects';
 
-import { generateToken } from './Token';
 import { RollCallToken } from './RollCallToken';
+import { generateToken } from './Token';
 
 /**
  * Recovers all PoP tokens associated with this wallet.
@@ -71,7 +71,7 @@ export async function recoverWalletRollCallTokens(): Promise<RollCallToken[]> {
               RollCallToken.fromState({
                 token: token.toState(),
                 laoId: laoId,
-                rollCallId: rc.id.valueOf(),
+                rollCallId: rc.name,
               }),
             );
           }
