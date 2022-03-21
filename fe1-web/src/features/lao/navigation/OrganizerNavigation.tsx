@@ -26,8 +26,8 @@ export default function OrganizerNavigation() {
       <Stack.Screen name={STRINGS.organizer_navigation_tab_home} component={OrganizerScreen} />
       {screens
         .sort((a, b) => a.order - b.order)
-        .map(({ name, Component }) => (
-          <Stack.Screen name={name} key={name} component={Component} />
+        .map(({ id, title, Component }) => (
+          <Stack.Screen name={id} key={id} component={Component} options={{ title: title || id }} />
         ))}
     </Stack.Navigator>
   );

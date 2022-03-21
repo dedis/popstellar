@@ -5,8 +5,9 @@ export namespace HomeFeature {
     toState: () => LaoState;
   }
 
-  export interface MainNavigationScreen {
-    name: string;
+  export interface Screen {
+    id: string;
+    title?: string;
     Component: React.ComponentType<unknown>;
     order: number;
   }

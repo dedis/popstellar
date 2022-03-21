@@ -37,8 +37,13 @@ const MainNavigation = () => {
       <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
       {screens
         .sort((a, b) => a.order - b.order)
-        .map(({ name, Component }) => (
-          <HomeTopTabNavigator.Screen key={name} name={name} component={Component} />
+        .map(({ id, title, Component }) => (
+          <HomeTopTabNavigator.Screen
+            key={id}
+            name={id}
+            component={Component}
+            options={{ title: title || id }}
+          />
         ))}
     </HomeTopTabNavigator.Navigator>
   );

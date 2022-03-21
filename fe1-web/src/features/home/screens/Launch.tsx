@@ -4,9 +4,10 @@ import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
-import { Channel } from 'core/objects';
+import { Channel, getLaoIdFromChannel } from 'core/objects';
 import { dispatch } from 'core/redux';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { addLaoServerAddress } from 'features/lao/reducer';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
 
@@ -39,19 +40,19 @@ const Launch: FunctionComponent<IPropTypes> = ({ navigation }) => {
     }
 
     getNetworkManager().connect(inputAddress);
+
     createLao(laoName)
-      .then((channel: Channel) =>
+      .then((channel: Channel) => {
         subscribeToChannel(channel).then(() => {
+          // after subscribing to the LAO channel, add the server address to the lao state
+          dispatch(addLaoServerAddress(getLaoIdFromChannel(channel), inputAddress));
+
           // navigate to the newly created LAO
-          navigation.navigate(STRINGS.app_navigation_tab_organizer, {
-            screen: STRINGS.organization_navigation_tab_organizer,
-            params: {
-              screen: STRINGS.organizer_navigation_tab_home,
-              params: { url: inputAddress },
-            },
+          navigation.navigate(STRINGS.app_navigation_tab_user, {
+            screen: STRINGS.organization_navigation_tab_user,
           });
-        }),
-      )
+        });
+      })
       .catch((reason) => console.debug(`Failed to establish lao connection: ${reason}`));
   };
 

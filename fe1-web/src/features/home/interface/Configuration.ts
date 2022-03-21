@@ -36,7 +36,7 @@ export interface HomeCompositionConfiguration {
   /**
    * A list of screens show in the main navigations
    */
-  mainNavigationScreens: HomeFeature.MainNavigationScreen[];
+  mainNavigationScreens: HomeFeature.Screen[];
 }
 
 /**

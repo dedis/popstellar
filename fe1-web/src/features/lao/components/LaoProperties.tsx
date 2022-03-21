@@ -11,7 +11,7 @@ import { LaoHooks } from '../hooks';
 import { selectCurrentLao } from '../reducer';
 import laoPropertiesStyles from '../styles/laoPropertiesStyles';
 
-const LaoProperties = ({ url }: IPropTypes) => {
+const LaoProperties = () => {
   const lao = useSelector(selectCurrentLao);
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
@@ -24,7 +24,10 @@ const LaoProperties = ({ url }: IPropTypes) => {
         <CollapsibleContainer title="Lao Properties">
           <ParagraphBlock text={`Lao name: ${lao.name}`} />
           <ParagraphBlock text={`Lao creation: ${lao.creation.toDateString()}`} />
-          <QRCode value={encodeLaoConnection(url, lao.id.toString())} visibility />
+          <QRCode
+            value={encodeLaoConnection(lao.server_addresses[0] || '', lao.id.toString())}
+            visibility
+          />
           <Button
             title="Add connection"
             onPress={() =>
@@ -38,12 +41,5 @@ const LaoProperties = ({ url }: IPropTypes) => {
     </>
   ) : null;
 };
-
-const propTypes = {
-  url: PropTypes.string.isRequired,
-};
-LaoProperties.prototype = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default LaoProperties;

@@ -74,7 +74,7 @@ export const compose = (config: LaoCompositionConfiguration): LaoCompositionInte
       encodeLaoConnectionForQRCode: config.encodeLaoConnectionForQRCode,
       laoNavigationScreens: [
         ...config.laoNavigationScreens,
-        { name: STRINGS.organization_navigation_tab_identity, Component: Identity, order: 2 },
+        { id: STRINGS.organization_navigation_tab_identity, Component: Identity, order: 2 },
       ],
       organizerNavigationScreens: config.organizerNavigationScreens,
     },

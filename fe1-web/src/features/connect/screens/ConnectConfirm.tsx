@@ -86,17 +86,14 @@ const ConnectConfirm = ({ navigation }: IPropTypes) => {
     }
 
     try {
-      // subscribe to the lao channel on the new connection
-      await subscribeToChannel(channel, [connection]);
       // add the new server address to the store
       dispatch(addLaoServerAddress(laoId, serverUrl));
 
-      navigation.navigate(STRINGS.app_navigation_tab_organizer, {
-        screen: STRINGS.organization_navigation_tab_organizer,
-        params: {
-          screen: STRINGS.organizer_navigation_tab_home,
-          params: { url: serverUrl },
-        },
+      // subscribe to the lao channel on the new connection
+      await subscribeToChannel(channel, [connection]);
+
+      navigation.navigate(STRINGS.app_navigation_tab_user, {
+        screen: STRINGS.organization_navigation_tab_user,
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);

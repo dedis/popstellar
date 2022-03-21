@@ -79,7 +79,15 @@ const LaoNavigation: React.FC = () => {
       Component = AttendeeScreen;
     }
 
-    return [...passedScreens, { name: screenName, Component, order: 2 }];
+    return [
+      ...passedScreens,
+      {
+        id: STRINGS.organization_navigation_tab_user,
+        title: screenName,
+        Component,
+        order: 2,
+      } as LaoFeature.Screen,
+    ];
   }, [passedScreens, isOrganizer, isWitness]);
 
   return (
@@ -91,8 +99,13 @@ const LaoNavigation: React.FC = () => {
       }}>
       {screens
         .sort((a, b) => a.order - b.order)
-        .map(({ name, Component }) => (
-          <OrganizationTopTabNavigator.Screen key={name} name={name} component={Component} />
+        .map(({ id, title, Component }) => (
+          <OrganizationTopTabNavigator.Screen
+            key={id}
+            name={id}
+            component={Component}
+            options={{ title: title || id }}
+          />
         ))}
 
       <OrganizationTopTabNavigator.Screen

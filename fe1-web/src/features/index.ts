@@ -60,12 +60,12 @@ export function configureFeatures() {
     LaoList: laoConfiguration.components.LaoList,
     mainNavigationScreens: [
       {
-        name: STRINGS.navigation_tab_connect,
+        id: STRINGS.navigation_tab_connect,
         Component: connectConfiguration.navigation.ConnectNavigation,
         order: 0,
       },
       {
-        name: STRINGS.navigation_tab_wallet,
+        id: STRINGS.navigation_tab_wallet,
         Component: walletConfiguration.navigation.WalletNavigation,
         order: 3,
       },
@@ -88,41 +88,41 @@ export function configureFeatures() {
     encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionInQRCode,
     /* navigation */
     laoNavigationScreens: [
-      { name: STRINGS.navigation_tab_home, Component: homeComposition.screens.Home, order: 0 },
+      { id: STRINGS.navigation_tab_home, Component: homeComposition.screens.Home, order: 0 },
       {
-        name: STRINGS.navigation_tab_social_media,
+        id: STRINGS.navigation_tab_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
         order: 1,
       },
       {
-        name: STRINGS.navigation_tab_wallet,
+        id: STRINGS.navigation_tab_wallet,
         Component: walletConfiguration.navigation.WalletNavigation,
         order: 4,
       },
     ],
     organizerNavigationScreens: [
       {
-        name: STRINGS.organizer_navigation_tab_create_event,
+        id: STRINGS.organizer_navigation_tab_create_event,
         Component: eventsConfiguration.screens.CreateEvent,
         order: 0,
       },
       {
-        name: STRINGS.organizer_navigation_creation_meeting,
+        id: STRINGS.organizer_navigation_creation_meeting,
         Component: meetingConfiguration.screens.CreateMeeting,
         order: 1,
       },
       {
-        name: STRINGS.organizer_navigation_creation_roll_call,
+        id: STRINGS.organizer_navigation_creation_roll_call,
         Component: rollCallConfiguration.screens.CreateRollCall,
         order: 2,
       },
       {
-        name: STRINGS.organizer_navigation_creation_election,
+        id: STRINGS.organizer_navigation_creation_election,
         Component: evotingConfiguration.screens.CreateElection,
         order: 3,
       },
       {
-        name: STRINGS.roll_call_open,
+        id: STRINGS.roll_call_open,
         Component: rollCallConfiguration.screens.RollCallOpened,
         order: 4,
       },
@@ -148,11 +148,11 @@ export function configureFeatures() {
     navigationOpts: {
       screens: [
         {
-          name: STRINGS.app_navigation_tab_home,
+          id: STRINGS.app_navigation_tab_home,
           component: homeComposition.navigation.MainNavigation,
         },
         {
-          name: STRINGS.app_navigation_tab_organizer,
+          id: STRINGS.app_navigation_tab_user,
           component: laoComposition.navigation.LaoNavigation,
         },
       ],

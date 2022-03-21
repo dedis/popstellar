@@ -26,10 +26,11 @@ export function compose(config: HomeCompositionConfiguration): HomeInterface {
         ...config.mainNavigationScreens,
         // add launch screen to the navigation
         {
-          name: STRINGS.navigation_tab_launch,
+          id: STRINGS.navigation_tab_launch,
+          title: STRINGS.navigation_tab_launch,
           Component: screens.Launch,
           order: 1,
-        } as HomeFeature.MainNavigationScreen,
+        } as HomeFeature.Screen,
       ],
     },
   };

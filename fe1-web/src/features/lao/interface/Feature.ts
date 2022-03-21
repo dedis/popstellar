@@ -2,7 +2,8 @@ import React from 'react';
 
 export namespace LaoFeature {
   export interface Screen {
-    name: string;
+    id: string;
+    title?: string;
     Component: React.ComponentType<unknown>;
     order: number;
   }

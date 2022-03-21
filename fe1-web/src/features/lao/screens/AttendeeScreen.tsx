@@ -1,5 +1,4 @@
-import { useRoute } from '@react-navigation/core';
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView } from 'react-native';
 
 import { LaoProperties } from '../components';
@@ -14,14 +13,9 @@ import { LaoHooks } from '../hooks';
 const AttendeeScreen = () => {
   const EventList = LaoHooks.useEventList();
 
-  // FIXME: route should use proper type
-  const route = useRoute<any>();
-  const { url } = route.params || '';
-  const [serverUrl] = useState(url);
-
   return (
     <ScrollView>
-      <LaoProperties url={serverUrl} />
+      <LaoProperties />
       <EventList />
     </ScrollView>
   );
