@@ -8,7 +8,7 @@ type ElectionOpen struct {
 	Election string `json:"election"`
 
 	// OpenedAt is a Unix timestamp
-	OpenedAt int64 `json:opened_at`
+	OpenedAt int64 `json:"opened_at"`
 }
 
 // GetObject implements MessageData

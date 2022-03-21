@@ -39,6 +39,7 @@ func (a *attendees) isPresent(key string) bool {
 	defer a.Unlock()
 
 	_, ok := a.store[key]
+
 	return ok
 }
 
