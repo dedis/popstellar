@@ -25,9 +25,9 @@ object ElectionHandler extends MessageHandler {
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
     } yield ()
 
-    Await.ready(combined, duration).value.get match {
-      case Success(_) => Left(rpcMessage)
-      case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
+    Await.ready(combined, duration).value match {
+      case Some(Success(_)) => Left(rpcMessage)
+      case Some(Failure(ex: DbActorNAckException)) => Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
       case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
     }
   }

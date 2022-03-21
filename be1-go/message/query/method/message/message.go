@@ -3,7 +3,6 @@ package message
 import (
 	"encoding/base64"
 	"encoding/json"
-
 	"golang.org/x/xerrors"
 )
 
@@ -18,7 +17,7 @@ type Message struct {
 
 // UnmarshalData fills the provided elements with the message data stored in the
 // data field. Recall that the Data field contains a base64URL representation of
-// a message data, it takes care of proprely decoding it. The provided element
+// a message data, it takes care of properly decoding it. The provided element
 // 'e' MUST be a pointer.
 func (m Message) UnmarshalData(e interface{}) error {
 	jsonData, err := base64.URLEncoding.DecodeString(m.Data)

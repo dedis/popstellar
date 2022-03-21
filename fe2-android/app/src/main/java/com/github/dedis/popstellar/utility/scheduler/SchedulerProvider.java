@@ -9,4 +9,6 @@ public interface SchedulerProvider {
   Scheduler computation();
 
   Scheduler newThread();
+
+  Scheduler mainThread();
 }

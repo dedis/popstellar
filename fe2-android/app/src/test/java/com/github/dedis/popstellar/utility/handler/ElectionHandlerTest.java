@@ -2,13 +2,12 @@ package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.github.dedis.popstellar.di.DataRegistryModule;
 import com.github.dedis.popstellar.di.JsonModule;
-import com.github.dedis.popstellar.model.network.GenericMessage;
-import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionQuestion;
@@ -17,6 +16,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
@@ -26,11 +26,8 @@ import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
-import com.github.dedis.popstellar.repository.local.LAOLocalDataSource;
-import com.github.dedis.popstellar.repository.remote.LAORemoteDataSource;
+import com.github.dedis.popstellar.repository.remote.MessageSender;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
-import com.github.dedis.popstellar.utility.scheduler.SchedulerProvider;
-import com.github.dedis.popstellar.utility.scheduler.TestSchedulerProvider;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
@@ -49,62 +46,42 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
-import io.reactivex.schedulers.TestScheduler;
+import io.reactivex.Completable;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ElectionHandlerTest extends TestCase {
-
-  @Mock LAORemoteDataSource remoteDataSource;
-  @Mock LAOLocalDataSource localDataSource;
-  @Mock KeyManager keyManager;
-
-  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
-  private static final MessageHandler messageHandler =
-      new MessageHandler(DataRegistryModule.provideDataRegistry());
-
-  private static final int REQUEST_ID = 42;
-  private static final int RESPONSE_DELAY = 1000;
 
   private static final KeyPair SENDER_KEY = generateKeyPair();
   private static final PublicKey SENDER = SENDER_KEY.getPublicKey();
 
   private static final CreateLao CREATE_LAO = new CreateLao("lao", SENDER);
-  private static final String CHANNEL = "/root";
-  private static final String LAO_CHANNEL = CHANNEL + "/" + CREATE_LAO.getId();
+  private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(CREATE_LAO.getId());
+
+  private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   private Lao lao;
   private RollCall rollCall;
   private Election election;
   private ElectionQuestion electionQuestion;
+
   private LAORepository laoRepository;
+  private MessageHandler messageHandler;
+
+  @Mock MessageSender messageSender;
+  @Mock KeyManager keyManager;
 
   @Before
   public void setup() throws GeneralSecurityException, IOException {
-    SchedulerProvider testSchedulerProvider = new TestSchedulerProvider();
-    TestScheduler testScheduler = (TestScheduler) testSchedulerProvider.io();
-
-    // Simulate a network response from the server after the response delay
-    Observable<GenericMessage> upstream =
-        Observable.fromArray((GenericMessage) new Result(REQUEST_ID))
-            .delay(RESPONSE_DELAY, TimeUnit.MILLISECONDS, testScheduler);
-
-    when(remoteDataSource.observeMessage()).thenReturn(upstream);
-    when(remoteDataSource.observeWebsocket()).thenReturn(Observable.empty());
-
     lenient().when(keyManager.getMainKeyPair()).thenReturn(SENDER_KEY);
     lenient().when(keyManager.getMainPublicKey()).thenReturn(SENDER);
 
-    laoRepository =
-        new LAORepository(
-            remoteDataSource,
-            localDataSource,
-            keyManager,
-            messageHandler,
-            GSON,
-            testSchedulerProvider);
+    laoRepository = new LAORepository();
+
+    when(messageSender.subscribe(any())).then(args -> Completable.complete());
+
+    laoRepository = new LAORepository();
+    messageHandler = new MessageHandler(DataRegistryModule.provideDataRegistry(), keyManager);
 
     // Create one LAO
     lao = new Lao(CREATE_LAO.getName(), CREATE_LAO.getOrganizer(), CREATE_LAO.getCreation());
@@ -123,7 +100,7 @@ public class ElectionHandlerTest extends TestCase {
     election = new Election(lao.getId(), Instant.now().getEpochSecond(), "election 1");
     election.setStart(Instant.now().getEpochSecond());
     election.setEnd(Instant.now().getEpochSecond() + 20L);
-    election.setChannel(lao.getChannel() + "/" + election.getId());
+    election.setChannel(lao.getChannel().subChannel(election.getId()));
     electionQuestion =
         new ElectionQuestion(
             "question", "Plurality", false, Arrays.asList("a", "b"), election.getId());
@@ -136,7 +113,7 @@ public class ElectionHandlerTest extends TestCase {
         });
 
     // Add the LAO to the LAORepository
-    laoRepository.getLaoById().put(LAO_CHANNEL, new LAOState(lao));
+    laoRepository.getLaoById().put(lao.getId(), new LAOState(lao));
     laoRepository.setAllLaoSubject();
 
     // Add the CreateLao message to the LAORepository
@@ -161,7 +138,7 @@ public class ElectionHandlerTest extends TestCase {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionSetup, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, LAO_CHANNEL, message);
+    messageHandler.handleMessage(laoRepository, messageSender, LAO_CHANNEL, message);
 
     // Check the Election is present with state OPENED and the correct ID
     Optional<Election> electionOpt =
@@ -194,7 +171,8 @@ public class ElectionHandlerTest extends TestCase {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionResult, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
+    messageHandler.handleMessage(
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
     // Check the Election is present with state RESULTS_READY and the results
     Optional<Election> electionOpt =
@@ -212,7 +190,8 @@ public class ElectionHandlerTest extends TestCase {
     MessageGeneral message = new MessageGeneral(SENDER_KEY, electionEnd, GSON);
 
     // Call the message handler
-    messageHandler.handleMessage(laoRepository, LAO_CHANNEL + "/" + election.getId(), message);
+    messageHandler.handleMessage(
+        laoRepository, messageSender, LAO_CHANNEL.subChannel(election.getId()), message);
 
     // Check the Election is present with state CLOSED and the results
     Optional<Election> electionOpt =

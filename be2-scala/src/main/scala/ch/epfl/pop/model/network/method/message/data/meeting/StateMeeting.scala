@@ -8,18 +8,18 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp, WitnessSignaturePair}
 import spray.json._
 
-case class StateMeeting(
-                         id: Hash,
-                         name: String,
-                         creation: Timestamp,
-                         last_modified: Timestamp,
-                         location: Option[String],
-                         start: Timestamp,
-                         end: Option[Timestamp],
-                         extra: Option[Any],
-                         modification_id: Hash,
-                         modification_signatures: List[WitnessSignaturePair]
-                       ) extends MessageData {
+final case class StateMeeting(
+                               id: Hash,
+                               name: String,
+                               creation: Timestamp,
+                               last_modified: Timestamp,
+                               location: Option[String],
+                               start: Timestamp,
+                               end: Option[Timestamp],
+                               extra: Option[Any],
+                               modification_id: Hash,
+                               modification_signatures: List[WitnessSignaturePair]
+                             ) extends MessageData {
   override val _object: ObjectType = ObjectType.MEETING
   override val action: ActionType = ActionType.STATE
 }

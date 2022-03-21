@@ -23,4 +23,4 @@ object ServerConf {
 }
 
 /* Note: Can be upgraded for future configs :) */
-case class ServerConf(interface: String, port: Int, path: String)
+final case class ServerConf(interface: String, port: Int, path: String)

@@ -88,7 +88,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	reactionPath := fmt.Sprintf("%s/social/reactions", channelID)
 	reactionCh := reaction.NewChannel(reactionPath, hub, log)
-	hub.NotifyNewChannel(reactionPath, &reactionCh, socket)
+	hub.NotifyNewChannel(reactionPath, reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
@@ -99,7 +99,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		sockets:         channel.NewSockets(),
 		inbox:           box,
 		general:         generalCh,
-		reactions:       &reactionCh,
+		reactions:       reactionCh,
 		organizerPubKey: organizerPubKey,
 		witnesses:       make(map[string]struct{}),
 		hub:             hub,
@@ -213,15 +213,16 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-// createGeneralChirpingChannel creates a new general chirping channel and returns it
+// createGeneralChirpingChannel creates a new general chirping channel
+// and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
-	hub.NotifyNewChannel(generalChannelPath, &generalChirpingChannel, socket)
+	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
 
-	return &generalChirpingChannel
+	return generalChirpingChannel
 }
 
 // rollCallState denotes the state of the roll call.
@@ -536,8 +537,7 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	chirpingChannelPath := c.channelID + social + publicKey
 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
-
-	c.hub.NotifyNewChannel(chirpingChannelPath, &cha, socket)
+	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
@@ -610,7 +610,7 @@ func (c *Channel) createElection(msg message.Message,
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
+	c.hub.NotifyNewChannel(channelPath, electionCh, socket)
 
 	return nil
 }

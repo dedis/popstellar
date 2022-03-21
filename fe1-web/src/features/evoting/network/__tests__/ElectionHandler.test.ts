@@ -31,9 +31,9 @@ import {
   mockVote1,
   mockVote2,
 } from 'features/evoting/__tests__/utils';
-import { EvotingConfiguration } from 'features/evoting/interface';
-import { Election, ElectionState, ElectionStatus, RegisteredVote } from 'features/evoting/objects';
 
+import { EvotingConfiguration } from '../../interface';
+import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../../objects';
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,

@@ -14,8 +14,8 @@ import com.github.dedis.popstellar.databinding.SocialMediaSearchFragmentBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment that let us search for chirps and users */
-@AndroidEntryPoint(Fragment.class)
-public class SocialMediaSearchFragment extends Hilt_SocialMediaSearchFragment {
+@AndroidEntryPoint
+public class SocialMediaSearchFragment extends Fragment {
 
   public static SocialMediaSearchFragment newInstance() {
     return new SocialMediaSearchFragment();

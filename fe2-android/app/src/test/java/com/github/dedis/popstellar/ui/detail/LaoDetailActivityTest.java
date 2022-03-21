@@ -27,18 +27,21 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.lifecycle.LiveData;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.qrcode.ConnectToLao;
 import com.github.dedis.popstellar.repository.LAORepository;
-import com.github.dedis.popstellar.repository.remote.LAORequestFactory;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.testutils.BundleBuilder;
 import com.github.dedis.popstellar.testutils.IntentUtils;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
+import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.google.gson.Gson;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.ChecksumException;
@@ -74,7 +77,7 @@ public class LaoDetailActivityTest {
   private static final Lao LAO = new Lao("LAO", Base64DataUtils.generatePublicKey(), 10223421);
   private static final String LAO_ID = LAO.getId();
 
-  @Inject LAORequestFactory requestFactory;
+  @Inject GlobalNetworkManager networkManager;
   @Inject Gson gson;
 
   @BindValue @Mock LAORepository laoRepository;
@@ -136,7 +139,7 @@ public class LaoDetailActivityTest {
 
     propertiesLayout().check(matches(isDisplayed()));
 
-    String expectedQRCode = gson.toJson(new ConnectToLao(requestFactory.getUrl(), LAO_ID));
+    String expectedQRCode = gson.toJson(new ConnectToLao(networkManager.getCurrentUrl(), LAO_ID));
     connectQrCode().check(matches(withQrCode(expectedQRCode)));
   }
 
@@ -145,6 +148,7 @@ public class LaoDetailActivityTest {
     witnessButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(witnessFragmentId()))));
   }
+
 
   // Matches an ImageView containing a QRCode with expected content
   private Matcher<? super View> withQrCode(String expectedContent) {

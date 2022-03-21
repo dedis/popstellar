@@ -44,7 +44,7 @@ public class ElectionTest {
   private final String id = "my election id";
   private final long startTime = 0;
   private final long endTime = 1;
-  private final String channel = "channel id";
+  private final Channel channel = Channel.ROOT.subChannel("election_channel");
   private final Election election = new Election("lao id", Instant.now().getEpochSecond(), name);
 
   @Test

@@ -125,10 +125,11 @@ func Test_Chirp_Channel_Catchup(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
 
-	fakeHub.RegisterNewChannel(generalName, &generalCha)
-	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
+
+	fakeHub.RegisterNewChannel(generalName, generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, cha)
 
 	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
@@ -174,7 +175,7 @@ func Test_Chirp_Channel_Broadcast(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
 
 	fakeSock := &fakeSocket{id: "fakeSock"}
 	cha.sockets.Upsert(fakeSock)
@@ -230,10 +231,10 @@ func Test_Send_Chirp(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
 
-	fakeHub.RegisterNewChannel(generalName, &generalCha)
-	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
+	fakeHub.RegisterNewChannel(generalName, generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, cha)
 	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
 	_, found = fakeHub.channelByID[generalName]
@@ -301,10 +302,10 @@ func Test_Delete_Chirp(t *testing.T) {
 
 	// Create the channels
 	generalCha := generalChirping.NewChannel(generalName, fakeHub, nolog)
-	cha := NewChannel(chirpChannelName, sender, fakeHub, &generalCha, nolog)
+	cha := NewChannel(chirpChannelName, sender, fakeHub, generalCha, nolog)
 
-	fakeHub.RegisterNewChannel(generalName, &generalCha)
-	fakeHub.RegisterNewChannel(chirpChannelName, &cha)
+	fakeHub.RegisterNewChannel(generalName, generalCha)
+	fakeHub.RegisterNewChannel(chirpChannelName, cha)
 	_, found := fakeHub.channelByID[chirpChannelName]
 	require.True(t, found)
 	_, found = fakeHub.channelByID[generalName]

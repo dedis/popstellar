@@ -15,7 +15,8 @@ type ConsensusElectAccept struct {
 	Accept     bool   `json:"accept"`
 }
 
-// Verify verifies that the ConsensusElectAccept message is correct
+// Verify implements Verifiable. It verifies that the ConsensusElectAccept
+// message is correct
 func (message ConsensusElectAccept) Verify() error {
 	// verify that the instance id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(message.InstanceID)

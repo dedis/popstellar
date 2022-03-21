@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.ui.qrcode;
 
+import static androidx.core.content.ContextCompat.checkSelfPermission;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,7 +14,6 @@ import androidx.activity.result.ActivityResultRegistry;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
@@ -20,8 +21,8 @@ import com.github.dedis.popstellar.databinding.QrcodeCameraPermFragmentBinding;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment handling permission granting for the camera */
-@AndroidEntryPoint(Fragment.class)
-public final class CameraPermissionFragment extends Hilt_CameraPermissionFragment {
+@AndroidEntryPoint
+public final class CameraPermissionFragment extends Fragment {
 
   public static final String TAG = CameraPermissionFragment.class.getSimpleName();
   public static final String REQUEST_KEY = "PERMISSION_REQUEST";
@@ -70,7 +71,7 @@ public final class CameraPermissionFragment extends Hilt_CameraPermissionFragmen
   public void onResume() {
     super.onResume();
     // If the permission was granted while the app was paused, switch to QRCodeScanningFragment
-    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+    if (checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       getParentFragmentManager().setFragmentResult(REQUEST_KEY, Bundle.EMPTY);
     }

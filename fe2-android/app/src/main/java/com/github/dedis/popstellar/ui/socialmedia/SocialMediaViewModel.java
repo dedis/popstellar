@@ -13,39 +13,38 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
-import com.github.dedis.popstellar.model.network.answer.Result;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.LAOState;
+import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
-import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 @HiltViewModel
 public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
-  private static final String ROOT = "/root/";
-  private static final String SOCIAL = "/social/";
+  private static final String SOCIAL = "social";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
   /*
@@ -67,26 +66,29 @@ public class SocialMediaViewModel extends AndroidViewModel {
   /*
    * Dependencies for this class
    */
-  private final LAORepository mLaoRepository;
-  private final Gson mGson;
-  private final KeyManager mKeyManager;
+  private final LAORepository laoRepository;
+  private final GlobalNetworkManager networkManager;
+  private final Gson gson;
+  private final KeyManager keyManager;
   private final CompositeDisposable disposables;
 
   @Inject
   public SocialMediaViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
+      GlobalNetworkManager networkManager,
       Gson gson,
       KeyManager keyManager) {
     super(application);
-    mLaoRepository = laoRepository;
-    mGson = gson;
-    mKeyManager = keyManager;
+    this.laoRepository = laoRepository;
+    this.networkManager = networkManager;
+    this.gson = gson;
+    this.keyManager = keyManager;
     disposables = new CompositeDisposable();
 
     mLAOs =
         LiveDataReactiveStreams.fromPublisher(
-            mLaoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   @Override
@@ -196,9 +198,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
-    String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = mLaoRepository.getLaoById().get(laoChannel);
-    if (laoState == null) {
+    Lao lao = getCurrentLao();
+    if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
@@ -206,47 +207,31 @@ public class SocialMediaViewModel extends AndroidViewModel {
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
     try {
-      PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
-      String channel = laoChannel + SOCIAL + token.getPublicKey().getEncoded();
+      PoPToken token = keyManager.getValidPoPToken(lao);
+      Channel channel =
+          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
       Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(token, addChirp, mGson);
+      MessageGeneral msg = new MessageGeneral(token, addChirp, gson);
 
       Disposable disposable =
-          mLaoRepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
+          networkManager
+              .getMessageSender()
+              .publish(token, channel, addChirp)
               .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId());
-                    } else {
-                      Log.d(TAG, "failed to send chirp");
-                      Toast.makeText(
-                              getApplication().getApplicationContext(),
-                              R.string.error_sending_chirp,
-                              Toast.LENGTH_LONG)
-                          .show();
-                    }
-                  },
-                  throwable -> Log.d(TAG, "timed out waiting for result on chirp/add", throwable));
+                  () -> Log.d(TAG, "sent chirp with messageId: " + msg.getMessageId()),
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_sending_chirp));
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
-      Toast.makeText(
-              getApplication().getApplicationContext(),
-              R.string.error_toast_pop_token + e.getMessage(),
-              Toast.LENGTH_LONG)
-          .show();
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }
 
   public void deleteChirp(MessageID chirpId, long timestamp) {
     Log.d(TAG, "Deleting the chirp with id: " + chirpId);
-    String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = mLaoRepository.getLaoById().get(laoChannel);
-    if (laoState == null) {
+    Lao lao = getCurrentLao();
+    if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
@@ -254,51 +239,38 @@ public class SocialMediaViewModel extends AndroidViewModel {
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
     try {
-      PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
-      String channel = laoChannel + SOCIAL + token.getPublicKey().getEncoded();
+      PoPToken token = keyManager.getValidPoPToken(lao);
+      Channel channel =
+          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
       Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(token, deleteChirp, mGson);
+      MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
 
       Disposable disposable =
-          mLaoRepository
-              .sendPublish(channel, msg)
-              .subscribeOn(Schedulers.io())
-              .observeOn(AndroidSchedulers.mainThread())
-              .timeout(5, TimeUnit.SECONDS)
+          networkManager
+              .getMessageSender()
+              .publish(token, channel, deleteChirp)
               .subscribe(
-                  answer -> {
-                    if (answer instanceof Result) {
-                      Log.d(TAG, "Deleted chirp with messageId: " + msg.getMessageId());
-                      Toast.makeText(
-                              getApplication().getApplicationContext(),
-                              "Deleted chirp!",
-                              Toast.LENGTH_LONG)
-                          .show();
-                    } else {
-                      Log.d(TAG, "Failed to delete chirp");
-                      Toast.makeText(
-                              getApplication().getApplicationContext(),
-                              "Error when deleting chirp. Please try again",
-                              Toast.LENGTH_LONG)
-                          .show();
-                    }
+                  () -> {
+                    Log.d(TAG, "Deleted chirp with messageId: " + msg.getMessageId());
+                    Toast.makeText(
+                            getApplication().getApplicationContext(),
+                            "Deleted chirp!",
+                            Toast.LENGTH_LONG)
+                        .show();
                   },
-                  throwable ->
-                      Log.d(TAG, "Timed out waiting for result on chirp/delete", throwable));
+                  error ->
+                      ErrorUtils.logAndShow(
+                          getApplication(), TAG, error, R.string.error_delete_chirp));
       disposables.add(disposable);
     } catch (KeyException e) {
-      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
-      Toast.makeText(
-              getApplication().getApplicationContext(),
-              R.string.error_toast_pop_token + e.getMessage(),
-              Toast.LENGTH_LONG)
-          .show();
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
     }
   }
 
   public List<Chirp> getChirpList(String laoId) {
-    Lao lao = mLaoRepository.getLaoByChannel(ROOT + laoId);
-    return lao.getChirpsInOrder();
+    Lao lao = getLao(laoId);
+    if (lao == null) return Collections.emptyList();
+    else return lao.getChirpsInOrder();
   }
 
   /**
@@ -309,19 +281,31 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
-    String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = mLaoRepository.getLaoById().get(laoChannel);
-    if (laoState == null) {
+    Lao lao = getCurrentLao();
+    if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return false;
     }
 
     try {
-      PoPToken token = mKeyManager.getValidPoPToken(laoState.getLao());
+      PoPToken token = keyManager.getValidPoPToken(lao);
       return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
-      Log.e(TAG, getApplication().getString(R.string.error_pop_token), e);
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
+  }
+
+  @Nullable
+  public Lao getCurrentLao() {
+    return getLao(getLaoId().getValue());
+  }
+
+  @Nullable
+  private Lao getLao(String laoId) {
+    LAOState laoState = laoRepository.getLaoById().get(laoId);
+    if (laoState == null) return null;
+
+    return laoState.getLao();
   }
 }

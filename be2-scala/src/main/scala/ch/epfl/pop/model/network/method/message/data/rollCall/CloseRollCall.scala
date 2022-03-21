@@ -8,12 +8,12 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, PublicKey, Timestamp}
 import spray.json._
 
-case class CloseRollCall(
-                          update_id: Hash,
-                          closes: Hash,
-                          closed_at: Timestamp,
-                          attendees: List[PublicKey]
-                        ) extends MessageData {
+final case class CloseRollCall(
+                                update_id: Hash,
+                                closes: Hash,
+                                closed_at: Timestamp,
+                                attendees: List[PublicKey]
+                              ) extends MessageData {
   override val _object: ObjectType = ObjectType.ROLL_CALL
   override val action: ActionType = ActionType.CLOSE
 }

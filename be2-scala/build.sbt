@@ -39,6 +39,9 @@ scalacOptions ++= Seq(
     "-Ycache-macro-class-loader:last-modified", // and macro definitions. This can lead to performance improvements.
 )
 
+Scapegoat/ scalacOptions -= "-Xfatal-warnings"
+// Temporarily report scapegoat errors as warnings, to avoid broken builds
+Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
 
 // Reload changes automatically
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -96,11 +99,7 @@ lazy val scoverageSettings = Seq(
 
 ThisBuild/ scapegoatVersion := "1.4.11"
 
-scapegoatReports := Seq("xml")
-
-// Temporarily report scapegoat errors as warnings, to avoid broken builds
-Scapegoat/ scalacOptions -= "-Xfatal-warnings"
-Scapegoat/ scalacOptions += "-P:scapegoat:overrideLevels:all=Warning"
+scapegoatReports := Seq("xml", "html")
 
 // Configure Sonar
 sonarProperties := Map(
@@ -156,7 +155,7 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.9" % Test
 libraryDependencies += "com.networknt" % "json-schema-validator" % "1.0.60"
 libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.0.0-RC3"
 
-// Scala file system handlings
+// Scala file system handling
 libraryDependencies += "org.scala-lang" % "scala-reflect" % scalaVersion.value
 
 conflictManager := ConflictManager.latestCompatible

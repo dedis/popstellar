@@ -54,7 +54,7 @@ object ParamsHandler extends AskPatternConstants {
     }
   })
 
-  case class Asking(g: GraphMessage, replyTo: ActorRef)
+  final case class Asking(g: GraphMessage, replyTo: ActorRef)
 
   def subscribeHandler(clientActorRef: AskableActorRef): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map {
     case Left(jsonRpcMessage: JsonRpcRequest) =>
