@@ -16,7 +16,7 @@ class NetworkManager {
 
   private rpcHandler: JsonRpcHandler = defaultRpcHandler;
 
-  private sendingStrategy: SendingStrategy;
+  private readonly sendingStrategy: SendingStrategy;
 
   private isOnline: boolean;
 

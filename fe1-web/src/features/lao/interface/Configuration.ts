@@ -123,7 +123,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 
   /* reducers */
   reducers: {
-    [LAO_REDUCER_PATH]: Reducer<LaoReducerState, AnyAction>;
+    [LAO_REDUCER_PATH]: Reducer<LaoReducerState>;
   };
 }
 

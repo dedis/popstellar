@@ -9,8 +9,6 @@ import { EventLaoReducerState, EVENT_REDUCER_PATH } from '../reducer';
 
 export const EVENTS_FEATURE_IDENTIFIER = 'events';
 
-export interface EventsConfiguration {}
-
 /**
  * The interface the evoting feature exposes
  */
@@ -64,7 +62,7 @@ export interface EventsInterface extends FeatureInterface {
 
   /* reducers */
   reducers: {
-    [EVENT_REDUCER_PATH]: Reducer<EventLaoReducerState, AnyAction>;
+    [EVENT_REDUCER_PATH]: Reducer<EventLaoReducerState>;
   };
 }
 

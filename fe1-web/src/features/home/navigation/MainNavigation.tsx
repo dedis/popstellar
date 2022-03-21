@@ -26,6 +26,8 @@ const styles = StyleSheet.create({
 
 const MainNavigation = () => {
   const screens = HomeHooks.useMainNavigationScreens();
+  // sort screens by order before rendering them
+  screens.sort((a, b) => a.order - b.order);
 
   return (
     <HomeTopTabNavigator.Navigator
@@ -35,16 +37,14 @@ const MainNavigation = () => {
         swipeEnabled: false,
       }}>
       <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
-      {screens
-        .sort((a, b) => a.order - b.order)
-        .map(({ id, title, Component }) => (
-          <HomeTopTabNavigator.Screen
-            key={id}
-            name={id}
-            component={Component}
-            options={{ title: title || id }}
-          />
-        ))}
+      {screens.map(({ id, title, Component }) => (
+        <HomeTopTabNavigator.Screen
+          key={id}
+          name={id}
+          component={Component}
+          options={{ title: title || id }}
+        />
+      ))}
     </HomeTopTabNavigator.Navigator>
   );
 };

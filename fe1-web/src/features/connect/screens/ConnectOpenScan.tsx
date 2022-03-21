@@ -26,13 +26,11 @@ const ConnectOpenScan = () => {
   const [showScanner, setShowScanner] = useState(false);
   // re-enable scanner on focus events
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
       // The screen is focused, set QrWasScanned to false (i.e. allow scanner to be reused)
       setShowScanner(true);
     });
-
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return unsubscribe;
   }, [navigation]);
 
   const toast = useToast();

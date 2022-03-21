@@ -1,5 +1,7 @@
 export namespace HomeFeature {
-  export interface LaoState {}
+  export interface LaoState {
+    id: string;
+  }
 
   export interface Lao {
     toState: () => LaoState;

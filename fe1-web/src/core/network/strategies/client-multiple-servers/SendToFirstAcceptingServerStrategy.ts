@@ -26,7 +26,7 @@ export const sendToFirstAcceptingServerStrategy: SendingStrategy = async (payloa
             // in case the previous connection failed, try the next one
             console.warn(`Could not send payload to ${connection.address} due to failure:`, error);
             console.warn('Trying a different connection');
-            return await connection.sendPayload(payload);
+            return connection.sendPayload(payload);
           }
         },
         // initially we just send the payload to the first server
