@@ -264,9 +264,6 @@ const STRINGS = {
     'porta orci auctor, a vulputate felis suscipit. Aenean vulputate ligula ac commodo ornare.',
 
   unused: 'unused',
-
-  /* Common error messages */
-  no_active_lao: 'no LAO is currently active',
 };
 
 export default STRINGS;

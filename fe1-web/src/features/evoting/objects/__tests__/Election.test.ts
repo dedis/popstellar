@@ -5,11 +5,10 @@ import STRINGS from 'resources/strings';
 import { mockLaoIdHash, mockLaoName } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
 
-import { LaoEventType } from 'features/events/objects';
 import {
   Election,
   ElectionStatus,
-  EventTypeElection,
+  ELECTION_EVENT_TYPE,
   Question,
   RegisteredVote,
   Vote,
@@ -55,7 +54,7 @@ const initializeData = () => {
 
   electionState = {
     id: 'electionId',
-    eventType: LaoEventType.ELECTION,
+    eventType: ELECTION_EVENT_TYPE,
     lao: 'MyLao',
     name: 'MyElection',
     version: 'version',
@@ -63,7 +62,7 @@ const initializeData = () => {
     start: 1520255600,
     end: 1520275600,
     questions: [question1, question2],
-    electionStatus: ElectionStatus.FINISHED,
+    electionStatus: ElectionStatus.TERMINATED,
     registeredVotes: [registeredVotes],
   };
 
@@ -91,7 +90,7 @@ describe('Election object', () => {
     const election = Election.fromState(electionState);
     const expectedState = {
       id: ELECTION_ID.valueOf(),
-      eventType: EventTypeElection,
+      eventType: ELECTION_EVENT_TYPE,
       lao: mockLaoName,
       name: NAME,
       version: VERSION,
@@ -100,7 +99,7 @@ describe('Election object', () => {
       end: TIMESTAMP_PAST2.valueOf(),
       questions: [question1, question2],
       registeredVotes: [registeredVotes],
-      electionStatus: ElectionStatus.FINISHED,
+      electionStatus: ElectionStatus.TERMINATED,
     };
     expect(election.toState()).toStrictEqual(expectedState);
   });

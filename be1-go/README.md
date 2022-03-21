@@ -71,7 +71,11 @@ the most common git operations without the hassle of using the CLI.
 Please ensure you have Go >= 1.16 installed on your machine. Instructions for
 doing so are available [here](https://golang.org/doc/install).
 
-Linux/OSX users also need to install GNU Make. OSX users may install it using
+#### Build on Unix
+
+To build the `pop` CLI on Unix devices, you need to execute the `make build` command. 
+
+You should first install GNU Make. OSX users may install it using
 homebrew. Linux users may do so using their package manager:
 
 ```bash
@@ -79,10 +83,15 @@ brew install make # OSX
 sudo apt-get install build-essential # Ubuntu/Debian
 ```
 
-### Execution
+#### Build on Windows
 
-You may build the `pop` CLI to interact with the server by executing `make
-build` on Linux/OSX or `make.bat build` in Windows.
+To build the `pop.exe` CLI on Windows devices, you need to execute the  `.\make.bat build` command.
+
+You should first install GCC compiler 64 bits. After having looked on the internet for a while we recommend [TDM-GCC](https://jmeubank.github.io/tdm-gcc/), using the tdm64-gcc-%VERSION%.exe that contains MinGW-w64. (As of March 2022)
+
+Then, you will be able to compile using `.\make.bat build` which will create `pop.exe` that you will be able to execute from the terminal. 
+
+### Execution
 
 You can see the CLI usage with the `-h` flag.
 

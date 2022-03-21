@@ -29,7 +29,7 @@ func Test_Election_End(t *testing.T) {
 
 	require.Equal(t, "election", msg.Object)
 	require.Equal(t, "end", msg.Action)
-	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.LAO)
+	require.Equal(t, "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=", msg.Lao)
 	require.Equal(t, "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=", msg.Election)
 	require.Equal(t, int64(1633099883), msg.CreatedAt)
 	require.Equal(t, "tAUYpZDc7lOfrxyviK6V9UsezeubGUZR-TpwF52pzWU=", msg.RegisteredVotes)

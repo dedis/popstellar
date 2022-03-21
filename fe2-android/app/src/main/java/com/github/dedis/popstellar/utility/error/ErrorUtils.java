@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.error;
 
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -37,7 +38,11 @@ public class ErrorUtils {
     String exceptionMsg = getLocalizedMessage(context, error, action, actionArgs);
 
     Log.e(tag, exceptionMsg, error);
-    Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show();
+
+    //This makes it so that the toast is run on the UI thread
+    //Otherwise it would crash
+    new Handler(context.getMainLooper()).post(
+            () -> Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show());
   }
 
   private static String getLocalizedMessage(

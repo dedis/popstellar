@@ -9,9 +9,10 @@ import { CheckboxList, TimeDisplay, WideButtonView } from 'core/components';
 import STRINGS from 'resources/strings';
 import { FOUR_SECONDS } from 'resources/const';
 
-import { castVote, terminateElection } from '../network/ElectionMessageApi';
+import { castVote, openElection, terminateElection } from '../network/ElectionMessageApi';
 import { Election, ElectionStatus, QuestionResult, SelectedBallots } from '../objects';
 import BarChartDisplay from './BarChartDisplay';
+import { EvotingHooks } from '../hooks';
 
 /**
  * Component used to display a Election event in the LAO event list
@@ -33,8 +34,9 @@ const styles = StyleSheet.create({
 });
 
 const EventElection = (props: IPropTypes) => {
-  const { election } = props;
-  const { isOrganizer } = props;
+  const { election, isOrganizer } = props;
+  const laoId = EvotingHooks.useCurrentLaoId();
+
   const toast = useToast();
   const questions = useMemo(
     () => election.questions.map((q) => ({ title: q.question, data: q.ballot_options })),
@@ -44,7 +46,7 @@ const EventElection = (props: IPropTypes) => {
   const [hasVoted, setHasVoted] = useState(0);
 
   const onCastVote = () => {
-    castVote(election, selectedBallots)
+    castVote(laoId, election, selectedBallots)
       .then(() => setHasVoted((prev) => prev + 1))
       .catch((err) => {
         console.error('Could not cast Vote, error:', err);
@@ -56,9 +58,23 @@ const EventElection = (props: IPropTypes) => {
       });
   };
 
+  const onOpenElection = () => {
+    console.log('Opening Election');
+    openElection(laoId, election)
+      .then(() => console.log('Election Opened'))
+      .catch((err) => {
+        console.error('Could not open election, error:', err);
+        toast.show(`Could not open election, error: ${err}`, {
+          type: 'danger',
+          placement: 'top',
+          duration: FOUR_SECONDS,
+        });
+      });
+  };
+
   const onTerminateElection = () => {
     console.log('Terminating Election');
-    terminateElection(election)
+    terminateElection(laoId, election)
       .then(() => console.log('Election Terminated'))
       .catch((err) => {
         console.error('Could not terminate election, error:', err);
@@ -77,14 +93,17 @@ const EventElection = (props: IPropTypes) => {
     switch (status) {
       case ElectionStatus.NOT_STARTED:
         return (
-          <SectionList
-            sections={questions}
-            keyExtractor={(item, index) => item + index}
-            renderSectionHeader={({ section: { title } }) => (
-              <Text style={styles.textQuestions}>{title}</Text>
-            )}
-            renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
-          />
+          <>
+            <SectionList
+              sections={questions}
+              keyExtractor={(item, index) => item + index}
+              renderSectionHeader={({ section: { title } }) => (
+                <Text style={styles.textQuestions}>{title}</Text>
+              )}
+              renderItem={({ item }) => <Text style={styles.textOptions}>{`\u2022 ${item}`}</Text>}
+            />
+            {isOrganizer && <WideButtonView title="Open election" onPress={onOpenElection} />}
+          </>
         );
       case ElectionStatus.OPENED:
         return (
@@ -101,18 +120,6 @@ const EventElection = (props: IPropTypes) => {
             ))}
             <WideButtonView title={STRINGS.cast_vote} onPress={onCastVote} />
             <Badge value={hasVoted} status="success" />
-            {isOrganizer && (
-              <WideButtonView
-                title="Terminate Election / Tally Votes"
-                onPress={onTerminateElection}
-              />
-            )}
-          </>
-        );
-      case ElectionStatus.FINISHED:
-        return (
-          <>
-            <Text style={styles.text}>Election finished</Text>
             {isOrganizer && (
               <WideButtonView
                 title="Terminate Election / Tally Votes"
