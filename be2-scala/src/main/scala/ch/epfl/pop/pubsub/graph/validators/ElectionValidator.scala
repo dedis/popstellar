@@ -45,6 +45,32 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
     }
   }
 
+  def validateOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "OpenElection", rpcMessage.id)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: OpenElection = message.decodedData.get.asInstanceOf[OpenElection]
+
+        val laoId: Hash = rpcMessage.extractLaoId
+
+        val sender: PublicKey = message.sender 
+        val channel: Channel = rpcMessage.getParamsChannel
+
+        if (!validateTimestampStaleness(data.opened_at)) {
+          Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
+        } else if (!validateAttendee(sender, channel)) {
+          Right(validationError(s"Sender $sender has an invalid PoP token."))
+        } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
+          Right(validationError(s"trying to send a OpenElection message on a wrong type of channel $channel"))
+        } else {
+          Left(rpcMessage)
+        }
+
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    }
+  }
+
   def validateCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "CastVoteElection", rpcMessage.id)
 
