@@ -63,7 +63,7 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
           // create rollcall channel
           _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
           // write rollcall creation message
-          _ <- dbActor ? DbActor.Write(rollCallChannel, message)
+          _ <- dbActor ? DbActor.WriteAndPropagate(rollCallChannel, message)
           // write rollcall data
         } yield ()
 
