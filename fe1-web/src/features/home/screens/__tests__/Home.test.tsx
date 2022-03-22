@@ -15,7 +15,7 @@ import Home from '../Home';
 
 const contextValueEmpyList = {
   [HOME_FEATURE_IDENTIFIER]: {
-    createLao: () => Promise.resolve('a channel'),
+    requestCreateLao: () => Promise.resolve('a channel'),
     addLaoServerAddress: () => mockReduxAction,
     connectToTestLao: () => {},
     useLaoList: () => [],
@@ -26,7 +26,7 @@ const contextValueEmpyList = {
 
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
-    createLao: () => Promise.resolve('a channel'),
+    requestCreateLao: () => Promise.resolve('a channel'),
     addLaoServerAddress: () => mockReduxAction,
     connectToTestLao: () => {},
     useLaoList: LaoHooks.useLaoList,

@@ -1,4 +1,4 @@
-import { shuffleArray } from 'core/functions/arrays';
+import { shuffleArray } from 'core/functions/Array';
 
 import { SendingStrategy } from './ClientMultipleServerStrategy';
 import { sendToFirstAcceptingServerStrategy } from './SendToFirstAcceptingServerStrategy';

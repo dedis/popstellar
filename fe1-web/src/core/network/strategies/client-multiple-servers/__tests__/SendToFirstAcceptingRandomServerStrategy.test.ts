@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import * as arrayFunctions from 'core/functions/arrays';
+import * as arrayFunctions from 'core/functions/Array';
 import { MockNetworkConnection } from 'core/network/__tests__/MockNetworkConnection';
 import { mockJsonRpcPayload } from 'core/network/__tests__/utils';
 import { NetworkConnection } from 'core/network/NetworkConnection';

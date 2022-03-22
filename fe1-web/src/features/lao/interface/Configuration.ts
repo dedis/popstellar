@@ -104,9 +104,10 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     getCurrentLaoId: () => Hash | undefined;
 
     /**
-     * Creates a new lao
+     * Sends a network request to create a new lao and returns
+     * the corresponding channel
      */
-    createLao: (laoName: string) => Promise<Channel>;
+    requestCreateLao: (laoName: string) => Promise<Channel>;
 
     /**
      * Opens a lao test connection
@@ -128,7 +129,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
 }
 
 /**
- * The type of the context that is provided to react evoting components
+ * The type of the context that is provided to react lao components
  */
 export type LaoReactContext = Pick<
   LaoCompositionConfiguration,

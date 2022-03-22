@@ -1,6 +1,5 @@
 import { catchup, getNetworkManager, subscribeToChannel } from 'core/network';
 import { getStore } from 'core/redux';
-import STRINGS from 'resources/strings';
 
 import { PublicComponents } from './components';
 import * as functions from './functions';
@@ -15,7 +14,6 @@ import {
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
 import { selectCurrentLaoId, laoReducer, addLaoServerAddress } from './reducer';
-import { Identity } from './screens';
 
 /**
  * Configures the LAO feature
@@ -69,10 +67,7 @@ export const compose = (config: LaoCompositionConfiguration): LaoCompositionInte
     context: {
       EventList: config.EventList,
       encodeLaoConnectionForQRCode: config.encodeLaoConnectionForQRCode,
-      laoNavigationScreens: [
-        ...config.laoNavigationScreens,
-        { id: STRINGS.organization_navigation_tab_identity, Component: Identity, order: 2 },
-      ],
+      laoNavigationScreens: config.laoNavigationScreens,
       organizerNavigationScreens: config.organizerNavigationScreens,
     },
   };

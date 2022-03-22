@@ -40,11 +40,4 @@ describe('E-Voting hooks', () => {
       expect(result.current).toEqual(mockLaoIdHash);
     });
   });
-
-  describe('EvotingHooks.useOnConfirmEventCreation', () => {
-    it('should return the onConfirmEventCreation config option', () => {
-      const { result } = renderHook(() => EvotingHooks.useOnConfirmEventCreation(), { wrapper });
-      expect(result.current).toEqual(onConfirmEventCreation);
-    });
-  });
 });

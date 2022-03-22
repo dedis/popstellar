@@ -40,7 +40,6 @@ export function configureFeatures() {
     updateEvent: eventsConfiguration.actionCreators.updateEvent,
     /* events: functions */
     getEventById: eventsConfiguration.functions.getEventById,
-    onConfirmEventCreation: eventsConfiguration.functions.onConfirmPress,
     /* other dependencies */
     messageRegistry,
   });
@@ -55,7 +54,7 @@ export function configureFeatures() {
   const homeComposition = home.compose({
     /* functions */
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
-    createLao: laoConfiguration.functions.createLao,
+    requestCreateLao: laoConfiguration.functions.requestCreateLao,
     /* action creators */
     addLaoServerAddress: laoConfiguration.actionCreators.addLaoServerAddress,
     /* hooks */
@@ -65,12 +64,12 @@ export function configureFeatures() {
       {
         id: STRINGS.navigation_tab_connect,
         Component: connectConfiguration.navigation.ConnectNavigation,
-        order: 0,
+        order: -99999999,
       },
       {
         id: STRINGS.navigation_tab_wallet,
         Component: walletConfiguration.navigation.WalletNavigation,
-        order: 3,
+        order: 99999999,
       },
     ],
   });
@@ -91,16 +90,20 @@ export function configureFeatures() {
     encodeLaoConnectionForQRCode: connectConfiguration.functions.encodeLaoConnectionForQRCode,
     /* navigation */
     laoNavigationScreens: [
-      { id: STRINGS.navigation_tab_home, Component: homeComposition.screens.Home, order: 0 },
+      {
+        id: STRINGS.navigation_tab_home,
+        Component: homeComposition.screens.Home,
+        order: -99999999,
+      },
       {
         id: STRINGS.navigation_tab_social_media,
         Component: socialConfiguration.navigation.SocialMediaNavigation,
-        order: 1,
+        order: 0,
       },
       {
         id: STRINGS.navigation_tab_wallet,
         Component: walletConfiguration.navigation.WalletNavigation,
-        order: 4,
+        order: 99999999,
       },
     ],
     organizerNavigationScreens: [
@@ -112,22 +115,22 @@ export function configureFeatures() {
       {
         id: STRINGS.organizer_navigation_creation_meeting,
         Component: meetingConfiguration.screens.CreateMeeting,
-        order: 1,
+        order: 10000,
       },
       {
         id: STRINGS.organizer_navigation_creation_roll_call,
         Component: rollCallConfiguration.screens.CreateRollCall,
-        order: 2,
+        order: 20000,
       },
       {
         id: STRINGS.organizer_navigation_creation_election,
         Component: evotingConfiguration.screens.CreateElection,
-        order: 3,
+        order: 30000,
       },
       {
         id: STRINGS.roll_call_open,
         Component: rollCallConfiguration.screens.RollCallOpened,
-        order: 4,
+        order: 40000,
       },
     ],
   });

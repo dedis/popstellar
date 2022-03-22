@@ -1,6 +1,6 @@
 import { mockLaoId } from '__tests__/utils';
 
-import { encodeLaoConnectionForQRCode } from '../lao-connection';
+import { encodeLaoConnectionForQRCode } from '../LaoConnection';
 
 describe('lao-connection', () => {
   describe('encodeLaoConnectionInQRCode', () => {

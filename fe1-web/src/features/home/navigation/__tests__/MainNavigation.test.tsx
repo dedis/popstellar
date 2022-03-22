@@ -11,7 +11,7 @@ import MainNavigation from '../MainNavigation';
 
 const contextValue = {
   [HOME_FEATURE_IDENTIFIER]: {
-    createLao: () => Promise.resolve('a channel'),
+    requestCreateLao: () => Promise.resolve('a channel'),
     addLaoServerAddress: () => mockReduxAction,
     connectToTestLao: () => {},
     useLaoList: () => [],

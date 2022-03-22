@@ -12,7 +12,7 @@ export interface HomeCompositionConfiguration {
   /* lao */
 
   /* functions */
-  createLao: (laoName: string) => Promise<Channel>;
+  requestCreateLao: (laoName: string) => Promise<Channel>;
   connectToTestLao: () => void;
 
   /* action creators */
@@ -42,12 +42,12 @@ export interface HomeCompositionConfiguration {
 }
 
 /**
- * The type of the context that is provided to react evoting components
+ * The type of the context that is provided to react home components
  */
 export type HomeReactContext = Pick<
   HomeCompositionConfiguration,
   /* lao */
-  | 'createLao'
+  | 'requestCreateLao'
   | 'addLaoServerAddress'
   | 'connectToTestLao'
   | 'useLaoList'
@@ -56,10 +56,9 @@ export type HomeReactContext = Pick<
 >;
 
 /**
- * The interface the evoting feature exposes
+ * The interface the home feature exposes
  */
 export interface HomeInterface extends FeatureInterface {
-  /* navigation */
   navigation: {
     MainNavigation: React.ComponentType<any>;
   };
@@ -67,6 +66,5 @@ export interface HomeInterface extends FeatureInterface {
     Home: React.ComponentType<any>;
     Launch: React.ComponentType<any>;
   };
-  /* context */
   context: HomeReactContext;
 }

@@ -10,7 +10,7 @@ import STRINGS from 'resources/strings';
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import { selectCurrentLao } from '../reducer';
-import { AttendeeScreen } from '../screens';
+import { AttendeeScreen, Identity } from '../screens';
 import OrganizerNavigation from './OrganizerNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
@@ -80,20 +80,21 @@ const LaoNavigation: React.FC = () => {
       Component = AttendeeScreen;
     }
 
-    const s = [
+    return [
       ...passedScreens,
+      {
+        id: STRINGS.organization_navigation_tab_identity,
+        Component: Identity,
+        order: 10000,
+      },
       {
         id: STRINGS.organization_navigation_tab_user,
         title: screenName,
         Component,
-        order: 2,
+        order: 20000,
       } as LaoFeature.Screen,
-    ];
-
-    // sort screens by order before rendering them
-    s.sort((a, b) => a.order - b.order);
-
-    return s;
+      // sort screens by order before rendering them
+    ].sort((a, b) => a.order - b.order);
   }, [passedScreens, isOrganizer, isWitness]);
 
   return (

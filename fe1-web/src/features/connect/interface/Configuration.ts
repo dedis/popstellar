@@ -35,7 +35,7 @@ export type ConnectReactContext = Pick<
 >;
 
 /**
- * The interface the evoting feature exposes
+ * The interface the connect feature exposes
  */
 export interface ConnectInterface extends FeatureInterface {
   navigation: {

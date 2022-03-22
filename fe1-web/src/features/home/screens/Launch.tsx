@@ -33,7 +33,7 @@ const Launch = () => {
   const [inputAddress, setInputAddress] = useState('ws://127.0.0.1:9000/organizer/client');
 
   const connectToTestLao = HomeHooks.useConnectToTestLao();
-  const createLao = HomeHooks.useCreateLao();
+  const requestCreateLao = HomeHooks.useRequestCreateLao();
   const addLaoServerAddress = HomeHooks.useAddLaoServerAddress();
 
   const onButtonLaunchPress = (laoName: string) => {
@@ -43,7 +43,7 @@ const Launch = () => {
 
     getNetworkManager().connect(inputAddress);
 
-    createLao(laoName)
+    requestCreateLao(laoName)
       .then((channel: Channel) => {
         subscribeToChannel(channel).then(() => {
           // after subscribing to the LAO channel, add the server address to the lao state

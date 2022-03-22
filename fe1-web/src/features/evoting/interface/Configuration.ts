@@ -2,7 +2,7 @@ import React from 'react';
 import { AnyAction } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Hash, Timestamp } from 'core/objects';
+import { Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { EvotingFeature } from './Feature';
@@ -58,27 +58,6 @@ export interface EvotingConfiguration {
    * @returns The event or undefined if none was found
    */
   getEventById: (id: Hash) => EvotingFeature.Event | undefined;
-
-  /**
-   * Function called when the user confirms an event creation. If the end is in the past, it will tell
-   * the user and cancel the creation. If the event starts more than 5 minutes in the past, it will
-   * ask if it can start now. Otherwise, the event will simply be created.
-   *
-   * @param start - The start time of the event
-   * @param end - The end time of the event
-   * @param createEvent - The function which creates the event
-   * @param setStartModalIsVisible - The function which sets the visibility of the modal on starting
-   * time being in past
-   * @param setEndModalIsVisible - The function which sets the visibility of the modal on ending time
-   * being in past
-   */
-  onConfirmEventCreation: (
-    start: Timestamp,
-    end: Timestamp,
-    createEvent: Function,
-    setStartModalIsVisible: Function,
-    setEndModalIsVisible: Function,
-  ) => void;
 }
 
 /**
@@ -93,7 +72,6 @@ export type EvotingReactContext = Pick<
   | 'getEventById'
   | 'addEvent'
   | 'updateEvent'
-  | 'onConfirmEventCreation'
 >;
 
 /**

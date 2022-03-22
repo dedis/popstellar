@@ -21,10 +21,10 @@ export namespace HomeHooks {
   export const useConnectToTestLao = () => useHomeContext().connectToTestLao;
 
   /**
-   * Gets the function that creates a new lao
+   * Gets the function that sends a network request to create a new lao
    * @returns The function to create a lao
    */
-  export const useCreateLao = () => useHomeContext().createLao;
+  export const useRequestCreateLao = () => useHomeContext().requestCreateLao;
 
   /**
    * Gets the function to add a server address to a lao
