@@ -18,8 +18,6 @@
     \n\n Please initialize your wallet to access the functionalities of the app.
     To do so, please tap Wallet tab above.
     </string>
-  <string name="text_wallet_welcome">\
-  </string>
   <string name="attendee">Attendee</string>
   <string name="organizer">Organizer</string>
 
