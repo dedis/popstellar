@@ -247,7 +247,7 @@ public class HomeActivity extends AppCompatActivity {
   public void setupConnectButton() {
     Button connectButton = findViewById(R.id.tab_connect);
     connectButton.setOnClickListener(v -> {
-        if (!mViewModel.isWalletSetUp()){
+        if (mViewModel != null && !mViewModel.isWalletSetUp()){
             ErrorUtils.logAndShow(
                     v.getContext(),
                     TAG,
@@ -263,7 +263,7 @@ public class HomeActivity extends AppCompatActivity {
   public void setupLaunchButton() {
     Button launchButton = findViewById(R.id.tab_launch);
     launchButton.setOnClickListener(v -> {
-        if (!mViewModel.isWalletSetUp()){
+        if (mViewModel != null && !mViewModel.isWalletSetUp()){
             ErrorUtils.logAndShow(
                     getApplicationContext(),
                     TAG,
@@ -284,7 +284,7 @@ public class HomeActivity extends AppCompatActivity {
   public void setupSocialMediaButton() {
     Button socialMediaButton = findViewById(R.id.tab_social_media);
     socialMediaButton.setOnClickListener(v -> {
-        if (!mViewModel.isWalletSetUp()){
+        if (mViewModel != null && !mViewModel.isWalletSetUp()){
             ErrorUtils.logAndShow(
                     v.getContext(),
                     TAG,
@@ -292,9 +292,7 @@ public class HomeActivity extends AppCompatActivity {
                     R.string.uninitialized_wallet_exception);
         }
         else {
-            {
-                mViewModel.openSocialMedia();
-            }
+            mViewModel.openSocialMedia();
         }
     });
   }
