@@ -254,8 +254,9 @@ public class HomeActivity extends AppCompatActivity {
                     new UninitializedWalletException(),
                     R.string.uninitialized_wallet_exception);
         }
-        else
+        else {
             mViewModel.openConnect();
+        }
     });
   }
 
@@ -269,8 +270,9 @@ public class HomeActivity extends AppCompatActivity {
                     new UninitializedWalletException(),
                     R.string.uninitialized_wallet_exception);
         }
-        else
+        else {
             mViewModel.openLaunch();
+        }
     });
   }
 
@@ -289,8 +291,11 @@ public class HomeActivity extends AppCompatActivity {
                     new UninitializedWalletException(),
                     R.string.uninitialized_wallet_exception);
         }
-        else
-        mViewModel.openSocialMedia();
+        else {
+            {
+                mViewModel.openSocialMedia();
+            }
+        }
     });
   }
 
