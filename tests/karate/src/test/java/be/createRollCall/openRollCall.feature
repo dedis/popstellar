@@ -1,12 +1,8 @@
 @env=go,scala
 Feature: Join a Roll Call
   Background:
-        ## This is feature will be called  to
-        # This call makes this feature and server.feature share the same scope
-        # Meaning they share def variables, configurations ...
-        # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
-        # * call wait <timeout>
-        # * karate.set(varName, newValue)
+        # This is feature will be called  to
+        # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
 

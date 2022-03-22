@@ -2,12 +2,10 @@
 Feature: Create a pop LAO
 
   Background:
-        ## This is feature will be called  to
+        # This is feature will be called  to test an LAO creation
         # This call makes this feature and server.feature share the same scope
         # Meaning they share def variables, configurations ...
         # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
-        # * call wait <timeout>
-        # * karate.set(varName, newValue)
     * call read('classpath:be/utils/server.feature')
 
   Scenario: Create Lao request with empty lao name should fail with an error response
