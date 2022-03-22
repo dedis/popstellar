@@ -17,10 +17,11 @@ const STRINGS = {
 
   /* --- App Navigation Strings --- */
   app_navigation_tab_home: 'AppHome',
-  app_navigation_tab_organizer: 'AppOrganizer',
+  app_navigation_tab_user: 'AppUser',
 
   /* --- Organization Navigation Strings --- */
   organization_navigation_tab_home: 'Home',
+  organization_navigation_tab_user: 'User',
   organization_navigation_tab_attendee: 'Attendee',
   organization_navigation_tab_organizer: 'Organizer',
   organization_navigation_tab_witness: 'Witness',
@@ -262,9 +263,6 @@ const STRINGS = {
     'porta orci auctor, a vulputate felis suscipit. Aenean vulputate ligula ac commodo ornare.',
 
   unused: 'unused',
-
-  /* Common error messages */
-  no_active_lao: 'no LAO is currently active',
 };
 
 export default STRINGS;

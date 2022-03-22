@@ -1,15 +1,15 @@
 import 'jest-extended';
+
 import { configureTestFeatures, mockPopToken } from '__tests__/utils';
-
-import { channelFromIds, Timestamp } from 'core/objects';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
-import { AddChirp } from 'features/social/network/messages/chirp';
-import { OpenedLaoStore } from 'features/lao/store';
+import { channelFromIds, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
+import { OpenedLaoStore } from 'features/lao/store';
+import { AddChirp } from 'features/social/network/messages/chirp';
 
-import { ActionType, ObjectType, SignatureType } from '../MessageData';
-import { configureMessages, Message } from '../Message';
 import { MessageRegistry } from '..';
+import { configureMessages, Message } from '../Message';
+import { ActionType, ObjectType, SignatureType } from '../MessageData';
 
 const { CHIRP } = ObjectType;
 const { ADD, INVALID } = ActionType;
@@ -27,6 +27,7 @@ const laoState: LaoState = {
   last_modified: 1577833500,
   organizer: 'organizerPublicKey',
   witnesses: [],
+  server_addresses: [],
 };
 const getMock = jest.spyOn(OpenedLaoStore, 'get');
 getMock.mockImplementation(() => Lao.fromState(laoState));

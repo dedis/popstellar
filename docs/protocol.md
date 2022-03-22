@@ -48,8 +48,6 @@ that it is implemented correctly, all messages will be described using the
 JSON Schema (proposed IETF standard, version: draft-07). 
 This will enable the teams to validate their inputs and outputs with the schema
 files as part of their testing strategy. 
-The JSON Schema description is not part of this document and will be provided
-in a dedicated branch of the project’s Github repository.
 
 ## Representation of complex data types in the protocol
 

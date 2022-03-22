@@ -1,12 +1,11 @@
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import React from 'react';
 import { Platform, StyleSheet } from 'react-native';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import STRINGS from 'resources/strings';
-import { ConnectNavigation } from 'features/connect/navigation';
-import { WalletNavigation } from 'features/wallet/navigation';
 
-import { Home, Launch } from '../screens';
+import { HomeHooks } from '../hooks';
+import { Home } from '../screens';
 
 /**
  * The main tab navigation component. It creates a tab navigator between the Home, Connect, Launch
@@ -25,7 +24,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const MainNavigation: React.FC = () => {
+const MainNavigation = () => {
+  const screens = HomeHooks.useMainNavigationScreens();
+  // sort screens by order before rendering them
+  screens.sort((a, b) => a.order - b.order);
+
   return (
     <HomeTopTabNavigator.Navigator
       style={styles.navigator}
@@ -34,15 +37,14 @@ const MainNavigation: React.FC = () => {
         swipeEnabled: false,
       }}>
       <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_home} component={Home} />
-      <HomeTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_connect}
-        component={ConnectNavigation}
-      />
-      <HomeTopTabNavigator.Screen name={STRINGS.navigation_tab_launch} component={Launch} />
-      <HomeTopTabNavigator.Screen
-        name={STRINGS.navigation_tab_wallet}
-        component={WalletNavigation}
-      />
+      {screens.map(({ id, title, Component }) => (
+        <HomeTopTabNavigator.Screen
+          key={id}
+          name={id}
+          component={Component}
+          options={{ title: title || id }}
+        />
+      ))}
     </HomeTopTabNavigator.Navigator>
   );
 };

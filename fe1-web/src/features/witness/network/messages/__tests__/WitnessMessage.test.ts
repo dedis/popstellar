@@ -1,9 +1,9 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { mockKeyPair, mockPopToken } from '__tests__/utils';
 
-import { Base64UrlData, ProtocolError } from 'core/objects';
+import { mockKeyPair, mockPopToken } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Base64UrlData, ProtocolError } from 'core/objects';
 
 import { WitnessMessage } from '../WitnessMessage';
 

@@ -1,10 +1,10 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
+import { TextBlock, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import STRINGS from 'resources/strings';
-import { TextBlock, WideButtonView } from 'core/components';
 
 import { WalletStore } from '../store';
 
@@ -33,7 +33,7 @@ const WalletHome = () => {
   }
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.welcome_to_wallet_display} />
       <View style={styles.smallPadding} />
       <TextBlock text={STRINGS.info_to_set_wallet} />

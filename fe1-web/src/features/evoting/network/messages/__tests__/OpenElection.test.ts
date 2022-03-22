@@ -1,28 +1,15 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import {
-  mockLao,
-  mockLaoId,
-  mockLaoIdHash,
-  mockLaoName,
-  configureTestFeatures,
-} from '__tests__/utils';
 
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { configureTestFeatures, mockLaoIdHash } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { OpenedLaoStore } from 'features/lao/store';
-
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+import { mockElectionId } from 'features/evoting/__tests__/utils';
+
 import { OpenElection } from '../OpenElection';
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-
-const electionId: Hash = Hash.fromStringArray(
-  'Election',
-  mockLaoId,
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
 
 // In these tests, we should assume that the input to the messages is
 // just a Partial<> and not a MessageDataProperties<>
@@ -30,7 +17,7 @@ const electionId: Hash = Hash.fromStringArray(
 const sampleOpenElection: Partial<OpenElection> = {
   object: ObjectType.ELECTION,
   action: ActionType.OPEN,
-  election: electionId,
+  election: mockElectionId,
   lao: mockLaoIdHash,
   opened_at: TIMESTAMP,
 };
@@ -38,14 +25,13 @@ const sampleOpenElection: Partial<OpenElection> = {
 const openElectionJson: string = `{
   "object": "${ObjectType.ELECTION}",
   "action": "${ActionType.OPEN}",
-  "election": "${electionId}",
+  "election": "${mockElectionId}",
   "lao": "${mockLaoIdHash}",
   "opened_at": ${TIMESTAMP}
 }`;
 
 beforeAll(() => {
   configureTestFeatures();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('OpenElection', () => {
@@ -56,7 +42,7 @@ describe('OpenElection', () => {
     const temp = {
       object: ObjectType.ELECTION,
       action: ActionType.OPEN,
-      election: electionId,
+      election: mockElectionId,
       lao: mockLaoIdHash,
       opened_at: TIMESTAMP,
     };
@@ -72,7 +58,7 @@ describe('OpenElection', () => {
     const obj = {
       object: ObjectType.ELECTION,
       action: ActionType.NOTIFY_ADD,
-      election: electionId.toString(),
+      election: mockElectionId.toString(),
       lao: mockLaoIdHash.toString(),
       opened_at: TIMESTAMP.valueOf(),
     };
@@ -84,7 +70,7 @@ describe('OpenElection', () => {
     const obj = {
       object: ObjectType.CHIRP,
       action: ActionType.OPEN,
-      election: electionId.toString(),
+      election: mockElectionId.toString(),
       lao: mockLaoIdHash.toString(),
       opened_at: TIMESTAMP.valueOf(),
     };
@@ -107,7 +93,7 @@ describe('OpenElection', () => {
       const createWrongObj = () =>
         new OpenElection({
           lao: undefined as unknown as Hash,
-          election: electionId,
+          election: mockElectionId,
           opened_at: TIMESTAMP,
         });
       expect(createWrongObj).toThrow(ProtocolError);
@@ -116,7 +102,7 @@ describe('OpenElection', () => {
     it('should throw an error if opened_at is undefined', () => {
       const createWrongObj = () =>
         new OpenElection({
-          election: electionId,
+          election: mockElectionId,
           lao: mockLaoIdHash,
           opened_at: undefined as unknown as Timestamp,
         });
@@ -127,7 +113,7 @@ describe('OpenElection', () => {
       const msg = new OpenElection({
         object: ObjectType.CHIRP,
         action: ActionType.NOTIFY_ADD,
-        election: electionId,
+        election: mockElectionId,
         lao: mockLaoIdHash,
         opened_at: TIMESTAMP,
       } as MessageDataProperties<OpenElection>);

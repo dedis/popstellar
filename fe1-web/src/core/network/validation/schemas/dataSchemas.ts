@@ -1,3 +1,5 @@
+// disable import/order here as it makes it easier to spot missing imports
+/* eslint-disable import/order */
 import dataCreateLao from 'protocol/query/method/message/data/dataCreateLao.json';
 import dataStateLao from 'protocol/query/method/message/data/dataStateLao.json';
 import dataUpdateLao from 'protocol/query/method/message/data/dataUpdateLao.json';
@@ -17,6 +19,7 @@ import dataNotifyAddChirp from 'protocol/query/method/message/data/dataNotifyAdd
 import dataDeleteChirp from 'protocol/query/method/message/data/dataDeleteChirp.json';
 import dataNotifyDeleteChirp from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
 import dataAddReaction from 'protocol/query/method/message/data/dataAddReaction.json';
+/* eslint-enable import/order */
 
 const dataSchemas = [
   dataCreateLao,

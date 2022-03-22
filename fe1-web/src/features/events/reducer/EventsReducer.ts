@@ -3,11 +3,11 @@
  * param-reassign. Please do not disable other errors.
  */
 /* eslint-disable no-param-reassign */
-import { createSlice, createSelector, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 import { Hash, PublicKey } from 'core/objects';
-import { RollCall } from 'features/rollCall/objects';
 import { getLaosState } from 'features/lao/reducer/LaoReducer';
+import { RollCall } from 'features/rollCall/objects';
 
 import { eventFromState, LaoEvent, LaoEventState } from '../objects';
 
@@ -41,12 +41,14 @@ interface EventReducerState {
 /**
  * This is the root state for the Events Reducer
  */
-interface EventLaoReducerState {
+export interface EventLaoReducerState {
   /**
    * byLaoId associates a given LAO ID with the full representation of its events
    */
   byLaoId: Record<string, EventReducerState>;
 }
+
+export const EVENT_REDUCER_PATH = 'events';
 
 const initialState: EventLaoReducerState = {
   byLaoId: {
@@ -58,9 +60,8 @@ const initialState: EventLaoReducerState = {
   },
 };
 
-const eventReducerPath = 'events';
 const eventsSlice = createSlice({
-  name: eventReducerPath,
+  name: EVENT_REDUCER_PATH,
   initialState,
   reducers: {
     // Add a Event to the list of known Events
@@ -106,15 +107,14 @@ const eventsSlice = createSlice({
 
     // Update an Event in the list of known Events
     updateEvent: {
-      prepare(laoId: Hash | string, event: LaoEventState, alias?: Hash | string): any {
-        return { payload: { laoId: laoId.valueOf(), event: event, alias: alias?.valueOf() } };
+      prepare(laoId: Hash | string, event: LaoEventState): any {
+        return { payload: { laoId: laoId.valueOf(), event: event } };
       },
       reducer(
         state,
         action: PayloadAction<{
           laoId: string;
           event: LaoEventState;
-          alias?: string;
         }>,
       ) {
         const { laoId, event } = action.payload;
@@ -169,49 +169,47 @@ const eventsSlice = createSlice({
 
 export const { addEvent, updateEvent, removeEvent, clearAllEvents } = eventsSlice.actions;
 
-export const getEventsState = (state: any): EventLaoReducerState => state[eventReducerPath];
+export const getEventsState = (state: any): EventLaoReducerState => state[EVENT_REDUCER_PATH];
 
 /**
  * Creates a list of all events.
  */
-export const makeEventsList = () =>
-  createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventsState(state),
-    // Second input: get the current LAO id,
-    (state) => getLaosState(state).currentId,
-    // Selector: returns an array of EventStates -- should it return an array of Event objects?
-    (eventMap: EventLaoReducerState, laoId: string | undefined): LaoEvent[] => {
-      if (!laoId || !(laoId in eventMap.byLaoId)) {
-        return [];
-      }
+export const selectEventsList = createSelector(
+  // First input: Get all events across all LAOs
+  (state) => getEventsState(state),
+  // Second input: get the current LAO id,
+  (state) => getLaosState(state).currentId,
+  // Selector: returns an array of EventStates -- should it return an array of Event objects?
+  (eventMap: EventLaoReducerState, laoId: string | undefined): LaoEvent[] => {
+    if (!laoId || !(laoId in eventMap.byLaoId)) {
+      return [];
+    }
 
-      return eventMap.byLaoId[laoId].allIds
-        .map((id): LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
-        .filter((e) => !!e) as LaoEvent[];
-      // need to assert that it is an Event[] because of TypeScript limitations as described here:
-      // https://github.com/microsoft/TypeScript/issues/16069
-    },
-  );
+    return eventMap.byLaoId[laoId].allIds
+      .map((id): LaoEvent | undefined => eventFromState(eventMap.byLaoId[laoId].byId[id]))
+      .filter((e) => !!e) as LaoEvent[];
+    // need to assert that it is an Event[] because of TypeScript limitations as described here:
+    // https://github.com/microsoft/TypeScript/issues/16069
+  },
+);
 
 /**
  * Creates a map from event id to event id alias.
  */
-export const makeEventsAliasMap = () =>
-  createSelector(
-    // First input: Get all events across all LAOs
-    (state) => getEventsState(state),
-    // Second input: get the current LAO id,
-    (state) => getLaosState(state).currentId,
-    // Selector: returns a map of ids -> LaoEvents' ids
-    (eventMap: EventLaoReducerState, laoId: string | undefined): Record<string, string> => {
-      if (!laoId || !(laoId in eventMap.byLaoId)) {
-        return {};
-      }
+export const selectEventsAliasMap = createSelector(
+  // First input: Get all events across all LAOs
+  (state) => getEventsState(state),
+  // Second input: get the current LAO id,
+  (state) => getLaosState(state).currentId,
+  // Selector: returns a map of ids -> LaoEvents' ids
+  (eventMap: EventLaoReducerState, laoId: string | undefined): Record<string, string> => {
+    if (!laoId || !(laoId in eventMap.byLaoId)) {
+      return {};
+    }
 
-      return eventMap.byLaoId[laoId].idAlias;
-    },
-  );
+    return eventMap.byLaoId[laoId].idAlias;
+  },
+);
 
 /**
  * Returns a map from event id to LaoEvent within a Lao.
@@ -242,6 +240,13 @@ export const makeEventsMap = (laoId: string | undefined = undefined) =>
       return dictObj;
     },
   );
+
+/**
+ * Shorthand selector for widely used variant of makeEventsMap()
+ * Selects the event map associated with the currently active lao
+ * @returns The event map for the current lao
+ */
+export const selectCurrentLaoEventsMap = makeEventsMap();
 
 /**
  * Gets a specific event within a Lao.
@@ -345,5 +350,5 @@ export const makeRollCallAttendeesList = (
 export const eventReduce = eventsSlice.reducer;
 
 export default {
-  [eventReducerPath]: eventsSlice.reducer,
+  [EVENT_REDUCER_PATH]: eventsSlice.reducer,
 };

@@ -1,17 +1,17 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
+
 import {
+  configureTestFeatures,
   mockLaoCreationTime,
   mockLaoIdHash,
   mockLaoName,
   mockPublicKey,
   mockPublicKey2,
   org,
-  configureTestFeatures,
 } from '__tests__/utils';
-
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, PublicKey, ProtocolError } from 'core/objects';
+import { Hash, ProtocolError, PublicKey } from 'core/objects';
 
 import { CreateLao } from '../CreateLao';
 

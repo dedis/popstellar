@@ -2,20 +2,18 @@ import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc
 import { hasWitnessSignatureQuorum } from 'core/network/validation/Checker';
 import { Hash } from 'core/objects';
 import { dispatch, getStore } from 'core/redux';
-import { makeLaosMap } from 'features/lao/reducer';
+import { selectEventById } from 'features/events/network/EventHandlerUtils';
 import { addEvent, updateEvent } from 'features/events/reducer';
-import { getEventFromId } from 'features/events/network/EventHandlerUtils';
+import { selectLaosMap } from 'features/lao/reducer';
 
-import { CreateMeeting, StateMeeting } from './messages';
 import { Meeting } from '../objects';
+import { CreateMeeting, StateMeeting } from './messages';
 
 /**
  * Handles all meeting related messages that are received.
  */
 
-const getLaos = makeLaosMap();
-
-const getLao = (laoId: Hash | string) => getLaos(getStore().getState())[laoId.valueOf()];
+const getLao = (laoId: Hash | string) => selectLaosMap(getStore().getState())[laoId.valueOf()];
 
 /**
  * Handles a MeetingCreate message by creating a meeting in the current Lao.
@@ -86,7 +84,7 @@ export function handleMeetingStateMessage(msg: ProcessableMessage): boolean {
 
   // FIXME: use meeting reducer
   const storeState = getStore().getState();
-  const oldMeeting = getEventFromId(storeState, mtgMsg.id) as Meeting;
+  const oldMeeting = selectEventById(storeState, mtgMsg.id) as Meeting;
   if (!oldMeeting) {
     console.warn(makeErr("no known meeting matching the 'id' field"));
     return false;

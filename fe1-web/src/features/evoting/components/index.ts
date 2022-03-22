@@ -1,1 +1,1 @@
-export { default as EventElection } from './EventElection';
+export { default as EventElection, ElectionEventTypeComponent } from './EventElection';

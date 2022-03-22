@@ -1,7 +1,7 @@
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 
 /** Data sent to add a reaction */
 export class AddReaction implements MessageData {
