@@ -12,9 +12,14 @@
 
   <!-- Home -->
   <string name="text_title_welcome">Welcome to Personhood.Online!</string>
-  <string name="text_body_welcome">\n\n To connect to a local organization (LAO), please tap Connect above. \n\n To
-        launch a new LAO as an organizer, please tap Launch tab above.
+  <string name="text_body_welcome">
+    \n\n To connect to a local organization (LAO), please tap Connect above.
+    \n\n To launch a new LAO as an organizer, please tap Launch tab above.
+    \n\n Please initialize your wallet to access the functionalities of the app.
+    To do so, please tap Wallet tab above.
     </string>
+  <string name="text_wallet_welcome">\
+  </string>
   <string name="attendee">Attendee</string>
   <string name="organizer">Organizer</string>
 
@@ -245,11 +250,11 @@
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
-  <string name="timeout_exception">a timeout occurred</string>
-  <string name="data_handling_exception">error while handling %1$s message</string>
-  <string name="key_generation_exception">could not generate key</string>
-  <string name="invalid_pop_token_exception">the token %1$s is invalid</string>
-  <string name="no_rollcall_exception">no rollcall exist in the LAO</string>
-  <string name="seed_validation_exception">unable to validate seed</string>
-  <string name="uninitialized_wallet_exception">the wallet is not initialized</string>
+  <string name="timeout_exception">A timeout occurred</string>
+  <string name="data_handling_exception">Error while handling %1$s message</string>
+  <string name="key_generation_exception">Could not generate key</string>
+  <string name="invalid_pop_token_exception">The token %1$s is invalid</string>
+  <string name="no_rollcall_exception">No rollcall exist in the LAO</string>
+  <string name="seed_validation_exception">Unable to validate seed</string>
+  <string name="uninitialized_wallet_exception">The wallet is not initialized</string>
 </resources>

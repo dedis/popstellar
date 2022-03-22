@@ -29,6 +29,8 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 
 import java.util.function.Supplier;
 
@@ -244,12 +246,32 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupConnectButton() {
     Button connectButton = findViewById(R.id.tab_connect);
-    connectButton.setOnClickListener(v -> mViewModel.openConnect());
+    connectButton.setOnClickListener(v -> {
+        if (!mViewModel.isWalletSetUp()){
+            ErrorUtils.logAndShow(
+                    v.getContext(),
+                    TAG,
+                    new UninitializedWalletException(),
+                    R.string.uninitialized_wallet_exception);
+        }
+        else
+            mViewModel.openConnect();
+    });
   }
 
   public void setupLaunchButton() {
     Button launchButton = findViewById(R.id.tab_launch);
-    launchButton.setOnClickListener(v -> mViewModel.openLaunch());
+    launchButton.setOnClickListener(v -> {
+        if (!mViewModel.isWalletSetUp()){
+            ErrorUtils.logAndShow(
+                    getApplicationContext(),
+                    TAG,
+                    new UninitializedWalletException(),
+                    R.string.uninitialized_wallet_exception);
+        }
+        else
+            mViewModel.openLaunch();
+    });
   }
 
   public void setupWalletButton() {
@@ -259,7 +281,17 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupSocialMediaButton() {
     Button socialMediaButton = findViewById(R.id.tab_social_media);
-    socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
+    socialMediaButton.setOnClickListener(v -> {
+        if (!mViewModel.isWalletSetUp()){
+            ErrorUtils.logAndShow(
+                    v.getContext(),
+                    TAG,
+                    new UninitializedWalletException(),
+                    R.string.uninitialized_wallet_exception);
+        }
+        else
+        mViewModel.openSocialMedia();
+    });
   }
 
   private void setupHomeFragment() {

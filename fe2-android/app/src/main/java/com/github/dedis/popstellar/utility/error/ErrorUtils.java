@@ -41,6 +41,7 @@ public class ErrorUtils {
 
     //This makes it so that the toast is run on the UI thread
     //Otherwise it would crash
+    Log.d(tag, "We got there");
     new Handler(context.getMainLooper()).post(
             () -> Toast.makeText(context, exceptionMsg, Toast.LENGTH_LONG).show());
   }

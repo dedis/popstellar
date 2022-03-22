@@ -50,6 +50,8 @@
         android:textSize="@dimen/size_body"
         android:textStyle="bold" />
 
+
+
     </LinearLayout>
 
     <LinearLayout
