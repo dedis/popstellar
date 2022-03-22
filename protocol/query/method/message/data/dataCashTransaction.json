@@ -52,7 +52,8 @@
                     "contentEncoding": "base64",
                     "description": "Signature on all txins and txouts using the recipient's private key"
                   }
-                }
+                },
+                "required": ["Type", "Pubkey", "Sig"]
               },
               "Sequence": {
                 "type": "integer",
