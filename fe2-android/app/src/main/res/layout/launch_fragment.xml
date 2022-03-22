@@ -59,6 +59,7 @@
           android:id="@+id/button_cancel_launch"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:theme="@style/ButtonTheme"
           android:gravity="center"
           android:text="@string/button_cancel"
           style="@style/Theme.AppCompat" />
@@ -69,6 +70,7 @@
           android:layout_height="wrap_content"
           android:layout_marginEnd="@dimen/margin_button"
           android:gravity="center"
+          android:theme="@style/ButtonTheme"
           android:enabled="@{entryBoxLaunch.text.length() > 0}"
           android:text="@string/text_button_launch"
           style="@style/Theme.AppCompat" />

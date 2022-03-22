@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.ui.home;
 
 import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.function.Supplier;
 
@@ -60,11 +62,7 @@ public class HomeActivity extends AppCompatActivity {
           JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
         });
 
-    setupHomeButton();
-    setupLaunchButton();
-    setupConnectButton();
-    setupWalletButton();
-    setupSocialMediaButton();
+    setupNavigationBar();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -237,30 +235,7 @@ public class HomeActivity extends AppCompatActivity {
     return new ViewModelProvider(activity).get(HomeViewModel.class);
   }
 
-  public void setupHomeButton() {
-    Button homeButton = findViewById(R.id.tab_home);
-    homeButton.setOnClickListener(v -> mViewModel.openHome());
-  }
 
-  public void setupConnectButton() {
-    Button connectButton = findViewById(R.id.tab_connect);
-    connectButton.setOnClickListener(v -> mViewModel.openConnect());
-  }
-
-  public void setupLaunchButton() {
-    Button launchButton = findViewById(R.id.tab_launch);
-    launchButton.setOnClickListener(v -> mViewModel.openLaunch());
-  }
-
-  public void setupWalletButton() {
-    Button walletButton = findViewById(R.id.tab_wallet);
-    walletButton.setOnClickListener(v -> mViewModel.openWallet());
-  }
-
-  public void setupSocialMediaButton() {
-    Button socialMediaButton = findViewById(R.id.tab_social_media);
-    socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
-  }
 
   private void setupHomeFragment() {
     setCurrentFragment(R.id.fragment_home, HomeFragment::newInstance);
@@ -353,4 +328,30 @@ public class HomeActivity extends AppCompatActivity {
     ActivityUtils.replaceFragmentInActivity(
         getSupportFragmentManager(), fragment, R.id.fragment_container_home);
   }
+
+    @SuppressLint("NonConstantResourceId")
+    public void setupNavigationBar() {
+        BottomNavigationView bottomNavigationView = findViewById(R.id.home_nav_bar);
+        bottomNavigationView.setOnItemSelectedListener(
+                item -> {
+                    switch (item.getItemId()) {
+                        case R.id.home_home_menu:
+                            mViewModel.openHome();
+                            break;
+                        case R.id.home_connect_menu:
+                            mViewModel.openConnect();
+                            break;
+                        case R.id.home_launch_menu:
+                            mViewModel.openLaunch();
+                            break;
+                        case R.id.home_wallet_menu:
+                            mViewModel.openWallet();
+                            break;
+                        case R.id.home_chirp_menu:
+                            mViewModel.openSocialMedia();
+                        default:
+                    }
+                    return true;
+                });
+    }
 }
