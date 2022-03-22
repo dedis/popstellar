@@ -1,15 +1,15 @@
-import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import React from 'react';
 import * as reactRedux from 'react-redux';
 
-import STRINGS from 'resources/strings';
-import { Hash, Timestamp } from 'core/objects';
-import { mockLao } from '__tests__/utils/TestUtils';
 import { mockNavigate } from '__mocks__/useNavigationMock';
+import { mockLao } from '__tests__/utils/TestUtils';
+import { Hash, Timestamp } from 'core/objects';
+import STRINGS from 'resources/strings';
 
+import { requestOpenRollCall, requestReopenRollCall } from '../../network';
 import { EventTypeRollCall, RollCall, RollCallStatus } from '../../objects';
 import EventRollCall from '../EventRollCall';
-import { requestOpenRollCall, requestReopenRollCall } from '../../network';
 
 const ID = new Hash('rollCallId');
 const NAME = 'myRollCall';

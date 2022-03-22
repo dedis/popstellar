@@ -2,16 +2,13 @@ import { subscribeToChannel } from 'core/network';
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { getReactionChannel, getUserSocialChannel } from 'core/objects';
 import { AsyncDispatch, dispatch, getStore } from 'core/redux';
-
 import { selectEventById } from 'features/events/network/EventHandlerUtils';
-import * as Wallet from 'features/wallet/objects';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { selectCurrentLao, setLaoLastRollCall } from 'features/lao/reducer';
+import * as Wallet from 'features/wallet/objects';
 
-import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 import { RollCall, RollCallStatus } from '../objects';
-import { CloseRollCall, CreateRollCall, OpenRollCall } from './messages';
-
+import { CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall } from './messages';
 
 /**
  * Handles a RollCallCreate message by creating a roll call in the current Lao.
@@ -76,7 +73,7 @@ export function handleRollCallOpenMessage(msg: ProcessableMessage): boolean {
     console.warn(makeErr('no LAO is currently active'));
     return false;
   }
-  
+
   const rcMsgData = msg.messageData as OpenRollCall;
   const oldRC = selectEventById(storeState, rcMsgData.opens) as RollCall;
   if (!oldRC) {
@@ -184,7 +181,7 @@ export function handleRollCallReopenMessage(msg: ProcessableMessage) {
   const storeState = getStore().getState();
 
   const rcMsgData = msg.messageData as ReopenRollCall;
-  const oldRC = getEventFromId(storeState, rcMsgData.opens) as RollCall;
+  const oldRC = selectEventById(storeState, rcMsgData.opens) as RollCall;
   if (!oldRC) {
     console.warn(makeErr("no known roll call matching the 'opens' field"));
     return false;

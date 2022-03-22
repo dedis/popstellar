@@ -1,11 +1,12 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { getStore } from 'core/redux';
 import { getEventFromId } from 'features/events/network/EventHandlerUtils';
-import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+
 import {
   handleRollCallCloseMessage,
   handleRollCallCreateMessage,

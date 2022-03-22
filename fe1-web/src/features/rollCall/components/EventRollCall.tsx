@@ -2,22 +2,18 @@ import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text } from 'react-native';
-import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 import { useToast } from 'react-native-toast-notifications';
-
+import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
-import { Timestamp } from 'core/objects';
 import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
-import { requestOpenRollCall, requestReopenRollCall } from '../network';
-import { selectCurrentLao } from 'features/lao/reducer';
-import { RollCall, RollCallStatus } from '../objects';
 import { FOUR_SECONDS } from '../../../resources/const';
+import { requestOpenRollCall, requestReopenRollCall } from '../network';
+import { RollCall, RollCallStatus } from '../objects';
 
 /**
  * Component used to display a RollCall event in the LAO event list

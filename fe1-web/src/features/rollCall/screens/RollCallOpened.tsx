@@ -7,8 +7,7 @@ import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
-
-import { EventTags, Hash, PublicKey } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { selectCurrentLao } from 'features/lao/reducer';
