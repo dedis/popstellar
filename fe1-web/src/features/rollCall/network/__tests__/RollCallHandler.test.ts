@@ -3,7 +3,7 @@ import '__tests__/utils/matchers';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { getStore } from 'core/redux';
-import { getEventFromId } from 'features/events/network/EventHandlerUtils';
+import { selectEventById } from 'features/events/network/EventHandlerUtils';
 import { addEvent, updateEvent } from 'features/events/reducer';
 import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
 
@@ -105,14 +105,14 @@ describe('RollCallHandler', () => {
 
   it('should create a correct RollCall object from msgData in handleRollCallOpenMessage', async () => {
     const usedMockMsg = createMockMsg(ActionType.OPEN, RollCallStatus.OPENED, rollCallStateOpened);
-    (getEventFromId as jest.Mock).mockReturnValue(mockRollCallCreated);
+    (selectEventById as jest.Mock).mockReturnValue(mockRollCallCreated);
     handleRollCallOpenMessage(usedMockMsg);
     expect(updateEvent).toHaveBeenCalledWith(usedMockMsg.laoId, mockRollCallOpened.toState());
   });
 
   it('should create a correct RollCall object from msgData in handleRollCallCloseMessage', async () => {
     const usedMockMsg = createMockMsg(ActionType.CLOSE, RollCallStatus.CLOSED, rollCallStateClosed);
-    (getEventFromId as jest.Mock).mockReturnValue(mockRollCallOpened);
+    (selectEventById as jest.Mock).mockReturnValue(mockRollCallOpened);
     handleRollCallCloseMessage(usedMockMsg);
     expect(updateEvent).toHaveBeenCalledWith(usedMockMsg.laoId, mockRollCallClosed.toState());
   });
@@ -123,7 +123,7 @@ describe('RollCallHandler', () => {
       RollCallStatus.REOPENED,
       rollCallStateReopened,
     );
-    (getEventFromId as jest.Mock).mockReturnValue(mockRollCallClosed);
+    (selectEventById as jest.Mock).mockReturnValue(mockRollCallClosed);
     handleRollCallReopenMessage(usedMockMsg);
     expect(updateEvent).toHaveBeenCalledWith(usedMockMsg.laoId, mockRollCallReopened.toState());
   });
