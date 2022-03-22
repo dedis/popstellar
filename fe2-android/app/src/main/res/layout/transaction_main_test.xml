@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:id="@+id/fragment_container_social_media"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".ui.socialmedia.SocialMediaActivity">
+
+    <FrameLayout
+      android:id="@+id/social_media_content"
+      android:layout_width="match_parent"
+      android:layout_height="455dp"
+      android:layout_weight="1" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+      android:id="@+id/_nav_bar_"
+      android:background="@color/mint_cream"
+      android:layout_width="match_parent"
+      android:layout_height="70dp"
+      android:layout_gravity="bottom"
+      app:labelVisibilityMode="labeled"
+      app:menu="@menu/digi_menu_test" />
+
+  </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

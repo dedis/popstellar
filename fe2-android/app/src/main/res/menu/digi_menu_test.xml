@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <item
+    android:id="@+id/send_coin_m"
+    android:icon="@drawable/ic_send_coin"
+    android:iconTint="@color/colorPrimary"
+    android:title="@string/digital_cash_send"
+    />
+  <item
+    android:id="@+id/receive_coin_m"
+    android:icon="@drawable/ic_receive_coin"
+    android:iconTint="@color/colorPrimary"
+    android:title="@string/digital_cash_receive"
+    />
+
+  <item
+    android:id="@+id/history_coin"
+    android:icon="@drawable/ic_history_coin"
+    android:title="@string/digital_cash_history"
+    android:iconTint="@color/colorPrimaryDark"
+    />
+
+  <item
+    android:id="@+id/history_coin"
+    android:icon="@drawable/ic_social_media_home_foreground"
+    android:title="@string/digital_cash_history"
+    android:iconTint="@color/colorPrimaryDark"
+    />
+
+  <item
+    android:id="@+id/issue_coin"
+    android:icon="@drawable/ic_issue_money"
+    android:title="@string/digital_cash_issue"
+    android:iconTint="@color/black"
+    />
+
+
+</menu>

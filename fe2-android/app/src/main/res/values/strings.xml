@@ -255,6 +255,8 @@
 
   <!-- Digital Cash -->
   <string name="digital_cash_send">SEND</string>
+  <string name="digital_cash_issue">ISSUE</string>
+  <string name="digital_cash_history">HISTORY</string>
   <string name="digital_cash_receive">RECEIVE</string>
   <string name="digital_cash_home">HOME</string>
   <string name="digital_cash_amount">LAO COIN</string>

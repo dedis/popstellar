@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
   package="com.github.dedis.popstellar">
 
   <uses-feature android:name="android.hardware.camera" />
@@ -8,18 +9,17 @@
   <uses-permission android:name="android.permission.INTERNET" />
 
   <application
+    android:name=".PoPApplication"
     android:allowBackup="true"
     android:fullBackupContent="@xml/backup_rules"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
-    android:name="com.github.dedis.popstellar.PoPApplication"
     android:networkSecurityConfig="@xml/network_security_config"
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
     <activity
-      android:name="com.github.dedis.popstellar.ui.transaction.TransactionMainActivity"
-      android:theme="@style/AppTheme"
+      android:name=".ui.transaction.TransactionMainTestActivity"
       android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -28,7 +28,7 @@
       </intent-filter>
     </activity>
     <activity
-      android:name="com.github.dedis.popstellar.ui.detail.LaoDetailActivity"
+      android:name=".ui.detail.LaoDetailActivity"
       android:windowSoftInputMode="adjustPan" />
     <activity android:name=".ui.settings.SettingsActivity" />
     <activity android:name=".ui.socialmedia.SocialMediaActivity" />
