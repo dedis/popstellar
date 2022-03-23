@@ -21,9 +21,9 @@
     />
 
   <item
-    android:id="@+id/history_coin"
+    android:id="@+id/home_coin"
     android:icon="@drawable/ic_digicash_home"
-    android:title="@string/digital_cash_history"
+    android:title="@string/digital_cash_home"
     android:iconTint="@color/colorPrimaryDark"
     />
 

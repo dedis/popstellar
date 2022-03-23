@@ -1,4 +1,5 @@
 package com.github.dedis.popstellar.ui.digitalcash;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaHomeFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -23,30 +25,31 @@ import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** Activity for the social media */
+/**
+ * Activity for the social media
+ */
 @AndroidEntryPoint
 public class DigitalCashMain extends AppCompatActivity {
-    //private SocialMediaViewModel mViewModel;
     public static final String OPENED_FROM = "OPENED_FROM";
     public static final String LAO_ID = "LAO_ID";
     public static final String LAO_NAME = "LAO_NAME";
+    private DigitalCashViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.digital_cash_main_activity);
-        //mViewModel = obtainViewModel(this);
+        mViewModel = obtainViewModel(this);
 
         // When we launch the social media from a lao, it directly sets its id and name
-        // if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
-        //    mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
+        if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
+            mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
+            mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
+        }
+        setupDigitalCashHomeFragment();
+        setupNavigationBar();
 
-        //mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
-        //}
-        // setupSocialMediaHomeFragment();
-        //setupNavigationBar();
-        /*
         // Subscribe to "lao name" string
         mViewModel
                 .getLaoName()
@@ -58,61 +61,19 @@ public class DigitalCashMain extends AppCompatActivity {
                                         .setTitle(String.format("popstellar - %s", newLaoName));
                             }
                         });
-        // Subscribe to "open home" event
-        mViewModel
-                .getOpenHomeEvent()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
-                                setupSocialMediaHomeFragment();
-                            }
-                        });
-        // Subscribe to "open search" event
-        mViewModel
-                .getOpenSearchEvent()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
-                                setupSocialMediaSearchFragment();
-                            }
-                        });
-        // Subscribe to "open following" event
-        mViewModel
-                .getOpenFollowingEvent()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
-                                setupSocialMediaFollowingFragment();
-                            }
-                        });
-        // Subscribe to "open profile" event
-        mViewModel
-                .getOpenProfileEvent()
-                .observe(
-                        this,
-                        booleanEvent -> {
-                            Boolean event = booleanEvent.getContentIfNotHandled();
-                            if (event != null) {
-                                setupSocialMediaProfileFragment();
-                            }
-                        });*/
+
+        mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
     }
-    /*
-    public static SocialMediaViewModel obtainViewModel(FragmentActivity activity) {
-        return new ViewModelProvider(activity).get(SocialMediaViewModel.class);
-    }*/
+
+    public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {
+        return new ViewModelProvider(activity).get(DigitalCashViewModel.class);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.digital_cash_menu, menu);
 
-        /*
+
         // Get the submenu and clear its unique item. The item was needed to create the submenu
         SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
         // Adding all currently opened lao name to the submenu
@@ -129,12 +90,12 @@ public class DigitalCashMain extends AppCompatActivity {
                                 }
                             }
                         });
-         */
+
 
         return true;
     }
 
-    /*@SuppressLint("NonConstantResourceId")
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Retrieve the index of the lao within the list
@@ -147,50 +108,59 @@ public class DigitalCashMain extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }*/
-    /*
+    }
+
     @SuppressLint("NonConstantResourceId")
     public void setupNavigationBar() {
         BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
         bottomNavigationView.setOnItemSelectedListener(
                 item -> {
                     switch (item.getItemId()) {
-                        case R.id.social_media_home_menu:
+                        case R.id.home_coin:
                             mViewModel.openHome();
                             break;
-                        case R.id.social_media_search_menu:
-                            mViewModel.openSearch();
+                        case R.id.history_coin:
+                            mViewModel.openHistory();
                             break;
-                        case R.id.social_media_following_menu:
-                            mViewModel.openFollowing();
+                        case R.id.send_coin_m:
+                            mViewModel.openSend();
                             break;
-                        case R.id.social_media_profile_menu:
-                            mViewModel.openProfile();
+                        case R.id.receive_coin_m:
+                            mViewModel.openReceive();
+                            break;
+                        case R.id.issue_coin:
+                            mViewModel.openIssue();
                             break;
                         default:
                     }
                     return true;
                 });
     }
-    public void setupSocialMediaHomeFragment() {
-        setCurrentFragment(R.id.fragment_social_media_home, SocialMediaHomeFragment::newInstance);
+
+    public void setupDigitalCashHomeFragment() {
+        setCurrentFragment(R.id.fragment_digital_cash_home, DigitalCashHomeFragment::newInstance);
     }
-    public void setupSocialMediaSearchFragment() {
-        setCurrentFragment(R.id.fragment_social_media_search, SocialMediaSearchFragment::newInstance);
+
+    public void setupDigitalCashSendFragment() {
+        setCurrentFragment(R.id.fragment_digital_cash_send, DigitalCashSendFragment::newInstance);
     }
-    public void setupSocialMediaFollowingFragment() {
-        setCurrentFragment(
-                R.id.fragment_social_media_following, SocialMediaFollowingFragment::newInstance);
+
+    public void setupDigitalCashHistoryFragment() {
+        setCurrentFragment(R.id.fragment_digital_cash_history, DigitalCashHistoryFragment::newInstance);
     }
-    public void setupSocialMediaProfileFragment() {
-        setCurrentFragment(R.id.fragment_social_media_profile, SocialMediaProfileFragment::newInstance);
+
+    public void setupDigitalCashReceiveFragment() {
+        setCurrentFragment(R.id.fragment_digital_cash_receive, DigitalCashReceiveFragment::newInstance);
     }
-     */
+
+    public void setupDigitalCashIssueFragment() {
+        setCurrentFragment(R.id.fragment_digital_cash_issue, DigitalCashIssueFragment::newInstance);
+    }
 
     /**
      * Set the current fragment in the container of the activity
      *
-     * @param id of the fragment
+     * @param id               of the fragment
      * @param fragmentSupplier provides the fragment if it is missing
      */
     private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
