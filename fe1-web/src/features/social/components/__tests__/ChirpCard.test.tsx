@@ -1,5 +1,6 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
+import { Text } from 'react-native';
 
 import { mockLao } from '__tests__/utils/TestUtils';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
@@ -50,6 +51,12 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
+// Ionicons and snapshot tests do not work nice together
+// See https://github.com/expo/expo/issues/3566
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: (props: unknown) => JSON.stringify(props),
+}));
+
 // endregion
 
 beforeAll(() => {
