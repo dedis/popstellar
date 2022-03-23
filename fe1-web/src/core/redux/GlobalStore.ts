@@ -25,7 +25,33 @@ const noopReducer = {
 const composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 25 });
 const composedEnhancer = composeEnhancers(applyMiddleware(thunkMiddleware));
 export const store: Store = createStore(makeRootReducer(noopReducer), composedEnhancer);
-export const persist: Persistor = persistStore(store);
+
+/**
+ * The type of functions that are executed as soon as the redux store is rehydrated
+ */
+type RehydrationCallback = () => void;
+
+/**
+ * A list of functions that are executed as soon as the redux store is rehydrated
+ */
+const rehydrationCallbacks: RehydrationCallback[] = [];
+
+/**
+ * Registers a callback to be executed after the store has been rehydrated
+ * @param callback The function that should be called after the redux store has been rehydrated
+ */
+export const addRehydrationCallback = (callback: RehydrationCallback) => {
+  rehydrationCallbacks.push(callback);
+};
+
+/**
+ * The persistor object that allows the execution of persistence operations
+ */
+export const persist: Persistor = persistStore(store, null, () => {
+  // callback function that is called after the store has been hydrated
+  // execute all registered callback functions
+  rehydrationCallbacks.forEach((callback) => callback());
+});
 
 // Expose the access functions
 export const getStore = (): Store => store;
