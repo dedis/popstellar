@@ -49,7 +49,7 @@ object MessageDecoder {
   private def populateDataField(rpcRequest: JsonRpcRequest, objectString: JsString, actionString: JsString, dataJsonString: String, registry: MessageRegistry): GraphMessage = {
     var filledRequest = rpcRequest // filler for the typed request
 
-    Try {
+    val x = Try {
       val _object: ObjectType = objectString.convertTo[ObjectType]
       val action: ActionType = actionString.convertTo[ActionType]
 
@@ -76,7 +76,8 @@ object MessageDecoder {
         case _ => throw new IllegalStateException(s"JsonRpcRequest <$rpcRequest> does not contain a message data")
       }
 
-    } match {
+    }
+    x match {
       case Success(_) => Left(filledRequest) // everything worked at expected, 'decodedData' field was populated
       case Failure(exception) => Right(PipelineError(ErrorCodes.INVALID_DATA.id, s"Invalid data: ${exception.getMessage}", rpcRequest.id))
     }

@@ -8,12 +8,10 @@ import ch.epfl.pop.model.network.method.message.data.{ActionType, MessageData, O
 import ch.epfl.pop.model.objects.{Hash, Timestamp}
 import spray.json._
 
-final case class EndElection(
-                              lao: Hash,
-                              election: Hash,
-                              created_at: Timestamp,
-                              registered_votes: Hash
-                            ) extends MessageData {
+final case class EndElection(lao: Hash,
+                             election: Hash,
+                             created_at: Timestamp,
+                             registered_votes: Hash) extends MessageData {
   override val _object: ObjectType = ObjectType.ELECTION
   override val action: ActionType = ActionType.END
 }
