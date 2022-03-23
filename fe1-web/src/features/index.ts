@@ -64,7 +64,7 @@ export function configureFeatures() {
       {
         id: STRINGS.navigation_tab_connect,
         Component: connectConfiguration.navigation.ConnectNavigation,
-        order: -99999999,
+        order: -10000,
       },
       {
         id: STRINGS.navigation_tab_wallet,
