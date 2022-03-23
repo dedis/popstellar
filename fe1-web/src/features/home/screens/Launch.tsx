@@ -34,7 +34,6 @@ const Launch = () => {
 
   const connectToTestLao = HomeHooks.useConnectToTestLao();
   const requestCreateLao = HomeHooks.useRequestCreateLao();
-  const addLaoServerAddress = HomeHooks.useAddLaoServerAddress();
 
   const onButtonLaunchPress = (laoName: string) => {
     if (!laoName) {
@@ -46,9 +45,6 @@ const Launch = () => {
     requestCreateLao(laoName)
       .then((channel: Channel) => {
         subscribeToChannel(channel).then(() => {
-          // after subscribing to the LAO channel, add the server address to the lao state
-          dispatch(addLaoServerAddress(getLaoIdFromChannel(channel), inputAddress));
-
           // navigate to the newly created LAO
           navigation.navigate(STRINGS.app_navigation_tab_user, {
             screen: STRINGS.organization_navigation_tab_user,

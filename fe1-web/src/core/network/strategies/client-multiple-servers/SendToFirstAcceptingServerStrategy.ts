@@ -1,4 +1,4 @@
-import { JsonRpcResponse } from 'core/network/jsonrpc';
+import { ExtendedJsonRpcResponse } from 'core/network/jsonrpc';
 import { NetworkConnection } from 'core/network/NetworkConnection';
 import { NetworkError } from 'core/network/NetworkError';
 
@@ -15,8 +15,8 @@ export const sendToFirstAcceptingServerStrategy: SendingStrategy = async (payloa
     // we try the next connection in the array on failure
     const response = await connections
       .slice(1) // ignore the first connection in the array
-      .reduce<Promise<JsonRpcResponse>>( // assert the correct type
-        async (promise: Promise<JsonRpcResponse>, connection: NetworkConnection) => {
+      .reduce<Promise<ExtendedJsonRpcResponse>>( // assert the correct type
+        async (promise: Promise<ExtendedJsonRpcResponse>, connection: NetworkConnection) => {
           // try to resolve the previous connection and see whether we get a
           // response
           try {

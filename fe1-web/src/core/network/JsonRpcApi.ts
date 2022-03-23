@@ -2,7 +2,14 @@ import { KeyPairRegistry } from 'core/keypair';
 import { getNetworkManager } from 'core/network/NetworkManager';
 import { Channel, KeyPair } from 'core/objects';
 
-import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
+import { ExtendedMessage } from './ingestion/ExtendedMessage';
+import {
+  JsonRpcMethod,
+  JsonRpcRequest,
+  ExtendedJsonRpcResponse,
+  Publish,
+  Subscribe,
+} from './jsonrpc';
 import { configureMessages, Message, MessageData, MessageRegistry } from './jsonrpc/messages';
 import { NetworkConnection } from './NetworkConnection';
 
@@ -76,9 +83,16 @@ export async function subscribe(
   // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
 
-function* messageGenerator(msgs: any[], channel: Channel) {
+interface ReceivedMessage {
+  message: any;
+  receivedFrom: string;
+}
+
+function* messageGenerator(msgs: ReceivedMessage[], channel: Channel) {
   for (const m of msgs) {
-    yield Message.fromJson(m, channel);
+    const message = Message.fromJson(m.message, channel);
+
+    yield ExtendedMessage.fromMessage(message, channel, m.receivedFrom);
   }
 }
 
@@ -91,7 +105,7 @@ function* messageGenerator(msgs: any[], channel: Channel) {
 export async function catchup(
   channel: Channel,
   connections?: NetworkConnection[],
-): Promise<Generator<Message, void, undefined>> {
+): Promise<Generator<ExtendedMessage, void, undefined>> {
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.CATCHUP,
     params: new Subscribe({
@@ -103,12 +117,19 @@ export async function catchup(
   // do not catch, as it needs to be handled on a higher level
   // A JsonRpcResponse can have r.result being of type number or of Message[]
   // But in the case of a catchup we always expect Message[]
-  const responses: JsonRpcResponse[] = await getNetworkManager().sendPayload(request, connections);
-  if (responses.find((r) => typeof r.result === 'number')) {
-    throw new Error('FIXME number in result. Should it be here?');
+  const responses: ExtendedJsonRpcResponse[] = await getNetworkManager().sendPayload(
+    request,
+    connections,
+  );
+  if (responses.find((r) => !Array.isArray(r.response.result))) {
+    throw new Error('Message result does not contain an array of messages!');
   }
 
-  const msgs = [].concat(...responses.map((r) => r.result as any));
+  const msgs: ReceivedMessage[] = responses.flatMap((r) =>
+    (r.response.result as Message[]).map(
+      (msg) => ({ message: msg, receivedFrom: r.receivedFrom } as ReceivedMessage),
+    ),
+  );
   return messageGenerator(msgs, channel);
 }
 

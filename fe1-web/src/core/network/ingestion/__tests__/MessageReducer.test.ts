@@ -37,7 +37,7 @@ const createExtendedMessage = async () => {
   });
   const message = await Message.fromData(messageData, keyPair);
   const channel = channelFromIds();
-  return ExtendedMessage.fromMessage(message, channel);
+  return ExtendedMessage.fromMessage(message, channel, 'some address');
 };
 
 beforeAll(configureTestFeatures);
