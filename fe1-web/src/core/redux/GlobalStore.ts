@@ -47,11 +47,20 @@ export const addRehydrationCallback = (callback: RehydrationCallback) => {
 /**
  * The persistor object that allows the execution of persistence operations
  */
-export const persist: Persistor = persistStore(store, null, () => {
-  // callback function that is called after the store has been hydrated
-  // execute all registered callback functions
-  rehydrationCallbacks.forEach((callback) => callback());
-});
+export const persist: Persistor = persistStore(
+  store,
+  {
+    // It seems this options is documented and working but not yet part of the types?
+    // See https://github.com/rt2zz/redux-persist#persiststorestore-config-callback
+    // @ts-ignore
+    manualPersist: true,
+  },
+  () => {
+    // callback function that is called after the store has been hydrated
+    // execute all registered callback functions
+    rehydrationCallbacks.forEach((callback) => callback());
+  },
+);
 
 // Expose the access functions
 export const getStore = (): Store => store;
