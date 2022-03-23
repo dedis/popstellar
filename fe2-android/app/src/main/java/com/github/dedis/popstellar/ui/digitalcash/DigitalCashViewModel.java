@@ -19,6 +19,8 @@ import com.google.gson.Gson;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.disposables.CompositeDisposable;
@@ -50,6 +52,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
+  @Inject
   public DigitalCashViewModel(
       @NonNull Application application,
       LAORepository laoRepository,
