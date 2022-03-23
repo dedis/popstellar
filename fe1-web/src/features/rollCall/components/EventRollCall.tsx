@@ -9,6 +9,7 @@ import { Timestamp } from 'core/objects';
 import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
+import { WalletStore } from 'features/wallet/store';
 import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall } from '../network';
@@ -31,9 +32,18 @@ const EventRollCall = (props: IPropTypes) => {
     throw new Error('no LAO is currently active');
   }
   const [popToken, setPopToken] = useState('');
+  const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(WalletStore.hasSeed());
+
+  // re-check if wallet has been initialized after focus events
+  useEffect(() => {
+    // Return the function to unsubscribe from the event so it gets removed on unmount
+    return navigation.addListener('focus', () => {
+      setHasWalletBeenInitialized(WalletStore.hasSeed());
+    });
+  }, [navigation]);
 
   useEffect(() => {
-    if (!lao || !lao.id || !rollCall || !rollCall.id) {
+    if (!lao?.id || !rollCall?.id) {
       return;
     }
 
@@ -41,7 +51,7 @@ const EventRollCall = (props: IPropTypes) => {
     Wallet.generateToken(lao.id, rollCall.id)
       .then((token) => setPopToken(token.publicKey.valueOf()))
       .catch((err) => console.error(`Could not generate token: ${err}`));
-  }, [lao, rollCall]);
+  }, [hasWalletBeenInitialized, lao, rollCall]);
 
   if (!rollCall) {
     console.debug('Error in Roll Call display: Roll Call doesnt exist in store');
