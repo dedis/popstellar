@@ -4,35 +4,29 @@
     android:id="@+id/send_coin_m"
     android:icon="@drawable/ic_digicash_send"
     android:iconTint="@color/colorPrimary"
-    android:title="@string/digital_cash_send"
-    />
+    android:title="@string/digital_cash_send" />
   <item
     android:id="@+id/receive_coin_m"
     android:icon="@drawable/ic_digicash_receive"
     android:iconTint="@color/colorPrimary"
-    android:title="@string/digital_cash_receive"
-    />
+    android:title="@string/digital_cash_receive" />
 
   <item
     android:id="@+id/history_coin"
     android:icon="@drawable/ic_digicash_history"
-    android:title="@string/digital_cash_history"
     android:iconTint="@color/colorPrimaryDark"
-    />
+    android:title="@string/digital_cash_history" />
 
   <item
     android:id="@+id/home_coin"
     android:icon="@drawable/ic_digicash_home"
-    android:title="@string/digital_cash_home"
     android:iconTint="@color/colorPrimaryDark"
-    />
+    android:title="@string/digital_cash_home" />
 
   <item
     android:id="@+id/issue_coin"
     android:icon="@drawable/ic_digicash_issue"
-    android:title="@string/digital_cash_issue"
     android:iconTint="@color/black"
-    />
-
+    android:title="@string/digital_cash_issue" />
 
 </menu>

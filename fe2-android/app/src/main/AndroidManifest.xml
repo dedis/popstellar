@@ -18,8 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
-        <activity
-          android:name="com.github.dedis.popstellar.ui.home.HomeActivity"
+
+          <!--android:name="com.github.dedis.popstellar.ui.home.HomeActivity"-->
+      <activity
+          android:name="com.github.dedis.popstellar.ui.digitalcah.DigitalCashMain"
           android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +33,7 @@
             android:name=".ui.detail.LaoDetailActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".ui.settings.SettingsActivity" />
-        <activity android:name=".ui.digitalcah.DigitalCashMain" />
+        <!--activity android:name=".ui.digitalcah.DigitalCashMain" /-->
         <activity android:name=".ui.socialmedia.SocialMediaActivity" />
 
         <uses-library
