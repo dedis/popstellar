@@ -36,7 +36,7 @@ const MainNavigation = () => {
         id: STRINGS.navigation_tab_home,
         title: STRINGS.navigation_tab_home,
         Component: Home,
-        order: -99999,
+        order: -99999999,
       } as HomeFeature.Screen,
       // add launch screen to the navigation
       {
