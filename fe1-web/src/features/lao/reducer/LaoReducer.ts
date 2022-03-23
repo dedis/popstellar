@@ -4,7 +4,7 @@
  */
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
-import { REHYDRATE } from 'redux-persist';
+import { REHYDRATE, RehydrateAction } from 'redux-persist';
 
 import { getKeyPairState } from 'core/keypair';
 import { Hash } from 'core/objects';
@@ -156,15 +156,21 @@ const laosSlice = createSlice({
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
-    builder.addCase(REHYDRATE, (state) => {
-      if (state.currentId) {
-        return {
-          ...state,
-          // make sure we always start disconnected
-          currentId: undefined,
-        };
+    builder.addCase(REHYDRATE, (state, rehydrateAction: RehydrateAction) => {
+      if (!rehydrateAction.payload || !(LAO_REDUCER_PATH in rehydrateAction.payload)) {
+        return state;
       }
-      return state;
+
+      const payload = rehydrateAction.payload as {
+        [LAO_REDUCER_PATH]: LaoReducerState;
+      };
+
+      return {
+        ...state,
+        ...(LAO_REDUCER_PATH in rehydrateAction.payload ? payload[LAO_REDUCER_PATH] : {}),
+        // make sure we always start disconnected
+        currentId: undefined,
+      };
     });
   },
 });
