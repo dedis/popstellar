@@ -65,7 +65,8 @@ describe('handleExtendedRpcRequests', () => {
 
     // the receivedAt value can differ. calls[i][j] => jth argument of ith call
     // @ts-ignore
-    obj.payload.receivedAt = (dispatch as jest.Mock).mock.calls[0][0].payload.receivedAt;
+    delete obj.payload.receivedAt;
+    delete (dispatch as jest.Mock).mock.calls[0][0].payload.receivedAt;
 
     expect(dispatch).toHaveBeenCalledWith(obj);
   });
