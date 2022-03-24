@@ -228,6 +228,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val setupElectionFormat: JsonFormat[SetupElection] = jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions")
   implicit val resultElectionFormat: JsonFormat[ResultElection] = jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures")
   implicit val endElectionFormat: JsonFormat[EndElection] = jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes")
+  implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp")
   implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp")

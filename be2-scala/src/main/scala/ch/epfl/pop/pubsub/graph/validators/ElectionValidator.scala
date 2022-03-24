@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection, OpenElection}
 import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
@@ -54,7 +54,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
 
         val laoId: Hash = rpcMessage.extractLaoId
 
-        val sender: PublicKey = message.sender 
+        val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
 
         if (!validateTimestampStaleness(data.opened_at)) {
