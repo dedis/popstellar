@@ -7,7 +7,6 @@ import { combineReducers, createStore } from 'redux';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { configureTestFeatures, mockLao } from '__tests__/utils';
 import { Hash, Timestamp } from 'core/objects';
-import { eventsReducer } from 'features/events/reducer';
 import { connectToLao, laoReducer } from 'features/lao/reducer';
 import { RollCall, RollCallStatus } from 'features/rollCall/objects';
 
