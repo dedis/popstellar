@@ -69,6 +69,7 @@ func (s *Sockets) SendToAll(buf []byte) {
 func (s *Sockets) Upsert(socket socket.Socket) {
 	s.Lock()
 	defer s.Unlock()
+
 	s.store[socket.ID()] = socket
 }
 

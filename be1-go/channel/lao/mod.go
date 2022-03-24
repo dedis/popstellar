@@ -124,7 +124,7 @@ func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry.Register(messagedata.LaoUpdate{}, c.processEmptyFun)
 	registry.Register(messagedata.MeetingCreate{}, c.processEmptyFun)
 	registry.Register(messagedata.MeetingState{}, c.processEmptyFun)
-	registry.Register(messagedata.MessageWitness{}, c.processMessageObject)
+	registry.Register(messagedata.MessageWitness{}, c.processMessageWitness)
 	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
 	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
 	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
@@ -410,8 +410,8 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-// processMessageObject handles a message object.
-func (c *Channel) processMessageObject(msg message.Message, msgData interface{}, _ socket.Socket) error {
+// processMessageWitness handles a message object.
+func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
@@ -528,7 +528,7 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 	}
 
 	// Check that data is correct
-	err := c.verifyMessageRollCallCreate(*data)
+	err := c.verifyMessageRollCallCreate(data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
@@ -587,7 +587,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	}
 
 	// check that data is correct
-	err := c.verifyMessageRollCallClose(*data)
+	err := c.verifyMessageRollCallClose(data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
