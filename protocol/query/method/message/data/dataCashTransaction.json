@@ -56,7 +56,8 @@
                 "required": ["Type", "Pubkey", "Sig"]
               },
               "Sequence": {
-                "type": "integer",
+                "type": "string",
+                "contentEncoding": "base64",
                 "$comment": "Set as 0xFFFFFFFF"
               }
             },
