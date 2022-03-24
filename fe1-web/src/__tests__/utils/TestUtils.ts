@@ -3,7 +3,8 @@ import testKeyPair from 'test_data/keypair.json';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import { Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
-import { EventTypeRollCall, RollCall, RollCallStatus } from "../../features/rollCall/objects";
+
+import { EventTypeRollCall, RollCall, RollCallStatus } from '../../features/rollCall/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
@@ -60,7 +61,7 @@ export const mockRollCallState: any = {
   proposedEnd: mockTimestampEnd.valueOf(),
   status: RollCallStatus.CLOSED,
   attendees: mockAttendees,
-}
+};
 
 export const mockRollCall = RollCall.fromState(mockRollCallState);
 

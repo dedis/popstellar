@@ -1,10 +1,11 @@
 import { mockLao, mockRollCallState } from '__tests__/utils/TestUtils';
-import { addEvent, removeEvent } from '../../../events/reducer';
-import { RollCall } from '../../../rollCall/objects';
-import { connectToLao, disconnectFromLao } from '../../../lao/reducer';
-import { dispatch } from '../../../../core/redux';
-import { generateToken } from '../Token';
+
 import { Hash } from '../../../../core/objects';
+import { dispatch } from '../../../../core/redux';
+import { addEvent, removeEvent } from '../../../events/reducer';
+import { connectToLao, disconnectFromLao } from '../../../lao/reducer';
+import { RollCall } from '../../../rollCall/objects';
+import { generateToken } from '../Token';
 
 const createRollCall = (Id: string, mockAttendees: string[]) => {
   return RollCall.fromState({

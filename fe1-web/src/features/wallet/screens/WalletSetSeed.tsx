@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
 import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
 
@@ -35,7 +35,7 @@ const WalletSetSeed = ({ navigation }: IPropTypes) => {
   };
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredXY}>
       <TextBlock text={STRINGS.type_seed_info} />
       <TextInputLine
         placeholder={STRINGS.type_seed_example}
