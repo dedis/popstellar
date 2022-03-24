@@ -1,10 +1,12 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
+import { mockLao } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 import { Base64UrlData, Hash, Signature, Timestamp } from 'core/objects';
 import { getStore } from 'core/redux';
 import { selectEventById } from 'features/events/network/EventHandlerUtils';
 import { addEvent, updateEvent } from 'features/events/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
 import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
 
 import {
@@ -18,6 +20,7 @@ jest.mock('core/network/JsonRpcApi');
 jest.mock('features/events/reducer');
 jest.mock('core/redux');
 jest.mock('features/events/network/EventHandlerUtils');
+jest.mock('features/lao/reducer');
 
 // region Mock Values Initialization region
 const ID = new Hash('rollCallId');
@@ -90,6 +93,7 @@ beforeEach(() => {
       getState: jest.fn(),
     };
   });
+  (selectCurrentLao as unknown as jest.Mock).mockReturnValue(mockLao);
 });
 
 describe('RollCallHandler', () => {
