@@ -11,7 +11,7 @@ import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
-import { FOUR_SECONDS } from '../../../resources/const';
+import { FOUR_SECONDS } from 'resources/const';
 import { requestOpenRollCall, requestReopenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
 
