@@ -15,26 +15,24 @@ const createRollCall = (Id: string, mockAttendees: string[]) => {
     attendees: [...mockRollCallState.attendees, ...mockAttendees],
   });
 };
-const mockRCID0 = 'mock0';
-const mockRCID1 = 'mock1';
-
-// Add attendees, right token from seed and generate stuff
+const mockRCID0: string = '0mock';
+const mockRCID1: string = '1mock';
+const hashMock0 = new Hash(mockRCID0);
+const hashMock1 = new Hash(mockRCID1);
+/*
+ * Generates a mock state with some mock popTokens
+ */
 export function useMockWalletState() {
-  const publicKeyMockRC0 = generateToken(mockLao.id, new Hash(mockRCID0));
-  const publicKeyMockRC1 = generateToken(mockLao.id, new Hash(mockRCID1));
-
+  const tokenMockRC0 = generateToken(mockLao.id, hashMock0);
+  const tokenMockRC1 = generateToken(mockLao.id, hashMock1);
   return {
     useMock: async () => {
-      const mockRollCall0 = createRollCall(mockRCID0, [
-        (await publicKeyMockRC0).publicKey.valueOf(),
-      ]);
-      const mockRollCall1 = createRollCall(mockRCID1, [
-        (await publicKeyMockRC1).publicKey.valueOf(),
-      ]);
+      const mockRollCall0 = createRollCall(mockRCID0, [(await tokenMockRC0).publicKey.valueOf()]);
+      const mockRollCall1 = createRollCall(mockRCID1, [(await tokenMockRC1).publicKey.valueOf()]);
       dispatch(connectToLao(mockLao.toState()));
       dispatch(addEvent(mockLao.id, mockRollCall0.toState()));
       dispatch(addEvent(mockLao.id, mockRollCall1.toState()));
-      console.debug('Dispatched events');
+      console.debug('Dispatched mock events');
     },
     clearMock: () => {
       dispatch(removeEvent(mockLao.id, mockRCID0));
