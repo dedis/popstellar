@@ -18,9 +18,7 @@ const styles = StyleSheet.create({
 const RollCallTokensDropDown = (props: IPropTypes) => {
   const { onTokenChange } = props;
   const { rollCallTokens } = props;
-  const onChange = (pk: string) => {
-    onTokenChange(rollCallTokens.find((rct) => rct?.token.publicKey.valueOf() === pk));
-  };
+
   const options = useMemo(() => {
     return rollCallTokens.map((rc) => {
       const value = rc?.token.publicKey.valueOf() || '';
@@ -28,11 +26,15 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
     });
   }, [rollCallTokens]);
 
+  const onChange = (pk: string) => {
+    const found = rollCallTokens.find((rct) => rct?.token.publicKey.valueOf() === pk);
+    if (found) {
+      onTokenChange(found);
+    }
+  };
+
   return (
-    <Picker
-      selectedValue={options[0]}
-      onValueChange={(val: any) => onChange(val)}
-      style={styles.pickerStyle}>
+    <Picker onValueChange={(val: any) => onChange(val)} style={styles.pickerStyle}>
       {options}
     </Picker>
   );
