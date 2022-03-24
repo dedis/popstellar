@@ -30,7 +30,14 @@ const initialState: LaoReducerState = {
 const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
   const newLao = action.payload;
 
-  if (!(newLao.id in state.byId)) {
+  if (newLao.id in state.byId) {
+    // we already have some data on this lao stored
+    // merge server addresses
+    state.byId[newLao.id].server_addresses = [
+      // the way via a set guarantees the list does not contain duplicates
+      ...new Set([...state.byId[newLao.id].server_addresses, ...newLao.server_addresses]),
+    ];
+  } else {
     state.byId[newLao.id] = newLao;
     state.allIds.push(newLao.id);
   }
