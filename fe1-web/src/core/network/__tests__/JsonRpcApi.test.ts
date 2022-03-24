@@ -155,9 +155,19 @@ describe('catchup', () => {
     const generator = await catchup(mockChannel);
     const { value, done } = generator.next();
 
-    expect(value).toBeJsonEqual(
-      ExtendedMessage.fromMessage(mockResponseMessage, mockChannel, mockAddress),
-    );
+    if (!(value instanceof ExtendedMessage)) {
+      throw new Error('The generator should contain at least one message');
+    }
+
+    const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockChannel, mockAddress);
+
+    // the receivedAt value can differ
+    // @ts-ignore
+    delete value.receivedAt;
+    // @ts-ignore
+    delete expected['receivedAt'];
+
+    expect(value).toBeJsonEqual(expected);
     expect(done).toBeFalse();
 
     expect(generator.next().done).toBeTrue();
