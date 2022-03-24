@@ -48,7 +48,7 @@ export async function publish(
   connections?: NetworkConnection[],
 ): Promise<void> {
   const keyPair = await getSigningKeyPair(msgData);
-  const message = await Message.fromData(msgData, keyPair);
+  const message = Message.fromData(msgData, keyPair);
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.PUBLISH,
     params: new Publish({
