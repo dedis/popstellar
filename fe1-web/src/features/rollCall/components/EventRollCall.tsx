@@ -1,12 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState, FunctionComponent } from 'react';
+import React, { useEffect, useState, FunctionComponent } from 'react';
 import { Text } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
 import { Timestamp } from 'core/objects';
-import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import { WalletStore } from 'features/wallet/store';
@@ -19,14 +18,11 @@ import { RollCall, RollCallStatus } from '../objects';
  * Component used to display a RollCall event in the LAO event list
  */
 const EventRollCall = (props: IPropTypes) => {
-  const { event } = props;
+  const { event: rollCall } = props;
   const { isOrganizer } = props;
   const lao = useSelector(selectCurrentLao);
   // FIXME: use a more specific navigation
   const navigation = useNavigation<any>();
-
-  const rollCallSelect = useMemo(() => makeEventGetter(lao?.id, event?.id), [lao, event]);
-  const rollCall = useSelector(rollCallSelect) as RollCall | undefined;
 
   if (!lao) {
     throw new Error('no LAO is currently active');
@@ -60,21 +56,21 @@ const EventRollCall = (props: IPropTypes) => {
 
   const onOpenRollCall = (reopen: boolean) => {
     if (reopen) {
-      if (!event.idAlias) {
+      if (!rollCall.idAlias) {
         console.debug(
           'Unable to send roll call re-open request, the event does not have an idAlias',
         );
         return;
       }
-      requestOpenRollCall(event.idAlias).catch((e) =>
+      requestOpenRollCall(rollCall.idAlias).catch((e) =>
         console.debug('Unable to send Roll call re-open request', e),
       );
     } else {
       const time = Timestamp.EpochNow();
-      requestOpenRollCall(event.id, time)
+      requestOpenRollCall(rollCall.id, time)
         .then(() => {
           navigation.navigate(STRINGS.roll_call_open, {
-            rollCallID: event.id.toString(),
+            rollCallID: rollCall.id.toString(),
             time: time.toString(),
           });
         })
@@ -147,9 +143,13 @@ const EventRollCall = (props: IPropTypes) => {
 
 const propTypes = {
   event: PropTypes.instanceOf(RollCall).isRequired,
-  isOrganizer: PropTypes.bool.isRequired,
+  isOrganizer: PropTypes.bool,
 };
 EventRollCall.propTypes = propTypes;
+
+EventRollCall.defaultProps = {
+  isOrganizer: false,
+};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
