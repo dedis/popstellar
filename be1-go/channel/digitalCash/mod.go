@@ -4,12 +4,15 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
+	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/registry"
+	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
+	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -190,4 +193,32 @@ func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	//	registry.Register(messagedata.ConsensusElect{}, c.processConsensusElect)
 
 	return registry
+}
+
+// processMessageObject handles a message object.
+func (c *Channel) processDigitalCashObject(msg message.Message, msgData interface{}, _ socket.Socket) error {
+
+	_, ok := msgData.(*messagedata.MessageWitness)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
+	}
+
+	var witnessData messagedata.MessageWitness
+
+	err := msg.UnmarshalData(&witnessData)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
+	}
+
+	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
+	if err != nil {
+		return answer.NewError(-4, "invalid witness signature")
+	}
+
+	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+	if err != nil {
+		return xerrors.Errorf("failed to add witness signature: %w", err)
+	}
+
+	return nil
 }
