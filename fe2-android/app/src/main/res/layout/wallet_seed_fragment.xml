@@ -25,9 +25,8 @@
       <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:text="@string/text_seed_wallet"
-        android:textSize="@dimen/size_title"
+        style="@style/title_style"
         android:textStyle="bold" />
 
       <TextView
@@ -47,7 +46,7 @@
 
         <Button
           android:id="@+id/button_confirm_seed"
-          style="@style/Theme.AppCompat"
+          style="@style/button_style"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:gravity="center"

@@ -5,12 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.WalletContentFragmentBinding;
@@ -101,10 +101,10 @@ public class ContentWalletFragment extends Fragment {
   }
 
   private void setupListAdapter() {
-    ListView listView = mWalletContentBinding.laoList;
+    RecyclerView recyclerView = mWalletContentBinding.laoList;
 
-    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, getActivity(), false);
+    mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, false);
 
-    listView.setAdapter(mListAdapter);
+    recyclerView.setAdapter(mListAdapter);
   }
 }

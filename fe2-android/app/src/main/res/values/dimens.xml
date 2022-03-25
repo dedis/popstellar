@@ -13,7 +13,8 @@
   <dimen name="margin_text">32dp</dimen>
   <dimen name="margin_text_small">16dp</dimen>
   <dimen name="margin_top">5dp</dimen>
-  <dimen name="size_title">24sp</dimen>
+  <dimen name="size_title">28sp</dimen>
+  <dimen name="size_section_title">20sp</dimen>
   <dimen name="size_body">18sp</dimen>
   <dimen name="size_small">12sp</dimen>
   <dimen name="tab_lao_detail">13sp</dimen>
@@ -94,5 +95,14 @@
   <dimen name="min_height_entry_box_chirp">245dp</dimen>
   <dimen name="social_media_divider_height">1dp</dimen>
   <dimen name="bottom_navigation_view_height">56dp</dimen>
+
+  <!--  Card View dimensions-->
+  <dimen name="card_view_elevation">8dp</dimen>
+  <dimen name="card_view_margin">10dp</dimen>
+  <dimen name="card_view_corner_radius">8dp</dimen>
+
+  <!-- Recycler View dimensions  -->
+  <dimen name="rv_margin">10dp</dimen>
+  <dimen name="rv_margin_top">20dp</dimen>
 
 </resources>

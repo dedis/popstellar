@@ -299,6 +299,7 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openHome() {
     mOpenHomeEvent.postValue(new SingleEvent<>(true));
+
   }
 
   public void openConnecting() {

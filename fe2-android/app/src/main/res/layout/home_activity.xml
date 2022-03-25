@@ -2,31 +2,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
-  android:id="@+id/fragment_container_home"
   android:layout_width="match_parent"
   android:layout_height="match_parent">
 
-<!--  <include-->
-<!--    layout="@layout/tab_home"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent" />-->
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/fragment_container_home"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    app:layout_constraintBottom_toTopOf="@+id/home_nav_bar"
+    app:layout_constraintTop_toTopOf="parent">
 
-<!--  <include-->
-<!--    layout="@layout/tab_connect_launch"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    tools:layout_editor_absoluteX="0dp"-->
-<!--    tools:layout_editor_absoluteY="0dp" />-->
+  </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--  <include-->
-<!--    layout="@layout/tab_wallet"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent" />-->
-
-<!--  <include-->
-<!--    layout="@layout/tab_social_media"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent" />-->
 
   <com.google.android.material.bottomnavigation.BottomNavigationView
     android:id="@+id/home_nav_bar"

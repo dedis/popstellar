@@ -25,26 +25,20 @@
       <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:text="@string/text_title_wallet"
-        android:textSize="@dimen/size_title"
-        android:textStyle="bold" />
+        style="@style/explication_welcome_style"/>
 
       <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:text="@string/text_help_wallet"
-        android:textSize="@dimen/size_body"
-        android:textStyle="italic" />
+        style="@style/explication_text_style"/>
 
       <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:text="@string/text_help_new_wallet"
-        android:textSize="@dimen/size_body"
-        android:textStyle="italic" />
+        style="@style/explication_text_style"/>
 
       <LinearLayout
         android:layout_width="match_parent"
@@ -58,6 +52,7 @@
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:gravity="center"
+          android:theme="@style/button_style"
           android:text="@string/button_new_wallet"
           style="@style/Theme.AppCompat" />
 
@@ -65,6 +60,7 @@
           android:id="@+id/button_own_seed"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:theme="@style/button_style"
           android:layout_marginEnd="@dimen/margin_button"
           android:gravity="center"
           android:text="@string/button_own_seed"

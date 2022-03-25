@@ -25,21 +25,15 @@
         android:id="@+id/connecting_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
         android:text="@string/connecting"
-        android:textSize="@dimen/size_body"
-        android:textStyle="bold" />
+        style="@style/explication_welcome_style"/>
 
       <TextView
         android:id="@+id/connecting_lao"
         android:text="@{view_model.getConnectingLao}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/margin_text"
-        android:gravity="center"
-        android:textSize="@dimen/size_title"
-        android:textStyle="bold" />
+        style="@style/explication_welcome_style"/>
 
       <RelativeLayout
         android:id="@+id/loadingPanel"
@@ -60,6 +54,7 @@
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_gravity="bottom|end"
+      style="@style/button_style"
       android:text="@string/button_cancel" />
   </FrameLayout>
 </layout>

@@ -1,33 +1,40 @@
 package com.github.dedis.popstellar.ui.home;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.HomeLaoLayoutBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
 
 import java.util.List;
 
-public class LAOListAdapter extends BaseAdapter {
+public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListItemViewHolder> {
+
+  private final String TAG = LAOListAdapter.class.getSimpleName();
 
   private final HomeViewModel homeViewModel;
 
   private List<Lao> laos;
 
-  private final LifecycleOwner lifecycleOwner;
 
   private final boolean openLaoDetail;
 
   public LAOListAdapter(
-      List<Lao> laos, HomeViewModel homeViewModel, LifecycleOwner activity, boolean openLaoDetail) {
+      List<Lao> laos, HomeViewModel homeViewModel, boolean openLaoDetail) {
+
     this.homeViewModel = homeViewModel;
     setList(laos);
-    lifecycleOwner = activity;
     this.openLaoDetail = openLaoDetail;
   }
 
@@ -40,14 +47,30 @@ public class LAOListAdapter extends BaseAdapter {
     notifyDataSetChanged();
   }
 
+  @NonNull
   @Override
-  public int getCount() {
-    return laos != null ? laos.size() : 0;
+  public LAOListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+    View view = layoutInflater.inflate(
+            R.layout.lao_card, parent, false);
+    return new LAOListItemViewHolder(view);
   }
 
   @Override
-  public Object getItem(int position) {
-    return laos.get(position);
+  public void onBindViewHolder(@NonNull LAOListItemViewHolder holder, int position) {
+
+    CardView cardView = holder.cardView;
+    final Lao lao = laos.get(position);
+    cardView.setOnClickListener(v -> {
+      if (openLaoDetail) {
+        homeViewModel.openLAO(lao.getId());
+      } else {
+        homeViewModel.openLaoWallet(lao.getId());
+      }});
+
+    TextView laoTitle = holder.laoTitle;
+    laoTitle.setText(lao.getName());
+
   }
 
   @Override
@@ -56,35 +79,21 @@ public class LAOListAdapter extends BaseAdapter {
   }
 
   @Override
-  public View getView(int position, View view, ViewGroup viewGroup) {
-    HomeLaoLayoutBinding binding;
-    if (view == null) {
-      // inflate
-      LayoutInflater inflater = LayoutInflater.from(viewGroup.getContext());
+  public int getItemCount() {
+    return laos != null ? laos.size() : 0;
+  }
 
-      binding = HomeLaoLayoutBinding.inflate(inflater, viewGroup, false);
-    } else {
-      binding = DataBindingUtil.getBinding(view);
+  static class LAOListItemViewHolder extends RecyclerView.ViewHolder{
+
+    private final CardView cardView;
+    private final TextView laoTitle;
+
+    public LAOListItemViewHolder(@NonNull View itemView) {
+      super(itemView);
+
+      cardView = itemView.findViewById(R.id.lao_card_view);
+      laoTitle = itemView.findViewById(R.id.lao_card_text_view);
+
     }
-
-    if (binding == null) throw new IllegalStateException("Binding could not be find in the view");
-
-    LAOItemUserActionsListener userActionsListener =
-        lao -> {
-          if (openLaoDetail) {
-            homeViewModel.openLAO(lao.getId());
-          } else {
-            homeViewModel.openLaoWallet(lao.getId());
-          }
-        };
-
-    binding.setLao(laos.get(position));
-    binding.setLifecycleOwner(lifecycleOwner);
-
-    binding.setListener(userActionsListener);
-
-    binding.executePendingBindings();
-
-    return binding.getRoot();
   }
 }
