@@ -3,7 +3,7 @@ package ch.epfl.pop.pubsub
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.data.ActionType.ActionType
 import ch.epfl.pop.model.network.method.message.data.ObjectType.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.network.method.message.data.lao.{CreateLao, StateLao, UpdateLao}
 import ch.epfl.pop.model.network.method.message.data.meeting.{CreateMeeting, StateMeeting}
 import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall, OpenRollCall, ReopenRollCall}
@@ -72,7 +72,7 @@ object MessageRegistry {
 
     // data election
     register.add((ObjectType.ELECTION, ActionType.SETUP), createSchemaVerifier("dataSetupElection.json"), SetupElection.buildFromJson, ElectionValidator.validateSetupElection, ElectionHandler.handleSetupElection)
-    register.add((ObjectType.ELECTION, ActionType.OPEN), createSchemaVerifier("dataOpenElection.json"), EndElection.buildFromJson, ElectionValidator.validateEndElection, ElectionHandler.handleOpenElection)
+    register.add((ObjectType.ELECTION, ActionType.OPEN), createSchemaVerifier("dataOpenElection.json"), OpenElection.buildFromJson, ElectionValidator.validateOpenElection, ElectionHandler.handleOpenElection)
     register.add((ObjectType.ELECTION, ActionType.CAST_VOTE), createSchemaVerifier("dataCastVote.json"), CastVoteElection.buildFromJson, ElectionValidator.validateCastVoteElection, ElectionHandler.handleCastVoteElection)
     register.add((ObjectType.ELECTION, ActionType.RESULT), createSchemaVerifier("dataResultElection.json"), ResultElection.buildFromJson, ElectionValidator.validateResultElection, ElectionHandler.handleResultElection)
     register.add((ObjectType.ELECTION, ActionType.END), createSchemaVerifier("dataEndElection.json"), EndElection.buildFromJson, ElectionValidator.validateEndElection, ElectionHandler.handleEndElection)
