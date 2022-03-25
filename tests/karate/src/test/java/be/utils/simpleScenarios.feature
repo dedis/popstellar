@@ -1,5 +1,8 @@
 @ignore @report=false
-  Feature: create lao
+  Feature: Create valid simple Scenarios
+    # This file contains a set of simple scenarios that can be used when
+    # testing the validity of other features. By calling one scenario from
+    # this file simply use the allocated name for the particular feature.
     @name=valid_lao
     Scenario: Creates valid lao
 
@@ -61,5 +64,4 @@
       * json open_roll_broadcast = frontend_buffer.takeTimeout(timeout)
       * json open_roll_result = frontend_buffer.takeTimeout(timeout)
       * karate.log("Received in simple scenarios open roll call :")
-      * karate.log("----------------------*****---------**----------")
       * karate.log(open_roll_result)

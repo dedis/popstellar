@@ -35,7 +35,6 @@ Feature: Create a pop LAO
       *  karate.log('Received: '+ karate.pretty(err) )
       Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -6, description: '#string'}}
 
-  @name=valid_lao
   Scenario: Create should succeed with a valid creation request
     Given def createLaoReq =
         """
