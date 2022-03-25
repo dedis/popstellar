@@ -9,9 +9,9 @@ import { QRCode, WideButtonView } from 'core/components';
 import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
+import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
-import { FOUR_SECONDS } from 'resources/const';
 import { requestOpenRollCall, requestReopenRollCall } from '../network';
 import { RollCall, RollCallStatus } from '../objects';
 
