@@ -21,13 +21,13 @@ export class RollCallToken {
     }
 
     if (obj.token === undefined) {
-      throw new Error("Undefined 'id' when creating 'RollCallToken'");
+      throw new Error("Undefined 'token' when creating 'RollCallToken'");
     }
     if (obj.laoId === undefined) {
-      throw new Error("Undefined 'name' when creating 'RollCallToken'");
+      throw new Error("Undefined 'laoId' when creating 'RollCallToken'");
     }
     if (obj.rollCallId === undefined) {
-      throw new Error("Undefined 'creation' when creating 'RollCallToken'");
+      throw new Error("Undefined 'rollCallId' when creating 'RollCallToken'");
     }
 
     this.token = obj.token;
