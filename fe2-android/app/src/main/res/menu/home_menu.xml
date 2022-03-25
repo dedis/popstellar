@@ -18,6 +18,6 @@
     android:title="@string/tab_wallet"/>
   <item
     android:id="@+id/home_chirp_menu"
-    android:icon="@drawable/ic_social_media_following_foreground"
+    android:icon="@drawable/ic_social_media_transparent_foreground"
     android:title="Social Media"/>
 </menu>

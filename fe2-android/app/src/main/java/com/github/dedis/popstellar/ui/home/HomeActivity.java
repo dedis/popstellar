@@ -4,6 +4,7 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,10 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
+import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
@@ -32,6 +35,7 @@ import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -65,8 +69,10 @@ public class HomeActivity extends AppCompatActivity {
           JsonUtils.loadSchema(JsonUtils.DATA_SCHEMA);
           JsonUtils.loadSchema(JsonUtils.GENERAL_MESSAGE_SCHEMA);
         });
+
     navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar();
+    MenuItem socialMediaItem = navbar.getMenu().getItem(4);
 
     // Subscribe to "open lao" event
     mViewModel
@@ -87,7 +93,6 @@ public class HomeActivity extends AppCompatActivity {
             this,
             booleanEvent -> {
               Boolean event = booleanEvent.getContentIfNotHandled();
-              Log.d(TAG, "Open home triggered");
               if (navbar.getSelectedItemId() != R.id.home_home_menu) {
                 navbar.setSelectedItemId(R.id.home_home_menu);
               }
@@ -150,6 +155,17 @@ public class HomeActivity extends AppCompatActivity {
                 setupSettingsActivity();
               }
             });
+
+    // Subscribe to lao adding event to adapt the chirp menu item
+    mViewModel
+        .getLAOs()
+        .observe(this, laos -> {
+          if (laos.size() > 0) {
+            socialMediaItem.setIcon(R.drawable.ic_social_media_opaque_foreground);
+          } else {
+            socialMediaItem.setIcon(R.drawable.ic_social_media_transparent_foreground);
+          }
+        });
 
     subscribeWalletEvents();
     subscribeSocialMediaEvent();
@@ -361,6 +377,7 @@ public class HomeActivity extends AppCompatActivity {
               break;
             case R.id.home_chirp_menu:
               mViewModel.openSocialMedia();
+              break;
             default:
           }
           return true;
