@@ -136,7 +136,7 @@ public class HomeViewModel extends AndroidViewModel
     } catch (JsonParseException e) {
       Log.e(TAG, "Invalid QRCode data", e);
       Toast.makeText(
-              getApplication().getApplicationContext(), "Invalid QRCode data", Toast.LENGTH_LONG)
+          getApplication().getApplicationContext(), "Invalid QRCode data", Toast.LENGTH_LONG)
           .show();
       return;
     }
@@ -166,7 +166,9 @@ public class HomeViewModel extends AndroidViewModel
     openConnecting();
   }
 
-  /** onCleared is used to cancel all subscriptions to observables. */
+  /**
+   * onCleared is used to cancel all subscriptions to observables.
+   */
   @Override
   protected void onCleared() {
     super.onCleared();
@@ -316,7 +318,7 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openConnect() {
     if (checkSelfPermission(
-            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+        getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       openQrCodeScanning();
     } else {

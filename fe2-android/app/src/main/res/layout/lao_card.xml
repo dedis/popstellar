@@ -28,20 +28,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-<!--      <ImageView-->
-<!--        android:id="@+id/imageView"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintHeight="60dp"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:layout_constraintWidth_max="60dp"-->
-<!--        app:srcCompat="@drawable/ic_home_lao" />-->
   </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
