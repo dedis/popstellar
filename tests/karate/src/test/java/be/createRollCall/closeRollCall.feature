@@ -36,7 +36,7 @@ Feature: Close a Roll Call
   # After the usual setup, create a roll cal but never open it. Then trying to send a valid
   # roll call close message should result in an error sent by the backend
   Scenario: Close a valid roll call that was never opened should return an error
-    Given string rol_call_close = read('classpath:data/rollCall/close/valid_roll_call_close_2.json')
+    Given string rollCallClose = read('classpath:data/rollCall/close/valid_roll_call_close_2.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     And eval frontend.send(rollCallClose)
     * json close_roll_err = frontend_buffer.takeTimeout(timeout)
