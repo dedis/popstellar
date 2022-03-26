@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.utility.handler.data;
 
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.OPENED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
@@ -12,6 +13,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Election;
 import com.github.dedis.popstellar.model.objects.Lao;
@@ -91,6 +93,32 @@ public final class ElectionHandler {
     election.setEventState(RESULTS_READY);
     lao.updateElection(election.getId(), election);
   }
+
+  /**
+   * Process an OpenElection message.
+   * @param context the HandlerContext of the message
+   * @param openElection the message that was received
+   */
+  public static void handleOpenElection(HandlerContext context, OpenElection openElection)
+      throws DataHandlingException {
+    LAORepository laoRepository = context.getLaoRepository();
+    Channel channel = context.getChannel();
+
+    Log.d(TAG, "handleOpenElection: channel " + channel);
+    Lao lao = laoRepository.getLaoByChannel(channel);
+    Election election = laoRepository.getElectionByChannel(channel);
+
+    if (election.getState() != CREATED) {
+      throw new DataHandlingException(
+          openElection,
+          "received an OpenElection but the election state was : " + election.getState());
+    }
+
+    election.setEventState(OPENED);
+    election.setStart(openElection.getOpenedAt());
+    lao.updateElection(election.getId(), election);
+  }
+
 
   /**
    * Process an ElectionEnd message.

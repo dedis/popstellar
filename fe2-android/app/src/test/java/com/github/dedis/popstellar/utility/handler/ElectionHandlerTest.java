@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.utility.handler;
 
 import static com.github.dedis.popstellar.testutils.Base64DataUtils.generateKeyPair;
 import static com.github.dedis.popstellar.utility.handler.data.ElectionHandler.electionSetupWitnessMessage;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.El
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResultQuestion;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.election.QuestionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -59,6 +61,9 @@ public class ElectionHandlerTest extends TestCase {
   private static final Channel LAO_CHANNEL = Channel.ROOT.subChannel(CREATE_LAO.getId());
 
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
+
+  private static final long openedAt = 1633099883;
+
 
   private Lao lao;
   private RollCall rollCall;
@@ -198,5 +203,30 @@ public class ElectionHandlerTest extends TestCase {
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(election.getId());
     assertTrue(electionOpt.isPresent());
     assertEquals(EventState.CLOSED, electionOpt.get().getState());
+  }
+
+  @Test
+  public void handleOpenElectionTest() throws DataHandlingException {
+    OpenElection openElection = new OpenElection(lao.getId(), election.getId(), openedAt);
+    MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, GSON);
+
+    for (EventState state : EventState.values()) {
+      election.setEventState(state);
+
+      if (state == EventState.CREATED) {
+        // If the previous state was CREATED, it should change it to OPENED.
+        messageHandler.handleMessage(laoRepository, messageSender,
+            election.getChannel(), message);
+        assertEquals(EventState.OPENED, election.getState());
+        assertEquals(openedAt, election.getStartTimestamp());
+      } else {
+        // If the previous state was not CREATED, the state should not change and throw an exception
+        assertThrows(
+            DataHandlingException.class,
+            () -> messageHandler.handleMessage(laoRepository,
+                messageSender, election.getChannel(), message));
+        assertEquals(state, election.getState());
+      }
+    }
   }
 }
