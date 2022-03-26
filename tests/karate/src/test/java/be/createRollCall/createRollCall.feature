@@ -22,22 +22,38 @@ Feature: Create a Roll Call
   Scenario: Valid Roll Call
     Given string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
+    * string rollCallData = read('classpath:data/rollCall/data/valid_roll_call_create_data.json')
+    * karate.log(rollCallData)
+    * string type = "publish"
+    * def id = 3
+    * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+    * string rolca = converter.messageFromData(rollCallData,type,id,channel)
+    * karate.log("////////////////////********** ::")
+    * karate.log(rolca)
+    * karate.log(rollCallReq)
+    * karate.log("////////////////////********** ::")
 
     * karate.log('Request for lao creation sent')
     * frontend_buffer.takeTimeout(timeout)
-    Then eval frontend.send(rollCallReq)
+    Then eval frontend.send(rolca)
     * json roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
+    * karate.log(roll_call_broadcast)
     * json roll_call_result = frontend_buffer.takeTimeout(timeout)
     Then match roll_call_result contains deep {jsonrpc: '2.0', id: 3, result: 0}
 
-  # Setting up the lao correctly but send an invalid roll call create request, containing
-  # an empty roll call name should result in an error message from the backend.
-  Scenario: Roll Call Creation with empty name should return an error code
+  # Setting up the lao correctly but sending an invalid message containing
+  # the messageId of a valid request but data being empty should result in an error from the backend
+  Scenario: Roll Call Creation with invalid messageId should return an error
     Given string badRollCallReq  = read('classpath:data/rollCall/bad_roll_call_create_empty_data_but_same_messageId_as_valid_roll_call.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     * string validRollCallReq  = read('classpath:data/rollCall/valid_roll_call_create.json')
+    * string rollCallData = read('classpath:data/rollCall/data/valid_roll_call_create_data.json')
+    * string type = "publish"
+    * def id = 3
+    * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
+    * string rolca = converter.messageFromData(rollCallData,type,id,channel)
 
-    When eval frontend.send(validRollCallReq)
+    When eval frontend.send(rolca)
     * karate.log('Request for roll call sent')
     * frontend_buffer.takeTimeout(timeout)
 

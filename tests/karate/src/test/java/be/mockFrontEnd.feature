@@ -19,6 +19,16 @@ Feature: Mock FrontEnd
     * def frontend_buffer = frontend.getBuffer()
     * def stopFrontend = function() { frontend.close() }
 
+
+    * def convertData =
+        """
+          function(){
+            var JsonConverter = Java.type('be.utils.JsonConverter')
+            return new JsonConverter()
+          }
+        """
+    * def converter = call convertData
+
     # Shutdown frontend automatically after the end of a scenario and  feature
     * configure afterScenario = stopFrontend
     * configure afterFeature = stopFrontend
