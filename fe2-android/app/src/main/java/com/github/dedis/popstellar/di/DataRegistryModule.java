@@ -44,6 +44,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.election.Ca
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionSetup;
+import com.github.dedis.popstellar.model.network.method.message.data.election.OpenElection;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.CreateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.StateLao;
 import com.github.dedis.popstellar.model.network.method.message.data.lao.UpdateLao;
@@ -105,6 +106,7 @@ public abstract class DataRegistryModule {
     // Election
     builder
         .add(ELECTION, SETUP, ElectionSetup.class, ElectionHandler::handleElectionSetup)
+        .add(ELECTION, OPEN, OpenElection.class, ElectionHandler::handleOpenElection)
         .add(ELECTION, CAST_VOTE, CastVote.class, ElectionHandler::handleCastVote)
         .add(ELECTION, END, ElectionEnd.class, ElectionHandler::handleElectionEnd)
         .add(ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult);
