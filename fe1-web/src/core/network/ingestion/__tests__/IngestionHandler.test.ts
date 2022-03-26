@@ -1,4 +1,4 @@
-import { mockKeyPair } from '__tests__/utils';
+import { mockKeyPair, mockMessageRegistry } from '__tests__/utils';
 import {
   Broadcast,
   ExtendedJsonRpcRequest,
@@ -10,7 +10,6 @@ import {
   configureMessages,
   Message,
   MessageData,
-  MessageRegistry,
   ObjectType,
 } from 'core/network/jsonrpc/messages';
 import { dispatch } from 'core/redux';
@@ -37,11 +36,6 @@ const mockMessageData: MessageData = { object: ObjectType.ELECTION, action: Acti
 let mockMessage: Message;
 let mockJsonRequest: Partial<JsonRpcRequest>;
 let extendedRequest: ExtendedJsonRpcRequest;
-
-const mockMessageRegistry = {
-  getSignatureType: jest.fn().mockImplementation(() => 'some signature'),
-  buildMessageData: jest.fn().mockImplementation((input) => JSON.stringify(input)),
-} as unknown as MessageRegistry;
 
 // endregion
 

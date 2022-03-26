@@ -3,9 +3,14 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 import { describe, jest } from '@jest/globals';
 
-import { mockKeyPair } from '__tests__/utils';
-import { KeyPairRegistry } from 'core/keypair';
-import { Channel } from 'core/objects';
+import {
+  mockAddress,
+  mockChannel,
+  mockKeyPair,
+  mockKeyPairRegistry,
+  mockMessageRegistry,
+  mockSignatureType,
+} from '__tests__/utils';
 
 import { ExtendedMessage } from '../ingestion/ExtendedMessage';
 import {
@@ -21,7 +26,6 @@ import {
   configureMessages,
   Message,
   MessageData,
-  MessageRegistry,
   ObjectType,
 } from '../jsonrpc/messages';
 import {
@@ -35,20 +39,6 @@ import {
 import { getNetworkManager } from '../NetworkManager';
 
 // region mock data
-
-const mockSignatureType = 'some signature';
-
-const mockMessageRegistry = {
-  getSignatureType: jest.fn().mockImplementation(() => mockSignatureType),
-  buildMessageData: jest.fn().mockImplementation((input) => JSON.stringify(input)),
-} as unknown as MessageRegistry;
-
-const mockKeyPairRegistry = {
-  getSignatureKeyPair: jest.fn().mockImplementation(() => Promise.resolve(mockKeyPair)),
-} as unknown as KeyPairRegistry;
-
-const mockChannel: Channel = 'some channel';
-const mockAddress = 'some address';
 const mockMessageData: MessageData = { object: ObjectType.ELECTION, action: ActionType.OPEN };
 
 const networkManager = getNetworkManager();
@@ -165,7 +155,7 @@ describe('catchup', () => {
     // @ts-ignore
     delete value.receivedAt;
     // @ts-ignore
-    delete expected['receivedAt'];
+    delete expected.receivedAt;
 
     expect(value).toBeJsonEqual(expected);
     expect(done).toBeFalse();

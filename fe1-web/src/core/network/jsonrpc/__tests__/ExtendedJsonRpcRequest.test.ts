@@ -1,16 +1,10 @@
 import { describe, it } from '@jest/globals';
 
-import { ExtendedJsonRpcRequest } from '../ExtendedJsonRpcRequest';
-import { JsonRpcMethod } from '../JsonRpcMethods';
-import { JsonRpcRequest } from '../JsonRpcRequest';
+import { mockAddress, mockJsonRequest } from '__tests__/utils';
+import { ProtocolError } from 'core/objects';
 
-const mockAddress = 'some address';
-const mockChannel = 'some channel';
-const mockJsonRequest: Partial<JsonRpcRequest> = {
-  jsonrpc: 'some data',
-  method: JsonRpcMethod.BROADCAST,
-  params: { channel: mockChannel },
-};
+import { ExtendedJsonRpcRequest } from '../ExtendedJsonRpcRequest';
+import { JsonRpcRequest } from '../JsonRpcRequest';
 
 describe('ExtendedJsonRpcRequest', () => {
   it('can create a new instance', () => {
@@ -24,6 +18,6 @@ describe('ExtendedJsonRpcRequest', () => {
 
   it('cannot create a new instance with missing receivedFrom parameter', () => {
     const fn = () => new ExtendedJsonRpcRequest({}, mockJsonRequest);
-    expect(fn).toThrow();
+    expect(fn).toThrow(ProtocolError);
   });
 });

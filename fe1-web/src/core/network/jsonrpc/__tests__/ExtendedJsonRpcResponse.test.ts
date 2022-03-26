@@ -1,10 +1,10 @@
 import { describe, it } from '@jest/globals';
 
+import { mockAddress, mockJsonResponse } from '__tests__/utils';
+import { ProtocolError } from 'core/objects';
+
 import { ExtendedJsonRpcResponse } from '../ExtendedJsonRpcResponse';
 import { JsonRpcResponse } from '../JsonRpcResponse';
-
-const mockAddress = 'some address';
-const mockJsonResponse: Partial<JsonRpcResponse> = { id: 0, result: [] };
 
 describe('ExtendedJsonRpcResponse', () => {
   it('can create a new instance', () => {
@@ -18,6 +18,6 @@ describe('ExtendedJsonRpcResponse', () => {
 
   it('cannot create a new instance with missing receivedFrom parameter', () => {
     const fn = () => new ExtendedJsonRpcResponse({}, mockJsonResponse);
-    expect(fn).toThrow();
+    expect(fn).toThrow(ProtocolError);
   });
 });
