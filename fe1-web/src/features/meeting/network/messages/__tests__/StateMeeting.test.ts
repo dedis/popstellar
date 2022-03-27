@@ -1,11 +1,10 @@
 import 'jest-extended';
-
-import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Base64UrlData, Hash, Timestamp, ProtocolError } from 'core/objects';
-import { OpenedLaoStore } from 'features/lao/store';
-
 import '__tests__/utils/matchers';
-import { mockLao, mockLaoId, configureTestFeatures } from '__tests__/utils';
+
+import { configureTestFeatures, mockLao, mockLaoId } from '__tests__/utils';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
+import { Base64UrlData, Hash, ProtocolError, Timestamp } from 'core/objects';
+import { OpenedLaoStore } from 'features/lao/store';
 
 import { StateMeeting } from '../StateMeeting';
 

@@ -1,7 +1,7 @@
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 
-import { handleWitnessMessage } from './WitnessHandler';
 import { WitnessMessage } from './messages';
+import { handleWitnessMessage } from './WitnessHandler';
 
 /**
  * Configures the network callbacks in a MessageRegistry.

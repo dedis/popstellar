@@ -1,6 +1,6 @@
 export {
+  validateConnectToLao,
+  validateDataObject,
   validateJsonRpcRequest,
   validateJsonRpcResponse,
-  validateDataObject,
-  validateConnectToLao,
 } from 'core/network/validation/Validator';

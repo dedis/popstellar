@@ -1,13 +1,13 @@
 import { ProtocolError } from 'core/objects';
 
 import { validateJsonRpcRequest } from '../validation';
-import { JsonRpcParams } from './JsonRpcParams';
-import { JsonRpcMethod } from './JsonRpcMethods';
 import { Broadcast } from './Broadcast';
+import { Catchup } from './Catchup';
+import { JsonRpcMethod } from './JsonRpcMethods';
+import { JsonRpcParams } from './JsonRpcParams';
+import { Publish } from './Publish';
 import { Subscribe } from './Subscribe';
 import { Unsubscribe } from './Unsubscribe';
-import { Publish } from './Publish';
-import { Catchup } from './Catchup';
 
 /**
  * This class represents a JSON-RPC 2.0 Request (or Notification)

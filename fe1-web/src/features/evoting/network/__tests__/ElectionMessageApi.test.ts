@@ -1,9 +1,10 @@
+import 'jest-extended';
+
+import { mockLaoIdHash } from '__tests__/utils';
 import { publish } from 'core/network';
 import { channelFromIds, Timestamp } from 'core/objects';
 import { mockElectionNotStarted, mockElectionOpened } from 'features/evoting/__tests__/utils';
 import { SelectedBallots } from 'features/evoting/objects';
-import 'jest-extended';
-import { mockLaoIdHash } from '__tests__/utils';
 
 import {
   castVote,

@@ -1,7 +1,7 @@
 import { sign } from 'tweetnacl';
 
-import { PublicKey } from './PublicKey';
 import { Base64UrlData } from './Base64Url';
+import { PublicKey } from './PublicKey';
 
 export class Signature extends Base64UrlData {
   /**

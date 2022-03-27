@@ -1,5 +1,5 @@
-import React from 'react';
 import PropTypes, { shape } from 'prop-types';
+import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 
