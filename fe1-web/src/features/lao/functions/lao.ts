@@ -1,7 +1,7 @@
 import { Channel, channelFromIds, Hash } from 'core/objects';
 import { getStore } from 'core/redux';
 
-import { selectCurrentLao, selectCurrentLaoId } from '../reducer';
+import { selectCurrentLao, selectCurrentLaoId, selectIsLaoWitness } from '../reducer';
 
 /**
  * Returns the current lao and throws an error if there is none
@@ -24,10 +24,14 @@ export const getCurrentLao = () => {
 export const getCurrentLaoId = () => selectCurrentLaoId(getStore().getState());
 
 /**
+ * Returns whether the user is witness of the current lao
+ * @returns Whether the user is witness of the current lao
+ */
+export const isLaoWitness = () => selectIsLaoWitness(getStore().getState());
+
+/**
  * Get a LAOs channel by its id
  * @param laoId The id of the lao whose channel should be returned
  * @returns The channel related to the passed lao id or undefined it the lao id is invalid
  */
-export function getLaoChannel(laoId: string): Channel {
-  return channelFromIds(new Hash(laoId));
-}
+export const getLaoChannel = (laoId: string): Channel => channelFromIds(new Hash(laoId));

@@ -49,6 +49,7 @@ export function configureFeatures() {
   witness.configure({
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
+    isLaoWitness: laoConfiguration.functions.isLaoWitness,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
   });
   const walletConfiguration = wallet.configure(keyPairRegistry);

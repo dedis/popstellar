@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/dot-notation */
 import 'jest-extended';
 
 import { configureTestFeatures, mockPopToken } from '__tests__/utils';
@@ -34,8 +35,12 @@ getMock.mockImplementation(() => Lao.fromState(laoState));
 
 let registry: MessageRegistry;
 beforeEach(() => {
+  // setup fresh message registry for each test
   registry = configureTestFeatures();
   configureMessages(registry);
+
+  // clear any handlers that might be initialized
+  registry['afterProcessingHandlers'] = [];
 });
 
 describe('MessageRegistry', () => {
@@ -50,11 +55,11 @@ describe('MessageRegistry', () => {
     const message = Message.fromData(messageData, mockPopToken);
     const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
 
-    const mockHandle = jest.fn();
+    const mockHandle = jest.fn().mockImplementation(() => true);
     const mockBuild = jest.fn();
     registry.add(CHIRP, ADD, mockHandle, mockBuild);
 
-    registry.handleMessage(extMsg);
+    expect(registry.handleMessage(extMsg)).toBeTrue();
 
     expect(mockHandle).toHaveBeenCalledTimes(1);
     expect(mockHandle).toHaveBeenCalledWith(extMsg);
@@ -89,5 +94,84 @@ describe('MessageRegistry', () => {
 
   it('verifyEntries should throw an error for undefined handler', () => {
     expect(registry.verifyEntries).toThrow(Error);
+  });
+
+  it('is initialized with no after processing handlers', () => {
+    expect(registry['afterProcessingHandlers']).toEqual([]);
+  });
+
+  it('is possible to add after processing handlers', () => {
+    const handler1 = jest.fn();
+    const handler2 = jest.fn();
+
+    registry.addAfterProcessingHandler(handler1);
+    registry.addAfterProcessingHandler(handler2);
+
+    expect(registry['afterProcessingHandlers']).toEqual([handler1, handler2]);
+  });
+
+  it('is possible to remove after processing handlers', () => {
+    const handler1 = jest.fn();
+    const handler2 = jest.fn();
+
+    registry.addAfterProcessingHandler(handler1);
+    registry.addAfterProcessingHandler(handler2);
+    registry.removeAfterProcessingHandler(handler1);
+
+    expect(registry['afterProcessingHandlers']).toEqual([handler2]);
+  });
+
+  it('is possible to clear all processing handlers', () => {
+    const handler1 = jest.fn();
+    const handler2 = jest.fn();
+
+    registry.addAfterProcessingHandler(handler1);
+    registry.addAfterProcessingHandler(handler2);
+    registry.clearAfterProcessingHandler();
+
+    expect(registry['afterProcessingHandlers']).toEqual([]);
+  });
+
+  it('executes the after processing handler after successfully processing a message', () => {
+    const handler1 = jest.fn();
+    const handler2 = jest.fn();
+
+    registry.addAfterProcessingHandler(handler1);
+    registry.addAfterProcessingHandler(handler2);
+
+    const message = Message.fromData(messageData, mockPopToken);
+    const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
+
+    const mockHandle = jest.fn().mockImplementation(() => true);
+    const mockBuild = jest.fn();
+    registry.add(CHIRP, ADD, mockHandle, mockBuild);
+
+    expect(registry.handleMessage(extMsg)).toBeTrue();
+
+    expect(handler1).toHaveBeenCalledWith(extMsg);
+    expect(handler1).toHaveBeenCalledTimes(1);
+
+    expect(handler2).toHaveBeenCalledWith(extMsg);
+    expect(handler2).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not execute the after processing handler after non-successfull handling of a message', () => {
+    const handler1 = jest.fn();
+    const handler2 = jest.fn();
+
+    registry.addAfterProcessingHandler(handler1);
+    registry.addAfterProcessingHandler(handler2);
+
+    const message = Message.fromData(messageData, mockPopToken);
+    const extMsg = ExtendedMessage.fromMessage(message, channel, 'some address');
+
+    const mockHandle = jest.fn().mockImplementation(() => false);
+    const mockBuild = jest.fn();
+    registry.add(CHIRP, ADD, mockHandle, mockBuild);
+
+    expect(registry.handleMessage(extMsg)).toBeFalse();
+
+    expect(handler1).toHaveBeenCalledTimes(0);
+    expect(handler2).toHaveBeenCalledTimes(0);
   });
 });

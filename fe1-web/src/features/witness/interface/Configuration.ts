@@ -19,6 +19,12 @@ export interface WitnessConfiguration {
   getCurrentLao: () => WitnessFeature.Lao;
 
   /**
+   * Returns whether the user is witness of the current lao
+   * @returns Whether the user is witness of the current lao
+   */
+  isLaoWitness: () => boolean;
+
+  /**
    * Returns the currently active lao. Can only be used inside react components
    * @returns The current lao
    */

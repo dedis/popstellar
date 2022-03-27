@@ -43,6 +43,9 @@ interface MessageEntry {
 // Generates a string key of the form "object, action" for the MessageRegistry mapping
 const k = (object: ObjectType, action: ActionType): string => `${object}, ${action}`;
 
+// A handler that will can be called after sucessfully processing a message
+export type AfterProcessingHandler = (msg: ProcessableMessage) => void;
+
 /**
  * Registry of message data classes and their corresponding properties. By default, it already
  * contains all types of MessageData as keys and their corresponding signature type and build
@@ -85,6 +88,8 @@ export class MessageRegistry {
     [k(REACTION, ADD), { signature: POP_TOKEN }],
   ]);
 
+  private afterProcessingHandlers: AfterProcessingHandler[] = [];
+
   /**
    * Adds callback functions to manage a type of message in the registry.
    *
@@ -108,7 +113,17 @@ export class MessageRegistry {
   handleMessage(msg: ProcessableMessage): boolean {
     const data = msg.messageData;
     const messageEntry = this.getEntry(data);
-    return messageEntry.handle!(msg);
+
+    const success = messageEntry.handle!(msg);
+
+    if (success) {
+      // execute all after processing handlers
+      for (const handler of this.afterProcessingHandlers) {
+        handler(msg);
+      }
+    }
+
+    return success;
   }
 
   /**
@@ -172,6 +187,29 @@ export class MessageRegistry {
       throw new ProtocolError(`Message '${key}' is not contained in MessageRegistry`);
     }
     return messageEntry;
+  }
+
+  /**
+   * Adds a function that is executed after successfully processing a message
+   * @param handler The handler to add
+   */
+  public addAfterProcessingHandler(handler: AfterProcessingHandler) {
+    this.afterProcessingHandlers.push(handler);
+  }
+
+  /**
+   * Removes a function that is executed after successfully processing a message
+   * @param handler The handler to remove
+   */
+  public removeAfterProcessingHandler(handler: AfterProcessingHandler) {
+    this.afterProcessingHandlers = this.afterProcessingHandlers.filter((h) => h !== handler);
+  }
+
+  /**
+   * Removes a function that is executed after successfully processing a message
+   */
+  public clearAfterProcessingHandler() {
+    this.afterProcessingHandlers = [];
   }
 
   static isMessageData(value: unknown): value is MessageData {

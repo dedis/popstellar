@@ -65,10 +65,16 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     useLaoList: () => Lao[];
 
     /**
-     * Checks whether the current user is the organizer of the current lao
-     * @returns Whether the current user is the organizer of the current lao
+     * Checks whether the current user is an organizer of the current lao
+     * @returns Whether the current user is an organizer of the current lao
      */
     useIsLaoOrganizer: () => boolean;
+
+    /**
+     * Checks whether the current user is a witness of the current lao
+     * @returns Whether the current user is a witness of the current lao
+     */
+    useIsLaoWitness: () => boolean;
 
     /**
      * Gets the map of lao ids to the respective laos
@@ -106,6 +112,7 @@ export interface LaoConfigurationInterface extends FeatureInterface {
     /**
      * Sends a network request to create a new lao and returns
      * the corresponding channel
+     * @returns The channel for the newly created lao
      */
     requestCreateLao: (laoName: string) => Promise<Channel>;
 
@@ -113,6 +120,12 @@ export interface LaoConfigurationInterface extends FeatureInterface {
      * Opens a lao test connection
      */
     openLaoTestConnection: () => void;
+
+    /**
+     * Returns whether the user is witness of the current lao
+     * @returns Whether the user is witness of the current lao
+     */
+    isLaoWitness: () => boolean;
 
     /**
      * Get a LAOs channel by its id
