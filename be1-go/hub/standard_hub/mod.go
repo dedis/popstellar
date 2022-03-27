@@ -545,7 +545,8 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	log.Logger.Error().Msg("from message" + senderPubKey.String())
 	log.Logger.Error().Msg("From cli " + h.GetPubKeyOwner().String())
 	if !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return xerrors.Errorf("Only an organizer may create an Lao")
+		return xerrors.Errorf("Only an organizer may start an Lao. " +
+			"Check the public key provided to the server is correct")
 	}
 
 	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)

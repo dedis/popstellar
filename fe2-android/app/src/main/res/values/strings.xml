@@ -242,6 +242,9 @@
   <string name="error_subscribe_lao">Could not subscribe to the LAO channel\n%1$s</string>
   <string name="error_create_lao">Could not create the LAO\n%1$s</string>
   <string name="error_delete_chirp">Could not delete chirp\n%1$s</string>
+  <string name="error_wrong_organizer_key">
+    "Only an organizer may start an Lao. Check the public key provided to the server is correct"
+  </string>
 
   <!-- Exception -->
   <string name="json_rpc_exception">An error response was replied by the server\nError %1$d - %2$s</string>
