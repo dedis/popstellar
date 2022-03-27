@@ -522,8 +522,9 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
+	fromLao := GroupLaoSettings(attendees, fakeHub, nolog, keypair.public)
 	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
-		false, electionSetup.Questions, attendees, fakeHub, nolog, keypair.public)
+		electionSetup.Questions, fromLao)
 
 	channelElec, ok := channel.(*Channel)
 	require.True(t, ok)

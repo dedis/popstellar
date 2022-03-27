@@ -45,10 +45,9 @@ func (a *attendees) isPresent(key string) bool {
 
 // NewChannel returns a new initialized election channel
 func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger,
-	organizerPubKey kyber.Point) channel.Channel {
+	laoSettings *LaoSettings) channel.Channel {
 
-	log = log.With().Str("channel", "election").Logger()
+	laoSettings.log = laoSettings.log.With().Str("channel", "election").Logger()
 
 	// Saving on election channel too so it self-contains the entire election history
 	// electionCh.inbox.storeMessage(msg)
@@ -65,14 +64,14 @@ func NewChannel(channelPath string, start, end int64, questions []messagedata.El
 		questions:  getAllQuestionsForElectionChannel(questions),
 
 		attendees: &attendees{
-			store: attendeesMap,
+			store: laoSettings.attendeesMap,
 		},
 
-		hub: hub,
+		hub: laoSettings.hub,
 
-		log: log,
+		log: laoSettings.log,
 
-		organiserPubKey: organizerPubKey,
+		organiserPubKey: laoSettings.organizerPubKey,
 	}
 
 	newChannel.registry = newChannel.NewElectionRegistry()
@@ -126,6 +125,20 @@ type Channel struct {
 	organiserPubKey kyber.Point
 
 	registry registry.MessageRegistry
+}
+
+// LaoSettings is used to regroup lao channel related parameters
+type LaoSettings struct {
+	attendeesMap map[string]struct{} 
+	hub channel.HubFunctionalities
+	log zerolog.Logger
+	organizerPubKey kyber.Point
+}
+
+// GroupLaoSettings is used to return a LaoSettings struct to create an election channel
+func GroupLaoSettings(attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
+	log zerolog.Logger,	organizerPubKey kyber.Point) *LaoSettings {
+	return &LaoSettings{attendeesMap, hub, log, organizerPubKey}
 }
 
 // question represents a question in an election.
