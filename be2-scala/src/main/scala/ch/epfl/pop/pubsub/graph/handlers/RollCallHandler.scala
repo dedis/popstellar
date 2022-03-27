@@ -4,7 +4,7 @@ import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.rollCall.CloseRollCall
+import ch.epfl.pop.model.network.method.message.data.rollCall.{CloseRollCall, CreateRollCall}
 import ch.epfl.pop.model.objects.{Base64Data, Channel, DbActorNAckException, PublicKey}
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
@@ -20,8 +20,11 @@ object RollCallHandler extends MessageHandler {
   final lazy val handlerInstance = new RollCallHandler(super.dbActor)
 
   def handleCreateRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCreateRollCall(rpcMessage)
+
   def handleOpenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenRollCall(rpcMessage)
+
   def handleReopenRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleReopenRollCall(rpcMessage)
+
   def handleCloseRollCall(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCloseRollCall(rpcMessage)
 }
 
@@ -40,8 +43,42 @@ class RollCallHandler(dbRef: => AskableActorRef) extends MessageHandler {
   private val unknownAnswer: String = "Database actor returned an unknown answer"
 
   def handleCreateRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcRequest)
-    Await.result(ask, duration)
+    rpcRequest.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: CreateRollCall = message.decodedData.get.asInstanceOf[CreateRollCall]
+        // we are using the rollcall id instead of the message_id at rollcall creation
+        val rollCallChannel: Channel = Channel(s"${Channel.ROOT_CHANNEL_PREFIX}${data.id}")
+        val combined = for {
+          // check whether the rollcall already exists in db
+          _ <- {
+            (dbActor ? DbActor.ChannelExists(rollCallChannel)).transformWith {
+              case Success(_) => Future {
+                throw DbActorNAckException(ErrorCodes.INVALID_ACTION.id, "rollcall already exists in db")
+              }
+              case _ => Future {
+                ()
+              }
+            }
+          }
+          // create rollcall channel
+          _ <- dbActor ? DbActor.CreateChannel(rollCallChannel, ObjectType.ROLL_CALL)
+          // write rollcall creation message
+          _ <- dbActor ? DbActor.WriteAndPropagate(rollCallChannel, message)
+          // write rollcall data
+        } yield ()
+
+        Await.ready(combined, duration).value.get match {
+          case Success(_) => Left(rpcRequest)
+          case Failure(ex: DbActorNAckException) => Right(PipelineError(ex.code, s"handleCreateRollCall failed : ${ex.message}", rpcRequest.getId))
+          case reply => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCreateRollCall failed : unexpected DbActor reply '$reply'", rpcRequest.getId))
+        }
+
+      case _ => Right(PipelineError(
+        ErrorCodes.SERVER_ERROR.id,
+        s"Unable to handle rollcall message $rpcRequest. Not a Publish/Broadcast message",
+        rpcRequest.id
+      ))
+    }
   }
 
   def handleOpenRollCall(rpcRequest: JsonRpcRequest): GraphMessage = {
