@@ -1,4 +1,5 @@
 import { ProtocolError } from 'core/objects';
+
 import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
 import { ProcessableMessage } from './ProcessableMessage';
 

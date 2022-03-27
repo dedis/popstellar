@@ -92,3 +92,4 @@ Feature: This feature starts a server and stops it after every scenario.
           """
     # Configure an after feature function
     * configure afterFeature = karate.get('afterScenario')
+

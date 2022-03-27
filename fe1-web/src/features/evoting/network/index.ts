@@ -1,14 +1,15 @@
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
+
+import { EvotingConfiguration } from '../interface';
 import {
-  handleElectionSetupMessage,
   handleCastVoteMessage,
   handleElectionEndMessage,
-  handleElectionResultMessage,
   handleElectionOpenMessage,
+  handleElectionResultMessage,
+  handleElectionSetupMessage,
 } from './ElectionHandler';
+import { CastVote, ElectionResult, EndElection, SetupElection } from './messages';
 import { OpenElection } from './messages/OpenElection';
-import { EvotingConfiguration } from '../interface';
 
 /**
  * Configures the network callbacks in a MessageRegistry.

@@ -7,9 +7,14 @@ const containerStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-evenly',
   },
-  centered: {
+  centeredY: {
     flex: 1,
     justifyContent: 'center',
+  },
+  centeredXY: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   anchoredCenter: {
     flex: 1,

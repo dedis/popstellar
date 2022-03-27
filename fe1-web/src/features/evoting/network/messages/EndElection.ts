@@ -1,7 +1,7 @@
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 import { Election } from 'features/evoting/objects';
 

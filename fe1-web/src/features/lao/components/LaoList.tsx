@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import { Spacing } from 'core/styles';
@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
 const LaoList = () => {
   const laos = useSelector(selectLaosList);
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <FlatList
         data={laos}
         keyExtractor={(item) => item.id.toString()}

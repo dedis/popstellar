@@ -1,40 +1,39 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
+
 import {
-  mockLaoIdHash,
   configureTestFeatures,
   mockKeyPair,
-  mockReduxAction,
   mockLao,
+  mockLaoIdHash,
   mockPopToken,
+  mockReduxAction,
 } from '__tests__/utils';
-
+import { KeyPairStore } from 'core/keypair';
+import { subscribeToChannel } from 'core/network';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import {
-  Hash,
-  Timestamp,
   Base64UrlData,
-  Signature,
   channelFromIds,
   getLastPartOfChannel,
+  Hash,
+  Signature,
+  Timestamp,
 } from 'core/objects';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-
 import { dispatch } from 'core/redux';
 import {
-  mockElectionNotStarted,
   mockElectionId,
+  mockElectionNotStarted,
   mockElectionOpened,
+  mockElectionResultQuestions,
+  mockElectionTerminated,
+  mockRegistedVotesHash,
   mockVote1,
   mockVote2,
-  mockRegistedVotesHash,
-  mockElectionTerminated,
-  mockElectionResultQuestions,
 } from 'features/evoting/__tests__/utils';
-import { subscribeToChannel } from 'core/network';
-import { KeyPairStore } from 'core/keypair';
+
 import { EvotingConfiguration } from '../../interface';
 import { Election, ElectionState, ElectionStatus, RegisteredVote } from '../../objects';
-
 import {
   handleCastVoteMessage,
   handleElectionEndMessage,

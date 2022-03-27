@@ -3,10 +3,9 @@ import { View } from 'react-native';
 
 import { TextBlock } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-
-import STRINGS from 'resources/strings';
 import { LaoList } from 'features/lao/components';
 import { useLaoList } from 'features/lao/hooks';
+import STRINGS from 'resources/strings';
 
 /**
  * Manage the Home screen component: if the user is not connected to any LAO, a welcome message
@@ -17,7 +16,7 @@ const Home = () => {
   return laos && laos.length > 0 ? (
     <LaoList />
   ) : (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.home_welcome} />
       <TextBlock bold text={STRINGS.home_connect_lao} />
       <TextBlock bold text={STRINGS.home_launch_lao} />

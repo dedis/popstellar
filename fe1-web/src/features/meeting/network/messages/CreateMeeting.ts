@@ -1,7 +1,7 @@
-import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 
 /** Data sent to create a Meeting event */
 export class CreateMeeting implements MessageData {

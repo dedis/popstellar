@@ -1,9 +1,9 @@
-import { EventTags, Hash, Timestamp, ProtocolError } from 'core/objects';
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { validateDataObject } from 'core/network/validation';
+import { checkTimestampStaleness } from 'core/network/validation/Checker';
+import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { Lao } from 'features/lao/objects';
 import { OpenedLaoStore } from 'features/lao/store';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { checkTimestampStaleness } from 'core/network/validation/Checker';
 
 const paramError = (o: OpenRollCall) => `parameter encountered during roll call ${o.action}`;
 

@@ -1,5 +1,5 @@
-import { PublicKey } from './PublicKey';
 import { PrivateKey } from './PrivateKey';
+import { PublicKey } from './PublicKey';
 
 // Plain-old-data
 export interface KeyPairState {

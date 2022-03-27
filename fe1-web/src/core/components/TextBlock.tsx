@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
-import PropTypes from 'prop-types';
 
 import { Typography } from '../styles';
 import { black } from '../styles/colors';

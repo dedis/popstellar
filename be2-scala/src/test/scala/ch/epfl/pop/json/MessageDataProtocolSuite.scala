@@ -55,7 +55,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     example
   }
 
-  test("Parser correctly encodes/decodes a CreateLao message data") {
+  test("Parser correctly decodes a CreateLao message data") {
     val example: String = getExampleMessage("messageData/lao_create/lao_create.json")
     val messageData = CreateLao.buildFromJson(example)
 
@@ -65,7 +65,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a SetupElection message data") {
+  test("Parser correctly decodes a SetupElection message data") {
     val example: String = getExampleMessage("messageData/election_setup/election_setup.json")
     val messageData = SetupElection.buildFromJson(example)
 
@@ -76,7 +76,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a ResultElection message data") {
+  test("Parser correctly decodes a ResultElection message data") {
     val example: String = getExampleMessage("messageData/election_result.json")
 
     val messageData = ResultElection.buildFromJson(example)
@@ -90,7 +90,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a EndElection message data") {
+  test("Parser correctly decodes a EndElection message data") {
     val example: String = getExampleMessage("messageData/election_end/election_end.json")
     val messageData = EndElection.buildFromJson(example)
 
@@ -100,7 +100,7 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
     messageData should equal(expected)
   }
 
-  test("Parser correctly encodes/decodes a CastVoteElection write_in message data") {
+  test("Parser correctly decodes a CastVoteElection write_in message data") {
     val example: String = getExampleMessage("messageData/vote_cast_write_in.json")
     val messageData = CastVoteElection.buildFromJson(example)
 
