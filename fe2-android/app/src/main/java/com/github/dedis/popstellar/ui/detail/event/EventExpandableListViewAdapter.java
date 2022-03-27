@@ -8,6 +8,7 @@ import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS
 
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -321,6 +322,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     Date dEnd = new java.util.Date(election.getEndTimestampInMillis());
     String dateEnd = DATE_FORMAT.format(dEnd);
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
+
     viewModel.setCurrentElection(election);
     viewModel
         .getEndElectionEvent()
@@ -375,9 +377,13 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     electionBinding.detailsButton.setOnClickListener(
         clicked -> {
           viewModel.setCurrentElection(election);
-          viewModel.openStartElection(true);
+          Log.d("ttt", "ddd");
+          viewModel.openElection(election);
+          //viewModel.openStartElection(true);
         });
-    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
+    //electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
+    //electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
+
 
     electionBinding.setEventCategory(category);
     electionBinding.setViewModel(viewModel);

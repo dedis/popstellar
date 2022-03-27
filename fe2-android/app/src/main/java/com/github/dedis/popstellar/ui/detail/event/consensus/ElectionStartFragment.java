@@ -54,6 +54,8 @@ public class ElectionStartFragment extends Fragment {
   private Button electionStart;
   private TextView electionStatus;
 
+  private Button electionStartNow;
+
   public ElectionStartFragment() {
     // Required empty public constructor
   }
@@ -180,9 +182,12 @@ public class ElectionStartFragment extends Fragment {
       LaoDetailViewModel mLaoDetailViewModel,
       String electionId) {
     electionStart.setOnClickListener(
-        clicked ->
-            mLaoDetailViewModel.sendConsensusElect(
-                Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
+        clicked -> {
+            //mLaoDetailViewModel.sendConsensusElect(
+            //    Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
+            Log.d(TAG, "Opening now election");
+            mLaoDetailViewModel.openElection(mLaoDetailViewModel.getCurrentElection());
+          });
 
     binding
         .backLayout
