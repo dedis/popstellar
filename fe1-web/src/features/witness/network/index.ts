@@ -1,18 +1,19 @@
-import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
+import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
 
+import { WitnessConfiguration } from '../interface';
 import { WitnessMessage } from './messages';
 import { handleWitnessMessage } from './WitnessHandler';
 
 /**
  * Configures the network callbacks in a MessageRegistry.
  *
- * @param registry - The MessageRegistry where we want to add the mappings
+ * @param config - The witness feature configuration object
  */
-export function configureNetwork(registry: MessageRegistry) {
-  registry.add(
+export const configureNetwork = (config: WitnessConfiguration) => {
+  config.messageRegistry.add(
     ObjectType.MESSAGE,
     ActionType.WITNESS,
-    handleWitnessMessage,
+    handleWitnessMessage(config.getCurrentLao),
     WitnessMessage.fromJson,
   );
-}
+};
