@@ -49,10 +49,6 @@ const getLaoTabName = (isOrganizer: boolean, isWitness: boolean): string => {
   return STRINGS.organization_navigation_tab_attendee;
 };
 
-// Cannot omit the "component" attribute in Screen
-// Moreover, cannot use a lambda in "component"
-const DummyComponent = () => null;
-
 const LaoNavigation: React.FC = () => {
   const lao = useSelector(selectCurrentLao);
   const passedScreens = LaoHooks.useLaoNavigationScreens();
@@ -66,7 +62,6 @@ const LaoNavigation: React.FC = () => {
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
 
   const tabName: string = getLaoTabName(isOrganizer, isWitness);
-  const laoName: string = lao ? lao.name : STRINGS.unused;
 
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.Screen[] = useMemo(() => {
@@ -86,7 +81,7 @@ const LaoNavigation: React.FC = () => {
         id: STRINGS.organization_navigation_tab_identity,
         Component: Identity,
         order: 10000,
-      },
+      } as LaoFeature.Screen,
       {
         id: STRINGS.organization_navigation_tab_user,
         title: screenName,
@@ -112,17 +107,6 @@ const LaoNavigation: React.FC = () => {
           options={{ title: title || id }}
         />
       ))}
-
-      <OrganizationTopTabNavigator.Screen
-        name={laoName}
-        component={DummyComponent}
-        listeners={{
-          tabPress: (e) => {
-            // => do nothing
-            e.preventDefault();
-          },
-        }}
-      />
     </OrganizationTopTabNavigator.Navigator>
   );
 };
