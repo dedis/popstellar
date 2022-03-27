@@ -7,6 +7,7 @@ import { QRCode, TextBlock, WideButtonView } from 'core/components';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { LaoEventType } from 'features/events/objects';
 import { makeEventByTypeSelector } from 'features/events/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
 import PROPS_TYPE from 'resources/Props';
 import STRINGS from 'resources/strings';
@@ -41,17 +42,20 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   const [selectedToken, setSelectedToken] = useState<RollCallToken>();
   const [isDebug, setIsDebug] = useState(false);
   const rollCalls = useSelector(rollCallSelector);
+  const lao = useSelector(selectCurrentLao);
 
   useEffect(() => {
-    Wallet.recoverWalletRollCallTokens()
-      .then((rct) => {
-        setTokens(rct);
-        setSelectedToken(rct[0]);
-      })
-      .catch((e) => {
-        console.debug(e);
-      });
-  }, [rollCalls, isDebug]);
+    if (lao) {
+      Wallet.recoverWalletRollCallTokens(rollCalls, lao)
+        .then((rct) => {
+          setTokens(rct);
+          setSelectedToken(rct[0]);
+        })
+        .catch((e) => {
+          console.debug(e);
+        });
+    }
+  }, [rollCalls, isDebug, lao]);
 
   const toggleDebugMode = () => {
     if (isDebug) {
