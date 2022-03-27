@@ -129,15 +129,15 @@ type Channel struct {
 
 // LaoSettings is used to regroup lao channel related parameters
 type LaoSettings struct {
-	attendeesMap map[string]struct{} 
-	hub channel.HubFunctionalities
-	log zerolog.Logger
+	attendeesMap    map[string]struct{}
+	hub             channel.HubFunctionalities
+	log             zerolog.Logger
 	organizerPubKey kyber.Point
 }
 
 // GroupLaoSettings is used to return a LaoSettings struct to create an election channel
 func GroupLaoSettings(attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
-	log zerolog.Logger,	organizerPubKey kyber.Point) *LaoSettings {
+	log zerolog.Logger, organizerPubKey kyber.Point) *LaoSettings {
 	return &LaoSettings{attendeesMap, hub, log, organizerPubKey}
 }
 
