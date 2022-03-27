@@ -22,7 +22,7 @@ object ElectionHandler extends MessageHandler {
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     val combined = for {
-      _ <- dbActor ? DbActor.Write(rpcMessage.getParamsChannel, message)
+      _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel, ObjectType.ELECTION)
     } yield ()
 
@@ -49,7 +49,7 @@ object ElectionHandler extends MessageHandler {
   )
 
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    //no need to propagate the results, we only need to write the results in the db 
+    //no need to propagate the results, we only need to write the results in the db
     val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
     Await.result(ask, duration)
   }
