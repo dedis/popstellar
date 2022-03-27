@@ -10,43 +10,49 @@ import (
 	"golang.org/x/xerrors"
 )
 
+const laoIDBase64 = "lao id is %s, should be base64URL encoded"
+const elecIDBase64 = "election id is %s, should be base64URL encoded"
+const elecIDFormat = "election channel id is %s, should be formatted as /root/laoID/electionID"
+const laoIDCompare = "lao id is %s, should be %s"
+const elecIDCompare = "election id is %s, should be %s"
+
 func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpen) error {
 	c.log.Info().Msgf("verifying election#open message of election with id %s", electionOpen.Election)
 
 	// verify lao id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(electionOpen.Lao)
 	if err != nil {
-		return xerrors.Errorf("lao id is %s, should be base64URL encoded", electionOpen.Lao)
+		return xerrors.Errorf(laoIDBase64, electionOpen.Lao)
 	}
 
 	// verify election id is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(electionOpen.Election)
 	if err != nil {
-		return xerrors.Errorf("election id is %s, should be base64URL encoded", electionOpen.Election)
+		return xerrors.Errorf(elecIDBase64, electionOpen.Election)
 	}
 
 	// split channel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
-		return xerrors.Errorf("election channel id is %s, should be formatted as /root/laoID/electionID", c.channelID)
+		return xerrors.Errorf(elecIDFormat, c.channelID)
 	}
 	laoID := IDs[0]
 	electionID := IDs[1]
 
 	// verify if lao id is the same as the channel
 	if electionOpen.Lao != laoID {
-		return xerrors.Errorf("lao id is %s, should be %s", laoID, electionOpen.Lao)
+		return xerrors.Errorf(laoIDCompare, laoID, electionOpen.Lao)
 	}
 
 	// verify if election id is the same as the channel
 	if electionOpen.Election != electionID {
-		return xerrors.Errorf("election id is %s, should be %s", electionID, electionOpen.Election)
+		return xerrors.Errorf(elecIDCompare, electionID, electionOpen.Election)
 	}
 
 	// verify created at is positive
 	if electionOpen.OpenedAt < 0 {
-		return xerrors.Errorf("election end created at is %d, should be minimum 0", electionOpen.OpenedAt)
+		return xerrors.Errorf("election open created at is %d, should be minimum 0", electionOpen.OpenedAt)
 	}
 
 	// verify open time of election
@@ -70,32 +76,32 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	// verify lao id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(castVote.Lao)
 	if err != nil {
-		return xerrors.Errorf("lao id is %s, should be base64URL encoded", castVote.Lao)
+		return xerrors.Errorf(laoIDBase64, castVote.Lao)
 	}
 
 	// verify election id is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(castVote.Election)
 	if err != nil {
-		return xerrors.Errorf("election id is %s, should be base64URL encoded", castVote.Election)
+		return xerrors.Errorf(elecIDBase64, castVote.Election)
 	}
 
 	// split channel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
-		return xerrors.Errorf("election channel id is %s, should be formatted as /root/laoID/electionID", c.channelID)
+		return xerrors.Errorf(elecIDFormat, c.channelID)
 	}
 	laoID := IDs[0]
 	electionID := IDs[1]
 
 	// verify if lao id is the same as the channel
 	if castVote.Lao != laoID {
-		return xerrors.Errorf("lao id is %s, should be %s", laoID, castVote.Lao)
+		return xerrors.Errorf(laoIDCompare, laoID, castVote.Lao)
 	}
 
 	// verify if election id is the same as the channel
 	if castVote.Election != electionID {
-		return xerrors.Errorf("election id is %s, should be %s", electionID, castVote.Election)
+		return xerrors.Errorf(elecIDCompare, electionID, castVote.Election)
 	}
 
 	// verify if election is not open
@@ -137,32 +143,32 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 	// verify lao id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(electionEnd.Lao)
 	if err != nil {
-		return xerrors.Errorf("lao id is %s, should be base64URL encoded", electionEnd.Lao)
+		return xerrors.Errorf(laoIDBase64, electionEnd.Lao)
 	}
 
 	// verify election id is base64URL encoded
 	_, err = base64.URLEncoding.DecodeString(electionEnd.Election)
 	if err != nil {
-		return xerrors.Errorf("election id is %s, should be base64URL encoded", electionEnd.Election)
+		return xerrors.Errorf(elecIDBase64, electionEnd.Election)
 	}
 
 	// split channel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
-		return xerrors.Errorf("election channel id is %s, should be formatted as /root/laoID/electionID", c.channelID)
+		return xerrors.Errorf(elecIDFormat, c.channelID)
 	}
 	laoID := IDs[0]
 	electionID := IDs[1]
 
 	// verify if lao id is the same as the channel
 	if electionEnd.Lao != laoID {
-		return xerrors.Errorf("lao id is %s, should be %s", laoID, electionEnd.Lao)
+		return xerrors.Errorf(laoIDCompare, laoID, electionEnd.Lao)
 	}
 
 	// verify if election id is the same as the channel
 	if electionEnd.Election != electionID {
-		return xerrors.Errorf("election id is %s, should be %s", electionID, electionEnd.Election)
+		return xerrors.Errorf(elecIDCompare, electionID, electionEnd.Election)
 	}
 
 	// verify created at is positive

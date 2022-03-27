@@ -10,6 +10,96 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestVerify_ElectionOpen(t *testing.T) {
+	// create the election channel
+	electChannel, _ := newFakeChannel(t)
+
+	// read the valid example file
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json"))
+	require.NoError(t, err)
+
+	object, action := "election", "open"
+
+	obj, act, err := messagedata.GetObjectAndAction(buf)
+	require.NoError(t, err)
+
+	require.Equal(t, object, obj)
+	require.Equal(t, action, act)
+
+	var electionOpen messagedata.ElectionOpen
+
+	err = json.Unmarshal(buf, &electionOpen)
+	require.NoError(t, err)
+
+	// test valid example
+	err = electChannel.verifyMessageElectionOpen(electionOpen)
+	require.NoError(t, err)
+
+	getTestBadExample := func(file string) func(*testing.T) {
+		return func(t *testing.T) {
+			// read the bad example file
+			buf, err = os.ReadFile(filepath.Join(relativeMsgDataExamplePath,
+				"election_open", file))
+			require.NoError(t, err)
+
+			obj, act, err = messagedata.GetObjectAndAction(buf)
+			require.NoError(t, err)
+
+			require.Equal(t, object, obj)
+			require.Equal(t, action, act)
+
+			err = json.Unmarshal(buf, &electionOpen)
+			require.NoError(t, err)
+
+			err = electChannel.verifyMessageElectionOpen(electionOpen)
+			require.Error(t, err)
+		}
+	}
+
+	t.Run("lao id not base64", getTestBadExample("bad_election_open_lao_not_base64.json"))
+	t.Run("election id not base64", getTestBadExample("bad_election_open_election_not_base64.json"))
+	t.Run("lao id invalid hash", getTestBadExample("bad_election_open_lao_invalid_hash.json"))
+	t.Run("election id invalid hash", getTestBadExample("bad_election_open_election_invalid_hash.json"))
+	t.Run("opened at negative", getTestBadExample("bad_election_open_opened_at_negative.json"))
+	t.Run("opened at before start", getTestBadExample("bad_election_open_opened_at_before_start.json"))
+}
+
+func TestVerify_ElectionOpen_already_open(t *testing.T) {
+	electChannel, _ := newFakeChannel(t)
+	electChannel.started = true
+
+	// read the valid example file
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json"))
+	require.NoError(t, err)
+
+	var electionOpen messagedata.ElectionOpen
+
+	err = json.Unmarshal(buf, &electionOpen)
+	require.NoError(t, err)
+
+	// test valid example
+	err = electChannel.verifyMessageElectionOpen(electionOpen)
+	require.Error(t, err)
+}
+
+func TestVerify_ElectionOpen_already_closed(t *testing.T) {
+	electChannel, _ := newFakeChannel(t)
+	electChannel.terminated = true
+
+	// read the valid example file
+	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json"))
+	require.NoError(t, err)
+
+	var electionOpen messagedata.ElectionOpen
+
+	err = json.Unmarshal(buf, &electionOpen)
+	require.NoError(t, err)
+
+	// test valid example
+	err = electChannel.verifyMessageElectionOpen(electionOpen)
+	require.Error(t, err)
+}
+
 func TestVerify_CastVote(t *testing.T) {
 	// create the election channel
 	electChannel, _ := newFakeChannel(t)
