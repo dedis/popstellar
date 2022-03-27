@@ -51,11 +51,9 @@ export async function recoverWalletPoPTokens(): Promise<Record<string, Record<st
  * This is implemented by checking through all known Roll Calls of all known LAOs,
  * generating tokens for them and checking if the token is a verified attendee.
  */
-export async function recoverWalletRollCallTokens(): Promise<RollCallToken[]> {
-  const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
-  // we're outside a component, we can't useSelector
-  const rollCalls = rollCallSelector(getStore().getState());
-
+export async function recoverWalletRollCallTokens(
+  rollCalls: Record<string, Record<string, RollCall>>,
+): Promise<RollCallToken[]> {
   const tokens: RollCallToken[] = [];
 
   let ops: Promise<any>[] = [];
@@ -71,7 +69,8 @@ export async function recoverWalletRollCallTokens(): Promise<RollCallToken[]> {
               RollCallToken.fromState({
                 token: token.toState(),
                 laoId: laoId,
-                rollCallId: rc.name,
+                rollCallId: rc.id.valueOf(),
+                rollCallName: rc.name,
               }),
             );
           }

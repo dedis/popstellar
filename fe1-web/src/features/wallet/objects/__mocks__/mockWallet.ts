@@ -1,17 +1,17 @@
 import { mockLao, mockRollCallState } from '__tests__/utils/TestUtils';
+import { Hash } from 'core/objects';
+import { dispatch } from 'core/redux';
+import { addEvent, removeEvent } from 'features/events/reducer';
+import { connectToLao, disconnectFromLao } from 'features/lao/reducer';
+import { RollCall } from 'features/rollCall/objects';
 
-import { Hash } from '../../../../core/objects';
-import { dispatch } from '../../../../core/redux';
-import { addEvent, removeEvent } from '../../../events/reducer';
-import { connectToLao, disconnectFromLao } from '../../../lao/reducer';
-import { RollCall } from '../../../rollCall/objects';
 import { generateToken } from '../Token';
 
-const createRollCall = (Id: string, mockAttendees: string[]) => {
+const createRollCall = (id: string, mockAttendees: string[]) => {
   return RollCall.fromState({
     ...mockRollCallState,
-    id: Id,
-    name: Id,
+    id: id,
+    name: id,
     attendees: [...mockRollCallState.attendees, ...mockAttendees],
   });
 };
@@ -22,22 +22,21 @@ const hashMock1 = new Hash(mockRCID1);
 /*
  * Generates a mock state with some mock popTokens
  */
-export function useMockWalletState() {
-  const tokenMockRC0 = generateToken(mockLao.id, hashMock0);
-  const tokenMockRC1 = generateToken(mockLao.id, hashMock1);
-  return {
-    useMock: async () => {
-      const mockRollCall0 = createRollCall(mockRCID0, [(await tokenMockRC0).publicKey.valueOf()]);
-      const mockRollCall1 = createRollCall(mockRCID1, [(await tokenMockRC1).publicKey.valueOf()]);
-      dispatch(connectToLao(mockLao.toState()));
-      dispatch(addEvent(mockLao.id, mockRollCall0.toState()));
-      dispatch(addEvent(mockLao.id, mockRollCall1.toState()));
-      console.debug('Dispatched mock events');
-    },
-    clearMock: () => {
-      dispatch(removeEvent(mockLao.id, mockRCID0));
-      dispatch(removeEvent(mockLao.id, mockRCID1));
-      dispatch(disconnectFromLao());
-    },
-  };
+export async function createMockWalletState() {
+  const tokenMockRC0 = await generateToken(mockLao.id, hashMock0);
+  const tokenMockRC1 = await generateToken(mockLao.id, hashMock1);
+  const mockRollCall0 = createRollCall(mockRCID0, [tokenMockRC0.publicKey.valueOf()]);
+  const mockRollCall1 = createRollCall(mockRCID1, [tokenMockRC1.publicKey.valueOf()]);
+  dispatch(connectToLao(mockLao.toState()));
+  dispatch(addEvent(mockLao.id, mockRollCall0.toState()));
+  dispatch(addEvent(mockLao.id, mockRollCall1.toState()));
+  console.debug('Dispatched mock events');
+}
+/*
+ * Clears the mock state
+ */
+export function clearMockWalletState() {
+  dispatch(removeEvent(mockLao.id, mockRCID0));
+  dispatch(removeEvent(mockLao.id, mockRCID1));
+  dispatch(disconnectFromLao());
 }

@@ -13,7 +13,7 @@ import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
 import * as Wallet from '../objects';
-import { useMockWalletState } from '../objects/__mocks__/mockWallet';
+import { createMockWalletState, clearMockWalletState } from '../objects/__mocks__/mockWallet';
 import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
@@ -40,9 +40,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   const [tokens, setTokens] = useState<RollCallToken[]>();
   const [selectedToken, setSelectedToken] = useState<RollCallToken>();
   const [isDebug, setIsDebug] = useState(false);
-
   const rollCalls = useSelector(rollCallSelector);
-  const mock = useMockWalletState();
 
   useEffect(() => {
     Wallet.recoverWalletRollCallTokens()
@@ -55,17 +53,17 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       });
   }, [rollCalls, isDebug]);
 
-  const setDebug = (isOn: boolean) => {
-    if (isOn) {
-      mock.clearMock();
+  const toggleDebugMode = () => {
+    if (isDebug) {
+      clearMockWalletState();
       setIsDebug(false);
     } else {
-      mock.useMock().then(() => setIsDebug(true));
+      createMockWalletState().then(() => setIsDebug(true));
     }
   };
   const tokenInfos = () => {
     if (selectedToken) {
-      const rollCallName = 'Roll Call name: '.concat(selectedToken.rollCallId.valueOf());
+      const rollCallName = `Roll Call name: ${selectedToken.rollCallId.valueOf()}`;
       return (
         <View style={containerStyles.centeredXY}>
           <TextBlock size={18} text={rollCallName} />
@@ -95,7 +93,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
       />
       <WideButtonView
         title={(isDebug ? 'Set debug mode off' : 'Set debug mode on').concat(' [TESTING]')}
-        onPress={() => setDebug(isDebug)}
+        onPress={() => toggleDebugMode()}
       />
     </View>
   );

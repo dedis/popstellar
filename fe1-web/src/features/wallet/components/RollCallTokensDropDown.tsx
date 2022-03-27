@@ -1,6 +1,6 @@
 import { Picker } from '@react-native-picker/picker';
 import PropTypes from 'prop-types';
-import React, { useMemo } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 
 import { RollCallToken } from '../objects/RollCallToken';
@@ -19,12 +19,10 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
   const { onTokenChange } = props;
   const { rollCallTokens } = props;
 
-  const options = useMemo(() => {
-    return rollCallTokens.map((rc) => {
-      const value = rc?.token.publicKey.valueOf() || '';
-      return <Picker.Item key={value} label={value} />;
-    });
-  }, [rollCallTokens]);
+  const options = rollCallTokens.map((rc) => {
+    const value = rc?.token.publicKey.valueOf() || '';
+    return <Picker.Item key={value} label={value} />;
+  });
 
   const onChange = (pk: string) => {
     const found = rollCallTokens.find((rct) => rct?.token.publicKey.valueOf() === pk);
