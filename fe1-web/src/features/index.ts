@@ -46,7 +46,7 @@ export function configureFeatures() {
   const meetingConfiguration = meeting.configure(messageRegistry);
   const rollCallConfiguration = rollCall.configure(messageRegistry);
   const socialConfiguration = social.configure(messageRegistry);
-  witness.configure({
+  const witnessConfiguration = witness.configure({
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
@@ -150,6 +150,7 @@ export function configureFeatures() {
     ...socialConfiguration.reducers,
     ...eventsConfiguration.reducers,
     ...walletConfiguration.reducers,
+    ...witnessConfiguration.reducers,
   });
 
   return {
@@ -174,6 +175,7 @@ export function configureFeatures() {
       [laoComposition.identifier]: laoComposition.context,
       [homeComposition.identifier]: homeComposition.context,
       [evotingConfiguration.identifier]: evotingConfiguration.context,
+      [witnessConfiguration.identifier]: witnessConfiguration.context,
     },
   };
 }

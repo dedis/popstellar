@@ -1,6 +1,9 @@
+import { Reducer } from 'redux';
+
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
+import { WITNESS_REDUCER_PATH, MessagesToWitnessReducerState } from '../reducer';
 import { WitnessFeature } from './Feature';
 
 export const WITNESS_FEATURE_IDENTIFIER = 'witness';
@@ -41,4 +44,9 @@ export type WintessReactContext = Pick<WitnessConfiguration, 'useCurrentLao'>;
  */
 export interface WitnessInterface extends FeatureInterface {
   context: WintessReactContext;
+
+  /* reducers */
+  reducers: {
+    [WITNESS_REDUCER_PATH]: Reducer<MessagesToWitnessReducerState>;
+  };
 }
