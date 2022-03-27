@@ -2,13 +2,9 @@ package be.utils;
 
 
 import com.intuit.karate.Json;
-import com.oracle.truffle.regex.tregex.util.json.JsonArray;
-import karate.com.linecorp.armeria.internal.shaded.bouncycastle.crypto.digests.SHA256Digest;
-import karate.com.linecorp.armeria.internal.shaded.fastutil.Hash;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Base64;
@@ -73,5 +69,11 @@ public class JsonConverter {
     return hexString.toString();
   }
 
+  public void setSenderPk(String newSenderPk){
+    this.senderPk = newSenderPk;
+  }
 
+  public void setSignature(String newSignature) {
+    this.signature = newSignature;
+  }
 }
