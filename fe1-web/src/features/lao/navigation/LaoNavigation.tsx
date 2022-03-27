@@ -10,8 +10,8 @@ import STRINGS from 'resources/strings';
 import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import { selectCurrentLao } from '../reducer';
-import { AttendeeScreen, Identity } from '../screens';
-import OrganizerNavigation from './OrganizerNavigation';
+import { AttendeeEventsScreen, Identity } from '../screens';
+import OrganizerEventsNavigation from './OrganizerNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -37,18 +37,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const getLaoTabName = (isOrganizer: boolean, isWitness: boolean): string => {
-  if (isOrganizer) {
-    return STRINGS.organization_navigation_tab_organizer;
-  }
-
-  if (isWitness) {
-    return STRINGS.organization_navigation_tab_witness;
-  }
-
-  return STRINGS.organization_navigation_tab_attendee;
-};
-
 const LaoNavigation: React.FC = () => {
   const lao = useSelector(selectCurrentLao);
   const passedScreens = LaoHooks.useLaoNavigationScreens();
@@ -61,18 +49,14 @@ const LaoNavigation: React.FC = () => {
   const isOrganizer = !!(lao && publicKey && publicKey.equals(lao.organizer));
   const isWitness = !!(lao && publicKey && lao.witnesses.some((w) => publicKey.equals(w)));
 
-  const tabName: string = getLaoTabName(isOrganizer, isWitness);
-
   // add the organizer or attendee screen depeding on the user
   const screens: LaoFeature.Screen[] = useMemo(() => {
-    const screenName = getLaoTabName(isOrganizer, isWitness);
-
     let Component: React.ComponentType<any>;
 
     if (isOrganizer || isWitness) {
-      Component = OrganizerNavigation;
+      Component = OrganizerEventsNavigation;
     } else {
-      Component = AttendeeScreen;
+      Component = AttendeeEventsScreen;
     }
 
     return [
@@ -83,8 +67,7 @@ const LaoNavigation: React.FC = () => {
         order: 10000,
       } as LaoFeature.Screen,
       {
-        id: STRINGS.organization_navigation_tab_user,
-        title: screenName,
+        id: STRINGS.organization_navigation_tab_events,
         Component,
         order: 20000,
       } as LaoFeature.Screen,
@@ -95,7 +78,7 @@ const LaoNavigation: React.FC = () => {
   return (
     <OrganizationTopTabNavigator.Navigator
       style={styles.navigator}
-      initialRouteName={tabName}
+      initialRouteName={STRINGS.organization_navigation_tab_events}
       screenOptions={{
         swipeEnabled: false,
       }}>

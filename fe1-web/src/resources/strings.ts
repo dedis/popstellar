@@ -8,6 +8,11 @@ const STRINGS = {
   general_no: 'No',
   general_add: 'Add',
 
+  /* --- User Roles --- */
+  user_role_attendee: 'Attendee',
+  user_role_organizer: 'Organizer',
+  user_role_witness: 'Witness',
+
   /* --- Navigation Strings --- */
   navigation_tab_home: 'Home',
   navigation_tab_social_media: 'Social Media',
@@ -17,14 +22,12 @@ const STRINGS = {
 
   /* --- App Navigation Strings --- */
   app_navigation_tab_home: 'AppHome',
-  app_navigation_tab_user: 'AppUser',
+  app_navigation_tab_lao: 'AppLao',
 
   /* --- Organization Navigation Strings --- */
   organization_navigation_tab_home: 'Home',
   organization_navigation_tab_user: 'User',
-  organization_navigation_tab_attendee: 'Attendee',
-  organization_navigation_tab_organizer: 'Organizer',
-  organization_navigation_tab_witness: 'Witness',
+  organization_navigation_tab_events: 'Events',
   organization_navigation_tab_identity: 'My identity',
 
   /* --- Witness Navigation Strings --- */

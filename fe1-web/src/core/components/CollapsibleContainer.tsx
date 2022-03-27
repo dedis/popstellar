@@ -12,8 +12,8 @@ const CollapsibleContainerStyles = StyleSheet.create({
   },
 });
 
-const CollapsibleContainer = ({ title, children }: IPropTypes) => {
-  const [showChildren, setShowChildren] = useState(false);
+const CollapsibleContainer = ({ title, isInitiallyOpen, children }: IPropTypes) => {
+  const [showChildren, setShowChildren] = useState(isInitiallyOpen);
 
   return (
     <View>
@@ -32,12 +32,14 @@ const CollapsibleContainer = ({ title, children }: IPropTypes) => {
 };
 
 const propTypes = {
+  isInitiallyOpen: PropTypes.bool,
   title: PropTypes.string,
   children: PropTypes.node,
 };
 CollapsibleContainer.propTypes = propTypes;
 
 CollapsibleContainer.defaultProps = {
+  isInitiallyOpen: false,
   title: '',
   children: null,
 };

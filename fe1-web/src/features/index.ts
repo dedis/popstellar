@@ -164,7 +164,7 @@ export function configureFeatures() {
           component: homeComposition.navigation.MainNavigation,
         },
         {
-          id: STRINGS.app_navigation_tab_user,
+          id: STRINGS.app_navigation_tab_lao,
           component: laoComposition.navigation.LaoNavigation,
         },
       ],

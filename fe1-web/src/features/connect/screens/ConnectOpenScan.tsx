@@ -94,8 +94,8 @@ const ConnectOpenScan = () => {
           // if we have an active lao, this was an additional connection and thus we navigate (back)
           // to the organization user screen
           if (laoId) {
-            navigation.navigate(STRINGS.app_navigation_tab_user, {
-              screen: STRINGS.organization_navigation_tab_user,
+            navigation.navigate(STRINGS.app_navigation_tab_lao, {
+              screen: STRINGS.organization_navigation_tab_events,
             });
           } else {
             navigation.navigate(STRINGS.connect_unapproved_title);

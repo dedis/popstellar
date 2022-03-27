@@ -68,8 +68,8 @@ const ConnectConfirm = () => {
       // subscribe to the lao channel on the new connection
       await subscribeToChannel(channel, [connection]);
 
-      navigation.navigate(STRINGS.app_navigation_tab_user, {
-        screen: STRINGS.organization_navigation_tab_user,
+      navigation.navigate(STRINGS.app_navigation_tab_lao, {
+        screen: STRINGS.organization_navigation_tab_events,
       });
     } catch (err) {
       console.error(`Failed to establish lao connection: ${err}`);
