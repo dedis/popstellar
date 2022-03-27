@@ -44,7 +44,7 @@ func (a *attendees) isPresent(key string) bool {
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, started bool, questions []messagedata.ElectionSetupQuestion,
+func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
 	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger,
 	organizerPubKey kyber.Point) channel.Channel {
 
@@ -60,7 +60,7 @@ func NewChannel(channelPath string, start, end int64, started bool, questions []
 
 		start:      start,
 		end:        end,
-		started:    started,
+		started:    false,
 		terminated: false,
 		questions:  getAllQuestionsForElectionChannel(questions),
 
