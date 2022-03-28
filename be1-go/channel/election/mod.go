@@ -25,6 +25,7 @@ import (
 
 const msgID = "msg id"
 const failedToDecodeData = "failed to decode message data: %v"
+const failedToBroadcast = "failed to broadcast message: %v"
 
 // attendees represents the attendees in an election.
 type attendees struct {
@@ -357,7 +358,7 @@ func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}) 
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
+		return xerrors.Errorf(failedToBroadcast, err)
 	}
 
 	return nil
@@ -409,7 +410,7 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
+		return xerrors.Errorf(failedToBroadcast, err)
 	}
 
 	return nil
@@ -463,7 +464,7 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
+		return xerrors.Errorf(failedToBroadcast, err)
 	}
 
 	// broadcast election result message
