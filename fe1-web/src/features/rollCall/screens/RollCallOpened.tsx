@@ -72,17 +72,12 @@ const RollCallOpened = () => {
   }, [lao, rollCallID, toast]);
 
   const handleError = (err: any) => {
-    console.error(err);
-    // The "err" object might be an exception, take the message property if it exists
-    toast.show(
-      err?.message ||
-        (typeof err === 'string' ? err : 'Unkown error, please check the console and report it!'),
-      {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
-      },
-    );
+    console.error(err.toString());
+    toast.show(err.toString(), {
+      type: 'danger',
+      placement: 'top',
+      duration: FOUR_SECONDS,
+    });
   };
 
   const addAttendeeAndShowToast = (attendee: string, toastMessage: string) => {
