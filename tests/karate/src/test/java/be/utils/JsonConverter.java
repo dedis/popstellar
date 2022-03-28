@@ -19,8 +19,10 @@ public class JsonConverter {
   private String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private String messageIdForced = "";
 
+  /*
+    Takes a json representation the data field of a message and produces it's base64 counterpart
+   */
   public String convertJson(Json json){
-
     String stringJson = json.toString();
     byte[] jsonBytes = stringJson.getBytes(StandardCharsets.UTF_8);
     Base64.Encoder encoder = Base64.getEncoder();
@@ -28,13 +30,16 @@ public class JsonConverter {
     return base64;
   }
 
-
-  public Json messageFromData(String stringData,String type, int id, String channel){
+  /*
+    Produces a valid Json representation of a message given message data, the id of the message
+    and the channel where the message is supposed to be sent
+   */
+  public Json messageFromData(String stringData, String method, int id, String channel){
     Json messageData = Json.of(stringData);
     String messageDataBase64 = convertJson(messageData);
-    System.out.println("data : "+messageDataBase64+" type: "+ type+ " id : "+ id+ "cannel : "+ channel);
+    System.out.println("data : "+messageDataBase64+" type: "+ method+ " id : "+ id+ "channel : "+ channel);
     Map<String,Object> messageJson = new LinkedHashMap<>();
-    messageJson.put("method",type);
+    messageJson.put("method",method);
     messageJson.put("id",id);
     Map <String,Object> paramsPart = new LinkedHashMap<>();
     paramsPart.put("channel",channel);
@@ -49,7 +54,7 @@ public class JsonConverter {
       messagePart.put("message_id",messageId);
       System.out.println("message id is : "+messageId);
     }catch (Exception e){
-
+      e.printStackTrace();
     }
     String[] witness = new String[0];
     messagePart.put("witness_signatures",witness);
@@ -58,7 +63,9 @@ public class JsonConverter {
     messageJson.put("jsonrpc","2.0");
     return Json.of(messageJson);
   }
-
+  /*
+    Produces the hexadecimal representation of a hash given as an array of bytes
+   */
   private String bytesToHex(byte[] hash) {
     StringBuilder hexString = new StringBuilder(2 * hash.length);
     for (int i = 0; i < hash.length; i++) {
