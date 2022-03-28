@@ -63,6 +63,71 @@ public class DigitalCashMain extends AppCompatActivity {
                         });
 
         mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
+
+        //Subscribe to "open home"
+        mViewModel
+                .getOpenHomeEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null){
+                                setupDigitalCashHomeFragment();
+                            }
+                        }
+                );
+
+        //Subscribe to "open history"
+        mViewModel
+                .getOpenHistoryEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null){
+                                setupDigitalCashHistoryFragment();
+                            }
+                        }
+                );
+
+        //Subscribe to "open send"
+        mViewModel
+                .getOpenSendEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null){
+                                setupDigitalCashSendFragment();
+                            }
+                        }
+                );
+
+        //Subscribe to "open receive"
+        mViewModel
+                .getOpenReceiveEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null){
+                                setupDigitalCashReceiveFragment();
+                            }
+                        }
+                );
+
+        //Subscribe to "open issue"
+        mViewModel
+                .getOpenIssueEvent()
+                .observe(
+                        this,
+                        booleanEvent -> {
+                            Boolean event = booleanEvent.getContentIfNotHandled();
+                            if (event != null){
+                                setupDigitalCashIssueFragment();
+                            }
+                        }
+                );
     }
 
     public static DigitalCashViewModel obtainViewModel(FragmentActivity activity) {

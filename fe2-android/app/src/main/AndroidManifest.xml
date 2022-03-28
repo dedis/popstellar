@@ -1,44 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.github.dedis.popstellar" >
+  package="com.github.dedis.popstellar">
 
-    <uses-feature android:name="android.hardware.camera" />
+  <uses-feature android:name="android.hardware.camera" />
 
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.CAMERA" />
+  <uses-permission android:name="android.permission.INTERNET" />
 
-    <application
-        android:name=".PoPApplication"
-        android:allowBackup="true"
-        android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme" >
+  <application
+    android:name=".PoPApplication"
+    android:allowBackup="true"
+    android:fullBackupContent="@xml/backup_rules"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:networkSecurityConfig="@xml/network_security_config"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/AppTheme">
 
+    <!--android:name="com.github.dedis.popstellar.ui.home.HomeActivity"-->
+    <activity
+      android:name="com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain"
+      android:exported="true">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
 
-          <!--android:name="com.github.dedis.popstellar.ui.home.HomeActivity"-->
-      <activity
-          android:name="com.github.dedis.popstellar.ui.digitalcah.DigitalCashMain"
-          android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+    <activity
+      android:name=".ui.detail.LaoDetailActivity"
+      android:windowSoftInputMode="adjustPan" />
+    <activity android:name=".ui.settings.SettingsActivity" />
+    <!--activity android:name=".ui.digitalcah.DigitalCashMain" /-->
+    <activity android:name=".ui.socialmedia.SocialMediaActivity" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.detail.LaoDetailActivity"
-            android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".ui.settings.SettingsActivity" />
-        <!--activity android:name=".ui.digitalcah.DigitalCashMain" /-->
-        <activity android:name=".ui.socialmedia.SocialMediaActivity" />
-
-        <uses-library
-            android:name="android.test.runner"
-            android:required="false" />
-    </application>
+    <uses-library
+      android:name="android.test.runner"
+      android:required="false" />
+  </application>
 
 </manifest>
