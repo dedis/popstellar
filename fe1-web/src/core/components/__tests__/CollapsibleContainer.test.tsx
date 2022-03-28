@@ -1,5 +1,5 @@
 import { describe } from '@jest/globals';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -14,5 +14,18 @@ describe('CollapsibleContainer', () => {
       </CollapsibleContainer>,
     ).toJSON();
     expect(component).toMatchSnapshot();
+  });
+
+  it('container can be opened', async () => {
+    const { getByText, toJSON } = render(
+      <CollapsibleContainer title="open me">
+        <Text>a first child</Text>
+        <Text>a second child</Text>
+      </CollapsibleContainer>,
+    );
+
+    fireEvent.press(getByText('open me'));
+
+    expect(toJSON()).toMatchSnapshot();
   });
 });

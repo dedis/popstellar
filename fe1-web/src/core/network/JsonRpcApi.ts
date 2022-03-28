@@ -100,15 +100,22 @@ export async function catchup(
     id: AUTO_ASSIGN_ID,
   });
 
-  // do not catch, as it needs to be handled on a higher level
-  // A JsonRpcResponse can have r.result being of type number or of Message[]
-  // But in the case of a catchup we always expect Message[]
   const responses: JsonRpcResponse[] = await getNetworkManager().sendPayload(request, connections);
-  if (responses.find((r) => typeof r.result === 'number')) {
-    throw new Error('FIXME number in result. Should it be here?');
+  for (const response of responses) {
+    // A JsonRpcResponse can have r.result being of type number or of Message[]
+    // But in the case of a catchup we always expect Message[]
+    if (typeof response.result === 'number') {
+      console.log(
+        'One of the received responses to a catchup message contained a number instead of a message array and will be ignored',
+        response,
+      );
+    }
   }
 
-  const msgs = [].concat(...responses.map((r) => r.result as any));
+  // only use responses containing a message array
+  const validResponses = responses.filter((r) => typeof r.result === 'number');
+
+  const msgs = [].concat(...validResponses.map((r) => r.result as any));
   return messageGenerator(msgs, channel);
 }
 

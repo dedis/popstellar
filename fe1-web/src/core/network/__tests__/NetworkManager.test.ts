@@ -3,11 +3,18 @@ import { expect } from '@jest/globals';
 import { NetInfoState } from '@react-native-community/netinfo';
 
 import { getNetworkManager } from '../NetworkManager';
+import { SendingStrategy } from '../strategies/ClientMultipleServerStrategy';
 import { mockJsonRpcPayload } from './utils';
 
 jest.mock('websocket');
 
 const networkManager = getNetworkManager();
+type NetworkManagerType = typeof networkManager;
+
+const {
+  getMockNetworkManager,
+}: { getMockNetworkManager: (sendingStrategy: SendingStrategy) => NetworkManagerType } =
+  jest.requireMock('core/network/NetworkManager.ts');
 
 afterEach(() => {
   networkManager.disconnectFromAll();
@@ -101,22 +108,13 @@ describe('NetworkManager', () => {
   });
 
   it('can sends data using the sending strategy', () => {
-    const connection = networkManager.connect('some address');
+    const sendingStrategy = jest.fn();
+    const mockNetworkManager: NetworkManagerType = getMockNetworkManager(sendingStrategy);
 
-    // override sending strategy
-    const originalSendingStrategy = networkManager['sendingStrategy'];
-    // @ts-ignore
-    networkManager['sendingStrategy'] = jest.fn();
+    const connection = mockNetworkManager.connect('some address');
+    mockNetworkManager.sendPayload(mockJsonRpcPayload);
 
-    networkManager.sendPayload(mockJsonRpcPayload);
-
-    expect(networkManager['sendingStrategy']).toHaveBeenCalledWith(mockJsonRpcPayload, [
-      connection,
-    ]);
-
-    // restore sending strategy
-    // @ts-ignore
-    networkManager['sendingStrategy'] = originalSendingStrategy;
+    expect(sendingStrategy).toHaveBeenCalledWith(mockJsonRpcPayload, [connection]);
   });
 
   it('is possible to add a reconnection handlers', () => {
@@ -160,7 +158,7 @@ describe('NetworkManager', () => {
     networkManager.addReconnectionHandler(handler);
     networkManager.addReconnectionHandler(handler2);
 
-    networkManager['reconnect']();
+    networkManager['reconnectIfNecessary']();
 
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler2).toHaveBeenCalledTimes(1);
