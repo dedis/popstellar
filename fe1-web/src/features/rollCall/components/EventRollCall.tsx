@@ -34,6 +34,9 @@ const EventRollCall = (props: IPropTypes) => {
   }
   const [popToken, setPopToken] = useState('');
 
+  // Once the roll call is opened the first time, idAlias is defined, and needed for closing/reopening the roll call
+  const eventHasBeenOpened = event.idAlias !== undefined;
+
   useEffect(() => {
     if (!lao || !lao.id || !rollCall || !rollCall.id) {
       return;
@@ -66,27 +69,26 @@ const EventRollCall = (props: IPropTypes) => {
   };
 
   const onReopenRollCall = () => {
-    if (!event.idAlias) {
+    if (eventHasBeenOpened) {
+      requestReopenRollCall(event.idAlias).catch((e) => {
+        makeToastErr('Unable to send Roll call re-open request');
+        console.debug('Unable to send Roll call re-open request', e);
+      });
+    } else {
       makeToastErr('Unable to send roll call re-open request, the event does not have an idAlias');
       console.debug('Unable to send roll call re-open request, the event does not have an idAlias');
-      return;
     }
-    requestReopenRollCall(event.idAlias).catch((e) => {
-      makeToastErr('Unable to send Roll call re-open request');
-      console.debug('Unable to send Roll call re-open request', e);
-    });
   };
 
-  // Scanning attendees should be available only when the Roll Call is in state opened or reopened => idAlias is defined
   const onScanAttendees = () => {
-    if (!event.idAlias) {
+    if (eventHasBeenOpened) {
+      navigation.navigate(STRINGS.roll_call_open, {
+        rollCallID: event.idAlias.toString(),
+      });
+    } else {
       makeToastErr('Unable to scan attendees, the event does not have an idAlias');
       console.debug('Unable to scan attendees, the event does not have an idAlias');
-      return;
     }
-    navigation.navigate(STRINGS.roll_call_open, {
-      rollCallID: event.idAlias.toString(),
-    });
   };
 
   const getRollCallDisplay = (status: RollCallStatus) => {
