@@ -20,7 +20,7 @@ public class JsonConverter {
   private String messageIdForced = "";
 
   /*
-    Takes a json representation the data field of a message and produces it's base64 counterpart
+    Produces the base64 variant of the json file passed as argument
    */
   public String convertJson(Json json){
     String stringJson = json.toString();
@@ -31,7 +31,7 @@ public class JsonConverter {
   }
 
   /*
-    Produces a valid Json representation of a message given message data, the id of the message
+    Produces a valid Json representation of a message given the message data, the id of the message
     and the channel where the message is supposed to be sent
    */
   public Json messageFromData(String stringData, String method, int id, String channel){
@@ -64,7 +64,7 @@ public class JsonConverter {
     return Json.of(messageJson);
   }
   /*
-    Produces the hexadecimal representation of a hash given as an array of bytes
+    Produces the hexadecimal representation of a hash (given as an array of bytes)
    */
   private String bytesToHex(byte[] hash) {
     StringBuilder hexString = new StringBuilder(2 * hash.length);

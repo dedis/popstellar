@@ -13,7 +13,7 @@ Feature: Create a pop LAO
 
   Scenario: Create Lao request with empty lao name should fail with an error response
     Given string laoCreateData = read('classpath:data/lao/data/bad_lao_create_empty_name_data.json')
-    * string laoCreate = converter.messageFromData(laoCreateData,method,id,channel)
+    * string laoCreate = converter.messageFromData(laoCreateData, method, id, channel)
     And   def socket = karate.webSocket(wsURL,handle)
     When  eval socket.send(laoCreate)
     *  karate.log('Sent: '+ karate.pretty(laoCreate))
@@ -23,7 +23,7 @@ Feature: Create a pop LAO
 
   Scenario: Create Lao with negative time should fail with an error response
       Given string badLaoCreateData = read('classpath:data/lao/data/bad_lao_create_negative_data.json')
-      * string badLaoCreate = converter.messageFromData(badLaoCreateData,method,id,channel)
+      * string badLaoCreate = converter.messageFromData(badLaoCreateData, method, id, channel)
       And   def socket = karate.webSocket(wsURL,handle)
       When  eval socket.send(badLaoCreate)
       *  karate.log('Sent: '+ karate.pretty(badLaoCreate))
@@ -33,7 +33,7 @@ Feature: Create a pop LAO
 
   Scenario: Create Lao with invalid id hash should fail with an error response
       Given string badLaoCreateData = read('classpath:data/lao/data/bad_lao_create_id_invalid_hash_data.json')
-      * string badLaoCreate = converter.messageFromData(badLaoCreateData,method,id,channel)
+      * string badLaoCreate = converter.messageFromData(badLaoCreateData, method, id, channel)
       And   def socket = karate.webSocket(wsURL,handle)
       When  eval socket.send(badLaoCreate)
       *  karate.log('Sent: '+ karate.pretty(badLaoCreate))
@@ -43,7 +43,7 @@ Feature: Create a pop LAO
 
   Scenario: Create should succeed with a valid creation request
     Given string laoCreateData = read('classpath:data/lao/data/valid_lao_create_data.json')
-    And string laoCreate = converter.messageFromData(laoCreateData,method,id,channel)
+    And string laoCreate = converter.messageFromData(laoCreateData, method, id, channel)
     And   def socket = karate.webSocket(wsURL,handle)
     * karate.log('Create Request = ' + laoCreate)
     When  eval socket.send(laoCreate)
