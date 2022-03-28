@@ -20,7 +20,7 @@
 
     <!--android:name="com.github.dedis.popstellar.ui.home.HomeActivity"-->
     <activity
-      android:name="com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain"
+      android:name="com.github.dedis.popstellar.ui.home.HomeActivity"
       android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -33,6 +33,7 @@
       android:windowSoftInputMode="adjustPan" />
     <activity android:name=".ui.settings.SettingsActivity" />
     <!--activity android:name=".ui.digitalcah.DigitalCashMain" /-->
+    <activity android:name=".ui.digitalcash.DigitalCashMain" />
     <activity android:name=".ui.socialmedia.SocialMediaActivity" />
 
     <uses-library
