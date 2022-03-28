@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import { describe, jest } from '@jest/globals';
+import { describe } from '@jest/globals';
 
 import {
   mockAddress,
@@ -36,23 +35,29 @@ import {
   publish,
   subscribe,
 } from '../JsonRpcApi';
-import { getNetworkManager } from '../NetworkManager';
+import { SendingStrategy } from '../strategies/ClientMultipleServerStrategy';
 
 // region mock data
-const mockMessageData: MessageData = { object: ObjectType.ELECTION, action: ActionType.OPEN };
-
-const networkManager = getNetworkManager();
 
 // requires the mock registries to be set up
 // is initialized in beforeAll()
 let mockResponseMessage: Message;
 let mockResponse: JsonRpcResponse;
 
-const mockSendingStrategy = jest
+const mockMessageData: MessageData = { object: ObjectType.ELECTION, action: ActionType.OPEN };
+const mockSendingStrategy: SendingStrategy = jest
   .fn()
   .mockImplementation(() =>
     Promise.resolve([new ExtendedJsonRpcResponse({ receivedFrom: mockAddress }, mockResponse)]),
   );
+
+jest.mock('core/network/NetworkManager', () => {
+  const actual = jest.requireActual('/core/network/NetworkManager');
+  return {
+    ...actual,
+    getNetworkManager: () => new actual.TEST_ONLY_EXPORTS.NetworkManager(mockSendingStrategy),
+  };
+});
 
 // endregion
 
@@ -60,10 +65,6 @@ beforeAll(() => {
   // set up mock registries
   configureJsonRpcApi(mockMessageRegistry, mockKeyPairRegistry);
   configureMessages(mockMessageRegistry);
-  // replace sending strategy of network manager with a jest mock function
-
-  // @ts-ignore
-  networkManager['sendingStrategy'] = mockSendingStrategy;
 
   // this cannot be initialized before as it requires the mock registries to be set up
   mockResponseMessage = Message.fromData(mockMessageData, mockKeyPair, []);
@@ -141,7 +142,7 @@ describe('catchup', () => {
     expect(mockSendingStrategy).toHaveBeenCalledTimes(1);
   });
 
-  it('returns the a valid message generator', async () => {
+  it('returns the valid message generator', async () => {
     const generator = await catchup(mockChannel);
     const { value, done } = generator.next();
 
@@ -151,13 +152,13 @@ describe('catchup', () => {
 
     const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockChannel, mockAddress);
 
-    // the receivedAt value can differ
-    // @ts-ignore
-    delete value.receivedAt;
-    // @ts-ignore
-    delete expected.receivedAt;
-
-    expect(value).toBeJsonEqual(expected);
+    // the receivedAt value is allowed differ
+    // cannot use expect.any(Number) here because of toBeJsonEqual and cannot use toBeEqual
+    // because once it is an instance of Base64Url and once of Hash
+    expect({ ...value, receivedAt: 0 }).toBeJsonEqual({
+      ...expected,
+      receivedAt: 0,
+    });
     expect(done).toBeFalse();
 
     expect(generator.next().done).toBeTrue();
