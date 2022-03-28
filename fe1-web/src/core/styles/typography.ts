@@ -13,6 +13,7 @@ export const important = {
 export const baseCentered = {
   ...base,
   textAlign: 'center',
+  marginHorizontal: 10,
 } as TextStyle;
 
 export const importantCentered = {

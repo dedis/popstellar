@@ -122,7 +122,7 @@ export const selectAllNotifications = createSelector(
     allIds.map((id) => notificationMap[id]),
 );
 
-export const makeSelectNotification = (notificationId: number) => (state: any) =>
+export const makeSelectNotification = (notificationId: number) => (state: unknown) =>
   getNotificationState(state).byId[notificationId];
 
 export const notificationReduce = notificationSlice.reducer;

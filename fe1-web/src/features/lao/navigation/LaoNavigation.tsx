@@ -12,8 +12,8 @@ import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import { selectCurrentLao } from '../reducer';
 import { AttendeeEventsScreen, Identity } from '../screens';
-import OrganizerEventsNavigation from './OrganizerNavigation';
 import NotificationNavigation from './NotificationNavigation';
+import OrganizerEventsNavigation from './OrganizerNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 

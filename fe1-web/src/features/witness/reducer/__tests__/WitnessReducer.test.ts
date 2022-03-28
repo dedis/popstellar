@@ -1,8 +1,13 @@
 import { describe } from '@jest/globals';
 
-import { configureTestFeatures, mockAddress, mockChannel, mockKeyPair } from '__tests__/utils';
-import { ExtendedMessage, ExtendedMessageState } from 'core/network/ingestion/ExtendedMessage';
-import { ActionType, Message, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { configureTestFeatures, mockKeyPair } from '__tests__/utils';
+import {
+  ActionType,
+  Message,
+  MessageData,
+  ObjectType,
+  ProcessableMessage,
+} from 'core/network/jsonrpc/messages';
 import { Timestamp } from 'core/objects';
 
 import { addMessageToWitness, witnessMessage, witnessReduce } from '../WitnessReducer';
@@ -14,7 +19,7 @@ beforeAll(() => {
   configureTestFeatures();
 });
 
-describe('WitnesssReducer', () => {
+describe('WitnessReducer', () => {
   describe('addMessageToWitness', () => {
     it('adds messages to the store', () => {
       const message: Message = Message.fromData(
@@ -27,19 +32,13 @@ describe('WitnesssReducer', () => {
         mockKeyPair,
       );
 
-      const extendedMessageState: ExtendedMessageState = ExtendedMessage.fromMessage(
-        message,
-        mockChannel,
-        mockAddress,
-      ).toState();
-
       const newState = witnessReduce(
         { allIds: [], byId: {} },
-        addMessageToWitness(extendedMessageState),
+        addMessageToWitness({ ...message } as ProcessableMessage),
       );
 
       expect(newState.allIds).toEqual([message.message_id.valueOf()]);
-      expect(newState.byId).toHaveProperty(message.message_id.valueOf(), extendedMessageState);
+      expect(newState.byId).toHaveProperty(message.message_id.valueOf(), message);
     });
   });
 
@@ -55,17 +54,11 @@ describe('WitnesssReducer', () => {
         mockKeyPair,
       );
 
-      const extendedMessageState: ExtendedMessageState = ExtendedMessage.fromMessage(
-        message,
-        mockChannel,
-        mockAddress,
-      ).toState();
-
       const messageId = message.message_id.valueOf();
 
       const newState = witnessReduce(
-        { allIds: [messageId], byId: { [messageId]: extendedMessageState } },
-        witnessMessage(extendedMessageState),
+        { allIds: [messageId], byId: { [messageId]: { ...message } as ProcessableMessage } },
+        witnessMessage({ ...message } as ProcessableMessage),
       );
 
       expect(newState.allIds).toEqual([]);

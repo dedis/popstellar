@@ -205,8 +205,8 @@ namespace STRINGS {
   export const meeting_create_location = 'Location';
 
   /* --- Time Display Strings --- */
-  export const time_display_start = 'Start= ';
-  export const time_display_end = 'End= ';
+  export const time_display_start = 'Start: ';
+  export const time_display_end = 'End: ';
 
   /* --- Wallet Strings --- */
   export const wallet_private_key_id = 'Private Decryption Key';
