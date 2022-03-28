@@ -12,6 +12,7 @@ export namespace WitnessFeature {
   export interface Notification {
     id: number;
     timestamp: number;
+    title: string;
     type: string;
   }
 

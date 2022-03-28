@@ -12,6 +12,8 @@ export interface NotificationState {
   hasBeenRead: boolean;
   /* the time associated with the notification */
   timestamp: number;
+  /* the title that is shown in the notification */
+  title: string;
   /* this field can be used to differentiate various types of notifications */
   type: string;
 }
@@ -80,11 +82,22 @@ const notificationSlice = createSlice({
       delete state.byId[notificationId];
       state.allIds = state.allIds.filter((id) => id !== notificationId);
     },
+
+    // Discards all notifications
+    discardAllNotifications: (state: Draft<NotificationReducerState>) => {
+      state.allIds = [];
+      state.byId = {};
+      state.nextId = 0;
+    },
   },
 });
 
-export const { addNotification, discardNotification, markNotificationAsRead } =
-  notificationSlice.actions;
+export const {
+  addNotification,
+  discardNotification,
+  discardAllNotifications,
+  markNotificationAsRead,
+} = notificationSlice.actions;
 
 export const getNotificationState = (state: any): NotificationReducerState =>
   state[NOTIFICATION_REDUCER_PATH];
@@ -108,6 +121,9 @@ export const selectAllNotifications = createSelector(
   (notificationMap: Record<string, NotificationState>, allIds: number[]): NotificationState[] =>
     allIds.map((id) => notificationMap[id]),
 );
+
+export const makeSelectNotification = (notificationId: number) => (state: any) =>
+  getNotificationState(state).byId[notificationId];
 
 export const notificationReduce = notificationSlice.reducer;
 

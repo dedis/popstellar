@@ -12,8 +12,8 @@ import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import { selectCurrentLao } from '../reducer';
 import { AttendeeEventsScreen, Identity } from '../screens';
-import NotificationScreen from '../screens/NotificationScreen';
 import OrganizerEventsNavigation from './OrganizerNavigation';
+import NotificationNavigation from './NotificationNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
 
@@ -75,7 +75,7 @@ const LaoNavigation: React.FC = () => {
       } as LaoFeature.Screen,
       {
         id: STRINGS.organization_navigation_tab_notifications,
-        Component: NotificationScreen,
+        Component: NotificationNavigation,
         order: 70000,
         Badge: () => <NotificationBadge>{5}</NotificationBadge>,
       } as LaoFeature.Screen,

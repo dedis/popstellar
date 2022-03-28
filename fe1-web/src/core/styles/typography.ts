@@ -1,11 +1,8 @@
 import { TextStyle } from 'react-native';
 
-import * as Spacing from './spacing';
-
 export const base = {
   textAlign: 'left',
   fontSize: 25,
-  marginHorizontal: Spacing.xs,
 } as TextStyle;
 
 export const important = {
