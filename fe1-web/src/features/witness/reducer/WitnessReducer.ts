@@ -5,12 +5,12 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
 
-import { ExtendedMessageState } from 'core/network/ingestion/ExtendedMessage';
+import { ProcessableMessage } from 'core/network/jsonrpc/messages';
 
 export const WITNESS_REDUCER_PATH = 'witness';
 
 export interface MessagesToWitnessReducerState {
-  byId: Record<string, ExtendedMessageState>;
+  byId: Record<string, ProcessableMessage>;
   allIds: string[];
 }
 
@@ -26,11 +26,11 @@ const messagesToWitnessSlice = createSlice({
     // Action called when a message has been witnessed
     addMessageToWitness: (
       state: Draft<MessagesToWitnessReducerState>,
-      action: PayloadAction<ExtendedMessageState>,
+      action: PayloadAction<ProcessableMessage>,
     ) => {
       const message = action.payload;
 
-      if (message.message_id in state.byId) {
+      if (message.message_id.valueOf() in state.byId) {
         // this message is already stored in the reducer
         return;
       }
@@ -42,7 +42,7 @@ const messagesToWitnessSlice = createSlice({
     // Add a message that has to be witnessed
     witnessMessage: (
       state: Draft<MessagesToWitnessReducerState>,
-      action: PayloadAction<ExtendedMessageState>,
+      action: PayloadAction<ProcessableMessage>,
     ) => {
       const message = action.payload;
 

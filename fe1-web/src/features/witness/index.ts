@@ -15,6 +15,9 @@ export function configure(configuration: WitnessConfiguration): WitnessInterface
     identifier: WITNESS_FEATURE_IDENTIFIER,
     context: {
       useCurrentLao: configuration.useCurrentLao,
+      addNotification: configuration.addNotification,
+      discardNotification: configuration.discardNotification,
+      markNotificationAsRead: configuration.markNotificationAsRead,
     },
     reducers: {
       ...witnessReducer,

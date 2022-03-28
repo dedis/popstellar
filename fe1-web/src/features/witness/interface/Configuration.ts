@@ -1,4 +1,4 @@
-import { Reducer } from 'redux';
+import { AnyAction, Reducer } from 'redux';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
 import FeatureInterface from 'core/objects/FeatureInterface';
@@ -32,12 +32,33 @@ export interface WitnessConfiguration {
    * @returns The current lao
    */
   useCurrentLao: () => WitnessFeature.Lao;
+
+  /**
+   * Creates an action to add a notification to the redux store
+   * @returns A redux action that can be dispatched
+   */
+  addNotification: (notification: Omit<WitnessFeature.Notification, 'id'>) => AnyAction;
+
+  /**
+   * Creates an action that marks a message as read inside the redux store
+   * @returns A redux action that can be dispatched
+   */
+  markNotificationAsRead: (notificationId: number) => AnyAction;
+
+  /**
+   * Creates an action to discard a notification
+   * @returns A redux action that can be dispatched
+   */
+  discardNotification: (notificationId: number) => AnyAction;
 }
 
 /**
  * The type of the context that is provided to react witness components
  */
-export type WintessReactContext = Pick<WitnessConfiguration, 'useCurrentLao'>;
+export type WintessReactContext = Pick<
+  WitnessConfiguration,
+  'useCurrentLao' | 'addNotification' | 'markNotificationAsRead' | 'discardNotification'
+>;
 
 /**
  * The interface the witness feature exposes

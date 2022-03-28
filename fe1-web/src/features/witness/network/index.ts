@@ -4,8 +4,15 @@ import {
   ObjectType,
   ProcessableMessage,
 } from 'core/network/jsonrpc/messages';
+import { Timestamp } from 'core/objects';
+import { dispatch } from 'core/redux';
 
-import { WitnessConfiguration } from '../interface';
+import {
+  MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
+  WitnessConfiguration,
+  WitnessFeature,
+} from '../interface';
+import { addMessageToWitness } from '../reducer';
 import { WitnessMessage } from './messages';
 import { WitnessingType, getWitnessRegistryEntry } from './messages/WitnessRegistry';
 import { handleWitnessMessage } from './WitnessHandler';
@@ -18,7 +25,9 @@ import { requestWitnessMessage } from './WitnessMessageApi';
  * other messages
  */
 const afterMessageProcessingHandler =
-  (/* isLaoWitness: WitnessConfiguration['isLaoWitness'] */): AfterProcessingHandler =>
+  (
+    addNotification: WitnessConfiguration['addNotification'] /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */,
+  ): AfterProcessingHandler =>
   (msg: ProcessableMessage) => {
     const entry = getWitnessRegistryEntry(msg.messageData);
 
@@ -35,7 +44,14 @@ const afterMessageProcessingHandler =
             break;
           } */
 
-          // requestWitnessMessage(msg.channel, msg.message_id);
+          dispatch(addMessageToWitness(msg));
+          dispatch(
+            addNotification({
+              timestamp: Timestamp.EpochNow().valueOf(),
+              type: MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
+              messageId: msg.message_id.valueOf(),
+            } as WitnessFeature.MessageToWitnessNotification),
+          );
           break;
 
         case WitnessingType.NO_WITNESSING:
@@ -59,6 +75,6 @@ export const configureNetwork = (config: WitnessConfiguration) => {
   );
 
   config.messageRegistry.addAfterProcessingHandler(
-    afterMessageProcessingHandler(/* config.isLaoWitness */),
+    afterMessageProcessingHandler(config.addNotification /* config.isLaoWitness */),
   );
 };

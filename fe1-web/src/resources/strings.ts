@@ -28,6 +28,7 @@ const STRINGS = {
   organization_navigation_tab_home: 'Home',
   organization_navigation_tab_user: 'User',
   organization_navigation_tab_events: 'Events',
+  organization_navigation_tab_notifications: 'Notifications',
   organization_navigation_tab_identity: 'My identity',
 
   /* --- Witness Navigation Strings --- */

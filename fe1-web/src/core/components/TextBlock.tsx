@@ -12,16 +12,13 @@ import { black } from '../styles/colors';
  */
 
 const TextBlock = (props: IPropTypes) => {
-  const { text } = props;
-  const { bold } = props;
-  const { visibility } = props;
-  const { color } = props;
+  const { text, bold, visibility, color } = props;
 
   if (!visibility) {
     return null;
   }
 
-  const fontStyle = bold ? Typography.important : Typography.base;
+  const fontStyle = bold ? Typography.importantCentered : Typography.baseCentered;
   const styles = StyleSheet.create({
     text: {
       ...fontStyle,

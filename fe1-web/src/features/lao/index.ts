@@ -13,7 +13,7 @@ import {
 } from './interface';
 import * as navigation from './navigation';
 import { configureNetwork } from './network';
-import { selectCurrentLaoId, laoReducer, addLaoServerAddress } from './reducer';
+import { selectCurrentLaoId, laoReducer, addLaoServerAddress, addNotification, discardNotification, markNotificationAsRead, notificationReducer } from './reducer';
 
 /**
  * Configures the LAO feature
@@ -45,6 +45,9 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
     components: PublicComponents,
     actionCreators: {
       addLaoServerAddress,
+      addNotification,
+      discardNotification,
+      markNotificationAsRead
     },
     hooks: {
       useLaoList: hooks.LaoHooks.useLaoList,
@@ -57,6 +60,7 @@ export const configure = (config: LaoConfiguration): LaoConfigurationInterface =
     functions,
     reducers: {
       ...laoReducer,
+      ...notificationReducer
     },
   };
 };

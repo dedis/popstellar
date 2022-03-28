@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { useSelector, useStore } from 'react-redux';
 
+import NotificationBadge from 'core/components/NotificationBadge';
 import { getKeyPairState } from 'core/keypair';
 import { PublicKey } from 'core/objects';
 import STRINGS from 'resources/strings';
@@ -11,6 +12,7 @@ import { LaoHooks } from '../hooks';
 import { LaoFeature } from '../interface';
 import { selectCurrentLao } from '../reducer';
 import { AttendeeEventsScreen, Identity } from '../screens';
+import NotificationScreen from '../screens/NotificationScreen';
 import OrganizerEventsNavigation from './OrganizerNavigation';
 
 const OrganizationTopTabNavigator = createMaterialTopTabNavigator();
@@ -71,6 +73,12 @@ const LaoNavigation: React.FC = () => {
         Component,
         order: 20000,
       } as LaoFeature.Screen,
+      {
+        id: STRINGS.organization_navigation_tab_notifications,
+        Component: NotificationScreen,
+        order: 70000,
+        Badge: () => <NotificationBadge>{5}</NotificationBadge>,
+      } as LaoFeature.Screen,
       // sort screens by order before rendering them
     ].sort((a, b) => a.order - b.order);
   }, [passedScreens, isOrganizer, isWitness]);
@@ -82,12 +90,16 @@ const LaoNavigation: React.FC = () => {
       screenOptions={{
         swipeEnabled: false,
       }}>
-      {screens.map(({ id, title, Component }) => (
+      {screens.map(({ id, title, Component, Badge, Icon }) => (
         <OrganizationTopTabNavigator.Screen
           key={id}
           name={id}
           component={Component}
-          options={{ title: title || id }}
+          options={{
+            title: title || id,
+            tabBarBadge: Badge,
+            tabBarIcon: Icon,
+          }}
         />
       ))}
     </OrganizationTopTabNavigator.Navigator>
