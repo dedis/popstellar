@@ -54,14 +54,9 @@
                   }
                 },
                 "required": ["Type", "Pubkey", "Sig"]
-              },
-              "Sequence": {
-                "type": "string",
-                "contentEncoding": "base64",
-                "$comment": "Set as 0xFFFFFFFF"
               }
             },
-            "required": ["TxOutHash", "TxOutIndex", "Script", "Sequence"]
+            "required": ["TxOutHash", "TxOutIndex", "Script"]
           },
           "minItems": 1
         },
