@@ -117,21 +117,10 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
 
-       /* val questionsId: List[Hash] = {
-          var sig = 0
-          var hash = List()
-          for (sig <- data.witness_signatures) {
-            hash = sig :: hash
-          }
-        }*/
-
         if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a ResultElection message on a wrong type of channel $channel"))
-          //trying to validate the signatures of the witness
-        /*} else if (!validateWitnessSignatures(data.witness_signatures, questionsId)) {
-          Right(validationError("witness signatures are not valid for the results id"))*/
         } else {
           Left(rpcMessage)
         }

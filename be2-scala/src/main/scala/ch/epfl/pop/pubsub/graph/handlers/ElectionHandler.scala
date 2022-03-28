@@ -44,41 +44,12 @@ object ElectionHandler extends MessageHandler {
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // no need to propagate here, hence the use of dbAskWrite
     val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)
-    rpcMessage.getParamsMessage match {
-      case Some(message: Message) =>
-        val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
-        val electionId: Hash = data.election
-        val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
-        dbActor ? DbActor.ReadChannelData(electionChannel) transformWith {
-          case Success(c: ChannelData) =>
-            // val decodedMessages = c.messages.map(message.decodedData.get.asInstanceOf[SetupElection].id)
-            Future.successful(c.messages)
-          case _ => Future.failed(new Exception())
-        }
-      case _ => ???
-    }
-
     Await.result(ask, duration)
   }
 
   def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
-    val message: Message = rpcMessage.getParamsMessage.get
-    val electionId: Hash = message.decodedData.get.asInstanceOf[SetupElection].id
-    val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
-
-    val electionsData = for {
-      channel <- dbActor ? DbActor.ReadChannelData(electionChannel)
-    } yield channel
-    Await.ready(electionsData, duration).value match {
-      case Some(Success(electionsData: ChannelData)) =>
-        var result = for (message<-electionsData.messages) yield message.base64Data
-        Left(rpcMessage)
-      case Some(Failure(ex: DbActorNAckException)) =>
-        Right(PipelineError(ex.code, s"handleSetupElection failed : ${ex.message}", rpcMessage.getId))
-      case reply =>
-        Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleSetupElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
-    }
-
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
   }
 
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
