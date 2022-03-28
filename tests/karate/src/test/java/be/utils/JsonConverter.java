@@ -17,6 +17,7 @@ public class JsonConverter {
 
   private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   private String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  private String messageIdForced = "";
 
   public String convertJson(Json json){
 
@@ -26,6 +27,7 @@ public class JsonConverter {
     String base64 = encoder.encodeToString(jsonBytes);
     return base64;
   }
+
 
   public Json messageFromData(String stringData,String type, int id, String channel){
     Json messageData = Json.of(stringData);
@@ -75,5 +77,9 @@ public class JsonConverter {
 
   public void setSignature(String newSignature) {
     this.signature = newSignature;
+  }
+
+  public void setMessageIdForced(String messageIdForced){
+    this.messageIdForced = messageIdForced;
   }
 }

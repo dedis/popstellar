@@ -43,11 +43,11 @@
 
     @name=valid_roll_call
     Scenario: Creates a valid Roll Call
-      * string rollCallReq  = read('classpath:data/rollCall/valid_roll_call_create_2.json')
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-
+      * string rollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_2_data.json')
+      * string rollCallCreate = converter.messageFromData(rollCallData,type,id,channel)
       * frontend_buffer.takeTimeout(timeout)
-      * eval frontend.send(rollCallReq)
+      * eval frontend.send(rollCallCreate)
       * def roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
       * def roll_call = frontend_buffer.takeTimeout(timeout)
       * karate.log("roll call create : "+roll_call_broadcast)
@@ -56,11 +56,17 @@
     Scenario: Opens a valid Roll Call
       * string rollCallCreateReq  = read('classpath:data/rollCall/valid_roll_call_create_3.json')
       * string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open_3.json')
+
+      * string rollCallCreateData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_3_data.json')
+      * string rollCallCreate = converter.messageFromData(rollCallCreateData,type,id,channel)
+      * string rollCallOpenData = read('classpath:data/rollCall/data/rollCallOpen/valid_roll_call_open_3_data.json')
+      * string rollCallOpen = converter.messageFromData(rollCallOpenData,type,id,channel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
-      * eval frontend.send(rollCallCreateReq)
+
+      * eval frontend.send(rollCallCreate)
       * json create_roll_broadcast = frontend_buffer.takeTimeout(timeout)
       * json create_roll_result = frontend_buffer.takeTimeout(timeout)
-      * eval frontend.send(rollCallOpenReq)
+      * eval frontend.send(rollCallOpen)
       * json open_roll_broadcast = frontend_buffer.takeTimeout(timeout)
       * json open_roll_result = frontend_buffer.takeTimeout(timeout)
       * karate.log("Received in simple scenarios open roll call :")
