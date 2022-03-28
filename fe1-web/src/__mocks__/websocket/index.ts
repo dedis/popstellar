@@ -6,7 +6,7 @@ import { ICloseEvent, IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websoc
 export class w3cwebsocket {
   private readonly url: string;
 
-  public readyState = 0; // alway ready. 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
+  public readyState = 0; // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
 
   public onopen: W3CWebSocket['onopen'] = jest.fn();
 
