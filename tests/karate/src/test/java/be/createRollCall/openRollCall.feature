@@ -15,7 +15,7 @@ Feature: Roll Call Open
     # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
-    * string type = "publish"
+    * string method = "publish"
     * def id = 32
     * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
@@ -27,7 +27,7 @@ Feature: Roll Call Open
   # containing the same id as the request and a result.
   Scenario: Open a valid Roll Call
     Given string rollCallOpenData = read('classpath:data/rollCall/data/rollCallOpen/valid_roll_call_open_data.json')
-    And string rollCallOpen = converter.messageFromData(rollCallOpenData,type,id,channel)
+    And string rollCallOpen = converter.messageFromData(rollCallOpenData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(rollCallOpen)
     * json open_roll_broadcast = frontend_buffer.takeTimeout(timeout)
@@ -42,7 +42,7 @@ Feature: Roll Call Open
   # was never sent opening a roll call is illegal and we expect an error message from the backend.
   Scenario: Opening a Roll Call that does not exist should return an error
     Given string badRollCallOpenData = read('classpath:data/rollCall/data/rollCallOpen/valid_roll_call_open_2_data.json')
-    And string rollCallOpen = converter.messageFromData(badRollCallOpenData,type,id,channel)
+    And string rollCallOpen = converter.messageFromData(badRollCallOpenData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(rollCallOpen)
     * json err_open = frontend_buffer.takeTimeout(timeout)
@@ -52,7 +52,7 @@ Feature: Roll Call Open
   # we provide an invalid update_id field in the message. We expect an error message in return
   Scenario: Opening a Roll Call with invalid update_id should return an error
     Given string badRollCallOpenData = read('classpath:data/rollCall/data/rollCallOpen/bad_roll_call_open_invalid_update_id_data.json')
-    And string badRollCallOpen = converter.messageFromData(badRollCallOpenData,type,id,channel)
+    And string badRollCallOpen = converter.messageFromData(badRollCallOpenData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(badRollCallOpen)
     * json err_open = frontend_buffer.takeTimeout(timeout)
@@ -61,7 +61,7 @@ Feature: Roll Call Open
   # Testing idempotency (Not guaranteed by the backend for now, so the test fails)
   Scenario: Opening a Roll Call for which with already received an error should return an error again
     Given string badRollCallOpenData = read('classpath:data/rollCall/data/rollCallOpen/bad_roll_call_open_invalid_update_id_data.json')
-    And string badRollCallOpen = converter.messageFromData(badRollCallOpenData,type,id,channel)
+    And string badRollCallOpen = converter.messageFromData(badRollCallOpenData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(badRollCallOpen)
     * json err_open = frontend_buffer.takeTimeout(timeout)

@@ -13,7 +13,7 @@ Feature: Close a Roll Call
     # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
-    * string type = "publish"
+    * string method = "publish"
     * def id = 33
     * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
@@ -22,7 +22,7 @@ Feature: Close a Roll Call
   # message and expect to receive a valid response from the backend
   Scenario: Close a valid roll should succeed
     Given string rollCallCloseData = read('classpath:data/rollCall/data/rollCallClose/valid_roll_call_close_data.json')
-    And string rollCallClose = converter.messageFromData(rollCallCloseData,type,id,channel)
+    And string rollCallClose = converter.messageFromData(rollCallCloseData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=open_roll_call')
     And  eval frontend.send(rollCallClose)
     * json close_roll_broadcast = frontend_buffer.takeTimeout(timeout)
@@ -33,7 +33,7 @@ Feature: Close a Roll Call
   # we provide an invalid update_id field in the message. We expect an error message in return
   Scenario: Close a valid roll call with wrong update_id should return an error message
     Given string badRollCallCloseData = read('classpath:data/rollCall/data/rollCallClose/bad_roll_call_close_invalid_update_id_data.json')
-    And string badRollCallClose = converter.messageFromData(badRollCallCloseData,type,id,channel)
+    And string badRollCallClose = converter.messageFromData(badRollCallCloseData,method,id,channel)
     And  eval frontend.send(badRollCallClose)
     * json close_roll_err = frontend_buffer.takeTimeout(timeout)
     Then  match close_roll_err contains deep {jsonrpc: '2.0', id: 33, error: {code: -4, description: '#string'}}
@@ -44,7 +44,7 @@ Feature: Close a Roll Call
     #Given string rollCallClose = read('classpath:data/rollCall/close/valid_roll_call_close_2.json')
 
     Given string rollCallCloseData = read('classpath:data/rollCall/data/rollCallClose/valid_roll_call_close_2_data.json')
-    And string rollCallClose = converter.messageFromData(rollCallCloseData,type,id,channel)
+    And string rollCallClose = converter.messageFromData(rollCallCloseData,method,id,channel)
 
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     And eval frontend.send(rollCallClose)

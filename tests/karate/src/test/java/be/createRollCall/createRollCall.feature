@@ -15,7 +15,7 @@ Feature: Create a Roll Call
     # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
-    * string type = "publish"
+    * string method = "publish"
     * def id = 3
     * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
@@ -24,7 +24,7 @@ Feature: Create a Roll Call
   # from the backend
   Scenario: Valid Roll Call
     Given string rollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_data.json')
-    And string rollCallCreate = converter.messageFromData(rollCallData,type,id,channel)
+    And string rollCallCreate = converter.messageFromData(rollCallData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     * karate.log('Request for lao creation sent')
     * frontend_buffer.takeTimeout(timeout)
@@ -39,7 +39,7 @@ Feature: Create a Roll Call
     Given string badRollCallReq  = read('classpath:data/rollCall/bad_roll_call_create_empty_data_but_same_messageId_as_valid_roll_call.json')
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     * string rollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_data.json')
-    * string rollCallCreate = converter.messageFromData(rollCallData,type,id,channel)
+    * string rollCallCreate = converter.messageFromData(rollCallData,method,id,channel)
 
     When eval frontend.send(rollCallCreate)
     * karate.log('Request for roll call sent')
@@ -54,7 +54,7 @@ Feature: Create a Roll Call
   Scenario: Roll Call Creation with non-organizer as sender should return an error
     Given string badRollCallReq = read('classpath:data/rollCall/bad_create_roll_call_not_organizer_sender.json')
     And string badRollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_data.json')
-    * string badRollCallCreate = converter.messageFromData(badRollCallData,type,id,channel)
+    * string badRollCallCreate = converter.messageFromData(badRollCallData,method,id,channel)
 
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallReq)
@@ -69,7 +69,7 @@ Feature: Create a Roll Call
 
     * string badRollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_data.json')
     * string rootChannel = "/root"
-    * string badRollCallCreate = converter.messageFromData(badRollCallData,type,id,rootChannel)
+    * string badRollCallCreate = converter.messageFromData(badRollCallData,method,id,rootChannel)
 
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
@@ -81,7 +81,7 @@ Feature: Create a Roll Call
   # from the backend.
   Scenario: Roll Call Creation with proposed start > proposed end should return and error
     Given string badRollCallData = read('classpath:data/rollCall/data/rollCallCreate/bad_roll_call_create_start_time_bigger_than_end_time_data.json')
-    And string badRollCallCreate = converter.messageFromData(badRollCallData,type,id,channel)
+    And string badRollCallCreate = converter.messageFromData(badRollCallData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
@@ -91,7 +91,7 @@ Feature: Create a Roll Call
   # a negative creation time should result in an error message from the backend.
   Scenario: Roll Call Creation with creation time is negative should return an error
     Given string badRollCallData = read('classpath:data/rollCall/data/rollCallCreate/bad_roll_call_create_creation_time_negative_data.json')
-    And string badRollCallCreate = converter.messageFromData(badRollCallData,type,id,channel)
+    And string badRollCallCreate = converter.messageFromData(badRollCallData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
@@ -102,7 +102,7 @@ Feature: Create a Roll Call
   # from the backend.
   Scenario: Roll Call Creation with creation time < proposed start should return and error
     Given string badRollCallData = read('classpath:data/rollCall/data/rollCallCreate/bad_roll_call_create_creation_time_less_than_start_time_data.json')
-    And string badRollCallCreate = converter.messageFromData(badRollCallData,type,id,channel)
+    And string badRollCallCreate = converter.messageFromData(badRollCallData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
@@ -112,7 +112,7 @@ Feature: Create a Roll Call
   # an invalid roll_call id should result in an error message from the backend.
   Scenario: Roll Call Creation with invalid roll_call id should return an error
     Given string badRollCallData = read('classpath:data/rollCall/data/rollCallCreate/bad_roll_call_create_invalid_roll_call_id_data.json')
-    And string badRollCallCreate = converter.messageFromData(badRollCallData,type,id,channel)
+    And string badRollCallCreate = converter.messageFromData(badRollCallData,method,id,channel)
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
