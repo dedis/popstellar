@@ -113,7 +113,7 @@ export async function catchup(
   }
 
   // only use responses containing a message array
-  const validResponses = responses.filter((r) => typeof r.result === 'number');
+  const validResponses = responses.filter((r) => typeof r.result !== 'number');
 
   const msgs = [].concat(...validResponses.map((r) => r.result as any));
   return messageGenerator(msgs, channel);
