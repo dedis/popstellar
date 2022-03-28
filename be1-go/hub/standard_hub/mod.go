@@ -146,7 +146,7 @@ func (q *queries) getNextCatchupMessage(channel string) method.Catchup {
 // NewHub returns a new Hub.
 func NewHub(pubKeyOwner kyber.Point, log zerolog.Logger, laoFac channel.LaoFactory,
 	hubType hub.HubType) (*Hub, error) {
-	
+
 	schemaValidator, err := validation.NewSchemaValidator(log)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to create the schema validator: %v", err)
