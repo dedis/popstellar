@@ -48,6 +48,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
   private final LifecycleOwner lifecycleOwner;
   private final LaoDetailViewModel viewModel;
   protected final HashMap<EventCategory, List<Event>> eventsMap;
+  private String TAG = "ON_OPENING:";
 
   /**
    * Constructor for the expandable list view adapter to display the events in the attendee UI
@@ -377,11 +378,12 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     electionBinding.detailsButton.setOnClickListener(
         clicked -> {
           viewModel.setCurrentElection(election);
-          Log.d("ttt", "ddd");
+          Log.d(TAG, viewModel.getCurrentLaoValue().getId());
+          viewModel.getCurrentLaoValue();
           viewModel.openElection(election);
           //viewModel.openStartElection(true);
         });
-    //electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
+    electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
     //electionBinding.detailsButton.setEnabled(viewModel.isWitness().getValue() || viewModel.isOrganizer().getValue());
 
 

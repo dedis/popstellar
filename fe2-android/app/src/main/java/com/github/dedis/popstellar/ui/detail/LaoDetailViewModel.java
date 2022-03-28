@@ -277,7 +277,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     //The time will have to be modified
     OpenElection openElection =
-        new OpenElection(e.getId(), laoId, e.getCreation());
+        new OpenElection(laoId, e.getId(), );
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
@@ -288,7 +288,7 @@ public class LaoDetailViewModel extends AndroidViewModel
                 () -> {
                   Log.d(TAG, "opened election successfully");
                   //to modify
-                  openStartElection(true);
+                  //openStartElection(true);
                 },
                 error ->
                     //modify the string after
