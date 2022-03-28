@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
-	"github.com/rs/zerolog/log"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/lao"
@@ -534,16 +533,13 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewErrorf(-4, "failed to decode public key of the sender: %v", err)
 	}
 
-	// Check if the sender of election creation message is the organizer
+	// Check if the sender of the LAO creation message is the organizer
 	senderPubKey := crypto.Suite.Point()
 	err = senderPubKey.UnmarshalBinary(senderBuf)
 	if err != nil {
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
 	}
-	println("from message is ", senderPubKey)
-	println("from terminal is ", h.GetPubKeyOwner())
-	log.Logger.Error().Msg("from message" + senderPubKey.String())
-	log.Logger.Error().Msg("From cli " + h.GetPubKeyOwner().String())
+
 	if !h.GetPubKeyOwner().Equal(senderPubKey) {
 		return xerrors.Errorf("Only an organizer may start an Lao. " +
 			"Check the public key provided to the server is correct")
