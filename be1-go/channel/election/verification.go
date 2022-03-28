@@ -104,14 +104,14 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 		return xerrors.Errorf(elecIDCompare, electionID, castVote.Election)
 	}
 
-	// verify if election is not open
-	if !c.started {
-		return xerrors.Errorf("cast vote created at is %d, but the election is not started", castVote.CreatedAt)
-	}
-
 	//verify if election is terminated
 	if c.terminated {
 		return xerrors.Errorf("cast vote created at is %d, but the election is terminated", castVote.CreatedAt)
+	}
+
+	// verify if election is not open
+	if !c.started {
+		return xerrors.Errorf("cast vote created at is %d, but the election is not started", castVote.CreatedAt)
 	}
 
 	// verify created at is positive
@@ -182,14 +182,14 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 			electionEnd.CreatedAt, c.end)
 	}
 
-	// verify if election is started
-	if !c.started {
-		return xerrors.Errorf("election is not started")
-	}
-
 	// verify if the election is not terminated
 	if c.terminated {
 		return xerrors.Errorf("election is already terminated")
+	}
+
+	// verify if election is started
+	if !c.started {
+		return xerrors.Errorf("election is not started")
 	}
 
 	// verify registered votes are base64URL encoded
