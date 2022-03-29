@@ -153,12 +153,8 @@ describe('catchup', () => {
     const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockChannel, mockAddress);
 
     // the receivedAt value is allowed differ
-    // cannot use expect.any(Number) here because of toBeJsonEqual and cannot use toBeEqual
-    // because once it is an instance of Base64Url and once of Hash
-    expect({ ...value, receivedAt: 0 }).toBeJsonEqual({
-      ...expected,
-      receivedAt: 0,
-    });
+    expect({ ...value, receivedAt: 0 })
+      .toBeJsonEqual({...expected, receivedAt: 0 });
     expect(done).toBeFalse();
 
     expect(generator.next().done).toBeTrue();
