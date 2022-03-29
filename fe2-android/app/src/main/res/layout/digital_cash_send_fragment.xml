@@ -31,6 +31,28 @@
       app:layout_constraintStart_toStartOf="parent"
       app:layout_constraintTop_toTopOf="parent">
 
+      <Space
+        android:layout_width="match_parent"
+        android:layout_height="116dp" />
+
+      <LinearLayout
+        android:layout_width="205dp"
+        android:layout_height="111dp"
+        android:orientation="horizontal">
+
+        <Space
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1" />
+
+        <EditText
+          android:id="@+id/ed_amount"
+          android:layout_width="match_parent"
+          android:layout_height="65dp"
+          android:hint="Amount LAO COIN" />
+
+      </LinearLayout>
+
       <EditText
         android:id="@+id/ed_sender_address"
         android:layout_width="match_parent"
@@ -48,6 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/digital_cash_send" />
+
     </LinearLayout>
   </androidx.constraintlayout.widget.ConstraintLayout>
 
