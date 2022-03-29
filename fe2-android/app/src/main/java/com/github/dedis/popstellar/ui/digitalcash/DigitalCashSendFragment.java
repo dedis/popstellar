@@ -2,13 +2,19 @@ package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
+import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
+import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -19,10 +25,6 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class DigitalCashSendFragment extends Fragment {
   private DigitalCashSendFragmentBinding mDigitalCashSendFragBinding;
   private DigitalCashViewModel mDigitalCashViewModel;
-
-  public DigitalCashSendFragment() {
-    // Required empty public constructor
-  }
 
   /**
    * Use this factory method to create a new instance of this fragment using the provided
@@ -36,14 +38,43 @@ public class DigitalCashSendFragment extends Fragment {
   }
 
   @Override
-  public void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
+  public void onViewCreated(
+          @NonNull View view,
+          @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+
+    //TODO here add the send Coin event
   }
 
+  @Nullable
   @Override
   public View onCreateView(
-      LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+          @NonNull LayoutInflater inflater,
+          @Nullable ViewGroup container,
+          @Nullable Bundle savedInstanceState) {
     // Inflate the layout for this fragment
-    return inflater.inflate(R.layout.digital_cash_send_fragment, container, false);
-  }
+    mDigitalCashSendFragBinding =
+            DigitalCashSendFragmentBinding.inflate(inflater, container, false);
+
+    mDigitalCashViewModel = DigitalCashMain.obtainViewModel(requireActivity());
+
+    mDigitalCashSendFragBinding.setViewModel(mDigitalCashViewModel);
+    mDigitalCashSendFragBinding.setLifecycleOwner(getViewLifecycleOwner());
+
+    return mDigitalCashSendFragBinding.getRoot();
+   }
+
+   private void sendTransaction(){
+      //send some coin
+     // make a toast appear
+     if (mDigitalCashViewModel.getLaoId().getValue() == null) {
+       Toast.makeText(
+               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
+               .show();
+     } else {
+
+       // Change to Open Receipt
+       mDigitalCashViewModel.openReceipt();
+     }
+   }
 }
