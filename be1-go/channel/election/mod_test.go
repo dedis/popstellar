@@ -353,7 +353,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 	// check the created election has only one question
 	require.Equal(t, 1, len(electChannel.questions))
 
-	// get cast vote message data
+	// get election open message data
 	file := filepath.Join(relativeMsgDataExamplePath, "election_open", "election_open.json")
 	buf, err := os.ReadFile(file)
 	require.NoError(t, err)
@@ -364,7 +364,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	// wrap the cast vote in a message
+	// wrap the election open in a message
 	m := message.Message{
 		Data:              buf64,
 		Sender:            pkOrganizer,
@@ -388,7 +388,7 @@ func Test_Publish_Election_Open(t *testing.T) {
 	pub.Params.Message = m
 	pub.Params.Channel = electChannel.channelID
 
-	// publish the cast vote on the election channel
+	// publish the election open on the election channel
 	require.NoError(t, electChannel.Publish(pub, socket.ClientSocket{}))
 
 }
@@ -408,7 +408,7 @@ func Test_Process_Election_Open(t *testing.T) {
 
 	buf64 := base64.URLEncoding.EncodeToString(buf)
 
-	// wrap the cast vote in a message
+	// wrap the election open in a message
 	m := message.Message{
 		Data:              buf64,
 		Sender:            "@@@",

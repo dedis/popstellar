@@ -66,10 +66,10 @@ func TestVerify_ElectionOpen(t *testing.T) {
 }
 
 func TestVerify_ElectionOpen_already_open(t *testing.T) {
+	// create the opened election channel
 	electChannel, _ := newFakeChannel(t)
 	electChannel.started = true
 
-	// read the valid example file
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open",
 		"election_open.json"))
 	require.NoError(t, err)
@@ -79,16 +79,16 @@ func TestVerify_ElectionOpen_already_open(t *testing.T) {
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
-	// test valid example
+	// send the election open message to the channel
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
 	require.Error(t, err)
 }
 
 func TestVerify_ElectionOpen_already_closed(t *testing.T) {
+	// create the terminated election channel
 	electChannel, _ := newFakeChannel(t)
 	electChannel.terminated = true
 
-	// read the valid example file
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_open",
 		"election_open.json"))
 	require.NoError(t, err)
@@ -98,7 +98,7 @@ func TestVerify_ElectionOpen_already_closed(t *testing.T) {
 	err = json.Unmarshal(buf, &electionOpen)
 	require.NoError(t, err)
 
-	// test valid example
+	// send the election open message to the channel
 	err = electChannel.verifyMessageElectionOpen(electionOpen)
 	require.Error(t, err)
 }
@@ -162,6 +162,7 @@ func TestVerify_CastVote(t *testing.T) {
 }
 
 func TestVerify_CastVote_not_open(t *testing.T) {
+	// create the non opened election channel
 	electChannel, _ := newFakeChannel(t)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "vote_cast_vote",
@@ -173,12 +174,13 @@ func TestVerify_CastVote_not_open(t *testing.T) {
 	err = json.Unmarshal(buf, &voteCastVote)
 	require.NoError(t, err)
 
-	// test valid example
+	// send the cast vote message to the channel
 	err = electChannel.verifyMessageCastVote(voteCastVote)
 	require.Error(t, err)
 }
 
 func TestVerify_CastVote_already_closed(t *testing.T) {
+	// create the terminated election channel
 	electChannel, _ := newFakeChannel(t)
 	electChannel.terminated = true
 
@@ -191,7 +193,7 @@ func TestVerify_CastVote_already_closed(t *testing.T) {
 	err = json.Unmarshal(buf, &voteCastVote)
 	require.NoError(t, err)
 
-	// test valid example
+	// send the cast vote message to the channel
 	err = electChannel.verifyMessageCastVote(voteCastVote)
 	require.Error(t, err)
 }
@@ -254,6 +256,7 @@ func TestVerify_ElectionEnd(t *testing.T) {
 }
 
 func TestVerify_ElectionEnd_not_open(t *testing.T) {
+	// create the non opened election channel
 	electChannel, _ := newFakeChannel(t)
 
 	buf, err := os.ReadFile(filepath.Join(relativeMsgDataExamplePath, "election_end",
@@ -265,12 +268,13 @@ func TestVerify_ElectionEnd_not_open(t *testing.T) {
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)
 
-	// test valid example
+	// send election end to the channel
 	err = electChannel.verifyMessageElectionEnd(electionEnd)
 	require.Error(t, err)
 }
 
 func TestVerify_ElectionEnd_already_closed(t *testing.T) {
+	// create the terminated election channel
 	electChannel, _ := newFakeChannel(t)
 	electChannel.terminated = true
 
@@ -283,7 +287,7 @@ func TestVerify_ElectionEnd_already_closed(t *testing.T) {
 	err = json.Unmarshal(buf, &electionEnd)
 	require.NoError(t, err)
 
-	// test valid example
+	// send election end to the channel
 	err = electChannel.verifyMessageElectionEnd(electionEnd)
 	require.Error(t, err)
 }
