@@ -18,7 +18,7 @@ export const sendToFirstAcceptingServerStrategy: SendingStrategy = async (payloa
       break;
     } catch (error) {
       // in case the connection failed, try the next one
-      console.info(`Could not send payload to ${connection.address} due to failure:`, error);
+      console.warn(`Could not send payload to ${connection.address} due to failure:`, error);
       console.info('Trying a different connection');
     }
   }

@@ -65,9 +65,12 @@ const ConnectConfirm = () => {
       return;
     }
 
-    const channel = getLaoChannel(laoId);
-
     try {
+      const channel = getLaoChannel(laoId);
+      if (!channel) {
+        throw new Error('The given LAO ID is invalid');
+      }
+
       // add the new server address to the store
       dispatch(addLaoServerAddress(laoId, serverUrl));
 
