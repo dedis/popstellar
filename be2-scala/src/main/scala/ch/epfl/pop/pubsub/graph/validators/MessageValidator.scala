@@ -41,7 +41,11 @@ object MessageValidator extends ContentValidator with AskPatternConstants {
   def validateAttendee(sender: PublicKey, channel: Channel, dbActor: AskableActorRef = DbActor.getInstance): Boolean = {
     val ask = dbActor ? DbActor.ReadLaoData(channel)
     Await.ready(ask, duration).value.get match {
-      case Success(DbActor.DbActorReadLaoDataAck(laoData)) => laoData.attendees.contains(sender)
+      case Success(DbActor.DbActorReadLaoDataAck(laoData)) =>
+        println("attendees " + laoData.attendees)
+        println("owner " + laoData.owner)
+        println("publickey " + laoData.publicKey)
+        laoData.attendees.contains(sender)
       case _ => false
     }
   }

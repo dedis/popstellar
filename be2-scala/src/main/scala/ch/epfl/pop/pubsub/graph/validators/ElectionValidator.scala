@@ -58,7 +58,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
-        } else if (!validateAttendee(sender, channel)) {
+        } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a OpenElection message on a wrong type of channel $channel"))
@@ -76,10 +76,11 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
-        val laoId: Hash = rpcMessage.extractLaoId
+        //val laoId: Hash = rpcMessage.extractLaoId
 
         val sender: PublicKey = message.sender
         val channel: Channel = rpcMessage.getParamsChannel
+        println("validator " + sender)
 
         //val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.created_at.toString, data.electionId.toString) //find name here) // is this right? as no name but election
 
@@ -95,7 +96,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         }*/
         // FIXME: check the actual votes
         // FIXME: for the VoteElection list, we need to check question ids but what do they mean? No info in documentation
-        else if (!validateAttendee(sender, channel)) {
+         else if (!validateAttendee(sender, channel)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
