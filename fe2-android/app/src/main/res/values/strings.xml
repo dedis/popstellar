@@ -230,6 +230,9 @@
   <string name="digital_cash_history">HISTORY</string>
   <string name="digital_cash_home">HOME</string>
 
+  <!-- Digital Cash error  -->
+  <string name="error_sending_coin">Could not send the transaction\n%1$s</string>
+
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
 
