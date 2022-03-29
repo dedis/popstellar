@@ -317,7 +317,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}) error {
+func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.ElectionOpen)
 	if !ok {
