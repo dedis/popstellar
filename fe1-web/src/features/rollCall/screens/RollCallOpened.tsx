@@ -1,19 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/core';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import QrReader from 'react-qr-reader';
 import { Badge } from 'react-native-elements';
-import { useRoute, useNavigation } from '@react-navigation/core';
 import { useToast } from 'react-native-toast-notifications';
+import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
-import { Spacing } from 'core/styles';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
 import { EventTags, Hash, PublicKey } from 'core/objects';
-import { makeCurrentLao } from 'features/lao/reducer';
-import { FOUR_SECONDS } from 'resources/const';
+import { Spacing } from 'core/styles';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
+import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
+import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
 import { requestCloseRollCall } from '../network';
 
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
   viewCenter: {
     flex: 8,
     justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     margin: Spacing.xs,
   } as ViewStyle,
@@ -41,8 +42,7 @@ const RollCallOpened = () => {
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
-  const laoSelect = useMemo(makeCurrentLao, []);
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   if (!lao) {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');

@@ -1,15 +1,16 @@
 import 'jest-extended';
+
 import { mockLaoIdHash } from '__tests__/utils';
 
-import { Hash, PublicKey } from '../index';
 import {
-  getLaoIdFromChannel,
   channelFromIds,
   getGeneralChirpsChannel,
+  getLaoIdFromChannel,
   getLastPartOfChannel,
   getReactionChannel,
   getUserSocialChannel,
 } from '../Channel';
+import { Hash, PublicKey } from '../index';
 
 describe('Channel object', () => {
   it('getLaoIdFromChannel should fail on empty path', () => {

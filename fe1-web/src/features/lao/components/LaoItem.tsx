@@ -1,7 +1,7 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TextStyle, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';

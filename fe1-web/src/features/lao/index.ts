@@ -1,8 +1,10 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { configureNetwork } from './network';
+
 import { PublicComponents } from './components';
+import * as functions from './functions';
 import * as hooks from './hooks';
 import * as navigation from './navigation';
+import { configureNetwork } from './network';
 import { laoReducer } from './reducer';
 
 /**
@@ -15,8 +17,9 @@ export function configure(registry: MessageRegistry) {
 
   return {
     components: PublicComponents,
-    hooks: hooks,
-    navigation: navigation,
+    hooks,
+    functions,
+    navigation,
     reducers: {
       ...laoReducer,
     },

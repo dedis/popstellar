@@ -1,8 +1,8 @@
-import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import PropTypes from 'prop-types';
-import { Pressable, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Pressable, View } from 'react-native';
 
 /**
  * UI button to go back in navigation. You can specify the string corresponding to where it should

@@ -1,84 +1,17 @@
 import 'jest-extended';
 import '__tests__/utils/matchers';
-import {
-  mockLao,
-  mockLaoId,
-  mockLaoIdHash,
-  mockLaoName,
-  configureTestFeatures,
-} from '__tests__/utils';
 
-import { Hash, Timestamp, ProtocolError, EventTags } from 'core/objects';
+import { configureTestFeatures, mockLaoId, mockLaoIdHash, mockLaoName } from '__tests__/utils';
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { OpenedLaoStore } from 'features/lao/store';
-
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
-import { Election, ElectionStatus, Question } from 'features/evoting/objects';
-import STRINGS from 'resources/strings';
+import { mockElectionOpened, mockElectionResultHash } from 'features/evoting/__tests__/utils';
+
 import { EndElection } from '../EndElection';
 
 // region test data initialization
 
 const TIMESTAMP = new Timestamp(1609455600); // 1st january 2021
-const CLOSE_TIMESTAMP = new Timestamp(1609542000); // 2nd january 2021
-
-const mockElectionId = Hash.fromStringArray(
-  'Election',
-  mockLaoId,
-  TIMESTAMP.toString(),
-  mockLaoName,
-);
-
-const mockQuestion = 'Mock Question 1';
-const mockQuestionId = Hash.fromStringArray(
-  EventTags.QUESTION,
-  mockElectionId.toString(),
-  mockQuestion,
-);
-const mockBallotOptions = ['Ballot Option 1', 'Ballot Option 2'];
-
-const question: Question = {
-  id: mockQuestionId.toString(),
-  question: mockQuestion,
-  voting_method: STRINGS.election_method_Plurality,
-  ballot_options: mockBallotOptions,
-  write_in: false,
-};
-
-const election = new Election({
-  lao: mockLaoIdHash,
-  id: mockElectionId,
-  name: 'An election',
-  version: STRINGS.election_version_identifier,
-  createdAt: TIMESTAMP,
-  start: TIMESTAMP,
-  end: CLOSE_TIMESTAMP,
-  questions: [question],
-  electionStatus: ElectionStatus.NOT_STARTED,
-  registeredVotes: [
-    {
-      createdAt: 0,
-      messageId: '0',
-      sender: '',
-      votes: [
-        { id: 'id1', question: 'q1', vote: [0] },
-        { id: 'id2', question: 'q2', vote: [0] },
-      ],
-    },
-    {
-      createdAt: 1,
-      messageId: '1',
-      sender: '',
-      votes: [
-        { id: 'id3', question: 'q3', vote: [0] },
-        { id: 'id4', question: 'q4', vote: [0] },
-      ],
-    },
-  ],
-});
-
-const mockVoteId = 'x';
-const mockElectionResultHash = Hash.fromStringArray(mockVoteId);
 
 const electionId: Hash = Hash.fromStringArray(
   'Election',
@@ -112,7 +45,6 @@ const endElectionJson: string = `{
 
 beforeAll(() => {
   configureTestFeatures();
-  OpenedLaoStore.store(mockLao);
 });
 
 describe('EndElection', () => {
@@ -225,7 +157,7 @@ describe('EndElection', () => {
   describe('computeRegisteredVotesHash', () => {
     // It seems a bit silly to test this function apart from it not returning an error as
     // we would simply write the same code here again?
-    const fn = () => EndElection.computeRegisteredVotesHash(election);
+    const fn = () => EndElection.computeRegisteredVotesHash(mockElectionOpened);
     expect(fn).not.toThrow();
     expect(fn().valueOf()).toEqual('eYH10agf4Jvfs-rihA-9pG1j0lFPHnYeI9e9Vx-GQ6Q=');
   });

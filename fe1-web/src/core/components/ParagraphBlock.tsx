@@ -1,8 +1,8 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
-import PropTypes from 'prop-types';
 
-import { Typography, Spacing } from '../styles';
+import { Spacing, Typography } from '../styles';
 
 const styles = StyleSheet.create({
   textStandard: {

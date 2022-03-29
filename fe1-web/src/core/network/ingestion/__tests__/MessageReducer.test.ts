@@ -1,15 +1,15 @@
 import 'jest-extended';
-import {
-  mockPopToken,
-  mockPrivateKey,
-  mockPublicKey,
-  configureTestFeatures,
-} from '__tests__/utils';
 
 import { AnyAction } from 'redux';
 
-import { channelFromIds, KeyPair, Timestamp } from 'core/objects';
+import {
+  configureTestFeatures,
+  mockPopToken,
+  mockPrivateKey,
+  mockPublicKey,
+} from '__tests__/utils';
 import { Message } from 'core/network/jsonrpc/messages';
+import { channelFromIds, KeyPair, Timestamp } from 'core/objects';
 import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { ExtendedMessage, markMessageAsProcessed } from '../ExtendedMessage';

@@ -1,32 +1,33 @@
-import React, { useState } from 'react';
-import { View, Platform, ScrollView } from 'react-native';
 import 'react-datepicker/dist/react-datepicker.css';
+
 import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { Platform, ScrollView, View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 
-import STRINGS from 'resources/strings';
-import { onChangeStartTime, onChangeEndTime } from 'core/components/DatePicker';
 import {
   ConfirmModal,
   DatePicker,
   DismissModal,
-  DropdownSelector,
+  ParagraphBlock,
   TextBlock,
   TextInputLine,
   TextInputList,
-  ParagraphBlock,
   WideButtonView,
 } from 'core/components';
-import { Hash, Timestamp, EventTags } from 'core/objects';
-import { Lao } from 'features/lao/objects';
-import { OpenedLaoStore } from 'features/lao/store';
+import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import { EventTags, Hash, Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
-import { onConfirmPress } from 'features/events/screens/CreateEvent';
+import STRINGS from 'resources/strings';
 
+import { EvotingHooks } from '../hooks';
 import { requestCreateElection } from '../network/ElectionMessageApi';
 import { Question } from '../objects';
 
 const DEFAULT_ELECTION_DURATION = 3600;
+
+// for now only plurality voting is supported (2022-03-16, Tyratox)
+const VOTING_METHOD = STRINGS.election_method_Plurality;
 
 /**
  * UI to create an Election Event
@@ -42,14 +43,16 @@ const CreateElection = ({ route }: any) => {
     Timestamp.EpochNow().addSeconds(DEFAULT_ELECTION_DURATION),
   );
   const [electionName, setElectionName] = useState('');
-  const votingMethods = [STRINGS.election_method_Plurality, STRINGS.election_method_Approval];
   const minBallotOptions = 2;
-  const currentLao: Lao = OpenedLaoStore.get();
-  const emptyQuestion = { question: '', voting_method: votingMethods[0], ballot_options: [''] };
+
+  const emptyQuestion = { question: '', voting_method: VOTING_METHOD, ballot_options: [''] };
   const [questions, setQuestions] = useState([emptyQuestion]);
   const [modalEndIsVisible, setModalEndIsVisible] = useState(false);
   const [modalStartIsVisible, setModalStartIsVisible] = useState(false);
   const time = Timestamp.EpochNow();
+
+  const currentLao = EvotingHooks.useCurrentLao();
+  const onConfirmEventCreation = EvotingHooks.useOnConfirmEventCreation();
 
   const buildDatePickerWeb = () => {
     const startDate = startTime.toDate();
@@ -87,6 +90,7 @@ const CreateElection = ({ route }: any) => {
     questions.map((item) => ({
       ...item,
       id: Hash.fromStringArray(EventTags.QUESTION, electionId.toString(), item.question).toString(),
+      // for now the write_in feature is disabled (2022-03-16, Tyratox)
       write_in: false,
     }));
 
@@ -98,6 +102,7 @@ const CreateElection = ({ route }: any) => {
 
   const createElection = () => {
     requestCreateElection(
+      currentLao.id,
       electionName,
       STRINGS.election_version_identifier,
       startTime,
@@ -140,17 +145,6 @@ const CreateElection = ({ route }: any) => {
               )
             }
           />
-          <View style={[styles.view, { marginHorizontal: 150 }]}>
-            <ParagraphBlock text={STRINGS.election_voting_method} />
-            <DropdownSelector
-              values={votingMethods}
-              onChange={(method: string) =>
-                setQuestions((prev) =>
-                  prev.map((item, id) => (id === idx ? { ...item, voting_method: method } : item)),
-                )
-              }
-            />
-          </View>
           <TextInputList
             onChange={(ballot_options: string[]) =>
               setQuestions((prev) =>
@@ -172,7 +166,7 @@ const CreateElection = ({ route }: any) => {
         <WideButtonView
           title={STRINGS.general_button_confirm}
           onPress={() =>
-            onConfirmPress(
+            onConfirmEventCreation(
               startTime,
               endTime,
               createElection,

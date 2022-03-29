@@ -1,9 +1,9 @@
 // Core storage module for the React app
-import { AnyAction, createStore, Store, applyMiddleware, Action } from 'redux';
-import { persistStore, Persistor } from 'redux-persist';
-import thunkMiddleware from 'redux-thunk';
 import { ThunkAction, ThunkDispatch } from '@reduxjs/toolkit';
+import { Action, AnyAction, applyMiddleware, createStore, Store } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import { Persistor, persistStore } from 'redux-persist';
+import thunkMiddleware from 'redux-thunk';
 
 // Import all the reducers, defining how storage is organized and accessed
 import { makeRootReducer } from './RootReducer';

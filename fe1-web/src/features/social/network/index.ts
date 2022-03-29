@@ -1,14 +1,14 @@
 import { ActionType, MessageRegistry, ObjectType } from 'core/network/jsonrpc/messages';
 
-import { AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp } from './messages/chirp';
-import { AddReaction } from './messages/reaction';
-import { handleAddReactionMessage } from './ReactionHandler';
 import {
   handleAddChirpMessage,
   handleDeleteChirpMessage,
   handleNotifyAddChirpMessage,
   handleNotifyDeleteChirpMessage,
 } from './ChirpHandler';
+import { AddChirp, DeleteChirp, NotifyAddChirp, NotifyDeleteChirp } from './messages/chirp';
+import { AddReaction } from './messages/reaction';
+import { handleAddReactionMessage } from './ReactionHandler';
 
 /**
  * Configures the network callbacks in a MessageRegistry.

@@ -1,13 +1,13 @@
+import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Text } from 'react-native';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
 
-import { Timestamp } from 'core/objects';
 import { QRCode, WideButtonView } from 'core/components';
+import { Timestamp } from 'core/objects';
 import { makeEventGetter } from 'features/events/reducer';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
 import STRINGS from 'resources/strings';
 
@@ -20,8 +20,7 @@ import { RollCall, RollCallStatus } from '../objects';
 const EventRollCall = (props: IPropTypes) => {
   const { event } = props;
   const { isOrganizer } = props;
-  const laoSelect = useMemo(makeCurrentLao, []);
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
   // FIXME: use a more specific navigation
   const navigation = useNavigation<any>();
 

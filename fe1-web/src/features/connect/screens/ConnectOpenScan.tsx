@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import QrReader from 'react-qr-reader';
 import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+import { View } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import QrReader from 'react-qr-reader';
 
-import STRINGS from 'resources/strings';
-import PROPS_TYPE from 'resources/Props';
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import { Colors } from 'core/styles';
 import { WideButtonView } from 'core/components';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { FOUR_SECONDS } from 'resources/const';
+import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 import { ConnectToLao } from '../objects';
 
@@ -55,11 +54,10 @@ const ConnectOpenScan = ({ navigation }: IPropTypes) => {
   };
 
   return QrWasScanned ? (
-    <View style={containerStyles.centered} />
+    <View style={containerStyles.centeredY} />
   ) : (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredXY}>
       <QrReader delay={300} onError={handleError} onScan={handleScan} style={{ width: '30%' }} />
-      <ActivityIndicator size="large" color={Colors.blue} />
       <WideButtonView
         title={STRINGS.general_button_cancel}
         onPress={() => {

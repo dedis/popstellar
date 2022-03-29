@@ -1,10 +1,9 @@
 import { Hash } from 'core/objects';
 
 import { LaoEvent } from '../objects';
-import { makeEventsAliasMap, makeEventsMap } from '../reducer';
+import { selectEventsAliasMap, selectCurrentLaoEventsMap } from '../reducer';
 
-const getEventMap = makeEventsMap();
-const getEventAliases = makeEventsAliasMap();
+const getEventAliases = selectEventsAliasMap;
 
 /**
  * Retrieves the event id associated with a given alias.
@@ -15,9 +14,9 @@ const getEventAliases = makeEventsAliasMap();
  * @returns LaoEvent associated with the id, if found
  * @returns undefined if the id doesn't match any known event ID or alias
  */
-export function getEventFromId(state: any, id: Hash): LaoEvent | undefined {
+export function selectEventById(state: any, id: Hash): LaoEvent | undefined {
   const eventAlias = getEventAliases(state);
-  const eventMap = getEventMap(state);
+  const eventMap = selectCurrentLaoEventsMap(state);
 
   const idStr = id.valueOf();
   const evtId = idStr in eventAlias ? eventAlias[idStr] : idStr;

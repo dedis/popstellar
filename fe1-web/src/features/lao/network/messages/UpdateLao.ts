@@ -1,10 +1,10 @@
-import { Hash, PublicKey, Timestamp, ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness, checkWitnesses } from 'core/network/validation/Checker';
+import { Hash, ProtocolError, PublicKey, Timestamp } from 'core/objects';
 
-import { OpenedLaoStore } from '../../store';
 import { Lao } from '../../objects';
+import { OpenedLaoStore } from '../../store';
 
 /** Data sent to update a Lao */
 export class UpdateLao implements MessageData {

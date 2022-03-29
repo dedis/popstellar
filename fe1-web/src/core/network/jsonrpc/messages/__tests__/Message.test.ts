@@ -1,16 +1,15 @@
 import 'jest-extended';
+
 import {
+  configureTestFeatures,
+  mockKeyPair,
   mockLao,
   mockLaoId,
   mockPopToken,
-  mockKeyPair,
-  configureTestFeatures,
 } from '__tests__/utils';
-
 import { Base64UrlData, EventTags, Hash, Timestamp } from 'core/objects';
-
-import { AddChirp } from 'features/social/network/messages/chirp';
 import { EndElection } from 'features/evoting/network/messages';
+import { AddChirp } from 'features/social/network/messages/chirp';
 
 import { encodeMessageData, Message } from '../index';
 

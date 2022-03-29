@@ -1,4 +1,5 @@
 import 'jest-extended';
+
 import base64url from 'base64url';
 
 declare global {
