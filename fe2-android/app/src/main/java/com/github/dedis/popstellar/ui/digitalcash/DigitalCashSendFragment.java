@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
 import com.github.dedis.popstellar.databinding.SocialMediaSendFragmentBinding;
+import com.github.dedis.popstellar.model.objects.Address;
 import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -72,7 +73,11 @@ public class DigitalCashSendFragment extends Fragment {
                requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
                .show();
      } else {
-
+       mDigitalCashViewModel.sendCoin(
+               Integer.valueOf(mDigitalCashSendFragBinding.edAmount.getText().toString()),
+               new Address(mDigitalCashSendFragBinding.edSenderAddress.getText().toString()),
+               new Address(mDigitalCashSendFragBinding.edReceiverAddress.getText().toString())
+       );
        // Change to Open Receipt
        mDigitalCashViewModel.openReceipt();
      }

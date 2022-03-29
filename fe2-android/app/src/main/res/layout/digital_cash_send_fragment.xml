@@ -49,6 +49,7 @@
           android:id="@+id/ed_amount"
           android:layout_width="match_parent"
           android:layout_height="65dp"
+          android:inputType="number"
           android:hint="Amount LAO COIN" />
 
       </LinearLayout>
