@@ -71,6 +71,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiveEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mSendNewTransactionEvent = new MutableLiveData<>();
 
   private final LiveData<List<Lao>> mLAOs;
   private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
@@ -122,6 +123,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return mOpenReceiptEvent;
   }
 
+  public MutableLiveData<SingleEvent<Boolean>> getSendNewTransactionEvent() {
+    return mSendNewTransactionEvent;
+  }
+
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
   }
@@ -167,6 +172,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public void setLaoName(String laoName) {
     mLaoName.setValue(laoName);
+  }
+
+  public void setSendNewTransactionEvent(){
+    mSendNewTransactionEvent.postValue(new SingleEvent<>(true));
   }
 
   /**

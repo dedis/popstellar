@@ -74,7 +74,7 @@ public class DigitalCashSendFragment extends Fragment {
                .show();
      } else {
        mDigitalCashViewModel.sendCoin(
-               Integer.valueOf(mDigitalCashSendFragBinding.edAmount.getText().toString()),
+               Integer.parseInt(mDigitalCashSendFragBinding.edAmount.getText().toString()),
                new Address(mDigitalCashSendFragBinding.edSenderAddress.getText().toString()),
                new Address(mDigitalCashSendFragBinding.edReceiverAddress.getText().toString())
        );
@@ -82,4 +82,10 @@ public class DigitalCashSendFragment extends Fragment {
        mDigitalCashViewModel.openReceipt();
      }
    }
+
+  private void setupSendChirpButton() {
+    mDigitalCashSendFragBinding.buttonSend
+            .setOnClickListener(
+            v -> mDigitalCashViewModel.);
+  }
 }
