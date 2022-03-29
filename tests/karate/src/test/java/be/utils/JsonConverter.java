@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Base64;
+import com.google.crypto.tink.subtle.Ed25519Sign;
 
 public class JsonConverter {
 
@@ -43,6 +44,8 @@ public class JsonConverter {
     Map<String,Object> messagePart  = new LinkedHashMap<>();
     messagePart.put("data",messageDataBase64);
     messagePart.put("sender",senderPk);
+
+
     messagePart.put("signature",signature);
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
