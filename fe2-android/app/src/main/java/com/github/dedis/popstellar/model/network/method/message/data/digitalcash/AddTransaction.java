@@ -19,7 +19,7 @@ public class AddTransaction extends Data {
         this.receiver_address = receiver_address;
 
         //TODO: This Amount has to be changed
-        // Limit of the sender account 
+        // Limit of the sender account
         this.amount = amount;
     }
 

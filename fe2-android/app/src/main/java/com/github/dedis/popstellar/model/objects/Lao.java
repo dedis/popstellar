@@ -41,6 +41,8 @@ public final class Lao {
   private Map<PublicKey, List<MessageID>> chirpsByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
+  //TODO some transaction
+  //Map <Public Key, Transaction>
 
   public Lao(String id) {
     if (id == null) {
