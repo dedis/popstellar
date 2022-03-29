@@ -153,8 +153,7 @@ describe('catchup', () => {
     const expected = ExtendedMessage.fromMessage(mockResponseMessage, mockChannel, mockAddress);
 
     // the receivedAt value is allowed differ
-    expect({ ...value, receivedAt: 0 })
-      .toBeJsonEqual({...expected, receivedAt: 0 });
+    expect({ ...value, receivedAt: 0 }).toBeJsonEqual({ ...expected, receivedAt: 0 });
     expect(done).toBeFalse();
 
     expect(generator.next().done).toBeTrue();
