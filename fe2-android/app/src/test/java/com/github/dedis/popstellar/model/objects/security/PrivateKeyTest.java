@@ -38,6 +38,10 @@ public class PrivateKeyTest {
     Signature sign1 = key1.sign(DATA);
     Signature sign2 = key2.sign(DATA);
 
+    for(int i = 0; i < 32; ++i){
+      System.out.println(VALID_PRIVATE_KEY[i]);
+    }
+
     assertEquals(sign1, sign2);
   }
 
