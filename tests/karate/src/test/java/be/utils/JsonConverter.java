@@ -59,10 +59,29 @@ public class JsonConverter {
     messageJson.put("id",id);
     Map <String,Object> paramsPart = new LinkedHashMap<>();
     paramsPart.put("channel",channel);
+
+    Map<String,Object> messagePart = constructMessageField(messageDataBase64);
+    paramsPart.put("message",messagePart);
+    messageJson.put("params",paramsPart);
+    messageJson.put("jsonrpc","2.0");
+    return Json.of(messageJson);
+  }
+
+  public Map<String,Object> constructMessageField(String messageDataBase64){
     Map<String,Object> messagePart  = new LinkedHashMap<>();
     messagePart.put("data",messageDataBase64);
     messagePart.put("sender",senderPk);
+    String signature = constructSignature(messageDataBase64);
+    messagePart.put("signature",signature);
+    String messageId = hashDataSignature(messageDataBase64.getBytes(StandardCharsets.UTF_8),signature.getBytes(StandardCharsets.UTF_8));
+    messagePart.put("message_id",messageId);
+    System.out.println("message id is : "+messageId);
+    String[] witness = new String[0];
+    messagePart.put("witness_signatures",witness);
+    return messagePart;
+  }
 
+  public String constructSignature(String messageDataBase64){
     try {
       byte[] bytes = senderSk.getBytes(StandardCharsets.UTF_8);
       String senderSk2 = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d39287427d7c1cc957bd0993973e8b7dbbed4ab80a678be2de775837d482168ad07a5e3";
@@ -70,25 +89,15 @@ public class JsonConverter {
       System.out.println("length is "+ bytes2.length);
       PublicKeySign signer = new Ed25519Sign(bytesSecretKeyRaw);
       System.out.println("*************************************************************************");
-      String signature = new String(signer.sign(stringData.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+      String signature = new String(signer.sign(messageDataBase64.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
       System.out.println("Singature is "+ signature);
     }catch (Exception e){
       System.out.println("CANNOT SIGN");
       e.printStackTrace();
     }
-    messagePart.put("signature",signature);
-
-    String messageId = hashDataSignature(messageDataBase64.getBytes(StandardCharsets.UTF_8),signature.getBytes(StandardCharsets.UTF_8));
-    messagePart.put("message_id",messageId);
-    System.out.println("message id is : "+messageId);
-
-    String[] witness = new String[0];
-    messagePart.put("witness_signatures",witness);
-    paramsPart.put("message",messagePart);
-    messageJson.put("params",paramsPart);
-    messageJson.put("jsonrpc","2.0");
-    return Json.of(messageJson);
+    return signature;//TODO:change
   }
+
   /*
     Produces the hexadecimal representation of a hash (given as an array of bytes)
    */
