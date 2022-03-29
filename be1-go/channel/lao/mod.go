@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"go.dedis.ch/kyber/v3"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
@@ -12,6 +13,7 @@ import (
 	"popstellar/channel/election"
 	"popstellar/channel/generalChirping"
 	"popstellar/channel/reaction"
+	"popstellar/channel/registry"
 	"popstellar/crypto"
 	"popstellar/db/sqlite"
 	"popstellar/inbox"
@@ -29,7 +31,6 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3"
 	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 )
@@ -72,6 +73,8 @@ type Channel struct {
 	attendees map[string]struct{}
 
 	log zerolog.Logger
+
+	registry registry.MessageRegistry
 }
 
 // NewChannel returns a new initialized LAO channel. It automatically creates
@@ -94,7 +97,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
 	hub.NotifyNewChannel(consensusPath, consensusCh, socket)
 
-	return &Channel{
+	newChannel := &Channel{
 		channelID:       channelID,
 		sockets:         channel.NewSockets(),
 		inbox:           box,
@@ -107,6 +110,28 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		attendees:       make(map[string]struct{}),
 		log:             log,
 	}
+
+	newChannel.registry = newChannel.NewLAORegistry()
+
+	return newChannel
+}
+
+// NewLAORegistry creates a new registry for the LAO channel
+func (c *Channel) NewLAORegistry() registry.MessageRegistry {
+	registry := registry.NewMessageRegistry()
+
+	registry.Register(messagedata.LaoState{}, c.processLaoState)
+	registry.Register(messagedata.LaoUpdate{}, c.processEmptyFun)
+	registry.Register(messagedata.MeetingCreate{}, c.processEmptyFun)
+	registry.Register(messagedata.MeetingState{}, c.processEmptyFun)
+	registry.Register(messagedata.MessageWitness{}, c.processMessageWitness)
+	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
+	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
+	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
+	registry.Register(messagedata.RollCallClose{}, c.processRollCallClose)
+	registry.Register(messagedata.ElectionSetup{}, c.processElectionObject)
+
+	return registry
 }
 
 // Subscribe is used to handle a subscribe message from the client.
@@ -162,7 +187,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
-func (c *Channel) broadcastToAllClients(msg message.Message) {
+func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.log.Info().
 		Str(msgID, msg.MessageID).
 		Msg("broadcasting message to all clients")
@@ -185,10 +210,12 @@ func (c *Channel) broadcastToAllClients(msg message.Message) {
 
 	buf, err := json.Marshal(&rpcMessage)
 	if err != nil {
-		c.log.Err(err).Msg("failed to marshal broadcast query")
+		return xerrors.Errorf("failed to marshal broadcast query: %v", err)
 	}
 
 	c.sockets.SendToAll(buf)
+
+	return nil
 }
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
@@ -213,8 +240,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
-// createGeneralChirpingChannel creates a new general chirping channel
-// and returns it
+// createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
@@ -267,72 +293,31 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
-	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
+	err := c.registry.Process(msg, socket)
 	if err != nil {
-		return xerrors.Errorf(failedToDecodeData, err)
-	}
-
-	object, action, err := messagedata.GetObjectAndAction(jsonData)
-	if err != nil {
-		return xerrors.Errorf("failed to get the action or the object: %v", err)
-	}
-
-	switch object {
-	case messagedata.LAOObject:
-		err = c.processLaoObject(action, msg)
-	case messagedata.MeetingObject:
-		err = c.processMeetingObject(action, msg)
-	case messagedata.MessageObject:
-		err = c.processMessageObject(action, msg)
-	case messagedata.RollCallObject:
-		err = c.processRollCallObject(action, msg, socket)
-	case messagedata.ElectionObject:
-		err = c.processElectionObject(action, msg, socket)
-	default:
-		err = xerrors.Errorf("object not accepted in a LAO channel.")
-	}
-
-	if err != nil {
-		return xerrors.Errorf("failed to process %q object: %w", object, err)
-	}
-
-	c.broadcastToAllClients(msg)
-
-	return nil
-}
-
-// processLaoObject processes a LAO object.
-func (c *Channel) processLaoObject(action string, msg message.Message) error {
-	switch action {
-	case messagedata.LAOActionUpdate:
-	case messagedata.LAOActionState:
-		var laoState messagedata.LaoState
-
-		err := msg.UnmarshalData(&laoState)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal lao#state: %v", err)
-		}
-
-		err = c.verifyMessageLaoState(laoState)
-		if err != nil {
-			return xerrors.Errorf("invalid lao#state message: %v", err)
-		}
-
-		err = c.processLaoState(laoState)
-		if err != nil {
-			return xerrors.Errorf("failed to process state action: %w", err)
-		}
-	default:
-		return answer.NewInvalidActionError(action)
+		return xerrors.Errorf("failed to process message: %w", err)
 	}
 
 	c.inbox.StoreMessage(msg)
+
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
 
 	return nil
 }
 
 // processLaoState processes a lao state action.
-func (c *Channel) processLaoState(data messagedata.LaoState) error {
+func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{}, sender socket.Socket) error {
+
+	data, ok := msgData.(*messagedata.LaoState)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a lao#state message", msgData)
+	}
+
+	c.log.Info().Msg("received a lao#state message")
+
 	// Check if we have the update message
 	msg, ok := c.inbox.GetMessage(data.ModificationID)
 
@@ -383,7 +368,7 @@ func (c *Channel) processLaoState(data messagedata.LaoState) error {
 		}
 	}
 
-	err = compareLaoUpdateAndState(updateMsgData, data)
+	err = compareLaoUpdateAndState(updateMsgData, *data)
 	if err != nil {
 		return xerrors.Errorf("failed to compare lao/update and existing state: %w", err)
 	}
@@ -425,110 +410,30 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-// processMeetingObject handles a meeting object.
-func (c *Channel) processMeetingObject(action string, msg message.Message) error {
+// processMessageWitness handles a message object.
+func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
-	// Nothing to do ...🤷‍♂️
-	switch action {
-	case messagedata.MeetingActionCreate:
-	case messagedata.MeetingActionState:
+	_, ok := msgData.(*messagedata.MessageWitness)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
 	}
 
-	c.inbox.StoreMessage(msg)
+	var witnessData messagedata.MessageWitness
 
-	return nil
-}
-
-// processMessageObject handles a message object.
-func (c *Channel) processMessageObject(action string, msg message.Message) error {
-
-	switch action {
-	case messagedata.MessageActionWitness:
-		var witnessData messagedata.MessageWitness
-
-		err := msg.UnmarshalData(&witnessData)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal witness data: %v", err)
-		}
-
-		err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
-		if err != nil {
-			return answer.NewError(-4, "invalid witness signature")
-		}
-
-		err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-		if err != nil {
-			return xerrors.Errorf("failed to add witness signature: %w", err)
-		}
-	default:
-		return answer.NewInvalidActionError(action)
-	}
-
-	return nil
-}
-
-// processRollCallObject handles a roll call object.
-func (c *Channel) processRollCallObject(action string, msg message.Message, socket socket.Socket) error {
-	sender := msg.Sender
-
-	senderBuf, err := base64.URLEncoding.DecodeString(sender)
+	err := msg.UnmarshalData(&witnessData)
 	if err != nil {
-		return xerrors.Errorf(keyDecodeError, err)
+		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
 	}
 
-	// Check if the sender of the roll call message is the organizer
-	senderPoint := crypto.Suite.Point()
-	err = senderPoint.UnmarshalBinary(senderBuf)
+	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
 	if err != nil {
-		return answer.NewErrorf(-4, keyUnmarshalError, err)
+		return answer.NewError(-4, "invalid witness signature")
 	}
 
-	if !c.organizerPubKey.Equal(senderPoint) {
-		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
-	}
-
-	switch action {
-	case messagedata.RollCallActionCreate:
-		var rollCallCreate messagedata.RollCallCreate
-
-		err := msg.UnmarshalData(&rollCallCreate)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal roll call create: %v", err)
-		}
-
-		err = c.processRollCallCreate(rollCallCreate)
-		if err != nil {
-			return xerrors.Errorf("failed to process roll call create: %v", err)
-		}
-
-	case messagedata.RollCallActionOpen, messagedata.RollCallActionReopen:
-		err := c.processRollCallOpen(msg, action)
-		if err != nil {
-			return xerrors.Errorf("failed to process open roll call: %v", err)
-		}
-
-	case messagedata.RollCallActionClose:
-		var rollCallClose messagedata.RollCallClose
-
-		err := msg.UnmarshalData(&rollCallClose)
-		if err != nil {
-			return xerrors.Errorf("failed to unmarshal roll call close: %v", err)
-		}
-
-		err = c.processRollCallClose(rollCallClose, socket)
-		if err != nil {
-			return xerrors.Errorf("failed to process close roll call: %v", err)
-		}
-
-	default:
-		return answer.NewInvalidActionError(action)
-	}
-
+	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
 	if err != nil {
-		return xerrors.Errorf("failed to process roll call action: %s %w", action, err)
+		return xerrors.Errorf("failed to add witness signature: %w", err)
 	}
-
-	c.inbox.StoreMessage(msg)
 
 	return nil
 }
@@ -542,12 +447,11 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(action string, msg message.Message,
-	socket socket.Socket) error {
-	expectedAction := messagedata.ElectionActionSetup
+func (c *Channel) processElectionObject(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
 
-	if action != expectedAction {
-		return answer.NewErrorf(-4, "invalid action %s, should be %s)", action, expectedAction)
+	_, ok := msgData.(*messagedata.ElectionSetup)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a election#setup message", msgData)
 	}
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
@@ -579,7 +483,7 @@ func (c *Channel) processElectionObject(action string, msg message.Message,
 		return xerrors.Errorf("invalid election#setup message: %v", err)
 	}
 
-	err = c.createElection(msg, electionSetup, socket)
+	err = c.createElection(msg, electionSetup, senderSocket)
 	if err != nil {
 		return xerrors.Errorf("failed to create election: %w", err)
 	}
@@ -618,37 +522,37 @@ func (c *Channel) createElection(msg message.Message,
 }
 
 // processRollCallCreate processes a roll call creation object.
-func (c *Channel) processRollCallCreate(msg messagedata.RollCallCreate) error {
+func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}, _ socket.Socket) error {
+
+	data, ok := msgData.(*messagedata.RollCallCreate)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a rollcall#create message", msgData)
+	}
 
 	// Check that data is correct
-	err := c.verifyMessageRollCallCreate(msg)
+	err := c.verifyMessageRollCallCreate(data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
-	if msg.ProposedStart > msg.ProposedEnd {
-		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", msg.ProposedStart, msg.ProposedEnd)
+	if data.ProposedStart > data.ProposedEnd {
+		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", data.ProposedStart, data.ProposedEnd)
 	}
 
-	c.rollCall.id = string(msg.ID)
+	c.rollCall.id = string(data.ID)
 	c.rollCall.state = Created
 	return nil
 }
 
 // processRollCallOpen processes an open roll call object.
-func (c *Channel) processRollCallOpen(msg message.Message, action string) error {
-	if action == messagedata.RollCallActionOpen {
-		// If the action is an OpenRollCallAction,
-		// the previous roll call action should be a CreateRollCallAction
-		if c.rollCall.state != Created {
-			return answer.NewError(-1, "The roll call cannot be opened since it does not exist")
-		}
-	} else {
-		// If the action is an RepenRollCallAction,
-		// the previous roll call action should be a CloseRollCallAction
-		if c.rollCall.state != Closed {
-			return answer.NewError(-1, "The roll call cannot be reopened since it has not been closed")
+func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
+
+	_, ok := msgData.(*messagedata.RollCallOpen)
+	if !ok {
+		_, ok2 := msgData.(*messagedata.RollCallReOpen)
+		if !ok2 {
+			return xerrors.Errorf("message %v isn't a rollcall#open/reopen message", msgData)
 		}
 	}
 
@@ -677,10 +581,15 @@ func (c *Channel) processRollCallOpen(msg message.Message, action string) error 
 }
 
 // processRollCallClose processes a close roll call message.
-func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket socket.Socket) error {
+func (c *Channel) processRollCallClose(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
+
+	data, ok := msgData.(*messagedata.RollCallClose)
+	if !ok {
+		return xerrors.Errorf("message %v isn't a rollcall#close message", msgData)
+	}
 
 	// check that data is correct
-	err := c.verifyMessageRollCallClose(msg)
+	err := c.verifyMessageRollCallClose(data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
@@ -689,11 +598,11 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		return answer.NewError(-1, "The roll call cannot be closed since it's not open")
 	}
 
-	if !c.rollCall.checkPrevID([]byte(msg.Closes)) {
+	if !c.rollCall.checkPrevID([]byte(data.Closes)) {
 		return answer.NewError(-4, "The field `closes` does not correspond to the id of the previous roll call message")
 	}
 
-	c.rollCall.id = msg.UpdateID
+	c.rollCall.id = data.UpdateID
 	c.rollCall.state = Closed
 
 	var db *sql.DB
@@ -708,10 +617,10 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		}
 	}
 
-	for _, attendee := range msg.Attendees {
+	for _, attendee := range data.Attendees {
 		c.attendees[attendee] = struct{}{}
 
-		c.createChirpingChannel(attendee, socket)
+		c.createChirpingChannel(attendee, senderSocket)
 
 		c.reactions.AddAttendee(attendee)
 
@@ -725,6 +634,10 @@ func (c *Channel) processRollCallClose(msg messagedata.RollCallClose, socket soc
 		}
 	}
 
+	return nil
+}
+
+func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error {
 	return nil
 }
 

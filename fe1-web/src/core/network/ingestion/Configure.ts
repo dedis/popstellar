@@ -1,9 +1,10 @@
 import { addReducers, getStore } from 'core/redux';
-import { JsonRpcHandler } from '../RpcHandler';
+
 import { MessageRegistry } from '../jsonrpc/messages';
+import { JsonRpcHandler } from '../RpcHandler';
 import { handleRpcRequests, setMessageRegistry } from './Handler';
-import { makeMessageStoreWatcher } from './Watcher';
 import messageReducer from './MessageReducer';
+import { makeMessageStoreWatcher } from './Watcher';
 
 /**
  * Configures all handlers of the system within a MessageRegistry.

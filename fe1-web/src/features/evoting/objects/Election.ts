@@ -1,4 +1,5 @@
 import { Hash, Timestamp } from 'core/objects';
+
 import { EvotingFeature } from '../interface/Feature';
 
 /**
@@ -32,14 +33,14 @@ export interface Question {
   question: string;
   voting_method: string;
   ballot_options: string[];
+  // cannot remove this here as the protocol still requires the property to be there
   write_in: boolean;
 }
 
 export interface Vote {
   id: string;
   question: string;
-  vote?: number[];
-  writeIn?: string;
+  vote: number[];
 }
 
 // This type ensures that for each question there is a unique set of option indices

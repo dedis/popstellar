@@ -1,5 +1,6 @@
 import { SignatureType } from 'core/network/jsonrpc/messages';
 import { KeyPair, ProtocolError } from 'core/objects';
+
 import { KeyPairStore } from './KeyPairStore';
 
 type GetKeyPairFunc = () => Promise<KeyPair>;

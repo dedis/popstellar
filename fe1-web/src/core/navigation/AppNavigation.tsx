@@ -1,8 +1,8 @@
+import { createStackNavigator } from '@react-navigation/stack';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { createStackNavigator } from '@react-navigation/stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import PropTypes from 'prop-types';
 
 /**
  * Define the App stack navigation

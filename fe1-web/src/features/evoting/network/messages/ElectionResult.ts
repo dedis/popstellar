@@ -1,7 +1,6 @@
-import { ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-
+import { validateDataObject } from 'core/network/validation';
+import { ProtocolError } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
 
 /** Data sent to ask for the result of an election */

@@ -1,20 +1,21 @@
 import 'jest-extended';
+
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
 
-import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { mockLaoId } from '__tests__/utils/TestUtils';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 
+import { Chirp, ChirpState, Reaction, ReactionState } from '../../objects';
 import {
-  socialReduce,
   addChirp,
+  addReaction,
+  deleteChirp,
   makeChirpsList,
   makeChirpsListOfUser,
-  deleteChirp,
-  addReaction,
   makeReactionsList,
+  socialReduce,
 } from '../SocialReducer';
-import { Chirp, ChirpState, Reaction, ReactionState } from '../../objects';
 
 let chirp0DeletedFake: ChirpState;
 let chirp0: ChirpState;

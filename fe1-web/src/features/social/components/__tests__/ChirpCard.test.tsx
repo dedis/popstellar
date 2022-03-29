@@ -1,10 +1,10 @@
-import React from 'react';
 import { fireEvent, render } from '@testing-library/react-native';
+import React from 'react';
 
+import { mockLao } from '__tests__/utils/TestUtils';
 import { Hash, PublicKey, Timestamp } from 'core/objects';
 import { OpenedLaoStore } from 'features/lao/store';
 import STRINGS from 'resources/strings';
-import { mockLao } from '__tests__/utils/TestUtils';
 
 import {
   requestAddReaction as mockRequestAddReaction,

@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { TextBlock, WideButtonView } from 'core/components';
-import STRINGS from 'resources/strings';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 const styles = StyleSheet.create({
   largePadding: {
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
  * Wallet synchronization error screen
  */
 const WalletError = ({ navigation }: IPropTypes) => (
-  <View style={containerStyles.centered}>
+  <View style={containerStyles.centeredY}>
     <TextBlock text={STRINGS.wallet_error} />
     <View style={styles.largePadding} />
     <WideButtonView

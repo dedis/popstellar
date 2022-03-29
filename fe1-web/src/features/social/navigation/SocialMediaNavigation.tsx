@@ -1,17 +1,16 @@
-import * as React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
 
-import STRINGS from 'resources/strings';
-import { gray, popBlue } from 'core/styles/colors';
 import { PublicKey } from 'core/objects';
-import { generateToken } from 'features/wallet/objects';
+import { gray, popBlue } from 'core/styles/colors';
 import { makeEventGetter } from 'features/events/reducer';
-import { RollCall } from 'features/rollCall/objects';
-
 import { selectCurrentLao } from 'features/lao/reducer';
+import { RollCall } from 'features/rollCall/objects';
+import { generateToken } from 'features/wallet/objects';
+import STRINGS from 'resources/strings';
+
 import { SocialFollows, SocialHome, SocialProfile } from '../screens';
 import SocialSearchNavigation from './SocialSearchNavigation';
 

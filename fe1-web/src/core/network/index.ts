@@ -8,8 +8,8 @@
  */
 
 export * from './CommunicationApi';
-export * from './JsonRpcApi';
-export { getNetworkManager } from './NetworkManager';
-export * from './NetworkError';
-export * from './RpcOperationError';
 export { configureNetwork } from './Configure';
+export * from './JsonRpcApi';
+export * from './NetworkError';
+export { getNetworkManager } from './NetworkManager';
+export * from './RpcOperationError';

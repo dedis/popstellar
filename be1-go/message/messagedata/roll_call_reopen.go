@@ -10,3 +10,18 @@ type RollCallReOpen struct {
 	// OpenedAt is a Unix timestamp
 	OpenedAt int64 `json:"opened_at"`
 }
+
+// GetObject implements MessageData
+func (RollCallReOpen) GetObject() string {
+	return RollCallObject
+}
+
+// GetAction implements MessageData
+func (RollCallReOpen) GetAction() string {
+	return RollCallActionReopen
+}
+
+// NewEmpty implements MessageData
+func (RollCallReOpen) NewEmpty() MessageData {
+	return &RollCallReOpen{}
+}

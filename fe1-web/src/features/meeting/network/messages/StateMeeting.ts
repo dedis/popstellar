@@ -1,14 +1,14 @@
+import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
+import { checkTimestampStaleness, checkWitnessSignatures } from 'core/network/validation/Checker';
 import {
   Hash,
+  ProtocolError,
   PublicKey,
   Signature,
   Timestamp,
-  ProtocolError,
   WitnessSignature,
 } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
-import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
-import { checkTimestampStaleness, checkWitnessSignatures } from 'core/network/validation/Checker';
 
 /** Data received to track the state of a Meeting */
 export class StateMeeting implements MessageData {

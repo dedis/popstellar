@@ -1,9 +1,9 @@
-import { Hash, Timestamp, EventTags, ProtocolError } from 'core/objects';
-import { validateDataObject } from 'core/network/validation';
 import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
+import { validateDataObject } from 'core/network/validation';
 import { checkTimestampStaleness } from 'core/network/validation/Checker';
-
+import { EventTags, Hash, ProtocolError, Timestamp } from 'core/objects';
 import { MessageDataProperties } from 'core/types';
+
 import { Question } from '../../objects';
 
 /** Data sent to setup an Election event */

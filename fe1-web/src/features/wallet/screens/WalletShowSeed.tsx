@@ -1,11 +1,11 @@
+import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
 import { CopiableTextInput, TextBlock, WideButtonView } from 'core/components';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
 
@@ -30,7 +30,7 @@ const WalletShowSeed = ({ navigation }: IPropTypes) => {
   }, []);
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       <TextBlock bold text={STRINGS.show_seed_info} />
       <View style={styles.smallPadding} />
       <CopiableTextInput text={seed} />

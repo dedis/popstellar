@@ -2,16 +2,16 @@ import {
   Base64UrlData,
   Channel,
   Hash,
+  KeyPair,
+  ProtocolError,
   PublicKey,
   Signature,
-  ProtocolError,
   WitnessSignature,
   WitnessSignatureState,
-  KeyPair,
 } from 'core/objects';
 
-import { MessageRegistry } from './MessageRegistry';
 import { MessageData } from './MessageData';
+import { MessageRegistry } from './MessageRegistry';
 
 let messageRegistry: MessageRegistry;
 

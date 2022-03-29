@@ -1,8 +1,8 @@
 import LaoItem from './LaoItem';
-import LaoProperties from './LaoProperties';
 import LaoList from './LaoList';
+import LaoProperties from './LaoProperties';
 
-export { LaoItem, LaoProperties, LaoList };
+export { LaoItem, LaoList, LaoProperties };
 
 export const PublicComponents = {
   LaoList: LaoList,

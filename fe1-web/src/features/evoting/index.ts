@@ -1,5 +1,5 @@
-import { configureNetwork } from './network';
 import { EvotingConfiguration, EvotingInterface } from './interface';
+import { configureNetwork } from './network';
 
 export const EVOTING_FEATURE_IDENTIFIER = 'evoting';
 

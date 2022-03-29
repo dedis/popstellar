@@ -7,6 +7,7 @@ import {
   Timestamp,
   WitnessSignature,
 } from 'core/objects';
+
 import { MessageData } from './MessageData';
 
 export interface ProcessableMessage {
