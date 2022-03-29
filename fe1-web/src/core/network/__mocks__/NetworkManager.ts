@@ -1,10 +1,10 @@
 import { SendingStrategy } from '../strategies/ClientMultipleServerStrategy';
 
-const NetworkManagerFile = jest.requireActual('../NetworkManager');
+const NetworkManagerModule = jest.requireActual('../NetworkManager');
 
 // expose the correct API
-export const { getNetworkManager } = NetworkManagerFile;
+export const { getNetworkManager } = NetworkManagerModule;
 
 // and also one that allows changing the used strategy
-const { NetworkManager } = NetworkManagerFile.TEST_ONLY_EXPORTS;
+const { NetworkManager } = NetworkManagerModule.TEST_ONLY_EXPORTS;
 export const getMockNetworkManager = (strategy: SendingStrategy) => new NetworkManager(strategy);

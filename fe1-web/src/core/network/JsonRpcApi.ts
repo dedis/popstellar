@@ -135,6 +135,9 @@ export async function catchup(
 
   // only use responses containing a message array
   const validResponses = responses.filter((r) => typeof r.response.result !== 'number');
+  if (validResponses.length === 0) {
+    throw new Error('No responses containing messages were received after a catchup message!');
+  }
 
   const msgs: ReceivedMessage[] = validResponses.flatMap((r) =>
     (r.response.result as Message[]).map(

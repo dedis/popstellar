@@ -40,6 +40,10 @@ export function configureNetwork(registry: MessageRegistry) {
     // if yes - then subscribe to the LAO channel and send a catchup
     const channel = getLaoChannel(laoId.valueOf());
 
+    if (!channel) {
+      throw new Error('The current LAO ID is invalid');
+    }
+
     await subscribeToChannel(channel);
     await catchup(channel);
   });

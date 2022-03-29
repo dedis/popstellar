@@ -11,10 +11,11 @@ jest.mock('websocket');
 const networkManager = getNetworkManager();
 type NetworkManagerType = typeof networkManager;
 
-const {
-  getMockNetworkManager,
-}: { getMockNetworkManager: (sendingStrategy: SendingStrategy) => NetworkManagerType } =
-  jest.requireMock('core/network/NetworkManager.ts');
+const NetworkManagerMock = jest.requireMock('core/network/NetworkManager.ts') as {
+  getMockNetworkManager: (sendingStrategy: SendingStrategy) => NetworkManagerType;
+};
+
+const { getMockNetworkManager } = NetworkManagerMock;
 
 afterEach(() => {
   networkManager.disconnectFromAll();
