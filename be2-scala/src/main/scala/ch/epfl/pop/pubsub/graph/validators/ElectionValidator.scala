@@ -3,8 +3,8 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection, OpenElection}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
@@ -52,12 +52,18 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
       case Some(message: Message) =>
         val data: OpenElection = message.decodedData.get.asInstanceOf[OpenElection]
 
-        val laoId: Hash = rpcMessage.extractLaoId
+        val electionId: Hash = rpcMessage.extractLaoId
         val sender: PublicKey = message.sender
+
         val channel: Channel = rpcMessage.getParamsChannel
+        val laoId: Base64Data = channel.decodeChannelLaoId.get
 
         if (!validateTimestampStaleness(data.opened_at)) {
           Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
+        } else if (electionId !=  data.election) {
+          Right(validationError("Unexpected election id"))
+        } else if (laoId != data.lao.base64Data) {
+          Right(validationError("Unexpected lao id"))
         } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
@@ -76,27 +82,19 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: CastVoteElection = message.decodedData.get.asInstanceOf[CastVoteElection]
-        //val laoId: Hash = rpcMessage.extractLaoId
-
+        val electionId: Hash = rpcMessage.extractLaoId
         val sender: PublicKey = message.sender
-        val channel: Channel = rpcMessage.getParamsChannel
-        println("validator " + sender)
 
-        //val expectedHash: Hash = Hash.fromStrings(EVENT_HASH_PREFIX, laoId.toString, data.created_at.toString, data.electionId.toString) //find name here) // is this right? as no name but election
+        val channel: Channel = rpcMessage.getParamsChannel
+        val laoId: Base64Data = channel.decodeChannelLaoId.get
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        }
-        /*else if (laoId != data.lao) {
-          Right(validationError("unexpected lao id"))
-        } */
-        // FIXME: implement electionId check using the election name from the DB and some way to check votes
-        /*else if (expectedHash != data.electionId){
+        } else if (electionId != data.election) {
           Right(validationError("unexpected election id"))
-        }*/
-        // FIXME: check the actual votes
-        // FIXME: for the VoteElection list, we need to check question ids but what do they mean? No info in documentation
-         else if (!validateAttendee(sender, channel)) {
+        } else if (laoId != data.lao.base64Data){
+          Right(validationError("unexpected lao id"))
+        } else if (!validateAttendee(sender, channel)) {
           Right(validationError(s"Sender $sender has an invalid PoP token."))
         } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
           Right(validationError(s"trying to send a CastVoteElection message on a wrong type of channel $channel"))
@@ -110,7 +108,7 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
 
   def validateResultElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     def validationError(reason: String): PipelineError = super.validationError(reason, "ResultElection", rpcMessage.id)
-    //need to check the hash id if they correspond to the registerd ones
+    //TODO : need to check the hash id if they correspond to the registerd ones
     rpcMessage.getParamsMessage match {
       case Some(message) =>
         val data: ResultElection = message.decodedData.get.asInstanceOf[ResultElection]
@@ -135,15 +133,18 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
     rpcMessage.getParamsMessage match {
       case Some(message: Message) =>
         val data: EndElection = message.decodedData.get.asInstanceOf[EndElection]
-
-        val laoId: Hash = rpcMessage.extractLaoId
+        val electionId: Hash = rpcMessage.extractLaoId
 
         val sender: PublicKey = message.sender
+
         val channel: Channel = rpcMessage.getParamsChannel
+        val laoId: Base64Data = channel.decodeChannelLaoId.get
 
         if (!validateTimestampStaleness(data.created_at)) {
           Right(validationError(s"stale 'created_at' timestamp (${data.created_at})"))
-        } else if (laoId != data.lao) {
+        } else if (electionId != data.election) {
+          Right(validationError("unexpected election id"))
+        } else if (laoId != data.lao.base64Data) {
           Right(validationError("unexpected lao id"))
         } else if (!validateOwner(sender, channel)) {
           Right(validationError(s"invalid sender $sender"))

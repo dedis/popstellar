@@ -75,5 +75,4 @@ object ElectionHandler extends MessageHandler {
     val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
     Await.result(ask, duration)
   }
-
 }
