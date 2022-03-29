@@ -260,4 +260,6 @@
   <string name="no_rollcall_exception">no rollcall exist in the LAO</string>
   <string name="seed_validation_exception">unable to validate seed</string>
   <string name="uninitialized_wallet_exception">the wallet is not initialized</string>
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
