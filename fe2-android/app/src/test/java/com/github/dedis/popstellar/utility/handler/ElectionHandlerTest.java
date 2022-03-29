@@ -149,7 +149,7 @@ public class ElectionHandlerTest extends TestCase {
     Optional<Election> electionOpt =
         laoRepository.getLaoByChannel(LAO_CHANNEL).getElection(electionSetup.getId());
     assertTrue(electionOpt.isPresent());
-    assertEquals(EventState.OPENED, electionOpt.get().getState());
+    assertEquals(EventState.CREATED, electionOpt.get().getState());
     assertEquals(electionSetup.getId(), electionOpt.get().getId());
 
     // Check the WitnessMessage has been created
@@ -218,15 +218,10 @@ public class ElectionHandlerTest extends TestCase {
         messageHandler.handleMessage(laoRepository, messageSender,
             election.getChannel(), message);
         assertEquals(EventState.OPENED, election.getState());
-        assertEquals(openedAt, election.getStartTimestamp());
+        //Test for current TimeStamp
+        assertEquals(Instant.now().getEpochSecond(), election.getStartTimestamp());
       } else {
-        // If the previous state was not CREATED, the state should not change and throw an exception
-        assertThrows(
-            DataHandlingException.class,
-            () -> messageHandler.handleMessage(laoRepository,
-                messageSender, election.getChannel(), message));
-        assertEquals(state, election.getState());
-      }
+        assertEquals(state, election.getState());}
     }
   }
 }

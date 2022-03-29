@@ -183,11 +183,9 @@ public class ElectionStartFragment extends Fragment {
       String electionId) {
     electionStart.setOnClickListener(
         clicked -> {
-            //mLaoDetailViewModel.sendConsensusElect(
-            //    Instant.now().getEpochSecond(), electionId, "election", "state", "started"));
-            Log.d(TAG, "Opening now election");
-            mLaoDetailViewModel.openElection(mLaoDetailViewModel.getCurrentElection());
-          });
+            mLaoDetailViewModel.sendConsensusElect(
+                Instant.now().getEpochSecond(), electionId, "election", "state", "started");
+        });
 
     binding
         .backLayout

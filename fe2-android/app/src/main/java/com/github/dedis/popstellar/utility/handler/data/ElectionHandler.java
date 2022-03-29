@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.utility.error.DataHandlingException;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public final class ElectionHandler {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
-      election.setEventState(OPENED);
+      election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
       context.getMessageSender().subscribe(election.getChannel()).subscribe();
@@ -108,14 +109,14 @@ public final class ElectionHandler {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
-    if (election.getState() != CREATED) {
-      throw new DataHandlingException(
-          openElection,
-          "received an OpenElection but the election state was : " + election.getState());
+    //if created --> open it
+    if (election.getState() == CREATED) {
+      election.setEventState(OPENED);
     }
 
-    election.setEventState(OPENED);
-    election.setStart(openElection.getOpenedAt());
+    election.setStart(Instant.now().getEpochSecond());
+    Log.d(TAG, "election opened " + election.getStartTimestamp());
+    //election.setEventState(OPENED);
     lao.updateElection(election.getId(), election);
   }
 

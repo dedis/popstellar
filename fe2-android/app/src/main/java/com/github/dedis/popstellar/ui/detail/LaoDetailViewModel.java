@@ -147,6 +147,7 @@ public class LaoDetailViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenStartElectionEvent =
       new MutableLiveData<>();
 
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenElectionEvent = new MutableLiveData<>();
   /*
    * LiveData objects that represent the state in a fragment
    */
@@ -261,10 +262,12 @@ public class LaoDetailViewModel extends AndroidViewModel
   }
 
   /**
-   * Opens the election and publish
+   * Opens the election and publish opening message
+   * triggers OpenElection event on success or logs appropriate error
    * @param e election to be opened
    */
   public void openElection(Election e){
+
     Log.d(TAG, "opening election with name : " + e.getName());
     Lao lao = getCurrentLaoValue();
     if (lao == null) {
@@ -275,9 +278,9 @@ public class LaoDetailViewModel extends AndroidViewModel
     Channel channel = e.getChannel();
     String laoId = lao.getId();
 
-    //The time will have to be modified
+    //The time will have to be modified on the backend
     OpenElection openElection =
-        new OpenElection(laoId, e.getId(), );
+        new OpenElection(laoId, e.getId(), e.getStartTimestamp());
 
     Log.d(TAG, PUBLISH_MESSAGE);
     Disposable disposable =
@@ -287,13 +290,13 @@ public class LaoDetailViewModel extends AndroidViewModel
             .subscribe(
                 () -> {
                   Log.d(TAG, "opened election successfully");
-                  //to modify
-                  //openStartElection(true);
+                  //block action button on expandableListViewAdapter
+                  openElectionEvent();
                 },
                 error ->
                     //modify the string after
                     ErrorUtils.logAndShow(
-                        getApplication(), TAG, error, R.string.error_end_election));
+                        getApplication(), TAG, error, R.string.error_open_election));
     disposables.add(disposable);
   }
 
@@ -715,6 +718,8 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenLaoDetailEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenElectionEvent(){return mOpenElectionEvent;}
+
   public LiveData<SingleEvent<Boolean>> getEndElectionEvent() {
     return mEndElectionEvent;
   }
@@ -972,6 +977,13 @@ public class LaoDetailViewModel extends AndroidViewModel
 
   public void openSocialMedia() {
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
+  }
+
+  /**
+   * Propagates the open election event
+   */
+  public void openElectionEvent() {
+    mOpenElectionEvent.postValue(new SingleEvent<>(true));
   }
 
   public void endElectionEvent() {
