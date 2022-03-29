@@ -10,11 +10,15 @@ import android.view.ViewGroup;
 
 import com.github.dedis.popstellar.R;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
 /**
- * A simple {@link Fragment} subclass. Use the {@link DigitalCashSendFragment#newInstance} factory
- * method to create an instance of this fragment.
+ * Fragment where you can send a coin
  */
+@AndroidEntryPoint
 public class DigitalCashSendFragment extends Fragment {
+  private DigitalCashSendFragmentBinding mDigitalCashSendFragBinding;
+  private DigitalCashViewModel mDigitalCashViewModel;
 
   public DigitalCashSendFragment() {
     // Required empty public constructor
@@ -26,7 +30,6 @@ public class DigitalCashSendFragment extends Fragment {
    *
    * @return A new instance of fragment DigitalCashSendFragment.
    */
-  // TODO: Rename and change types and number of parameters
   public static DigitalCashSendFragment newInstance() {
     DigitalCashSendFragment fragment = new DigitalCashSendFragment();
     return fragment;
