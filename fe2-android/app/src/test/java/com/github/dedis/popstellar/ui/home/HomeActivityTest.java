@@ -19,6 +19,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExternalResource;
@@ -35,15 +36,6 @@ public class HomeActivityTest {
   //  Hilt rule
   private final HiltAndroidRule hiltAndroidRule = new HiltAndroidRule(this);
 
-  //Setup rule, used to setup things before the activity is started
-  private final TestRule setupRule =
-      new ExternalResource() {
-        @Override
-        protected void before() throws Throwable {
-          hiltAndroidRule.inject();
-        }
-      };
-
   // Activity scenario rule that starts the activity.
   public ActivityScenarioRule<HomeActivity> activityScenarioRule =
       new ActivityScenarioRule<HomeActivity>(HomeActivity.class);
@@ -52,7 +44,6 @@ public class HomeActivityTest {
   public final RuleChain rule =
       RuleChain.outerRule(MockitoJUnit.testRule(this))
           .around(hiltAndroidRule)
-          .around(setupRule)
           .around(activityScenarioRule);
 
   @Test

@@ -14,35 +14,32 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
  */
 public class HomePageObject {
 
-  public static ViewInteraction fragmentContainer(){
-    return  onView(withId(R.id.fragment_container_home));
+  public static ViewInteraction fragmentContainer() {
+    return onView(withId(R.id.fragment_container_home));
   }
 
-  public static ViewInteraction homeButton(){
+  public static ViewInteraction homeButton() {
     return onView(withId(R.id.tab_home));
   }
 
-  public static ViewInteraction connectButton(){
+  public static ViewInteraction connectButton() {
     return onView(withId(R.id.tab_connect));
   }
 
-  public static ViewInteraction launchButton(){
+  public static ViewInteraction launchButton() {
     return onView(withId(R.id.tab_launch));
   }
 
-  public static ViewInteraction walletButton(){
+  public static ViewInteraction walletButton() {
     return onView(withId(R.id.tab_wallet));
   }
 
-  public static ViewInteraction socialMediaButton(){
+  public static ViewInteraction socialMediaButton() {
     return onView(withId(R.id.tab_social_media));
   }
 
   @IdRes
-  public static int homeFragmentId(){
+  public static int homeFragmentId() {
     return R.id.fragment_home;
   }
-
-
-
 }

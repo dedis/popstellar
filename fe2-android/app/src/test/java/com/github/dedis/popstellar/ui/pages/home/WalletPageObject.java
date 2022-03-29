@@ -6,8 +6,7 @@ import com.github.dedis.popstellar.R;
 public class WalletPageObject {
 
   @IdRes
-  public static int walletFragmentId(){
+  public static int walletFragmentId() {
     return R.id.fragment_wallet;
   }
-
 }
