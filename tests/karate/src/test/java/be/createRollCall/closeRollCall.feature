@@ -26,7 +26,7 @@ Feature: Close a Roll Call
     And  eval frontend.send(rollCallClose)
     * json close_roll_broadcast = frontend_buffer.takeTimeout(timeout)
     * json close_roll_result = frontend_buffer.takeTimeout(timeout)
-    Then match close_roll_result contains deep {jsonrpc: '2.0', id: 33, result: 0}
+    Then match close_roll_result contains deep {jsonrpc: '2.0', id: id, result: 0}
 
   # After the usual setup open a valid roll call and then send an invalid request for roll call close, here
   # we provide an invalid update_id field in the message. We expect an error message in return
@@ -35,7 +35,7 @@ Feature: Close a Roll Call
     And string badRollCallClose = converter.publishМessageFromData(badRollCallCloseData, id, channel)
     And  eval frontend.send(badRollCallClose)
     * json close_roll_err = frontend_buffer.takeTimeout(timeout)
-    Then  match close_roll_err contains deep {jsonrpc: '2.0', id: 33, error: {code: -4, description: '#string'}}
+    Then  match close_roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # After the usual setup, create a roll cal but never open it. Then trying to send a valid
   # roll call close message should result in an error sent by the backend
@@ -48,5 +48,5 @@ Feature: Close a Roll Call
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     And eval frontend.send(rollCallClose)
     * json close_roll_err = frontend_buffer.takeTimeout(timeout)
-    Then  match close_roll_err contains deep {jsonrpc: '2.0', id: 33, error: {code: -4, description: '#string'}}
+    Then  match close_roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 

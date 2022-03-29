@@ -34,7 +34,7 @@ Feature: Roll Call Open
     * karate.log(open_roll_broadcast)
     * json open_roll = frontend_buffer.takeTimeout(timeout)
     * karate.log(open_roll)
-    Then match open_roll contains deep {jsonrpc: '2.0', id: 32, result: 0}
+    Then match open_roll contains deep {jsonrpc: '2.0', id: id, result: 0}
 
   # First creates a valid lao followed by subscribe and catchup but we don't send a roll call
   # create message but send a valid roll call open message. Since the roll call create message
@@ -45,7 +45,7 @@ Feature: Roll Call Open
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(rollCallOpen)
     * json err_open = frontend_buffer.takeTimeout(timeout)
-    Then match err_open contains deep {jsonrpc: '2.0', id: 32, error: {code: -4, description: '#string'}}
+    Then match err_open contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # Create a valid roll call and then send an invalid request for roll call open, her
   # we provide an invalid update_id field in the message. We expect an error message in return
@@ -55,7 +55,7 @@ Feature: Roll Call Open
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(badRollCallOpen)
     * json err_open = frontend_buffer.takeTimeout(timeout)
-    Then match err_open contains deep {jsonrpc: '2.0', id: 32, error: {code: -4, description: '#string'}}
+    Then match err_open contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # Testing idempotency (Not guaranteed by the backend for now, so the test fails)
   Scenario: Opening a Roll Call for which with already received an error should return an error again
@@ -64,5 +64,5 @@ Feature: Roll Call Open
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
     When eval frontend.send(badRollCallOpen)
     * json err_open = frontend_buffer.takeTimeout(timeout)
-    Then match err_open contains deep {jsonrpc: '2.0', id: 32, error: {code: -4, description: '#string'}}
+    Then match err_open contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 

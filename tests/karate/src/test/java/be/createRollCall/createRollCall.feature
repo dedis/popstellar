@@ -30,7 +30,7 @@ Feature: Create a Roll Call
     Then eval frontend.send(rollCallCreate)
     * json roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
     * json roll_call_result = frontend_buffer.takeTimeout(timeout)
-    Then match roll_call_result contains deep {jsonrpc: '2.0', id: 3, result: 0}
+    Then match roll_call_result contains deep {jsonrpc: '2.0', id: id, result: 0}
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # an empty roll call name should result in an error message from the backend.
@@ -46,7 +46,7 @@ Feature: Create a Roll Call
 
     Then eval frontend.send(badRollCallReq)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
-    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+    Then match roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # Setting up the lao correctly and sending a roll call create message that comes from
   # a non-organizer should result in an error message being sent by the backend.
@@ -58,7 +58,7 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallReq)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
-    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+    Then match roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # Setting up a lao correctly but sending a valid roll call create message on the
   # root channel should result in backend rejecting the message and sending an error message
@@ -72,7 +72,7 @@ Feature: Create a Roll Call
 
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
-    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -6, description: '#string'}}
+    Then match roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -6, description: '#string'}}
 
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
@@ -84,7 +84,7 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
-    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+    Then match roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # a negative creation time should result in an error message from the backend.
@@ -94,7 +94,7 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
-    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+    Then match roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # a creation time larger than proposed start time should result in an error message
@@ -105,7 +105,7 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
-    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+    Then match roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
 
   # Setting up the lao correctly but send an invalid roll call create request, containing
   # an invalid roll_call id should result in an error message from the backend.
@@ -115,4 +115,4 @@ Feature: Create a Roll Call
     * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
     When eval frontend.send(badRollCallCreate)
     * json roll_err = frontend_buffer.takeTimeout(timeout)
-    Then match roll_err contains deep {jsonrpc: '2.0', id: 3, error: {code: -4, description: '#string'}}
+    Then match roll_err contains deep {jsonrpc: '2.0', id: id, error: {code: -4, description: '#string'}}
