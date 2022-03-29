@@ -47,15 +47,11 @@ public class JsonConverter {
     messagePart.put("data",messageDataBase64);
     messagePart.put("sender",senderPk);
     messagePart.put("signature",signature);
-    try {
-      MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      String concat = messageDataBase64+signature;
-      String messageId =bytesToHex(digest.digest(concat.getBytes(StandardCharsets.UTF_8)));
-      messagePart.put("message_id",messageId);
-      System.out.println("message id is : "+messageId);
-    }catch (Exception e){
-      e.printStackTrace();
-    }
+
+    String messageId = hashDataSignature(messageDataBase64.getBytes(StandardCharsets.UTF_8),signature.getBytes(StandardCharsets.UTF_8));
+    messagePart.put("message_id",messageId);
+    System.out.println("message id is : "+messageId);
+
     String[] witness = new String[0];
     messagePart.put("witness_signatures",witness);
     paramsPart.put("message",messagePart);
@@ -89,4 +85,21 @@ public class JsonConverter {
   public void setMessageIdForced(String messageIdForced){
     this.messageIdForced = messageIdForced;
   }
+
+  private String hashDataSignature(byte[] data, byte[] signature){
+    try {
+      MessageDigest digest = MessageDigest.getInstance("SHA-256");
+      String dataLength = Integer.toString(data.length);
+      String signatureLength = Integer.toString(signature.length);
+      digest.update(dataLength.getBytes(StandardCharsets.UTF_8));
+      digest.update(data);
+      digest.update(signatureLength.getBytes(StandardCharsets.UTF_8));
+      digest.update(signature);
+      return Base64.getUrlEncoder().encodeToString(digest.digest());
+    }catch (Exception e){
+      e.printStackTrace();
+    }
+    return "Hash is not constructed correctly";
+  }
+
 }
