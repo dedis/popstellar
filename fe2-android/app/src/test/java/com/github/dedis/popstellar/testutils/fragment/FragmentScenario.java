@@ -188,7 +188,7 @@ public class FragmentScenario<A extends AppCompatActivity, F extends Fragment> {
           activity
               .getSupportFragmentManager()
               .beginTransaction()
-              .add(contentId, fragment, TAG)
+              .replace(contentId, fragment, TAG)
               .setMaxLifecycle(fragment, Lifecycle.State.RESUMED)
               .commitNow();
         });
