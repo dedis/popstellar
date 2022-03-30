@@ -163,8 +163,10 @@ const STRINGS = {
 
   /* --- Roll-call open page Strings --- */
   roll_call_open: 'Open Roll-Call',
+  roll_call_reopen: 'Re-open Roll-Call',
 
   /* --- Roll-call scanning Strings --- */
+  roll_call_scan_attendees: 'Scan Attendees',
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',
   roll_call_scan_participant: 'participant scanned',
   roll_call_scan_close: 'Close Roll-Call',

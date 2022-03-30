@@ -7,7 +7,7 @@ import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
 import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
-import { EventTags, Hash, PublicKey } from 'core/objects';
+import { Hash, PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { selectCurrentLao } from 'features/lao/reducer';
@@ -38,7 +38,7 @@ const RollCallOpened = () => {
   // FIXME: navigation and route should user proper type
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { rollCallID, time } = route.params;
+  const { rollCallID } = route.params;
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
@@ -72,17 +72,12 @@ const RollCallOpened = () => {
   }, [lao, rollCallID, toast]);
 
   const handleError = (err: any) => {
-    console.error(err);
-    // The "err" object might be an exception, take the message property if it exists
-    toast.show(
-      err?.message ||
-        (typeof err === 'string' ? err : 'Unkown error, please check the console and report it!'),
-      {
-        type: 'danger',
-        placement: 'top',
-        duration: FOUR_SECONDS,
-      },
-    );
+    console.error(err.toString());
+    toast.show(err.toString(), {
+      type: 'danger',
+      placement: 'top',
+      duration: FOUR_SECONDS,
+    });
   };
 
   const addAttendeeAndShowToast = (attendee: string, toastMessage: string) => {
@@ -109,9 +104,8 @@ const RollCallOpened = () => {
   };
 
   const onCloseRollCall = () => {
-    const updateId = Hash.fromStringArray(EventTags.ROLL_CALL, lao.id.toString(), rollCallID, time);
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-    return requestCloseRollCall(updateId, attendeesList)
+    return requestCloseRollCall(rollCallID, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })
