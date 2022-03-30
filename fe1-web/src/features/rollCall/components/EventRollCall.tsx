@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, FunctionComponent } from 'react';
 import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
@@ -157,3 +157,11 @@ EventRollCall.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default EventRollCall;
+
+export const RollCallEventTypeComponent = {
+  isOfType: (event: unknown) => event instanceof RollCall,
+  Component: EventRollCall as FunctionComponent<{
+    event: unknown;
+    isOrganizer: boolean | null | undefined;
+  }>,
+};

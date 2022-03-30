@@ -27,6 +27,7 @@ const laoState: LaoState = {
   last_modified: 1577833500,
   organizer: 'organizerPublicKey',
   witnesses: [],
+  server_addresses: [],
 };
 const getMock = jest.spyOn(OpenedLaoStore, 'get');
 getMock.mockImplementation(() => Lao.fromState(laoState));

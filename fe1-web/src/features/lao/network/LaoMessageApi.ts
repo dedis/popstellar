@@ -11,7 +11,7 @@ import { CreateLao, StateLao, UpdateLao } from './messages';
  */
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
-export function requestCreateLao(laoName: string): Promise<Channel> {
+export async function requestCreateLao(laoName: string): Promise<Channel> {
   const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
 
@@ -23,7 +23,9 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
     witnesses: [],
   });
 
-  return publish(ROOT_CHANNEL, message).then(() => channelFromIds(message.id));
+  await publish(ROOT_CHANNEL, message);
+
+  return channelFromIds(message.id);
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */
