@@ -1,9 +1,13 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
+import static com.github.dedis.popstellar.ui.pages.home.HomeFragmentPageObject.laoList;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentId;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
-import com.github.dedis.popstellar.ui.pages.home.HomePageObject;
 
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -26,8 +30,9 @@ public class HomeFragmentTest {
   @Rule(order = 2)
   public final ActivityFragmentScenarioRule<HomeActivity, HomeFragment> fragmentRule =
       ActivityFragmentScenarioRule.launchIn(
-          HomeActivity.class,
-          HomePageObject.homeFragmentId(),
-          HomeFragment.class,
-          HomeFragment::new);
+          HomeActivity.class, homeFragmentId(), HomeFragment.class, HomeFragment::new);
+
+  public void emptyLaosHasEmptyList() {
+    laoList().check(matches(hasChildCount(0)));
+  }
 }
