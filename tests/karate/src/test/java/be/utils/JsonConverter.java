@@ -1,24 +1,12 @@
 package be.utils;
-
-
-
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.intuit.karate.Json;
-
 import java.nio.charset.StandardCharsets;
 import java.security.*;
-import java.security.interfaces.DSAPrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Base64;
 import com.google.crypto.tink.PublicKeySign;
-import com.google.crypto.tink.subtle.Ed25519Sign;
-
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 public class JsonConverter {
 
