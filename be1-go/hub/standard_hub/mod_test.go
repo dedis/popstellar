@@ -113,7 +113,8 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	require.Error(t, sock.err, "sender's public key %q does not match the organizer's", msg.Sender)
+	require.EqualError(t, sock.err, "sender's public key does not match the organizer's: %q != %q", msg.Sender,
+		keypair.public)
 
 }
 
