@@ -6,7 +6,7 @@
     @name=valid_lao
     Scenario: Creates valid lao
 
-      * string laoCreateReq  = read('classpath:data/lao/valid_lao_create.json')
+      * string laoCreateReq  = read('classpath:data/lao/valid_lao_create_2.json')
       * eval frontend.send(laoCreateReq)
       * frontend_buffer.takeTimeout(timeout)
 
@@ -45,7 +45,7 @@
     Scenario: Creates a valid Roll Call
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
       * string rollCallData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_2_data.json')
-      * string rollCallCreate = converter.messageFromData(rollCallData,method,id,channel)
+      * string rollCallCreate = converter.publishМessageFromData(rollCallData, id, channel)
       * frontend_buffer.takeTimeout(timeout)
       * eval frontend.send(rollCallCreate)
       * def roll_call_broadcast = frontend_buffer.takeTimeout(timeout)
@@ -58,9 +58,9 @@
       * string rollCallOpenReq  = read('classpath:data/rollCall/open/valid_roll_call_open_3.json')
 
       * string rollCallCreateData = read('classpath:data/rollCall/data/rollCallCreate/valid_roll_call_create_3_data.json')
-      * string rollCallCreate = converter.messageFromData(rollCallCreateData,method,id,channel)
+      * string rollCallCreate = converter.publishМessageFromData(rollCallCreateData, id, channel)
       * string rollCallOpenData = read('classpath:data/rollCall/data/rollCallOpen/valid_roll_call_open_3_data.json')
-      * string rollCallOpen = converter.messageFromData(rollCallOpenData,method,id,channel)
+      * string rollCallOpen = converter.publishМessageFromData(rollCallOpenData, id, channel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_lao')
 
       * eval frontend.send(rollCallCreate)

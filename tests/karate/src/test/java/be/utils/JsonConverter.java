@@ -1,16 +1,24 @@
 package be.utils;
 
 
+
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.intuit.karate.Json;
 
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
+import java.security.*;
+import java.security.interfaces.DSAPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Base64;
 import com.google.crypto.tink.PublicKeySign;
 import com.google.crypto.tink.subtle.Ed25519Sign;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class JsonConverter {
 
@@ -20,21 +28,9 @@ public class JsonConverter {
 
   private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   private String senderSk = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQn18HMlXvQmTlz6LfbvtSrgKZ4vi3ndYN9SCForQel4w==";
+
   private String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private String messageIdForced = "";
-//  private byte[] VALID_PRIVATE_KEY =
-//    Utils.hexToBytes("3b28b4ab2fe355a13d7b24f90816ff0676f7978bf462fc84f1d5d948b119ec66");
-  private byte[] bytesSecretKeyRaw = {59,
-  40,-76,-85,47,-29,85,-95,61,123,36,-7,8,22,-1,6,118, -9,-105,-117,-12,98,-4,-124
-    ,-15
-    ,-43
-    ,-39
-  ,72
-   , -79
-  ,25
-   , -20
-  ,102};
-
   /*
     Produces the base64 variant of the json file passed as argument
    */
@@ -57,62 +53,72 @@ public class JsonConverter {
     Map<String,Object> messageJson = new LinkedHashMap<>();
     messageJson.put("method","publish");
     messageJson.put("id",id);
-    Map <String,Object> paramsPart = new LinkedHashMap<>();
-    paramsPart.put("channel",channel);
-
-    Map<String,Object> messagePart = constructMessageField(messageDataBase64);
-    paramsPart.put("message",messagePart);
+    Map<String,Object> paramsPart = constructParamsField(channel,messageDataBase64);
     messageJson.put("params",paramsPart);
     messageJson.put("jsonrpc","2.0");
     return Json.of(messageJson);
   }
 
-  public Map<String,Object> constructMessageField(String messageDataBase64){
+  public Map<String,Object> constructMessageField(String messageDataBase64, boolean forcedMessageId){
     Map<String,Object> messagePart  = new LinkedHashMap<>();
     messagePart.put("data",messageDataBase64);
     messagePart.put("sender",senderPk);
     String signature = constructSignature(messageDataBase64);
     messagePart.put("signature",signature);
-    String messageId = hashDataSignature(messageDataBase64.getBytes(StandardCharsets.UTF_8),signature.getBytes(StandardCharsets.UTF_8));
+    String messageId = hash(messageDataBase64.getBytes(StandardCharsets.UTF_8),signature.getBytes(StandardCharsets.UTF_8));
+    if(forcedMessageId && !messageIdForced.isEmpty()){
+      messageId = this.messageIdForced;
+      messageIdForced = "";
+    }
     messagePart.put("message_id",messageId);
     System.out.println("message id is : "+messageId);
     String[] witness = new String[0];
     messagePart.put("witness_signatures",witness);
     return messagePart;
   }
+  
+  public Map<String,Object> constructParamsField(String channel, String messageDataBase64){
+    Map <String,Object> paramsPart = new LinkedHashMap<>();
+    paramsPart.put("channel",channel);
 
+    Map<String,Object> messagePart = constructMessageField(messageDataBase64,false);
+    paramsPart.put("message",messagePart);
+
+    return paramsPart;
+  }
+
+  /*
+      Constructs a valid signature on given data
+   */
   public String constructSignature(String messageDataBase64){
     try {
-      byte[] bytes = senderSk.getBytes(StandardCharsets.UTF_8);
-      String senderSk2 = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d39287427d7c1cc957bd0993973e8b7dbbed4ab80a678be2de775837d482168ad07a5e3";
-      byte[] bytes2 = senderSk2.getBytes(StandardCharsets.UTF_8);
-      System.out.println("length is "+ bytes2.length);
-      PublicKeySign signer = new Ed25519Sign(bytesSecretKeyRaw);
-      System.out.println("*************************************************************************");
-      String signature = new String(signer.sign(messageDataBase64.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
-      System.out.println("Singature is "+ signature);
+      // Hex representation of the private key
+      String privateKeyHex = "1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93";
+      byte[] ans = new byte[privateKeyHex.length() / 2];
+
+      for (int i = 0; i < ans.length; i++) {
+        int index = i * 2;
+
+        int val = Integer.parseInt(privateKeyHex.substring(index, index + 2), 16);
+        ans[i] = (byte)val;
+      }
+      byte[] privateKeyBytes = ans;
+      PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
+      byte[] singie = publicKeySign.sign(messageDataBase64.getBytes(StandardCharsets.UTF_8));
+      String signature = Base64.getUrlEncoder().encodeToString(singie);
+      return signature;
+
     }catch (Exception e){
       System.out.println("CANNOT SIGN");
       e.printStackTrace();
     }
-    return signature;//TODO:change
+    // This should never happen
+    return signature;
   }
 
   /*
-    Produces the hexadecimal representation of a hash (given as an array of bytes)
+      If want to test a sender that is not the organizer we can change the sender public key
    */
-  private String bytesToHex(byte[] hash) {
-    StringBuilder hexString = new StringBuilder(2 * hash.length);
-    for (int i = 0; i < hash.length; i++) {
-      String hex = Integer.toHexString(0xff & hash[i]);
-      if(hex.length() == 1) {
-        hexString.append('0');
-      }
-      hexString.append(hex);
-    }
-    return hexString.toString();
-  }
-
   public void setSenderPk(String newSenderPk){
     this.senderPk = newSenderPk;
   }
@@ -121,22 +127,28 @@ public class JsonConverter {
     this.signature = newSignature;
   }
 
+  /*
+      If we want to test how the backend behaves with a non-valid message id we can set it by force
+   */
   public void setMessageIdForced(String messageIdForced){
     this.messageIdForced = messageIdForced;
   }
 
-  private String hashDataSignature(byte[] data, byte[] signature){
+  /*
+      Hashes an arbitrary number of arguments
+   */
+  private String hash(byte[]... allData){
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
-      String dataLength = Integer.toString(data.length);
-      String signatureLength = Integer.toString(signature.length);
-      digest.update(dataLength.getBytes(StandardCharsets.UTF_8));
-      digest.update(data);
-      digest.update(signatureLength.getBytes(StandardCharsets.UTF_8));
-      digest.update(signature);
+      for(byte[] data : allData) {
+        String dataLength = Integer.toString(data.length);
+        digest.update(dataLength.getBytes(StandardCharsets.UTF_8));
+        digest.update(data);
+      }
       return Base64.getUrlEncoder().encodeToString(digest.digest());
     }catch (Exception e){
       e.printStackTrace();
+      System.out.println("Exception happened in hash construction");
     }
     return "Hash is not constructed correctly";
   }
