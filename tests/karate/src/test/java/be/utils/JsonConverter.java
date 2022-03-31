@@ -16,8 +16,8 @@ public class JsonConverter {
 
   private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   private String senderSk = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQn18HMlXvQmTlz6LfbvtSrgKZ4vi3ndYN9SCForQel4w==";
-  // TODO: should be changed once the ambiguity in why the sender secrete key is 64 bytes instead of 32 is resolved
-  private String privateKeyHex = "1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93";
+  //TODO: change to the real private key hex representation once the ambiguity of what is the true private key in the 64 byte in json keypair is resolved
+  private String privateKeyHexTemp = "1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93";
 
   private String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private String messageIdForced = "";
@@ -55,28 +55,32 @@ public class JsonConverter {
 
   public Map<String,Object> constructMessageField(String messageDataBase64, boolean forcedMessageId){
     Map<String,Object> messagePart  = new LinkedHashMap<>();
-    messagePart.put("data",messageDataBase64);
-    messagePart.put("sender",senderPk);
+    messagePart.put("data", messageDataBase64);
+    messagePart.put("sender", senderPk);
+
     String signature = constructSignature(messageDataBase64);
-    messagePart.put("signature",signature);
+    messagePart.put("signature", signature);
     String messageId = hash(messageDataBase64.getBytes(),signature.getBytes());
+
     if(forcedMessageId && !messageIdForced.isEmpty()){
       messageId = this.messageIdForced;
       messageIdForced = "";
     }
-    messagePart.put("message_id",messageId);
-    System.out.println("message id is : "+messageId);
+    messagePart.put("message_id", messageId);
+    System.out.println("message id is : " + messageId);
+
     String[] witness = new String[0];
-    messagePart.put("witness_signatures",witness);
+    messagePart.put("witness_signatures", witness);
+
     return messagePart;
   }
 
   public Map<String,Object> constructParamsField(String channel, String messageDataBase64){
     Map <String,Object> paramsPart = new LinkedHashMap<>();
-    paramsPart.put("channel",channel);
+    paramsPart.put("channel", channel);
 
     Map<String,Object> messagePart = constructMessageField(messageDataBase64,false);
-    paramsPart.put("message",messagePart);
+    paramsPart.put("message", messagePart);
 
     return paramsPart;
   }
@@ -87,12 +91,12 @@ public class JsonConverter {
   public String constructSignature(String messageDataBase64){
     try {
       // Hex representation of the private key
-      byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
+      byte[] privateKeyBytes = new byte[privateKeyHexTemp.length() / 2];
 
       for (int i = 0; i < privateKeyBytes.length; i++) {
         int index = i * 2;
 
-        int val = Integer.parseInt(privateKeyHex.substring(index, index + 2), 16);
+        int val = Integer.parseInt(privateKeyHexTemp.substring(index, index + 2), 16);
         privateKeyBytes[i] = (byte)val;
       }
       PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
