@@ -107,7 +107,7 @@ type Channel struct {
 	terminated bool
 
 	// Questions asked to the participants
-	//the key will be the string representation of the id of type byte[]
+	// the key will be the string representation of the id of type byte[]
 	questions map[string]*question
 
 	// attendees that took part in the roll call string of their PK
@@ -130,7 +130,7 @@ type question struct {
 	// ballotOptions represents different ballot options.
 	ballotOptions []string
 
-	//valid vote mutex.
+	// valid vote mutex.
 	validVotesMu sync.RWMutex
 
 	// validVotes represents the list of all valid votes. The key represents
@@ -576,9 +576,7 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))
-		for i, b := range q.BallotOptions {
-			ballotOpts[i] = b
-		}
+		copy(ballotOpts, q.BallotOptions)
 
 		qs[q.ID] = &question{
 			id:            []byte(q.ID),
