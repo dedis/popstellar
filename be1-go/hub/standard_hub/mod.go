@@ -542,7 +542,7 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	}
 
 	if !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewErrorf(-5, "sender's public key %q does not match the organizer's", msg.Sender)
+		return answer.NewErrorf(-5, "sender's public key does not match the organizer's: %q != %q", senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
