@@ -76,7 +76,7 @@ public class JsonConverter {
     messagePart.put("witness_signatures",witness);
     return messagePart;
   }
-  
+
   public Map<String,Object> constructParamsField(String channel, String messageDataBase64){
     Map <String,Object> paramsPart = new LinkedHashMap<>();
     paramsPart.put("channel",channel);
@@ -94,15 +94,14 @@ public class JsonConverter {
     try {
       // Hex representation of the private key
       String privateKeyHex = "1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93";
-      byte[] ans = new byte[privateKeyHex.length() / 2];
+      byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
 
-      for (int i = 0; i < ans.length; i++) {
+      for (int i = 0; i < privateKeyBytes.length; i++) {
         int index = i * 2;
 
         int val = Integer.parseInt(privateKeyHex.substring(index, index + 2), 16);
-        ans[i] = (byte)val;
+        privateKeyBytes[i] = (byte)val;
       }
-      byte[] privateKeyBytes = ans;
       PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
       byte[] singie = publicKeySign.sign(messageDataBase64.getBytes(StandardCharsets.UTF_8));
       String signature = Base64.getUrlEncoder().encodeToString(singie);
