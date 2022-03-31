@@ -1,5 +1,6 @@
 package messagedata
 
+/*
 type TransactionPost struct {
 	Object string `json:"object"`
 	Action string `json:"action"`
@@ -97,3 +98,5 @@ type TransactionPost struct {
 	} `json:"properties"`
 	Required []string `json:"required"`
 }
+
+*/

@@ -4,15 +4,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/rs/zerolog"
-	"go.dedis.ch/kyber/v3/sign/schnorr"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/registry"
-	"popstellar/crypto"
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
-	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -95,15 +92,14 @@ func (c Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) err
 	return nil
 }
 
-// NewChannel returns a new initialized election channel
+// NewChannel returns a new initialized digitalCash channel
 func NewChannel(channelID string, log zerolog.Logger, hub channel.HubFunctionalities) channel.Channel {
 
 	log = log.With().Str("channel", "digitalCash").Logger()
 
 	box := inbox.NewInbox(channelID)
 
-	// Saving on election channel too so it self-contains the entire election history
-	// electionCh.inbox.storeMessage(msg)
+	// Saving on Digital Cash channel too so it self-contains the entire cash history
 	retChannel := &Channel{
 		sockets:   channel.NewSockets(),
 		hub:       hub,
@@ -161,6 +157,8 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 		return xerrors.Errorf("failed to verify json schema: %w", err)
 	}
 
+	c.log.Info().Str(msgID, msg.MessageID).Msg("!!!NEWMSG!!!: " + msg.Data)
+
 	// Check if the message already exists
 	if _, ok := c.inbox.GetMessage(msg.MessageID); ok {
 		return answer.NewError(-3, "message already exists")
@@ -190,14 +188,16 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	//	registry.Register(messagedata.ConsensusElect{}, c.processConsensusElect)
+	//	registry.Register(messagedata.something{}, c.processDigitalCashObject)
 
 	return registry
 }
 
 // processMessageObject handles a message object.
+/*
 func (c *Channel) processDigitalCashObject(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
+	//TODO UPDATE following
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
@@ -222,3 +222,4 @@ func (c *Channel) processDigitalCashObject(msg message.Message, msgData interfac
 
 	return nil
 }
+*/
