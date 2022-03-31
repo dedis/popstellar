@@ -1,17 +1,10 @@
 package messagedata
 
 type TransactionPost struct {
-	Schema     string `json:"$schema"`
-	Id         string `json:"$id"`
-	Title      string `json:"title"`
-	Type       string `json:"type"`
+	Object string `json:"object"`
+	Action string `json:"action"`
+
 	Properties struct {
-		Object struct {
-			Const string `json:"const"`
-		} `json:"object"`
-		Action struct {
-			Const string `json:"const"`
-		} `json:"action"`
 		Transaction struct {
 			Type        string `json:"type"`
 			Description string `json:"description"`
@@ -57,11 +50,6 @@ type TransactionPost struct {
 								} `json:"properties"`
 								Required []string `json:"required"`
 							} `json:"Script"`
-							Sequence struct {
-								Type            string `json:"type"`
-								ContentEncoding string `json:"contentEncoding"`
-								Comment         string `json:"$comment"`
-							} `json:"Sequence"`
 						} `json:"properties"`
 						Required []string `json:"required"`
 					} `json:"items"`

@@ -1,5 +1,5 @@
 package digitalCash
-"""
+
 type T struct {
 	Object      string `json:"object"`
 	Action      string `json:"action"`
@@ -25,4 +25,3 @@ type T struct {
 		LockTime int `json:"LockTime"`
 	} `json:"transaction"`
 }
-
