@@ -36,9 +36,7 @@ import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/**
- * HomeActivity represents the entry point for the application.
- */
+/** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity {
 
@@ -248,32 +246,34 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupConnectButton() {
     Button connectButton = findViewById(R.id.tab_connect);
-    connectButton.setOnClickListener(v -> {
-      if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
-        ErrorUtils.logAndShow(
-            v.getContext(),
-            TAG,
-            new UninitializedWalletException(),
-            R.string.uninitialized_wallet_exception);
-      } else {
-        mViewModel.openConnect();
-      }
-    });
+    connectButton.setOnClickListener(
+        v -> {
+          if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+            ErrorUtils.logAndShow(
+                v.getContext(),
+                TAG,
+                new UninitializedWalletException(),
+                R.string.uninitialized_wallet_exception);
+          } else {
+            mViewModel.openConnect();
+          }
+        });
   }
 
   public void setupLaunchButton() {
     Button launchButton = findViewById(R.id.tab_launch);
-    launchButton.setOnClickListener(v -> {
-      if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
-        ErrorUtils.logAndShow(
-            getApplicationContext(),
-            TAG,
-            new UninitializedWalletException(),
-            R.string.uninitialized_wallet_exception);
-      } else {
-        mViewModel.openLaunch();
-      }
-    });
+    launchButton.setOnClickListener(
+        v -> {
+          if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+            ErrorUtils.logAndShow(
+                getApplicationContext(),
+                TAG,
+                new UninitializedWalletException(),
+                R.string.uninitialized_wallet_exception);
+          } else {
+            mViewModel.openLaunch();
+          }
+        });
   }
 
   public void setupWalletButton() {
@@ -283,17 +283,18 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupSocialMediaButton() {
     Button socialMediaButton = findViewById(R.id.tab_social_media);
-    socialMediaButton.setOnClickListener(v -> {
-      if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
-        ErrorUtils.logAndShow(
-            v.getContext(),
-            TAG,
-            new UninitializedWalletException(),
-            R.string.uninitialized_wallet_exception);
-      } else {
-        mViewModel.openSocialMedia();
-      }
-    });
+    socialMediaButton.setOnClickListener(
+        v -> {
+          if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+            ErrorUtils.logAndShow(
+                v.getContext(),
+                TAG,
+                new UninitializedWalletException(),
+                R.string.uninitialized_wallet_exception);
+          } else {
+            mViewModel.openSocialMedia();
+          }
+        });
   }
 
   private void setupHomeFragment() {
@@ -375,7 +376,7 @@ public class HomeActivity extends AppCompatActivity {
   /**
    * Set the current fragment in the container of the activity
    *
-   * @param id               of the fragment
+   * @param id of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
