@@ -36,7 +36,9 @@ import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/** HomeActivity represents the entry point for the application. */
+/**
+ * HomeActivity represents the entry point for the application.
+ */
 @AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity {
 
@@ -113,10 +115,10 @@ public class HomeActivity extends AppCompatActivity {
               HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 switch (action) {
-                    case  SCAN:
+                  case SCAN:
                     setupScanFragment();
                     break;
-                  case  REQUEST_CAMERA_PERMISSION:
+                  case REQUEST_CAMERA_PERMISSION:
                     setupCameraPermissionFragment();
                     break;
                 }
@@ -247,32 +249,30 @@ public class HomeActivity extends AppCompatActivity {
   public void setupConnectButton() {
     Button connectButton = findViewById(R.id.tab_connect);
     connectButton.setOnClickListener(v -> {
-        if (!mViewModel.isWalletSetUp()){
-            ErrorUtils.logAndShow(
-                    v.getContext(),
-                    TAG,
-                    new UninitializedWalletException(),
-                    R.string.uninitialized_wallet_exception);
-        }
-        else {
-            mViewModel.openConnect();
-        }
+      if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+        ErrorUtils.logAndShow(
+            v.getContext(),
+            TAG,
+            new UninitializedWalletException(),
+            R.string.uninitialized_wallet_exception);
+      } else {
+        mViewModel.openConnect();
+      }
     });
   }
 
   public void setupLaunchButton() {
     Button launchButton = findViewById(R.id.tab_launch);
     launchButton.setOnClickListener(v -> {
-        if (!mViewModel.isWalletSetUp()){
-            ErrorUtils.logAndShow(
-                    getApplicationContext(),
-                    TAG,
-                    new UninitializedWalletException(),
-                    R.string.uninitialized_wallet_exception);
-        }
-        else {
-            mViewModel.openLaunch();
-        }
+      if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+        ErrorUtils.logAndShow(
+            getApplicationContext(),
+            TAG,
+            new UninitializedWalletException(),
+            R.string.uninitialized_wallet_exception);
+      } else {
+        mViewModel.openLaunch();
+      }
     });
   }
 
@@ -284,16 +284,15 @@ public class HomeActivity extends AppCompatActivity {
   public void setupSocialMediaButton() {
     Button socialMediaButton = findViewById(R.id.tab_social_media);
     socialMediaButton.setOnClickListener(v -> {
-        if (!mViewModel.isWalletSetUp()){
-            ErrorUtils.logAndShow(
-                    v.getContext(),
-                    TAG,
-                    new UninitializedWalletException(),
-                    R.string.uninitialized_wallet_exception);
-        }
-        else {
-            mViewModel.openSocialMedia();
-        }
+      if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+        ErrorUtils.logAndShow(
+            v.getContext(),
+            TAG,
+            new UninitializedWalletException(),
+            R.string.uninitialized_wallet_exception);
+      } else {
+        mViewModel.openSocialMedia();
+      }
     });
   }
 
@@ -376,13 +375,15 @@ public class HomeActivity extends AppCompatActivity {
   /**
    * Set the current fragment in the container of the activity
    *
-   * @param id of the fragment
+   * @param id               of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
     Fragment fragment = getSupportFragmentManager().findFragmentById(id);
     // If the fragment was not created yet, create it now
-    if (fragment == null) fragment = fragmentSupplier.get();
+    if (fragment == null) {
+      fragment = fragmentSupplier.get();
+    }
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(
