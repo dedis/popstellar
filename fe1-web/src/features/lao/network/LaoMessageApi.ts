@@ -1,17 +1,17 @@
-import { Channel, channelFromIds, Hash, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 import { KeyPairStore } from 'core/keypair';
 import { publish } from 'core/network';
+import { Channel, channelFromIds, Hash, PublicKey, ROOT_CHANNEL, Timestamp } from 'core/objects';
 
-import { CreateLao, StateLao, UpdateLao } from './messages';
 import { Lao } from '../objects';
 import { OpenedLaoStore } from '../store';
+import { CreateLao, StateLao, UpdateLao } from './messages';
 
 /**
  * Contains all functions to send lao related messages.
  */
 
 /** Send a server query asking for the creation of a LAO with a given name (String) */
-export function requestCreateLao(laoName: string): Promise<Channel> {
+export async function requestCreateLao(laoName: string): Promise<Channel> {
   const time = Timestamp.EpochNow();
   const pubKey = KeyPairStore.getPublicKey();
 
@@ -23,7 +23,9 @@ export function requestCreateLao(laoName: string): Promise<Channel> {
     witnesses: [],
   });
 
-  return publish(ROOT_CHANNEL, message).then(() => channelFromIds(message.id));
+  await publish(ROOT_CHANNEL, message);
+
+  return channelFromIds(message.id);
 }
 
 /** Send a server query asking for a LAO update providing a new name (String) */

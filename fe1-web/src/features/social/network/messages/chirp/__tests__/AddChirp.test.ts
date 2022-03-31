@@ -2,7 +2,7 @@ import 'jest-extended';
 import '__tests__/utils/matchers';
 
 import { ActionType, ObjectType } from 'core/network/jsonrpc/messages';
-import { Hash, Timestamp, ProtocolError } from 'core/objects';
+import { Hash, ProtocolError, Timestamp } from 'core/objects';
 
 import { AddChirp } from '../AddChirp';
 

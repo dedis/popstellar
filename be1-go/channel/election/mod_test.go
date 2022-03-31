@@ -152,7 +152,7 @@ func Test_Election_Channel_Broadcast(t *testing.T) {
 	err = json.Unmarshal(buf, &broadcast)
 	require.NoError(t, err)
 
-	require.NoError(t, electChannel.Broadcast(broadcast, nil))
+	require.Error(t, electChannel.Broadcast(broadcast, nil))
 }
 
 // Tests that the channel works correctly when it receives a cast vote and
@@ -375,9 +375,12 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
 		electionSetup.Questions, attendees, fakeHub, nolog, keypair.public)
 
-	fakeHub.NotifyNewChannel(channel.channelID, &channel, &fakeSocket{id: "socket"})
+	channelElec, ok := channel.(*Channel)
+	require.True(t, ok)
 
-	return &channel, pkOrganizer
+	fakeHub.NotifyNewChannel(channelElec.channelID, channel, &fakeSocket{id: "socket"})
+
+	return channelElec, pkOrganizer
 }
 
 type keypair struct {

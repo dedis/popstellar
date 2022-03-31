@@ -1,14 +1,19 @@
-import { Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import testKeyPair from 'test_data/keypair.json';
+
+import { MessageRegistry } from 'core/network/jsonrpc/messages';
+import { Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
-export const mockPublicKey2 = testKeyPair.publicKey2;
 export const mockKeyPair = KeyPair.fromState({
-  publicKey: testKeyPair.publicKey,
-  privateKey: testKeyPair.privateKey,
+  publicKey: mockPublicKey,
+  privateKey: mockPrivateKey,
 });
+
+export const mockPublicKey2 = testKeyPair.publicKey2;
+export const mockPrivateKey2 = testKeyPair.privateKey2;
+
 export const mockPopToken = PopToken.fromState({
   publicKey: testKeyPair.publicKey2,
   privateKey: testKeyPair.privateKey2,
@@ -31,7 +36,15 @@ export const mockLaoState: LaoState = {
   last_modified: mockLaoCreationTime.valueOf(),
   organizer: org.valueOf(),
   witnesses: [],
+  server_addresses: [],
 };
 export const mockLao = Lao.fromState(mockLaoState);
 
 export const defaultMessageDataFields = ['object', 'action'];
+
+export const mockReduxAction = {
+  type: '',
+  payload: undefined,
+};
+
+export const mockMessageRegistry = new MessageRegistry();

@@ -1,3 +1,5 @@
+// disable import/order here as it makes it easier to spot missing imports
+/* eslint-disable import/order */
 import dataCreateLao from 'protocol/query/method/message/data/dataCreateLao.json';
 import dataStateLao from 'protocol/query/method/message/data/dataStateLao.json';
 import dataUpdateLao from 'protocol/query/method/message/data/dataUpdateLao.json';
@@ -8,6 +10,7 @@ import dataOpenRollCall from 'protocol/query/method/message/data/dataOpenRollCal
 import dataCloseRollCall from 'protocol/query/method/message/data/dataCloseRollCall.json';
 import dataWitnessMessage from 'protocol/query/method/message/data/dataWitnessMessage.json';
 import dataSetupElection from 'protocol/query/method/message/data/dataSetupElection.json';
+import dataOpenElection from 'protocol/query/method/message/data/dataOpenElection.json';
 import dataCastVote from 'protocol/query/method/message/data/dataCastVote.json';
 import dataEndElection from 'protocol/query/method/message/data/dataEndElection.json';
 import dataResultElection from 'protocol/query/method/message/data/dataResultElection.json';
@@ -16,6 +19,7 @@ import dataNotifyAddChirp from 'protocol/query/method/message/data/dataNotifyAdd
 import dataDeleteChirp from 'protocol/query/method/message/data/dataDeleteChirp.json';
 import dataNotifyDeleteChirp from 'protocol/query/method/message/data/dataNotifyDeleteChirp.json';
 import dataAddReaction from 'protocol/query/method/message/data/dataAddReaction.json';
+/* eslint-enable import/order */
 
 const dataSchemas = [
   dataCreateLao,
@@ -30,6 +34,7 @@ const dataSchemas = [
   dataCloseRollCall,
 
   dataSetupElection,
+  dataOpenElection,
   dataCastVote,
   dataEndElection,
   dataResultElection,

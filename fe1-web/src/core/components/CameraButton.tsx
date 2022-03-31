@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, Image, View, TouchableOpacity, ImageStyle } from 'react-native';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { Image, ImageStyle, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import circularButtonStyles from '../styles/stylesheets/circularButtonStyles';
 

@@ -1,17 +1,17 @@
+import PropTypes from 'prop-types';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 import { useSelector } from 'react-redux';
 
-import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
 import { CopiableTextInput, QRCode, TextBlock, WideButtonView } from 'core/components';
 import { PopToken } from 'core/objects';
-import PROPS_TYPE from 'resources/Props';
-import { makeLaosMap } from 'features/lao/reducer';
-import { makeEventByTypeSelector } from 'features/events/reducer';
+import containerStyles from 'core/styles/stylesheets/containerStyles';
 import { LaoEventType } from 'features/events/objects';
+import { makeEventByTypeSelector } from 'features/events/reducer';
+import { selectLaosMap } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
+import PROPS_TYPE from 'resources/Props';
+import STRINGS from 'resources/strings';
 
 import * as Wallet from '../objects';
 
@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
 });
 
 const rollCallSelector = makeEventByTypeSelector<RollCall>(LaoEventType.ROLL_CALL);
-const laoSelector = makeLaosMap();
 
 const hasTokens = (tokensByLao: Record<string, Record<string, PopToken>>): boolean =>
   tokensByLao && Object.values(tokensByLao).some((tokens) => Object.entries(tokens).length);
@@ -41,7 +40,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   const [tokensByLao, setTokensByLao] = useState<Record<string, Record<string, PopToken>>>();
 
   const rollCalls = useSelector(rollCallSelector);
-  const laos = useSelector(laoSelector);
+  const laos = useSelector(selectLaosMap);
 
   useEffect(() => {
     Wallet.recoverWalletPoPTokens()
@@ -61,7 +60,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
     const tokenPk = tokensByLao[laoId][rollCallId].publicKey;
 
     return (
-      <View style={containerStyles.centered} key={`token-${laoId}-${rollCallId}`}>
+      <View style={containerStyles.centeredY} key={`token-${laoId}-${rollCallId}`}>
         <View style={styles.smallPadding} />
         <TextBlock bold text={`${STRINGS.lao_name}: ${lao.name}`} />
         <TextBlock bold text={`${STRINGS.roll_call_name}: ${rollCall.name}`} />
@@ -141,7 +140,7 @@ const WalletSyncedSeed = ({ navigation }: IPropTypes) => {
   }
 
   return (
-    <View style={containerStyles.centered}>
+    <View style={containerStyles.centeredY}>
       {!showTokens && recoverTokens()}
       {showTokens && displayTokens()}
     </View>

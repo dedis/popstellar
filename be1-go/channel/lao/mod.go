@@ -91,7 +91,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 
 	reactionPath := fmt.Sprintf("%s/social/reactions", channelID)
 	reactionCh := reaction.NewChannel(reactionPath, hub, log)
-	hub.NotifyNewChannel(reactionPath, &reactionCh, socket)
+	hub.NotifyNewChannel(reactionPath, reactionCh, socket)
 
 	consensusPath := fmt.Sprintf("%s/consensus", channelID)
 	consensusCh := consensus.NewChannel(consensusPath, hub, log)
@@ -102,7 +102,7 @@ func NewChannel(channelID string, hub channel.HubFunctionalities, msg message.Me
 		sockets:         channel.NewSockets(),
 		inbox:           box,
 		general:         generalCh,
-		reactions:       &reactionCh,
+		reactions:       reactionCh,
 		organizerPubKey: organizerPubKey,
 		witnesses:       make(map[string]struct{}),
 		hub:             hub,
@@ -124,7 +124,7 @@ func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 	registry.Register(messagedata.LaoUpdate{}, c.processEmptyFun)
 	registry.Register(messagedata.MeetingCreate{}, c.processEmptyFun)
 	registry.Register(messagedata.MeetingState{}, c.processEmptyFun)
-	registry.Register(messagedata.MessageWitness{}, c.processMessageObject)
+	registry.Register(messagedata.MessageWitness{}, c.processMessageWitness)
 	registry.Register(messagedata.RollCallCreate{}, c.processRollCallCreate)
 	registry.Register(messagedata.RollCallOpen{}, c.processRollCallOpen)
 	registry.Register(messagedata.RollCallReOpen{}, c.processRollCallOpen)
@@ -243,12 +243,12 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
 func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
 	generalChannelPath := laoID + social + chirps
-	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger) // TODO HAS BEEN MODIFIED BY JOHANN
-	hub.NotifyNewChannel(generalChannelPath, &generalChirpingChannel, socket)
+	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
+	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
 
 	log.Info().Msgf("storing new channel '%s' ", generalChannelPath)
 
-	return &generalChirpingChannel //.(*generalChirping.Channel)
+	return generalChirpingChannel
 }
 
 // rollCallState denotes the state of the roll call.
@@ -410,8 +410,8 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	return nil
 }
 
-// processMessageObject handles a message object.
-func (c *Channel) processMessageObject(msg message.Message, msgData interface{}, _ socket.Socket) error {
+// processMessageWitness handles a message object.
+func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
@@ -442,8 +442,7 @@ func (c *Channel) createChirpingChannel(publicKey string, socket socket.Socket) 
 	chirpingChannelPath := c.channelID + social + publicKey
 
 	cha := chirp.NewChannel(chirpingChannelPath, publicKey, c.hub, c.general, be1_go.Logger)
-
-	c.hub.NotifyNewChannel(chirpingChannelPath, &cha, socket)
+	c.hub.NotifyNewChannel(chirpingChannelPath, cha, socket)
 	log.Info().Msgf("storing new chirp channel (%s) for: '%s'", c.channelID, publicKey)
 }
 
@@ -515,7 +514,7 @@ func (c *Channel) createElection(msg message.Message,
 	c.inbox.StoreMessage(msg)
 
 	// Add the new election channel to the organizerHub
-	c.hub.NotifyNewChannel(channelPath, &electionCh, socket)
+	c.hub.NotifyNewChannel(channelPath, electionCh, socket)
 
 	return nil
 }
@@ -529,7 +528,7 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 	}
 
 	// Check that data is correct
-	err := c.verifyMessageRollCallCreate(*data)
+	err := c.verifyMessageRollCallCreate(data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#create message: %v", err)
 	}
@@ -588,7 +587,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	}
 
 	// check that data is correct
-	err := c.verifyMessageRollCallClose(*data)
+	err := c.verifyMessageRollCallClose(data)
 	if err != nil {
 		return xerrors.Errorf("invalid roll_call#close message: %v", err)
 	}
@@ -636,7 +635,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	return nil
 }
 
-func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error { //TODO DO NOT KNOW IF SHOULD BE HERE
+func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) error {
 	return nil
 }
 

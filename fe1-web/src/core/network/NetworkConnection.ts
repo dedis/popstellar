@@ -1,15 +1,17 @@
-import { w3cwebsocket as W3CWebSocket } from 'websocket';
+import { IMessageEvent, w3cwebsocket as W3CWebSocket } from 'websocket';
 
 import { ProtocolError } from 'core/objects';
 
-import { RpcOperationError } from './RpcOperationError';
+import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from './jsonrpc';
 import { NetworkError } from './NetworkError';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
-import { JsonRpcRequest, JsonRpcResponse, UNDEFINED_ID } from './jsonrpc';
+import { RpcOperationError } from './RpcOperationError';
+
+const WEBSOCKET_CONNECTION_MAX_ATTEMPTS = 3;
+const WEBSOCKET_CONNECTION_FAILURE_TIMEOUT = 1000;
 
 const WEBSOCKET_READYSTATE_INTERVAL_MS = 10;
 const WEBSOCKET_READYSTATE_MAX_ATTEMPTS = 100;
-
 const WEBSOCKET_MESSAGE_TIMEOUT_MS = 10000; // 10 seconds max round-trip time
 
 const JSON_RPC_ID_WRAP_AROUND = 10000;
@@ -32,6 +34,8 @@ export class NetworkConnection {
 
   public readonly address: string;
 
+  private failedConnectionAttempts: number = 0;
+
   constructor(address: string, handler?: JsonRpcHandler) {
     this.ws = this.establishConnection(address);
     this.address = this.ws.url;
@@ -41,10 +45,10 @@ export class NetworkConnection {
   private establishConnection(address: string): W3CWebSocket {
     const ws: W3CWebSocket = new W3CWebSocket(address);
 
-    ws.onopen = () => this.onOpen();
-    ws.onmessage = (message: any) => this.onMessage(message);
-    ws.onclose = () => this.onClose();
-    ws.onerror = (event: any) => this.onError(event);
+    ws.onopen = this.onOpen.bind(this);
+    ws.onmessage = this.onMessage.bind(this);
+    ws.onclose = this.onClose.bind(this);
+    ws.onerror = this.onError.bind(this);
 
     return ws;
   }
@@ -53,11 +57,22 @@ export class NetworkConnection {
     this.ws.close();
   }
 
-  private onOpen(): void {
-    console.info(`Initiating web socket : ${this.address}`);
+  public reconnectIfNecessary() {
+    // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
+    if (this.ws.readyState > 1) {
+      this.disconnect();
+      this.ws = this.establishConnection(this.address);
+    }
   }
 
-  private onMessage(message: any): void {
+  private onOpen(): void {
+    console.info(`Initiating web socket : ${this.address}`);
+
+    // reset failed connection attempts
+    this.failedConnectionAttempts = 0;
+  }
+
+  private onMessage(message: IMessageEvent): void {
     console.debug(`Received a new message from '${this.address}' : `, message.data);
 
     try {
@@ -79,10 +94,18 @@ export class NetworkConnection {
     console.info(`Closed websocket connection : ${this.address}`);
   }
 
-  private onError(event: any): void {
+  private onError(event: Error): void {
+    this.failedConnectionAttempts += 1;
+
     console.error(`WebSocket error observed on '${this.address}' : `, event);
     console.error(`Trying to establish a new connection at address : ${this.address}`);
-    this.ws = this.establishConnection(this.address);
+
+    // only retry a certain number of times and add a wait before retrying
+    if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
+      setTimeout(() => {
+        this.reconnectIfNecessary();
+      }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT);
+    }
   }
 
   private static parseIncomingData(data: any): JsonRpcResponse | JsonRpcRequest {

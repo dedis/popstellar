@@ -1,15 +1,14 @@
 import { ActionType, ObjectType, ProcessableMessage } from 'core/network/jsonrpc/messages';
 import { dispatch, getStore } from 'core/redux';
-import { makeCurrentLao } from 'features/lao/reducer';
+import { selectCurrentLao } from 'features/lao/reducer';
 
 import { Reaction } from '../objects';
-import { AddReaction } from './messages/reaction';
 import { addReaction } from '../reducer';
+import { AddReaction } from './messages/reaction';
 
 /**
  * Handler for social media chirp's reactions
  */
-const getCurrentLao = makeCurrentLao();
 
 /**
  * Handles an addReaction message by storing the reaction sent.
@@ -25,7 +24,7 @@ export function handleAddReactionMessage(msg: ProcessableMessage): boolean {
   const makeErr = (err: string) => `reaction/add was not processed: ${err}`;
 
   const storeState = getStore().getState();
-  const lao = getCurrentLao(storeState);
+  const lao = selectCurrentLao(storeState);
   if (!lao) {
     console.warn(makeErr('no Lao is currently active'));
     return false;

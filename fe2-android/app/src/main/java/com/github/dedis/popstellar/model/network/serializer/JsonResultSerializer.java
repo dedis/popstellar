@@ -19,6 +19,8 @@ import java.util.List;
 public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeserializer<Result> {
 
   private static final String TAG = JsonResultSerializer.class.getSimpleName();
+  private final String RESULT = "result";
+  private final String ID = "ID";
 
   @Override
   public Result deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -27,7 +29,7 @@ public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeseria
 
     int id = root.get("id").getAsInt();
 
-    JsonElement resultElement = root.get("result");
+    JsonElement resultElement = root.get(RESULT);
     if (resultElement.isJsonPrimitive()) {
       return new Result(id);
     } else {
@@ -41,13 +43,13 @@ public class JsonResultSerializer implements JsonSerializer<Result>, JsonDeseria
   public JsonElement serialize(Result src, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject output = new JsonObject();
 
-    output.addProperty("id", src.getId());
+    output.addProperty(ID, src.getId());
     if (src instanceof ResultMessages) {
       ResultMessages resultMessages = (ResultMessages) src;
       JsonElement messages = context.serialize(resultMessages.getMessages());
-      output.add("result", messages);
+      output.add(RESULT, messages);
     } else {
-      output.addProperty("result", 0);
+      output.addProperty(RESULT, 0);
     }
 
     return output;

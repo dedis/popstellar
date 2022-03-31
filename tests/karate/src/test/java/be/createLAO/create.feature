@@ -2,13 +2,38 @@
 Feature: Create a pop LAO
 
   Background:
-        ## This is feature will be called  to
+        # This is feature will be called  to test an LAO creation
         # This call makes this feature and server.feature share the same scope
         # Meaning they share def variables, configurations ...
         # Especially JS functions defined in server.feature can be directly used here thanks to Karate shared scopes
-        # * call wait <timeout>
-        # * karate.set(varName, newValue)
     * call read('classpath:be/utils/server.feature')
+
+  Scenario: Create Lao request with empty lao name should fail with an error response
+    Given string  emptyNameReq = read('classpath:data/lao/bad_lao_create_empty_name.json')
+    And   def socket = karate.webSocket(wsURL,handle)
+    When  eval socket.send(emptyNameReq)
+    *  karate.log('Sent: '+ karate.pretty(emptyNameReq))
+    And  json err = socket.listen(timeout)
+    * karate.log('Received: '+ err )
+    Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+
+  Scenario: Create Lao with negative time should fail with an error response
+      Given string negTimeLao = read('classpath:data/lao/bad_lao_create_negative.json')
+      And   def socket = karate.webSocket(wsURL,handle)
+      When  eval socket.send(negTimeLao)
+      *  karate.log('Sent: '+ karate.pretty(negTimeLao))
+      And  json err = socket.listen(timeout)
+      *  karate.log('Received: '+ karate.pretty(err) )
+      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
+
+  Scenario: Create Lao with invalid id hash should fail with an error response
+      Given string invalidIdLao = read('classpath:data/lao/bad_lao_create_id_invalid_hash.json')
+      And   def socket = karate.webSocket(wsURL,handle)
+      When  eval socket.send(invalidIdLao)
+      *  karate.log('Sent: '+ karate.pretty(invalidIdLao))
+      And  json err = socket.listen(timeout)
+      *  karate.log('Received: '+ karate.pretty(err) )
+      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
 
   Scenario: Create should succeed with a valid creation request
     Given def createLaoReq =
@@ -49,29 +74,3 @@ Feature: Create a pop LAO
     * karate.log('Received answer = ' + answer)
     Then match answer == createLaoRes
 
-  Scenario: Create Lao request with empty lao name should fail with an error response
-    Given string  emptyNameReq = read('classpath:data/lao/bad_lao_create_empty_name.json')
-    And   def socket = karate.webSocket(wsURL,handle)
-    When  eval socket.send(emptyNameReq)
-    *  karate.log('Sent: '+ karate.pretty(emptyNameReq))
-    And  json err = socket.listen(timeout)
-    * karate.log('Received: '+ err )
-    Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
-
-  Scenario: Create Lao with negative time should fail with an error response
-      Given string negTimeLao = read('classpath:data/lao/bad_lao_create_negative.json')
-      And   def socket = karate.webSocket(wsURL,handle)
-      When  eval socket.send(negTimeLao)
-      *  karate.log('Sent: '+ karate.pretty(negTimeLao))
-      And  json err = socket.listen(timeout)
-      *  karate.log('Received: '+ karate.pretty(err) )
-      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}
-
-  Scenario: Create Lao with invalid id hash should fail with an error response
-      Given string invalidIdLao = read('classpath:data/lao/bad_lao_create_id_invalid_hash.json')
-      And   def socket = karate.webSocket(wsURL,handle)
-      When  eval socket.send(invalidIdLao)
-      *  karate.log('Sent: '+ karate.pretty(invalidIdLao))
-      And  json err = socket.listen(timeout)
-      *  karate.log('Received: '+ karate.pretty(err) )
-      Then match err contains deep {jsonrpc: '2.0', id: 1, error: {code: -4, description: '#string'}}

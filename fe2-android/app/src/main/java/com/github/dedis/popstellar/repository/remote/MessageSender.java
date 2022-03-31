@@ -2,6 +2,7 @@ package com.github.dedis.popstellar.repository.remote;
 
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.security.KeyPair;
 
 import io.reactivex.Completable;
@@ -21,7 +22,7 @@ public interface MessageSender extends Disposable {
    * @param channel to retrieve old messages on
    * @return a {@link Completable} the will complete once the catchup is finished
    */
-  Completable catchup(String channel);
+  Completable catchup(Channel channel);
 
   /**
    * Publish some {@link Data} on the given channel
@@ -31,7 +32,7 @@ public interface MessageSender extends Disposable {
    * @param data to send
    * @return a {@link Completable} the will complete once the publish is finished
    */
-  Completable publish(KeyPair keyPair, String channel, Data data);
+  Completable publish(KeyPair keyPair, Channel channel, Data data);
 
   /**
    * Publish an already created {@link MessageGeneral} on the given channel
@@ -40,7 +41,7 @@ public interface MessageSender extends Disposable {
    * @param msg to send
    * @return a {@link Completable} the will complete once the publish is finished
    */
-  Completable publish(String channel, MessageGeneral msg);
+  Completable publish(Channel channel, MessageGeneral msg);
 
   /**
    * Subscribe to given channel
@@ -50,7 +51,7 @@ public interface MessageSender extends Disposable {
    * @param channel to subscribe to
    * @return a {@link Completable} the will complete once the subscription is finished
    */
-  Completable subscribe(String channel);
+  Completable subscribe(Channel channel);
 
   /**
    * Unsubscribe of given channel
@@ -58,5 +59,5 @@ public interface MessageSender extends Disposable {
    * @param channel to unsubscribe from
    * @return a {@link Completable} the will complete once the unsubscribe is finished
    */
-  Completable unsubscribe(String channel);
+  Completable unsubscribe(Channel channel);
 }

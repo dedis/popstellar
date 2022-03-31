@@ -96,7 +96,7 @@ type ConsensusInstance struct {
 	electInstances map[string]*ElectInstance
 }
 
-// Store the state of a consensus dependant on the elect message
+// ElectInstance stores the state of a consensus dependent on the elect message
 type ElectInstance struct {
 	timeoutChan chan string
 
@@ -439,7 +439,6 @@ func (c *Channel) createConsensusInstance(instanceID string) *ConsensusInstance 
 
 // processConsensusElect processes an elect action.
 func (c *Channel) processConsensusElect(message message.Message, msgData interface{}, _ socket.Socket) error {
-
 	data, ok := msgData.(*messagedata.ConsensusElect)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a consensus#elect message", msgData)

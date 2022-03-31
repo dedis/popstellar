@@ -1,16 +1,15 @@
-import React from 'react';
-import { useRoute, useNavigation } from '@react-navigation/core';
+import { useNavigation, useRoute } from '@react-navigation/core';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
-import * as reactRedux from 'react-redux';
+import React from 'react';
 // @ts-ignore
 import { fireScan as fakeQrReaderScan } from 'react-qr-reader';
-
-import { Hash, PublicKey, Timestamp } from 'core/objects';
-import STRINGS from 'resources/strings';
+import * as reactRedux from 'react-redux';
 import keyPair from 'test_data/keypair.json';
-import { mockLao, mockLaoId, mockLaoName, mockPopToken } from '__tests__/utils/TestUtils';
 
+import { mockLao, mockLaoId, mockLaoName, mockPopToken } from '__tests__/utils/TestUtils';
+import { Hash, PublicKey, Timestamp } from 'core/objects';
 import * as token from 'features/wallet/objects/Token';
+import STRINGS from 'resources/strings';
 
 import { requestCloseRollCall as mockRequestCloseRollCall } from '../../network/RollCallMessageApi';
 import RollCallOpened from '../RollCallOpened';
@@ -46,7 +45,7 @@ beforeEach(() => {
 
   (useRoute as jest.Mock).mockReturnValue({
     name: STRINGS.roll_call_open,
-    params: { rollCallID: rollCallId, time: time },
+    params: { rollCallID: rollCallId, updateID: rollCallId },
   });
 
   (useNavigation as jest.Mock).mockReturnValue({

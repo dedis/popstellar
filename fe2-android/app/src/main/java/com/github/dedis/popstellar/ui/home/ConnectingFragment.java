@@ -18,8 +18,8 @@ import dagger.hilt.android.AndroidEntryPoint;
  * A simple {@link Fragment} subclass. Use the {@link ConnectingFragment#newInstance} factory method
  * to create an instance of this fragment.
  */
-@AndroidEntryPoint(Fragment.class)
-public final class ConnectingFragment extends Hilt_ConnectingFragment {
+@AndroidEntryPoint
+public final class ConnectingFragment extends Fragment {
 
   public static final String TAG = ConnectingFragment.class.getSimpleName();
 

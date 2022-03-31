@@ -16,6 +16,7 @@ import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.AddChirp;
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.DeleteChirp;
+import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Chirp;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -28,6 +29,7 @@ import com.github.dedis.popstellar.utility.error.keys.KeyException;
 import com.github.dedis.popstellar.utility.security.KeyManager;
 import com.google.gson.Gson;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,8 +44,7 @@ public class SocialMediaViewModel extends AndroidViewModel {
   public static final String TAG = SocialMediaViewModel.class.getSimpleName();
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
-  private static final String ROOT = "/root/";
-  private static final String SOCIAL = "/social/";
+  private static final String SOCIAL = "social";
   public static final Integer MAX_CHAR_NUMBERS = 300;
 
   /*
@@ -197,9 +198,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public void sendChirp(String text, @Nullable MessageID parentId, long timestamp) {
     Log.d(TAG, "Sending a chirp");
-    String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = laoRepository.getLaoByChannel().get(laoChannel);
-    if (laoState == null) {
+    Lao lao = getCurrentLao();
+    if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
@@ -207,8 +207,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
     AddChirp addChirp = new AddChirp(text, parentId, timestamp);
 
     try {
-      PoPToken token = keyManager.getValidPoPToken(laoState.getLao());
-      String channel = laoChannel + SOCIAL + token.getPublicKey().getEncoded();
+      PoPToken token = keyManager.getValidPoPToken(lao);
+      Channel channel =
+          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
       Log.d(TAG, PUBLISH_MESSAGE);
       MessageGeneral msg = new MessageGeneral(token, addChirp, gson);
 
@@ -229,9 +230,8 @@ public class SocialMediaViewModel extends AndroidViewModel {
 
   public void deleteChirp(MessageID chirpId, long timestamp) {
     Log.d(TAG, "Deleting the chirp with id: " + chirpId);
-    String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = laoRepository.getLaoByChannel().get(laoChannel);
-    if (laoState == null) {
+    Lao lao = getCurrentLao();
+    if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return;
     }
@@ -239,8 +239,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
     DeleteChirp deleteChirp = new DeleteChirp(chirpId, timestamp);
 
     try {
-      PoPToken token = keyManager.getValidPoPToken(laoState.getLao());
-      String channel = laoChannel + SOCIAL + token.getPublicKey().getEncoded();
+      PoPToken token = keyManager.getValidPoPToken(lao);
+      Channel channel =
+          lao.getChannel().subChannel(SOCIAL).subChannel(token.getPublicKey().getEncoded());
       Log.d(TAG, PUBLISH_MESSAGE);
       MessageGeneral msg = new MessageGeneral(token, deleteChirp, gson);
 
@@ -267,8 +268,9 @@ public class SocialMediaViewModel extends AndroidViewModel {
   }
 
   public List<Chirp> getChirpList(String laoId) {
-    Lao lao = laoRepository.getLaoByChannel(ROOT + laoId);
-    return lao.getChirpsInOrder();
+    Lao lao = getLao(laoId);
+    if (lao == null) return Collections.emptyList();
+    else return lao.getChirpsInOrder();
   }
 
   /**
@@ -279,19 +281,31 @@ public class SocialMediaViewModel extends AndroidViewModel {
    */
   public boolean isOwner(String sender) {
     Log.d(TAG, "Testing if the sender is also the owner");
-    String laoChannel = ROOT + getLaoId().getValue();
-    LAOState laoState = laoRepository.getLaoByChannel().get(laoChannel);
-    if (laoState == null) {
+    Lao lao = getCurrentLao();
+    if (lao == null) {
       Log.e(TAG, LAO_FAILURE_MESSAGE);
       return false;
     }
 
     try {
-      PoPToken token = keyManager.getValidPoPToken(laoState.getLao());
+      PoPToken token = keyManager.getValidPoPToken(lao);
       return sender.equals(token.getPublicKey().getEncoded());
     } catch (KeyException e) {
       ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
       return false;
     }
+  }
+
+  @Nullable
+  public Lao getCurrentLao() {
+    return getLao(getLaoId().getValue());
+  }
+
+  @Nullable
+  private Lao getLao(String laoId) {
+    LAOState laoState = laoRepository.getLaoById().get(laoId);
+    if (laoState == null) return null;
+
+    return laoState.getLao();
   }
 }

@@ -1,7 +1,7 @@
-import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, TextStyle, ViewStyle } from 'react-native';
-import PropTypes from 'prop-types';
 import { useNavigation } from '@react-navigation/native';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { StyleSheet, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 import { Spacing, Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
@@ -24,28 +24,28 @@ const styles = StyleSheet.create({
   } as TextStyle,
 });
 
-const LaoItem = ({ LAO }: IPropTypes) => {
+const LaoItem = ({ lao }: IPropTypes) => {
   // FIXME: use proper navigation type
   const navigation = useNavigation<any>();
 
   const handlePress = () => {
     navigation.navigate(STRINGS.connect_confirm_title, {
-      laoIdIn: LAO.id.valueOf(),
-      url: LAO.server_address,
+      laoIdIn: lao.id.valueOf(),
+      url: lao.server_addresses[0],
     });
   };
 
   return (
     <View style={styles.view}>
       <TouchableOpacity onPress={() => handlePress()}>
-        <Text style={styles.text}>{LAO.name}</Text>
+        <Text style={styles.text}>{lao.name}</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const propTypes = {
-  LAO: PropTypes.instanceOf(Lao).isRequired,
+  lao: PropTypes.instanceOf(Lao).isRequired,
 };
 LaoItem.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

@@ -2,6 +2,7 @@ package messagedata
 
 import (
 	"encoding/base64"
+
 	"golang.org/x/xerrors"
 )
 
@@ -10,8 +11,10 @@ type ReactionAdd struct {
 	Object            string `json:"object"`
 	Action            string `json:"action"`
 	ReactionCodepoint string `json:"reaction_codepoint"`
-	ChirpId           string `json:"chirp_id"`
-	Timestamp         int64  `json:"timestamp"`
+	ChirpID           string `json:"chirp_id"`
+
+	// Timestamp is a Unix timestamp
+	Timestamp int64 `json:"timestamp"`
 }
 
 // Verify verifies that the ReactionAdd message is correct
@@ -22,10 +25,25 @@ func (message ReactionAdd) Verify() error {
 	}
 
 	// verify that the chirp id is base64URL encoded
-	_, err := base64.URLEncoding.DecodeString(message.ChirpId)
+	_, err := base64.URLEncoding.DecodeString(message.ChirpID)
 	if err != nil {
-		return xerrors.Errorf("chirp id is %s, should be base64URL encoded", message.ChirpId)
+		return xerrors.Errorf("chirp id is %s, should be base64URL encoded", message.ChirpID)
 	}
 
 	return nil
+}
+
+// GetObject implements MessageData
+func (ReactionAdd) GetObject() string {
+	return ReactionObject
+}
+
+// GetAction implements MessageData
+func (ReactionAdd) GetAction() string {
+	return ReactionActionAdd
+}
+
+// NewEmpty implements MessageData
+func (ReactionAdd) NewEmpty() MessageData {
+	return &ReactionAdd{}
 }

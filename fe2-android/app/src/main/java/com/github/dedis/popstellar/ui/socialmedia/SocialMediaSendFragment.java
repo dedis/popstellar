@@ -18,8 +18,8 @@ import java.time.Instant;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment where we can write and send a chirp */
-@AndroidEntryPoint(Fragment.class)
-public class SocialMediaSendFragment extends Hilt_SocialMediaSendFragment {
+@AndroidEntryPoint
+public class SocialMediaSendFragment extends Fragment {
   private SocialMediaSendFragmentBinding mSocialMediaSendFragBinding;
   private SocialMediaViewModel mSocialMediaViewModel;
 

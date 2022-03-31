@@ -31,8 +31,8 @@ import javax.inject.Inject;
 import dagger.hilt.android.AndroidEntryPoint;
 
 /** Fragment used to display the new seed UI */
-@AndroidEntryPoint(Fragment.class)
-public class SeedWalletFragment extends Hilt_SeedWalletFragment {
+@AndroidEntryPoint
+public class SeedWalletFragment extends Fragment {
 
   public static final String TAG = SeedWalletFragment.class.getSimpleName();
   private WalletSeedFragmentBinding mWalletSeedFragBinding;

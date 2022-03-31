@@ -2,7 +2,6 @@ import { sign } from 'tweetnacl';
 
 import { Base64UrlData, KeyPair, KeyPairState, PrivateKey, PublicKey } from '../objects';
 import { dispatch, getStore } from '../redux';
-
 import { getKeyPairState, setKeyPair } from './KeyPairReducer';
 
 /**

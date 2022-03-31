@@ -1,9 +1,10 @@
-import { Channel, KeyPair } from 'core/objects';
-import { getNetworkManager } from 'core/network/NetworkManager';
 import { KeyPairRegistry } from 'core/keypair';
+import { getNetworkManager } from 'core/network/NetworkManager';
+import { Channel, KeyPair } from 'core/objects';
 
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse, Publish, Subscribe } from './jsonrpc';
 import { configureMessages, Message, MessageData, MessageRegistry } from './jsonrpc/messages';
+import { NetworkConnection } from './NetworkConnection';
 
 export const AUTO_ASSIGN_ID = -1;
 
@@ -16,19 +17,6 @@ let messageRegistry: MessageRegistry;
  * A local reference to the global KeyPairRegistry object
  */
 let keyPairRegistry: KeyPairRegistry;
-
-/**
- * Configure the JSON-RPC interface with its dependencies
- *
- * @param messageReg - The MessageRegistry to be injected
- * @param keyPairReg - The KeyPairRegistry to be injected
- */
-export function configureJsonRpcApi(messageReg: MessageRegistry, keyPairReg: KeyPairRegistry) {
-  messageRegistry = messageReg;
-  keyPairRegistry = keyPairReg;
-
-  configureMessages(messageReg);
-}
 
 /**
  * Get the keypair with which to sign the MessageData
@@ -45,8 +33,13 @@ export function getSigningKeyPair(msgData: MessageData): Promise<KeyPair> {
  *
  * @param channel - The channel on which to publish the message
  * @param msgData - The message data to be sent on the channel
+ * @param connections - An optional list of network connection if the message should only be sent on a subset of connections
  */
-export async function publish(channel: Channel, msgData: MessageData): Promise<void> {
+export async function publish(
+  channel: Channel,
+  msgData: MessageData,
+  connections?: NetworkConnection[],
+): Promise<void> {
   const keyPair = await getSigningKeyPair(msgData);
   const message = await Message.fromData(msgData, keyPair);
   const request = new JsonRpcRequest({
@@ -58,15 +51,19 @@ export async function publish(channel: Channel, msgData: MessageData): Promise<v
     id: AUTO_ASSIGN_ID,
   });
 
-  await getNetworkManager().sendPayload(request);
+  await getNetworkManager().sendPayload(request, connections);
 }
 
 /**
  * Subscribe to a channel
  *
  * @param channel - The channel to which we need to subscribe
+ * @param connections - An optional list of network connection if the message should only be sent on a subset of connections
  */
-export function subscribe(channel: Channel): Promise<void> {
+export async function subscribe(
+  channel: Channel,
+  connections?: NetworkConnection[],
+): Promise<void> {
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.SUBSCRIBE,
     params: new Subscribe({
@@ -75,11 +72,7 @@ export function subscribe(channel: Channel): Promise<void> {
     id: AUTO_ASSIGN_ID,
   });
 
-  return getNetworkManager()
-    .sendPayload(request)
-    .then(() => {
-      /* discard JsonRpcResponse, as subscribe only returns an ack */
-    });
+  await getNetworkManager().sendPayload(request, connections);
   // propagate the catch() with the full error message, as it needs to be handled on a higher level
 }
 
@@ -93,8 +86,12 @@ function* messageGenerator(msgs: any[], channel: Channel) {
  * Catch-up on the messages sent on the channel
  *
  * @param channel - The channel on which messages need to be retrieved
+ * @param connections - An optional list of network connection if the message should only be sent on a subset of connections
  */
-export async function catchup(channel: Channel): Promise<Generator<Message, void, undefined>> {
+export async function catchup(
+  channel: Channel,
+  connections?: NetworkConnection[],
+): Promise<Generator<Message, void, undefined>> {
   const request = new JsonRpcRequest({
     method: JsonRpcMethod.CATCHUP,
     params: new Subscribe({
@@ -103,12 +100,37 @@ export async function catchup(channel: Channel): Promise<Generator<Message, void
     id: AUTO_ASSIGN_ID,
   });
 
-  // do not catch, as it needs to be handled on a higher level
-  const response: JsonRpcResponse = await getNetworkManager().sendPayload(request);
-  if (typeof response.result === 'number') {
-    throw new Error('FIXME number in result. Should it be here?');
+  const responses: JsonRpcResponse[] = await getNetworkManager().sendPayload(request, connections);
+  for (const response of responses) {
+    // A JsonRpcResponse can have r.result being of type number or of Message[]
+    // But in the case of a catchup we always expect Message[]
+    if (typeof response.result === 'number') {
+      console.log(
+        'One of the received responses to a catchup message contained a number instead of a message array and will be ignored',
+        response,
+      );
+    }
   }
 
-  const msgs = response.result as any[];
+  // only use responses containing a message array
+  const validResponses = responses.filter((r) => typeof r.result !== 'number');
+  if (validResponses.length === 0) {
+    throw new Error('No responses containing messages were received after a catchup message!');
+  }
+
+  const msgs = [].concat(...validResponses.map((r) => r.result as any));
   return messageGenerator(msgs, channel);
+}
+
+/**
+ * Configure the JSON-RPC interface with its dependencies
+ *
+ * @param messageReg - The MessageRegistry to be injected
+ * @param keyPairReg - The KeyPairRegistry to be injected
+ */
+export function configureJsonRpcApi(messageReg: MessageRegistry, keyPairReg: KeyPairRegistry) {
+  messageRegistry = messageReg;
+  keyPairRegistry = keyPairReg;
+
+  configureMessages(messageReg);
 }

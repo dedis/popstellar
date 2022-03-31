@@ -635,7 +635,7 @@ func (h *fakeHub) SendAndHandleMessage(msg method.Broadcast) error {
 	return nil
 }
 
-// fakeSocket is a fake implementation of a sockSocket
+// fakeSocket is a fake implementation of a Socket
 //
 // - implements socket.Socket
 type fakeSocket struct {

@@ -203,7 +203,7 @@ func Test_Catchup(t *testing.T) {
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
@@ -248,7 +248,7 @@ func Test_SendReaction(t *testing.T) {
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
@@ -302,7 +302,7 @@ func Test_DeleteAbsentReaction_MustFail(t *testing.T) {
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
@@ -355,7 +355,7 @@ func Test_DeleteReaction(t *testing.T) {
 	// Create the channel
 	cha := NewChannel(reactionChannelName, fakeHub, nolog)
 
-	fakeHub.RegisterNewChannel(reactionChannelName, &cha)
+	fakeHub.RegisterNewChannel(reactionChannelName, cha)
 	_, found := fakeHub.channelByID[reactionChannelName]
 	require.True(t, found)
 
@@ -410,7 +410,7 @@ func Test_DeleteReaction(t *testing.T) {
 	require.NoError(t, err)
 
 	// We set the reactionId with the ID obtain above
-	del.ReactionId = addReactionID
+	del.ReactionID = addReactionID
 
 	buf, err = json.Marshal(del)
 	require.NoError(t, err)
@@ -425,7 +425,7 @@ func Test_DeleteReaction(t *testing.T) {
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
-	deleteReactionId := m.MessageID
+	deleteReactionID := m.MessageID
 
 	err = json.Unmarshal(bufCreatePub, &pub)
 	require.NoError(t, err)
@@ -442,7 +442,7 @@ func Test_DeleteReaction(t *testing.T) {
 
 	// Check that the messages are stored in the inbox
 	require.Equal(t, addReactionID, cha.inbox.GetSortedMessages()[0].MessageID)
-	require.Equal(t, deleteReactionId, cha.inbox.GetSortedMessages()[1].MessageID)
+	require.Equal(t, deleteReactionID, cha.inbox.GetSortedMessages()[1].MessageID)
 }
 
 // -----------------------------------------------------------------------------

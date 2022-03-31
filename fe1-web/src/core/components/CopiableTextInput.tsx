@@ -1,6 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, View, ViewStyle, TextInput, TextStyle } from 'react-native';
+import React from 'react';
+import { StyleSheet, TextInput, TextStyle, View, ViewStyle } from 'react-native';
 
 import { Typography, Views } from '../styles';
 import CopyButton from './CopyButton';

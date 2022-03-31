@@ -1,4 +1,5 @@
 import { ProtocolError } from 'core/objects';
+
 import { ActionType, MessageData, ObjectType, SignatureType } from './MessageData';
 import { ProcessableMessage } from './ProcessableMessage';
 
@@ -66,6 +67,7 @@ export class MessageRegistry {
 
     // Election
     [k(ELECTION, SETUP), { signature: KEYPAIR }],
+    [k(ELECTION, OPEN), { signature: KEYPAIR }],
     [k(ELECTION, CAST_VOTE), { signature: POP_TOKEN }],
     [k(ELECTION, END), { signature: KEYPAIR }],
     [k(ELECTION, RESULT), { signature: KEYPAIR }],

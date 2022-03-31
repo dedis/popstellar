@@ -21,8 +21,8 @@ import java.util.Optional;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-@AndroidEntryPoint(Fragment.class)
-public class AttendeesListFragment extends Hilt_AttendeesListFragment {
+@AndroidEntryPoint
+public class AttendeesListFragment extends Fragment {
 
   public static final String TAG = AttendeesListFragment.class.getSimpleName();
   public static final String EXTRA_ID = "id";

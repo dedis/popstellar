@@ -1,19 +1,19 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigation, useRoute } from '@react-navigation/core';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import QrReader from 'react-qr-reader';
 import { Badge } from 'react-native-elements';
-import { useRoute, useNavigation } from '@react-navigation/core';
 import { useToast } from 'react-native-toast-notifications';
+import QrReader from 'react-qr-reader';
 import { useSelector } from 'react-redux';
 
+import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
+import { Hash, PublicKey } from 'core/objects';
 import { Spacing } from 'core/styles';
 import containerStyles from 'core/styles/stylesheets/containerStyles';
-import STRINGS from 'resources/strings';
-import { ConfirmModal, TextBlock, WideButtonView } from 'core/components';
-import { EventTags, Hash, PublicKey } from 'core/objects';
-import { makeCurrentLao } from 'features/lao/reducer';
-import { FOUR_SECONDS } from 'resources/const';
+import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
+import { FOUR_SECONDS } from 'resources/const';
+import STRINGS from 'resources/strings';
 
 import { requestCloseRollCall } from '../network';
 
@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
   viewCenter: {
     flex: 8,
     justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 1,
     margin: Spacing.xs,
   } as ViewStyle,
@@ -37,12 +38,11 @@ const RollCallOpened = () => {
   // FIXME: navigation and route should user proper type
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
-  const { rollCallID, time } = route.params;
+  const { rollCallID } = route.params;
   const [attendees, updateAttendees] = useState(new Set<string>());
   const [inputModalIsVisible, setInputModalIsVisible] = useState(false);
   const toast = useToast();
-  const laoSelect = useMemo(makeCurrentLao, []);
-  const lao = useSelector(laoSelect);
+  const lao = useSelector(selectCurrentLao);
 
   if (!lao) {
     throw new Error('Impossible to open a Roll Call without being connected to an LAO');
@@ -71,9 +71,9 @@ const RollCallOpened = () => {
     addOwnToken().catch((e) => console.error(e));
   }, [lao, rollCallID, toast]);
 
-  const handleError = (err: string) => {
-    console.error(err);
-    toast.show(err, {
+  const handleError = (err: any) => {
+    console.error(err.toString());
+    toast.show(err.toString(), {
       type: 'danger',
       placement: 'top',
       duration: FOUR_SECONDS,
@@ -104,9 +104,8 @@ const RollCallOpened = () => {
   };
 
   const onCloseRollCall = () => {
-    const updateId = Hash.fromStringArray(EventTags.ROLL_CALL, lao.id.toString(), rollCallID, time);
     const attendeesList = Array.from(attendees).map((key: string) => new PublicKey(key));
-    return requestCloseRollCall(updateId, attendeesList)
+    return requestCloseRollCall(rollCallID, attendeesList)
       .then(() => {
         navigation.navigate(STRINGS.organizer_navigation_tab_home);
       })

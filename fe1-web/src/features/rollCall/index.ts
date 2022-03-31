@@ -1,5 +1,8 @@
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
+
+import { RollCallEventTypeComponent } from './components';
 import { configureNetwork } from './network';
+import * as screens from './screens';
 
 /**
  * Configures the roll call feature
@@ -8,4 +11,6 @@ import { configureNetwork } from './network';
  */
 export function configure(registry: MessageRegistry) {
   configureNetwork(registry);
+
+  return { eventTypeComponents: [RollCallEventTypeComponent], screens };
 }

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 /** Class modeling a Local Autonomous Organization (LAO) */
 public final class Lao {
 
-  private String channel;
+  private final Channel channel;
   private String id;
   private String name;
   private Long lastModified;
@@ -48,7 +48,8 @@ public final class Lao {
     } else if (id.isEmpty()) {
       throw new IllegalArgumentException(" The id of the Lao is empty");
     }
-    this.channel = "/root/" + id;
+
+    this.channel = Channel.getLaoChannel(id);
     this.id = id;
     this.rollCalls = new HashMap<>();
     this.elections = new HashMap<>();
@@ -208,12 +209,8 @@ public final class Lao {
     return organizer;
   }
 
-  public String getChannel() {
+  public Channel getChannel() {
     return channel;
-  }
-
-  public void setChannel(String channel) {
-    this.channel = channel;
   }
 
   public String getId() {

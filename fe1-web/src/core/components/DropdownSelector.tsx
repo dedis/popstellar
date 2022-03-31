@@ -1,6 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
 import { Picker } from '@react-native-picker/picker';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import containerStyles from '../styles/stylesheets/containerStyles';
 
