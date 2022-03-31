@@ -26,3 +26,15 @@ Feature: Create LAO
     Then match create_lao contains deep { method: 'publish', params: { channel: '/root' }}
     Then match subscribe contains deep { method: 'subscribe' }
     Then match catchup contains deep { method: 'catchup' }
+
+  Scenario:
+    When click(tab_launch_selector)
+    And input(tab_launch_lao_name_selector, 'Lao Name')
+    And click(tab_launch_create_lao_selector)
+
+    #Emptying buffer
+    * json create_lao = buffer.takeTimeout(timeout)
+    * json subscribe = buffer.takeTimeout(withMethod('subscribe'), timeout)
+    * json catchup = buffer.takeTimeout(withMethod('catchup'), timeout)
+
+
