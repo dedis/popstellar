@@ -20,9 +20,6 @@ Feature: android page object
     * def tab_launch_lao_name_selector = '#com.github.dedis.popstellar:id/entry_box_launch'
     * def tab_launch_create_lao_selector = '#com.github.dedis.popstellar:id/button_launch'
 
-    # Lao Detail
-    * def
-
   @name=basic_setup
   Scenario: Setup connection to the backend and complete on the home page
     Given driver driverOptions
