@@ -59,6 +59,7 @@ public final class ElectionHandler {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
+      //Modified: more logic to set as CREATED with Open Election implementation
       election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
@@ -109,11 +110,12 @@ public final class ElectionHandler {
     Lao lao = laoRepository.getLaoByChannel(channel);
     Election election = laoRepository.getElectionByChannel(channel);
 
-    //if created --> open it
+    //If created --> open it
     if (election.getState() == CREATED) {
       election.setEventState(OPENED);
     }
 
+    //Sets the start time to now
     election.setStart(Instant.now().getEpochSecond());
     Log.d(TAG, "election opened " + election.getStartTimestamp());
     //election.setEventState(OPENED);

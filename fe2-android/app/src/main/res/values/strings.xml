@@ -169,6 +169,7 @@
   <string name="cast_vote">Cast votes</string>
   <string name="show_results">Show results</string>
   <string name="start">Start</string>
+  <string name="refresh_start">Refresh to start</string>
 
   <!-- Consensus -->
   <string name="start_election">Start Election</string>

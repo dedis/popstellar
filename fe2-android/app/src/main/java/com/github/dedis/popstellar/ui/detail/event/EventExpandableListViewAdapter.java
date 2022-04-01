@@ -4,6 +4,7 @@ import static com.github.dedis.popstellar.model.objects.event.EventCategory.FUTU
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PAST;
 import static com.github.dedis.popstellar.model.objects.event.EventCategory.PRESENT;
 import static com.github.dedis.popstellar.model.objects.event.EventState.CLOSED;
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
 import static com.github.dedis.popstellar.model.objects.event.EventState.RESULTS_READY;
 
 import android.app.AlertDialog.Builder;
@@ -325,10 +326,28 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
     electionBinding.electionEndDate.setText("End Date : " + dateEnd);
 
     viewModel.setCurrentElection(election);
+    //Prevent that all buttons get stucked while election ends
+    viewModel
+        .getEndElectionEvent()
+        .observe(
+            lifecycleOwner,
+            end -> {
+              electionBinding.electionActionButton.setText(R.string.election_ended);
+              electionBinding.electionActionButton.setEnabled(false);
+            });
 
     //Update election's fragment view depending on category (PRESENT, FUTURE, PAST)
     switch (category) {
+
       case PRESENT:
+
+        //Check that election has been opened (synch with backend, casting enabled only after opened)
+        //Election has to opens automatically when it reaches it's scheduled start time
+        if (election.getState() == CREATED){
+          viewModel.setCurrentElection(election);
+          viewModel.openElection(election);
+        }
+
         electionBinding.electionActionButton.setText(R.string.cast_vote);
         electionBinding.electionActionButton.setEnabled(true);
         electionBinding.electionActionButton.setOnClickListener(
@@ -336,18 +355,9 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
               viewModel.setCurrentElection(election);
               viewModel.openCastVotes();
             });
-        //Prevent that all buttons are stucked while election ends, only present one's
-        viewModel
-            .getEndElectionEvent()
-            .observe(
-                lifecycleOwner,
-                end -> {
-                  electionBinding.electionActionButton.setText(R.string.election_ended);
-                  electionBinding.electionActionButton.setEnabled(false);
-                });
         break;
-      case PAST:
 
+      case PAST:
         electionBinding.electionActionButton.setEnabled(true);
         if (!viewModel.isOrganizer().getValue()) {
           electionBinding.electionActionButton.setEnabled(false);
@@ -373,8 +383,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         }
         break;
 
-        case FUTURE:
-          electionBinding.electionActionButton.setOnClickListener(
+      case FUTURE:
+        electionBinding.electionActionButton.setOnClickListener(
               clicked -> {
                 viewModel.setCurrentElection(election);
                 viewModel.openElection(election);
@@ -383,15 +393,14 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
         electionBinding.electionActionButton.setText(R.string.start);
         //Only the organizer can start the vote
         electionBinding.electionActionButton.setEnabled(viewModel.isOrganizer().getValue());
-          viewModel
-              .getOpenElectionEvent()
-              .observe(
-                  lifecycleOwner,
-                  open -> {
-                    electionBinding.electionActionButton.setText("Refresh to start");
-                    electionBinding.electionActionButton.setEnabled(false);
-                  }
-              );
+        viewModel
+            .getOpenElectionEvent()
+            .observe(
+                lifecycleOwner,
+                open -> {
+                  electionBinding.electionActionButton.setText(R.string.refresh_start);
+                  electionBinding.electionActionButton.setEnabled(false);
+                });
         break;
     }
 
@@ -439,11 +448,11 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
 
     boolean isOrganizer = viewModel.isOrganizer().getValue();
 
-    if (isOrganizer && rollCall.getState() == EventState.CREATED) {
+    if (isOrganizer && rollCall.getState() == CREATED) {
       binding.rollcallOpenButton.setVisibility(View.VISIBLE);
     } else if (isOrganizer && rollCall.getState() == CLOSED) {
       binding.rollcallReopenButton.setVisibility(View.VISIBLE);
-    } else if (!isOrganizer && rollCall.getState() == EventState.CREATED) {
+    } else if (!isOrganizer && rollCall.getState() == CREATED) {
       binding.rollcallScheduledButton.setVisibility(View.VISIBLE);
     } else if (!isOrganizer && rollCall.getState() == EventState.OPENED) {
       binding.rollcallEnterButton.setVisibility(View.VISIBLE);

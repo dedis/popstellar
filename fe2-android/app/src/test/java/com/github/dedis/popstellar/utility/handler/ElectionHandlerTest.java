@@ -206,7 +206,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void handleOpenElectionTest() throws DataHandlingException {
+  public void testHandleOpenElection() throws DataHandlingException {
     OpenElection openElection = new OpenElection(lao.getId(), election.getId(), openedAt);
     MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, GSON);
 
@@ -214,7 +214,8 @@ public class ElectionHandlerTest extends TestCase {
       election.setEventState(state);
 
       if (state == EventState.CREATED) {
-        // If the previous state was CREATED, it should change it to OPENED.
+
+        //If the previous state was CREATED, it should change it to OPENED.
         messageHandler.handleMessage(laoRepository, messageSender,
             election.getChannel(), message);
         assertEquals(EventState.OPENED, election.getState());

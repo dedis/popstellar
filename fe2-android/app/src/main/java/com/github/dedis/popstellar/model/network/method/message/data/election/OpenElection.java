@@ -54,11 +54,11 @@ public final class OpenElection extends Data {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    OpenElection that = (OpenElection) o;
+    OpenElection election = (OpenElection) o;
 
-    return openedAt == that.openedAt
-        && java.util.Objects.equals(laoId, that.laoId)
-        && java.util.Objects.equals(electionId, that.electionId);
+    return openedAt == election.openedAt
+        && election.laoId.equals(laoId)
+        && laoId.equals(election.laoId);
   }
 
   @Override
