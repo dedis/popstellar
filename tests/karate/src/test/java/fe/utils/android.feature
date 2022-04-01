@@ -8,12 +8,6 @@ Feature: android page object
     * capabilities.app = karate.toAbsolutePath('file:' + capabilities.app)
     * def driverOptions = { webDriverSession: { desiredCapabilities : "#(capabilities)" } }
 
-    # Create and import mock backend
-    * call read('classpath:fe/net/mockbackend.feature')
-    * def backendURL = 'ws://10.0.2.2:' + backend.getPort()
-    # Import message filters
-    * call read('classpath:common/net/filters.feature')
-
     # ================= Page Object Start ====================
 
     # Tab buttons
@@ -40,10 +34,10 @@ Feature: android page object
       # If this breaks, use this code to log the page hierarchy :
       # karate.log(driver.getHttp().path("source").get().value)
 
-      And click('//*[@content-desc="More options"]')
-      And click('#com.github.dedis.popstellar:id/title')
+    And click('//*[@content-desc="More options"]')
+    And click('#com.github.dedis.popstellar:id/title')
 
       # Input the mock backend url and connect to it
-      And input('#com.github.dedis.popstellar:id/entry_box_server_url', backendURL)
-      And click('#com.github.dedis.popstellar:id/button_apply')
-      And match backend.waitForConnection(5000) == true
+    And input('#com.github.dedis.popstellar:id/entry_box_server_url', backendURL)
+    And click('#com.github.dedis.popstellar:id/button_apply')
+    And match backend.waitForConnection(5000) == true
