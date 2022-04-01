@@ -16,8 +16,7 @@ public class JsonConverter {
 
   private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   private String senderSk = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQn18HMlXvQmTlz6LfbvtSrgKZ4vi3ndYN9SCForQel4w==";
-  //TODO: change to the real private key hex representation once the ambiguity of what is the true private key in the 64 byte in json keypair is resolved
-  private String privateKeyHexTemp = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
+  private String privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
 
   private String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private String messageIdForced = "";
@@ -93,12 +92,12 @@ public class JsonConverter {
   public String constructSignature(String messageDataBase64){
     try {
       // Hex representation of the private key
-      byte[] privateKeyBytes = new byte[privateKeyHexTemp.length() / 2];
+      byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
 
       for (int i = 0; i < privateKeyBytes.length; i++) {
         int index = i * 2;
 
-        int val = Integer.parseInt(privateKeyHexTemp.substring(index, index + 2), 16);
+        int val = Integer.parseInt(privateKeyHex.substring(index, index + 2), 16);
         privateKeyBytes[i] = (byte)val;
       }
       PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
