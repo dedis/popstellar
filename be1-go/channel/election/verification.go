@@ -50,15 +50,9 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 		return xerrors.Errorf(elecIDCompare, electionID, electionOpen.Election)
 	}
 
-	// verify created at is positive
+	// verify opened at is positive
 	if electionOpen.OpenedAt < 0 {
 		return xerrors.Errorf("election open created at is %d, should be minimum 0", electionOpen.OpenedAt)
-	}
-
-	// verify open time of election
-	if electionOpen.OpenedAt < c.start {
-		return xerrors.Errorf("election openedAt is %d, should be greater or equal to defined start time %d",
-			electionOpen.OpenedAt, c.start)
 	}
 
 	// verify if the election was already started or terminated

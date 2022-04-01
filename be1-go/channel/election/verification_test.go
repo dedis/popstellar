@@ -62,7 +62,6 @@ func TestVerify_ElectionOpen(t *testing.T) {
 	t.Run("lao id invalid hash", getTestBadExample("bad_election_open_lao_invalid_hash.json"))
 	t.Run("election id invalid hash", getTestBadExample("bad_election_open_election_invalid_hash.json"))
 	t.Run("opened at negative", getTestBadExample("bad_election_open_opened_at_negative.json"))
-	t.Run("opened at before start", getTestBadExample("bad_election_open_opened_at_before_start.json"))
 }
 
 func TestVerify_ElectionOpen_already_open(t *testing.T) {

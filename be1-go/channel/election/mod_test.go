@@ -423,7 +423,7 @@ func Test_Process_Election_Open(t *testing.T) {
 	// Fail for non base64 sender key
 	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
 
-	// Fail for not organizer public key
+	// Fail for non organizer public key
 	m.Sender = base64.URLEncoding.EncodeToString(generateKeyPair(t).publicBuf)
 	require.Error(t, electChannel.processElectionOpen(m, electionOpen, socket.OrganizerSocket{}))
 }
@@ -460,9 +460,7 @@ func newFakeChannel(t *testing.T) (*Channel, string) {
 	attendees := make(map[string]struct{})
 	attendees[base64.URLEncoding.EncodeToString(keypair.publicBuf)] = struct{}{}
 	channelPath := "/root/" + electionSetup.Lao + "/" + electionSetup.ID
-	fromLao := GroupLaoSettings(attendees, fakeHub, nolog, keypair.public)
-	channel := NewChannel(channelPath, electionSetup.StartTime, electionSetup.EndTime,
-		electionSetup.Questions, fromLao)
+	channel := NewChannel(channelPath, electionSetup, attendees, fakeHub, nolog, keypair.public)
 
 	channelElec, ok := channel.(*Channel)
 	require.True(t, ok)
