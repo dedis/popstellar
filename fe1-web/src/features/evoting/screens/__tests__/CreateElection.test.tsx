@@ -4,7 +4,7 @@ import React from 'react';
 import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockLaoIdHash, mockMessageRegistry, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 
 import CreateElection from '../CreateElection';
 

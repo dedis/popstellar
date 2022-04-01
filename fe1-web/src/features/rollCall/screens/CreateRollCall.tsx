@@ -14,8 +14,8 @@ import {
   WideButtonView,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import { onConfirmEventCreation } from 'core/functions/UI';
 import { Timestamp } from 'core/objects';
-import { onConfirmPress } from 'features/events/screens/CreateEvent';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -128,7 +128,7 @@ const CreateRollCall = ({ route }: any) => {
       <WideButtonView
         title={STRINGS.general_button_confirm}
         onPress={() =>
-          onConfirmPress(
+          onConfirmEventCreation(
             proposedStartTime,
             proposedEndTime,
             createRollCall,

@@ -18,9 +18,14 @@ const styles = StyleSheet.create({
 });
 
 const AppNavigation = ({ screens }: IPropTypes) => {
-  const entries = screens.map(({ name, component }) => (
+  const entries = screens.map(({ id, title, component }) => (
     // make the reasonable assumption that we haven't passed strings as components here
-    <Stack.Screen name={name} key={name} component={component as React.ComponentType} />
+    <Stack.Screen
+      name={id}
+      key={id}
+      component={component as React.ComponentType}
+      options={{ title: title || id }}
+    />
   ));
 
   return (
@@ -38,7 +43,8 @@ const AppNavigation = ({ screens }: IPropTypes) => {
 const propTypes = {
   screens: PropTypes.arrayOf(
     PropTypes.shape({
-      name: PropTypes.string.isRequired,
+      id: PropTypes.string.isRequired,
+      title: PropTypes.string,
       component: PropTypes.elementType.isRequired,
     }).isRequired,
   ).isRequired,

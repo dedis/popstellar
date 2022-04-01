@@ -36,6 +36,7 @@ export const mockLaoState: LaoState = {
   last_modified: mockLaoCreationTime.valueOf(),
   organizer: org.valueOf(),
   witnesses: [],
+  server_addresses: [],
 };
 export const mockLao = Lao.fromState(mockLaoState);
 
