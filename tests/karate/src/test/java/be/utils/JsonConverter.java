@@ -16,10 +16,10 @@ public class JsonConverter {
 
   private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   private String senderSkObject = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQn18HMlXvQmTlz6LfbvtSrgKZ4vi3ndYN9SCForQel4w==";
-  private String getSenderSk = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQ=";
+  private String senderSk = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQ=";
   private String privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
 
-  private String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  private String signatureForced = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private String messageIdForced = "";
 
   /**
@@ -111,7 +111,7 @@ public class JsonConverter {
       e.printStackTrace();
     }
     // This should never happen
-    return signature;
+    return signatureForced;
   }
 
   /**
@@ -125,11 +125,14 @@ public class JsonConverter {
    * If we want to test having a secret key that does not match the private key we can set a different private key
    */
   public void setSenderSk(String newSenderSk){
-    this.senderPk = newSenderSk;
+    this.senderSk = newSenderSk;
   }
 
+  /**
+   * If we want to test having a signature that does not match the data and private key we can set it by force
+   */
   public void setSignature(String newSignature) {
-    this.signature = newSignature;
+    this.signatureForced = newSignature;
   }
 
   /**
