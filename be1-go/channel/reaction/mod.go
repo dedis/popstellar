@@ -80,7 +80,7 @@ func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 			"reaction channel: %w", err)
 	}
 
-	err = c.handleMessage(publish.Params.Message)
+	err = c.handleMessage(publish.Params.Message, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to handle publish message: %v", err)
 	}
@@ -123,7 +123,7 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
 	c.log.Info().Msg("received a broadcast")
 
 	err := c.verifyMessage(broadcast.Params.Message)
@@ -132,7 +132,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 			"reaction channel: %w", err)
 	}
 
-	err = c.handleMessage(broadcast.Params.Message)
+	err = c.handleMessage(broadcast.Params.Message, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to handle broadcast message: %v", err)
 	}
@@ -141,9 +141,9 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 }
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message) error {
+func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
-	err := c.registry.Process(msg)
+	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
 	}
@@ -211,7 +211,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 }
 
 // processReactionAdd is the callback that processes reaction#add messages
-func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}) error {
+func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}, _ socket.Socket) error {
 	err := c.verifyAddReactionMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to verify add reaction message: %v", err)
@@ -221,7 +221,7 @@ func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}) e
 }
 
 // processReactionDelete is the callback that processes reaction#delete messages
-func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}) error {
+func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}, _ socket.Socket) error {
 	err := c.verifyDeleteReactionMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete reaction message: %v", err)

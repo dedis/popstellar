@@ -14,6 +14,8 @@ public class MultiMsgWebSocketClient extends WebSocketClient {
     super(options, logger);
     this.logger = logger;
     this.queue = queue;
+
+    setTextHandler(m -> true);
   }
 
   @Override

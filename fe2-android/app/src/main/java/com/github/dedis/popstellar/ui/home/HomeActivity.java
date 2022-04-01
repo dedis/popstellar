@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
@@ -34,15 +35,15 @@ import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/**
- * HomeActivity represents the entry point for the application.
- */
+/** HomeActivity represents the entry point for the application. */
 @AndroidEntryPoint
 public class HomeActivity extends AppCompatActivity {
 
@@ -159,13 +160,15 @@ public class HomeActivity extends AppCompatActivity {
     // Subscribe to lao adding event to adapt the chirp menu item
     mViewModel
         .getLAOs()
-        .observe(this, laos -> {
-          if (laos.size() > 0) {
-            socialMediaItem.setIcon(R.drawable.ic_social_media_opaque_foreground);
-          } else {
-            socialMediaItem.setIcon(R.drawable.ic_social_media_transparent_foreground);
-          }
-        });
+        .observe(
+            this,
+            laos -> {
+              if (laos.size() > 0) {
+                socialMediaItem.setIcon(R.drawable.ic_social_media_opaque_foreground);
+              } else {
+                socialMediaItem.setIcon(R.drawable.ic_social_media_transparent_foreground);
+              }
+            });
 
     subscribeWalletEvents();
     subscribeSocialMediaEvent();
@@ -259,7 +262,6 @@ public class HomeActivity extends AppCompatActivity {
     return new ViewModelProvider(activity).get(HomeViewModel.class);
   }
 
-
   private void setupHomeFragment() {
     setCurrentFragment(R.id.fragment_home, HomeFragment::newInstance);
   }
@@ -309,9 +311,12 @@ public class HomeActivity extends AppCompatActivity {
     if (mViewModel.getLAOs().getValue() == null) {
       Toast.makeText(getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG).show();
       Handler handler = new Handler();
-      handler.postDelayed((Runnable) () -> {
-        navbar.setSelectedItemId(R.id.home_home_menu);
-      }, 1000);
+      handler.postDelayed(
+          (Runnable)
+              () -> {
+                navbar.setSelectedItemId(R.id.home_home_menu);
+              },
+          1000);
     } else {
       Intent intent = new Intent(this, SocialMediaActivity.class);
       Log.d(TAG, "Trying to open social media");
@@ -343,7 +348,7 @@ public class HomeActivity extends AppCompatActivity {
   /**
    * Set the current fragment in the container of the activity
    *
-   * @param id               of the fragment
+   * @param id of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {
@@ -367,20 +372,44 @@ public class HomeActivity extends AppCompatActivity {
               mViewModel.openHome();
               break;
             case R.id.home_connect_menu:
-              mViewModel.openConnect();
+              if (checkWalletInitialization()) {
+                mViewModel.openConnect();
+              }
               break;
             case R.id.home_launch_menu:
-              mViewModel.openLaunch();
+              if (checkWalletInitialization()) {
+                mViewModel.openLaunch();
+              }
               break;
             case R.id.home_wallet_menu:
               mViewModel.openWallet();
               break;
             case R.id.home_chirp_menu:
-              mViewModel.openSocialMedia();
+              if (checkWalletInitialization()) {
+                mViewModel.openSocialMedia();
+              }
               break;
             default:
           }
           return true;
         });
+  }
+
+  /**
+   * Checks the status the wallet initialization and log and display error if needed
+   *
+   * @return true if the wallet is already initialized, else return false and deals with error
+   *     displaying and logging
+   */
+  private boolean checkWalletInitialization() {
+    if (Boolean.FALSE.equals(mViewModel.isWalletSetUp())) {
+      ErrorUtils.logAndShow(
+          getApplicationContext(),
+          TAG,
+          new UninitializedWalletException(),
+          R.string.uninitialized_wallet_exception);
+      return false;
+    }
+    return true;
   }
 }

@@ -4,7 +4,7 @@ import React from 'react';
 
 import { mockLao, mockLaoIdHash, mockMessageRegistry, mockReduxAction } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
-import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting';
+import { EVOTING_FEATURE_IDENTIFIER } from 'features/evoting/interface';
 
 import { EvotingHooks } from '../index';
 
@@ -38,13 +38,6 @@ describe('E-Voting hooks', () => {
     it('should return the current lao id', () => {
       const { result } = renderHook(() => EvotingHooks.useCurrentLaoId(), { wrapper });
       expect(result.current).toEqual(mockLaoIdHash);
-    });
-  });
-
-  describe('EvotingHooks.useOnConfirmEventCreation', () => {
-    it('should return the onConfirmEventCreation config option', () => {
-      const { result } = renderHook(() => EvotingHooks.useOnConfirmEventCreation(), { wrapper });
-      expect(result.current).toEqual(onConfirmEventCreation);
     });
   });
 });

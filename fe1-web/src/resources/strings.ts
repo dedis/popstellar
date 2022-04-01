@@ -17,10 +17,11 @@ const STRINGS = {
 
   /* --- App Navigation Strings --- */
   app_navigation_tab_home: 'AppHome',
-  app_navigation_tab_organizer: 'AppOrganizer',
+  app_navigation_tab_user: 'AppUser',
 
   /* --- Organization Navigation Strings --- */
   organization_navigation_tab_home: 'Home',
+  organization_navigation_tab_user: 'User',
   organization_navigation_tab_attendee: 'Attendee',
   organization_navigation_tab_organizer: 'Organizer',
   organization_navigation_tab_witness: 'Witness',
@@ -161,8 +162,10 @@ const STRINGS = {
 
   /* --- Roll-call open page Strings --- */
   roll_call_open: 'Open Roll-Call',
+  roll_call_reopen: 'Re-open Roll-Call',
 
   /* --- Roll-call scanning Strings --- */
+  roll_call_scan_attendees: 'Scan Attendees',
   roll_call_scan_description: 'Please scan each participant’s Roll-call QR code exactly once.',
   roll_call_scan_participant: 'participant scanned',
   roll_call_scan_close: 'Close Roll-Call',

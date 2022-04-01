@@ -16,6 +16,7 @@ import {
   WideButtonView,
 } from 'core/components';
 import { onChangeEndTime, onChangeStartTime } from 'core/components/DatePicker';
+import { onConfirmEventCreation } from 'core/functions/UI';
 import { EventTags, Hash, Timestamp } from 'core/objects';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
@@ -52,7 +53,6 @@ const CreateElection = ({ route }: any) => {
   const time = Timestamp.EpochNow();
 
   const currentLao = EvotingHooks.useCurrentLao();
-  const onConfirmEventCreation = EvotingHooks.useOnConfirmEventCreation();
 
   const buildDatePickerWeb = () => {
     const startDate = startTime.toDate();

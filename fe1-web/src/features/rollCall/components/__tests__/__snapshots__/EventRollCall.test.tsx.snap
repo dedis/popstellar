@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EventRollCall should correctly render 1`] = `
+Array [
+  <Text>
+    Roll Call
+  </Text>,
+  <Text>
+    Not Open yet
+  </Text>,
+  <Text>
+    Be sure to have set up your Wallet
+  </Text>,
+]
+`;
