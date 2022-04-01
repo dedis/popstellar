@@ -1,6 +1,8 @@
 package be.utils;
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.intuit.karate.Json;
+
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -89,7 +91,7 @@ public class JsonConverter {
   /**
    * Constructs a valid signature on given data
    */
-  public String constructSignature(String messageDataBase64){
+  public String constructSignature(String messageData){
     try {
       // Hex representation of the private key
       byte[] privateKeyBytes = new byte[privateKeyHex.length() / 2];
@@ -101,7 +103,7 @@ public class JsonConverter {
         privateKeyBytes[i] = (byte)val;
       }
       PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
-      byte[] singie = publicKeySign.sign(messageDataBase64.getBytes());
+      byte[] singie = publicKeySign.sign(messageData.getBytes(StandardCharsets.UTF_8));
       String signature = Base64.getUrlEncoder().encodeToString(singie);
       return signature;
 
