@@ -1,7 +1,6 @@
 package be.utils;
 import com.google.crypto.tink.subtle.Ed25519Sign;
 import com.intuit.karate.Json;
-import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
