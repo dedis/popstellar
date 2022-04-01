@@ -1,11 +1,8 @@
 @env=android,web
 Feature: Create LAO
 
-  Background: Driver basic setup
-    # This page object will add view selectors variables to the current scope, start the app and setup mock backend
-    # The is a basic setup (selected by its name tag): it will start on the home page being connected to the backend
-    # More info on tag selection: https://github.com/karatelabs/karate#call-tag-selector
-    * def page_object = 'classpath:fe/utils/<env>.feature@name=basic_setup'
+  Background: Driver setup
+    * def page_object = 'classpath:fe/utils/<env>.feature'
     * replace page_object.env = karate.env
     * call read(page_object)
 
@@ -15,13 +12,13 @@ Feature: Create LAO
     And click(tab_launch_create_lao_selector)
 
     # Retrieving sent messages
-    * json create_lao = buffer.takeTimeout(timeout)
-    * json subscribe = buffer.takeTimeout(withMethod('subscribe'), timeout)
-    * json catchup = buffer.takeTimeout(withMethod('catchup'), timeout)
+    * json create_lao = backend.takeTimeout(1000)
+    * json subscribe = backend.takeTimeout(withMethod('subscribe'), 1000)
+    * json catchup = backend.takeTimeout(withMethod('catchup'), 1000)
 
     # TODO Test consensus subscription when it is implemented on both fe
-    # * json subscribe_consensus = backend.takeTimeout(withMethod('subscribe'), timeout)
-    # * json catchup_consensus = backend.takeTimeout(withMethod('catchup'), timeout)
+    # * json subscribe_consensus = backend.takeTimeout(withMethod('subscribe'), 1000)
+    # * json catchup_consensus = backend.takeTimeout(withMethod('catchup'), 1000)
 
     Then match create_lao contains deep { method: 'publish', params: { channel: '/root' }}
     Then match subscribe contains deep { method: 'subscribe' }
