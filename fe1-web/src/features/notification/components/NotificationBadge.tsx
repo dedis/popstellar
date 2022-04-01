@@ -1,8 +1,10 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
+import { useSelector } from 'react-redux';
 
 import containerStyles from 'core/styles/stylesheets/containerStyles';
+
+import { selectUnreadNotificationCount } from '../reducer';
 
 const NotificationBadgeStyles = StyleSheet.create({
   container: {
@@ -15,7 +17,9 @@ const NotificationBadgeStyles = StyleSheet.create({
   } as ViewStyle,
 });
 
-const NotificationBadge = ({ children: count }: IPropTypes) => {
+const NotificationBadge = () => {
+  const count = useSelector(selectUnreadNotificationCount);
+
   if (count <= 0) {
     return null;
   }
@@ -23,11 +27,5 @@ const NotificationBadge = ({ children: count }: IPropTypes) => {
   return <View style={NotificationBadgeStyles.container} />;
 };
 
-const propTypes = {
-  children: PropTypes.number.isRequired,
-};
-NotificationBadge.propTypes = propTypes;
-
-type IPropTypes = PropTypes.InferProps<typeof propTypes>;
-
-export default NotificationBadge;
+// The react-navigation Badge parameter does not directly accept components
+export default () => <NotificationBadge />;

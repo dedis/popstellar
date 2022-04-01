@@ -9,6 +9,7 @@ import * as evoting from './evoting';
 import * as home from './home';
 import * as lao from './lao';
 import * as meeting from './meeting';
+import * as notification from './notification';
 import * as rollCall from './rollCall';
 import * as social from './social';
 import * as wallet from './wallet';
@@ -19,6 +20,7 @@ export function configureFeatures() {
   const keyPairRegistry = new KeyPairRegistry();
 
   // configure features
+  const notificationConfiguration = notification.configure();
   const eventsConfiguration = events.configure();
   const laoConfiguration = lao.configure({ registry: messageRegistry });
   const connectConfiguration = connect.configure({
@@ -51,9 +53,9 @@ export function configureFeatures() {
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
     useCurrentLao: laoConfiguration.hooks.useCurrentLao,
-    addNotification: laoConfiguration.actionCreators.addNotification,
-    markNotificationAsRead: laoConfiguration.actionCreators.markNotificationAsRead,
-    discardNotification: laoConfiguration.actionCreators.discardNotification,
+    addNotification: notificationConfiguration.actionCreators.addNotification,
+    markNotificationAsRead: notificationConfiguration.actionCreators.markNotificationAsRead,
+    discardNotification: notificationConfiguration.actionCreators.discardNotification,
   });
   const walletConfiguration = wallet.configure(keyPairRegistry);
 
@@ -109,6 +111,12 @@ export function configureFeatures() {
         order: 0,
       },
       {
+        id: STRINGS.organization_navigation_tab_notifications,
+        Component: notificationConfiguration.navigation.NotificationNavigation,
+        order: 70000,
+        Badge: notificationConfiguration.components.NotificationBadge,
+      },
+      {
         id: STRINGS.navigation_tab_wallet,
         Component: walletConfiguration.navigation.WalletNavigation,
         order: 99999999,
@@ -149,6 +157,7 @@ export function configureFeatures() {
 
   // setup all reducers
   addReducers({
+    ...notificationConfiguration.reducers,
     ...laoConfiguration.reducers,
     ...socialConfiguration.reducers,
     ...eventsConfiguration.reducers,

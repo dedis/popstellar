@@ -6,13 +6,7 @@ import { Channel, Hash } from 'core/objects';
 import FeatureInterface from 'core/objects/FeatureInterface';
 
 import { Lao } from '../objects';
-import {
-  LaoReducerState,
-  LAO_REDUCER_PATH,
-  NotificationReducerState,
-  NOTIFICATION_REDUCER_PATH,
-} from '../reducer';
-import { NotificationState } from '../reducer/NotificationReducer';
+import { LaoReducerState, LAO_REDUCER_PATH } from '../reducer';
 import { LaoFeature } from './Feature';
 
 export const LAO_FEATURE_IDENTIFIER = 'lao';
@@ -60,9 +54,6 @@ export interface LaoConfigurationInterface extends FeatureInterface {
   /* action creators */
   actionCreators: {
     addLaoServerAddress: (laoId: Hash | string, serverAddress: string) => AnyAction;
-    addNotification: (notification: Omit<NotificationState, 'id' | 'hasBeenRead'>) => AnyAction;
-    markNotificationAsRead: (notificationId: number) => AnyAction;
-    discardNotification: (notificationId: number) => AnyAction;
   };
 
   /* hooks */
@@ -147,7 +138,6 @@ export interface LaoConfigurationInterface extends FeatureInterface {
   /* reducers */
   reducers: {
     [LAO_REDUCER_PATH]: Reducer<LaoReducerState>;
-    [NOTIFICATION_REDUCER_PATH]: Reducer<NotificationReducerState>;
   };
 }
 
