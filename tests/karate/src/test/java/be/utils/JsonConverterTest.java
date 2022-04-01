@@ -56,11 +56,13 @@ public class JsonConverterTest {
     Map<String,Object> paramsMap = new LinkedHashMap<>();
     paramsMap.put("channel","/root");
     Map<String,Object> messageMap  = new LinkedHashMap<>();
-    // fields are retaken from valid_lao_create.json
+
+    // fields are taken from valid_lao_create.json
     messageMap.put("data","eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9");
     messageMap.put("sender","J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=");
     messageMap.put("signature","ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==");
     messageMap.put("message_id","2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=");
+
     String[] witness = new String[0];
     messageMap.put("witness_signatures",witness);
     paramsMap.put("message",messageMap);

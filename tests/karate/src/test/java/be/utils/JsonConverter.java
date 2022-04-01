@@ -17,7 +17,7 @@ public class JsonConverter {
   private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   private String senderSk = "0leCDBokllJXKXT72psnqF5UYFVRxnc1BNDShY05KHQn18HMlXvQmTlz6LfbvtSrgKZ4vi3ndYN9SCForQel4w==";
   //TODO: change to the real private key hex representation once the ambiguity of what is the true private key in the 64 byte in json keypair is resolved
-  private String privateKeyHexTemp = "1498b5467a63dffa2dc9d9e069caf075d16fc33fdd4c3b01bfadae6433767d93";
+  private String privateKeyHexTemp = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
 
   private String signature = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private String messageIdForced = "";
@@ -45,7 +45,7 @@ public class JsonConverter {
     messageJson.put("method", "publish");
     messageJson.put("id", id);
 
-    Map<String,Object> paramsPart = constructParamsField(channel, messageDataBase64);
+    Map<String,Object> paramsPart = constructParamsField(channel, stringData);
 
     messageJson.put("params", paramsPart);
     messageJson.put("jsonrpc", "2.0");
@@ -53,12 +53,14 @@ public class JsonConverter {
     return Json.of(messageJson);
   }
 
-  public Map<String,Object> constructMessageField(String messageDataBase64, boolean forcedMessageId){
+  public Map<String,Object> constructMessageField(String stringData, boolean forcedMessageId){
     Map<String,Object> messagePart  = new LinkedHashMap<>();
+    Json messageData = Json.of(stringData);
+    String messageDataBase64 = convertJsonToBase64(messageData);
     messagePart.put("data", messageDataBase64);
     messagePart.put("sender", senderPk);
 
-    String signature = constructSignature(messageDataBase64);
+    String signature = constructSignature(stringData);
     messagePart.put("signature", signature);
     String messageId = hash(messageDataBase64.getBytes(),signature.getBytes());
 

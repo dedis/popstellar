@@ -6,7 +6,7 @@
     @name=valid_lao
     Scenario: Creates valid lao
 
-      * string laoCreateReq  = read('classpath:data/lao/valid_lao_create_2.json')
+      * string laoCreateReq  = read('classpath:data/lao/valid_lao_create.json')
       * eval frontend.send(laoCreateReq)
       * frontend_buffer.takeTimeout(timeout)
 

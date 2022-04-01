@@ -66,3 +66,4 @@ Feature: Roll Call Open
     * json err_open = frontend_buffer.takeTimeout(timeout)
     Then match err_open contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
 
+    
