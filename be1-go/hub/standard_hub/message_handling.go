@@ -279,6 +279,20 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to broadcast message: %v", err)
 	}
 
+	signature := publish.Params.Message.Signature
+	messageId := publish.Params.Message.MessageID
+	data := publish.Params.Message.Data
+
+	expectedMessageId := messagedata.Hash(data,signature)
+
+	if expectedMessageId != messageId {
+		h.log.Info().Msg("----------------------------------------------------------")
+		h.log.Info().Msg("expectedId is " + expectedMessageId + " message id "+ messageId)
+		return publish.ID, xerrors.Errorf("wrong message id")
+	}
+	h.log.Info().Msg("***********************************************************")
+	h.log.Info().Msg("expectedId is " + expectedMessageId + " message id "+ messageId)
+
 	if publish.Params.Channel == rootChannel {
 		err := h.handleRootChannelPublishMesssage(socket, publish)
 		if err != nil {

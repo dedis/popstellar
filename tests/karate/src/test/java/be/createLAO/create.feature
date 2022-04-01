@@ -10,26 +10,26 @@ Feature: Create a pop LAO
     * def id = 1
     * string channel = "/root"
 
-  Scenario: Create Lao request with empty lao name should fail with an error response
-    Given string laoCreateData = read('classpath:data/lao/data/bad_lao_create_empty_name_data.json')
-    * string laoCreate = converter.publishМessageFromData(laoCreateData, id, channel)
-    And   def socket = karate.webSocket(wsURL,handle)
-    When  eval socket.send(laoCreate)
-    *  karate.log('Sent: '+ karate.pretty(laoCreate))
-    And  json err = socket.listen(timeout)
-    * karate.log('Received: '+ err )
-    Then match err contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
+#  Scenario: Create Lao request with empty lao name should fail with an error response
+#    Given string laoCreateData = read('classpath:data/lao/data/bad_lao_create_empty_name_data.json')
+#    * string laoCreate = converter.publishМessageFromData(laoCreateData, id, channel)
+#    And   def socket = karate.webSocket(wsURL,handle)
+#    When  eval socket.send(laoCreate)
+#    *  karate.log('Sent: '+ karate.pretty(laoCreate))
+#    And  json err = socket.listen(timeout)
+#    * karate.log('Received: '+ err )
+#    Then match err contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
 
-  Scenario: Create Lao with negative time should fail with an error response
-      Given string badLaoCreateData = read('classpath:data/lao/data/bad_lao_create_negative_data.json')
-      * string badLaoCreate = converter.publishМessageFromData(badLaoCreateData, id, channel)
-      And   def socket = karate.webSocket(wsURL,handle)
-      When  eval socket.send(badLaoCreate)
-      *  karate.log('Sent: '+ karate.pretty(badLaoCreate))
-      And  json err = socket.listen(timeout)
-      *  karate.log('Received: '+ karate.pretty(err) )
-      Then match err contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
-
+#  Scenario: Create Lao with negative time should fail with an error response
+#      Given string badLaoCreateData = read('classpath:data/lao/data/bad_lao_create_negative_data.json')
+#      * string badLaoCreate = converter.publishМessageFromData(badLaoCreateData, id, channel)
+#      And   def socket = karate.webSocket(wsURL,handle)
+#      When  eval socket.send(badLaoCreate)
+#      *  karate.log('Sent: '+ karate.pretty(badLaoCreate))
+#      And  json err = socket.listen(timeout)
+#      *  karate.log('Received: '+ karate.pretty(err) )
+#      Then match err contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
+#
   Scenario: Create Lao with invalid id hash should fail with an error response
       Given string badLaoCreateData = read('classpath:data/lao/data/bad_lao_create_id_invalid_hash_data.json')
       * string badLaoCreate = converter.publishМessageFromData(badLaoCreateData, id, channel)
