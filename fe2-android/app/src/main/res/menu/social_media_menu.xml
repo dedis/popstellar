@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
     android:id="@+id/social_media_home_menu"
-    android:icon="@drawable/ic_social_media_home_foreground"
+    android:icon="@drawable/ic_common_home_opaque_foreground"
     android:title="@string/home" />
   <item
     android:id="@+id/social_media_search_menu"

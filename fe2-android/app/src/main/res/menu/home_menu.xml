@@ -2,15 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
   <item
     android:id="@+id/home_home_menu"
-    android:icon="@drawable/ic_social_media_home_foreground"
+    android:icon="@drawable/ic_common_home_opaque_foreground"
     android:title="@string/tab_home"/>
   <item
     android:id="@+id/home_connect_menu"
-    android:icon="@drawable/ic_home_connect_foreground"
+    android:icon="@drawable/ic_home_connect_opaque_foreground"
     android:title="@string/tab_connect"/>
   <item
     android:id="@+id/home_launch_menu"
-    android:icon="@drawable/ic_home_launch_foreground"
+    android:icon="@drawable/ic_home_launch_opaque_foreground"
     android:title="@string/tab_launch"/>
   <item
     android:id="@+id/home_wallet_menu"
@@ -18,6 +18,6 @@
     android:title="@string/tab_wallet"/>
   <item
     android:id="@+id/home_chirp_menu"
-    android:icon="@drawable/ic_social_media_transparent_foreground"
+    android:icon="@drawable/ic_common_social_media_transparent_foreground"
     android:title="Social Media"/>
 </menu>

@@ -59,8 +59,9 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
   @Override
   public void onBindViewHolder(@NonNull LAOListItemViewHolder holder, int position) {
 
-    CardView cardView = holder.cardView;
     final Lao lao = laos.get(position);
+
+    CardView cardView = holder.cardView;
     cardView.setOnClickListener(v -> {
       if (openLaoDetail) {
         homeViewModel.openLAO(lao.getId());

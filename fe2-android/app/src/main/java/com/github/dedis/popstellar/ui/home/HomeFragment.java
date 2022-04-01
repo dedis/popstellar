@@ -9,8 +9,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import com.github.dedis.popstellar.databinding.HomeFragmentBinding;
 
@@ -79,9 +81,13 @@ public final class HomeFragment extends Fragment {
 
     mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, true);
 
-    recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+    LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+    recyclerView.setLayoutManager(mLayoutManager);
+
+    DividerItemDecoration dividerItemDecoration =
+        new DividerItemDecoration(getContext(), mLayoutManager.getOrientation());
+    recyclerView.addItemDecoration(dividerItemDecoration);
 
     recyclerView.setAdapter(mListAdapter);
-
   }
 }

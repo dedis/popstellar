@@ -4,14 +4,12 @@ import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPE
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.IdRes;
@@ -24,7 +22,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
-import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
@@ -34,11 +31,12 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
+import com.github.dedis.popstellar.utility.error.GenericException;
+import com.github.dedis.popstellar.utility.error.NoLAOException;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -73,7 +71,6 @@ public class HomeActivity extends AppCompatActivity {
 
     navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar();
-    MenuItem socialMediaItem = navbar.getMenu().getItem(4);
 
     // Subscribe to "open lao" event
     mViewModel
@@ -157,24 +154,14 @@ public class HomeActivity extends AppCompatActivity {
               }
             });
 
-    // Subscribe to lao adding event to adapt the chirp menu item
-    mViewModel
-        .getLAOs()
-        .observe(
-            this,
-            laos -> {
-              if (laos.size() > 0) {
-                socialMediaItem.setIcon(R.drawable.ic_social_media_opaque_foreground);
-              } else {
-                socialMediaItem.setIcon(R.drawable.ic_social_media_transparent_foreground);
-              }
-            });
-
     subscribeWalletEvents();
     subscribeSocialMediaEvent();
   }
 
   private void subscribeWalletEvents() {
+
+    MenuItem connectItem = navbar.getMenu().getItem(1);
+    MenuItem launchItem = navbar.getMenu().getItem(2);
 
     // Subscribe to "open Seed" event
     mViewModel
@@ -215,9 +202,27 @@ public class HomeActivity extends AppCompatActivity {
                 openContentWallet(laoId);
               }
             });
+
+    mViewModel
+        .getIsWalletSetUpEvent()
+        .observe(
+            this,
+            aBoolean -> {
+              // We set transparency of the
+              if (aBoolean) {
+                connectItem.setIcon(R.drawable.ic_home_connect_opaque_foreground);
+                launchItem.setIcon(R.drawable.ic_home_launch_opaque_foreground);
+              } else {
+                connectItem.setIcon(R.drawable.ic_home_connect_transparent_foreground);
+                launchItem.setIcon(R.drawable.ic_home_launch_transparent_foreground);
+              }
+            });
   }
 
   private void subscribeSocialMediaEvent() {
+
+    MenuItem socialMediaItem = navbar.getMenu().getItem(4);
+
     // Subscribe to "open social media" event
     mViewModel
         .getOpenSocialMediaEvent()
@@ -227,6 +232,19 @@ public class HomeActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupSocialMediaActivity();
+              }
+            });
+
+    // Subscribe to lao adding event to adapt the social media menu item
+    mViewModel
+        .getLAOs()
+        .observe(
+            this,
+            laos -> {
+              if (laos.size() > 0) {
+                socialMediaItem.setIcon(R.drawable.ic_common_social_media_opaque_foreground);
+              } else {
+                socialMediaItem.setIcon(R.drawable.ic_common_social_media_transparent_foreground);
               }
             });
   }
@@ -308,21 +326,10 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
-    if (mViewModel.getLAOs().getValue() == null) {
-      Toast.makeText(getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG).show();
-      Handler handler = new Handler();
-      handler.postDelayed(
-          (Runnable)
-              () -> {
-                navbar.setSelectedItemId(R.id.home_home_menu);
-              },
-          1000);
-    } else {
       Intent intent = new Intent(this, SocialMediaActivity.class);
       Log.d(TAG, "Trying to open social media");
       intent.putExtra(OPENED_FROM, TAG);
       startActivity(intent);
-    }
   }
 
   private void openLaoDetails(String laoId) {
@@ -374,18 +381,26 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.home_connect_menu:
               if (checkWalletInitialization()) {
                 mViewModel.openConnect();
+              } else {
+                revertToHome();
               }
               break;
             case R.id.home_launch_menu:
               if (checkWalletInitialization()) {
                 mViewModel.openLaunch();
+              } else {
+                revertToHome();
               }
               break;
             case R.id.home_wallet_menu:
               mViewModel.openWallet();
               break;
             case R.id.home_chirp_menu:
-              if (checkWalletInitialization()) {
+              if (mViewModel.getLAOs().getValue() == null) {
+                ErrorUtils.logAndShow(
+                    getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
+                revertToHome();
+              } else {
                 mViewModel.openSocialMedia();
               }
               break;
@@ -411,5 +426,12 @@ public class HomeActivity extends AppCompatActivity {
       return false;
     }
     return true;
+  }
+
+  private void revertToHome() {
+    Handler handler = new Handler();
+    handler.postDelayed(
+        () -> navbar.setSelectedItemId(R.id.home_home_menu),
+        getResources().getInteger(R.integer.navigation_reversion_delay));
   }
 }
