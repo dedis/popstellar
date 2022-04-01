@@ -73,4 +73,19 @@ public class JsonConverterTest {
     assert toCompare.toString().equals(jsonValidLaoMessage.toString());
 
   }
+
+  @Test
+  public void testIf(){
+    JsonConverter jsonConverter = new JsonConverter();
+    // This data was collected from a message sent by fe-2
+    String signature_sent = "QZMdg27-pdQKUDQMlsQY1uAiIgHtT5s29n7kUUI4cHdAGVRMNopC7wVJHvpC1j6p95RN0IqZyC-VhldE0bMgAA==";
+    String message_id_sent = "ZV_OUCYDlF2ScULlLDmjZuiqzcbujEgjcaoFmLsArpU=";
+    String dataBase64_sent = "eyJjcmVhdGlvbiI6MTY0ODgxOTE0OCwiaWQiOiJoTVNoM2t2a0lHMGdBcWpLQ3ZrajBQV2Eza3VHd21PdnR5SEVua2d4UzdrPSIsIm5hbWUiOiJsYW80Iiwib3JnYW5pemVyIjoiWUdaR25NUkFkS2J3MDZpX1lZczFxVDA3TlBZTEFLMGNubnpDcnNDTFE0QT0iLCJ3aXRuZXNzZXMiOltdLCJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUifQ==";
+
+    String message_id_check = jsonConverter.hash(dataBase64_sent.getBytes(),signature_sent.getBytes());
+
+    assert message_id_sent.equals(message_id_check);
+  }
+
+
 }

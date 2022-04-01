@@ -56,6 +56,7 @@ public class KeyManager {
     try {
       cacheMainKey();
       Log.d(TAG, "Public Key = " + getMainPublicKey().getEncoded());
+      Log.d(TAG, "Private Key = " + getMainKeyPair().getPrivateKey().toString());
     } catch (IOException | GeneralSecurityException e) {
       Log.e(TAG, "Failed to retrieve device's key", e);
       throw new IllegalStateException("Failed to retrieve device's key", e);

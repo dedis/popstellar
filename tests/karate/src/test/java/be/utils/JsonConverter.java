@@ -146,7 +146,7 @@ public class JsonConverter {
   /**
    * Hashes an arbitrary number of arguments
    */
-  private String hash(byte[]... allData){
+  public String hash(byte[]... allData){
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
       for(byte[] data : allData) {
