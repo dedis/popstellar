@@ -57,8 +57,8 @@ public final class OpenElection extends Data {
     OpenElection election = (OpenElection) o;
 
     return openedAt == election.openedAt
-        && election.laoId.equals(laoId)
-        && laoId.equals(election.laoId);
+        && laoId.equals(election.laoId)
+        && electionId.equals(election.electionId);
   }
 
   @Override
