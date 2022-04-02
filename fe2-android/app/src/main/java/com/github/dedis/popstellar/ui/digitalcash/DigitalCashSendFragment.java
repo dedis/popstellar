@@ -68,11 +68,11 @@ public class DigitalCashSendFragment extends Fragment {
    private void sendTransaction(){
       //send some coin
      // make a toast appear
-     if (mDigitalCashViewModel.getLaoId().getValue() == null) {
-       Toast.makeText(
-               requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
-               .show();
-     } else {
+     //if (mDigitalCashViewModel.getLaoId().getValue() == null) {
+      // Toast.makeText(
+       //        requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
+        //       .show();
+    // } else {
        mDigitalCashViewModel.sendCoin(
                Integer.parseInt(mDigitalCashSendFragBinding.edAmount.getText().toString()),
                new Address(mDigitalCashSendFragBinding.edSenderAddress.getText().toString()),
@@ -80,12 +80,7 @@ public class DigitalCashSendFragment extends Fragment {
        );
        // Change to Open Receipt
        mDigitalCashViewModel.openReceipt();
-     }
+     //}
    }
 
-  private void setupSendChirpButton() {
-    mDigitalCashSendFragBinding.buttonSend
-            .setOnClickListener(
-            v -> mDigitalCashViewModel.);
-  }
 }

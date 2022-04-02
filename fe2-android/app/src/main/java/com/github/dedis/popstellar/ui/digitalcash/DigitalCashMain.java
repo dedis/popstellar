@@ -43,26 +43,26 @@ public class DigitalCashMain extends AppCompatActivity {
         mViewModel = obtainViewModel(this);
 
         // When we launch the social media from a lao, it directly sets its id and name
-        if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
-            mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
-            mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
-        }
+        //if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
+        //    mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
+        //    mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
+        //}
         setupDigitalCashHomeFragment();
         setupNavigationBar();
 
         // Subscribe to "lao name" string
-        mViewModel
-                .getLaoName()
-                .observe(
-                        this,
-                        newLaoName -> {
-                            if (newLaoName != null) {
-                                Objects.requireNonNull(getSupportActionBar())
-                                        .setTitle(String.format("popstellar - %s", newLaoName));
-                            }
-                        });
+        //mViewModel
+        //        .getLaoName()
+         //       .observe(
+           //             this,
+             //           newLaoName -> {
+               //             if (newLaoName != null) {
+                 //               Objects.requireNonNull(getSupportActionBar())
+                   //                     .setTitle(String.format("popstellar - %s", newLaoName));
+                     //       }
+                       // });
 
-        mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
+        //mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
 
         //Subscribe to "open home"
         mViewModel
@@ -140,44 +140,29 @@ public class DigitalCashMain extends AppCompatActivity {
 
 
         // Get the submenu and clear its unique item. The item was needed to create the submenu
-        SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
-        // Adding all currently opened lao name to the submenu
-        mViewModel
-                .getLAOs()
-                .observe(
-                        this,
-                        list -> {
-                            if (list != null) {
-                                laosList.clear();
-                                for (int i = 0; i < list.size(); ++i) {
-                                    // Creating a unique id using the index of the lao within the list
-                                    laosList.add(Menu.NONE, i, Menu.CATEGORY_CONTAINER, list.get(i).getName());
-                                }
-                            }
-                        });
-
+        //SubMenu laosList = menu.findItem(R.id.laos_list).getSubMenu();
 
         return true;
     }
 
-    @SuppressLint("NonConstantResourceId")
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    //@SuppressLint("NonConstantResourceId")
+    //@Override
+    //public boolean onOptionsItemSelected(MenuItem item) {
         // Retrieve the index of the lao within the list
-        int i = item.getItemId();
-        List<Lao> laos = mViewModel.getLAOs().getValue();
-        if (laos != null && i >= 0 && i < laos.size()) {
-            Lao lao = laos.get(i);
-            mViewModel.setLaoId(lao.getId());
-            mViewModel.setLaoName(lao.getName());
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+        //int i = item.getItemId();
+       // List<Lao> laos = mViewModel.getLAOs().getValue();
+      //  if (laos != null && i >= 0 && i < laos.size()) {
+      //      Lao lao = laos.get(i);
+      //      mViewModel.setLaoId(lao.getId());
+      //      mViewModel.setLaoName(lao.getName());
+      //      return true;
+      //  }
+     //   return super.onOptionsItemSelected(item);
+    //}
 
     @SuppressLint("NonConstantResourceId")
     public void setupNavigationBar() {
-        BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
         bottomNavigationView.setOnItemSelectedListener(
                 item -> {
                     switch (item.getItemId()) {
@@ -203,7 +188,7 @@ public class DigitalCashMain extends AppCompatActivity {
     }
 
     public void setupDigitalCashHomeFragment() {
-        setCurrentFragment(R.id.fragment_digital_cash_home, DigitalCashHomeFragment::newInstance);
+        setCurrentFragment(R.id.fragment_container_home, DigitalCashHomeFragment::newInstance);
     }
 
     public void setupDigitalCashSendFragment() {
@@ -235,6 +220,6 @@ public class DigitalCashMain extends AppCompatActivity {
 
         // Set the new fragment in the container
         ActivityUtils.replaceFragmentInActivity(
-                getSupportFragmentManager(), fragment, R.id.fragment_container_social_media);
+                getSupportFragmentManager(), fragment, R.id.fragment_container_digital_cash);
     }
 }

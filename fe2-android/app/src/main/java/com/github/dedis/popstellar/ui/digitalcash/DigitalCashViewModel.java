@@ -46,7 +46,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   /*
    * Dependencies for this class
    */
-  private final LAORepository laoRepository;
+  //private final LAORepository laoRepository;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
@@ -73,9 +73,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mSendNewTransactionEvent = new MutableLiveData<>();
 
-  private final LiveData<List<Lao>> mLAOs;
-  private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
-  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
+  //private final LiveData<List<Lao>> mLAOs;
+  //private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
+  //private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
   @Inject
   public DigitalCashViewModel(
@@ -85,15 +85,15 @@ public class DigitalCashViewModel extends AndroidViewModel {
       Gson gson,
       KeyManager keyManager) {
     super(application);
-    this.laoRepository = laoRepository;
+    //this.laoRepository = laoRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
     disposables = new CompositeDisposable();
 
-    this.mLAOs =
-        LiveDataReactiveStreams.fromPublisher(
-            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+    //this.mLAOs =
+       // LiveDataReactiveStreams.fromPublisher(
+          //  this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   /*
@@ -127,17 +127,17 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return mSendNewTransactionEvent;
   }
 
-  public LiveData<List<Lao>> getLAOs() {
-    return mLAOs;
-  }
+  //public LiveData<List<Lao>> getLAOs() {
+   // return mLAOs;
+  //}
 
-  public LiveData<String> getLaoId() {
-    return mLaoId;
-  }
+  //public LiveData<String> getLaoId() {
+   // return mLaoId;
+  //}
 
-  public LiveData<String> getLaoName() {
-    return mLaoName;
-  }
+  //public LiveData<String> getLaoName() {
+    //return mLaoName;
+  //}
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -166,13 +166,13 @@ public class DigitalCashViewModel extends AndroidViewModel {
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
   }
 
-  public void setLaoId(String laoId) {
-    mLaoId.setValue(laoId);
-  }
+  //public void setLaoId(String laoId) {
+    //mLaoId.setValue(laoId);
+  //}
 
-  public void setLaoName(String laoName) {
-    mLaoName.setValue(laoName);
-  }
+  //public void setLaoName(String laoName) {
+    //mLaoName.setValue(laoName);
+  //}
 
   public void setSendNewTransactionEvent(){
     mSendNewTransactionEvent.postValue(new SingleEvent<>(true));
@@ -190,11 +190,12 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   public void sendCoin(int amount , @Nullable Address sender_address, @Nullable Address receiver_address){
     Log.d(TAG, "Sending a transaction");
-    Lao lao = getCurrentLao();
-    if (lao == null) {
-      Log.e(TAG, LAO_FAILURE_MESSAGE);
-      return;
-    }
+    Lao lao = new Lao("hey");
+            //getCurrentLao();
+    //if (lao == null) {
+     // Log.e(TAG, LAO_FAILURE_MESSAGE);
+      //return;
+   // }
 
     AddTransaction addTransaction = new AddTransaction(amount,sender_address,receiver_address);
 
@@ -226,16 +227,16 @@ public class DigitalCashViewModel extends AndroidViewModel {
     disposables.dispose();
   }
 
-  @Nullable
-  public Lao getCurrentLao() {
-    return getLao(getLaoId().getValue());
-  }
+  //@Nullable
+  //public Lao getCurrentLao() {
+  //  return getLao(getLaoId().getValue());
+  //}
 
-  @Nullable
-  private Lao getLao(String laoId) {
-    LAOState laoState = laoRepository.getLaoById().get(laoId);
-    if (laoState == null) return null;
+  //@Nullable
+  //private Lao getLao(String laoId) {
+    //LAOState laoState = laoRepository.getLaoById().get(laoId);
+   // if (laoState == null) return null;
 
-    return laoState.getLao();
-  }
+  //  return laoState.getLao();
+  //}
 }

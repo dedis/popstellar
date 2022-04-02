@@ -69,8 +69,8 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSeedEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSettingsEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
-      new MutableLiveData<>();
+  //private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
+      //new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
           new MutableLiveData<>();
 
@@ -287,9 +287,9 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenSettingsEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
-    return mOpenSocialMediaEvent;
-  }
+  //public LiveData<SingleEvent<Boolean>> getOpenSocialMediaEvent() {
+    //return mOpenSocialMediaEvent;
+  //}
 
   public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
     return mOpenDigitalCashEvent;
@@ -345,9 +345,9 @@ public class HomeViewModel extends AndroidViewModel
     mOpenSettingsEvent.setValue(new SingleEvent<>(true));
   }
 
-  public void openSocialMedia() {
-    mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
-  }
+  //public void openSocialMedia() {
+    //mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
+  //}
 
   public void openDigitalCash() {
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));

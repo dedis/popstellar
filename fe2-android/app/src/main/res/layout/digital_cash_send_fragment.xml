@@ -49,6 +49,7 @@
           android:id="@+id/ed_amount"
           android:layout_width="match_parent"
           android:layout_height="65dp"
+          android:layout_marginLeft="43dp"
           android:inputType="number"
           android:hint="Amount LAO COIN" />
 
@@ -58,12 +59,14 @@
         android:id="@+id/ed_sender_address"
         android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_marginLeft="12dp"
         android:hint="Give Sender Address"></EditText>
 
       <EditText
         android:id="@+id/ed_receiver_address"
         android:layout_width="match_parent"
         android:layout_height="52dp"
+        android:layout_marginLeft="12dp"
         android:hint="Give Receiver Address"></EditText>
 
       <Button
