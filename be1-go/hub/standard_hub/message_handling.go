@@ -273,7 +273,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	messageId := publish.Params.Message.MessageID
 	data := publish.Params.Message.Data
 
-	expectedMessageId := messagedata.Hash(data,signature)
+	expectedMessageId := messagedata.Hash(data, signature)
 
 	if expectedMessageId != messageId {
 		return publish.ID, xerrors.Errorf("message_id is wrong")
