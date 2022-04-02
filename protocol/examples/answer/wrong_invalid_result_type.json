@@ -1,0 +1,7 @@
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+        "type": "some invalid result type"
+    }
+}

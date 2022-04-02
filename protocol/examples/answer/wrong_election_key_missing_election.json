@@ -1,0 +1,8 @@
+{
+    "jsonrpc": "2.0",
+    "id": 10,
+    "result": {
+        "type": "election_key",
+        "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
+    }
+}

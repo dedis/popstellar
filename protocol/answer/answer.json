@@ -7,23 +7,64 @@
     "additionalProperties": false,
     "properties": {
         "result": {
-            "description": "In case of positive answer, result of the client query",
+            "description": "In case of positive answer, result of the client query. This field is absent if there is an error",
+            "$comment": "To make it easier to differentiate different result types, every result type must have a 'type' constant property",
             "oneOf": [
                 {
-                    "type": "integer",
-                    "const": 0,
-                    "$comment": "Default return value indicating a success"
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "response_code"
+                        },
+                        "response_code": {
+                            "const": 0,
+                            "$comment": "Default return value indicating a success"
+                        }
+                    },
+                    "required": ["type", "response_code"]
                 },
                 {
-                    "type": "array",
-                    "items": {
-                        "$ref": "../query/method/message/message.json"
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "messages"
+                        },
+                        "messages": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../query/method/message/message.json"
+                            },
+                            "minItems": 0,
+                            "$comment": "Return value for a `catchup` request"
+                        }
                     },
-                    "minItems": 0,
-                    "$comment": "Return value for a `catchup` request"
+                    "required": ["type", "messages"]
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "election_key"
+                        },
+                        "election": {
+                            "type": "string",
+                            "contentEncoding": "base64",
+                            "description": "The election id the new election key is associated with",
+                            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+                        },
+                        "election_key": {
+                            "description": "[Base64String] public key of the election",
+                            "type": "string",
+                            "contentEncoding": "base64",
+                            "$comment": "Note: the string is encoded in Base64"
+                        }
+                    },
+                    "required": ["type", "election", "election_key"]
                 }
-            ],
-            "$comment": "Note: this field is absent if there is an error"
+            ]
         },
 
         "error": {
@@ -58,5 +99,5 @@
             "required": ["error", "id", "jsonrpc"]
         }
     ],
-    "$comment": "Can contain either a `result` or an `error`. The result can be either a list of messages or `0`."
+    "$comment": "Can contain either a `result` or an `error`."
 }

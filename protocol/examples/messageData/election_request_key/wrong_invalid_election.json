@@ -1,0 +1,5 @@
+{
+    "object": "election",
+    "action": "request_key",
+    "election": 0
+}

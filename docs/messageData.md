@@ -18,6 +18,7 @@
   - [Closing a Roll-Call (roll_call#close)](#closing-a-roll-call-roll_callclose)
   - [Reopening a Roll-Call (roll_call#reopen)](#reopening-a-roll-call-roll_callreopen)
   - [Elections (introduction)](#elections-introduction)
+  - [Requesting a key for an encrypted election (election#request_key)](#requesting-a-key-for-an-encrypted-election-electionrequest_key)
   - [Setting up an Election (election#setup)](#setting-up-an-election-electionsetup)
   - [Opening an Election (election#open)](#opening-an-election-electionopen)
   - [Casting a vote (election#cast_vote)](#casting-a-vote-electioncast_vote)
@@ -1049,13 +1050,91 @@ the organizer forgets to scan an attendee’s public key.
 
 An election has the following phases:
 
-Setup → Open → Cast vote(s) → End → Result
+(Request key) → Setup → Open → Cast vote(s) → End → Result
 
+**(Request key)**: If the election is supposed to have secret (encrypted, confidential) ballots, the frontend first has to request an election key.
 **Setup**: This phase consists of the organizer creating a new election.
 **Open**: This state consists of the organizer opening the election.
 **Cast vote(s)**: This phase consists of the members of the LAO casting a vote.  
 **End**: This phase consists of the organizer ending the election. No new votes are accepted from now on.
 **Result**: This phase consists of the organizer determining the outcome of the election and retrieving the **witness* signatures on it.
+
+## Requesting a key for an encrypted election (election#request_key)
+
+🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
+**Mid Level** > **High level** (*election#request_key*)
+
+There are two supported versions for elections: Open and secret ballot. In order to set up a secret ballot election, the backend(-s) need to establish a shared key among them per election. The corresponding public key is included on the election#setup message and can then be used to encrypt the votes before casting them.
+
+<details>
+<summary>
+💡 See an example
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_request_key/election_request_key.json
+
+{
+    "object": "election",
+    "action": "request_key",
+    "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg="
+}
+
+```
+
+</details>
+
+```json5
+// ../protocol/query/method/message/data/dataRequestKeyElection.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/message/data/dataRequestKeyElection.json",
+    "description": "Match an ElectionRequestKey query",
+    "type": "object",
+    "properties": {
+        "object": {
+            "const": "election"
+        },
+        "action": {
+            "const": "request_key"
+        },
+        "election": {
+            "type": "string",
+            "contentEncoding": "base64",
+            "description": "The election id already has to be known so that the backend can more easily associate the following election#setup message",
+            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+        }
+    },
+    "additionalProperties": false,
+    "required": ["object", "action", "election"]
+}
+
+```
+
+<details>
+<summary>
+💡 See an example of election key answer
+</summary>
+
+```json5
+// ../protocol/examples/answer/election_key.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+        "type": "election_key",
+        "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+        "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
+    }
+}
+
+```
+
+The full specification for answers can be found in [protocol.md](protocol.md#answer)
+
+</details>
 
 ## Setting up an Election (election#setup)
 

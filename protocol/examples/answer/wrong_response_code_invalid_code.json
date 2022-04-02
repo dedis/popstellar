@@ -1,0 +1,8 @@
+{
+    "jsonrpc": "2.0",
+    "id": 999,
+    "result": {
+        "type": "response_code",
+        "response_code": 1234
+    }
+}

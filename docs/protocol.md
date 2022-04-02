@@ -224,12 +224,15 @@ RPC
 Response (in case of success)
 
 ```json5
-// ../protocol/examples/answer/general_empty.json
+// ../protocol/examples/answer/response_code.json
 
 {
     "jsonrpc": "2.0",
     "id": 999,
-    "result": 0
+    "result": {
+        "type": "response_code",
+        "response_code": 0
+    }
 }
 
 ```
@@ -311,12 +314,15 @@ RPC
 Response (in case of success)
 
 ```json5
-// ../protocol/examples/answer/general_empty.json
+// ../protocol/examples/answer/response_code.json
 
 {
     "jsonrpc": "2.0",
     "id": 999,
-    "result": 0
+    "result": {
+        "type": "response_code",
+        "response_code": 0
+    }
 }
 
 ```
@@ -407,12 +413,15 @@ RPC
 Response (in case of success)
 
 ```json5
-// ../protocol/examples/answer/general_empty.json
+// ../protocol/examples/answer/response_code.json
 
 {
     "jsonrpc": "2.0",
     "id": 999,
-    "result": 0
+    "result": {
+        "type": "response_code",
+        "response_code": 0
+    }
 }
 
 ```
@@ -594,20 +603,23 @@ Response (in case of success)
 
 
 ```json5
-// ../protocol/examples/answer/general_message.json
+// ../protocol/examples/answer/messages.json
 
 {
     "jsonrpc": "2.0",
     "id": 3,
-    "result": [
-        {
-            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
-            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-            "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
-            "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
-            "witness_signatures": []
-        }
-    ]
+    "result": {
+        "type": "messages",
+        "messages": [
+            {
+                "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
+                "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
+                "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
+                "witness_signatures": []
+            }
+        ]
+    }
 }
 
 ```
@@ -667,12 +679,15 @@ Response (in case of success)
 🧭 **RPC Message** > **Answer**
 
 The JSON-RPC 2.0 answer is best documented in the JSON-RPC specification.
-In the Proof-of-Personhood system, there are however only three types of
+In the Proof-of-Personhood system, there are however only four types of
 valid messages: 
 
 * `0`-valued answers (i.e., no error, no return value)
 * catchup answers, which contain a list of messages
+* Election keys that are used to encrypt votes in secret ballot elections
 * error-valued answers, further detailed in the next section.
+
+All answer types except for the error message are wrapped in an object with the property `type` that allows for easier differentiation on how to parse the remaining content.
   
 <details>
 <summary>
@@ -680,12 +695,15 @@ valid messages:
 </summary>
 
 ```json5
-// ../protocol/examples/answer/general_empty.json
+// ../protocol/examples/answer/response_code.json
 
 {
     "jsonrpc": "2.0",
     "id": 999,
-    "result": 0
+    "result": {
+        "type": "response_code",
+        "response_code": 0
+    }
 }
 
 ```
@@ -698,20 +716,45 @@ valid messages:
 </summary>
 
 ```json5
-// ../protocol/examples/answer/general_message.json
+// ../protocol/examples/answer/messages.json
 
 {
     "jsonrpc": "2.0",
     "id": 3,
-    "result": [
-        {
-            "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
-            "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
-            "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
-            "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
-            "witness_signatures": []
-        }
-    ]
+    "result": {
+        "type": "messages",
+        "messages": [
+            {
+                "data": "eyJvYmplY3QiOiJsYW8iLCJhY3Rpb24iOiJjcmVhdGUiLCJuYW1lIjoiTEFPIiwiY3JlYXRpb24iOjE2MzMwMzU3MjEsIm9yZ2FuaXplciI6Iko5ZkJ6SlY3MEprNWMtaTMyNzdVcTRDbWVMNHQ1M1dEZlVnaGFLMEhwZU09Iiwid2l0bmVzc2VzIjpbXSwiaWQiOiJwX0VZYkh5TXY2c29wSTVRaEVYQmY0ME1PX2VOb3E3Vl9MeWdCZDRjOVJBPSJ9",
+                "sender": "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=",
+                "signature": "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==",
+                "message_id": "2mAAevx61TZJi4groVGqqkeLEQq0e-qM6PGmTWuShyY=",
+                "witness_signatures": []
+            }
+        ]
+    }
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+💡 See an example of election key answer
+</summary>
+
+```json5
+// ../protocol/examples/answer/election_key.json
+
+{
+    "jsonrpc": "2.0",
+    "id": 3,
+    "result": {
+        "type": "election_key",
+        "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+        "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
+    }
 }
 
 ```
@@ -735,23 +778,64 @@ See the full specification
     "additionalProperties": false,
     "properties": {
         "result": {
-            "description": "In case of positive answer, result of the client query",
+            "description": "In case of positive answer, result of the client query. This field is absent if there is an error",
+            "$comment": "To make it easier to differentiate different result types, every result type must have a 'type' constant property",
             "oneOf": [
                 {
-                    "type": "integer",
-                    "const": 0,
-                    "$comment": "Default return value indicating a success"
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "response_code"
+                        },
+                        "response_code": {
+                            "const": 0,
+                            "$comment": "Default return value indicating a success"
+                        }
+                    },
+                    "required": ["type", "response_code"]
                 },
                 {
-                    "type": "array",
-                    "items": {
-                        "$ref": "../query/method/message/message.json"
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "messages"
+                        },
+                        "messages": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "../query/method/message/message.json"
+                            },
+                            "minItems": 0,
+                            "$comment": "Return value for a `catchup` request"
+                        }
                     },
-                    "minItems": 0,
-                    "$comment": "Return value for a `catchup` request"
+                    "required": ["type", "messages"]
+                },
+                {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "type": {
+                            "const": "election_key"
+                        },
+                        "election": {
+                            "type": "string",
+                            "contentEncoding": "base64",
+                            "description": "The election id the new election key is associated with",
+                            "$comment": "Hash : HashLen('Election', lao_id, created_at, name)"
+                        },
+                        "election_key": {
+                            "description": "[Base64String] public key of the election",
+                            "type": "string",
+                            "contentEncoding": "base64",
+                            "$comment": "Note: the string is encoded in Base64"
+                        }
+                    },
+                    "required": ["type", "election", "election_key"]
                 }
-            ],
-            "$comment": "Note: this field is absent if there is an error"
+            ]
         },
 
         "error": {
@@ -786,7 +870,7 @@ See the full specification
             "required": ["error", "id", "jsonrpc"]
         }
     ],
-    "$comment": "Can contain either a `result` or an `error`. The result can be either a list of messages or `0`."
+    "$comment": "Can contain either a `result` or an `error`."
 }
 
 ```
