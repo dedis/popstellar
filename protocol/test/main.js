@@ -11,6 +11,7 @@ const method_unsubscribe_schema = require("../query/method/unsubscribe.json");
 const method_broadcast_schema = require("../query/method/broadcast.json");
 const method_publish_schema = require("../query/method/publish.json");
 const method_catchup_schema = require("../query/method/catchup.json");
+const method_greeting_schema = require("../query/method/greeting.json");
 
 const message_data_schema = require("../query/method/message/data/data.json");
 const message_data_roll_call_close_schema = require("../query/method/message/data/dataCloseRollCall.json");
@@ -59,6 +60,7 @@ ajv.addSchema([
     method_broadcast_schema,
     method_publish_schema,
     method_catchup_schema,
+    method_greeting_schema,
 
     message_data_schema,
 

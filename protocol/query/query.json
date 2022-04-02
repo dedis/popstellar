@@ -32,6 +32,9 @@
         },
         {
             "$ref": "method/catchup.json"
+        },
+        {
+            "$ref": "method/greeting.json"
         }
     ],
 

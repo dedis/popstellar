@@ -11,6 +11,7 @@
   - [Concatenation for hashing](#concatenation-for-hashing)
 - [JSON RPC (low-level)](#json-rpc-low-level)
   - [Query](#query)
+    - [Greeting new clients](#greeting-new-clients)
     - [Subscribing to a channel](#subscribing-to-a-channel)
     - [Unsubscribing from a channel](#unsubscribing-from-a-channel)
     - [Publishing a message on a channel](#publishing-a-message-on-a-channel)
@@ -186,11 +187,124 @@ and its arguments (`params`).
 
 Here are the different methods that can be called:
 
+* Greeting
 * Subscribe
 * Unsubscribe
 * Catchup
 * Broadcast
 * Publish
+
+### Greeting new clients
+🧭 **RPC Message** > **Query** > **Greeting**
+
+This is a message that is sent to clients after they have connected to a server.
+The message contains the servers (canonical) address, its public key and a list of peers. The canonical address is the address the client is supposed to use in order to connect to the server. This allows clients to more easily tell apart synonyms such as `128.179.33.44` and `dedis.ch`. More importantly it tells the client the name that should be linked to the public key (`sender`) that is also part of the greeting message and enables client to implement public key pinning.
+
+Most messages are sent by frontends but there are also some messages that originate from the backend. These messages are signed using the private key corresponding to the public key received by this message.
+
+Last but not least, the greeting message contains a list of peers that tells client which other servers it can or should connect to. These severs run by other organizers or witnesses allow the client to send messages to multiple servers which increases the likelihood of sending it to a honest one.
+
+RPC 
+
+```json5
+// ../protocol/examples/query/greeting/greeting.json
+
+{
+    "jsonrpc": "2.0",
+    "method": "greeting",
+    "params": {
+        "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
+        "sender": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ=",
+        "address": "popdemo.dedis.ch/demo",
+        "peers": [
+            {
+                "address": "popdemo.dedis.ch/second-organizer-demo"
+            },
+            {
+                "address": "popdemo.dedis.ch/witness-demo"
+            }
+        ]
+    }
+}
+
+```
+
+
+<details>
+<summary>
+💡 See the full specification
+</summary>
+
+```json5
+// ../protocol/query/method/greeting.json
+
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://raw.githubusercontent.com/dedis/popstellar/master/protocol/query/method/greeting.json",
+    "description": "Match propagation of a greeting on a channel query",
+    "$comment": "A message the back-end sends to clients when they connect to it. It informs clients about the servers public key and its peers",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "method": {
+            "description": "[String] operation to be performed by the query",
+            "const": "greeting"
+        },
+
+        "params": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "channel": {
+                    "description": "[String] name of the channel",
+                    "type": "string",
+                    "pattern": "^/root(/[^/]+)+$"
+                },
+
+                "sender": {
+                    "description": "[Base64String] public key of the server",
+                    "type": "string",
+                    "contentEncoding": "base64",
+                    "$comment": "Note: the string is encoded in Base64"
+                },
+
+                "address": {
+                    "description": "Canonical address of the server without a protocol prefix",
+                    "type": "string",
+                    "pattern": "^(?!.*://).*$"
+                },
+
+                "peers": {
+                    "description": "A list of peers the server is connected to (excluding itself). These can be other organizers or witnesses",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "address": {
+                                "description": "Address of the peer without a protocol prefix",
+                                "type": "string",
+                                "pattern": "^(?!.*://).*$"
+                            }
+                        }
+                    }
+                }
+            },
+
+            "required": ["channel", "sender", "address", "peers"]
+        },
+
+        "jsonrpc": {
+            "$comment": "Defined by the parent, but needed here for the validation"
+        }
+    },
+
+    "required": ["method", "params", "jsonrpc"]
+}
+
+```
+
+</details>
 
 ### Subscribing to a channel
 

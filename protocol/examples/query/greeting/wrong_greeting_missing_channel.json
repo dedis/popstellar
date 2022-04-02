@@ -1,0 +1,16 @@
+{
+    "jsonrpc": "2.0",
+    "method": "greeting",
+    "params": {
+        "sender": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ=",
+        "address": "popdemo.dedis.ch/demo",
+        "peers": [
+            {
+                "address": "popdemo.dedis.ch/second-organizer-demo"
+            },
+            {
+                "address": "popdemo.dedis.ch/witness-demo"
+            }
+        ]
+    }
+}
