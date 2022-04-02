@@ -72,7 +72,7 @@ public class SeedWalletFragment extends Fragment {
     setupDisplaySeed();
     setupConfirmSeedButton();
 
-    mWalletSeedFragBinding.seedWallet.setOnClickListener(
+    mWalletSeedFragBinding.seedWalletText.setOnClickListener(
         v -> {
           ClipboardManager clipboardManager =
               (ClipboardManager)
@@ -80,7 +80,7 @@ public class SeedWalletFragment extends Fragment {
                       .getApplicationContext()
                       .getSystemService(Context.CLIPBOARD_SERVICE);
           clipboardManager.setPrimaryClip(
-              ClipData.newPlainText("Seed", mWalletSeedFragBinding.seedWallet.getText()));
+              ClipData.newPlainText("Seed", mWalletSeedFragBinding.seedWalletText.getText()));
           Toast.makeText(
                   requireContext().getApplicationContext(),
                   R.string.copied_to_clipboard,
@@ -103,7 +103,7 @@ public class SeedWalletFragment extends Fragment {
       for (String i : exportSeed) {
         joiner.add(i);
       }
-      mWalletSeedFragBinding.seedWallet.setText(joiner.toString());
+      mWalletSeedFragBinding.seedWalletText.setText(joiner.toString());
     } else {
       Toast.makeText(requireContext().getApplicationContext(), err, Toast.LENGTH_LONG).show();
     }
@@ -121,7 +121,7 @@ public class SeedWalletFragment extends Fragment {
               "Yes",
               (dialog, which) -> {
                 try {
-                  mHomeViewModel.importSeed(mWalletSeedFragBinding.seedWallet.getText().toString());
+                  mHomeViewModel.importSeed(mWalletSeedFragBinding.seedWalletText.getText().toString());
                 } catch (GeneralSecurityException | SeedValidationException e) {
                   Log.e(TAG, "Error importing key", e);
                   Toast.makeText(

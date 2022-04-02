@@ -395,7 +395,7 @@ public class HomeActivity extends AppCompatActivity {
             case R.id.home_wallet_menu:
               mViewModel.openWallet();
               break;
-            case R.id.home_chirp_menu:
+            case R.id.home_social_media_menu:
               if (mViewModel.getLAOs().getValue() == null) {
                 ErrorUtils.logAndShow(
                     getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);

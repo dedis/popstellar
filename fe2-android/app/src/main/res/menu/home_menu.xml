@@ -17,7 +17,7 @@
     android:icon="@drawable/ic_home_wallet_foreground"
     android:title="@string/tab_wallet"/>
   <item
-    android:id="@+id/home_chirp_menu"
+    android:id="@+id/home_social_media_menu"
     android:icon="@drawable/ic_common_social_media_transparent_foreground"
     android:title="Social Media"/>
 </menu>

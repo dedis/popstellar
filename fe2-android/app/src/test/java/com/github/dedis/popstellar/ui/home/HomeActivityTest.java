@@ -1,6 +1,7 @@
 package com.github.dedis.popstellar.ui.home;
 
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -12,6 +13,7 @@ import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.socialMed
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.launchButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentId;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.navBar;
 
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -74,5 +76,15 @@ public class HomeActivityTest {
   public void walletButtonOpensWalletFragment() {
     walletButton().perform(click());
     fragmentContainer().check(matches(withChild(withId(walletFragmentId()))));
+  }
+
+  @Test
+  public void walletButtonIsDisplayed(){
+    walletButton().check(matches(isDisplayed()));
+  }
+
+  @Test
+  public void navBarIsDisplayed(){
+    navBar().check(matches(isDisplayed()));
   }
 }

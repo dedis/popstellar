@@ -23,18 +23,21 @@
       android:orientation="vertical">
 
       <TextView
+        android:id="@+id/wallet_welcome_text_1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/text_title_wallet"
         style="@style/explication_welcome_style"/>
 
       <TextView
+        android:id="@+id/wallet_welcome_text_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/text_help_wallet"
         style="@style/explication_text_style"/>
 
       <TextView
+        android:id="@+id/wallet_welcome_text_3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/text_help_new_wallet"
