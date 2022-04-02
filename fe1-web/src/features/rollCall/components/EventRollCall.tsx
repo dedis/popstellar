@@ -44,7 +44,7 @@ const EventRollCall = (props: IPropTypes) => {
   const eventHasBeenOpened = rollCall.idAlias !== undefined;
 
   useEffect(() => {
-    if (!lao?.id || !rollCall?.id) {
+    if (!hasWalletBeenInitialized || !lao?.id || !rollCall?.id) {
       return;
     }
 

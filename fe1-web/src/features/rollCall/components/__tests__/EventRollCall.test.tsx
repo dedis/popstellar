@@ -1,10 +1,15 @@
 import { fireEvent, render } from '@testing-library/react-native';
 import React from 'react';
 import * as reactRedux from 'react-redux';
+import { Provider } from 'react-redux';
+import { combineReducers, createStore } from 'redux';
 
 import { mockNavigate } from '__mocks__/useNavigationMock';
+import MockNavigator from '__tests__/components/MockNavigator';
+import { configureTestFeatures } from '__tests__/utils';
 import { mockLao } from '__tests__/utils/TestUtils';
 import { Hash, Timestamp } from 'core/objects';
+import { connectToLao, laoReducer } from 'features/lao/reducer';
 import STRINGS from 'resources/strings';
 
 import { requestOpenRollCall, requestReopenRollCall } from '../../network';
@@ -38,13 +43,25 @@ const mockRollCallClosed = RollCall.fromState(createStateWithStatus(RollCallStat
 const mockRollCallCreated = RollCall.fromState(createStateWithStatus(RollCallStatus.CREATED));
 const mockRollCallOpened = RollCall.fromState(createStateWithStatus(RollCallStatus.OPENED));
 
-jest.mock('@react-navigation/native');
-jest.mock('features/rollCall/network', () => ({
-  requestOpenRollCall: jest.fn(() => Promise.resolve()),
-  requestReopenRollCall: jest.fn(() => Promise.resolve()),
-}));
+jest.mock('features/rollCall/network', () => {
+  const actualNetwork = jest.requireActual('features/rollCall/network');
+  return {
+    ...actualNetwork,
+    requestOpenRollCall: jest.fn(() => Promise.resolve()),
+    requestReopenRollCall: jest.fn(() => Promise.resolve()),
+  };
+});
 
 let mockSelector: any;
+
+beforeAll(() => {
+  // the wallet uses the global store hence the full test features are required
+  configureTestFeatures();
+});
+
+// set up mock store
+const mockStore = createStore(combineReducers(laoReducer));
+mockStore.dispatch(connectToLao(mockLao.toState()));
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -54,14 +71,30 @@ beforeEach(() => {
 describe('EventRollCall', () => {
   it('should correctly render', () => {
     mockSelector.mockReturnValueOnce(mockRollCallCreated);
-    const obj = render(<EventRollCall event={mockRollCallCreated} isOrganizer={false} />);
+
+    const Screen = () => <EventRollCall event={mockRollCallCreated} isOrganizer={false} />;
+    const obj = render(
+      <Provider store={mockStore}>
+        <MockNavigator component={Screen} />
+      </Provider>,
+    );
+
     expect(obj.toJSON()).toMatchSnapshot();
   });
 
   it('should call requestOpenRollCall when the open button is clicked', () => {
     const usedMockRollCall = mockRollCallCreated;
     mockSelector.mockReturnValueOnce(usedMockRollCall);
-    const obj = render(<EventRollCall event={usedMockRollCall} isOrganizer />);
+
+    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const obj = render(
+      <Provider store={mockStore}>
+        <Provider store={mockStore}>
+          <MockNavigator component={Screen} />
+        </Provider>
+      </Provider>,
+    );
+
     const openRollCallButton = obj.getByText(STRINGS.roll_call_open);
     fireEvent.press(openRollCallButton);
     expect(requestOpenRollCall).toHaveBeenCalledTimes(1);
@@ -70,7 +103,14 @@ describe('EventRollCall', () => {
   it('should call requestReopenRollCall when the reopen button is clicked', () => {
     const usedMockRollCall = mockRollCallClosed;
     mockSelector.mockReturnValueOnce(usedMockRollCall);
-    const obj = render(<EventRollCall event={usedMockRollCall} isOrganizer />);
+
+    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const obj = render(
+      <Provider store={mockStore}>
+        <MockNavigator component={Screen} />
+      </Provider>,
+    );
+
     const reopenRollCallButton = obj.getByText(STRINGS.roll_call_reopen);
     fireEvent.press(reopenRollCallButton);
     expect(requestReopenRollCall).toHaveBeenCalledTimes(1);
@@ -79,7 +119,14 @@ describe('EventRollCall', () => {
   it('should navigate to RollCallOpened when scan attendees button is clicked', () => {
     const usedMockRollCall = mockRollCallOpened;
     mockSelector.mockReturnValueOnce(usedMockRollCall);
-    const obj = render(<EventRollCall event={usedMockRollCall} isOrganizer />);
+
+    const Screen = () => <EventRollCall event={usedMockRollCall} isOrganizer />;
+    const obj = render(
+      <Provider store={mockStore}>
+        <MockNavigator component={Screen} />
+      </Provider>,
+    );
+
     const scanAttendeesButton = obj.getByText(STRINGS.roll_call_scan_attendees);
     fireEvent.press(scanAttendeesButton);
     expect(mockNavigate).toHaveBeenCalledTimes(1);
