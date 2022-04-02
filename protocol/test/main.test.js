@@ -109,9 +109,6 @@ test("message data: lao", () => {
 test("message data: vote", () => {
     vote_cast_vote = require("../examples/messageData/vote_cast_vote/vote_cast_vote.json");
     expect(vote_cast_vote).toBeValid(messageDataSchema);
-
-    vote_cast_write_in = require("../examples/messageData/vote_cast_write_in.json");
-    expect(vote_cast_write_in).toBeValid(messageDataSchema);
 });
 
 test("message data: roll call", () => {

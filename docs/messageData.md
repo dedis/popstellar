@@ -1144,7 +1144,7 @@ The full specification for answers can be found in [protocol.md](protocol.md#ans
 By sending the election/setup message to the organizer’s server’s channel
 (“/root/lao-channel”), the main channel of the election will be created with the identifier id.
 The election will be created with the start_time and end_time fields denote the start and end time for the election.
-The election may allow write-in or have ballot options.
+In the future elections may allow write-in or support different voting methods but at the moment, write-in elections are not supported (`write_in` property is always set to false) and only plurality voting is supported.
 
 <details>
 <summary>
@@ -1244,8 +1244,8 @@ The election may allow write-in or have ballot options.
                     },
                     "voting_method": {
                         "type": "string",
-                        "enum": ["Plurality", "Approval"],
-                        "$comment": "supported voting method"
+                        "enum": ["Plurality"],
+                        "$comment": "supported voting methods"
                     },
                     "ballot_options": {
                         "description": "[Array[String]] ballot options",
@@ -1258,8 +1258,8 @@ The election may allow write-in or have ballot options.
                         "uniqueItems": true
                     },
                     "write_in": {
-                        "type": "boolean",
-                        "$comment": "whether write-in is allowed"
+                        "const": false,
+                        "$comment": "whether write-in is allowed. not supported yet"
                     }
                 },
                 "additionalProperties": false,
@@ -1289,6 +1289,7 @@ The election may allow write-in or have ballot options.
         "questions"
     ]
 }
+
 
 ```
 
@@ -1364,7 +1365,6 @@ The election can be opened by publishing an election/open message on the electio
 
 A member of the LAO can cast a vote by publishing an election/cast_vote message to the
 election’s channel. Each member may cast multiple votes, only the last one will be counted.
-If write-in is allowed for the election then the vote has to have a write-in.
 
 For the generated vote ids, it has to be made sure that the hash is unique and
 consistent across all subsystems. The hash is computed based on the list of
@@ -1396,25 +1396,6 @@ For example if the user select the ballot options with indices 5 and 2, then the
             "id": "8L2MWJJYNGG57ZOKdbmhHD9AopvBaBN26y1w5jL07ms=",
             "question": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
             "vote": [0]
-        }
-    ]
-}
-
-```
-```json5
-// ../protocol/examples/messageData/vote_cast_write_in.json
-
-{
-    "object": "election",
-    "action": "cast_vote",
-    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
-    "election": "QWTmcWMMMiUdWdZX7ib7GyqH6A5ifDYwPaMpKxIZm1k=",
-    "created_at": 1633098996,
-    "votes": [
-        {
-            "id": "DtIsj7nQ0Y4iLJ4ETKv2D0uah7IYGyEVW7aCLFjaL0w=",
-            "question": "WBVsWJI-C5YkD0wdE4DxnLa0lJzjnHEd67XPFVB9v3g=",
-            "write_in": "Computer Science"
         }
     ]
 }
@@ -1458,50 +1439,29 @@ For example if the user select the ballot options with indices 5 and 2, then the
             "type": "array",
             "items": {
                 "type": "object",
-                "allOf": [
-                    {
-                        "properties": {
-                            "id": {
-                                "type": "string",
-                                "contentEncoding": "base64",
-                                "$comment": "Hash : HashLen('Vote', election_id, question_id, (vote_index(es)|write_in)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
-                            },
-                            "question": {
-                                "type": "string",
-                                "contentEncoding": "base64",
-                                "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
-                            }
-                        },
-                        "required": ["id", "question"]
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "Hash : HashLen('Vote', election_id, question_id, vote_index(es)), concatenate vote indexes - must sort in ascending order and use delimiter ','"
                     },
-                    {
-                        "oneOf": [
-                            {
-                                "properties": {
-                                    "vote": {
-                                        "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
-                                        "type": "array",
-                                        "items": {
-                                            "type": "integer",
-                                            "$comment": "vote index"
-                                        },
-                                        "minItems": 1,
-                                        "uniqueItems": true
-                                    }
-                                },
-                                "required": ["vote"]
-                            },
-                            {
-                                "properties": {
-                                    "write_in": {
-                                        "type": "string"
-                                    }
-                                },
-                                "required": ["write_in"]
-                            }
-                        ]
+                    "question": {
+                        "type": "string",
+                        "contentEncoding": "base64",
+                        "$comment": "ID of the question : Hash : SHA256('Question'||election_id||question)"
+                    },
+                    "vote": {
+                        "description": "[Array[Integer]] index(es) corresponding to the ballot_options",
+                        "type": "array",
+                        "items": {
+                            "type": "integer",
+                            "$comment": "vote index"
+                        },
+                        "minItems": 1,
+                        "uniqueItems": true
                     }
-                ]
+                },
+                "required": ["id", "question", "vote"]
             },
             "minItems": 1,
             "uniqueItems": true

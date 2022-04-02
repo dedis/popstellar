@@ -60,8 +60,8 @@
                     },
                     "voting_method": {
                         "type": "string",
-                        "enum": ["Plurality", "Approval"],
-                        "$comment": "supported voting method"
+                        "enum": ["Plurality"],
+                        "$comment": "supported voting methods"
                     },
                     "ballot_options": {
                         "description": "[Array[String]] ballot options",
@@ -74,8 +74,8 @@
                         "uniqueItems": true
                     },
                     "write_in": {
-                        "type": "boolean",
-                        "$comment": "whether write-in is allowed"
+                        "const": false,
+                        "$comment": "whether write-in is allowed. not supported yet"
                     }
                 },
                 "additionalProperties": false,
