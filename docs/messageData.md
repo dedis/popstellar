@@ -1144,11 +1144,14 @@ The full specification for answers can be found in [protocol.md](protocol.md#ans
 By sending the election/setup message to the organizer’s server’s channel
 (“/root/lao-channel”), the main channel of the election will be created with the identifier id.
 The election will be created with the start_time and end_time fields denote the start and end time for the election.
+
+An election can either be open or secret ballot and the `version` property has to be set to `open-ballot` or `secret-ballot`, respectively. If it is a secret ballot election, then the message must additionally contain the public key of the election that was previously obtained from a [election#request_key](#requesting-a-key-for-an-encrypted-election-electionrequest_key) message.
+
 In the future elections may allow write-in or support different voting methods but at the moment, write-in elections are not supported (`write_in` property is always set to false) and only plurality voting is supported.
 
 <details>
 <summary>
-💡 See an example
+💡 See an example of an open ballot election setup
 </summary>
 
 ```json5
@@ -1160,7 +1163,41 @@ In the future elections may allow write-in or support different voting methods b
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
-    "version": "1.0.0",
+    "version": "open-ballot",
+    "created_at": 1633098941,
+    "start_time": 1633098941,
+    "end_time": 1633099812,
+    "questions": [
+        {
+            "id": "2PLwVvqxMqW5hQJXkFpNCvBI9MZwuN8rf66V1hS-iZU=",
+            "question": "Is this project fun?",
+            "voting_method": "Plurality",
+            "ballot_options": ["Yes", "No"],
+            "write_in": false
+        }
+    ]
+}
+
+```
+
+</details>
+
+<details>
+<summary>
+💡 See an example of a secret ballot election setup
+</summary>
+
+```json5
+// ../protocol/examples/messageData/election_setup/election_setup_secret_ballot.json
+
+{
+    "object": "election",
+    "action": "setup",
+    "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
+    "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
+    "name": "Election",
+    "key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ",
+    "version": "secret-ballot",
     "created_at": 1633098941,
     "start_time": 1633098941,
     "end_time": 1633099812,
@@ -1206,10 +1243,18 @@ In the future elections may allow write-in or support different voting methods b
         },
         "name": {
             "type": "string",
-            "$comment": "name of the election"
+            "$comment": "name of the election",
+            "minLength": 1
+        },
+        "key": {
+            "description": "[Base64String] public key of the election. Is required in secret ballot elections.",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
         },
         "version": {
             "type": "string",
+            "enum": ["open-ballot", "secret-ballot"],
             "$comment": "features/implementation identifier"
         },
         "created_at": {
@@ -1287,6 +1332,21 @@ In the future elections may allow write-in or support different voting methods b
         "start_time",
         "end_time",
         "questions"
+    ],
+    "anyOf": [
+        {
+            "$comment": "Require the key property if the version is set 'secret-ballot'. If the key property is set for other election versions, it must be ignored.",
+            "properties": {
+                "version": { "const": "secret-ballot" }
+            },
+            "required": ["key"]
+        },
+        {
+            "properties": {
+                "version": { "const": "open-ballot" }
+            },
+            "required": []
+        }
     ]
 }
 

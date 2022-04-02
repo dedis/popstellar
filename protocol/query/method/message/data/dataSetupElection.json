@@ -22,10 +22,18 @@
         },
         "name": {
             "type": "string",
-            "$comment": "name of the election"
+            "$comment": "name of the election",
+            "minLength": 1
+        },
+        "key": {
+            "description": "[Base64String] public key of the election. Is required in secret ballot elections.",
+            "type": "string",
+            "contentEncoding": "base64",
+            "$comment": "Note: the string is encoded in Base64"
         },
         "version": {
             "type": "string",
+            "enum": ["open-ballot", "secret-ballot"],
             "$comment": "features/implementation identifier"
         },
         "created_at": {
@@ -103,5 +111,20 @@
         "start_time",
         "end_time",
         "questions"
+    ],
+    "anyOf": [
+        {
+            "$comment": "Require the key property if the version is set 'secret-ballot'. If the key property is set for other election versions, it must be ignored.",
+            "properties": {
+                "version": { "const": "secret-ballot" }
+            },
+            "required": ["key"]
+        },
+        {
+            "properties": {
+                "version": { "const": "open-ballot" }
+            },
+            "required": []
+        }
     ]
 }
