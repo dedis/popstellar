@@ -64,6 +64,11 @@ export type WintessReactContext = Pick<
  * The interface the witness feature exposes
  */
 export interface WitnessInterface extends FeatureInterface {
+  notificationTypeComponents: {
+    isOfType: (notification: WitnessFeature.Notification) => boolean;
+    Component: React.ComponentType<{ notification: WitnessFeature.Notification }>;
+  }[];
+
   context: WintessReactContext;
 
   /* reducers */

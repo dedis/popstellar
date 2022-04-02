@@ -1,3 +1,4 @@
+import { WitnessNotificationTypeComponent } from './components';
 import { WitnessConfiguration, WitnessInterface, WITNESS_FEATURE_IDENTIFIER } from './interface';
 import { configureNetwork } from './network';
 import { witnessReducer } from './reducer';
@@ -13,6 +14,9 @@ export function configure(configuration: WitnessConfiguration): WitnessInterface
 
   return {
     identifier: WITNESS_FEATURE_IDENTIFIER,
+
+    notificationTypeComponents: [WitnessNotificationTypeComponent],
+
     context: {
       useCurrentLao: configuration.useCurrentLao,
       addNotification: configuration.addNotification,

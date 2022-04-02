@@ -1,5 +1,10 @@
 import NotificationBadge from './components/NotificationBadge';
-import { NotificationInterface, NOTIFICATION_FEATURE_IDENTIFIER } from './interface/Configuration';
+import {
+  NotificationCompositionConfiguration,
+  NotificationCompositionInterface,
+  NotificationConfigurationInterface,
+  NOTIFICATION_FEATURE_IDENTIFIER,
+} from './interface/Configuration';
 import NotificationNavigation from './navigation/NotificationNavigation';
 import {
   addNotification,
@@ -8,7 +13,7 @@ import {
   notificationReducer,
 } from './reducer';
 
-export const configure = (): NotificationInterface => ({
+export const configure = (): NotificationConfigurationInterface => ({
   identifier: NOTIFICATION_FEATURE_IDENTIFIER,
 
   components: {
@@ -27,5 +32,14 @@ export const configure = (): NotificationInterface => ({
 
   reducers: {
     ...notificationReducer,
+  },
+});
+
+export const compose = (
+  configuration: NotificationCompositionConfiguration,
+): NotificationCompositionInterface => ({
+  identifier: NOTIFICATION_FEATURE_IDENTIFIER,
+  context: {
+    notificationTypeComponents: configuration.notificationTypeComponents,
   },
 });

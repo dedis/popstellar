@@ -11,7 +11,7 @@ export const NOTIFICATION_FEATURE_IDENTIFIER = 'notification';
 /**
  * The interface the notification feature exposes
  */
-export interface NotificationInterface extends FeatureInterface {
+export interface NotificationConfigurationInterface extends FeatureInterface {
   components: {
     NotificationBadge: () => React.ReactNode;
   };
@@ -29,4 +29,23 @@ export interface NotificationInterface extends FeatureInterface {
   reducers: {
     [NOTIFICATION_REDUCER_PATH]: Reducer<NotificationReducerState>;
   };
+}
+
+export interface NotificationCompositionConfiguration {
+  notificationTypeComponents: {
+    isOfType: (notification: NotificationState) => boolean;
+    Component: React.ComponentType<{ notification: NotificationState }>;
+  }[];
+}
+
+/**
+ * The type of the context that is provided to react components
+ */
+export type NotificationReactContext = Pick<
+  NotificationCompositionConfiguration,
+  'notificationTypeComponents'
+>;
+
+export interface NotificationCompositionInterface extends FeatureInterface {
+  context: NotificationReactContext;
 }

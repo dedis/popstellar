@@ -90,7 +90,7 @@ const NotificationScreen = () => {
   return (
     <ScreenWrapper>
       <Button
-        title="Add Notification"
+        title="Add notification"
         onPress={() =>
           dispatch(
             addNotification({
@@ -101,7 +101,20 @@ const NotificationScreen = () => {
           )
         }
       />
-      <Button title="Clear Notifications" onPress={() => dispatch(discardAllNotifications())} />
+      <Button title="Clear notifications" onPress={() => dispatch(discardAllNotifications())} />
+      <Button
+        title="Add witness notification"
+        onPress={() =>
+          dispatch(
+            addNotification({
+              timestamp: Timestamp.EpochNow().valueOf(),
+              title: 'A message to witness',
+              type: 'message-to-witness',
+              messageId: 'this is a message id',
+            } as Omit<NotificationState, 'id' | 'hasBeenRead'>),
+          )
+        }
+      />
       <FlatList
         data={notificationData}
         keyExtractor={(item) => ('id' in item ? item.id.toString() : item.title)}

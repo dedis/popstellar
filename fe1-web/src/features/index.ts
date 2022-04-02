@@ -60,7 +60,9 @@ export function configureFeatures() {
   const walletConfiguration = wallet.configure(keyPairRegistry);
 
   // compose features
-
+  const notificationComposition = notification.compose({
+    notificationTypeComponents: [...witnessConfiguration.notificationTypeComponents],
+  });
   const homeComposition = home.compose({
     /* functions */
     connectToTestLao: laoConfiguration.functions.openLaoTestConnection,
@@ -182,6 +184,7 @@ export function configureFeatures() {
       ],
     },
     context: {
+      [notificationComposition.identifier]: notificationComposition.context,
       [connectConfiguration.identifier]: connectConfiguration.context,
       [eventsComposition.identifier]: eventsComposition.context,
       [laoComposition.identifier]: laoComposition.context,
