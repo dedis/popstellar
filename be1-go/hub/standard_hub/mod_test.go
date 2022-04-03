@@ -164,11 +164,13 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 
 	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
 	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+	badMessageID := ""
 
 	msg := message.Message{
 		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
 		Signature:         signatureBase64,
+		MessageID:         badMessageID,
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -205,7 +207,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	require.EqualError(
 		t, sock.err,
 		fmt.Sprintf(
-			"failed to handle method: message_id is wrong"))
+			"failed to handle method: message_id %vis wrong", badMessageID))
 }
 
 func Test_Create_LAO(t *testing.T) {
