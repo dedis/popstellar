@@ -1,10 +1,13 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.LiveDataReactiveStreams;
@@ -13,6 +16,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.SingleEvent;
 import com.github.dedis.popstellar.model.network.method.message.MessageGeneral;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.AddDummyTransaction;
 import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.AddTransaction;
 import com.github.dedis.popstellar.model.objects.Address;
 import com.github.dedis.popstellar.model.objects.Channel;
@@ -46,7 +50,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   /*
    * Dependencies for this class
    */
-  //private final LAORepository laoRepository;
+  private final LAORepository laoRepository;
   private final GlobalNetworkManager networkManager;
   private final Gson gson;
   private final KeyManager keyManager;
@@ -55,10 +59,10 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private static final String LAO_FAILURE_MESSAGE = "failed to retrieve lao";
   private static final String PUBLISH_MESSAGE = "sending publish message";
 
-  @Inject Wallet wallet;
 
   //TODO are we in a row call
-  private RollCall rollCall;
+  //@Inject RollCall rollCall;
+  //@Inject Lao this_lao;
 
   private static final String DIGITAL_CASH = "DIGITAL_CASH";
 
@@ -85,7 +89,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
       Gson gson,
       KeyManager keyManager) {
     super(application);
-    //this.laoRepository = laoRepository;
+    this.laoRepository = laoRepository;
     this.networkManager = networkManager;
     this.gson = gson;
     this.keyManager = keyManager;
@@ -132,7 +136,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   //}
 
   //public LiveData<String> getLaoId() {
-   // return mLaoId;
+    //return mLaoId;
   //}
 
   //public LiveData<String> getLaoName() {
@@ -188,38 +192,40 @@ public class DigitalCashViewModel extends AndroidViewModel {
    * @param receiver_address String
    */
 
-  public void sendCoin(int amount , @Nullable Address sender_address, @Nullable Address receiver_address){
+  public void sendCoin(int amount , @Nullable Address sender_address, @Nullable Address receiver_address,Context context){
     Log.d(TAG, "Sending a transaction");
-    Lao lao = new Lao("hey");
-      //getCurrentLao();
+    //Lao lao = getCurrentLao();
     //if (lao == null) {
      // Log.e(TAG, LAO_FAILURE_MESSAGE);
       //return;
    // }
 
-    AddTransaction addTransaction = new AddTransaction(amount,sender_address,receiver_address);
+    AddDummyTransaction addTransaction = new AddDummyTransaction(amount,sender_address,receiver_address);
+    //wallet
+    //try {
+      //PoPToken token = keyManager.getValidPoPToken(lao);
+              //,rollCall);
+      //Channel channel =
+        //      lao.getChannel().subChannel(DIGITAL_CASH).subChannel(token.getPublicKey().getEncoded());
+      //Log.d(TAG, PUBLISH_MESSAGE);
+      //MessageGeneral msg = new MessageGeneral(token, addTransaction, gson);
 
-    try {
-      PoPToken token = keyManager.getValidPoPToken(lao);
-      Channel channel =
-              lao.getChannel().subChannel(DIGITAL_CASH).subChannel(token.getPublicKey().getEncoded());
-      Log.d(TAG, PUBLISH_MESSAGE);
-      MessageGeneral msg = new MessageGeneral(token, addTransaction, gson);
-
-      Disposable disposable =
-              networkManager
-                      .getMessageSender()
-                      .publish(token, channel, addTransaction)
-                      .subscribe(
-                              () -> Log.d(TAG, "sent some transaction" + msg.getMessageId()),
-                              error ->
-                                      ErrorUtils.logAndShow(
-                                              getApplication(), TAG, error, R.string.error_sending_coin));
-      disposables.add(disposable);
-    } catch (KeyException e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+      //Disposable disposable =
+        //      networkManager
+          //            .getMessageSender()
+            //          .publish(token, channel, addTransaction)
+              //        .subscribe(
+                //              () -> Log.d(TAG, "sent some transaction" + msg.getMessageId()),
+                  //            error ->
+                    //                  ErrorUtils.logAndShow(
+                      //                        getApplication(), TAG, error, R.string.error_sending_coin));
+      //disposables.add(disposable);
+    //} catch (KeyException e) {
+      //ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
+    //}
+    Toast.makeText(context, addTransaction.toString(), Toast.LENGTH_LONG).show();
+    //
     }
-  }
 
   @Override
   protected void onCleared() {
@@ -229,14 +235,14 @@ public class DigitalCashViewModel extends AndroidViewModel {
 
   //@Nullable
   //public Lao getCurrentLao() {
-  //  return getLao(getLaoId().getValue());
+    //return getLao(getLaoId().getValue());
   //}
 
   //@Nullable
   //private Lao getLao(String laoId) {
     //LAOState laoState = laoRepository.getLaoById().get(laoId);
-   // if (laoState == null) return null;
+    //if (laoState == null) return null;
 
-  //  return laoState.getLao();
+    //return laoState.getLao();
   //}
 }

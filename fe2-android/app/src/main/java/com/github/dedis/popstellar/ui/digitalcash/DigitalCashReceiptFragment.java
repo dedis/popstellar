@@ -9,13 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.github.dedis.popstellar.R;
+import com.github.dedis.popstellar.databinding.DigitalCashSendFragmentBinding;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link DigitalCashReceiveFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import dagger.hilt.android.AndroidEntryPoint;
+
+/** Fragment where you can have the receipt a coin */
+@AndroidEntryPoint
 public class DigitalCashReceiptFragment extends Fragment {
+    private DigitalCashSendFragmentBinding mDigitalCashSendFragBinding;
+    private DigitalCashViewModel mDigitalCashViewModel;
+    private
 
     public DigitalCashReceiptFragment() {
         // Required empty public constructor

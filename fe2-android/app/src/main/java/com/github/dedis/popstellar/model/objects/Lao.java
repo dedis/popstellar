@@ -1,5 +1,7 @@
 package com.github.dedis.popstellar.model.objects;
 
+import android.widget.ListPopupWindow;
+
 import androidx.annotation.NonNull;
 
 import com.github.dedis.popstellar.model.objects.security.MessageID;
@@ -38,7 +40,9 @@ public final class Lao {
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
   private Map<MessageID, Chirp> allChirps;
+  private Map<MessageID,DummyCoin> allDummyCoins;
   private Map<PublicKey, List<MessageID>> chirpsByUser;
+  private Map<PublicKey, List<MessageID>> dummyCoinByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
   //TODO some transaction
@@ -151,6 +155,24 @@ public final class Lao {
     chirpsByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
   }
 
+  /**
+   * Update the list of chirps that have been sent in the lao. If the list of chirps contain one
+   * with Id prevId, it will remove it from the list then add the new chirp into it.
+   *
+   * @param prevId the previous id of a chirp
+   * @param coin the chirp
+   */
+  public void updateAllDummyCoin(MessageID prevId, DummyCoin coin) {
+    if (coin == null) {
+      throw new IllegalArgumentException("The dummyCoin is null");
+    }
+    allDummyCoins.remove(prevId);
+    allDummyCoins.put(coin.getId(), coin);
+
+    PublicKey user = coin.getSender();
+    dummyCoinByUser.computeIfAbsent(user, key -> new ArrayList<>()).add(prevId);
+  }
+
   public Optional<RollCall> getRollCall(String id) {
     return Optional.ofNullable(rollCalls.get(id));
   }
@@ -171,6 +193,7 @@ public final class Lao {
     return Optional.ofNullable(allChirps.get(id));
   }
 
+  public Optional<DummyCoin> getDummyCoin {return }
   /**
    * Removes an election from the list of elections.
    *

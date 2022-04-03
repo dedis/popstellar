@@ -87,7 +87,7 @@ public class DigitalCashSendFragment extends Fragment {
     mDigitalCashViewModel.sendCoin(
         Integer.parseInt(mDigitalCashSendFragBinding.edAmount.getText().toString()),
         new Address(mDigitalCashSendFragBinding.edSenderAddress.getText().toString()),
-        new Address(mDigitalCashSendFragBinding.edReceiverAddress.getText().toString()));
+        new Address(mDigitalCashSendFragBinding.edReceiverAddress.getText().toString()),this.requireContext());
     // Change to Open Receipt
     mDigitalCashViewModel.openReceipt();
     // }
