@@ -19,9 +19,7 @@ import com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
-/**
- * Fragment where you can send a coin
- */
+/** Fragment where you can send a coin */
 @AndroidEntryPoint
 public class DigitalCashSendFragment extends Fragment {
   private DigitalCashSendFragmentBinding mDigitalCashSendFragBinding;
@@ -38,24 +36,15 @@ public class DigitalCashSendFragment extends Fragment {
     return fragment;
   }
 
-  @Override
-  public void onViewCreated(
-          @NonNull View view,
-          @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-
-    //TODO here add the send Coin event
-  }
-
   @Nullable
   @Override
   public View onCreateView(
-          @NonNull LayoutInflater inflater,
-          @Nullable ViewGroup container,
-          @Nullable Bundle savedInstanceState) {
+      @NonNull LayoutInflater inflater,
+      @Nullable ViewGroup container,
+      @Nullable Bundle savedInstanceState) {
     // Inflate the layout for this fragment
     mDigitalCashSendFragBinding =
-            DigitalCashSendFragmentBinding.inflate(inflater, container, false);
+        DigitalCashSendFragmentBinding.inflate(inflater, container, false);
 
     mDigitalCashViewModel = DigitalCashMain.obtainViewModel(requireActivity());
 
@@ -63,24 +52,44 @@ public class DigitalCashSendFragment extends Fragment {
     mDigitalCashSendFragBinding.setLifecycleOwner(getViewLifecycleOwner());
 
     return mDigitalCashSendFragBinding.getRoot();
-   }
+  }
 
-   private void sendTransaction(){
-      //send some coin
-     // make a toast appear
-     //if (mDigitalCashViewModel.getLaoId().getValue() == null) {
-      // Toast.makeText(
-       //        requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
-        //       .show();
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    setupSendCoinButton();
+    mDigitalCashViewModel
+            .getSendNewTransactionEvent()
+            .observe(
+                    getViewLifecycleOwner(),
+                    booleanEvent -> {
+                      Boolean event = booleanEvent.getContentIfNotHandled();
+                      if (event != null) {
+                        sendNewCoin();
+                      }
+                    });
+  }
+
+  private void setupSendCoinButton() {
+    mDigitalCashSendFragBinding.buttonSend.setOnClickListener(
+        v -> mDigitalCashViewModel.sendNewTransactionEvent());
+  }
+
+  private void sendNewCoin() {
+    //TODO: should be some check LAO
+    // send some coin
+    // make a toast appear
+    // if (mDigitalCashViewModel.getLaoId().getValue() == null) {
+    // Toast.makeText(
+    //        requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
+    //       .show();
     // } else {
-       mDigitalCashViewModel.sendCoin(
-               Integer.parseInt(mDigitalCashSendFragBinding.edAmount.getText().toString()),
-               new Address(mDigitalCashSendFragBinding.edSenderAddress.getText().toString()),
-               new Address(mDigitalCashSendFragBinding.edReceiverAddress.getText().toString())
-       );
-       // Change to Open Receipt
-       mDigitalCashViewModel.openReceipt();
-     //}
-   }
-
+    mDigitalCashViewModel.sendCoin(
+        Integer.parseInt(mDigitalCashSendFragBinding.edAmount.getText().toString()),
+        new Address(mDigitalCashSendFragBinding.edSenderAddress.getText().toString()),
+        new Address(mDigitalCashSendFragBinding.edReceiverAddress.getText().toString()));
+    // Change to Open Receipt
+    mDigitalCashViewModel.openReceipt();
+    // }
+  }
 }

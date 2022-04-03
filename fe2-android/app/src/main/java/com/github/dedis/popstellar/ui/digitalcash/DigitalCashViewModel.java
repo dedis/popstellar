@@ -174,7 +174,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     //mLaoName.setValue(laoName);
   //}
 
-  public void setSendNewTransactionEvent(){
+  public void sendNewTransactionEvent(){
     mSendNewTransactionEvent.postValue(new SingleEvent<>(true));
   }
 
@@ -191,7 +191,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
   public void sendCoin(int amount , @Nullable Address sender_address, @Nullable Address receiver_address){
     Log.d(TAG, "Sending a transaction");
     Lao lao = new Lao("hey");
-            //getCurrentLao();
+      //getCurrentLao();
     //if (lao == null) {
      // Log.e(TAG, LAO_FAILURE_MESSAGE);
       //return;
