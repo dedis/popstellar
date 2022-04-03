@@ -11,7 +11,6 @@ import ch.epfl.pop.model.network.method.message.data.socialMedia._
 import ch.epfl.pop.model.network.method.message.data.witness._
 import ch.epfl.pop.model.network.method.message.data.{MessageData, ActionType, ObjectType}
 import ch.epfl.pop.model.objects._
-import ch.epfl.pop.pubsub.MessageRegistry
 import spray.json._
 
 import scala.collection.immutable.ListMap
@@ -256,6 +255,7 @@ object MessageDataProtocol extends DefaultJsonProtocol {
   implicit val setupElectionFormat: JsonFormat[SetupElection] = annotateHeader(jsonFormat[Hash, Hash, String, String, Timestamp, Timestamp, Timestamp, List[ElectionQuestion], SetupElection](SetupElection.apply, "id", "lao", "name", "version", "created_at", "start_time", "end_time", "questions"))
   implicit val resultElectionFormat: JsonFormat[ResultElection] = annotateHeader(jsonFormat[List[ElectionQuestionResult], List[Signature], ResultElection](ResultElection.apply, "questions", "witness_signatures"))
   implicit val endElectionFormat: JsonFormat[EndElection] = annotateHeader(jsonFormat[Hash, Hash, Timestamp, Hash, EndElection](EndElection.apply, "lao", "election", "created_at", "registered_votes"))
+  implicit val openElectionFormat: JsonFormat[OpenElection] = jsonFormat[Hash, Hash, Timestamp, OpenElection](OpenElection.apply, "lao", "election", "opened_at")
 
   implicit val addChirpFormat: JsonFormat[AddChirp] = annotateHeader(jsonFormat[String, Option[String], Timestamp, AddChirp](AddChirp.apply, "text", "parent_id", "timestamp"))
   implicit val notifyAddChirpFormat: JsonFormat[NotifyAddChirp] = annotateHeader(jsonFormat[Hash, Channel, Timestamp, NotifyAddChirp](NotifyAddChirp.apply, "chirp_id", "channel", "timestamp"))

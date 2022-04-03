@@ -34,6 +34,11 @@ object ElectionHandler extends MessageHandler {
     }
   }
 
+  def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
+    Await.result(ask, duration)
+  }
+
   def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     // no need to propagate here, hence the use of dbAskWrite
     val ask: Future[GraphMessage] = dbAskWrite(rpcMessage)

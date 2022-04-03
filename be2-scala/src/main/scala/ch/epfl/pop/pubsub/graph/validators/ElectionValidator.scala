@@ -3,8 +3,8 @@ package ch.epfl.pop.pubsub.graph.validators
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, ResultElection, SetupElection}
-import ch.epfl.pop.model.objects.{Channel, Hash, PublicKey}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, EndElection, OpenElection, ResultElection, SetupElection}
+import ch.epfl.pop.model.objects.{Base64Data, Channel, Hash, PublicKey}
 import ch.epfl.pop.pubsub.graph.validators.MessageValidator._
 import ch.epfl.pop.pubsub.graph.{GraphMessage, PipelineError}
 
@@ -37,6 +37,37 @@ object ElectionValidator extends MessageDataContentValidator with EventValidator
         } //note: the SetupElection is the only message sent to the main channel, others are sent in an election channel
         else if (!validateChannelType(ObjectType.LAO, channel)) {
           Right(validationError(s"trying to send a SetupElection message on a wrong type of channel $channel"))
+        } else {
+          Left(rpcMessage)
+        }
+
+      case _ => Right(validationErrorNoMessage(rpcMessage.id))
+    }
+  }
+
+  def validateOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = {
+    def validationError(reason: String): PipelineError = super.validationError(reason, "OpenElection", rpcMessage.id)
+
+    rpcMessage.getParamsMessage match {
+      case Some(message: Message) =>
+        val data: OpenElection = message.decodedData.get.asInstanceOf[OpenElection]
+
+        val electionId: Hash = rpcMessage.extractLaoId
+        val sender: PublicKey = message.sender
+
+        val channel: Channel = rpcMessage.getParamsChannel
+        val laoId: Base64Data = channel.decodeChannelLaoId.get
+
+        if (!validateTimestampStaleness(data.opened_at)) {
+          Right(validationError(s"stale 'opened_at' timestamp (${data.opened_at})"))
+        } else if (electionId !=  data.election) {
+          Right(validationError("Unexpected election id"))
+        } else if (laoId != data.lao.base64Data) {
+          Right(validationError("Unexpected lao id"))
+        } else if (!validateOwner(sender, channel)) {
+          Right(validationError(s"Sender $sender has an invalid PoP token."))
+        } else if (!validateChannelType(ObjectType.ELECTION, channel)) {
+          Right(validationError(s"trying to send a OpenElection message on a wrong type of channel $channel"))
         } else {
           Left(rpcMessage)
         }
