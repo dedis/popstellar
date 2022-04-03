@@ -125,7 +125,7 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 
 }
 
-func Test_Create_LAO_Bad_MessageID(t *testing.T){
+func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	keypair := generateKeyPair(t)
 
 	fakeChannelFac := &fakeChannelFac{
