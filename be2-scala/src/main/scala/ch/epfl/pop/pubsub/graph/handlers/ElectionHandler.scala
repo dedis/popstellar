@@ -1,5 +1,6 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import akka.pattern.AskableActorRef
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
@@ -11,9 +12,31 @@ import ch.epfl.pop.storage.DbActor
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.util.{Failure, Success}
-import java.security.Timestamp
 
+/**
+ * ElectionHandler object uses the db instance from the MessageHandler
+ */
 object ElectionHandler extends MessageHandler {
+  final lazy val handlerInstance = new ElectionHandler(super.dbActor)
+
+  def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleSetupElection(rpcMessage)
+
+  def handleOpenElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleOpenElection(rpcMessage)
+
+  def handleCastVoteElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleCastVoteElection(rpcMessage)
+
+  def handleResultElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleResultElection(rpcMessage)
+
+  def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = handlerInstance.handleEndElection(rpcMessage)
+}
+
+class ElectionHandler(dbRef: => AskableActorRef) extends MessageHandler {
+
+  /**
+   *
+   * Overrides default DbActor with provided parameter
+   */
+  override final val dbActor: AskableActorRef = dbRef
 
   def handleSetupElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //FIXME: add election info to election channel/electionData
