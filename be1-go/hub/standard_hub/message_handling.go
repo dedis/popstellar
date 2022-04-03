@@ -325,7 +325,7 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	expectedMessageId := messagedata.Hash(data, signature)
 
 	if expectedMessageId != messageId {
-		return xerrors.Errorf("message_id is wrong")
+		return xerrors.Errorf("message_id %q is wrong", messageId)
 	}
 
 	h.Lock()
