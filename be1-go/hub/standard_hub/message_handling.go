@@ -277,7 +277,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 
 	if expectedMessageId != messageId {
 
-		return publish.ID, xerrors.Errorf("message_id is wrong, correct id is %v and incorrect is %v",expectedMessageId,messageId)
+		return publish.ID, xerrors.Errorf("message_id is wrong expected is %q but was %v",expectedMessageId,messageId)
 	}
 
 	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
