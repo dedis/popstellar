@@ -71,3 +71,12 @@
       * json open_roll_result = frontend_buffer.takeTimeout(timeout)
       * karate.log("Received in simple scenarios open roll call :")
       * karate.log(open_roll_result)
+
+    @name=election_setup
+    Scenario: Sets up a valid election
+      * string electionSetupData = read('classpath:data/election/data/electionSetup/valid_election_setup_2_data.json')
+      * string electionSetup = converter.publishМessageFromData(electionSetupData, 4, rootChannel)
+      * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
+      * eval frontend.send(electionSetup)
+      * def election_create_broadcast = frontend_buffer.takeTimeout(timeout)
+      * def election_create = frontend_buffer.takeTimeout(timeout)
