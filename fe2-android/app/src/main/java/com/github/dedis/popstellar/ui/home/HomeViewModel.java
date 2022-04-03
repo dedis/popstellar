@@ -49,18 +49,21 @@ public class HomeViewModel extends AndroidViewModel
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
-  public enum HomeViewAction {SCAN, REQUEST_CAMERA_PERMISSION}
+  public enum HomeViewAction {
+    SCAN,
+    REQUEST_CAMERA_PERMISSION
+  }
 
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
-  /*
-   * LiveData objects for capturing events like button clicks
-   */
+  /** LiveData objects for capturing events like button clicks */
   private final MutableLiveData<SingleEvent<String>> mOpenLaoEvent = new MutableLiveData<>();
+
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
@@ -72,18 +75,16 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
 
-  /*
-   * LiveData objects that represent the state in a fragment
-   */
+  /** LiveData objects that represent the state in a fragment */
   private final MutableLiveData<String> mConnectingLao = new MutableLiveData<>();
+
   private final MutableLiveData<Boolean> mIsWalletSetUp = new MutableLiveData<>(false);
   private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
   private final LiveData<List<Lao>> mLAOs;
 
-  /*
-   * Dependencies for this class
-   */
+  /** Dependencies for this class */
   private final Gson gson;
+
   private final LAORepository laoRepository;
   private final KeyManager keyManager;
   private final Wallet wallet;
@@ -218,9 +219,7 @@ public class HomeViewModel extends AndroidViewModel
     mOpenSeedEvent.postValue(new SingleEvent<>(true));
   }
 
-  /*
-   * Getters for MutableLiveData instances declared above
-   */
+  /** Getters for MutableLiveData instances declared above */
   public LiveData<List<Lao>> getLAOs() {
     return mLAOs;
   }
@@ -314,8 +313,7 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openConnect() {
-    if (checkSelfPermission(
-            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+    if (checkSelfPermission(getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       openQrCodeScanning();
     } else {
