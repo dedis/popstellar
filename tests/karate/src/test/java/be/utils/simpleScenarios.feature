@@ -75,7 +75,7 @@
     @name=election_setup
     Scenario: Sets up a valid election
       * string electionSetupData = read('classpath:data/election/data/electionSetup/valid_election_setup_2_data.json')
-      * string electionSetup = converter.publishМessageFromData(electionSetupData, 4, rootChannel)
+      * string electionSetup = converter.publishМessageFromData(electionSetupData, 4, laoChannel)
       * call read('classpath:be/utils/simpleScenarios.feature@name=valid_roll_call')
       * eval frontend.send(electionSetup)
       * def election_create_broadcast = frontend_buffer.takeTimeout(timeout)
