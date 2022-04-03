@@ -209,7 +209,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
     //wallet
     try {
       KeyPair token = keyManager.getMainKeyPair();
-      Toast.makeText(context,token.toString(),Toast.LENGTH_LONG).show();
+      Toast.makeText(context,token.getPublicKey().toString(),Toast.LENGTH_LONG).show();
               //.getValidPoPToken(lao);
               //,rollCall);
       Channel channel =
@@ -222,7 +222,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
                       .getMessageSender()
                       .publish(token, channel, addTransaction)
                       .subscribe(
-                              () -> Log.d(TAG, "sent some transaction" + msg.getMessageId()),
+                              () -> Log.d(TAG, "send some transaction" + msg.getMessageId()),
                               error ->
                                       ErrorUtils.logAndShow(
                                               getApplication(), TAG, error, R.string.error_sending_coin));

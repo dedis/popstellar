@@ -61,6 +61,8 @@ public final class Lao {
     this.elections = new HashMap<>();
     this.allChirps = new HashMap<>();
     this.chirpsByUser = new HashMap<>();
+    this.allDummyCoins = new HashMap<>();
+    this.dummyCoinByUser = new HashMap<>();
     this.keyToNode = new HashMap<>();
     this.messageIdToElectInstance = new HashMap<>();
     this.witnessMessages = new HashMap<>();
