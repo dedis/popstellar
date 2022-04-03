@@ -782,6 +782,90 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	require.Equal(t, fakeChannelFac.c, hub.channelByID[rootPrefix+data.ID])
 }
 
+// Tests that a broadcast without a valid message id returns an error
+func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
+	keypair := generateKeyPair(t)
+
+	fakeChannelFac := &fakeChannelFac{
+		c: &fakeChannel{},
+	}
+
+	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
+	require.NoError(t, err)
+
+	now := time.Now().Unix()
+	name := "LAO X"
+
+	// LaoID is Hash(organizer||create||name) encoded in base64URL
+	h := sha256.New()
+	h.Write(keypair.publicBuf)
+	h.Write([]byte(fmt.Sprintf("%d", now)))
+	h.Write([]byte(name))
+
+	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+
+	data := messagedata.LaoCreate{
+		Object:    messagedata.LAOObject,
+		Action:    messagedata.LAOActionCreate,
+		ID:        laoID,
+		Name:      name,
+		Creation:  123,
+		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Witnesses: []string{},
+	}
+
+	dataBuf, err := json.Marshal(data)
+	require.NoError(t, err)
+
+	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
+	require.NoError(t, err)
+
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+	fakeMessageID := ""
+
+	msg := message.Message{
+		Data:              dataBase64,
+		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
+		Signature:         signatureBase64,
+		MessageID:         fakeMessageID,
+		WitnessSignatures: []message.WitnessSignature{},
+	}
+
+	broadcast := method.Broadcast{
+		Base: query.Base{
+			JSONRPCBase: jsonrpc.JSONRPCBase{
+				JSONRPC: "2.0",
+			},
+
+			Method: query.MethodBroadcast,
+		},
+
+		Params: struct {
+			Channel string          `json:"channel"`
+			Message message.Message `json:"message"`
+		}{
+			Channel: "/root",
+			Message: msg,
+		},
+	}
+
+	publishBuf, err := json.Marshal(&broadcast)
+	require.NoError(t, err)
+
+	sock := &fakeSocket{}
+
+	hub.handleMessageFromServer(&socket.IncomingMessage{
+		Socket:  sock,
+		Message: publishBuf,
+	})
+
+	require.EqualError(
+		t, sock.err,
+		fmt.Sprintf(
+			"failed to handle method: message_id %v is wrong", fakeMessageID))
+}
+
 // Check that if the organizer receives a subscribe message, it will call the
 // subscribe function on the appropriate channel.
 func Test_Handle_Subscribe(t *testing.T) {
