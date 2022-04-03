@@ -202,12 +202,10 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 		Message: publishBuf,
 	})
 
-	expectedMessageId := messagedata.Hash(dataBase64, signatureBase64)
-
 	require.EqualError(
 		t, sock.err,
 		fmt.Sprintf(
-			"failed to handle method: message_id is wrong expected is %q but was ", expectedMessageId))
+			"failed to handle method: message_id is wrong"))
 }
 
 func Test_Create_LAO(t *testing.T) {

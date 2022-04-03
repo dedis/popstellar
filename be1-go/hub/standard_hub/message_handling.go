@@ -276,8 +276,7 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 	expectedMessageId := messagedata.Hash(data, signature)
 
 	if expectedMessageId != messageId {
-
-		return publish.ID, xerrors.Errorf("message_id is wrong expected is %q but was %v", expectedMessageId, messageId)
+		return publish.ID, xerrors.Errorf("message_id is wrong")
 	}
 
 	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
@@ -317,6 +316,16 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	err := json.Unmarshal(byteMessage, &broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal publish message: %v", err)
+	}
+
+	signature := broadcast.Params.Message.Signature
+	messageId := broadcast.Params.Message.MessageID
+	data := broadcast.Params.Message.Data
+
+	expectedMessageId := messagedata.Hash(data, signature)
+
+	if expectedMessageId != messageId {
+		return xerrors.Errorf("message_id is wrong")
 	}
 
 	h.Lock()
