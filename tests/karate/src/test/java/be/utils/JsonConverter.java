@@ -14,16 +14,15 @@ public class JsonConverter {
 
   private String senderPk = "J9fBzJV70Jk5c-i3277Uq4CmeL4t53WDfUghaK0HpeM=";
   private String privateKeyHex = "d257820c1a249652572974fbda9b27a85e54605551c6773504d0d2858d392874";
-  private String signatureForced = "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
+  private String signatureForced =
+      "ONylxgHA9cbsB_lwdfbn3iyzRd4aTpJhBMnvEKhmJF_niE_pUHdmjxDXjEwFyvo5WiH1NZXWyXG27SYEpkasCA==";
   private String messageIdForced = "";
 
   public Json fromMapToJson(Map<String, String> map) {
     return Json.of(map);
   }
 
-  /**
-   * Produces the base64 variant of the json file passed as argument
-   */
+  /** Produces the base64 variant of the json file passed as argument */
   public String convertJsonToBase64(Json json) {
     String stringJson = json.toString();
     byte[] jsonBytes = stringJson.getBytes();
@@ -84,9 +83,7 @@ public class JsonConverter {
     return paramsPart;
   }
 
-  /**
-   * Constructs a valid signature on given data
-   */
+  /** Constructs a valid signature on given data */
   public String constructSignature(String messageData) {
     try {
       // Hex representation of the private key
@@ -110,22 +107,22 @@ public class JsonConverter {
     return signatureForced;
   }
 
-  /**
-   * If want to test a sender that is not the organizer we can change the sender public key
-   */
+  /** If want to test a sender that is not the organizer we can change the sender public key */
   public void setSenderPk(String newSenderPk) {
     this.senderPk = newSenderPk;
   }
 
   /**
-   * If we want to test having a secret key that does not match the private key we can set a different private key
+   * If we want to test having a secret key that does not match the private key we can set a
+   * different private key
    */
   public void setSenderSk(String newSenderSkHex) {
     this.privateKeyHex = newSenderSkHex;
   }
 
   /**
-   * If we want to test having a signature that does not match the data and private key we can set it by force
+   * If we want to test having a signature that does not match the data and private key we can set
+   * it by force
    */
   public void setSignature(String newSignature) {
     this.signatureForced = newSignature;
@@ -138,9 +135,7 @@ public class JsonConverter {
     this.messageIdForced = messageIdForced;
   }
 
-  /**
-   * Hashes an arbitrary number of arguments
-   */
+  /** Hashes an arbitrary number of arguments */
   public String hash(byte[]... allData) {
     try {
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -156,5 +151,4 @@ public class JsonConverter {
     }
     return "Hash is not constructed correctly";
   }
-
 }

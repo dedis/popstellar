@@ -59,3 +59,18 @@ Feature: Cast a vote
     And eval frontend.send(badCastVote)
     * json cast_vote = frontend_buffer.takeTimeout(timeout)
     Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
+
+  Scenario: Non attendee casting a vote should return an error
+    Given string castVoteData = read('classpath:data/election/data/castVote/valid_cast_vote_data.json')
+    * string nonAttendeePk = "oKHk3AivbpNXk_SfFcHDaVHcCcY8IBfHE7auXJ7h4ms="
+    * string nonAttendeeSkHex = "0cf511d2fe4c20bebb6bd51c1a7ce973d22de33d712ddf5f69a92d99e879363b"
+    * converter.setSenderSk(nonAttendeeSkHex)
+    * converter.setSenderPk(nonAttendeePk)
+    And string castVote = converter.publishМessageFromData(castVoteData, id, channel)
+    * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
+    And eval frontend.send(castVote)
+    * json cast_vote = frontend_buffer.takeTimeout(timeout)
+    Then match cast_vote contains deep {jsonrpc: '2.0', id: '#(id)', error: {code: -4, description: '#string'}}
+
+    
+
