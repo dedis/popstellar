@@ -1,102 +1,57 @@
 package messagedata
 
-/*
+//TBC
 type TransactionPost struct {
-	Object string `json:"object"`
-	Action string `json:"action"`
-
-	Properties struct {
-		Transaction struct {
-			Type        string `json:"type"`
-			Description string `json:"description"`
-			Properties  struct {
-				Version struct {
-					Type        string `json:"type"`
-					Description string `json:"description"`
-				} `json:"Version"`
-				TxIn struct {
-					Type        string `json:"type"`
-					Description string `json:"description"`
-					Items       struct {
-						Type        string `json:"type"`
-						Description string `json:"description"`
-						Properties  struct {
-							TxOutHash struct {
-								Type            string `json:"type"`
-								ContentEncoding string `json:"contentEncoding"`
-								Description     string `json:"description"`
-							} `json:"TxOutHash"`
-							TxOutIndex struct {
-								Type        string `json:"type"`
-								Description string `json:"description"`
-							} `json:"TxOutIndex"`
-							Script struct {
-								Type        string `json:"type"`
-								Description string `json:"description"`
-								Properties  struct {
-									Type struct {
-										Type        string `json:"type"`
-										Description string `json:"description"`
-									} `json:"Type"`
-									Pubkey struct {
-										Type            string `json:"type"`
-										ContentEncoding string `json:"contentEncoding"`
-										Description     string `json:"description"`
-									} `json:"Pubkey"`
-									Sig struct {
-										Type            string `json:"type"`
-										ContentEncoding string `json:"contentEncoding"`
-										Description     string `json:"description"`
-									} `json:"Sig"`
-								} `json:"properties"`
-								Required []string `json:"required"`
-							} `json:"Script"`
-						} `json:"properties"`
-						Required []string `json:"required"`
-					} `json:"items"`
-					MinItems int `json:"minItems"`
-				} `json:"TxIn"`
-				TxOut struct {
-					Type        string `json:"type"`
-					Description string `json:"description"`
-					Items       struct {
-						Type        string `json:"type"`
-						Description string `json:"description"`
-						Properties  struct {
-							Value struct {
-								Type        string `json:"type"`
-								Description string `json:"description"`
-							} `json:"Value"`
-							Script struct {
-								Type        string `json:"type"`
-								Description string `json:"description"`
-								Properties  struct {
-									Type struct {
-										Type        string `json:"type"`
-										Description string `json:"description"`
-									} `json:"Type"`
-									PubkeyHash struct {
-										Type            string `json:"type"`
-										ContentEncoding string `json:"contentEncoding"`
-										Description     string `json:"description"`
-									} `json:"PubkeyHash"`
-								} `json:"properties"`
-								Required []string `json:"required"`
-							} `json:"Script"`
-						} `json:"properties"`
-						Required []string `json:"required"`
-					} `json:"items"`
-					MinItems int `json:"minItems"`
-				} `json:"TxOut"`
-				LockTime struct {
-					Type        string `json:"type"`
-					Description string `json:"description"`
-				} `json:"LockTime"`
-			} `json:"properties"`
-			Required []string `json:"required"`
-		} `json:"transaction"`
-	} `json:"properties"`
-	Required []string `json:"required"`
+	Object      string            `json:"object"`
+	Action      string            `json:"action"`
+	Transaction TransactionStruct `json:"transaction"`
 }
+
+//TBC
+type TransactionStruct struct {
+	Version  int           `json:"version"`
+	TxIn     []TxInStruct  `json:"txin"`  // min 1
+	TxOut    []TxOutStruct `json:"txout"` //min 1
+	Locktime int           `json:"locktime"`
+}
+
+type TxInStruct struct {
+	TxOutHash  string       `json:"txouthash"`
+	TxOutIndex int          `json:"txoutindex"`
+	ScripIn    UnlockScript `json:"script"`
+}
+
+type TxOutStruct struct {
+	Value     int        `json:"value"`
+	ScriptOut LockScript `json:"script"`
+}
+
+type LockScript struct {
+	Type       string `json:"Type"`
+	PubKeyHash string `json:"PubkeyHash"`
+}
+
+type UnlockScript struct {
+	Type   string `json:"Type"`
+	PubKey string `json:"Pubkey"`
+	Sig    string `json:"Sig"`
+}
+
+/*
+// GetObject implements MessageData
+func (TransactionPost) GetObject() string {
+	return RollCallObject
+}
+
+// GetAction implements MessageData
+func (TransactionPost) GetAction() string {
+	return RollCallActionClose
+}
+
+// NewEmpty implements MessageData
+func (TransactionPost) NewEmpty() MessageData {
+	return &TransactionPost{}
+}
+
 
 */
