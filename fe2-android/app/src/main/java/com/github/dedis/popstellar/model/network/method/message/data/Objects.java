@@ -13,6 +13,7 @@ public enum Objects {
   ELECTION("election"),
   CONSENSUS("consensus"),
   CHIRP("chirp"),
+  DUMMY_TRANSACTION("dummy_transaction"),
   TRANSACTION("transaction");
 
   private static final List<Objects> ALL = Collections.unmodifiableList(Arrays.asList(values()));

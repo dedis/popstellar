@@ -24,7 +24,7 @@ public class DummyTransactionHandler {
      * @param context the HandlerContext of the message
      * @param addDummyTransaction the data of the message that was received
      */
-    public static void handleChirpAdd(HandlerContext context, AddDummyTransaction addDummyTransaction) {
+    public static void handleTransactionAdd(HandlerContext context, AddDummyTransaction addDummyTransaction) {
         LAORepository laoRepository = context.getLaoRepository();
         Channel channel = context.getChannel();
         MessageID messageId = context.getMessageId();
@@ -36,6 +36,9 @@ public class DummyTransactionHandler {
 
         dummyCoin.setChannel(channel);
         dummyCoin.setSender(senderPk);
+        dummyCoin.setSender_address(addDummyTransaction.getSender_address());
+        dummyCoin.setReceiver_address(addDummyTransaction.getReceiver_address());
+        dummyCoin.setAmount(addDummyTransaction.getAmount());
 
         lao.updateAllDummyCoin(messageId, dummyCoin);
     }

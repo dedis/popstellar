@@ -59,23 +59,23 @@ public class DigitalCashSendFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     setupSendCoinButton();
     mDigitalCashViewModel
-            .getSendNewTransactionEvent()
+            .getSendNewDummyTransactionEvent()
             .observe(
                     getViewLifecycleOwner(),
                     booleanEvent -> {
                       Boolean event = booleanEvent.getContentIfNotHandled();
                       if (event != null) {
-                        sendNewCoin();
+                        sendNewDummyCoin();
                       }
                     });
   }
 
   private void setupSendCoinButton() {
     mDigitalCashSendFragBinding.buttonSend.setOnClickListener(
-        v -> mDigitalCashViewModel.sendNewTransactionEvent());
+        v -> mDigitalCashViewModel.sendNewDummyTransactionEvent());
   }
 
-  private void sendNewCoin() {
+  private void sendNewDummyCoin() {
     //TODO: should be some check LAO
     // send some coin
     // make a toast appear
@@ -84,7 +84,7 @@ public class DigitalCashSendFragment extends Fragment {
     //        requireContext().getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG)
     //       .show();
     // } else {
-    mDigitalCashViewModel.sendCoin(
+    mDigitalCashViewModel.sendNewDummyCoin(
         Integer.parseInt(mDigitalCashSendFragBinding.edAmount.getText().toString()),
         new Address(mDigitalCashSendFragBinding.edSenderAddress.getText().toString()),
         new Address(mDigitalCashSendFragBinding.edReceiverAddress.getText().toString()),this.requireContext());

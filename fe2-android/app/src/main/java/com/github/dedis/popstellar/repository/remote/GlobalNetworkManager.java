@@ -16,8 +16,8 @@ import io.reactivex.disposables.Disposable;
 /** Module responsible of managing the connection to the backend server. */
 @Singleton
 public class GlobalNetworkManager implements Disposable {
-
-  private static final String DEFAULT_URL = "ws://10.0.2.2:9000/organizer/client";
+  //TODO CHANGE
+  private static final String DEFAULT_URL = "wss://popdemo.dedis.ch/go";
 
   private final LAORepository laoRepository;
   private final MessageHandler messageHandler;

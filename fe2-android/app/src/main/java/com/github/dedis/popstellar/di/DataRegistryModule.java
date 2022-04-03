@@ -25,6 +25,7 @@ import static com.github.dedis.popstellar.model.network.method.message.data.Acti
 import static com.github.dedis.popstellar.model.network.method.message.data.Action.WITNESS;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CHIRP;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.CONSENSUS;
+import static com.github.dedis.popstellar.model.network.method.message.data.Objects.DUMMY_TRANSACTION;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.ELECTION;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.LAO;
 import static com.github.dedis.popstellar.model.network.method.message.data.Objects.MEETING;
@@ -40,6 +41,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.consensus.C
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPrepare;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPromise;
 import com.github.dedis.popstellar.model.network.method.message.data.consensus.ConsensusPropose;
+import com.github.dedis.popstellar.model.network.method.message.data.digitalcash.AddDummyTransaction;
 import com.github.dedis.popstellar.model.network.method.message.data.election.CastVote;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionEnd;
 import com.github.dedis.popstellar.model.network.method.message.data.election.ElectionResult;
@@ -59,6 +61,7 @@ import com.github.dedis.popstellar.model.network.method.message.data.socialmedia
 import com.github.dedis.popstellar.model.network.method.message.data.socialmedia.NotifyDeleteChirp;
 import com.github.dedis.popstellar.utility.handler.data.ChirpHandler;
 import com.github.dedis.popstellar.utility.handler.data.ConsensusHandler;
+import com.github.dedis.popstellar.utility.handler.data.DummyTransactionHandler;
 import com.github.dedis.popstellar.utility.handler.data.ElectionHandler;
 import com.github.dedis.popstellar.utility.handler.data.LaoHandler;
 import com.github.dedis.popstellar.utility.handler.data.RollCallHandler;
@@ -130,6 +133,13 @@ public abstract class DataRegistryModule {
         .add(CHIRP, NOTIFY_ADD, NotifyAddChirp.class, null)
         .add(CHIRP, DELETE, DeleteChirp.class, ChirpHandler::handleDeleteChirp)
         .add(CHIRP, NOTIFY_DELETE, NotifyDeleteChirp.class, null);
+
+    // DummySocialMedia
+    builder.add(
+        DUMMY_TRANSACTION,
+        ADD,
+        AddDummyTransaction.class,
+        DummyTransactionHandler::handleTransactionAdd);
 
     return builder.build();
   }

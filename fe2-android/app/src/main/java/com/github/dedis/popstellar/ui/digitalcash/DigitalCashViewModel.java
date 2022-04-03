@@ -23,6 +23,7 @@ import com.github.dedis.popstellar.model.objects.Channel;
 import com.github.dedis.popstellar.model.objects.Lao;
 import com.github.dedis.popstellar.model.objects.RollCall;
 import com.github.dedis.popstellar.model.objects.Wallet;
+import com.github.dedis.popstellar.model.objects.security.KeyPair;
 import com.github.dedis.popstellar.model.objects.security.PoPToken;
 import com.github.dedis.popstellar.model.objects.security.PublicKey;
 import com.github.dedis.popstellar.model.objects.security.privatekey.PlainPrivateKey;
@@ -75,11 +76,11 @@ public class DigitalCashViewModel extends AndroidViewModel {
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiveEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenIssueEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenReceiptEvent = new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<Boolean>> mSendNewTransactionEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mSendNewDummyTransactionEvent = new MutableLiveData<>();
 
-  //private final LiveData<List<Lao>> mLAOs;
-  //private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
-  //private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
+  private final LiveData<List<Lao>> mLAOs;
+  private final MutableLiveData<String> mLaoId = new MutableLiveData<>();
+  private final MutableLiveData<String> mLaoName = new MutableLiveData<>();
 
   @Inject
   public DigitalCashViewModel(
@@ -95,9 +96,9 @@ public class DigitalCashViewModel extends AndroidViewModel {
     this.keyManager = keyManager;
     disposables = new CompositeDisposable();
 
-    //this.mLAOs =
-       // LiveDataReactiveStreams.fromPublisher(
-          //  this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
+    this.mLAOs =
+        LiveDataReactiveStreams.fromPublisher(
+            this.laoRepository.getAllLaos().toFlowable(BackpressureStrategy.BUFFER));
   }
 
   /*
@@ -127,21 +128,21 @@ public class DigitalCashViewModel extends AndroidViewModel {
     return mOpenReceiptEvent;
   }
 
-  public MutableLiveData<SingleEvent<Boolean>> getSendNewTransactionEvent() {
-    return mSendNewTransactionEvent;
+  public MutableLiveData<SingleEvent<Boolean>> getSendNewDummyTransactionEvent() {
+    return mSendNewDummyTransactionEvent;
   }
 
-  //public LiveData<List<Lao>> getLAOs() {
-   // return mLAOs;
-  //}
+  public LiveData<List<Lao>> getLAOs() {
+    return mLAOs;
+  }
 
-  //public LiveData<String> getLaoId() {
-    //return mLaoId;
-  //}
+  public LiveData<String> getLaoId() {
+    return mLaoId;
+  }
 
-  //public LiveData<String> getLaoName() {
-    //return mLaoName;
-  //}
+  public LiveData<String> getLaoName() {
+    return mLaoName;
+  }
 
   /*
    * Methods that modify the state or post an Event to update the UI.
@@ -170,16 +171,16 @@ public class DigitalCashViewModel extends AndroidViewModel {
     mOpenReceiptEvent.postValue(new SingleEvent<>(true));
   }
 
-  //public void setLaoId(String laoId) {
-    //mLaoId.setValue(laoId);
-  //}
+  public void setLaoId(String laoId) {
+    mLaoId.setValue(laoId);
+  }
 
-  //public void setLaoName(String laoName) {
-    //mLaoName.setValue(laoName);
-  //}
+  public void setLaoName(String laoName) {
+    mLaoName.setValue(laoName);
+  }
 
-  public void sendNewTransactionEvent(){
-    mSendNewTransactionEvent.postValue(new SingleEvent<>(true));
+  public void sendNewDummyTransactionEvent(){
+    mSendNewDummyTransactionEvent.postValue(new SingleEvent<>(true));
   }
 
   /**
@@ -192,38 +193,44 @@ public class DigitalCashViewModel extends AndroidViewModel {
    * @param receiver_address String
    */
 
-  public void sendCoin(int amount , @Nullable Address sender_address, @Nullable Address receiver_address,Context context){
-    Log.d(TAG, "Sending a transaction");
-    //Lao lao = getCurrentLao();
-    //if (lao == null) {
-     // Log.e(TAG, LAO_FAILURE_MESSAGE);
-      //return;
-   // }
-
+  public void sendNewDummyCoin(int amount , @Nullable Address sender_address, @Nullable Address receiver_address,Context context){
+    Log.d(TAG, "Sending a dummy transaction");
     AddDummyTransaction addTransaction = new AddDummyTransaction(amount,sender_address,receiver_address);
-    //wallet
-    //try {
-      //PoPToken token = keyManager.getValidPoPToken(lao);
-              //,rollCall);
-      //Channel channel =
-        //      lao.getChannel().subChannel(DIGITAL_CASH).subChannel(token.getPublicKey().getEncoded());
-      //Log.d(TAG, PUBLISH_MESSAGE);
-      //MessageGeneral msg = new MessageGeneral(token, addTransaction, gson);
-
-      //Disposable disposable =
-        //      networkManager
-          //            .getMessageSender()
-            //          .publish(token, channel, addTransaction)
-              //        .subscribe(
-                //              () -> Log.d(TAG, "sent some transaction" + msg.getMessageId()),
-                  //            error ->
-                    //                  ErrorUtils.logAndShow(
-                      //                        getApplication(), TAG, error, R.string.error_sending_coin));
-      //disposables.add(disposable);
-    //} catch (KeyException e) {
-      //ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_retrieve_own_token);
-    //}
     Toast.makeText(context, addTransaction.toString(), Toast.LENGTH_LONG).show();
+
+    Lao lao = getCurrentLao();
+    if (lao == null) {
+      Log.e(TAG, LAO_FAILURE_MESSAGE);
+      Toast.makeText(context, "FAIL DUMMY", Toast.LENGTH_LONG).show();
+      return;
+    }
+
+    //AddDummyTransaction addTransaction = new AddDummyTransaction(amount,sender_address,receiver_address);
+    //wallet
+    try {
+      KeyPair token = keyManager.getMainKeyPair();
+      Toast.makeText(context,token.toString(),Toast.LENGTH_LONG).show();
+              //.getValidPoPToken(lao);
+              //,rollCall);
+      Channel channel =
+              lao.getChannel().subChannel(DIGITAL_CASH).subChannel(token.getPublicKey().getEncoded());
+      Log.d(TAG, PUBLISH_MESSAGE);
+      MessageGeneral msg = new MessageGeneral(token, addTransaction, gson);
+
+      Disposable disposable =
+              networkManager
+                      .getMessageSender()
+                      .publish(token, channel, addTransaction)
+                      .subscribe(
+                              () -> Log.d(TAG, "sent some transaction" + msg.getMessageId()),
+                              error ->
+                                      ErrorUtils.logAndShow(
+                                              getApplication(), TAG, error, R.string.error_sending_coin));
+      disposables.add(disposable);
+    } catch (Exception e) {
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_for_keys);
+    }
+    Toast.makeText(context, "DONE DUMMY", Toast.LENGTH_LONG).show();
     //
     }
 
@@ -233,16 +240,16 @@ public class DigitalCashViewModel extends AndroidViewModel {
     disposables.dispose();
   }
 
-  //@Nullable
-  //public Lao getCurrentLao() {
-    //return getLao(getLaoId().getValue());
-  //}
+  @Nullable
+  public Lao getCurrentLao() {
+    return getLao(getLaoId().getValue());
+  }
 
-  //@Nullable
-  //private Lao getLao(String laoId) {
-    //LAOState laoState = laoRepository.getLaoById().get(laoId);
-    //if (laoState == null) return null;
+  @Nullable
+  private Lao getLao(String laoId) {
+    LAOState laoState = laoRepository.getLaoById().get(laoId);
+    if (laoState == null) return null;
 
-    //return laoState.getLao();
-  //}
+    return laoState.getLao();
+  }
 }

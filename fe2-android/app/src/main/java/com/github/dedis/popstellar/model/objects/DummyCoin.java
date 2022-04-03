@@ -76,5 +76,13 @@ public class DummyCoin {
     public void setAmount(int amount) {
         this.amount = amount;
     }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return String.format(
+                "Chirp{id='%s', channel='%s', sender='%s', addr_sender='%s', addr_receiver='%s', amount='%s'",
+                id.getEncoded(), channel, sender, sender_address,receiver_address,amount);
+    }
 }
 

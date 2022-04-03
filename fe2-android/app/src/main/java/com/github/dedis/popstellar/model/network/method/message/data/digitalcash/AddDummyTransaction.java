@@ -60,7 +60,7 @@ public class AddDummyTransaction extends Data {
 
     @Override
     public String getObject() {
-        return Objects.TRANSACTION.getObject();
+        return Objects.DUMMY_TRANSACTION.getObject();
     }
 
     @Override

@@ -101,6 +101,9 @@ public class LaoDetailViewModel extends AndroidViewModel
       new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
+  //Digital Cash
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
+          new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaoDetailEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<EventType>> mChooseNewLaoEventTypeEvent =
       new MutableLiveData<>();
@@ -741,6 +744,10 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenSocialMediaEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
+    return mOpenDigitalCashEvent;
+  }
+
   public LiveData<SingleEvent<EventType>> getNewLaoEventEvent() {
     return mChooseNewLaoEventTypeEvent;
   }
@@ -935,6 +942,8 @@ public class LaoDetailViewModel extends AndroidViewModel
   public void openSocialMedia() {
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
+
+  public void openDigitalCash(){mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));}
 
   public void endElectionEvent() {
     mEndElectionEvent.postValue(new SingleEvent<>(true));
