@@ -627,10 +627,14 @@ func Test_Handle_Broadcast(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -720,10 +724,14 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, dataBuf)
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString(dataBuf)
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString(dataBuf),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
@@ -1008,10 +1016,14 @@ func Test_Send_And_Handle_Message(t *testing.T) {
 	signature, err := schnorr.Sign(suite, keypair.private, []byte("XXX"))
 	require.NoError(t, err)
 
+	dataBase64 := base64.URLEncoding.EncodeToString([]byte("XXX"))
+	signatureBase64 := base64.URLEncoding.EncodeToString(signature)
+
 	msg := message.Message{
-		Data:              base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Data:              dataBase64,
 		Sender:            base64.URLEncoding.EncodeToString(keypair.publicBuf),
-		Signature:         base64.URLEncoding.EncodeToString(signature),
+		Signature:         signatureBase64,
+		MessageID:         messagedata.Hash(dataBase64, signatureBase64),
 		WitnessSignatures: []message.WitnessSignature{},
 	}
 
