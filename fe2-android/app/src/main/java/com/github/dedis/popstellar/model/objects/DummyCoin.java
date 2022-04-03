@@ -11,6 +11,10 @@ public class DummyCoin {
     private Channel channel;
 
     private PublicKey sender;
+    private Address receiver_address;
+    private Address sender_address;
+    private int amount;
+
     public DummyCoin(MessageID id) {
         if (id == null) {
             throw new IllegalArgumentException("The id is null");
@@ -47,6 +51,30 @@ public class DummyCoin {
 
     public void setSender(PublicKey sender) {
         this.sender = sender;
+    }
+
+    public Address getReceiver_address() {
+        return receiver_address;
+    }
+
+    public void setReceiver_address(Address receiver_address) {
+        this.receiver_address = receiver_address;
+    }
+
+    public Address getSender_address() {
+        return sender_address;
+    }
+
+    public void setSender_address(Address sender_address) {
+        this.sender_address = sender_address;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
     }
 }
 

@@ -40,13 +40,13 @@ public final class Lao {
   private Map<String, RollCall> rollCalls;
   private Map<String, Election> elections;
   private Map<MessageID, Chirp> allChirps;
-  private Map<MessageID,DummyCoin> allDummyCoins;
+  private Map<MessageID, DummyCoin> allDummyCoins;
   private Map<PublicKey, List<MessageID>> chirpsByUser;
   private Map<PublicKey, List<MessageID>> dummyCoinByUser;
   private final Map<MessageID, ElectInstance> messageIdToElectInstance;
   private final Map<PublicKey, ConsensusNode> keyToNode;
-  //TODO some transaction
-  //Map <Public Key, Transaction>
+  // TODO some transaction
+  // Map <Public Key, Transaction>
 
   public Lao(String id) {
     if (id == null) {
@@ -193,7 +193,9 @@ public final class Lao {
     return Optional.ofNullable(allChirps.get(id));
   }
 
-  public Optional<DummyCoin> getDummyCoin {return }
+  public Optional<DummyCoin> getDummyCoin(MessageID id) {
+    return Optional.ofNullable(allDummyCoins.get(id));
+  }
   /**
    * Removes an election from the list of elections.
    *
@@ -349,6 +351,10 @@ public final class Lao {
 
   public Map<MessageID, Chirp> getAllChirps() {
     return allChirps;
+  }
+
+  public Map<MessageID, DummyCoin> getAllDummyCoins() {
+    return allDummyCoins;
   }
 
   public void setRollCalls(Map<String, RollCall> rollCalls) {
