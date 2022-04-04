@@ -41,7 +41,7 @@ function fn() {
         "platformName" : "Android",
         "connectHardwareKeyboard" : true,
         "deviceName" : "emulator-5554",
-        "avd" : "Pixel_4a_API_30",
+        "avd" : "Pixel_4_API_30",
         "automationName" : "UiAutomator2"
       }
       config["android"] = android
