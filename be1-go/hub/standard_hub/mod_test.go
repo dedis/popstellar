@@ -122,7 +122,6 @@ func Test_Create_LAO_Bad_Key(t *testing.T) {
 		fmt.Sprintf(
 			"failed to handle method: failed to handle root channel message: sender's public key does not "+
 				"match the organizer's: %q != %q", wrongKeypair.public.String(), keypair.public.String()))
-
 }
 
 func Test_Create_LAO_Bad_MessageID(t *testing.T) {
