@@ -1160,10 +1160,10 @@ In the future elections may allow write-in or support different voting methods b
 {
     "object": "election",
     "action": "setup",
+    "version": "open-ballot",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
-    "version": "open-ballot",
     "created_at": 1633098941,
     "start_time": 1633098941,
     "end_time": 1633099812,
@@ -1193,11 +1193,11 @@ In the future elections may allow write-in or support different voting methods b
 {
     "object": "election",
     "action": "setup",
+    "version": "secret-ballot",
     "id": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
     "lao": "fzJSZjKf-2cbXH7kds9H8NORuuFIRLkevJlN7qQemjo=",
     "name": "Election",
     "key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ",
-    "version": "secret-ballot",
     "created_at": 1633098941,
     "start_time": 1633098941,
     "end_time": 1633099812,
@@ -1231,6 +1231,11 @@ In the future elections may allow write-in or support different voting methods b
         "action": {
             "const": "setup"
         },
+        "version": {
+            "type": "string",
+            "enum": ["open-ballot", "secret-ballot"],
+            "$comment": "features/implementation identifier"
+        },
         "id": {
             "type": "string",
             "contentEncoding": "base64",
@@ -1247,15 +1252,10 @@ In the future elections may allow write-in or support different voting methods b
             "minLength": 1
         },
         "key": {
-            "description": "[Base64String] public key of the election. Is required in secret ballot elections.",
+            "description": "Optional field. Required for secret-ballot elections; use an ephemeral keypair for each election and place the base64 encoded public key here.",
             "type": "string",
             "contentEncoding": "base64",
             "$comment": "Note: the string is encoded in Base64"
-        },
-        "version": {
-            "type": "string",
-            "enum": ["open-ballot", "secret-ballot"],
-            "$comment": "features/implementation identifier"
         },
         "created_at": {
             "description": "[Timestamp] time created in UTC",

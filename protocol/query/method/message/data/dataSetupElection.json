@@ -10,6 +10,11 @@
         "action": {
             "const": "setup"
         },
+        "version": {
+            "type": "string",
+            "enum": ["open-ballot", "secret-ballot"],
+            "$comment": "features/implementation identifier"
+        },
         "id": {
             "type": "string",
             "contentEncoding": "base64",
@@ -26,15 +31,10 @@
             "minLength": 1
         },
         "key": {
-            "description": "[Base64String] public key of the election. Is required in secret ballot elections.",
+            "description": "Optional field. Required for secret-ballot elections; use an ephemeral keypair for each election and place the base64 encoded public key here.",
             "type": "string",
             "contentEncoding": "base64",
             "$comment": "Note: the string is encoded in Base64"
-        },
-        "version": {
-            "type": "string",
-            "enum": ["open-ballot", "secret-ballot"],
-            "$comment": "features/implementation identifier"
         },
         "created_at": {
             "description": "[Timestamp] time created in UTC",
