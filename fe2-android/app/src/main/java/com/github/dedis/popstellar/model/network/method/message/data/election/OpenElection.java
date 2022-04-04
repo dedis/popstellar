@@ -1,7 +1,10 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
+import static com.github.dedis.popstellar.model.objects.event.EventState.CREATED;
+
 import androidx.annotation.NonNull;
 
+import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
