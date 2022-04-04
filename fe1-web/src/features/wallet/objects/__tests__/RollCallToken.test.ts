@@ -32,4 +32,12 @@ describe('Roll call token object', () => {
     const rct = RollCallToken.fromState(rctState);
     expect(rct.toState()).to.be.eql(rctState);
   });
+  it('should fail when undefined fields', () => {
+    expect(() => new RollCallToken({ token: undefined })).to.throw();
+    expect(() => new RollCallToken({ token: mockToken })).to.throw();
+    expect(() => new RollCallToken({ token: mockToken, laoId: mockLao.id })).to.throw();
+    expect(
+      () => new RollCallToken({ token: mockToken, laoId: mockLao.id, rollCallId: mockRC.id }),
+    ).to.throw();
+  });
 });
