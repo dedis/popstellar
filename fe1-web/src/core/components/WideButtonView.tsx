@@ -12,9 +12,7 @@ const styles = StyleSheet.create({
 });
 
 const WideButtonView = (props: IPropTypes) => {
-  const { title } = props;
-  const { onPress } = props;
-  const { disabled } = props;
+  const { title, onPress, disabled } = props;
 
   return (
     <View style={styles.wideButtonView}>

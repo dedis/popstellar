@@ -23,7 +23,7 @@ exports[`BackButton renders correctly 1`] = `
     onStartShouldSetResponder={[Function]}
     testID="backButton"
   >
-    <Text />
+    {"name":"chevron-back-outline","size":23}
   </View>
 </View>
 `;

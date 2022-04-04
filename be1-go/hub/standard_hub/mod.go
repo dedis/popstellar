@@ -534,11 +534,15 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 		return answer.NewErrorf(-4, "failed to decode public key of the sender: %v", err)
 	}
 
-	// Check if the sender of election creation message is the organizer
+	// Check if the sender of the LAO creation message is the organizer
 	senderPubKey := crypto.Suite.Point()
 	err = senderPubKey.UnmarshalBinary(senderBuf)
 	if err != nil {
 		return answer.NewErrorf(-4, "failed to unmarshal public key of the sender: %v", err)
+	}
+
+	if !h.GetPubKeyOwner().Equal(senderPubKey) {
+		return answer.NewErrorf(-5, "sender's public key does not match the organizer's: %q != %q", senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
