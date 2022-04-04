@@ -204,7 +204,7 @@ func Test_Create_LAO_Bad_MessageID(t *testing.T) {
 	})
 
 	require.EqualError(
-		t, sock.err, "failed to handle method: message_id is wrong")
+		t, sock.err, fmt.Sprintf("failed to handle method: message_id %vis wrong", badMessageID))
 }
 
 func Test_Create_LAO(t *testing.T) {
