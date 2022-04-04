@@ -7,7 +7,7 @@ const MockNavigator = ({
   component,
   params = {},
 }: {
-  component: React.ComponentType<unknown>;
+  component: React.ComponentType<any>;
   params?: Partial<object>;
 }) => {
   return (
