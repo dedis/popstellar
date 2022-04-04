@@ -88,6 +88,7 @@ public class CastVote extends Data {
     return "CastVote{"
         + "createdAt="
         + createdAt
+        + '\''
         + ", laoId='"
         + laoId
         + '\''
