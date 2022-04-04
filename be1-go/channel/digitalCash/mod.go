@@ -30,14 +30,14 @@ type Channel struct {
 	log zerolog.Logger
 }
 
-func (c Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
+func (c *Channel) Subscribe(socket socket.Socket, msg method.Subscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received a subscribe")
 	c.sockets.Upsert(socket)
 
 	return nil
 }
 
-func (c Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
+func (c *Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	c.log.Info().Str(msgID, strconv.Itoa(msg.ID)).Msg("received an unsubscribe")
 
 	ok := c.sockets.Delete(socketID)
@@ -48,7 +48,7 @@ func (c Channel) Unsubscribe(socketID string, msg method.Unsubscribe) error {
 	return nil
 }
 
-func (c Channel) Publish(publish method.Publish, socket socket.Socket) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -67,13 +67,13 @@ func (c Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	return nil
 }
 
-func (c Channel) Catchup(catchup method.Catchup) []message.Message {
+func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 	c.log.Info().Str(msgID, strconv.Itoa(catchup.ID)).Msg("received a catchup")
 
 	return c.inbox.GetSortedMessages()
 }
 
-func (c Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
 	c.log.Info().Msg("received a broadcast")
 
 	err := c.verifyMessage(broadcast.Params.Message)
