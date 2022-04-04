@@ -10,7 +10,8 @@ public enum Method {
   UNSUBSCRIBE("unsubscribe", Unsubscribe.class, true),
   PUBLISH("publish", Publish.class, true),
   MESSAGE("broadcast", Broadcast.class, false),
-  CATCHUP("catchup", Catchup.class, true);
+  CATCHUP("catchup", Catchup.class, true),
+  GREETING("greeting", Greeting.class, false);
 
   private static final List<Method> ALL = Collections.unmodifiableList(Arrays.asList(values()));
 
