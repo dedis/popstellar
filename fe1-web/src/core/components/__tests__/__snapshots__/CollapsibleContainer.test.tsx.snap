@@ -60,7 +60,7 @@ exports[`CollapsibleContainer container can be opened 1`] = `
 </View>
 `;
 
-exports[`CollapsibleContainer renders correctly 1`] = `
+exports[`CollapsibleContainer renders correctly when closed 1`] = `
 <View>
   <View
     accessible={true}
