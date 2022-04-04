@@ -1,3 +1,5 @@
+import 'jest-extended';
+import '__tests__/utils/matchers';
 import { describe } from '@jest/globals';
 
 import { configureTestFeatures, mockKeyPair } from '__tests__/utils';
@@ -5,7 +7,13 @@ import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import { ActionType, Message, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Timestamp } from 'core/objects';
 
-import { addMessageToWitness, removeMessageToWitness, witnessReduce } from '../WitnessReducer';
+import {
+  addMessageToWitness,
+  makeMessageSelector,
+  removeMessageToWitness,
+  witnessReduce,
+  WITNESS_REDUCER_PATH,
+} from '../WitnessReducer';
 
 const timestamp = new Timestamp(1607277600);
 
@@ -35,6 +43,32 @@ describe('WitnessReducer', () => {
 
       const newState = witnessReduce(
         { allIds: [], byId: {} },
+        addMessageToWitness(extendedMessage),
+      );
+
+      expect(newState.allIds).toEqual([message.message_id.valueOf()]);
+      expect(newState.byId).toHaveProperty(message.message_id.valueOf(), extendedMessage);
+    });
+
+    it("doesn't add a messages a second time to the store", () => {
+      const message: Message = Message.fromData(
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hi',
+          timestamp,
+        } as MessageData,
+        mockKeyPair,
+      );
+
+      const extendedMessage = ExtendedMessage.fromMessage(
+        message,
+        'some channel',
+        'some address',
+      ).toState();
+
+      const newState = witnessReduce(
+        witnessReduce({ allIds: [], byId: {} }, addMessageToWitness(extendedMessage)),
         addMessageToWitness(extendedMessage),
       );
 
@@ -73,6 +107,67 @@ describe('WitnessReducer', () => {
 
       expect(newState.allIds).toEqual([]);
       expect(newState.byId).toEqual({});
+    });
+
+    it("doesn't do anything of the id is not in the store", () => {
+      const message: Message = Message.fromData(
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hi',
+          timestamp,
+        } as MessageData,
+        mockKeyPair,
+      );
+
+      const messageId = message.message_id.valueOf();
+
+      const newState = witnessReduce(
+        {
+          allIds: [messageId],
+          byId: {
+            [messageId]: ExtendedMessage.fromMessage(
+              message,
+              'some channel',
+              'some address',
+            ).toState(),
+          },
+        },
+        removeMessageToWitness('some other id'),
+      );
+
+      expect(newState.allIds).toEqual([messageId]);
+      expect(newState.byId).toEqual({
+        [messageId]: ExtendedMessage.fromMessage(message, 'some channel', 'some address').toState(),
+      });
+    });
+  });
+
+  describe('makeMessageSelector', () => {
+    it('returns the correct message', () => {
+      const message: Message = Message.fromData(
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hi',
+          timestamp,
+        } as MessageData,
+        mockKeyPair,
+      );
+
+      const messageId = message.message_id.valueOf();
+      const extMessage = ExtendedMessage.fromMessage(message, 'some channel', 'some address');
+
+      expect(
+        makeMessageSelector(messageId)({
+          [WITNESS_REDUCER_PATH]: {
+            allIds: [messageId],
+            byId: {
+              [messageId]: extMessage.toState(),
+            },
+          },
+        }),
+      ).toBeJsonEqual(extMessage);
     });
   });
 });
