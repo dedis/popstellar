@@ -1,3 +1,4 @@
+import { KeyPairStore } from 'core/keypair';
 import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import {
   ActionType,
@@ -30,10 +31,22 @@ const afterMessageProcessingHandler =
     addNotification: WitnessConfiguration['addNotification'] /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */,
   ): AfterProcessingHandler =>
   (msg: ProcessableMessage) => {
+    // check if this message has already been signed by us
+    const publicKey = KeyPairStore.getPublicKey();
+    const signedByUs = msg.witness_signatures.find((sig) =>
+      sig.signature.verify(publicKey, msg.message_id),
+    );
+
+    if (signedByUs) {
+      // if it was, return. we do not have to sign it twice.
+      return;
+    }
+
     const entry = getWitnessRegistryEntry(msg.messageData);
 
     if (entry) {
       // we have a wintessing entry for this message type
+
       switch (entry.type) {
         case WitnessingType.PASSIVE:
           requestWitnessMessage(msg.channel, msg.message_id);
