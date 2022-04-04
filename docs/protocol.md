@@ -215,13 +215,13 @@ RPC
     "params": {
         "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
         "sender": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ=",
-        "address": "popdemo.dedis.ch/demo",
+        "address": "wss://popdemo.dedis.ch/demo",
         "peers": [
             {
-                "address": "popdemo.dedis.ch/second-organizer-demo"
+                "address": "wss://popdemo.dedis.ch/second-organizer-demo"
             },
             {
-                "address": "popdemo.dedis.ch/witness-demo"
+                "address": "wss://popdemo.dedis.ch/witness-demo"
             }
         ]
     }
@@ -269,9 +269,9 @@ RPC
                 },
 
                 "address": {
-                    "description": "Canonical address of the server without a protocol prefix",
+                    "description": "Canonical address of the server with a protocol prefix",
                     "type": "string",
-                    "pattern": "^(?!.*://).*$"
+                    "pattern": "^.*://.*$"
                 },
 
                 "peers": {
@@ -282,9 +282,9 @@ RPC
                         "additionalProperties": false,
                         "properties": {
                             "address": {
-                                "description": "Address of the peer without a protocol prefix",
+                                "description": "Address of the peer with a protocol prefix",
                                 "type": "string",
-                                "pattern": "^(?!.*://).*$"
+                                "pattern": "^.*://.*$"
                             }
                         }
                     }

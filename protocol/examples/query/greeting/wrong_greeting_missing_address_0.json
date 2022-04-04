@@ -6,10 +6,10 @@
         "sender": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ=",
         "peers": [
             {
-                "address": "popdemo.dedis.ch/second-organizer-demo"
+                "address": "wss://popdemo.dedis.ch/second-organizer-demo"
             },
             {
-                "address": "popdemo.dedis.ch/witness-demo"
+                "address": "wss://popdemo.dedis.ch/witness-demo"
             }
         ]
     }

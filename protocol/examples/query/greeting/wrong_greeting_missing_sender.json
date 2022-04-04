@@ -3,13 +3,13 @@
     "method": "greeting",
     "params": {
         "channel": "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=",
-        "address": "popdemo.dedis.ch/demo",
+        "address": "wss://popdemo.dedis.ch/demo",
         "peers": [
             {
-                "address": "popdemo.dedis.ch/second-organizer-demo"
+                "address": "wss://popdemo.dedis.ch/second-organizer-demo"
             },
             {
-                "address": "popdemo.dedis.ch/witness-demo"
+                "address": "wss://popdemo.dedis.ch/witness-demo"
             }
         ]
     }
