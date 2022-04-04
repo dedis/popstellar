@@ -14,10 +14,10 @@
   <string name="home_title">My LAOs</string>
   <string name="text_title_welcome">Welcome to Personhood.Online!</string>
   <string name="text_body_welcome">
-    \n\n To connect to a local organization (LAO), please tap Connect above.
-    \n\n To launch a new LAO as an organizer, please tap Launch tab above.
+    \n\n To connect to a local organization (LAO), please tap Connect below.
+    \n\n To launch a new LAO as an organizer, please tap Launch tab below.
     \n\n Please initialize your wallet to access the functionalities of the app.
-    To do so, please tap Wallet tab above.
+    To do so, please tap Wallet tab below.
     </string>
   <string name="attendee">Attendee</string>
   <string name="organizer">Organizer</string>
@@ -187,7 +187,7 @@
   <string name="text_title_wallet">Welcome to your wallet !</string>
   <string name="text_help_wallet">\n\nYou may import your seed if you own one or create a new wallet.</string>
   <string name="text_help_new_wallet">\n\nATTENTION: if you create a new wallet remember to write down
-        the given seed and store it secure place, this is the only backup to your PoP tokens.</string>
+        the given seed and store it in a secure place, this is the only backup to your PoP tokens.</string>
   <string name="text_seed_wallet">This is the only backup for your PoP tokens - store it securely</string>
   <string name="confirm_button">Confirm</string>
   <string name="content_title">Tokens</string>
