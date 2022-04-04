@@ -10,11 +10,13 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const laoIDBase64 = "lao id is %s, should be base64URL encoded"
-const elecIDBase64 = "election id is %s, should be base64URL encoded"
-const elecIDFormat = "election channel id is %s, should be formatted as /root/laoID/electionID"
-const laoIDCompare = "lao id is %s, should be %s"
-const elecIDCompare = "election id is %s, should be %s"
+const (
+laoIDBase64 = "lao id is %s, should be base64URL encoded"
+elecIDBase64 = "election id is %s, should be base64URL encoded"
+elecIDFormat = "election channel id is %s, should be formatted as /root/laoID/electionID"
+laoIDCompare = "lao id is %s, should be %s"
+elecIDCompare = "election id is %s, should be %s"
+)
 
 func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpen) error {
 	c.log.Info().Msgf("verifying election#open message of election with id %s", electionOpen.Election)
