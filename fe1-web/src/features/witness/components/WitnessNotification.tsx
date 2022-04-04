@@ -1,4 +1,3 @@
-import { useNavigation } from '@react-navigation/core';
 import PropTypes from 'prop-types';
 import React, { FunctionComponent, useEffect, useMemo } from 'react';
 import { Text, View } from 'react-native';

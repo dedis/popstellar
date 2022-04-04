@@ -1,17 +1,11 @@
 import { describe } from '@jest/globals';
 
 import { configureTestFeatures, mockKeyPair } from '__tests__/utils';
-import {
-  ActionType,
-  Message,
-  MessageData,
-  ObjectType,
-  ProcessableMessage,
-} from 'core/network/jsonrpc/messages';
+import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
+import { ActionType, Message, MessageData, ObjectType } from 'core/network/jsonrpc/messages';
 import { Timestamp } from 'core/objects';
 
 import { addMessageToWitness, removeMessageToWitness, witnessReduce } from '../WitnessReducer';
-import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 
 const timestamp = new Timestamp(1607277600);
 
@@ -33,17 +27,23 @@ describe('WitnessReducer', () => {
         mockKeyPair,
       );
 
+      const extendedMessage = ExtendedMessage.fromMessage(
+        message,
+        'some channel',
+        'some address',
+      ).toState();
+
       const newState = witnessReduce(
         { allIds: [], byId: {} },
-        addMessageToWitness(new ExtendedMessage(message).toState()),
+        addMessageToWitness(extendedMessage),
       );
 
       expect(newState.allIds).toEqual([message.message_id.valueOf()]);
-      expect(newState.byId).toHaveProperty(message.message_id.valueOf(), message);
+      expect(newState.byId).toHaveProperty(message.message_id.valueOf(), extendedMessage);
     });
   });
 
-  describe('witnessMessage', () => {
+  describe('removeMessageToWitness', () => {
     it('removes the witnesses message from the store', () => {
       const message: Message = Message.fromData(
         {
@@ -58,7 +58,16 @@ describe('WitnessReducer', () => {
       const messageId = message.message_id.valueOf();
 
       const newState = witnessReduce(
-        { allIds: [messageId], byId: { [messageId]: new ExtendedMessage(message).toState() } },
+        {
+          allIds: [messageId],
+          byId: {
+            [messageId]: ExtendedMessage.fromMessage(
+              message,
+              'some channel',
+              'some address',
+            ).toState(),
+          },
+        },
         removeMessageToWitness(message.message_id.valueOf()),
       );
 
