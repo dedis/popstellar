@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
 const RollCallTokensDropDown = (props: IPropTypes) => {
   const { onTokenChange } = props;
   const { rollCallTokens } = props;
+  const { selectedToken } = props;
 
   const options = rollCallTokens.map((rc) => {
     const value = rc?.token.publicKey.valueOf() || '';
@@ -32,7 +33,10 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
   };
 
   return (
-    <Picker onValueChange={(val: any) => onChange(val)} style={styles.pickerStyle}>
+    <Picker
+      onValueChange={(val: any) => onChange(val)}
+      style={styles.pickerStyle}
+      selectedValue={selectedToken?.token.publicKey.valueOf()}>
       {options}
     </Picker>
   );
@@ -41,6 +45,7 @@ const RollCallTokensDropDown = (props: IPropTypes) => {
 const propTypes = {
   onTokenChange: PropTypes.func.isRequired,
   rollCallTokens: PropTypes.arrayOf(PropTypes.instanceOf(RollCallToken)).isRequired,
+  selectedToken: PropTypes.instanceOf(RollCallToken).isRequired,
 };
 RollCallTokensDropDown.propTypes = propTypes;
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;

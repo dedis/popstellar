@@ -11,7 +11,7 @@ const createRollCall = (id: string, name: string, mockAttendees: string[]) => {
   return RollCall.fromState({
     ...mockRollCallState,
     id: id,
-    name: id,
+    name: name,
     attendees: [...mockRollCallState.attendees, ...mockAttendees],
   });
 };

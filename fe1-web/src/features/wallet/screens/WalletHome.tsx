@@ -67,7 +67,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   };
   const tokenInfos = () => {
     if (selectedToken) {
-      const rollCallName = `Roll Call name: ${selectedToken.rollCallId.valueOf()}`;
+      const rollCallName = `Roll Call name: ${selectedToken.rollCallName.valueOf()}`;
       return (
         <View style={containerStyles.centeredXY}>
           <TextBlock size={18} text={rollCallName} />
@@ -82,8 +82,12 @@ const WalletHome = ({ navigation }: IPropTypes) => {
     <View style={styles.homeContainer}>
       <TextBlock bold text={STRINGS.wallet_welcome} />
       <View style={styles.tokenSelectContainer}>
-        {tokens && tokens.length > 0 && (
-          <RollCallTokensDropDown rollCallTokens={tokens} onTokenChange={setSelectedToken} />
+        {tokens && tokens.length > 0 && selectedToken && (
+          <RollCallTokensDropDown
+            rollCallTokens={tokens}
+            onTokenChange={setSelectedToken}
+            selectedToken={selectedToken}
+          />
         )}
       </View>
       {selectedToken && tokenInfos()}
