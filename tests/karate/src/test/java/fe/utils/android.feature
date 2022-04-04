@@ -42,15 +42,15 @@ Feature: android page object
       # karate.log(driver.getHttp().path("source").get().value)
 
     And click('//*[@content-desc="More options"]')
-    And click('#com.github.dedis.popstellar:id/title')
+    * click('#com.github.dedis.popstellar:id/title')
 
       # Input the mock backend url and connect to it
-    And input('#com.github.dedis.popstellar:id/entry_box_server_url', backendURL)
-    And click('#com.github.dedis.popstellar:id/button_apply')
-    And match backend.waitForConnection(5000) == true
+    * input('#com.github.dedis.popstellar:id/entry_box_server_url', backendURL)
+    * click('#com.github.dedis.popstellar:id/button_apply')
+    * match backend.waitForConnection(5000) == true
 
-    And click(tab_wallet_selector)
-    And click(tab_wallet_new_wallet_selector)
-    And click(tab_wallet_confirm_selector)
-    And dialog(true)
+    * click(tab_wallet_selector)
+    * click(tab_wallet_new_wallet_selector)
+    * click(tab_wallet_confirm_selector)
+    * dialog(true)
 
