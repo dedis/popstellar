@@ -11,11 +11,11 @@ import (
 )
 
 const (
-laoIDBase64 = "lao id is %s, should be base64URL encoded"
-elecIDBase64 = "election id is %s, should be base64URL encoded"
-elecIDFormat = "election channel id is %s, should be formatted as /root/laoID/electionID"
-laoIDCompare = "lao id is %s, should be %s"
-elecIDCompare = "election id is %s, should be %s"
+	laoIDBase64   = "lao id is %s, should be base64URL encoded"
+	elecIDBase64  = "election id is %s, should be base64URL encoded"
+	elecIDFormat  = "election channel id is %s, should be formatted as /root/laoID/electionID"
+	laoIDCompare  = "lao id is %s, should be %s"
+	elecIDCompare = "election id is %s, should be %s"
 )
 
 func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpen) error {

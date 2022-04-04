@@ -24,9 +24,9 @@ import (
 )
 
 const (
-msgID = "msg id"
-failedToDecodeData = "failed to decode message data: %v"
-failedToBroadcast = "failed to broadcast message: %v"
+	msgID              = "msg id"
+	failedToDecodeData = "failed to decode message data: %v"
+	failedToBroadcast  = "failed to broadcast message: %v"
 )
 
 // attendees represents the attendees in an election.
