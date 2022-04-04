@@ -2,12 +2,15 @@ package digitalCash
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"github.com/rs/zerolog"
 	"golang.org/x/xerrors"
 	"popstellar/channel"
 	"popstellar/channel/registry"
 	"popstellar/inbox"
+	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
+	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
 	"popstellar/network/socket"
@@ -110,7 +113,6 @@ func NewChannel(channelID string, log zerolog.Logger, hub channel.HubFunctionali
 	return retChannel
 }
 
-/*
 // broadcastToAllClients is a helper message to broadcast a message to all
 // TODO don't know if will be useful
 // clients.
@@ -141,8 +143,6 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.sockets.SendToAll(buf)
 	return nil
 }
-
-*/
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
 func (c *Channel) verifyMessage(msg message.Message) error {
@@ -178,10 +178,10 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 
 	c.inbox.StoreMessage(msg)
 
-	//err = c.broadcastToAllClients(msg)
-	//if err != nil {
-	//	return xerrors.Errorf("failed to broadcast message: %v", err)
-	//}
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf("failed to broadcast message: %v", err)
+	}
 
 	return nil
 }
