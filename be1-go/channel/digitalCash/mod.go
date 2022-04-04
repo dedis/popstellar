@@ -114,7 +114,6 @@ func NewChannel(channelID string, log zerolog.Logger, hub channel.HubFunctionali
 }
 
 // broadcastToAllClients is a helper message to broadcast a message to all
-// TODO don't know if will be useful
 // clients.
 func (c *Channel) broadcastToAllClients(msg message.Message) error {
 	c.log.Info().Str(msgID, msg.MessageID).Msg("broadcasting message to all")
@@ -194,11 +193,12 @@ func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	return registry
 }
 
+// UPDATE FOLLOWING
 // processMessageObject handles a message object.
 /*
 func (c *Channel) processDigitalCashObject(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
-	//TODO UPDATE following
+
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
