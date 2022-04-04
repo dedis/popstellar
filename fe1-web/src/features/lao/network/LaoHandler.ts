@@ -19,7 +19,7 @@ export function handleLaoCreateMessage(msg: ProcessableMessage): boolean {
     last_modified: createLaoMsg.creation,
     organizer: createLaoMsg.organizer,
     witnesses: createLaoMsg.witnesses,
-    server_addresses: [],
+    server_addresses: [msg.receivedFrom],
   });
 
   dispatch(connectToLao(lao.toState()));
