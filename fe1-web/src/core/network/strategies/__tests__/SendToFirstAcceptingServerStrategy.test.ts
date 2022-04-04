@@ -3,6 +3,7 @@ import { describe, expect, it } from '@jest/globals';
 import { MockNetworkConnection } from 'core/network/__tests__/MockNetworkConnection';
 import { mockJsonRpcPayload } from 'core/network/__tests__/utils';
 import { NetworkConnection } from 'core/network/NetworkConnection';
+import { NetworkError } from 'core/network/NetworkError';
 
 import { sendToFirstAcceptingServerStrategy } from '../SendToFirstAcceptingServerStrategy';
 
@@ -96,7 +97,7 @@ describe('SendToFirstAcceptingServerStrategy', () => {
         mockJsonRpcPayload,
         mockConnections as unknown as NetworkConnection[],
       ),
-    ).rejects.toHaveProperty('message', errors[2]);
+    ).rejects.toBeInstanceOf(NetworkError);
 
     expect(c1.sendPayload).toHaveBeenCalledWith(mockJsonRpcPayload);
     expect(c1.sendPayload).toHaveBeenCalledTimes(1);

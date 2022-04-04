@@ -107,7 +107,7 @@ type Channel struct {
 	terminated bool
 
 	// Questions asked to the participants
-	//the key will be the string representation of the id of type byte[]
+	// the key will be the string representation of the id of type byte[]
 	questions map[string]*question
 
 	// attendees that took part in the roll call string of their PK
@@ -130,7 +130,7 @@ type question struct {
 	// ballotOptions represents different ballot options.
 	ballotOptions []string
 
-	//valid vote mutex.
+	// valid vote mutex.
 	validVotesMu sync.RWMutex
 
 	// validVotes represents the list of all valid votes. The key represents
@@ -157,7 +157,7 @@ type validVote struct {
 }
 
 // Publish is used to handle publish messages in the election channel.
-func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
+func (c *Channel) Publish(publish method.Publish, socket socket.Socket) error {
 	c.log.Info().
 		Str(msgID, strconv.Itoa(publish.ID)).
 		Msg("received a publish")
@@ -168,7 +168,7 @@ func (c *Channel) Publish(publish method.Publish, _ socket.Socket) error {
 			"election channel: %w", err)
 	}
 
-	err = c.handleMessage(publish.Params.Message)
+	err = c.handleMessage(publish.Params.Message, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to handle a publish message: %v", err)
 	}
@@ -211,7 +211,7 @@ func (c *Channel) Catchup(catchup method.Catchup) []message.Message {
 }
 
 // Broadcast is used to handle a broadcast message.
-func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
+func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) error {
 	c.log.Info().Msg("received a broadcast")
 
 	err := c.verifyMessage(broadcast.Params.Message)
@@ -220,7 +220,7 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 			"election channel: %w", err)
 	}
 
-	err = c.handleMessage(broadcast.Params.Message)
+	err = c.handleMessage(broadcast.Params.Message, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to handle broadcast message: %v", err)
 	}
@@ -229,9 +229,9 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, _ socket.Socket) error {
 }
 
 // handleMessage handles a message received in a broadcast or publish method
-func (c *Channel) handleMessage(msg message.Message) error {
+func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
 
-	err := c.registry.Process(msg)
+	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %v", err)
 	}
@@ -298,7 +298,7 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 }
 
 // processCastVote is the callback that processes election#cast_vote messages
-func (c *Channel) processCastVote(msg message.Message, msgData interface{}) error {
+func (c *Channel) processCastVote(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.VoteCastVote)
 	if !ok {
@@ -350,7 +350,7 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}) erro
 }
 
 // processElectionEnd is the callback that processes election#end messages
-func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) error {
+func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.ElectionEnd)
 	if !ok {
@@ -407,7 +407,7 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}) e
 }
 
 // processElectionResult is the callback that processes election#result messages
-func (c *Channel) processElectionResult(msg message.Message, msgData interface{}) error {
+func (c *Channel) processElectionResult(msg message.Message, msgData interface{}, _ socket.Socket) error {
 	data, ok := msgData.(*messagedata.ElectionResult)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#result message", msgData)
@@ -576,9 +576,7 @@ func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQues
 	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))
-		for i, b := range q.BallotOptions {
-			ballotOpts[i] = b
-		}
+		copy(ballotOpts, q.BallotOptions)
 
 		qs[q.ID] = &question{
 			id:            []byte(q.ID),

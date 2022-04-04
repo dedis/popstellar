@@ -36,11 +36,7 @@ describe('SendToFirstAcceptingRandomServerStrategy', () => {
       ),
     ).resolves.toEqual(expect.anything());
 
-    // make sure shuffleArray was called with the correct input
-    // .calls[i][j] is the j-th argument of the i-th call
-    // converting the two operands to sets since shuffleArray() shuffles in-place
-    // and thus .hasBeenCalledWith() reports a wrong order
-    expect(new Set(shuffleArray.mock.calls[0][0])).toEqual(new Set(mockConnections));
+    expect(shuffleArray).toHaveBeenCalledWith(mockConnections);
     expect(shuffleArray).toHaveBeenCalledTimes(1);
   });
 });

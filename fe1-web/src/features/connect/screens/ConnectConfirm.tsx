@@ -62,9 +62,12 @@ const ConnectConfirm = () => {
       return;
     }
 
-    const channel = getLaoChannel(laoId);
-
     try {
+      const channel = getLaoChannel(laoId);
+      if (!channel) {
+        throw new Error('The given LAO ID is invalid');
+      }
+
       // subscribe to the lao channel on the new connection
       await subscribeToChannel(channel, [connection]);
 

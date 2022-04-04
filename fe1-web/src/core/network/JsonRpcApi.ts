@@ -121,11 +121,25 @@ export async function catchup(
     request,
     connections,
   );
-  if (responses.find((r) => !Array.isArray(r.response.result))) {
-    throw new Error('Message result does not contain an array of messages!');
+
+  for (const extendedResponse of responses) {
+    // A JsonRpcResponse can have r.result being of type number or of Message[]
+    // But in the case of a catchup we always expect Message[]
+    if (typeof extendedResponse.response.result === 'number') {
+      console.log(
+        'One of the received responses to a catchup message contained a number instead of a message array and will be ignored',
+        extendedResponse,
+      );
+    }
   }
 
-  const msgs: ReceivedMessage[] = responses.flatMap((r) =>
+  // only use responses containing a message array
+  const validResponses = responses.filter((r) => typeof r.response.result !== 'number');
+  if (validResponses.length === 0) {
+    throw new Error('No responses containing messages were received after a catchup message!');
+  }
+
+  const msgs: ReceivedMessage[] = validResponses.flatMap((r) =>
     (r.response.result as Message[]).map(
       (msg) => ({ message: msg, receivedFrom: r.receivedFrom } as ReceivedMessage),
     ),

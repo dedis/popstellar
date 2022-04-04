@@ -53,15 +53,14 @@ beforeAll(() => {
 describe('handleExtendedRpcRequests', () => {
   it('dispatches the correct redux action', () => {
     handleExtendedRpcRequests(extendedRequest);
-    const obj = addMessages(
+    const obj: any = addMessages(
       ExtendedMessage.fromMessage(mockMessage, mockChannel, mockAddress).toState(),
     );
 
-    // the receivedAt value can differ. calls[i][j] => jth argument of ith call
-    // @ts-ignore
-    delete obj.payload[0].receivedAt;
-    delete (dispatch as jest.Mock).mock.calls[0][0].payload[0].receivedAt;
-
-    expect(dispatch).toHaveBeenCalledWith(obj);
+    expect(dispatch).toHaveBeenCalledWith({
+      ...obj,
+      // the receivedAt value is allowed differ. there is a payload field containing the messages
+      payload: [{ ...obj.payload[0], receivedAt: expect.any(Number) }],
+    });
   });
 });

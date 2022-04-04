@@ -86,7 +86,7 @@ func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
 }
 
 // verifyMessageRollCallCreate checks the roll_call#create message data is valid.
-func (c *Channel) verifyMessageRollCallCreate(rollCallCreate messagedata.RollCallCreate) error {
+func (c *Channel) verifyMessageRollCallCreate(rollCallCreate *messagedata.RollCallCreate) error {
 	c.log.Info().Msgf("verifying roll_call#create message of roll call %s", rollCallCreate.ID)
 
 	// verify id is base64URL encoded
@@ -177,8 +177,9 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 	return nil
 }
 
+//TODO modif Noemien ??
 // verifyMessageRollCallClose checks the roll_call#close message data is valid.
-func (c *Channel) verifyMessageRollCallClose(rollCallClose messagedata.RollCallClose) error {
+func (c *Channel) verifyMessageRollCallClose(rollCallClose *messagedata.RollCallClose) error {
 	c.log.Info().Msgf("verifying roll_call#close message of roll call with update id %s", rollCallClose.UpdateID)
 
 	// verify update id is base64URL encoded

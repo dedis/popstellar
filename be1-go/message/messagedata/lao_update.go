@@ -46,3 +46,18 @@ func (message LaoUpdate) Verify() error {
 
 	return nil
 }
+
+// GetObject implements MessageData
+func (LaoUpdate) GetObject() string {
+	return LAOObject
+}
+
+// GetAction implements MessageData
+func (LaoUpdate) GetAction() string {
+	return LAOActionUpdate
+}
+
+// NewEmpty implements MessageData
+func (LaoUpdate) NewEmpty() MessageData {
+	return &LaoUpdate{}
+}
