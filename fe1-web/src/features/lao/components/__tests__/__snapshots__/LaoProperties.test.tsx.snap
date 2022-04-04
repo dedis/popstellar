@@ -394,15 +394,6 @@ exports[`LaoProperties renders correctly as attendee 1`] = `
                               }
                             }
                           >
-                            Lao creation: 13/09/2020, 14:26:40
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "marginHorizontal": 10,
-                              }
-                            }
-                          >
                             Your role: Attendee
                           </Text>
                           <View
@@ -21590,15 +21581,6 @@ exports[`LaoProperties renders correctly as organizer 1`] = `
                               }
                             }
                           >
-                            Lao creation: 13/09/2020, 14:26:40
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "marginHorizontal": 10,
-                              }
-                            }
-                          >
                             Your role: Organizer
                           </Text>
                           <View
@@ -42778,15 +42760,6 @@ exports[`LaoProperties renders correctly as witness 1`] = `
                             }
                           >
                             Lao name: MyLao
-                          </Text>
-                          <Text
-                            style={
-                              Object {
-                                "marginHorizontal": 10,
-                              }
-                            }
-                          >
-                            Lao creation: 13/09/2020, 14:26:40
                           </Text>
                           <Text
                             style={

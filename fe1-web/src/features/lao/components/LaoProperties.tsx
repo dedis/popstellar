@@ -55,7 +55,6 @@ const LaoProperties = ({ isInitiallyOpen }: IPropTypes) => {
     <View style={laoPropertiesStyles.default}>
       <CollapsibleContainer title="Lao Properties" isInitiallyOpen={isInitiallyOpen}>
         <ParagraphBlock text={`Lao name: ${lao.name}`} />
-        <ParagraphBlock text={`Lao creation: ${lao.creation.toDateString()}`} />
         <ParagraphBlock text={`Your role: ${getUserRole(isOrganizer, isWitness)}`} />
         <QRCode
           value={encodeLaoConnection(lao.server_addresses[0] || '', lao.id.toString())}
