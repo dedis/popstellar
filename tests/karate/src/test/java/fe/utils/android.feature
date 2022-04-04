@@ -32,7 +32,7 @@ Feature: android page object
     Given driver driverOptions
 
       # Create and import mock backend
-    * call read('classpath:fe/net/mock_backend.feature')
+    * call read('classpath:fe/net/mockBackend.feature')
     * def backendURL = 'ws://10.0.2.2:' + backend.getPort()
       # Import message filters
     * call read('classpath:common/net/filters.feature')
