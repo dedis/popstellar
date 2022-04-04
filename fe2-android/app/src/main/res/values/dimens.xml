@@ -92,9 +92,7 @@
   <dimen name="card_view_margin">10dp</dimen>
   <dimen name="lone_bottom_button_top_margin">30dp</dimen>
 
-  <!-- Social Media dimensions -->
-  <dimen name="card_view_corner_radius">8dp</dimen>
-  <dimen name="rv_margin">10dp</dimen>
+  <!-- Lao ist dimensions -->
   <dimen name="rv_margin_top">20dp</dimen>
 
   <!--  Card View dimensions-->

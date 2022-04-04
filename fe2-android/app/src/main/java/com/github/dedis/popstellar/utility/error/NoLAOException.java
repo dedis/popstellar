@@ -4,9 +4,6 @@ import com.github.dedis.popstellar.R;
 
 public class NoLAOException extends GenericException{
 
-  public NoLAOException() {
-  }
-
   @Override
   public int getUserMessage() {
     return R.string.error_no_lao;

@@ -1,32 +1,24 @@
 package com.github.dedis.popstellar.ui.home;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
-import com.github.dedis.popstellar.databinding.HomeLaoLayoutBinding;
 import com.github.dedis.popstellar.model.objects.Lao;
 
 import java.util.List;
 
 public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListItemViewHolder> {
 
-  private final String TAG = LAOListAdapter.class.getSimpleName();
-
   private final HomeViewModel homeViewModel;
 
   private List<Lao> laos;
-
 
   private final boolean openLaoDetail;
 

@@ -19,5 +19,5 @@
   <item
     android:id="@+id/home_social_media_menu"
     android:icon="@drawable/ic_common_social_media_transparent_foreground"
-    android:title="Social Media"/>
+    android:title="@string/tab_social_media"/>
 </menu>

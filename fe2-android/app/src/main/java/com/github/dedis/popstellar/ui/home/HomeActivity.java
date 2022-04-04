@@ -10,14 +10,12 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
@@ -31,7 +29,6 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.error.GenericException;
 import com.github.dedis.popstellar.utility.error.NoLAOException;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
@@ -72,18 +69,6 @@ public class HomeActivity extends AppCompatActivity {
     navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar();
 
-    // Subscribe to "open lao" event
-    mViewModel
-        .getOpenLaoEvent()
-        .observe(
-            this,
-            stringEvent -> {
-              String laoId = stringEvent.getContentIfNotHandled();
-              if (laoId != null) {
-                openLaoDetails(laoId);
-              }
-            });
-
     // Subscribe to "open home" event
     mViewModel
         .getOpenHomeEvent()
@@ -96,6 +81,36 @@ public class HomeActivity extends AppCompatActivity {
               }
               if (event != null) {
                 setupHomeFragment();
+              }
+            });
+
+    // Subscribe to "open settings" event
+    mViewModel
+        .getOpenSettingsEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSettingsActivity();
+              }
+            });
+
+    subscribeWalletEvents();
+    subscribeSocialMediaEvent();
+    subscribeLaoRelatedEvent();
+  }
+
+  private void subscribeLaoRelatedEvent() {
+    // Subscribe to "open lao" event
+    mViewModel
+        .getOpenLaoEvent()
+        .observe(
+            this,
+            stringEvent -> {
+              String laoId = stringEvent.getContentIfNotHandled();
+              if (laoId != null) {
+                openLaoDetails(laoId);
               }
             });
 
@@ -141,21 +156,6 @@ public class HomeActivity extends AppCompatActivity {
                 setupLaunchFragment();
               }
             });
-
-    // Subscribe to "open settings" event
-    mViewModel
-        .getOpenSettingsEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (event != null) {
-                setupSettingsActivity();
-              }
-            });
-
-    subscribeWalletEvents();
-    subscribeSocialMediaEvent();
   }
 
   private void subscribeWalletEvents() {
@@ -326,10 +326,10 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupSocialMediaActivity() {
-      Intent intent = new Intent(this, SocialMediaActivity.class);
-      Log.d(TAG, "Trying to open social media");
-      intent.putExtra(OPENED_FROM, TAG);
-      startActivity(intent);
+    Intent intent = new Intent(this, SocialMediaActivity.class);
+    Log.d(TAG, "Trying to open social media");
+    intent.putExtra(OPENED_FROM, TAG);
+    startActivity(intent);
   }
 
   private void openLaoDetails(String laoId) {

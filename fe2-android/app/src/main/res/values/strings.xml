@@ -115,7 +115,6 @@
   <string name="show_qrcode_to_organizer">Please show the QR code to the organizer</string>
 
   <!-- Witness -->
-  <string name="witnessing">Witnessing</string>
   <string name="delete_witness_dialog_title">Delete ?</string>
   <string name="add_witness_successful">Witness has been added</string>
   <string name="add_witness_unsuccessful">Witness could not be added</string>
