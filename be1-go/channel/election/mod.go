@@ -23,9 +23,11 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const msgID = "msg id"
-const failedToDecodeData = "failed to decode message data: %v"
-const failedToBroadcast = "failed to broadcast message: %v"
+const (
+msgID = "msg id"
+failedToDecodeData = "failed to decode message data: %v"
+failedToBroadcast = "failed to broadcast message: %v"
+)
 
 // attendees represents the attendees in an election.
 type attendees struct {
