@@ -23,7 +23,7 @@ Feature: web test
     Given driver driverOptions
 
     # Create and import mock backend
-    And call read('classpath:fe/net/mockbackend.feature')
+    And call read('classpath:fe/net/mock_backend.feature')
     * def backendURL = 'ws://localhost:' + backend.getPort()
     # Import message filters
     And call read('classpath:common/net/filters.feature')

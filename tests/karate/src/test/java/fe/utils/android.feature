@@ -28,11 +28,11 @@ Feature: android page object
     * def add_event_selector = '#com.github.dedis.popstellar:id/add_future_event_button'
 
   @name=basic_setup
-  Scenario: Setup connection to the backend and complete on the home page
+  Scenario: Setup connection to the backend and complete wallet initialization
     Given driver driverOptions
 
       # Create and import mock backend
-    * call read('classpath:fe/net/mockbackend.feature')
+    * call read('classpath:fe/net/mock_backend.feature')
     * def backendURL = 'ws://10.0.2.2:' + backend.getPort()
       # Import message filters
     * call read('classpath:common/net/filters.feature')

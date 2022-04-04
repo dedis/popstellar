@@ -50,7 +50,7 @@ mvn test -DargLine="-Dkarate.env=scala"
 
 Build the application by running `./gradlew assembleDebug` in the corresponding directory.
 
-Start the Android Emulator. Start appium : if you use the GUI, delete the text in Host and Port and click on the start
+Start the Android Emulator. Start Appium : if you use the GUI, delete the text in Host and Port and click on the start
 server button. If you use the terminal, run `appium`.
 
 With Android Bumblebee the emulator can either run in a tool window or a standalone window. (To have it in a standalone
