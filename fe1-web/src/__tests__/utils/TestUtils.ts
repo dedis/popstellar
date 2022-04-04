@@ -3,7 +3,7 @@ import testKeyPair from 'test_data/keypair.json';
 import { KeyPairRegistry } from 'core/keypair';
 import { JsonRpcMethod, JsonRpcRequest, JsonRpcResponse } from 'core/network/jsonrpc';
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { Channel, EventTags, Hash, KeyPair, PopToken, PublicKey, Timestamp } from "core/objects";
+import { Channel, EventTags, Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
 import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
 
