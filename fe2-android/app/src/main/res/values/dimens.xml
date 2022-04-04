@@ -89,7 +89,6 @@
   <dimen name="social_media_divider_height">1dp</dimen>
   <dimen name="bottom_navigation_view_height">56dp</dimen>
   <dimen name="card_view_elevation">1dp</dimen>
-  <dimen name="card_view_margin">10dp</dimen>
   <dimen name="lone_bottom_button_top_margin">30dp</dimen>
 
   <!-- Lao ist dimensions -->

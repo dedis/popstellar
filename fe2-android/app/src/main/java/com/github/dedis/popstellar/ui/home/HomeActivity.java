@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -209,7 +210,7 @@ public class HomeActivity extends AppCompatActivity {
             this,
             aBoolean -> {
               // We set transparency of the
-              if (aBoolean) {
+              if (Boolean.TRUE.equals(aBoolean)) {
                 connectItem.setIcon(R.drawable.ic_home_connect_opaque_foreground);
                 launchItem.setIcon(R.drawable.ic_home_launch_opaque_foreground);
               } else {
@@ -241,10 +242,10 @@ public class HomeActivity extends AppCompatActivity {
         .observe(
             this,
             laos -> {
-              if (laos.size() > 0) {
-                socialMediaItem.setIcon(R.drawable.ic_common_social_media_opaque_foreground);
-              } else {
+              if (laos.isEmpty()) {
                 socialMediaItem.setIcon(R.drawable.ic_common_social_media_transparent_foreground);
+              } else {
+                socialMediaItem.setIcon(R.drawable.ic_common_social_media_opaque_foreground);
               }
             });
   }
@@ -429,9 +430,9 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void revertToHome() {
-    Handler handler = new Handler();
-    handler.postDelayed(
-        () -> navbar.setSelectedItemId(R.id.home_home_menu),
-        getResources().getInteger(R.integer.navigation_reversion_delay));
+    new Handler(Looper.getMainLooper())
+        .postDelayed(
+            () -> navbar.setSelectedItemId(R.id.home_home_menu),
+            getResources().getInteger(R.integer.navigation_reversion_delay));
   }
 }
