@@ -45,7 +45,7 @@ const WalletHome = ({ navigation }: IPropTypes) => {
   const lao = useSelector(selectCurrentLao);
 
   useEffect(() => {
-    if (lao) {
+    if (lao && rollCalls) {
       Wallet.recoverWalletRollCallTokens(rollCalls, lao)
         .then((rct) => {
           setTokens(rct);
@@ -54,6 +54,10 @@ const WalletHome = ({ navigation }: IPropTypes) => {
         .catch((e) => {
           console.debug(e);
         });
+    } else {
+      // Clear tokens screen state
+      setSelectedToken(undefined);
+      setTokens(undefined);
     }
   }, [rollCalls, isDebug, lao]);
 
