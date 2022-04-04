@@ -228,7 +228,7 @@ public class DigitalCashViewModel extends AndroidViewModel {
                                               getApplication(), TAG, error, R.string.error_sending_coin));
       disposables.add(disposable);
     } catch (Exception e) {
-      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.error_for_keys);
+      ErrorUtils.logAndShow(getApplication(), TAG, e, R.string.generic_error);
     }
     Toast.makeText(context, "DONE DUMMY", Toast.LENGTH_LONG).show();
     //
