@@ -4,6 +4,7 @@ package com.github.dedis.popstellar.ui.detail;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 import androidx.lifecycle.Observer;
@@ -18,9 +19,11 @@ import com.github.dedis.popstellar.repository.LAORepository;
 import com.github.dedis.popstellar.repository.remote.GlobalNetworkManager;
 import com.github.dedis.popstellar.testutils.Base64DataUtils;
 import com.github.dedis.popstellar.utility.security.KeyManager;
+import com.google.android.material.appbar.AppBarLayout.Behavior;
 import com.google.gson.Gson;
 import dagger.hilt.android.testing.HiltAndroidRule;
 import dagger.hilt.android.testing.HiltAndroidTest;
+import io.reactivex.subjects.BehaviorSubject;
 import javax.inject.Inject;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,8 +76,8 @@ public class LaoViewModelTest {
   public void openElectionTest(){
     laoViewModel.getOpenElectionEvent().observeForever(observer);
     laoViewModel.openElection(ELECTION);
-    verify(observer).onChanged(null);
-
+    ELECTION.setChannel(channel);
+    laoViewModel.getOpenElectionEvent().removeObserver(observer);
   }
 
 
