@@ -1,10 +1,9 @@
 import testKeyPair from 'test_data/keypair.json';
 
 import { MessageRegistry } from 'core/network/jsonrpc/messages';
-import { EventTags, Hash, KeyPair, PopToken, PublicKey, Timestamp } from "core/objects";
+import { EventTags, Hash, KeyPair, PopToken, PublicKey, Timestamp } from 'core/objects';
 import { Lao, LaoState } from 'features/lao/objects';
-
-import { EventTypeRollCall, RollCall, RollCallStatus } from "../../features/rollCall/objects";
+import { EventTypeRollCall, RollCall, RollCallStatus } from 'features/rollCall/objects';
 
 export const mockPublicKey = testKeyPair.publicKey;
 export const mockPrivateKey = testKeyPair.privateKey;
