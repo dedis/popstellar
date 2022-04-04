@@ -27,7 +27,8 @@ namespace STRINGS {
   export const app_navigation_tab_lao = 'AppLao';
 
   /* --- Notification Navigation Strings --- */
-  export const notification_navigation_tab_notifications = 'Notifications';
+  export const notification_navigation_tab_notifications = 'NotificationNavigation Notifications';
+  export const notification_navigation_tab_notifications_title = 'Notifications';
   export const notification_navigation_tab_single_notification = 'Notification';
 
   /* --- Organization Navigation Strings --- */

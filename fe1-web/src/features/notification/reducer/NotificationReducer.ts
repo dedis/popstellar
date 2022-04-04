@@ -18,7 +18,7 @@ export interface NotificationState {
   type: string;
 }
 
-export const NOTIFICATION_REDUCER_PATH = 'laoNotifications';
+export const NOTIFICATION_REDUCER_PATH = 'notifications';
 
 export interface NotificationReducerState {
   byId: Record<number, NotificationState>;
@@ -122,8 +122,21 @@ export const selectAllNotifications = createSelector(
     allIds.map((id) => notificationMap[id]),
 );
 
-export const makeSelectNotification = (notificationId: number) => (state: unknown) =>
-  getNotificationState(state).byId[notificationId];
+/**
+ * Retrives a single notification state by id
+ * NOTE: This function does not memoize since there is no computation taking place
+ * @param notificationId The id of the notification to retrieve
+ * @param state The redux state
+ * @returns A single notificatio n state
+ */
+export const getNotification = (notificationId: number, state: unknown) => {
+  const notificationState = getNotificationState(state);
+  if (notificationId in notificationState.byId) {
+    return notificationState.byId[notificationId];
+  }
+
+  return undefined;
+};
 
 export const notificationReduce = notificationSlice.reducer;
 

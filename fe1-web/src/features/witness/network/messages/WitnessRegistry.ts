@@ -34,7 +34,7 @@ const k = (...args: string[]) => args.join(',');
 
 const WITNESSING_TYPE_MAP = new Map<string, WitnessEntry>([
   // Lao
-  [k(LAO, CREATE), { type: WitnessingType.NO_WITNESSING }],
+  [k(LAO, CREATE), { type: WitnessingType.ACTIVE }],
   [k(LAO, STATE), { type: WitnessingType.NO_WITNESSING }],
   [k(LAO, UPDATE_PROPERTIES), { type: WitnessingType.NO_WITNESSING }],
 

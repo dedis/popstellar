@@ -14,18 +14,12 @@ import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import ScreenWrapper from 'core/components/ScreenWrapper';
-import { Timestamp } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
 import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
-import {
-  addNotification,
-  discardAllNotifications,
-  NotificationState,
-  selectAllNotifications,
-} from '../reducer';
+import { discardAllNotifications, NotificationState, selectAllNotifications } from '../reducer';
 
 interface ListSeparatorItem {
   title: string;
@@ -48,7 +42,10 @@ const NotificationScreenStyles = StyleSheet.create({
   } as ViewStyle,
 });
 
-type NavigationProps = StackScreenProps<NotificationStackParamList, 'Notifications'>;
+type NavigationProps = StackScreenProps<
+  NotificationStackParamList,
+  'NotificationNavigation Notifications'
+>;
 
 const NotificationScreen = () => {
   const navigation = useNavigation<NavigationProps['navigation']>();
@@ -89,32 +86,6 @@ const NotificationScreen = () => {
 
   return (
     <ScreenWrapper>
-      <Button
-        title="Add notification"
-        onPress={() =>
-          dispatch(
-            addNotification({
-              timestamp: Timestamp.EpochNow().valueOf(),
-              title: 'heio',
-              type: 'some type',
-            }),
-          )
-        }
-      />
-      <Button title="Clear notifications" onPress={() => dispatch(discardAllNotifications())} />
-      <Button
-        title="Add witness notification"
-        onPress={() =>
-          dispatch(
-            addNotification({
-              timestamp: Timestamp.EpochNow().valueOf(),
-              title: 'A message to witness',
-              type: 'message-to-witness',
-              messageId: 'this is a message id',
-            } as Omit<NotificationState, 'id' | 'hasBeenRead'>),
-          )
-        }
-      />
       <FlatList
         data={notificationData}
         keyExtractor={(item) => ('id' in item ? item.id.toString() : item.title)}
@@ -147,6 +118,7 @@ const NotificationScreen = () => {
           return <Text style={Typography.important as TextStyle}>{item.title}</Text>;
         }}
       />
+      <Button title="Clear notifications" onPress={() => dispatch(discardAllNotifications())} />
     </ScreenWrapper>
   );
 };

@@ -1,3 +1,4 @@
+import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 import {
   ActionType,
   AfterProcessingHandler,
@@ -44,9 +45,10 @@ const afterMessageProcessingHandler =
             break;
           } */
 
-          dispatch(addMessageToWitness(msg));
+          dispatch(addMessageToWitness(new ExtendedMessage(msg).toState()));
           dispatch(
             addNotification({
+              title: `Witnessing required: ${msg.messageData.object}#${msg.messageData.action}`,
               timestamp: Timestamp.EpochNow().valueOf(),
               type: MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
               messageId: msg.message_id.valueOf(),

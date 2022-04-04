@@ -10,7 +10,8 @@ import {
 } from 'core/network/jsonrpc/messages';
 import { Timestamp } from 'core/objects';
 
-import { addMessageToWitness, witnessMessage, witnessReduce } from '../WitnessReducer';
+import { addMessageToWitness, removeMessageToWitness, witnessReduce } from '../WitnessReducer';
+import { ExtendedMessage } from 'core/network/ingestion/ExtendedMessage';
 
 const timestamp = new Timestamp(1607277600);
 
@@ -34,7 +35,7 @@ describe('WitnessReducer', () => {
 
       const newState = witnessReduce(
         { allIds: [], byId: {} },
-        addMessageToWitness({ ...message } as ProcessableMessage),
+        addMessageToWitness(new ExtendedMessage(message).toState()),
       );
 
       expect(newState.allIds).toEqual([message.message_id.valueOf()]);
@@ -57,8 +58,8 @@ describe('WitnessReducer', () => {
       const messageId = message.message_id.valueOf();
 
       const newState = witnessReduce(
-        { allIds: [messageId], byId: { [messageId]: { ...message } as ProcessableMessage } },
-        witnessMessage({ ...message } as ProcessableMessage),
+        { allIds: [messageId], byId: { [messageId]: new ExtendedMessage(message).toState() } },
+        removeMessageToWitness(message.message_id.valueOf()),
       );
 
       expect(newState.allIds).toEqual([]);

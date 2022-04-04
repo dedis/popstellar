@@ -11,6 +11,7 @@ export namespace WitnessFeature {
 
   export interface Notification {
     id: number;
+    hasBeenRead: boolean;
     timestamp: number;
     title: string;
     type: string;

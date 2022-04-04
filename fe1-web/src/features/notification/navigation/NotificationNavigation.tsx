@@ -17,6 +17,7 @@ const NotificationNavigation = () => {
         name={STRINGS.notification_navigation_tab_notifications}
         component={NotificationScreen}
         options={{
+          title: STRINGS.notification_navigation_tab_notifications_title,
           // show not back button for this screen
           headerLeft: () => null,
         }}

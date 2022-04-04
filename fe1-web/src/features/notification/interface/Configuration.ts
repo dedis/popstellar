@@ -34,7 +34,10 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
 export interface NotificationCompositionConfiguration {
   notificationTypeComponents: {
     isOfType: (notification: NotificationState) => boolean;
-    Component: React.ComponentType<{ notification: NotificationState }>;
+    Component: React.ComponentType<{
+      notification: NotificationState;
+      navigateToNotificationScreen: () => void;
+    }>;
   }[];
 }
 
