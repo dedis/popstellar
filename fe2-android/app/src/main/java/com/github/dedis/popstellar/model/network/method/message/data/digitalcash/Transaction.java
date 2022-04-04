@@ -63,7 +63,7 @@ public class Transaction {
 
     @Override
     public int hashCode() {
-        return Objects.hash(version, TxIns, TxOuts, timestamp);
+        return Objects.hash(getVersion(), getTxIns(), getTxOuts(), getTimestamp());
     }
 
     @Override
@@ -72,7 +72,7 @@ public class Transaction {
                 "version=" + version + '\'' +
                 ", TxIns=" + Arrays.toString(TxIns.toArray()) + '\'' +
                 ", TxOuts=" + Arrays.toString(TxOuts.toArray()) + '\''+
-                ", timestamp=" + timestamp +
+                ", timestamp=" + timestamp + '\'' +
                 '}';
     }
 }
