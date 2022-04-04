@@ -43,14 +43,14 @@ const Launch = () => {
     getNetworkManager().connect(inputAddress);
 
     requestCreateLao(laoName)
-      .then((channel: Channel) => {
+      .then((channel: Channel) =>
         subscribeToChannel(channel).then(() => {
           // navigate to the newly created LAO
           navigation.navigate(STRINGS.app_navigation_tab_lao, {
             screen: STRINGS.organization_navigation_tab_events,
           });
-        });
-      })
+        }),
+      )
       .catch((reason) => console.debug(`Failed to establish lao connection: ${reason}`));
   };
 

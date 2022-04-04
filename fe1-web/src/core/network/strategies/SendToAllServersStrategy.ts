@@ -10,8 +10,6 @@ export const sendToAllServersStrategy: SendingStrategy = async (payload, connect
   try {
     return await Promise.all(connections.map((c) => c.sendPayload(payload)));
   } catch (error) {
-    // Some day, we will want to retry from a different network connection,
-    // before throwing an error to the caller
     console.error('Could not send payload due to failure:', error);
     throw error;
   }

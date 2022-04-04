@@ -46,13 +46,10 @@ object MessageDecoder {
    */
   def dataParser(registry: MessageRegistry): Flow[GraphMessage, GraphMessage, NotUsed] = Flow[GraphMessage].map(parseData(_, registry))
 
-  private def populateDataField(rpcRequest: JsonRpcRequest, objectString: JsString, actionString: JsString, dataJsonString: String, registry: MessageRegistry): GraphMessage = {
+  private def populateDataField(rpcRequest: JsonRpcRequest, _object: ObjectType, action: ActionType, dataJsonString: String, registry: MessageRegistry): GraphMessage = {
     var filledRequest = rpcRequest // filler for the typed request
 
     Try {
-      val _object: ObjectType = objectString.convertTo[ObjectType]
-      val action: ActionType = actionString.convertTo[ActionType]
-
       val validated: Try[Unit] = registry.getSchemaVerifier(_object, action) match {
         // validate the data schema if the registry found a mapping
         case Some(schemaVerifier) => schemaVerifier(dataJsonString)
@@ -82,13 +79,13 @@ object MessageDecoder {
     }
   }
 
-  /**
-   * Decides whether a graph message 'data' field should be decoded or not.
-   * If yes, the 'data' field is decoded
-   *
-   * @param graphMessage graph message that should be further decoded
-   * @return the upgraded graph message (with 'data' field decoded) or an error
-   */
+  /** Decides whether a graph message 'data' field should be decoded or not. If yes, the 'data' field is decoded
+    *
+    * @param graphMessage
+    *   graph message that should be further decoded
+    * @return
+    *   the upgraded graph message (with 'data' field decoded) or an error
+    */
   def parseData(graphMessage: GraphMessage, registry: MessageRegistry): GraphMessage = graphMessage match {
     case Left(rpcRequest: JsonRpcRequest) => rpcRequest.getDecodedData match {
       case Some(_) =>
@@ -99,22 +96,15 @@ object MessageDecoder {
         // json string representation of the 'data' field
         val jsonString: JsonString = rpcRequest.getEncodedData.fold("")(_.decodeToString())
 
-        // Try to extract data header from the json string
-        Try(jsonString.parseJson.asJsObject.getFields("object", "action")) match {
-
-          // if the header is correct (both 'object' and 'action' are present and both strings)
-          case Success(Seq(objectString@JsString(_), actionString@JsString(_))) =>
-            populateDataField(rpcRequest, objectString, actionString, jsonString, registry)
-          case Success(_) => Right(PipelineError(
-            ErrorCodes.INVALID_DATA.id,
-            "Invalid data: Unable to parse 'data' field: 'object' or 'action' field is missing/wrongly formatted",
-            rpcRequest.id
-          ))
-          case _ => Right(PipelineError(
-            ErrorCodes.INVALID_DATA.id,
-            "Invalid data: Unable to parse 'data' field: 'data' is not a valid json string",
-            rpcRequest.id
-          ))
+        parseHeader(jsonString) match {
+          case Success((_object, action)) =>
+            populateDataField(rpcRequest, _object, action, jsonString, registry)
+          case Failure(exception) =>
+            Right(PipelineError(
+              ErrorCodes.INVALID_DATA.id,
+              s"Invalid header: ${exception.getMessage()}",
+              rpcRequest.id
+            ))
         }
     }
     case _ => graphMessage

@@ -28,3 +28,18 @@ type MeetingState struct {
 	ModificationID         string                  `json:"modification_id"`
 	ModificationSignatures []ModificationSignature `json:"modification_signatures"`
 }
+
+// GetObject implements MessageData
+func (MeetingState) GetObject() string {
+	return MeetingObject
+}
+
+// GetAction implements MessageData
+func (MeetingState) GetAction() string {
+	return MeetingActionState
+}
+
+// NewEmpty implements MessageData
+func (MeetingState) NewEmpty() MessageData {
+	return &MeetingState{}
+}

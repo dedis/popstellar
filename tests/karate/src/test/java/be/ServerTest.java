@@ -9,4 +9,19 @@ public class ServerTest {
   Karate testCreateLAO() {
     return Karate.run("classpath:be/createLAO");
   }
+
+  @Karate.Test
+  Karate testCreateRollCall() {
+    return Karate.run("classpath:be/createRollCall/createRollCall.feature");
+  }
+
+  @Karate.Test
+  Karate testOpenRollCall() {
+    return Karate.run("classpath:be/createRollCall/openRollCall.feature");
+  }
+
+  @Karate.Test
+  Karate testCloseRollCall() {
+    return Karate.run("classpath:be/createRollCall/closeRollCall.feature");
+  }
 }

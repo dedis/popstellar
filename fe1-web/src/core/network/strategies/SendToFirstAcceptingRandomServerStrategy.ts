@@ -6,6 +6,4 @@ import { sendToFirstAcceptingServerStrategy } from './SendToFirstAcceptingServer
 export const sendToFirstAcceptingRandomServerStrategy: SendingStrategy = async (
   payload,
   connections,
-) =>
-  // we have to create a copy of the array as shuffleArray shuffles in-place
-  sendToFirstAcceptingServerStrategy(payload, shuffleArray([...connections]));
+) => sendToFirstAcceptingServerStrategy(payload, shuffleArray(connections));

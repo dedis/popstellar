@@ -63,13 +63,19 @@ export class NetworkConnection {
     this.ws.close();
   }
 
-  public reconnect() {
-    this.disconnect();
-    this.ws = this.establishConnection(this.address);
+  public reconnectIfNecessary() {
+    // 0 = CONNECTING, 1 = OPEN, 2 = CLOSING, 3 = CLOSED
+    if (this.ws.readyState > 1) {
+      this.disconnect();
+      this.ws = this.establishConnection(this.address);
+    }
   }
 
   private onOpen(): void {
     console.info(`Initiating web socket : ${this.address}`);
+
+    // reset failed connection attempts
+    this.failedConnectionAttempts = 0;
   }
 
   private onMessage(message: IMessageEvent): void {
@@ -103,7 +109,7 @@ export class NetworkConnection {
     // only retry a certain number of times and add a wait before retrying
     if (this.failedConnectionAttempts <= WEBSOCKET_CONNECTION_MAX_ATTEMPTS) {
       setTimeout(() => {
-        this.reconnect();
+        this.reconnectIfNecessary();
       }, WEBSOCKET_CONNECTION_FAILURE_TIMEOUT);
     }
   }

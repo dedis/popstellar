@@ -22,6 +22,13 @@ class SchemaVerifierSuite extends FunSuite with Matchers {
 
   import SchemaVerifierSuite._
 
+  /* ----------------------------- Test invalid JSON requests ----------------------------- */
+  test("Invalid jsonString - string instead of JSON object") {
+    val invalidJSON = "wrond JSON string"
+
+    verifyRpcSchema(invalidJSON) shouldBe a[Right[_, PipelineError]]
+  }
+
   /* ----------------------------- High-level (JSON-rpc) tests ----------------------------- */
   test("Correct subscribe JSON-RPC query") {
     val subscribePath = "../protocol/examples/query/subscribe/subscribe.json"

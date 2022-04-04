@@ -13,3 +13,18 @@ type RollCallClose struct {
 	// Attendees is a list of public keys
 	Attendees []string `json:"attendees"`
 }
+
+// GetObject implements MessageData
+func (RollCallClose) GetObject() string {
+	return RollCallObject
+}
+
+// GetAction implements MessageData
+func (RollCallClose) GetAction() string {
+	return RollCallActionClose
+}
+
+// NewEmpty implements MessageData
+func (RollCallClose) NewEmpty() MessageData {
+	return &RollCallClose{}
+}

@@ -176,8 +176,10 @@ namespace STRINGS {
 
   /* --- Roll-call open page Strings --- */
   export const roll_call_open = 'Open Roll-Call';
+  export const roll_call_reopen = 'Re-open Roll-Call';
 
   /* --- Roll-call scanning Strings --- */
+  export const roll_call_scan_attendees = 'Scan Attendees';
   export const roll_call_scan_description =
     'Please scan each participant’s Roll-call QR code exactly once.';
   export const roll_call_scan_participant = 'participant scanned';
