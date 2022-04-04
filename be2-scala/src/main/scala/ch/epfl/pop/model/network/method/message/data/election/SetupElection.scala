@@ -10,7 +10,7 @@ import spray.json._
 
 final case class SetupElection(
                                 id: Hash,
-                                loa: Hash,
+                                lao: Hash,
                                 name: String,
                                 version: String,
                                 created_at: Timestamp,
