@@ -16,6 +16,7 @@ public class MethodTest {
     assertEquals(Publish.class, Method.PUBLISH.getDataClass());
     assertEquals(Broadcast.class, Method.MESSAGE.getDataClass());
     assertEquals(Catchup.class, Method.CATCHUP.getDataClass());
+    assertEquals(Greeting.class, Method.GREETING.getDataClass());
   }
 
   @Test
@@ -25,6 +26,7 @@ public class MethodTest {
     assertTrue(Method.PUBLISH.expectResult());
     assertFalse(Method.MESSAGE.expectResult());
     assertTrue(Method.CATCHUP.expectResult());
+    assertFalse(Method.GREETING.expectResult());
   }
 
   @Test

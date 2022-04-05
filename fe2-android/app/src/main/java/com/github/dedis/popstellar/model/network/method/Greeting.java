@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.network.method;
 
 import com.github.dedis.popstellar.model.objects.Channel;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -22,9 +21,17 @@ public class Greeting extends Message {
    * @param channel the channel over which the message is sent
    * @throws IllegalArgumentException if channel is null
    */
-  public Greeting(Channel channel) {
+  public Greeting(Channel channel, String address, String sender, List<String> peers) {
     super(channel);
-
+    if (address == null) {
+      throw new IllegalArgumentException("The address of the backend can't be null");
+    } else if (sender == null) {
+      throw new IllegalArgumentException("The public key of the backend can't be null");
+    }
+    //Peers can be empty
+    this.peers = peers;
+    this.address = address;
+    this.sender = sender;
   }
 
   //Getter for params
@@ -42,6 +49,33 @@ public class Greeting extends Message {
       return peers;
   }
 
+  @Override
+  public boolean equals(Object o){
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+
+    Greeting that = (Greeting) o;
+
+    //Check fields
+    boolean checkAdress = that.equals(getAddress());
+    boolean checkSender = that.equals(getSender());
+    boolean checkPeers = that.equals(getPeers());
+
+    return checkSender && checkPeers && checkAdress;
+  }
+
+  @Override
+  public String toString() {
+    return "Greeting{" + "channel='" + getChannel() + "', method='" + getMethod() + "', "
+        + "sender = " + getSender() + "address=" + getAddress() + "}";
+  }
 
 
 }
