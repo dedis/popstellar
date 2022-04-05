@@ -7,14 +7,14 @@ import {
   ProcessableMessage,
 } from 'core/network/jsonrpc/messages';
 import { Timestamp } from 'core/objects';
-import { dispatch } from 'core/redux';
+import { dispatch, getStore } from 'core/redux';
 
 import {
   MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
   WitnessConfiguration,
   WitnessFeature,
 } from '../interface';
-import { addMessageToWitness } from '../reducer';
+import { addMessageToWitness, getMessageToWitness } from '../reducer';
 import { WitnessMessage } from './messages';
 import { WitnessingType, getWitnessRegistryEntry } from './messages/WitnessRegistry';
 import { handleWitnessMessage } from './WitnessHandler';
@@ -39,6 +39,13 @@ const afterMessageProcessingHandler =
 
     if (signedByUs) {
       // if it was, return. we do not have to sign it twice.
+      return;
+    }
+
+    const storedMessage = getMessageToWitness(msg.message_id.valueOf(), getStore().getState());
+    if (storedMessage) {
+      // this message is already stored in the witness reducer
+      // and hence does not have to be stored a second time
       return;
     }
 

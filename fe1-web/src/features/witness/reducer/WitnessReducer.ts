@@ -62,7 +62,34 @@ export const { addMessageToWitness, removeMessageToWitness } = messagesToWitness
 export const getMessagesToWitnessState = (state: any): MessagesToWitnessReducerState =>
   state[WITNESS_REDUCER_PATH];
 
-export const makeMessageSelector = (messageId: string) =>
+/**
+ * Gets a message by id from the redux store without memoizing the result.
+ * MUST NOT BE USED IN useSelector(). `makeMessageSelector` SHOULD BE USED
+ * FOR useSelector()
+ * @param messageId The id of the message to retrieve
+ * @param state The redux state
+ * @returns The stored message or undefined if there is none for this id
+ */
+export const getMessageToWitness = (
+  messageId: string,
+  state: unknown,
+): ExtendedMessage | undefined => {
+  const { byId } = getMessagesToWitnessState(state);
+
+  if (messageId in byId) {
+    return ExtendedMessage.fromState(byId[messageId]);
+  }
+
+  return undefined;
+};
+
+/**
+ * Creates a redux-toolkit selector that memoizes the result if the input do not change
+ * Intended for the use in combination with useSelector()
+ * @param messageId The id of the message
+ * @returns A redux selector
+ */
+export const makeMessageToWitnessSelector = (messageId: string) =>
   createSelector(
     // First input: map of message ids to messages
     (state) => getMessagesToWitnessState(state).byId,

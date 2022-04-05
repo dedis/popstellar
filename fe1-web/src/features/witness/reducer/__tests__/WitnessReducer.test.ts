@@ -9,7 +9,8 @@ import { Timestamp } from 'core/objects';
 
 import {
   addMessageToWitness,
-  makeMessageSelector,
+  getMessageToWitness,
+  makeMessageToWitnessSelector,
   removeMessageToWitness,
   witnessReduce,
   WITNESS_REDUCER_PATH,
@@ -143,7 +144,7 @@ describe('WitnessReducer', () => {
     });
   });
 
-  describe('makeMessageSelector', () => {
+  describe('getMessageToWitness', () => {
     it('returns the correct message', () => {
       const message: Message = Message.fromData(
         {
@@ -159,7 +160,35 @@ describe('WitnessReducer', () => {
       const extMessage = ExtendedMessage.fromMessage(message, 'some channel', 'some address');
 
       expect(
-        makeMessageSelector(messageId)({
+        getMessageToWitness(messageId, {
+          [WITNESS_REDUCER_PATH]: {
+            allIds: [messageId],
+            byId: {
+              [messageId]: extMessage.toState(),
+            },
+          },
+        }),
+      ).toBeJsonEqual(extMessage);
+    });
+  });
+
+  describe('makeMessageToWitnessSelector', () => {
+    it('returns the correct message', () => {
+      const message: Message = Message.fromData(
+        {
+          object: ObjectType.CHIRP,
+          action: ActionType.ADD,
+          text: 'hi',
+          timestamp,
+        } as MessageData,
+        mockKeyPair,
+      );
+
+      const messageId = message.message_id.valueOf();
+      const extMessage = ExtendedMessage.fromMessage(message, 'some channel', 'some address');
+
+      expect(
+        makeMessageToWitnessSelector(messageId)({
           [WITNESS_REDUCER_PATH]: {
             allIds: [messageId],
             byId: {
