@@ -6,7 +6,6 @@ build: protocol
 lint:
 	@go get -v honnef.co/go/tools/cmd/staticcheck
 	@go mod tidy
-	staticcheck ./...
 
 test: protocol
 	go test -v -race ./...
