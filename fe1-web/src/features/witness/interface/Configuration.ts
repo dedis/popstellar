@@ -28,12 +28,6 @@ export interface WitnessConfiguration {
   isLaoWitness: () => boolean;
 
   /**
-   * Returns the currently active lao. Can only be used inside react components
-   * @returns The current lao
-   */
-  useCurrentLao: () => WitnessFeature.Lao;
-
-  /**
    * Creates an action to add a notification to the redux store
    * @returns A redux action that can be dispatched
    */
@@ -49,7 +43,7 @@ export interface WitnessConfiguration {
    * Creates an action to discard a notification
    * @returns A redux action that can be dispatched
    */
-  discardNotification: (notificationId: number) => AnyAction;
+  discardNotifications: (notificationIds: number[]) => AnyAction;
 }
 
 /**
@@ -57,15 +51,18 @@ export interface WitnessConfiguration {
  */
 export type WintessReactContext = Pick<
   WitnessConfiguration,
-  'useCurrentLao' | 'addNotification' | 'markNotificationAsRead' | 'discardNotification'
+  'addNotification' | 'markNotificationAsRead' | 'discardNotifications'
 >;
 
 /**
  * The interface the witness feature exposes
  */
 export interface WitnessInterface extends FeatureInterface {
-  notificationTypeComponents: {
+  notificationTypes: {
     isOfType: (notification: WitnessFeature.Notification) => boolean;
+
+    delete?: (notification: WitnessFeature.Notification) => void;
+
     Component: React.ComponentType<{
       notification: WitnessFeature.Notification;
       navigateToNotificationScreen: () => void;

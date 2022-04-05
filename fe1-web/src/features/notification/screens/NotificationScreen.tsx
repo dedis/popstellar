@@ -18,8 +18,9 @@ import { dispatch } from 'core/redux';
 import { Typography } from 'core/styles';
 import STRINGS from 'resources/strings';
 
+import { NotificationHooks } from '../hooks';
 import { NotificationStackParamList } from '../navigation/NotificationStackParamList';
-import { discardAllNotifications, NotificationState, selectAllNotifications } from '../reducer';
+import { discardNotifications, NotificationState, selectAllNotifications } from '../reducer';
 
 interface ListSeparatorItem {
   title: string;
@@ -84,6 +85,22 @@ const NotificationScreen = () => {
     return items;
   }, [notifications]);
 
+  const notificationTypes = NotificationHooks.useNotificationTypes();
+
+  const onClearNotifications = () => {
+    // call custom delete function on all notifications
+    for (const notification of notifications) {
+      const deleteFn = notificationTypes.find((t) => t.isOfType(notification))?.delete;
+
+      // if a delete function was provided for this type, then call it
+      if (deleteFn) {
+        deleteFn(notification);
+      }
+    }
+    // remove notifications from the notification reducer
+    dispatch(discardNotifications(notifications.map((n) => n.id)));
+  };
+
   return (
     <ScreenWrapper>
       <FlatList
@@ -118,7 +135,7 @@ const NotificationScreen = () => {
           return <Text style={Typography.important as TextStyle}>{item.title}</Text>;
         }}
       />
-      <Button title="Clear notifications" onPress={() => dispatch(discardAllNotifications())} />
+      <Button title="Clear notifications" onPress={onClearNotifications} />
     </ScreenWrapper>
   );
 };

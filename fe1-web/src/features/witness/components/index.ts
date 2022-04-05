@@ -1,4 +1,1 @@
-export {
-  default as WitnessNotification,
-  WitnessNotificationTypeComponent,
-} from './WitnessNotification';
+export { default as WitnessNotification, WitnessNotificationType } from './WitnessNotification';

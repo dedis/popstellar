@@ -68,19 +68,22 @@ const notificationSlice = createSlice({
     },
 
     // Discards a notification
-    discardNotification: (
+    discardNotifications: (
       state: Draft<NotificationReducerState>,
-      action: PayloadAction<number>,
+      action: PayloadAction<number[]>,
     ) => {
-      const notificationId = action.payload;
+      const notificationIds = action.payload;
 
-      if (!(notificationId in state.byId)) {
-        // this message was never stored?
-        return;
+      for (const notificationId of notificationIds) {
+        if (!(notificationId in state.byId)) {
+          // this message was never stored?
+          return;
+        }
+
+        delete state.byId[notificationId];
       }
 
-      delete state.byId[notificationId];
-      state.allIds = state.allIds.filter((id) => id !== notificationId);
+      state.allIds = state.allIds.filter((id) => !notificationIds.includes(id));
     },
 
     // Discards all notifications
@@ -94,7 +97,7 @@ const notificationSlice = createSlice({
 
 export const {
   addNotification,
-  discardNotification,
+  discardNotifications,
   discardAllNotifications,
   markNotificationAsRead,
 } = notificationSlice.actions;

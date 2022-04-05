@@ -23,7 +23,7 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
   actionCreators: {
     addNotification: (notification: Omit<NotificationState, 'id' | 'hasBeenRead'>) => AnyAction;
     markNotificationAsRead: (notificationId: number) => AnyAction;
-    discardNotification: (notificationId: number) => AnyAction;
+    discardNotifications: (notificationIds: number[]) => AnyAction;
   };
 
   reducers: {
@@ -32,8 +32,21 @@ export interface NotificationConfigurationInterface extends FeatureInterface {
 }
 
 export interface NotificationCompositionConfiguration {
-  notificationTypeComponents: {
+  notificationTypes: {
+    /**
+     * Checks if a given notification is of this type
+     */
     isOfType: (notification: NotificationState) => boolean;
+
+    /**
+     * Callback function that is called when a notification is deleted
+     */
+    delete?: (notification: NotificationState) => void;
+
+    /**
+     * Renders the single notification view for this notification
+     * type
+     */
     Component: React.ComponentType<{
       notification: NotificationState;
       navigateToNotificationScreen: () => void;
@@ -46,7 +59,7 @@ export interface NotificationCompositionConfiguration {
  */
 export type NotificationReactContext = Pick<
   NotificationCompositionConfiguration,
-  'notificationTypeComponents'
+  'notificationTypes'
 >;
 
 export interface NotificationCompositionInterface extends FeatureInterface {

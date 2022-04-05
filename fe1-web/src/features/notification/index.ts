@@ -8,7 +8,7 @@ import {
 import NotificationNavigation from './navigation/NotificationNavigation';
 import {
   addNotification,
-  discardNotification,
+  discardNotifications,
   markNotificationAsRead,
   notificationReducer,
 } from './reducer';
@@ -26,7 +26,7 @@ export const configure = (): NotificationConfigurationInterface => ({
 
   actionCreators: {
     addNotification,
-    discardNotification,
+    discardNotifications,
     markNotificationAsRead,
   },
 
@@ -40,6 +40,6 @@ export const compose = (
 ): NotificationCompositionInterface => ({
   identifier: NOTIFICATION_FEATURE_IDENTIFIER,
   context: {
-    notificationTypeComponents: configuration.notificationTypeComponents,
+    notificationTypes: configuration.notificationTypes,
   },
 });

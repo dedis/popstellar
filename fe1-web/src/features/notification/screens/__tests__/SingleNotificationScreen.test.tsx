@@ -10,13 +10,13 @@ import {
   NOTIFICATION_FEATURE_IDENTIFIER,
 } from 'features/notification/interface/Configuration';
 import { addNotification, notificationReducer } from 'features/notification/reducer';
-import { WitnessNotificationTypeComponent } from 'features/witness/components';
+import { WitnessNotificationType } from 'features/witness/components';
 
 import SingleNotificationScreen from '../SingleNotificationScreen';
 
 const contextValue = {
   [NOTIFICATION_FEATURE_IDENTIFIER]: {
-    notificationTypeComponents: [WitnessNotificationTypeComponent],
+    notificationTypes: [WitnessNotificationType],
   } as NotificationReactContext,
 };
 

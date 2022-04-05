@@ -52,16 +52,15 @@ export function configureFeatures() {
     messageRegistry,
     getCurrentLao: laoConfiguration.functions.getCurrentLao,
     isLaoWitness: laoConfiguration.functions.isLaoWitness,
-    useCurrentLao: laoConfiguration.hooks.useCurrentLao,
     addNotification: notificationConfiguration.actionCreators.addNotification,
     markNotificationAsRead: notificationConfiguration.actionCreators.markNotificationAsRead,
-    discardNotification: notificationConfiguration.actionCreators.discardNotification,
+    discardNotifications: notificationConfiguration.actionCreators.discardNotifications,
   });
   const walletConfiguration = wallet.configure(keyPairRegistry);
 
   // compose features
   const notificationComposition = notification.compose({
-    notificationTypeComponents: [...witnessConfiguration.notificationTypeComponents],
+    notificationTypes: [...witnessConfiguration.notificationTypes],
   });
   const homeComposition = home.compose({
     /* functions */

@@ -19,16 +19,16 @@ const SingleNotificationScreen = () => {
 
   const store = useStore();
   const notification = getNotification(notificationId, store.getState());
-  const notificationTypeComponents = NotificationHooks.useNotificationTypeComponents();
+  const notificationTypes = NotificationHooks.useNotificationTypes();
 
   // search the notification type component list for a fitting comonent to render
   // this notification. undefined if there is none
   const Component = useMemo(() => {
     if (notification) {
-      return notificationTypeComponents.find((c) => c.isOfType(notification))?.Component;
+      return notificationTypes.find((c) => c.isOfType(notification))?.Component;
     }
     return undefined;
-  }, [notification, notificationTypeComponents]);
+  }, [notification, notificationTypes]);
 
   return (
     <ScreenWrapper>

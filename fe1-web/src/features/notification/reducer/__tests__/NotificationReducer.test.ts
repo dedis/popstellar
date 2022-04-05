@@ -2,7 +2,7 @@ import { describe } from '@jest/globals';
 
 import {
   addNotification,
-  discardNotification,
+  discardNotifications,
   discardAllNotifications,
   markNotificationAsRead,
   notificationReduce,
@@ -34,7 +34,7 @@ describe('NotificationReducer', () => {
     });
   });
 
-  describe('discardNotification', () => {
+  describe('discardNotifications', () => {
     it('removes a notification from the store', () => {
       const newState = notificationReduce(
         {
@@ -45,7 +45,7 @@ describe('NotificationReducer', () => {
           },
           nextId: 2,
         } as NotificationReducerState,
-        discardNotification(0),
+        discardNotifications([0]),
       );
 
       expect(newState.allIds).toEqual([1]);
@@ -53,6 +53,27 @@ describe('NotificationReducer', () => {
         1: { id: 1, hasBeenRead: false, timestamp: 20, title: 'some title', type: 'some-type' },
       });
       expect(newState.nextId).toEqual(2);
+    });
+
+    it('removes multiple notifications from the store', () => {
+      const newState = notificationReduce(
+        {
+          allIds: [0, 1, 2],
+          byId: {
+            0: { id: 0, hasBeenRead: false, timestamp: 20, title: 'some title', type: 'some-type' },
+            1: { id: 1, hasBeenRead: false, timestamp: 20, title: 'some title', type: 'some-type' },
+            2: { id: 2, hasBeenRead: false, timestamp: 20, title: 'some title', type: 'some-type' },
+          },
+          nextId: 3,
+        } as NotificationReducerState,
+        discardNotifications([0, 2]),
+      );
+
+      expect(newState.allIds).toEqual([1]);
+      expect(newState.byId).toEqual({
+        1: { id: 1, hasBeenRead: false, timestamp: 20, title: 'some title', type: 'some-type' },
+      });
+      expect(newState.nextId).toEqual(3);
     });
 
     it("doesn't do anything if the id does not exist in the store", () => {
@@ -64,7 +85,7 @@ describe('NotificationReducer', () => {
           },
           nextId: 1,
         } as NotificationReducerState,
-        discardNotification(1),
+        discardNotifications([1]),
       );
 
       expect(newState.allIds).toEqual([0]);

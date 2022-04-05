@@ -5,22 +5,25 @@ import { Button } from 'react-native-elements';
 import { useSelector } from 'react-redux';
 
 import { dispatch } from 'core/redux';
-import { discardNotification } from 'features/notification/reducer';
 
+import { WitnessHooks } from '../hooks';
 import { WitnessFeature, MESSAGE_TO_WITNESS_NOTIFICATION_TYPE } from '../interface';
 import { requestWitnessMessage } from '../network/WitnessMessageApi';
-import { makeMessageSelector, removeMessageToWitness } from '../reducer';
+import { makeMessageToWitnessSelector, removeMessageToWitness } from '../reducer';
 
 const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPropTypes) => {
   const messageSelector = useMemo(
-    () => makeMessageSelector(notification.messageId),
+    () => makeMessageToWitnessSelector(notification.messageId),
     [notification.messageId],
   );
   const message = useSelector(messageSelector);
 
+  const discardNotifications = WitnessHooks.useDiscardNotifications();
+  const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
+
   const onWitness = () => {
     if (message) {
-      dispatch(discardNotification(notification.id));
+      dispatch(discardNotifications([notification.id]));
       requestWitnessMessage(message.channel, message.message_id);
       dispatch(removeMessageToWitness(message.message_id.valueOf()));
       navigateToNotificationScreen();
@@ -29,8 +32,7 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 
   const onDecline = () => {
     if (message) {
-      dispatch(discardNotification(notification.id));
-      dispatch(removeMessageToWitness(message.message_id.valueOf()));
+      dispatch(markNotificationAsRead(notification.id));
       navigateToNotificationScreen();
     }
   };
@@ -38,10 +40,10 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
   // if the notification state somehow gets out of sync, remove the corresponding notification
   useEffect(() => {
     if (!message) {
-      dispatch(discardNotification(notification.id));
+      dispatch(discardNotifications([notification.id]));
       navigateToNotificationScreen();
     }
-  }, [navigateToNotificationScreen, notification.id, message]);
+  }, [navigateToNotificationScreen, discardNotifications, notification.id, message]);
 
   return (
     <View>
@@ -70,9 +72,25 @@ type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
 export default WitnessNotification;
 
-export const WitnessNotificationTypeComponent = {
+export const WitnessNotificationType = {
+  /**
+   * Checks whether the given notification is a witness notification
+   * @param notification The notification whose type should be checked
+   * @returns True if the notification is a witness notification, false otherwise
+   */
   isOfType: (notification: WitnessFeature.Notification) =>
     'type' in notification && notification.type === MESSAGE_TO_WITNESS_NOTIFICATION_TYPE,
+
+  /**
+   * Custom cleanup function that removes the message from the witness store
+   */
+  delete: ((notification: WitnessFeature.MessageToWitnessNotification) => {
+    dispatch(removeMessageToWitness(notification.messageId.valueOf()));
+  }) as (notification: WitnessFeature.Notification) => void,
+
+  /**
+   * The component to render the witness notification
+   */
   Component: WitnessNotification as unknown as FunctionComponent<{
     notification: WitnessFeature.Notification;
     navigateToNotificationScreen: () => void;

@@ -20,9 +20,9 @@ export namespace NotificationHooks {
   };
 
   /**
-   * Gets the list of components that can be used to render components
-   * @returns The list of components used to render notifications
+   * Gets the list of notification types with e.g. the component that should be used to
+   * render them
+   * @returns The list of different notification types
    */
-  export const useNotificationTypeComponents = () =>
-    useNotificationContext().notificationTypeComponents;
+  export const useNotificationTypes = () => useNotificationContext().notificationTypes;
 }

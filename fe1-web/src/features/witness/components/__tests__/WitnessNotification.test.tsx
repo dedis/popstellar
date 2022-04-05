@@ -10,7 +10,7 @@ import { ActionType, MessageData, ObjectType } from 'core/network/jsonrpc/messag
 import { Timestamp } from 'core/objects';
 import {
   addNotification,
-  discardNotification,
+  discardNotifications,
   markNotificationAsRead,
   notificationReducer,
 } from 'features/notification/reducer';
@@ -57,8 +57,8 @@ mockStore.dispatch(addNotification(mockNotification));
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
     addNotification: (notification) => mockStore.dispatch(addNotification(notification)),
-    discardNotification: (notificationId) =>
-      mockStore.dispatch(discardNotification(notificationId)),
+    discardNotifications: (notificationIds) =>
+      mockStore.dispatch(discardNotifications(notificationIds)),
     markNotificationAsRead: (notificationId) =>
       mockStore.dispatch(markNotificationAsRead(notificationId)),
     useCurrentLao: () => mockLao,
