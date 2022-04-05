@@ -1,14 +1,16 @@
 package ch.epfl.pop.pubsub.graph.handlers
 
+import ch.epfl.pop.json.MessageDataProtocol.resultElectionFormat
 import ch.epfl.pop.model.network.JsonRpcRequest
 import ch.epfl.pop.model.network.method.message.Message
 import ch.epfl.pop.model.network.method.message.data.ObjectType
-import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, ResultElection, SetupElection}
+import ch.epfl.pop.model.network.method.message.data.election.{CastVoteElection, ElectionBallotVotes, ElectionQuestion, ElectionQuestionResult, OpenElection, ResultElection, SetupElection}
 import ch.epfl.pop.model.objects._
 import ch.epfl.pop.pubsub.PubSubMediator.Propagate
 import ch.epfl.pop.pubsub.graph.{ErrorCodes, GraphMessage, PipelineError}
 import ch.epfl.pop.storage.DbActor
 import ch.epfl.pop.storage.DbActor.DbActorReadAck
+import spray.json.enrichAny
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -24,8 +26,9 @@ object ElectionHandler extends MessageHandler {
     val electionChannel: Channel = Channel(s"${rpcMessage.getParamsChannel.channel}${Channel.CHANNEL_SEPARATOR}$electionId")
 
     val combined = for {
-      _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
       _ <- dbActor ? DbActor.CreateChannel(electionChannel /* TODO : replace with rpcMessage.getParamsChannel ? */ , ObjectType.ELECTION)
+      _ <- dbActor ? DbActor.WriteAndPropagate(rpcMessage.getParamsChannel, message)
+      _ <- dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
     } yield ()
 
     Await.ready(combined, duration).value match {
@@ -59,30 +62,55 @@ object ElectionHandler extends MessageHandler {
 
   def handleEndElection(rpcMessage: JsonRpcRequest): GraphMessage = {
     //no need to propagate the results, we only need to write the results in the db
-    val ask: Future[GraphMessage] = dbAskWritePropagate(rpcMessage)
-    val channel = rpcMessage.getParamsChannel
-    val results = getResults(channel)
-    // TODO get witness signatures
-    val witness_signatures = rpcMessage.getParamsMessage.get.witness_signatures.map(_.signature)
-
-    val resultElection = ResultElection(results, witness_signatures)
-    val resultPropagation=dbActor ? Propagate(channel, Message(/*TODO resultElection*/ ???, ???, ???, ???, ???))
-    Await.result(resultPropagation, duration)
-    Await.result(ask, duration)
+    Await.ready(dbAskWritePropagate(rpcMessage), duration).value match {
+      case Some(Success(_)) =>
+        val electionChannel = rpcMessage.getParamsChannel
+        val results = getResults(electionChannel)
+        val witness_signatures = rpcMessage.getParamsMessage.get.witness_signatures.map(_.signature)
+        val resultElection = ResultElection(results, witness_signatures)
+        val data = Base64Data.encode(resultElection.toJson.toString)
+        // TODO create the signature
+        val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
+        Await.ready(askLaoData, duration).value match {
+          case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) =>
+            val signature = Some(laoData.privateKey.signData(data))
+            val sender = laoData.publicKey
+            val msgId = Hash.fromStrings(data.toString, signature.get.toString)
+            val message = Message(data,
+              sender,
+              signature.get,
+              msgId,
+              List.empty, Some(resultElection))
+            val propagation = dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
+            Await.ready(propagation, duration).value match {
+              case Some(Success(_)) =>
+                Left(rpcMessage)
+              case Some(Failure(ex: DbActorNAckException)) =>
+                Right(PipelineError(ex.code, s"handleCloseElection failed : ${
+                  ex.message
+                }", rpcMessage.getId))
+              case reply =>
+                Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseElection failed : unexpected DbActor reply '$reply'", rpcMessage.getId))
+            }
+          case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseElection failed : couldn't read LAO data", rpcMessage.getId))
+        }
+      case _ => Right(PipelineError(ErrorCodes.SERVER_ERROR.id, s"handleCloseElection failed : askWritePropagate failed", rpcMessage.getId))
+    }
   }
 
 
-  private def getResults(channel: Channel): List[ElectionQuestionResult] = {
-    val castsVotesElections: List[CastVoteElection] = getLastVotes(channel)
+  private def getResults(electionChannel: Channel): List[ElectionQuestionResult] = {
+    val castsVotesElections: List[CastVoteElection] = getLastVotes(electionChannel)
+    val question2Ballots = getSetupMessage(electionChannel).questions.map(question => question.id -> question.ballot_options).toMap
     // results is a map [Question ID -> [Ballot name -> count]]
     val results = mutable.HashMap[Hash, Map[String, Int]]()
     for (castVoteElection <- castsVotesElections;
          voteElection <- castVoteElection.votes) {
-      val question = voteElection.question
-
+      val question = voteElection.question //.asInstanceOf[ElectionQuestion]
+      val ballots = question2Ballots(question)
       // fixme : get the ballot name (from setup ?)
       val ballot = voteElection.vote match {
-        case Some(List(index)) => f"<index=$index>";
+        case Some(List(index)) => ballots.toArray.apply(index)
         case _ => "<NOT_VOTED>"
       }
       println(f"Your ballot is $ballot !")
@@ -104,20 +132,42 @@ object ElectionHandler extends MessageHandler {
   }
 
 
+  private def getSetupMessage(electionChannel: Channel): SetupElection = {
+    var result: SetupElection = null
+    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
+      case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
+        for (message <- channelData.messages) {
+          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value.get match {
+            case Success(value) => value
+            case _ => None
+          }) match {
+            case DbActorReadAck(Some(message)) =>
+              try {
+                result = SetupElection.buildFromJson(message.data.decodeToString())
+              } catch {
+                case exception: Throwable => print(exception)
+              }
+          }
+        }
+      case _ =>
+    }
+    result
+  }
+
   /**
    * Read every castvote in the channel and keep the last per attendee
    *
-   * @param channel : the election channel
+   * @param electionChannel : the election channel
    * @return the final vote for each attendee that has voted
    */
-  private def getLastVotes(channel: Channel): List[CastVoteElection] =
-    Await.ready(dbActor ? DbActor.ReadChannelData(channel), duration).value match {
+  private def getLastVotes(electionChannel: Channel): List[CastVoteElection] =
+    Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
         val messages: List[Hash] = channelData.messages
         val lastVotes: mutable.HashMap[PublicKey, CastVoteElection] = new mutable.HashMap()
         for (messageIdHash <- messages) {
           val dbAnswer =
-            Await.ready(dbActor ? DbActor.Read(channel = channel, messageId = messageIdHash), duration).value.get match {
+            Await.ready(dbActor ? DbActor.Read(channel = electionChannel, messageId = messageIdHash), duration).value.get match {
               case Success(value) => value
               case _ => None
             }
