@@ -1,6 +1,7 @@
 Feature: web test
 
   Background: App Preset
+    #* configure driver = { type: 'chrome', executable: 'C:/Program Files/Google/Chrome/Application/chrome.exe'}
     * configure driver = { type: 'chrome' }
     * def driverOptions = karate.toAbsolutePath('file:../../fe1-web/web-build/index.html')
 
@@ -22,7 +23,7 @@ Feature: web test
     Given driver driverOptions
 
     # Create and import mock backend
-    And call read('classpath:fe/net/mockbackend.feature')
+    And call read('classpath:fe/net/mockBackend.feature')
     * def backendURL = 'ws://localhost:' + backend.getPort()
     # Import message filters
     And call read('classpath:common/net/filters.feature')
