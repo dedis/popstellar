@@ -1,8 +1,7 @@
-import { Channel } from 'core/objects';
 import { dispatch } from 'core/redux';
 
-import { Broadcast, JsonRpcMethod, JsonRpcRequest } from '../jsonrpc';
-import { ActionType, Message, MessageRegistry, ObjectType } from '../jsonrpc/messages';
+import { Broadcast, JsonRpcMethod, ExtendedJsonRpcRequest } from '../jsonrpc';
+import { ActionType, MessageRegistry, ObjectType } from '../jsonrpc/messages';
 import { ExtendedMessage } from './ExtendedMessage';
 import { addMessages } from './MessageReducer';
 
@@ -33,27 +32,35 @@ function handleLaoCreateMessages(msg: ExtendedMessage): boolean {
   return true;
 }
 
-export function storeMessage(msg: Message, ch: Channel) {
+/**
+ * Stores a received message
+ * @param msg The message that should be stored
+ */
+export function storeMessage(msg: ExtendedMessage) {
   try {
-    // create extended message
-    const extMsg = ExtendedMessage.fromMessage(msg, ch);
-
     // process LAO/create message
-    const isLao = handleLaoCreateMessages(extMsg);
+    const isLao = handleLaoCreateMessages(msg);
 
     if (!isLao) {
       // send it to the store
-      dispatch(addMessages(extMsg.toState()));
+      dispatch(addMessages(msg.toState()));
     }
   } catch (err) {
     console.warn('Messages could not be stored, error:', err, msg);
   }
 }
 
-export function handleRpcRequests(req: JsonRpcRequest) {
-  if (req.method === JsonRpcMethod.BROADCAST) {
-    const broadcastParams = req.params as Broadcast;
-    storeMessage(broadcastParams.message, broadcastParams.channel);
+export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
+  if (req.request.method === JsonRpcMethod.BROADCAST) {
+    const broadcastParams = req.request.params as Broadcast;
+
+    storeMessage(
+      ExtendedMessage.fromMessage(
+        broadcastParams.message,
+        broadcastParams.channel,
+        req.receivedFrom,
+      ),
+    );
   } else {
     console.warn('A request was received but it is currently unsupported:', req);
   }
