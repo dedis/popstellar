@@ -1112,30 +1112,6 @@ There are two supported versions for elections: Open and secret ballot. In order
 
 ```
 
-<details>
-<summary>
-💡 See an example of election key answer
-</summary>
-
-```json5
-// ../protocol/examples/answer/election_key.json
-
-{
-    "jsonrpc": "2.0",
-    "id": 3,
-    "result": {
-        "type": "election_key",
-        "election": "zG1olgFZwA0m3mLyUqeOqrG0MbjtfqShkyZ6hlyx1tg=",
-        "election_key": "JsS0bXJU8yMT9jvIeTfoS6RJPZ8YopuAUPkxssHaoTQ"
-    }
-}
-
-```
-
-The full specification for answers can be found in [protocol.md](protocol.md#answer)
-
-</details>
-
 ## Setting up an Election (election#setup)
 
 🧭 **RPC Message** > **RPC payload** (*Query*) > **Query payload** (*Publish*) >
