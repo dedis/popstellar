@@ -17,7 +17,7 @@ object SetupElectionExamples {
   final val LOA_ID: Hash = Hash(Base64Data.encode("laoId"))
   final val ELECTION_NAME: String = "valid"
   final val ELECTION_VERSION: String = ""
-  final val NOT_STALE_CREATED_AT = Timestamp(1649089860L)
+  final val NOT_STALE_CREATED_AT = Timestamp(1649089855L)
   final val NOT_STALE_START_TIME = Timestamp(1649089860L)
   final val NOT_STALE_END_TIME = Timestamp(1649093440L)
   final val QUESTIONS = List(ElectionQuestion(Hash(Base64Data("1I1mAuxuZsAFX2mYf4ZsU2xeAw6oadTIkBlMMZvivpo=")), "valid", VOTING_METHOD, List("yes","no"), false))
@@ -55,6 +55,16 @@ object SetupElectionExamples {
     Hash(Base64Data("")),
     List.empty,
     Some(wrongTimestampOrderSetupElection)
+  )
+
+  val wrongTimestampOrderSetupElection2: SetupElection = SetupElection(ELECTION_ID, LOA_ID, ELECTION_NAME, ELECTION_VERSION, NOT_STALE_START_TIME, NOT_STALE_CREATED_AT, NOT_STALE_END_TIME, QUESTIONS)
+  final val MESSAGE_SETUPELECTION_WRONG_ORDER2: Message = new Message(
+    Base64Data.encode(wrongTimestampOrderSetupElection2.toJson.toString),
+    SENDER_SETUPELECTION,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(wrongTimestampOrderSetupElection2)
   )
 
   val wrongIdSetupElection: SetupElection = SetupElection(invalidId, LOA_ID, ELECTION_NAME, ELECTION_VERSION, NOT_STALE_CREATED_AT, NOT_STALE_START_TIME, NOT_STALE_END_TIME, QUESTIONS)

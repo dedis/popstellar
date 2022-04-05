@@ -51,6 +51,16 @@ object OpenElectionExamples {
     Some(wrongIdOpenElection)
   )
 
+  val wrongLaoIdOpenElection: OpenElection = OpenElection(invalidId, ELECTION_ID, NOT_STALE_OPENED_AT)
+  final val MESSAGE_OPEN_ELECTION_WRONG_LAO_ID: Message = new Message(
+    Base64Data.encode(wrongLaoIdOpenElection.toJson.toString),
+    SENDER_ELECTION,
+    SIGNATURE,
+    Hash(Base64Data("")),
+    List.empty,
+    Some(wrongLaoIdOpenElection)
+  )
+
   final val MESSAGE_OPEN_ELECTION_WRONG_OWNER: Message = new Message(
     Base64Data.encode(workingOpenElection.toJson.toString),
     invalidSender,
