@@ -15,6 +15,7 @@ const Stack = createStackNavigator();
 export default function WalletNavigation() {
   const home = { name: STRINGS.navigation_wallet_home_tab, Component: WalletHome };
   const setup = { name: STRINGS.navigation_wallet_setup_tab, Component: WalletSetup };
+
   const hasSeed = WalletStore.hasSeed();
 
   const screens = hasSeed ? [home, setup] : [setup, home];

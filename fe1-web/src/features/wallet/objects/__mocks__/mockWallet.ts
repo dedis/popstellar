@@ -2,7 +2,7 @@ import { mockLao, mockRollCallState } from '__tests__/utils/TestUtils';
 import { EventTags, Hash } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { addEvent, removeEvent } from 'features/events/reducer';
-import { connectToLao, disconnectFromLao } from 'features/lao/reducer';
+import { connectToLao, disconnectFromLao, removeLao } from 'features/lao/reducer';
 import { RollCall } from 'features/rollCall/objects';
 
 import { generateToken } from '../Token';
@@ -55,4 +55,5 @@ export function clearMockWalletState() {
   dispatch(removeEvent(mockLao.id, hashMock0));
   dispatch(removeEvent(mockLao.id, hashMock1));
   dispatch(disconnectFromLao());
+  dispatch(removeLao(mockLao.id));
 }
