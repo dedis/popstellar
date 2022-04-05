@@ -6,6 +6,6 @@ public class FrontEndTest {
 
   @Karate.Test
   Karate testCreateLAO() {
-    return Karate.run("classpath:fe/LAO/create_lao.feature");
+    return Karate.run("classpath:fe/create_lao.feature");
   }
 }

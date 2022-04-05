@@ -7,7 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "prebuild-web": "node node_modules/expo-optimize/build/index.js",
+    "prebuild-web": "node_modules/expo-optimize/build/index.js",
     "build-web": "expo build:web",
     "postbuild-web": "zip-build web-build -t %NAME%_%TIMESTAMP%.%EXT%",
     "eject": "expo eject",
