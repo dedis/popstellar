@@ -1,6 +1,6 @@
 {
     "name": "test",
-    "version": "open-ballot",
+    "version": "1.0.0",
     "description": "test suite for json schemas ",
     "main": "index.js",
     "scripts": {
