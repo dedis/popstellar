@@ -66,19 +66,22 @@ object ElectionHandler extends MessageHandler {
       case Some(Success(_)) =>
         val electionChannel = rpcMessage.getParamsChannel
         val results = getResults(electionChannel)
-        val witness_signatures = rpcMessage.getParamsMessage.get.witness_signatures.map(_.signature)
+        val witness_signatures = rpcMessage.getParamsMessage match {
+          case Some(it) => it.witness_signatures.map(_.signature)
+          case _ => Nil
+        }
         val resultElection = ResultElection(results, witness_signatures)
         val data = Base64Data.encode(resultElection.toJson.toString)
         // TODO create the signature
         val askLaoData = dbActor ? DbActor.ReadLaoData(rpcMessage.getParamsChannel)
         Await.ready(askLaoData, duration).value match {
           case Some(Success(DbActor.DbActorReadLaoDataAck(laoData))) =>
-            val signature = Some(laoData.privateKey.signData(data))
+            val signature = laoData.privateKey.signData(data)
             val sender = laoData.publicKey
-            val msgId = Hash.fromStrings(data.toString, signature.get.toString)
+            val msgId = Hash.fromStrings(data.toString, signature.toString)
             val message = Message(data,
               sender,
-              signature.get,
+              signature,
               msgId,
               List.empty, Some(resultElection))
             val propagation = dbActor ? DbActor.WriteAndPropagate(electionChannel, message)
@@ -137,8 +140,8 @@ object ElectionHandler extends MessageHandler {
     Await.ready(dbActor ? DbActor.ReadChannelData(electionChannel), duration).value match {
       case Some(Success(DbActor.DbActorReadChannelDataAck(channelData))) =>
         for (message <- channelData.messages) {
-          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value.get match {
-            case Success(value) => value
+          (Await.ready(dbActor ? DbActor.Read(electionChannel, message), duration).value match {
+            case Some(Success(value)) => value
             case _ => None
           }) match {
             case DbActorReadAck(Some(message)) =>
@@ -167,8 +170,8 @@ object ElectionHandler extends MessageHandler {
         val lastVotes: mutable.HashMap[PublicKey, CastVoteElection] = new mutable.HashMap()
         for (messageIdHash <- messages) {
           val dbAnswer =
-            Await.ready(dbActor ? DbActor.Read(channel = electionChannel, messageId = messageIdHash), duration).value.get match {
-              case Success(value) => value
+            Await.ready(dbActor ? DbActor.Read(channel = electionChannel, messageId = messageIdHash), duration).value match {
+              case Some(Success(value)) => value
               case _ => None
             }
           dbAnswer match {
