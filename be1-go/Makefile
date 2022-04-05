@@ -4,7 +4,6 @@ build: protocol
 	go build -o pop ./cli
 
 lint:
-	@go get -v honnef.co/go/tools/cmd/staticcheck
 	@go mod tidy
 
 test: protocol

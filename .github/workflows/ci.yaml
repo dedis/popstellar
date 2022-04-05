@@ -139,13 +139,14 @@ jobs:
       - name: Run check target
         run: |
           make check
-      - uses: dominikh/staticcheck-action@v1.1.0
-        with:
-          version: "2021.1.1"
-          install-go: true
+
       - name: Run go vet
         run: |
           make vet
+
+      - uses: dominikh/staticcheck-action@v1.1.0
+        with:
+          version: "2021.1.1"
 
       - name: Build
         if: ${{ always() }} # execute even if previous steps failed
