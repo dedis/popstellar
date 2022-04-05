@@ -66,8 +66,7 @@ public final class HomeFragment extends Fragment {
 
               mListAdapter.replaceList(laos);
 
-              // TODO: perhaps move this to data binding
-              if (laos.size() > 0) {
+              if (!laos.isEmpty()) {
                 mHomeFragBinding.welcomeScreen.setVisibility(View.GONE);
                 mHomeFragBinding.listScreen.setVisibility(View.VISIBLE);
                 mHomeFragBinding.homeTitle.setVisibility(View.VISIBLE);
