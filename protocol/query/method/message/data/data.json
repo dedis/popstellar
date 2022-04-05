@@ -26,6 +26,9 @@
             "$ref": "dataResultElection.json"
         },
         {
+            "$ref" :"dataCashDummyTransaction.json"
+        },
+        {
             "$ref": "dataSetupElection.json"
         },
 		{
