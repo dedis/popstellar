@@ -13,6 +13,9 @@ import { MessageData } from './MessageData';
 export interface ProcessableMessage {
   receivedAt: Timestamp;
   processedAt?: Timestamp;
+  // the address this message was received from
+  receivedFrom: string;
+
   channel: Channel;
   laoId: Hash;
 
