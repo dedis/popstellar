@@ -2,7 +2,6 @@ import 'jest-extended';
 
 import { describe } from '@jest/globals';
 import { AnyAction } from 'redux';
-import { RehydrateAction } from 'redux-persist';
 
 import {
   mockLaoCreationTime,
@@ -30,7 +29,6 @@ import {
   selectCurrentLao,
   setLaoLastRollCall,
   updateLao,
-  LAO_REDUCER_PATH,
 } from '../LaoReducer';
 
 let emptyState: any;
@@ -180,16 +178,6 @@ describe('LaoReducer', () => {
     expect(laoReduce(filledState1, setLaoLastRollCall(mockLaoId, rollCallId, true))).toEqual(
       filledStateAfterRollCall,
     );
-  });
-
-  it('should clear currentId on rehydration', () => {
-    expect(
-      laoReduce(connectedState1, {
-        type: 'persist/REHYDRATE',
-        key: 'root:persist',
-        payload: { [LAO_REDUCER_PATH]: {} },
-      } as RehydrateAction),
-    ).toEqual({ ...connectedState1, currentId: undefined });
   });
 });
 

@@ -4,7 +4,7 @@
  */
 /* eslint-disable no-param-reassign */
 import { createSelector, createSlice, Draft, PayloadAction } from '@reduxjs/toolkit';
-import { REHYDRATE, RehydrateAction } from 'redux-persist';
+import { REHYDRATE } from 'redux-persist';
 
 import { getKeyPairState } from 'core/keypair';
 import { Hash } from 'core/objects';
@@ -30,14 +30,7 @@ const initialState: LaoReducerState = {
 const addLaoReducer = (state: Draft<LaoReducerState>, action: PayloadAction<LaoState>) => {
   const newLao = action.payload;
 
-  if (newLao.id in state.byId) {
-    // we already have some data on this lao stored
-    // merge server addresses
-    state.byId[newLao.id].server_addresses = [
-      // the way via a set guarantees the list does not contain duplicates
-      ...new Set([...state.byId[newLao.id].server_addresses, ...newLao.server_addresses]),
-    ];
-  } else {
+  if (!(newLao.id in state.byId)) {
     state.byId[newLao.id] = newLao;
     state.allIds.push(newLao.id);
   }
@@ -163,21 +156,15 @@ const laosSlice = createSlice({
   },
   extraReducers: (builder) => {
     // this is called by the persistence layer of Redux, upon starting the application
-    builder.addCase(REHYDRATE, (state, rehydrateAction: RehydrateAction) => {
-      if (!rehydrateAction.payload || !(LAO_REDUCER_PATH in rehydrateAction.payload)) {
-        return state;
+    builder.addCase(REHYDRATE, (state) => {
+      if (state.currentId) {
+        return {
+          ...state,
+          // make sure we always start disconnected
+          currentId: undefined,
+        };
       }
-
-      const payload = rehydrateAction.payload as {
-        [LAO_REDUCER_PATH]: LaoReducerState;
-      };
-
-      return {
-        ...state,
-        ...(LAO_REDUCER_PATH in rehydrateAction.payload ? payload[LAO_REDUCER_PATH] : {}),
-        // make sure we always start disconnected
-        currentId: undefined,
-      };
+      return state;
     });
   },
 });

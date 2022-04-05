@@ -2,6 +2,7 @@ import { useNavigation, useRoute } from '@react-navigation/core';
 import React, { useState } from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
+import { useDispatch } from 'react-redux';
 
 import { TextBlock, TextInputLine, WideButtonView } from 'core/components';
 import { getNetworkManager, subscribeToChannel } from 'core/network';
@@ -54,6 +55,8 @@ const ConnectConfirm = () => {
   const [laoId, setLaoId] = useState(laoIdIn);
 
   const toast = useToast();
+  const dispatch = useDispatch();
+  const addLaoServerAddress = ConnectHooks.useAddLaoServerAddress();
   const getLaoChannel = ConnectHooks.useGetLaoChannel();
 
   const onButtonConfirm = async () => {
@@ -67,6 +70,9 @@ const ConnectConfirm = () => {
       if (!channel) {
         throw new Error('The given LAO ID is invalid');
       }
+
+      // add the new server address to the store
+      dispatch(addLaoServerAddress(laoId, serverUrl));
 
       // subscribe to the lao channel on the new connection
       await subscribeToChannel(channel, [connection]);

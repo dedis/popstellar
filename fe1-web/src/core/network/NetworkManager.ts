@@ -1,7 +1,7 @@
 import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 import { AppState, AppStateStatus } from 'react-native';
 
-import { ExtendedJsonRpcResponse, JsonRpcRequest } from './jsonrpc';
+import { JsonRpcRequest, JsonRpcResponse } from './jsonrpc';
 import { NetworkConnection } from './NetworkConnection';
 import { defaultRpcHandler, JsonRpcHandler } from './RpcHandler';
 import { SendingStrategy } from './strategies/ClientMultipleServerStrategy';
@@ -151,7 +151,7 @@ class NetworkManager {
   public sendPayload(
     payload: JsonRpcRequest,
     connections?: NetworkConnection[],
-  ): Promise<ExtendedJsonRpcResponse[]> {
+  ): Promise<JsonRpcResponse[]> {
     return this.sendingStrategy(payload, connections || this.connections);
   }
 

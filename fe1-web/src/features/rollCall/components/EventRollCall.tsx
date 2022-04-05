@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import PropTypes from 'prop-types';
-import React, { useEffect, useState, FunctionComponent } from 'react';
+import React, { useEffect, useMemo, useState, FunctionComponent } from 'react';
 import { Text } from 'react-native';
 import { useToast } from 'react-native-toast-notifications';
 import { useSelector } from 'react-redux';
 
 import { QRCode, WideButtonView } from 'core/components';
+import { makeEventGetter } from 'features/events/reducer';
 import { selectCurrentLao } from 'features/lao/reducer';
 import * as Wallet from 'features/wallet/objects';
-import { WalletStore } from 'features/wallet/store';
 import { FOUR_SECONDS } from 'resources/const';
 import STRINGS from 'resources/strings';
 
@@ -19,32 +19,26 @@ import { RollCall, RollCallStatus } from '../objects';
  * Component used to display a RollCall event in the LAO event list
  */
 const EventRollCall = (props: IPropTypes) => {
-  const { event: rollCall } = props;
+  const { event } = props;
   const { isOrganizer } = props;
   const lao = useSelector(selectCurrentLao);
   // FIXME: use a more specific navigation
   const navigation = useNavigation<any>();
   const toast = useToast();
 
+  const rollCallSelect = useMemo(() => makeEventGetter(lao?.id, event?.id), [lao, event]);
+  const rollCall = useSelector(rollCallSelect) as RollCall | undefined;
+
   if (!lao) {
     throw new Error('no LAO is currently active');
   }
   const [popToken, setPopToken] = useState('');
-  const [hasWalletBeenInitialized, setHasWalletBeenInitialized] = useState(WalletStore.hasSeed());
-
-  // re-check if wallet has been initialized after focus events
-  useEffect(() => {
-    // Return the function to unsubscribe from the event so it gets removed on unmount
-    return navigation.addListener('focus', () => {
-      setHasWalletBeenInitialized(WalletStore.hasSeed());
-    });
-  }, [navigation]);
 
   // Once the roll call is opened the first time, idAlias is defined, and needed for closing/reopening the roll call
-  const eventHasBeenOpened = rollCall.idAlias !== undefined;
+  const eventHasBeenOpened = event.idAlias !== undefined;
 
   useEffect(() => {
-    if (!hasWalletBeenInitialized || !lao?.id || !rollCall?.id) {
+    if (!lao || !lao.id || !rollCall || !rollCall.id) {
       return;
     }
 
@@ -52,7 +46,7 @@ const EventRollCall = (props: IPropTypes) => {
     Wallet.generateToken(lao.id, rollCall.id)
       .then((token) => setPopToken(token.publicKey.valueOf()))
       .catch((err) => console.error(`Could not generate token: ${err}`));
-  }, [hasWalletBeenInitialized, lao, rollCall]);
+  }, [lao, rollCall]);
 
   if (!rollCall) {
     console.debug('Error in Roll Call display: Roll Call doesnt exist in store');
@@ -68,7 +62,7 @@ const EventRollCall = (props: IPropTypes) => {
   };
 
   const onOpenRollCall = () => {
-    requestOpenRollCall(rollCall.id).catch((e) => {
+    requestOpenRollCall(event.id).catch((e) => {
       makeToastErr('Unable to send roll call open request');
       console.debug('Unable to send Roll call open request', e);
     });
@@ -76,7 +70,7 @@ const EventRollCall = (props: IPropTypes) => {
 
   const onReopenRollCall = () => {
     if (eventHasBeenOpened) {
-      requestReopenRollCall(rollCall.idAlias).catch((e) => {
+      requestReopenRollCall(event.idAlias).catch((e) => {
         makeToastErr('Unable to send Roll call re-open request');
         console.debug('Unable to send Roll call re-open request', e);
       });
@@ -89,7 +83,7 @@ const EventRollCall = (props: IPropTypes) => {
   const onScanAttendees = () => {
     if (eventHasBeenOpened) {
       navigation.navigate(STRINGS.roll_call_open, {
-        rollCallID: rollCall.idAlias.toString(),
+        rollCallID: event.idAlias.toString(),
       });
     } else {
       makeToastErr('Unable to scan attendees, the event does not have an idAlias');
@@ -156,13 +150,9 @@ const EventRollCall = (props: IPropTypes) => {
 
 const propTypes = {
   event: PropTypes.instanceOf(RollCall).isRequired,
-  isOrganizer: PropTypes.bool,
+  isOrganizer: PropTypes.bool.isRequired,
 };
 EventRollCall.propTypes = propTypes;
-
-EventRollCall.defaultProps = {
-  isOrganizer: false,
-};
 
 type IPropTypes = PropTypes.InferProps<typeof propTypes>;
 
