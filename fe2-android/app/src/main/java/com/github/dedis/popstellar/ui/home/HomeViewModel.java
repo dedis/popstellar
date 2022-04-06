@@ -71,6 +71,8 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSettingsEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
       new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
+          new MutableLiveData<>();
 
   /*
    * LiveData objects that represent the state in a fragment
@@ -289,6 +291,10 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenSocialMediaEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
+    return mOpenDigitalCashEvent;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -341,6 +347,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openSocialMedia() {
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
+  }
+
+  public void openDigitalCash() {
+    mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
   public void launchNewLao() {

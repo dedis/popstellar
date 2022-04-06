@@ -222,6 +222,14 @@
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
 
+  <!-- Digital Cash -->
+  <string name="transaction">TRANSACTION</string>
+  <string name="digital_cash_send">SEND</string>
+  <string name="digital_cash_receive">RECEIVE</string>
+  <string name="digital_cash_issue">ISSUE</string>
+  <string name="digital_cash_history">HISTORY</string>
+  <string name="digital_cash_home">HOME</string>
+
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
 
@@ -252,4 +260,6 @@
   <string name="no_rollcall_exception">no rollcall exist in the LAO</string>
   <string name="seed_validation_exception">unable to validate seed</string>
   <string name="uninitialized_wallet_exception">the wallet is not initialized</string>
+  <!-- TODO: Remove or change this placeholder text -->
+  <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -102,7 +102,7 @@ func TestVerify_RollCallCreate(t *testing.T) {
 	require.NoError(t, err)
 
 	// test valid example
-	err = laoChannel.verifyMessageRollCallCreate(rollCallCreate)
+	err = laoChannel.verifyMessageRollCallCreate(&rollCallCreate)
 	require.NoError(t, err)
 }
 
@@ -162,7 +162,7 @@ func TestVerify_RollCallClose(t *testing.T) {
 	require.NoError(t, err)
 
 	// test valid example
-	err = laoChannel.verifyMessageRollCallClose(rollCallClose)
+	err = laoChannel.verifyMessageRollCallClose(&rollCallClose)
 	require.NoError(t, err)
 }
 
