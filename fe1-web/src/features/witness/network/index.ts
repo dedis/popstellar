@@ -35,12 +35,6 @@ const afterMessageProcessingHandler =
           break;
 
         case WitnessingType.ACTIVE:
-          // only send witness messages if we are a witness
-          /* if (!isLaoWitness()) {
-            break;
-          } */
-
-          // requestWitnessMessage(msg.channel, msg.message_id);
           break;
 
         case WitnessingType.NO_WITNESSING:
