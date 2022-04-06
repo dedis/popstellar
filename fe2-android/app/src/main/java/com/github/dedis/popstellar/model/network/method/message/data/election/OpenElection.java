@@ -12,9 +12,11 @@ import com.google.gson.annotations.SerializedName;
 
 public final class OpenElection extends Data {
 
+  @NonNull
   @SerializedName("lao")
   private final String laoId;
 
+  @NonNull
   @SerializedName("election")
   private final String electionId;
 

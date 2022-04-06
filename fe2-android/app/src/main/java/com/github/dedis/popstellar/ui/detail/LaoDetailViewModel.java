@@ -278,7 +278,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     Channel channel = e.getChannel();
     String laoId = lao.getId();
 
-    //The time will have to be modified on the backend
+    // The time will have to be modified on the backend
     OpenElection openElection =
         new OpenElection(laoId, e.getId(), e.getStartTimestamp());
 
@@ -290,11 +290,10 @@ public class LaoDetailViewModel extends AndroidViewModel
             .subscribe(
                 () -> {
                   Log.d(TAG, "opened election successfully");
-                  //block action button on expandableListViewAdapter
+                  // Block action button on expandableListViewAdapter
                   openElectionEvent();
                 },
                 error ->
-                    //modify the string after
                     ErrorUtils.logAndShow(
                         getApplication(), TAG, error, R.string.error_open_election));
     disposables.add(disposable);
@@ -718,7 +717,9 @@ public class LaoDetailViewModel extends AndroidViewModel
     return mOpenLaoDetailEvent;
   }
 
-  public LiveData<SingleEvent<Boolean>> getOpenElectionEvent(){return mOpenElectionEvent;}
+  public LiveData<SingleEvent<Boolean>> getOpenElectionEvent() {
+    return mOpenElectionEvent;
+  }
 
   public LiveData<SingleEvent<Boolean>> getEndElectionEvent() {
     return mEndElectionEvent;

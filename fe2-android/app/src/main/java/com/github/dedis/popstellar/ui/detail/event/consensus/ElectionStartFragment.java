@@ -54,7 +54,6 @@ public class ElectionStartFragment extends Fragment {
   private Button electionStart;
   private TextView electionStatus;
 
-  private Button electionStartNow;
 
   public ElectionStartFragment() {
     // Required empty public constructor
