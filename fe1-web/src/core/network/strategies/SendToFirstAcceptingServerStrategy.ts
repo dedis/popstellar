@@ -1,4 +1,4 @@
-import { ExtendedJsonRpcResponse } from 'core/network/jsonrpc';
+import { JsonRpcResponse } from 'core/network/jsonrpc';
 import { NetworkError } from 'core/network/NetworkError';
 
 import { SendingStrategy } from './ClientMultipleServerStrategy';
@@ -8,7 +8,7 @@ export const sendToFirstAcceptingServerStrategy: SendingStrategy = async (payloa
     throw new NetworkError('Cannot send payload: no websocket connection available');
   }
 
-  let response: ExtendedJsonRpcResponse | null = null;
+  let response: JsonRpcResponse | null = null;
   for (const connection of connections) {
     // try to send the payload using the current connection
     try {

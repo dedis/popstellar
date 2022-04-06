@@ -50,10 +50,6 @@ jest.mock('react-redux', () => ({
 }));
 
 jest.mock('core/components/ProfileIcon', () => () => 'ProfileIcon');
-// Ionicons and snapshot tests do not work nice together
-// See https://github.com/expo/expo/issues/3566
-jest.mock('@expo/vector-icons');
-
 // endregion
 
 beforeAll(() => {

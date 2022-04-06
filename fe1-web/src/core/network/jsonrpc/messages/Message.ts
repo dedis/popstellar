@@ -164,11 +164,11 @@ export class Message {
    * @param witnessSignatures- The signatures of the witnesses
    * @returns - The created message
    */
-  public static fromData(
+  public static async fromData(
     data: MessageData,
     senderKeyPair: KeyPair,
     witnessSignatures?: WitnessSignature[],
-  ): Message {
+  ): Promise<Message> {
     const encodedDataJson: Base64UrlData = encodeMessageData(data);
     const { publicKey, privateKey } = senderKeyPair;
     const signature = privateKey.sign(encodedDataJson);
