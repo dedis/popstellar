@@ -942,7 +942,7 @@ public class LaoDetailViewModel extends AndroidViewModel
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
   }
 
-  public void openDigitalCashEvent() {
+  public void openDigitalCash() {
     mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
