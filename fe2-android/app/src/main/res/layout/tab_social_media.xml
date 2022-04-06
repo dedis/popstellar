@@ -19,15 +19,24 @@
     android:orientation="vertical"
     app:layout_constraintGuide_percent="@dimen/guideline_vertical_tab_social_media" />
 
+  <androidx.constraintlayout.widget.Guideline
+    android:id="@+id/guideline_vertical_tab_social_media2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.89" />
+
   <Button
     android:id="@+id/tab_social_media"
-    android:layout_width="0dp"
-    android:layout_height="0dp"
+    android:layout_width="36dp"
+    android:layout_height="46dp"
     android:text="@string/tab_social_media"
     android:textSize="@dimen/size_small"
     app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_social_media"
-    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintHorizontal_bias="0.0"
     app:layout_constraintStart_toStartOf="@+id/guideline_vertical_tab_social_media"
-    app:layout_constraintTop_toTopOf="parent" />
+    app:layout_constraintStart_toEndOf="@+id/guideline_vertical_tab_social_media2"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
