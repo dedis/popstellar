@@ -1,4 +1,4 @@
-import { Hash, PublicKey } from 'core/objects';
+import { Hash, PublicKey, Signature } from 'core/objects';
 
 export interface DigitalCashTransactionState {
   version: number;
@@ -8,8 +8,8 @@ export interface DigitalCashTransactionState {
 }
 export interface TxInScript {
   type: string;
-  pubKey: PublicKey;
-  sig: string;
+  publicKey: PublicKey;
+  signature: Signature;
 }
 export interface TxIn {
   txOutHash: Hash;
@@ -18,7 +18,7 @@ export interface TxIn {
 }
 export interface TxOutScript {
   type: string;
-  pubKeyHash: Hash;
+  publicKeyHash: Hash;
 }
 export interface TxOut {
   value: number;
