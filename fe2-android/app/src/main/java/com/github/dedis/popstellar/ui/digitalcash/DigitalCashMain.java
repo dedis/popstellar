@@ -39,7 +39,7 @@ public class DigitalCashMain extends AppCompatActivity {
     setContentView(R.layout.digital_cash_main_activity);
     mViewModel = obtainViewModel(this);
 
-    // When we launch the social media from a lao, it directly sets its id and name
+    // When we launch the digital cash from a lao, it directly sets its id and name
     if (getIntent().getExtras().get(OPENED_FROM).equals(LaoDetailActivity.class.getSimpleName())) {
       mViewModel.setLaoId((String) getIntent().getExtras().get(LAO_ID));
       mViewModel.setLaoName((String) getIntent().getExtras().get(LAO_NAME));
@@ -106,6 +106,18 @@ public class DigitalCashMain extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupDigitalCashReceiveFragment();
+              }
+            });
+
+    // Subscribe to "receipt"
+    mViewModel
+        .getOpenReceiptEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupDigitalCashReceiptFragment();
               }
             });
 
@@ -210,6 +222,10 @@ public class DigitalCashMain extends AppCompatActivity {
 
   public void setupDigitalCashIssueFragment() {
     setCurrentFragment(R.id.fragment_digital_cash_issue, DigitalCashIssueFragment::newInstance);
+  }
+
+  public void setupDigitalCashReceiptFragment() {
+    setCurrentFragment(R.id.fragment_digital_cash_receipt, DigitalCashReceiptFragment::newInstance);
   }
 
   /**
