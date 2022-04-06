@@ -6,7 +6,7 @@ import {
   mockLaoId,
   mockLaoIdHash,
   mockLaoName,
-  mockMessageRegistry,
+  messageRegistryInstance,
   mockReduxAction,
 } from '__tests__/utils';
 import FeatureContext from 'core/contexts/FeatureContext';
@@ -144,7 +144,7 @@ const contextValue = {
     addEvent: () => mockReduxAction,
     updateEvent: () => mockReduxAction,
     getEventById: () => undefined,
-    messageRegistry: mockMessageRegistry,
+    messageRegistry: messageRegistryInstance,
     onConfirmEventCreation: () => undefined,
   },
 };

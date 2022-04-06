@@ -10,7 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 /**
  * Page object of {@Link HomeActivity}
  *
- * <p>Creation : 26.03.2021
+ * <p>Creation : 26.03.2022
  */
 public class HomePageObject {
 
