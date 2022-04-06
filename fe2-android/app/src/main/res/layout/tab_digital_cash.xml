@@ -21,8 +21,8 @@
 
   <Button
     android:id="@+id/tab_digital_cash"
-    android:layout_width="29dp"
-    android:layout_height="57dp"
+    android:layout_width="36dp"
+    android:layout_height="43dp"
     android:text="@string/transaction"
     android:textSize="@dimen/size_small"
     app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_tab_digital_cash"

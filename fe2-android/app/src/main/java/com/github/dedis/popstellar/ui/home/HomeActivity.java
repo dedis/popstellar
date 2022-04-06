@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
@@ -65,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
     setupConnectButton();
     setupWalletButton();
     setupSocialMediaButton();
+    setupDigitalCashButton();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -111,10 +113,10 @@ public class HomeActivity extends AppCompatActivity {
               HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 switch (action) {
-                    case  SCAN:
+                  case SCAN:
                     setupScanFragment();
                     break;
-                  case  REQUEST_CAMERA_PERMISSION:
+                  case REQUEST_CAMERA_PERMISSION:
                     setupCameraPermissionFragment();
                     break;
                 }
@@ -147,6 +149,7 @@ public class HomeActivity extends AppCompatActivity {
 
     subscribeWalletEvents();
     subscribeSocialMediaEvent();
+    subscribeDigitalCashEvent();
   }
 
   private void subscribeWalletEvents() {
@@ -202,6 +205,20 @@ public class HomeActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupSocialMediaActivity();
+              }
+            });
+  }
+
+  private void subscribeDigitalCashEvent() {
+    // Subscribe to "open social media" event
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupDigitalCashActivity();
               }
             });
   }
@@ -262,6 +279,11 @@ public class HomeActivity extends AppCompatActivity {
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
   }
 
+  public void setupDigitalCashButton() {
+    Button digitalCashButton = findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
+  }
+
   private void setupHomeFragment() {
     setCurrentFragment(R.id.fragment_home, HomeFragment::newInstance);
   }
@@ -313,6 +335,17 @@ public class HomeActivity extends AppCompatActivity {
     } else {
       Intent intent = new Intent(this, SocialMediaActivity.class);
       Log.d(TAG, "Trying to open social media");
+      intent.putExtra(OPENED_FROM, TAG);
+      startActivity(intent);
+    }
+  }
+
+  private void setupDigitalCashActivity() {
+    if (mViewModel.getLAOs().getValue() == null) {
+      Toast.makeText(getApplicationContext(), R.string.error_no_lao, Toast.LENGTH_LONG).show();
+    } else {
+      Intent intent = new Intent(this, DigitalCashMain.class);
+      Log.d(TAG, "Trying to open digital cash");
       intent.putExtra(OPENED_FROM, TAG);
       startActivity(intent);
     }

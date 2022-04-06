@@ -49,7 +49,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public static final String TAG = HomeViewModel.class.getSimpleName();
 
-  public enum HomeViewAction {SCAN, REQUEST_CAMERA_PERMISSION}
+  public enum HomeViewAction {
+    SCAN,
+    REQUEST_CAMERA_PERMISSION
+  }
 
   private static final ScanningAction scanningAction = ScanningAction.ADD_LAO_PARTICIPANT;
 
@@ -60,7 +63,8 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<Boolean>> mOpenHomeEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenConnectingEvent =
       new MutableLiveData<>();
-  private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent = new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<HomeViewAction>> mOpenConnectEvent =
+      new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenLaunchEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mLaunchNewLaoEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mCancelNewLaoEvent = new MutableLiveData<>();
@@ -70,6 +74,8 @@ public class HomeViewModel extends AndroidViewModel
   private final MutableLiveData<SingleEvent<String>> mOpenLaoWalletEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSettingsEvent = new MutableLiveData<>();
   private final MutableLiveData<SingleEvent<Boolean>> mOpenSocialMediaEvent =
+      new MutableLiveData<>();
+  private final MutableLiveData<SingleEvent<Boolean>> mOpenDigitalCashEvent =
       new MutableLiveData<>();
 
   /*
@@ -289,6 +295,10 @@ public class HomeViewModel extends AndroidViewModel
     return mOpenSocialMediaEvent;
   }
 
+  public LiveData<SingleEvent<Boolean>> getOpenDigitalCashEvent() {
+    return mOpenDigitalCashEvent;
+  }
+
   /*
    * Methods that modify the state or post an Event to update the UI.
    */
@@ -314,8 +324,7 @@ public class HomeViewModel extends AndroidViewModel
   }
 
   public void openConnect() {
-    if (checkSelfPermission(
-            getApplication().getApplicationContext(), Manifest.permission.CAMERA)
+    if (checkSelfPermission(getApplication().getApplicationContext(), Manifest.permission.CAMERA)
         == PackageManager.PERMISSION_GRANTED) {
       openQrCodeScanning();
     } else {
@@ -341,6 +350,10 @@ public class HomeViewModel extends AndroidViewModel
 
   public void openSocialMedia() {
     mOpenSocialMediaEvent.setValue(new SingleEvent<>(true));
+  }
+
+  public void openDigitalCash() {
+    mOpenDigitalCashEvent.setValue(new SingleEvent<>(true));
   }
 
   public void launchNewLao() {
