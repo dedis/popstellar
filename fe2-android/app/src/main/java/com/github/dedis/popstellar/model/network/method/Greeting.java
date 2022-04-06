@@ -8,11 +8,11 @@ import java.util.List;
  */
 public class Greeting extends Message {
 
-  //Backend sender address
+  // Backend sender address
   private String sender;
-  //Backend server address
+  // Backend server address
   private String address;
-  //Backend "peer", list of addresses of future 1 Client -> multiple Server communication
+  // Backend "peer", list of addresses of future 1 Client -> multiple Server communication
   private List<String> peers;
 
 
@@ -76,7 +76,6 @@ public class Greeting extends Message {
     return "Greeting{" + "channel='" + getChannel() + "', method='" + getMethod() + "', "
         + "sender = " + getSender() + "address=" + getAddress() + "}";
   }
-
 
 }
 
