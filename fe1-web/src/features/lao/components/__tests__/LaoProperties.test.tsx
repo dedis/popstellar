@@ -15,6 +15,9 @@ import { connectToLao, laoReducer } from 'features/lao/reducer';
 
 import LaoProperties from '../LaoProperties';
 
+// the qr code is rendered as a svg which results in a 2MB snapshot file
+jest.mock('react-qr-code', () => 'qr code');
+
 const contextValue = {
   [LAO_FEATURE_IDENTIFIER]: {
     EventList: () => null,
