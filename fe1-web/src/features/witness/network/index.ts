@@ -18,7 +18,10 @@ import { requestWitnessMessage } from './WitnessMessageApi';
  * other messages
  */
 const afterMessageProcessingHandler =
-  (/* isLaoWitness: WitnessConfiguration['isLaoWitness'] */): AfterProcessingHandler =>
+  (
+    enabled: WitnessConfiguration['enabled'],
+    /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */
+  ): AfterProcessingHandler =>
   (msg: ProcessableMessage) => {
     const entry = getWitnessRegistryEntry(msg.messageData);
 
@@ -26,7 +29,9 @@ const afterMessageProcessingHandler =
       // we have a wintessing entry for this message type
       switch (entry.type) {
         case WitnessingType.PASSIVE:
-          requestWitnessMessage(msg.channel, msg.message_id);
+          if (enabled) {
+            requestWitnessMessage(msg.channel, msg.message_id);
+          }
           break;
 
         case WitnessingType.ACTIVE:
@@ -59,6 +64,6 @@ export const configureNetwork = (config: WitnessConfiguration) => {
   );
 
   config.messageRegistry.addAfterProcessingHandler(
-    afterMessageProcessingHandler(/* config.isLaoWitness */),
+    afterMessageProcessingHandler(config.enabled /* config.isLaoWitness */),
   );
 };
