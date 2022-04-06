@@ -222,6 +222,14 @@
   <string name="text">text</string>
   <string name="delete_button">delete button</string>
 
+  <!-- Digital Cash -->
+  <string name="transaction">TRANSACTION</string>
+  <string name="digital_cash_send">SEND</string>
+  <string name="digital_cash_receive">RECEIVE</string>
+  <string name="digital_cash_issue">ISSUE</string>
+  <string name="digital_cash_history">HISTORY</string>
+  <string name="digital_cash_home">HOME</string>
+
   <!-- Error Messages -->
   <string name="error_no_lao">You are not in a LAO</string>
 
