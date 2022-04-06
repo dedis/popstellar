@@ -122,16 +122,17 @@ describe('WitnessReducer', () => {
       );
 
       const messageId = message.message_id.valueOf();
+      const extMessage = ExtendedMessage.fromMessage(
+        message,
+        'some channel',
+        'some address',
+      ).toState();
 
       const newState = witnessReduce(
         {
           allIds: [messageId],
           byId: {
-            [messageId]: ExtendedMessage.fromMessage(
-              message,
-              'some channel',
-              'some address',
-            ).toState(),
+            [messageId]: extMessage,
           },
         },
         removeMessageToWitness('some other id'),
@@ -139,7 +140,7 @@ describe('WitnessReducer', () => {
 
       expect(newState.allIds).toEqual([messageId]);
       expect(newState.byId).toEqual({
-        [messageId]: ExtendedMessage.fromMessage(message, 'some channel', 'some address').toState(),
+        [messageId]: extMessage,
       });
     });
   });

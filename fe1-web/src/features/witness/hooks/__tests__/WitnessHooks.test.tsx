@@ -13,6 +13,7 @@ const markNotificationAsRead = jest.fn();
 
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
+    enabled: true,
     addNotification,
     discardNotifications,
     markNotificationAsRead,
@@ -41,6 +42,15 @@ describe('WitnessHooks', () => {
         wrapper,
       });
       expect(result.current).toEqual(markNotificationAsRead);
+    });
+  });
+
+  describe('WitnessHooks.useIsEnabled', () => {
+    it('should return the correct value', () => {
+      const { result } = renderHook(() => WitnessHooks.useIsEnabled(), {
+        wrapper,
+      });
+      expect(result.current).toEqual(true);
     });
   });
 });

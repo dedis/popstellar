@@ -56,12 +56,12 @@ const afterMessageProcessingHandler =
     if (entry) {
       // we have a wintessing entry for this message type
 
-      if (!enabled) {
-        return;
-      }
-
       switch (entry.type) {
         case WitnessingType.PASSIVE:
+          if (!enabled) {
+            return;
+          }
+
           requestWitnessMessage(msg.channel, msg.message_id);
           break;
 

@@ -20,11 +20,14 @@ const WitnessNotification = ({ notification, navigateToNotificationScreen }: IPr
 
   const discardNotifications = WitnessHooks.useDiscardNotifications();
   const markNotificationAsRead = WitnessHooks.useMarkNotificationAsRead();
+  const isEnabled = WitnessHooks.useIsEnabled();
 
   const onWitness = () => {
     if (message) {
       dispatch(discardNotifications([notification.id]));
-      requestWitnessMessage(message.channel, message.message_id);
+      if (isEnabled) {
+        requestWitnessMessage(message.channel, message.message_id);
+      }
       dispatch(removeMessageToWitness(message.message_id.valueOf()));
       navigateToNotificationScreen();
     }

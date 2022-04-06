@@ -54,7 +54,7 @@ export interface WitnessConfiguration {
  */
 export type WintessReactContext = Pick<
   WitnessConfiguration,
-  'addNotification' | 'markNotificationAsRead' | 'discardNotifications'
+  'enabled' | 'addNotification' | 'markNotificationAsRead' | 'discardNotifications'
 >;
 
 /**

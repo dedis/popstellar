@@ -27,4 +27,10 @@ export namespace WitnessHooks {
    * @returns The action creator
    */
   export const useMarkNotificationAsRead = () => useNotificationContext().markNotificationAsRead;
+
+  /**
+   * Checks if the witness feature is enabled
+   * @returns Whether the feature is enabled or not
+   */
+  export const useIsEnabled = () => useNotificationContext().enabled;
 }
