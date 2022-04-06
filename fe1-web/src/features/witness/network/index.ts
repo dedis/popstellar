@@ -28,7 +28,9 @@ import { requestWitnessMessage } from './WitnessMessageApi';
  */
 const afterMessageProcessingHandler =
   (
-    addNotification: WitnessConfiguration['addNotification'] /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */,
+    enabled: WitnessConfiguration['enabled'],
+    addNotification: WitnessConfiguration['addNotification'],
+    /* isLaoWitness: WitnessConfiguration['isLaoWitness'] */
   ): AfterProcessingHandler =>
   (msg: ProcessableMessage) => {
     // check if this message has already been signed by us
@@ -53,6 +55,10 @@ const afterMessageProcessingHandler =
 
     if (entry) {
       // we have a wintessing entry for this message type
+
+      if (!enabled) {
+        return;
+      }
 
       switch (entry.type) {
         case WitnessingType.PASSIVE:
@@ -97,6 +103,6 @@ export const configureNetwork = (config: WitnessConfiguration) => {
   );
 
   config.messageRegistry.addAfterProcessingHandler(
-    afterMessageProcessingHandler(config.addNotification /* config.isLaoWitness */),
+    afterMessageProcessingHandler(config.enabled, config.addNotification /* config.isLaoWitness */),
   );
 };

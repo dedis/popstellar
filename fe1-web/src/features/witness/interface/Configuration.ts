@@ -9,6 +9,9 @@ import { WitnessFeature } from './Feature';
 export const WITNESS_FEATURE_IDENTIFIER = 'witness';
 
 export interface WitnessConfiguration {
+  /* feature toggle */
+  enabled: boolean;
+
   /* objects */
 
   messageRegistry: MessageRegistry;
