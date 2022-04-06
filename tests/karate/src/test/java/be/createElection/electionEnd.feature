@@ -13,8 +13,8 @@ Feature: Cast a vote
     # The following calls makes this feature, mockFrontEnd.feature and server.feature share the same scope
     * call read('classpath:be/utils/server.feature')
     * call read('classpath:be/mockFrontEnd.feature')
-    * def id = 41
-    * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/ZVxXK2QN60uCNxNsIzShYYQmtwGttWLpQPQapYCNg4g="
+    * def id = 42
+    * string channel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA=/rdv-0minecREM9XidNxnQotO7nxtVVnx-Zkmfm7hm2w="
     * string laoChannel = "/root/p_EYbHyMv6sopI5QhEXBf40MO_eNoq7V_LygBd4c9RA="
 
   Scenario: Sending a valid election end should succeed
@@ -23,5 +23,6 @@ Feature: Cast a vote
     * call read('classpath:be/utils/simpleScenarios.feature@name=election_setup')
     And eval frontend.send(electionEnd)
     * json election_end = frontend_buffer.takeTimeout(timeout)
-    
+    Then match election_end contains deep {jsonrpc: '2.0', id: '#(id)', result: 0}
+
 

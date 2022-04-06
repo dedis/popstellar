@@ -34,4 +34,11 @@ public class ServerTest {
   Karate testCastVote(){
     return Karate.run("classpath:be/createElection/castVote.feature");
   }
+
+  @Karate.Test
+  Karate testElectionEnd(){
+    return Karate.run("classpath:be/createElection/electionEnd.feature");
+  }
 }
+
+

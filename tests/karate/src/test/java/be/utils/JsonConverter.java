@@ -97,7 +97,7 @@ public class JsonConverter {
       }
       PublicKeySign publicKeySign = new Ed25519Sign(privateKeyBytes);
       byte[] singie = publicKeySign.sign(messageData.getBytes(StandardCharsets.UTF_8));
-      return Base64.getUrlEncoder().encodeToString(singie);
+      return Base64.get                                      UrlEncoder().encodeToString(singie);
 
     } catch (Exception e) {
       System.out.println("CANNOT SIGN");
