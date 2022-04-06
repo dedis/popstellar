@@ -56,6 +56,7 @@ mockStore.dispatch(addNotification(mockNotification));
 
 const contextValue = {
   [WITNESS_FEATURE_IDENTIFIER]: {
+    enabled: true,
     addNotification: (notification) => mockStore.dispatch(addNotification(notification)),
     discardNotifications: (notificationIds) =>
       mockStore.dispatch(discardNotifications(notificationIds)),

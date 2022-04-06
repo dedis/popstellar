@@ -18,6 +18,7 @@ export function configure(configuration: WitnessConfiguration): WitnessInterface
     notificationTypes: [WitnessNotificationType],
 
     context: {
+      enabled: configuration.enabled,
       addNotification: configuration.addNotification,
       discardNotifications: configuration.discardNotifications,
       markNotificationAsRead: configuration.markNotificationAsRead,
