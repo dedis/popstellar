@@ -14,7 +14,7 @@ import STRINGS from 'resources/strings';
 
 import { RollCallTokensDropDown } from '../components';
 import * as Wallet from '../objects';
-import { createMockWalletState, clearMockWalletState } from '../objects/__mocks__/mockWallet';
+import { createDummyWalletState, clearDummyWalletState } from '../objects/DummyWallet';
 import { RollCallToken } from '../objects/RollCallToken';
 
 const styles = StyleSheet.create({
@@ -63,10 +63,10 @@ const WalletHome = ({ navigation }: IPropTypes) => {
 
   const toggleDebugMode = () => {
     if (isDebug) {
-      clearMockWalletState();
+      clearDummyWalletState();
       setIsDebug(false);
     } else {
-      createMockWalletState().then(() => setIsDebug(true));
+      createDummyWalletState().then(() => setIsDebug(true));
     }
   };
   const tokenInfos = () => {

@@ -6,7 +6,7 @@ import MockNavigator from '__tests__/components/MockNavigator';
 import { mockLao, mockPopToken, mockRC } from '__tests__/utils';
 
 import { recoverWalletRollCallTokens } from '../../objects';
-import { clearMockWalletState, createMockWalletState } from '../../objects/__mocks__/mockWallet';
+import { clearDummyWalletState, createDummyWalletState } from '../../objects/DummyWallet';
 import { RollCallToken } from '../../objects/RollCallToken';
 import { WalletHome } from '../index';
 
@@ -14,7 +14,7 @@ jest.mock('react-redux');
 jest.mock('core/platform/Storage');
 jest.mock('core/platform/crypto/browser');
 jest.mock('features/wallet/objects/Wallet');
-jest.mock('features/wallet/objects/__mocks__/mockWallet');
+jest.mock('features/wallet/objects/DummyWallet');
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -45,11 +45,10 @@ describe('Wallet home', () => {
     render(<MockNavigator component={WalletHome} />);
   });
   it('enables correctly the debug mode', async () => {
-    const mockCreateWalletState = (createMockWalletState as jest.Mock).mockImplementation(
-      () => new Promise(() => undefined),
+    const mockCreateWalletState = (createDummyWalletState as jest.Mock).mockImplementation(() =>
+      Promise.resolve(),
     );
     const { getByText } = render(<MockNavigator component={WalletHome} />);
-
     const toggleDebugButton = getByText('Set debug mode on [TESTING]');
 
     fireEvent.press(toggleDebugButton);
@@ -58,19 +57,19 @@ describe('Wallet home', () => {
     });
   });
   it('disables correctly the debug mode', async () => {
-    (createMockWalletState as jest.Mock).mockImplementation(
-      () => new Promise(() => undefined),
-    );
+    (createDummyWalletState as jest.Mock).mockImplementation(() => Promise.resolve());
 
-    const mockClearWalletState = clearMockWalletState as jest.Mock;
+    const mockClearWalletState = clearDummyWalletState as jest.Mock;
     const { getByText } = render(<MockNavigator component={WalletHome} />);
 
-    const toggleButton = getByText('Set debug mode on [TESTING]');
-    fireEvent.press(toggleButton);
+    const toggleButtonOn = getByText('Set debug mode on [TESTING]');
+    fireEvent.press(toggleButtonOn);
 
     await waitFor(() => {
-      fireEvent.press(toggleButton);
-      expect(mockClearWalletState).toHaveBeenCalledTimes(1);
+      const toggleButtonOff = getByText('Set debug mode off [TESTING]');
+      fireEvent.press(toggleButtonOff);
     });
+
+    expect(mockClearWalletState).toHaveBeenCalledTimes(1);
   });
 });
