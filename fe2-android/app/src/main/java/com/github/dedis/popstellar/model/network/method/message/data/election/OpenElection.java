@@ -1,7 +1,6 @@
 package com.github.dedis.popstellar.model.network.method.message.data.election;
 
 import androidx.annotation.NonNull;
-
 import com.github.dedis.popstellar.model.network.method.message.data.Action;
 import com.github.dedis.popstellar.model.network.method.message.data.Data;
 import com.github.dedis.popstellar.model.network.method.message.data.Objects;
@@ -36,10 +35,12 @@ public final class OpenElection extends Data {
     return Action.OPEN.getAction();
   }
 
+  @NonNull
   public String getLaoId() {
     return laoId;
   }
 
+  @NonNull
   public String getElectionId() {
     return electionId;
   }
