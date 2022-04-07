@@ -81,6 +81,10 @@ public class WalletPageObject {
     return onView(withId(R.id.wallet_content_text_2));
   }
 
+  public static ViewInteraction walletSeedCopyButton(){
+    return onView(withId(R.id.seed_wallet_copy));
+  }
+
   public static ViewInteraction logOutButton(){
     return onView(withId(R.id.logout_button));
   }

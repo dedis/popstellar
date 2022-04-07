@@ -10,7 +10,7 @@
   <dimen name="guideline_vertical_tab_social_media">0.80</dimen>
 
   <!-- Text -->
-  <dimen name="margin_text">32dp</dimen>
+  <dimen name="margin_text">28dp</dimen>
   <dimen name="margin_text_small">16dp</dimen>
   <dimen name="margin_top">5dp</dimen>
   <dimen name="size_title">28sp</dimen>
@@ -90,6 +90,7 @@
   <dimen name="bottom_navigation_view_height">56dp</dimen>
   <dimen name="card_view_elevation">1dp</dimen>
   <dimen name="lone_bottom_button_top_margin">30dp</dimen>
+  <integer name="min_number_lines_seed_text">3</integer>
 
   <!-- Lao ist dimensions -->
   <dimen name="rv_margin_top">20dp</dimen>

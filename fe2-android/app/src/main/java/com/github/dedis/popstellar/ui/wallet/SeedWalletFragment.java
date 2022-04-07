@@ -72,21 +72,24 @@ public class SeedWalletFragment extends Fragment {
     setupDisplaySeed();
     setupConfirmSeedButton();
 
-    mWalletSeedFragBinding.seedWalletText.setOnClickListener(
-        v -> {
-          ClipboardManager clipboardManager =
-              (ClipboardManager)
-                  requireContext()
-                      .getApplicationContext()
-                      .getSystemService(Context.CLIPBOARD_SERVICE);
-          clipboardManager.setPrimaryClip(
-              ClipData.newPlainText("Seed", mWalletSeedFragBinding.seedWalletText.getText()));
-          Toast.makeText(
-                  requireContext().getApplicationContext(),
-                  R.string.copied_to_clipboard,
-                  Toast.LENGTH_LONG)
-              .show();
-        });
+      View.OnClickListener onClickListener = v -> {
+              ClipboardManager clipboardManager =
+                      (ClipboardManager)
+                              requireContext()
+                                      .getApplicationContext()
+                                      .getSystemService(Context.CLIPBOARD_SERVICE);
+              clipboardManager.setPrimaryClip(
+                      ClipData.newPlainText("Seed", mWalletSeedFragBinding.seedWalletText.getText()));
+              Toast.makeText(
+                      requireContext().getApplicationContext(),
+                      R.string.copied_to_clipboard,
+                      Toast.LENGTH_LONG)
+                      .show();
+      };
+
+      mWalletSeedFragBinding.seedWalletText.setOnClickListener(onClickListener);
+      mWalletSeedFragBinding.seedWalletCopy.setOnClickListener(onClickListener);
+
   }
 
   private void setupDisplaySeed() {
