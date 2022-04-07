@@ -1,6 +1,8 @@
 package com.github.dedis.popstellar.model.network.method;
 
 import com.github.dedis.popstellar.model.objects.Channel;
+import com.github.dedis.popstellar.model.objects.security.PublicKey;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
 public class Greeting extends Message {
 
   // Backend sender address
-  private String sender;
+  private PublicKey sender;
   // Backend server address
   private String address;
   // Backend "peer", list of addresses of future 1 Client -> multiple Server communication
@@ -21,17 +23,18 @@ public class Greeting extends Message {
    * @param channel the channel over which the message is sent
    * @throws IllegalArgumentException if channel is null
    */
-  public Greeting(Channel channel, String address, String sender, List<String> peers) {
+  public Greeting(Channel channel, String address, String sender,String... peers) {
     super(channel);
     if (address == null) {
       throw new IllegalArgumentException("The address of the backend can't be null");
     } else if (sender == null) {
       throw new IllegalArgumentException("The public key of the backend can't be null");
     }
-    //Peers can be empty
-    this.peers = peers;
+    // Peers can be empty
+    this.peers = Arrays.asList(peers);
     this.address = address;
-    this.sender = sender;
+    // Check of validity should be done via the Public Key class
+    this.sender = new PublicKey(sender);
   }
 
   //Getter for params
@@ -40,12 +43,11 @@ public class Greeting extends Message {
     return Method.GREETING.getMethod();
   }
 
-  public String getSender(){return sender;}
+  public PublicKey getSender(){return sender;}
 
   public String getAddress(){return address;}
 
   public List<String> getPeers(){
-      //TODO: change the return format, might return null
       return peers;
   }
 
@@ -63,10 +65,11 @@ public class Greeting extends Message {
 
     Greeting that = (Greeting) o;
 
-    //Check fields
-    boolean checkAdress = that.equals(getAddress());
-    boolean checkSender = that.equals(getSender());
-    boolean checkPeers = that.equals(getPeers());
+    // Check fields
+    boolean checkAdress = that.getAddress().equals(getAddress());
+    boolean checkSender = that.getSender().equals(getSender());
+    boolean checkPeers =
+        that.getPeers().containsAll(getPeers());
 
     return checkSender && checkPeers && checkAdress;
   }
