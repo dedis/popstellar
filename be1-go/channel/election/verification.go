@@ -107,12 +107,6 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 		return xerrors.Errorf("election end created at is %d, should be minimum 0", electionEnd.CreatedAt)
 	}
 
-	// verify end time of election
-	if electionEnd.CreatedAt < c.end {
-		return xerrors.Errorf("election end created at is %d, should be greater or equal to defined end time %d",
-			electionEnd.CreatedAt, c.end)
-	}
-
 	// verify registered votes are base64URL encoded
 	if _, err := base64.URLEncoding.DecodeString(electionEnd.RegisteredVotes); err != nil {
 		return xerrors.Errorf("election registered votes is %s, should be base64URL encoded", electionEnd.RegisteredVotes)
