@@ -428,7 +428,7 @@ public class LaoDetailActivity extends AppCompatActivity {
   /**
    * Set the current fragment in the container of the activity
    *
-   * @param id               of the fragment
+   * @param id of the fragment
    * @param fragmentSupplier provides the fragment if it is missing
    */
   private void setCurrentFragment(@IdRes int id, Supplier<Fragment> fragmentSupplier) {

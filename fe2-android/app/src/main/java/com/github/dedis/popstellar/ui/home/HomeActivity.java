@@ -30,10 +30,10 @@ import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.SeedWalletFragment;
 import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 import com.github.dedis.popstellar.utility.ActivityUtils;
-import com.github.dedis.popstellar.utility.error.NoLAOException;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.github.dedis.popstellar.utility.error.ErrorUtils;
+import com.github.dedis.popstellar.utility.error.NoLAOException;
 import com.github.dedis.popstellar.utility.error.keys.UninitializedWalletException;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.function.Supplier;
 
@@ -49,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
   private final int CONNECT_POSITION = 1;
   private final int LAUNCH_POSITION = 2;
   private final int SOCIAL_MEDIA_POSITION = 4;
-  
+
    private HomeViewModel mViewModel;
 
   private BottomNavigationView navbar;
