@@ -208,6 +208,20 @@ public class HomeActivity extends AppCompatActivity {
             });
   }
 
+  private void subscribeDigitalCashEvent() {
+    // Subscribe to "digital cash media" event
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupDigitalCashActivity();
+              }
+            });
+  }
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
@@ -272,6 +286,7 @@ public class HomeActivity extends AppCompatActivity {
             Toast.makeText(HomeActivity.this, "Button for Transaction", Toast.LENGTH_LONG).show();
           }
         });
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
   }
 
   private void setupHomeFragment() {
@@ -328,6 +343,10 @@ public class HomeActivity extends AppCompatActivity {
       intent.putExtra(OPENED_FROM, TAG);
       startActivity(intent);
     }
+  }
+
+  private void setupDigitalCashActivity() {
+    // TODO : EMPTY
   }
 
   private void openLaoDetails(String laoId) {
