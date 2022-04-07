@@ -174,12 +174,6 @@ func (c *Channel) verifyMessageElectionEnd(electionEnd messagedata.ElectionEnd) 
 		return xerrors.Errorf("election end created at is %d, should be minimum 0", electionEnd.CreatedAt)
 	}
 
-	// verify end time of election
-	if electionEnd.CreatedAt < c.end {
-		return xerrors.Errorf("election end created at is %d, should be greater or equal to defined end time %d",
-			electionEnd.CreatedAt, c.end)
-	}
-
 	// verify if the election is not terminated
 	if c.terminated {
 		return xerrors.Errorf("election is already terminated")

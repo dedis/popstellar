@@ -250,7 +250,6 @@ func TestVerify_ElectionEnd(t *testing.T) {
 	t.Run("lao id invalid hash", getTestBadExample("bad_election_end_lao_invalid_hash.json"))
 	t.Run("election id invalid hash", getTestBadExample("bad_election_end_election_invalid_hash.json"))
 	t.Run("created at negative", getTestBadExample("bad_election_end_created_at_negative.json"))
-	t.Run("created at before election end", getTestBadExample("bad_election_end_created_at_before_end.json"))
 	t.Run("registered votes not base64", getTestBadExample("bad_election_end_registered_votes_not_base64.json"))
 }
 
