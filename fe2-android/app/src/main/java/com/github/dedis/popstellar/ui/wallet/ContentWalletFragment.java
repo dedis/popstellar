@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.github.dedis.popstellar.R;
@@ -103,6 +104,7 @@ public class ContentWalletFragment extends Fragment {
   private void setupListAdapter() {
     RecyclerView recyclerView = mWalletContentBinding.laoList;
 
+    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     mListAdapter = new LAOListAdapter(new ArrayList<>(0), mHomeViewModel, false);
 
     recyclerView.setAdapter(mListAdapter);
