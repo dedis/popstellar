@@ -23,8 +23,11 @@ import (
 	"golang.org/x/xerrors"
 )
 
-const msgID = "msg id"
-const failedToDecodeData = "failed to decode message data: %v"
+const (
+	msgID              = "msg id"
+	failedToDecodeData = "failed to decode message data: %v"
+	failedToBroadcast  = "failed to broadcast message: %v"
+)
 
 // attendees represents the attendees in an election.
 type attendees struct {
@@ -39,13 +42,14 @@ func (a *attendees) isPresent(key string) bool {
 	defer a.Unlock()
 
 	_, ok := a.store[key]
+
 	return ok
 }
 
 // NewChannel returns a new initialized election channel
-func NewChannel(channelPath string, start, end int64, questions []messagedata.ElectionSetupQuestion,
-	attendeesMap map[string]struct{}, hub channel.HubFunctionalities, log zerolog.Logger,
-	organizerPubKey kyber.Point) channel.Channel {
+func NewChannel(channelPath string, msgData messagedata.ElectionSetup,
+	attendeesMap map[string]struct{}, hub channel.HubFunctionalities,
+	log zerolog.Logger, organizerPubKey kyber.Point) channel.Channel {
 
 	log = log.With().Str("channel", "election").Logger()
 
@@ -57,10 +61,11 @@ func NewChannel(channelPath string, start, end int64, questions []messagedata.El
 		inbox:     inbox.NewInbox(channelPath),
 		channelID: channelPath,
 
-		start:      start,
-		end:        end,
+		start:      msgData.StartTime,
+		end:        msgData.EndTime,
+		started:    false,
 		terminated: false,
-		questions:  getAllQuestionsForElectionChannel(questions),
+		questions:  getAllQuestionsForElectionChannel(msgData.Questions),
 
 		attendees: &attendees{
 			store: attendeesMap,
@@ -82,9 +87,10 @@ func NewChannel(channelPath string, start, end int64, questions []messagedata.El
 func (c *Channel) NewElectionRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
+	registry.Register(messagedata.ElectionOpen{}, c.processElectionOpen)
+	registry.Register(messagedata.VoteCastVote{}, c.processCastVote)
 	registry.Register(messagedata.ElectionEnd{}, c.processElectionEnd)
 	registry.Register(messagedata.ElectionResult{}, c.processElectionResult)
-	registry.Register(messagedata.VoteCastVote{}, c.processCastVote)
 
 	return registry
 }
@@ -102,6 +108,9 @@ type Channel struct {
 
 	// Ending time of the election
 	end int64
+
+	// True if the election has started and false otherwise
+	started bool
 
 	// True if the election is over and false otherwise
 	terminated bool
@@ -297,6 +306,54 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 	return nil
 }
 
+func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
+
+	data, ok := msgData.(*messagedata.ElectionOpen)
+	if !ok {
+		return xerrors.Errorf("message '%T' isn't a election#open message", msgData)
+	}
+
+	c.log.Info().Str("Election", data.Election).Msg("received a election#open message")
+
+	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
+	if err != nil {
+		return xerrors.Errorf("failed to decode sender key: %v", err)
+	}
+
+	senderPoint := crypto.Suite.Point()
+
+	err = senderPoint.UnmarshalBinary(senderBuf)
+	if err != nil {
+		return answer.NewErrorf(-4, "invalid sender public key: %s", senderBuf)
+	}
+
+	if !c.organiserPubKey.Equal(senderPoint) {
+		return answer.NewErrorf(-5, "sender is %s, should be the organizer", msg.Sender)
+	}
+
+	var electionOpen messagedata.ElectionOpen
+
+	err = msg.UnmarshalData(&electionOpen)
+	if err != nil {
+		return xerrors.Errorf("failed to unmarshal publish election end: %v", err)
+	}
+
+	// check that data is correct
+	err = c.verifyMessageElectionOpen(electionOpen)
+	if err != nil {
+		return xerrors.Errorf("invalid election#open message: %v", err)
+	}
+
+	c.started = true
+
+	err = c.broadcastToAllClients(msg)
+	if err != nil {
+		return xerrors.Errorf(failedToBroadcast, err)
+	}
+
+	return nil
+}
+
 // processCastVote is the callback that processes election#cast_vote messages
 func (c *Channel) processCastVote(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
@@ -343,7 +400,7 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}, _ so
 
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
+		return xerrors.Errorf(failedToBroadcast, err)
 	}
 
 	return nil
@@ -392,9 +449,12 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}, _
 		return xerrors.Errorf("invalid election#end message: %v", err)
 	}
 
+	c.started = false
+	c.terminated = true
+
 	err = c.broadcastToAllClients(msg)
 	if err != nil {
-		return xerrors.Errorf("failed to broadcast message: %v", err)
+		return xerrors.Errorf(failedToBroadcast, err)
 	}
 
 	// broadcast election result message
