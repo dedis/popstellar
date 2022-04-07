@@ -19,7 +19,7 @@ export async function subscribeToChannel(channel: Channel, connections?: Network
     const msgs = await catchup(channel, connections);
 
     for (const msg of msgs) {
-      storeMessage(msg, channel);
+      storeMessage(msg);
     }
 
     return;
