@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -65,6 +66,7 @@ public class HomeActivity extends AppCompatActivity {
     setupConnectButton();
     setupWalletButton();
     setupSocialMediaButton();
+    setupDigitalCashButton();
 
     // Subscribe to "open lao" event
     mViewModel
@@ -111,10 +113,10 @@ public class HomeActivity extends AppCompatActivity {
               HomeViewModel.HomeViewAction action = stringEvent.getContentIfNotHandled();
               if (action != null) {
                 switch (action) {
-                    case  SCAN:
+                  case SCAN:
                     setupScanFragment();
                     break;
-                  case  REQUEST_CAMERA_PERMISSION:
+                  case REQUEST_CAMERA_PERMISSION:
                     setupCameraPermissionFragment();
                     break;
                 }
@@ -260,6 +262,16 @@ public class HomeActivity extends AppCompatActivity {
   public void setupSocialMediaButton() {
     Button socialMediaButton = findViewById(R.id.tab_social_media);
     socialMediaButton.setOnClickListener(v -> mViewModel.openSocialMedia());
+  }
+
+  public void setupDigitalCashButton() {
+    Button digitalCashButton = findViewById(R.id.tab_digital_cash);
+    digitalCashButton.setOnClickListener(
+        new View.OnClickListener() {
+          public void onClick(View v) {
+            Toast.makeText(HomeActivity.this, "Button for Transaction", Toast.LENGTH_LONG).show();
+          }
+        });
   }
 
   private void setupHomeFragment() {
