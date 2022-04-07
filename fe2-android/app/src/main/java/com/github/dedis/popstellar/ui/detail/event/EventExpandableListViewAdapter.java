@@ -333,8 +333,8 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
             });
 
     if (category == PRESENT) {
-      //Check that election has been opened (synch with backend, casting enabled only after opened)
-      //Election has to opens automatically when it reaches it's scheduled start time
+      // Check that election has been opened (synch with backend, casting enabled only after opened)
+      // Election has to opens automatically when it reaches it's scheduled start time
       if (election.getState() == CREATED){
         viewModel.setCurrentElection(election);
         viewModel.openElection(election);
@@ -381,7 +381,7 @@ public class EventExpandableListViewAdapter extends BaseExpandableListAdapter {
           });
 
       electionBinding.electionActionButton.setText(R.string.start);
-      //Only the organizer can start the vote
+      // Only the organizer can start the vote
       electionBinding.electionActionButton.setEnabled(viewModel.isOrganizer().getValue());
       viewModel
           .getOpenElectionEvent()

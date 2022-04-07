@@ -59,7 +59,7 @@ public final class ElectionHandler {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
-      //Modified: more logic to set as CREATED with Open Election implementation
+      // Modified: more logic to set as CREATED with Open Election implementation
       election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
@@ -101,8 +101,7 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param openElection the message that was received
    */
-  public static void handleOpenElection(HandlerContext context, OpenElection openElection)
-      throws DataHandlingException {
+  public static void handleOpenElection(HandlerContext context, OpenElection openElection) {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
@@ -166,7 +165,7 @@ public final class ElectionHandler {
               .map(Map.Entry::getKey)
               .findFirst();
       // Retrieve the creation time of the previous cast vote, if doesn't exist replace with min
-      // value
+      // Value
       long previousMessageCreation =
           previousMessageIdOption
               .map(s -> laoRepository.getMessageById().get(s))
