@@ -41,9 +41,7 @@ public class OpenElectionTest {
     assertNotEquals(openElection, new OpenElection(random, electionId, openedAt));
     assertNotEquals(openElection, new OpenElection(laoId, random, openedAt));
     assertNotEquals(openElection, new OpenElection(laoId, electionId, 0));
-
     assertEquals(false, openElection.equals(null));
-
     assertEquals(openElection, openElection);
 
   }

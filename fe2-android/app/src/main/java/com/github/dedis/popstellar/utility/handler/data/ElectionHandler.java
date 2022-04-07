@@ -117,7 +117,6 @@ public final class ElectionHandler {
     //Sets the start time to now
     election.setStart(Instant.now().getEpochSecond());
     Log.d(TAG, "election opened " + election.getStartTimestamp());
-    //election.setEventState(OPENED);
     lao.updateElection(election.getId(), election);
   }
 

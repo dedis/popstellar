@@ -63,8 +63,6 @@ public class ElectionHandlerTest extends TestCase {
   private static final Gson GSON = JsonModule.provideGson(DataRegistryModule.provideDataRegistry());
 
   private static final long openedAt = 1633099883;
-
-
   private Lao lao;
   private RollCall rollCall;
   private Election election;

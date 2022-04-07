@@ -673,7 +673,7 @@ public class LaoDetailViewModel extends AndroidViewModel
 
     try {
       KeyPair mainKey = keyManager.getMainKeyPair();
-      // generate the signature of the message
+      // Generate the signature of the message
       Signature signature = mainKey.sign(witnessMessage.getMessageId());
 
       Log.d(TAG, PUBLISH_MESSAGE);
