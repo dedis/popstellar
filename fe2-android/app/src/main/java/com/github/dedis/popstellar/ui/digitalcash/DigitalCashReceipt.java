@@ -13,9 +13,9 @@ import com.github.dedis.popstellar.R;
  * A simple {@link Fragment} subclass. Use the {@link DigitalCashReceiveFragment#newInstance}
  * factory method to create an instance of this fragment.
  */
-public class DigitalCashReceiptFragment extends Fragment {
+public class DigitalCashReceipt extends Fragment {
 
-  public DigitalCashReceiptFragment() {
+  public DigitalCashReceipt() {
     // Required empty public constructor
   }
 
