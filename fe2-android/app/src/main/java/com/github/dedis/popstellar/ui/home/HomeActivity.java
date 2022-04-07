@@ -46,7 +46,11 @@ public class HomeActivity extends AppCompatActivity {
   private final String TAG = HomeActivity.class.getSimpleName();
   public static final int LAO_DETAIL_REQUEST_CODE = 0;
 
-  private HomeViewModel mViewModel;
+  private final int CONNECT_POSITION = 1;
+  private final int LAUNCH_POSITION = 2;
+  private final int SOCIAL_MEDIA_POSITION = 4;
+  
+   private HomeViewModel mViewModel;
 
   private BottomNavigationView navbar;
 
@@ -161,8 +165,8 @@ public class HomeActivity extends AppCompatActivity {
 
   private void subscribeWalletEvents() {
 
-    MenuItem connectItem = navbar.getMenu().getItem(1);
-    MenuItem launchItem = navbar.getMenu().getItem(2);
+    MenuItem connectItem = navbar.getMenu().getItem(CONNECT_POSITION);
+    MenuItem launchItem = navbar.getMenu().getItem(LAUNCH_POSITION);
 
     // Subscribe to "open Seed" event
     mViewModel
@@ -222,7 +226,7 @@ public class HomeActivity extends AppCompatActivity {
 
   private void subscribeSocialMediaEvent() {
 
-    MenuItem socialMediaItem = navbar.getMenu().getItem(4);
+    MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
 
     // Subscribe to "open social media" event
     mViewModel
