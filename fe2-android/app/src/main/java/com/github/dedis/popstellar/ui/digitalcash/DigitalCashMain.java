@@ -1,5 +1,6 @@
 package com.github.dedis.popstellar.ui.digitalcash;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -8,6 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.github.dedis.popstellar.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -32,5 +34,27 @@ public class DigitalCashMain extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.digital_cash_menu, menu);
     return true;
+  }
+
+  @SuppressLint("NonConstantResourceId")
+  public void setupNavigationBar() {
+    BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
+    bottomNavigationView.setOnItemSelectedListener(
+        item -> {
+          switch (item.getItemId()) {
+            case R.id.home_coin:
+              break;
+            case R.id.history_coin:
+              break;
+            case R.id.send_coin_m:
+              break;
+            case R.id.receive_coin_m:
+              break;
+            case R.id.issue_coin:
+              break;
+            default:
+          }
+          return true;
+        });
   }
 }

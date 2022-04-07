@@ -32,6 +32,7 @@ import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallDetailFragme
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallEventCreationFragment;
 import com.github.dedis.popstellar.ui.detail.event.rollcall.RollCallTokenFragment;
 import com.github.dedis.popstellar.ui.detail.witness.WitnessMessageFragment;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
 import com.github.dedis.popstellar.ui.home.HomeActivity;
 import com.github.dedis.popstellar.ui.home.HomeViewModel;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
@@ -295,7 +296,18 @@ public class LaoDetailActivity extends AppCompatActivity {
   }
 
   private void setupDigitalCashMainActivity() {
-    // TODO do the things here when activity is created
+    mViewModel
+        .getOpenDigitalCashEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                Intent intent = new Intent(this, DigitalCashMain.class);
+                Log.d(TAG, "Trying to open social media");
+                startActivity(intent);
+              }
+            });
   }
 
   private void setupWitnessMessageFragment() {

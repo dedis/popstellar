@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -22,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.github.dedis.popstellar.R;
 import com.github.dedis.popstellar.model.network.serializer.JsonUtils;
 import com.github.dedis.popstellar.ui.detail.LaoDetailActivity;
+import com.github.dedis.popstellar.ui.digitalcash.DigitalCashMain;
 import com.github.dedis.popstellar.ui.qrcode.CameraPermissionFragment;
 import com.github.dedis.popstellar.ui.qrcode.QRCodeScanningFragment;
 import com.github.dedis.popstellar.ui.settings.SettingsActivity;
@@ -149,6 +149,7 @@ public class HomeActivity extends AppCompatActivity {
 
     subscribeWalletEvents();
     subscribeSocialMediaEvent();
+    subscribeDigitalCashEvent();
   }
 
   private void subscribeWalletEvents() {
@@ -280,12 +281,6 @@ public class HomeActivity extends AppCompatActivity {
 
   public void setupDigitalCashButton() {
     Button digitalCashButton = findViewById(R.id.tab_digital_cash);
-    digitalCashButton.setOnClickListener(
-        new View.OnClickListener() {
-          public void onClick(View v) {
-            Toast.makeText(HomeActivity.this, "Button for Transaction", Toast.LENGTH_LONG).show();
-          }
-        });
     digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
   }
 
@@ -346,7 +341,9 @@ public class HomeActivity extends AppCompatActivity {
   }
 
   private void setupDigitalCashActivity() {
-    // TODO : EMPTY
+    Intent intent = new Intent(this, DigitalCashMain.class);
+    Log.d(TAG, "Trying to open digital_cash");
+    startActivity(intent);
   }
 
   private void openLaoDetails(String laoId) {
