@@ -696,24 +696,20 @@ func Test_Create_LAO_Broadcast(t *testing.T) {
 	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	now := time.Now().Unix()
 	name := "LAO X"
+	creationTime := 123
+	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(keypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
-		Creation:  123,
-		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Creation:  int64(creationTime),
+		Organizer: organizer,
 		Witnesses: []string{},
 	}
 
@@ -790,24 +786,20 @@ func Test_Create_LAO_Broadcast_Wrong_MessageID(t *testing.T) {
 	hub, err := NewHub(keypair.public, nolog, fakeChannelFac.newChannel, hub.OrganizerHubType)
 	require.NoError(t, err)
 
-	now := 1257894000
 	name := "LAO X"
+	creationTime := 12300000
+	organizer := base64.URLEncoding.EncodeToString([]byte("Somebody"))
 
 	// LaoID is Hash(organizer||create||name) encoded in base64URL
-	h := sha256.New()
-	h.Write(keypair.publicBuf)
-	h.Write([]byte(fmt.Sprintf("%d", now)))
-	h.Write([]byte(name))
-
-	laoID := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	laoID := messagedata.Hash(organizer, fmt.Sprintf("%d", creationTime), name)
 
 	data := messagedata.LaoCreate{
 		Object:    messagedata.LAOObject,
 		Action:    messagedata.LAOActionCreate,
 		ID:        laoID,
 		Name:      name,
-		Creation:  123,
-		Organizer: base64.URLEncoding.EncodeToString([]byte("XXX")),
+		Creation:  int64(creationTime),
+		Organizer: organizer,
 		Witnesses: []string{},
 	}
 
