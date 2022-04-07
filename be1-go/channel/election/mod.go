@@ -308,12 +308,12 @@ func (c *Channel) verifyMessage(msg message.Message) error {
 
 func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.ElectionOpen)
+	data, ok := msgData.(*messagedata.ElectionOpen)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#open message", msgData)
 	}
 
-	c.log.Info().Msg("received a election#open message")
+	c.log.Info().Str("Election", data.Election).Msg("received a election#open message")
 
 	senderBuf, err := base64.URLEncoding.DecodeString(msg.Sender)
 	if err != nil {
@@ -321,9 +321,10 @@ func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}, 
 	}
 
 	senderPoint := crypto.Suite.Point()
+
 	err = senderPoint.UnmarshalBinary(senderBuf)
 	if err != nil {
-		return answer.NewError(-4, "invalid sender public key")
+		return answer.NewErrorf(-4, "invalid sender public key: %s", senderBuf)
 	}
 
 	if !c.organiserPubKey.Equal(senderPoint) {

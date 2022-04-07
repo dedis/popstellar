@@ -35,10 +35,12 @@ func (c *Channel) verifyMessageElectionOpen(electionOpen messagedata.ElectionOpe
 
 	// split channel to [lao id, election id]
 	noRoot := strings.ReplaceAll(c.channelID, messagedata.RootPrefix, "")
+
 	IDs := strings.Split(noRoot, "/")
 	if len(IDs) != 2 {
 		return xerrors.Errorf(elecIDFormat, c.channelID)
 	}
+
 	laoID := IDs[0]
 	electionID := IDs[1]
 

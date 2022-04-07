@@ -389,7 +389,8 @@ func Test_Publish_Election_Open(t *testing.T) {
 	pub.Params.Channel = electChannel.channelID
 
 	// publish the election open on the election channel
-	require.NoError(t, electChannel.Publish(pub, socket.ClientSocket{}))
+	err = electChannel.Publish(pub, socket.ClientSocket{})
+	require.NoError(t, err)
 
 }
 
