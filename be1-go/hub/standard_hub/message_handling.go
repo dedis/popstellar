@@ -123,6 +123,7 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 	if err != nil {
 		h.log.Err(err).Msg("invalid lao#create message")
 		sock.SendError(&id, err)
+		return err
 	}
 
 	err = h.createLao(broadcast.Params.Message, laoCreate, sock)
