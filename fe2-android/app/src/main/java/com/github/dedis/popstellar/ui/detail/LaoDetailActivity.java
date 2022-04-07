@@ -89,6 +89,8 @@ public class LaoDetailActivity extends AppCompatActivity {
     setupIdentityFragment();
     // Subscribe to " open social media " event
     setupSocialMediaActivity();
+    // Subscribe to " open digital cash " event
+    setupDigitalCashMainActivity();
     // Subscribe to " open witness message" event
     setupWitnessMessageFragment();
     // Subscribe to "add witness" event
@@ -238,6 +240,7 @@ public class LaoDetailActivity extends AppCompatActivity {
                 .show();
           }
         });
+    digitalCashButton.setOnClickListener(v -> mViewModel.openDigitalCash());
   }
 
   private void setupLaoFragment() {
@@ -289,6 +292,10 @@ public class LaoDetailActivity extends AppCompatActivity {
                 startActivity(intent);
               }
             });
+  }
+
+  private void setupDigitalCashMainActivity() {
+    // TODO do the things here when activity is created
   }
 
   private void setupWitnessMessageFragment() {
