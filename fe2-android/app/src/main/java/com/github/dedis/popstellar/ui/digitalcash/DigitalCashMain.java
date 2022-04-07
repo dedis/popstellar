@@ -30,7 +30,8 @@ public class DigitalCashMain extends AppCompatActivity {
 
     mViewModel = obtainViewModel(this);
 
-    setupFragment(R.id.fragment_digital_cash_home);
+    setupFragment(R.id.fragment_digital_cash_send);
+    setupNavigationBar();
 
     // Subscribe to "open home"
     mViewModel
@@ -117,7 +118,7 @@ public class DigitalCashMain extends AppCompatActivity {
 
   @SuppressLint("NonConstantResourceId")
   public void setupNavigationBar() {
-    BottomNavigationView bottomNavigationView = findViewById(R.id.social_media_nav_bar);
+    BottomNavigationView bottomNavigationView = findViewById(R.id.digital_cash_nav_bar);
     bottomNavigationView.setOnItemSelectedListener(
         item -> {
           switch (item.getItemId()) {
@@ -181,6 +182,6 @@ public class DigitalCashMain extends AppCompatActivity {
 
     // Set the new fragment in the container
     ActivityUtils.replaceFragmentInActivity(
-        getSupportFragmentManager(), fragment, R.id.fragment_container_social_media);
+        getSupportFragmentManager(), fragment, R.id.fragment_container_digital_cash);
   }
 }
