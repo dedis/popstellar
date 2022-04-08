@@ -204,7 +204,7 @@ public class ElectionHandlerTest extends TestCase {
   }
 
   @Test
-  public void testHandleOpenElection() throws DataHandlingException {
+  public void testHandleElectionOpen() throws DataHandlingException {
     OpenElection openElection = new OpenElection(lao.getId(), election.getId(), openedAt);
     MessageGeneral message = new MessageGeneral(SENDER_KEY, openElection, GSON);
 

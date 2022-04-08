@@ -106,7 +106,7 @@ public abstract class DataRegistryModule {
     // Election
     builder
         .add(ELECTION, SETUP, ElectionSetup.class, ElectionHandler::handleElectionSetup)
-        .add(ELECTION, OPEN, OpenElection.class, ElectionHandler::handleOpenElection)
+        .add(ELECTION, OPEN, OpenElection.class, ElectionHandler::handleElectionOpen)
         .add(ELECTION, CAST_VOTE, CastVote.class, ElectionHandler::handleCastVote)
         .add(ELECTION, END, ElectionEnd.class, ElectionHandler::handleElectionEnd)
         .add(ELECTION, RESULT, ElectionResult.class, ElectionHandler::handleElectionResult);

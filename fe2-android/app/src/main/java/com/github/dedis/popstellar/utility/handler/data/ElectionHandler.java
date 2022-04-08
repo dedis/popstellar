@@ -59,7 +59,6 @@ public final class ElectionHandler {
 
       election.setStart(electionSetup.getStartTime());
       election.setEnd(electionSetup.getEndTime());
-      // Modified: more logic to set as CREATED with Open Election implementation
       election.setEventState(CREATED);
 
       // Once the election is created, we subscribe to the election channel
@@ -101,7 +100,8 @@ public final class ElectionHandler {
    * @param context the HandlerContext of the message
    * @param openElection the message that was received
    */
-  public static void handleOpenElection(HandlerContext context, OpenElection openElection) {
+  @SuppressWarnings("unused")
+  public static void handleElectionOpen(HandlerContext context, OpenElection openElection) {
     LAORepository laoRepository = context.getLaoRepository();
     Channel channel = context.getChannel();
 
