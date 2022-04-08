@@ -80,8 +80,8 @@ func (c *Channel) verifyMessageLaoState(laoState messagedata.LaoState) error {
 	for _, mod := range laoState.ModificationSignatures {
 		_, err := base64.URLEncoding.DecodeString(mod.Witness)
 		if err != nil {
-			return xerrors.Errorf("lao modification signature witness is %s,"+
-				" should be base64URL encoded", mod.Witness)
+			return xerrors.Errorf("lao modification signature witness is %s, "+
+				"should be base64URL encoded", mod.Witness)
 		}
 	}
 
@@ -159,7 +159,7 @@ func (c *Channel) verifyMessageRollCallOpen(rollCallOpen messagedata.RollCallOpe
 	// verify update id is base64URL encoded
 	_, err := base64.URLEncoding.DecodeString(rollCallOpen.UpdateID)
 	if err != nil {
-		return xerrors.Errorf("roll call update id is %s, "+"should be base64URL encoded",
+		return xerrors.Errorf("roll call update id is %s, should be base64URL encoded",
 			rollCallOpen.UpdateID)
 	}
 

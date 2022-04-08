@@ -159,7 +159,7 @@ func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance,
 
 	electInstance, ok := consensusInstance.electInstances[messageID]
 	if !ok {
-		return nil, xerrors.Errorf("message Id doesn't correspond to any" +
+		return nil, xerrors.Errorf("message Id doesn't correspond to any " +
 			"previously received message")
 	}
 

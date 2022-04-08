@@ -554,7 +554,7 @@ func gatherResults(questions map[string]*question,
 	for id := range questions {
 		question, ok := questions[id]
 		if !ok {
-			return resultElection, xerrors.Errorf("no question with this"+
+			return resultElection, xerrors.Errorf("no question with this "+
 				"questionId '%s' was recorded", id)
 		}
 
@@ -602,7 +602,7 @@ func checkMethodProperties(method string, length int) error {
 		return answer.NewError(-4, "No ballot option was chosen for plurality voting method")
 	}
 	if method == "Approval" && length != 1 {
-		return answer.NewError(-4, "Cannot choose multiple ballot options"+
+		return answer.NewError(-4, "Cannot choose multiple ballot options "+
 			"on approval voting method")
 	}
 

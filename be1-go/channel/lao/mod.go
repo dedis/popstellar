@@ -338,8 +338,8 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
 	if data.ProposedStart > data.ProposedEnd {
-		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field"+
-			" `proposed_end`: %d > %d", data.ProposedStart, data.ProposedEnd)
+		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field "+
+			"`proposed_end`: %d > %d", data.ProposedStart, data.ProposedEnd)
 	}
 
 	c.rollCall.id = string(data.ID)
@@ -376,7 +376,7 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
 	}
 
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
-		return answer.NewError(-1, "The field `opens` does not correspond to the id of"+
+		return answer.NewError(-1, "The field `opens` does not correspond to the id of "+
 			"the previous roll call message")
 	}
 
@@ -406,7 +406,7 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	}
 
 	if !c.rollCall.checkPrevID([]byte(data.Closes)) {
-		return answer.NewError(-4, "The field `closes` does not correspond to the id of"+
+		return answer.NewError(-4, "The field `closes` does not correspond to the id of "+
 			"the previous roll call message")
 	}
 
@@ -609,7 +609,7 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be"+
+		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be "+
 			"equal to the channel ID %s", setupMsg.Lao, channelID)
 	}
 
@@ -659,7 +659,7 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	}
 
 	if match != M {
-		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to"+
+		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to "+
 			"match but %d matched", M, match)
 	}
 

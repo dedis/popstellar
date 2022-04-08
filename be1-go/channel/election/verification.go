@@ -124,8 +124,8 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 
 	// verify created at is after start of election
 	if castVote.CreatedAt < c.start {
-		return xerrors.Errorf("cast vote created at is %d, should be greater or"+
-			" equal to defined start time %d",
+		return xerrors.Errorf("cast vote created at is %d, should be greater or "+
+			"equal to defined start time %d",
 			castVote.CreatedAt, c.start)
 	}
 
@@ -133,8 +133,8 @@ func (c *Channel) verifyMessageCastVote(castVote messagedata.VoteCastVote) error
 	if castVote.CreatedAt > c.end {
 		// note that CreatedAt is provided by the client and can't be fully trusted.
 		// We leave this check as is until we have a better solution.
-		return xerrors.Errorf("cast vote created at is %d, should be smaller or"+
-			" equal to defined end time %d",
+		return xerrors.Errorf("cast vote created at is %d, should be smaller or "+
+			"equal to defined end time %d",
 			castVote.CreatedAt, c.end)
 	}
 
