@@ -146,7 +146,7 @@ test("message data: election", () => {
     election_setup_secret_ballot = require("../examples/messageData/election_setup/election_setup_secret_ballot.json");
     expect(election_setup_secret_ballot).toBeValid(messageDataSchema);
 
-    election_open = require("../examples/messageData/election_open.json");
+    election_open = require("../examples/messageData/election_open/election_open.json");
     expect(election_open).toBeValid(messageDataSchema);
 
     election_end = require("../examples/messageData/election_end/election_end.json");
