@@ -1,8 +1,10 @@
 package fe.net;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.intuit.karate.Logger;
 import com.intuit.karate.http.WebSocketServerBase;
-
 import common.net.MessageBuffer;
 import common.net.MessageQueue;
 import karate.io.netty.channel.Channel;
@@ -59,14 +61,26 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
   @Override
   protected void channelRead0(
       ChannelHandlerContext channelHandlerContext, TextWebSocketFrame frame) {
-    logger.info("message received : {}", frame.text());
-    queue.onNewMsg(frame.text());
+      String frameText = frame.text();
+    logger.info("message received : {}", frameText);
+    queue.onNewMsg(frameText);
 
     // Send back the reply
-    if (replyProducer != null) send(replyProducer.apply(frame.text()));
+    if (replyProducer != null) send(replyProducer.apply(frameText));
+    if (frameText.contains("publish")){
+        broadcastResponse(frameText);
+    }
   }
 
-  public int getPort() {
+    private void broadcastResponse(String frameText) {
+        JsonObject jsonObject = (JsonObject) JsonParser.parseString(frameText);
+        if (jsonObject == null){
+            throw new IllegalStateException();
+        }
+
+    }
+
+    public int getPort() {
     return server.getPort();
   }
 
