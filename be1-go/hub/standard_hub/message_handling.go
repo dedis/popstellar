@@ -123,6 +123,7 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 	if err != nil {
 		h.log.Err(err).Msg("invalid lao#create message")
 		sock.SendError(&id, err)
+		return err
 	}
 
 	err = h.createLao(broadcast.Params.Message, laoCreate, sock)
@@ -269,6 +270,15 @@ func (h *Hub) handlePublish(socket socket.Socket, byteMessage []byte) (int, erro
 		return -1, xerrors.Errorf("failed to unmarshal publish message: %v", err)
 	}
 
+	signature := publish.Params.Message.Signature
+	messageId := publish.Params.Message.MessageID
+	data := publish.Params.Message.Data
+
+	expectedMessageId := messagedata.Hash(data, signature)
+	if expectedMessageId != messageId {
+		return publish.ID, xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageId, messageId)
+	}
+
 	alreadyReceived, err := h.broadcastToServers(publish.Params.Message, publish.Params.Channel)
 	if alreadyReceived {
 		h.log.Info().Msg("message was already received")
@@ -306,6 +316,15 @@ func (h *Hub) handleBroadcast(socket socket.Socket, byteMessage []byte) error {
 	err := json.Unmarshal(byteMessage, &broadcast)
 	if err != nil {
 		return xerrors.Errorf("failed to unmarshal publish message: %v", err)
+	}
+
+	signature := broadcast.Params.Message.Signature
+	messageId := broadcast.Params.Message.MessageID
+	data := broadcast.Params.Message.Data
+
+	expectedMessageId := messagedata.Hash(data, signature)
+	if expectedMessageId != messageId {
+		return xerrors.Errorf("message_id is wrong: expected %q found %q", expectedMessageId, messageId)
 	}
 
 	h.Lock()
