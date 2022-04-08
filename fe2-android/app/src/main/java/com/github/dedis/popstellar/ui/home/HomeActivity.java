@@ -2,7 +2,6 @@ package com.github.dedis.popstellar.ui.home;
 
 import static com.github.dedis.popstellar.ui.socialmedia.SocialMediaActivity.OPENED_FROM;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -385,30 +384,42 @@ public class HomeActivity extends AppCompatActivity {
           if (id == R.id.home_home_menu) {
             mViewModel.openHome();
           } else if (id == R.id.home_connect_menu) {
-            if (checkWalletInitialization()) {
-              mViewModel.openConnect();
-            } else {
-              revertToHome();
-            }
+            handleConnectNavigation();
           } else if (id == R.id.home_launch_menu) {
-            if (checkWalletInitialization()) {
-              mViewModel.openLaunch();
-            } else {
-              revertToHome();
-            }
+            handleLaunchNavigation();
           } else if (id == R.id.home_wallet_menu) {
             mViewModel.openWallet();
           } else if (id == R.id.home_social_media_menu) {
-            if (mViewModel.getLAOs().getValue() == null) {
-              ErrorUtils.logAndShow(
-                  getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
-              revertToHome();
-            } else {
-              mViewModel.openSocialMedia();
-            }
+            handleSocialMediaNavigation();
           }
           return true;
         });
+  }
+
+  private void handleSocialMediaNavigation() {
+    if (mViewModel.getLAOs().getValue() == null) {
+      ErrorUtils.logAndShow(
+          getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
+      revertToHome();
+    } else {
+      mViewModel.openSocialMedia();
+    }
+  }
+
+  private void handleConnectNavigation() {
+    if (checkWalletInitialization()) {
+      mViewModel.openConnect();
+    } else {
+      revertToHome();
+    }
+  }
+
+  private void handleLaunchNavigation() {
+    if (checkWalletInitialization()) {
+      mViewModel.openLaunch();
+    } else {
+      revertToHome();
+    }
   }
 
   /**
