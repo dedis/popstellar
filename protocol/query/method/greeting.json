@@ -29,9 +29,9 @@
                 },
 
                 "address": {
-                    "description": "Canonical address of the server without a protocol prefix",
+                    "description": "Canonical address of the server with a protocol prefix",
                     "type": "string",
-                    "pattern": "^(?!.*://).*$"
+                    "pattern": "^.*://.*$"
                 },
 
                 "peers": {
@@ -44,9 +44,10 @@
                             "address": {
                                 "description": "Address of the peer without a protocol prefix",
                                 "type": "string",
-                                "pattern": "^(?!.*://).*$"
+                                "pattern": "^.*://.*$"
                             }
-                        }
+                        },
+                        "required": ["address"]
                     }
                 }
             },
