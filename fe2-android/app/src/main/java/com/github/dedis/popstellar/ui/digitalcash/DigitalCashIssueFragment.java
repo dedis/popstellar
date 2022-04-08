@@ -34,7 +34,14 @@ public class DigitalCashIssueFragment extends Fragment {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    // Spinner spin = (Spinner)findViewById(R.id.digital_cash_issue_user);
+    // spin.setOnItemSelectedListener(this);
   }
+
+  // @Override
+  // public void onItemSelected(AdapterView<?> arg0, View arg1, int position, long id) {
+  // Toast.makeText(getApplicationContext(),country[position] , Toast.LENGTH_LONG).show();
+  // }
 
   @Override
   public View onCreateView(
