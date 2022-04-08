@@ -15,6 +15,7 @@ public class ScriptTxIn {
 
   @SerializedName("Sig")
   private final String sig; // Signature on all txins and txouts using the recipient's private key
+  // Transaction //with all txin txout
 
   /**
    * @param type The script describing the unlock mechanism
