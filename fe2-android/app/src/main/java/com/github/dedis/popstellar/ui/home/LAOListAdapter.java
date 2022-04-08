@@ -22,8 +22,7 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
 
   private final boolean openLaoDetail;
 
-  public LAOListAdapter(
-      List<Lao> laos, HomeViewModel homeViewModel, boolean openLaoDetail) {
+  public LAOListAdapter(List<Lao> laos, HomeViewModel homeViewModel, boolean openLaoDetail) {
 
     this.homeViewModel = homeViewModel;
     setList(laos);
@@ -43,8 +42,7 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
   @Override
   public LAOListItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
     LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-    View view = layoutInflater.inflate(
-            R.layout.lao_card, parent, false);
+    View view = layoutInflater.inflate(R.layout.lao_card, parent, false);
     return new LAOListItemViewHolder(view);
   }
 
@@ -54,16 +52,17 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
     final Lao lao = laos.get(position);
 
     CardView cardView = holder.cardView;
-    cardView.setOnClickListener(v -> {
-      if (openLaoDetail) {
-        homeViewModel.openLAO(lao.getId());
-      } else {
-        homeViewModel.openLaoWallet(lao.getId());
-      }});
+    cardView.setOnClickListener(
+        v -> {
+          if (openLaoDetail) {
+            homeViewModel.openLAO(lao.getId());
+          } else {
+            homeViewModel.openLaoWallet(lao.getId());
+          }
+        });
 
     TextView laoTitle = holder.laoTitle;
     laoTitle.setText(lao.getName());
-
   }
 
   @Override
@@ -76,7 +75,7 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
     return laos != null ? laos.size() : 0;
   }
 
-  static class LAOListItemViewHolder extends RecyclerView.ViewHolder{
+  static class LAOListItemViewHolder extends RecyclerView.ViewHolder {
 
     private final CardView cardView;
     private final TextView laoTitle;
@@ -86,7 +85,6 @@ public class LAOListAdapter extends RecyclerView.Adapter<LAOListAdapter.LAOListI
 
       cardView = itemView.findViewById(R.id.lao_card_view);
       laoTitle = itemView.findViewById(R.id.lao_card_text_view);
-
     }
   }
 }

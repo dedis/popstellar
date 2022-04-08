@@ -7,22 +7,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedWithText;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogNegativeButton;
 import static com.github.dedis.popstellar.testutils.UITestUtils.dialogPositiveButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.navBar;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletContentFragmentId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletSeedWarningText;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.seedWalletText;
-import static com.github.dedis.popstellar.testutils.UITestUtils.assertToastIsDisplayedWithText;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.confirmButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.seedWalletText;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletContentFragmentId;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletSeedCopyButton;
-
-
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletSeedWarningText;
 import static org.hamcrest.Matchers.allOf;
-
-import android.widget.Button;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
@@ -46,62 +42,62 @@ public class WalletSeedFragmentTest {
 
   @Rule(order = 0)
   public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
+
   @Rule(order = 1)
   public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
   @Rule(order = 3)
   public final ActivityFragmentScenarioRule<HomeActivity, SeedWalletFragment> fragmentRule =
-      ActivityFragmentScenarioRule.launchIn(HomeActivity.class,
+      ActivityFragmentScenarioRule.launchIn(
+          HomeActivity.class,
           homeFragmentContainerId(),
           SeedWalletFragment.class,
           SeedWalletFragment::newInstance);
 
   @Before
-  public void setup(){
+  public void setup() {
     hiltRule.inject();
   }
 
   @Test
-  public void navBarIsDisplayed(){
+  public void navBarIsDisplayed() {
     navBar().check(matches(isDisplayed()));
   }
 
   @Test
-  public void warningTextIsDisplayed(){
+  public void warningTextIsDisplayed() {
     walletSeedWarningText().check(matches(isDisplayed()));
   }
 
   @Test
-  public void seedWalletTextIsDisplayed(){
+  public void seedWalletTextIsDisplayed() {
     seedWalletText().check(matches(isDisplayed()));
   }
 
   @Test
-  public void seedWalletTextDisplaysToastOnClick(){
+  public void seedWalletTextDisplaysToastOnClick() {
     seedWalletText().perform(click());
     assertToastIsDisplayedWithText(R.string.copied_to_clipboard);
     walletSeedCopyButton().perform(click());
     assertToastIsDisplayedWithText(R.string.copied_to_clipboard);
-
   }
 
   @Test
-  public void confirmButtonIsDisplayed(){
+  public void confirmButtonIsDisplayed() {
     confirmButton().check(matches(isDisplayed()));
   }
 
   @Test
-  public void confirmButtonDisplaysDialogOnClick(){
+  public void confirmButtonDisplaysDialogOnClick() {
     confirmButton().perform(click());
     assertThat(dialogPositiveButton(), allOf(withText("YES"), isDisplayed()));
     assertThat(dialogNegativeButton(), allOf(withText("Cancel"), isDisplayed()));
   }
 
   @Test
-  public void acceptingDialogConfirmButtonsOpensWalletContentFragment(){
+  public void acceptingDialogConfirmButtonsOpensWalletContentFragment() {
     confirmButton().perform(click());
     dialogPositiveButton().performClick();
     fragmentContainer().check(matches(withChild(withId(walletContentFragmentId()))));
   }
-
 }

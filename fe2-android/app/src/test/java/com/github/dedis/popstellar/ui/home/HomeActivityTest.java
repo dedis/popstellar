@@ -1,35 +1,31 @@
 package com.github.dedis.popstellar.ui.home;
 
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.connectButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.fragmentContainer;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.connectButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.walletButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.socialMediaButton;
-import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.launchButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.launchButton;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.navBar;
-
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.socialMediaButton;
+import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.walletButton;
+import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletFragmentId;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import dagger.hilt.android.testing.HiltAndroidRule;
-import dagger.hilt.android.testing.HiltAndroidTest;
-import org.junit.Before;
+
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExternalResource;
 import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 
+import dagger.hilt.android.testing.HiltAndroidRule;
+import dagger.hilt.android.testing.HiltAndroidTest;
 
 @HiltAndroidTest
 @RunWith(AndroidJUnit4.class)
@@ -79,12 +75,12 @@ public class HomeActivityTest {
   }
 
   @Test
-  public void walletButtonIsDisplayed(){
+  public void walletButtonIsDisplayed() {
     walletButton().check(matches(isDisplayed()));
   }
 
   @Test
-  public void navBarIsDisplayed(){
+  public void navBarIsDisplayed() {
     navBar().check(matches(isDisplayed()));
   }
 }

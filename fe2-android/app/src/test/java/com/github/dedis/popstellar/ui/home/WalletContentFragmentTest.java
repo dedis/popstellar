@@ -3,7 +3,6 @@ package com.github.dedis.popstellar.ui.home;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static com.github.dedis.popstellar.ui.pages.home.HomePageObject.homeFragmentContainerId;
-import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.logOutButton;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.tokenTitle;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletContentText1;
 import static com.github.dedis.popstellar.ui.pages.home.WalletPageObject.walletContentText2;
@@ -12,7 +11,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.github.dedis.popstellar.testutils.fragment.ActivityFragmentScenarioRule;
 import com.github.dedis.popstellar.ui.wallet.ContentWalletFragment;
-import com.github.dedis.popstellar.ui.wallet.WalletFragment;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,33 +28,31 @@ public class WalletContentFragmentTest {
 
   @Rule(order = 0)
   public final MockitoTestRule mockitoRule = MockitoJUnit.testRule(this);
+
   @Rule(order = 1)
   public final HiltAndroidRule hiltRule = new HiltAndroidRule(this);
 
   @Rule(order = 3)
   public final ActivityFragmentScenarioRule<HomeActivity, ContentWalletFragment> fragmentRule =
-      ActivityFragmentScenarioRule.launchIn(HomeActivity.class,
+      ActivityFragmentScenarioRule.launchIn(
+          HomeActivity.class,
           homeFragmentContainerId(),
           ContentWalletFragment.class,
           ContentWalletFragment::newInstance);
 
   @Before
-  public void setup(){
+  public void setup() {
     hiltRule.inject();
   }
 
   @Test
-  public void tokenTitleIsDisplayed(){
+  public void tokenTitleIsDisplayed() {
     tokenTitle().check(matches(isDisplayed()));
   }
 
   @Test
-  public void walletContentTextsAreDisplayed(){
+  public void walletContentTextsAreDisplayed() {
     walletContentText1().check(matches(isDisplayed()));
     walletContentText2().check(matches(isDisplayed()));
   }
-
-
-
-
 }
