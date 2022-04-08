@@ -48,6 +48,11 @@ export class Greeting extends JsonRpcParams {
       throw new ProtocolError("Undefined 'peers' parameter in Greeting");
     }
 
+    // make sure .peers does not contain the address
+    if (params.peers.includes(params.address)) {
+      throw new ProtocolError("'peers' is not supposed to contain 'address' in Greeting");
+    }
+
     this.peers = params.peers;
   }
 

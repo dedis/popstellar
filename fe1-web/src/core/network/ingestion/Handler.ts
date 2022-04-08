@@ -1,3 +1,4 @@
+import { Server } from 'core/objects';
 import { dispatch } from 'core/redux';
 import { addServer } from 'core/redux/ServerReducer';
 
@@ -68,10 +69,9 @@ export function handleExtendedRpcRequests(req: ExtendedJsonRpcRequest) {
     const greetingParams = req.request.params as Greeting;
 
     dispatch(
-      addServer({
-        address: greetingParams.address,
-        publicKey: greetingParams.sender,
-      }),
+      addServer(
+        new Server({ address: greetingParams.address, publicKey: greetingParams.sender }).toState(),
+      ),
     );
 
     // connect to all received peer addresses
