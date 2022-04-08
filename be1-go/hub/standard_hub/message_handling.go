@@ -44,7 +44,7 @@ func (h *Hub) handleRootChannelPublishMesssage(sock socket.Socket, publish metho
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(publish.ID, "only lao#create is allowed on root, but found %s#%s", object, action)
+		err := answer.NewErrorf(-6, "only lao#create is allowed on root, but found %s#%s", object, action)
 		sock.SendError(&publish.ID, err)
 		return err
 	}
@@ -105,7 +105,7 @@ func (h *Hub) handleRootChannelBroadcastMesssage(sock socket.Socket, broadcast m
 
 	// must be "lao#create"
 	if object != messagedata.LAOObject || action != messagedata.LAOActionCreate {
-		err := answer.NewErrorf(id, "only lao#create is allowed on root, but found %s#%s", object, action)
+		err := answer.NewErrorf(-6, "only lao#create is allowed on root, but found %s#%s", object, action)
 		sock.SendError(&id, err)
 		return err
 	}
