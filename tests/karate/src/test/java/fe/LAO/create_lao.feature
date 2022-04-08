@@ -26,3 +26,4 @@ Feature: Create LAO
     Then match create_lao contains deep { method: 'publish', params: { channel: '/root' }}
     Then match subscribe contains deep { method: 'subscribe' }
     Then match catchup contains deep { method: 'catchup' }
+    * click('Lao Name')

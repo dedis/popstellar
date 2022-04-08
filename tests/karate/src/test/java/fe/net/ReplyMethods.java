@@ -28,4 +28,13 @@ public class ReplyMethods {
                 : VALID_REPLY_TEMPLATE;
         return template.replace("%ID%", Integer.toString(id));
       };
+
+  public static Function<String, String> BROADCAST_VALID =
+          msg -> {
+            Json msgJson = Json.of(msg);
+            int id = (int) msgJson.get("id") + 1;
+            msgJson.set("id", id+1);
+            msgJson.set("method", "broadcast");
+            return msgJson.toString();
+          };
 }

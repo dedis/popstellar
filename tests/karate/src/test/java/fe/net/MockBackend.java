@@ -68,17 +68,22 @@ public class MockBackend extends SimpleChannelInboundHandler<TextWebSocketFrame>
     // Send back the reply
     if (replyProducer != null) send(replyProducer.apply(frameText));
     if (frameText.contains("publish")){
-        broadcastResponse(frameText);
+        send(ReplyMethods.BROADCAST_VALID.apply(frameText));
     }
   }
 
-    private void broadcastResponse(String frameText) {
-        JsonObject jsonObject = (JsonObject) JsonParser.parseString(frameText);
-        if (jsonObject == null){
-            throw new IllegalStateException();
-        }
-
-    }
+//    private void broadcastResponse(String frameText) {
+//        JsonObject jsonObject = (JsonObject) JsonParser.parseString(frameText);
+//        if (jsonObject == null){
+//            throw new IllegalStateException();
+//        }
+//        JsonObject msgData = jsonObject.getAsJsonObject("params").getAsJsonObject("")
+//        logger.info("Json extracted is {}", jsonObject.toString());
+//        logger.info("Part is {}", jsonObject.getAsJsonObject("params"));
+//        Gson gson = new Gson();
+//
+//
+//    }
 
     public int getPort() {
     return server.getPort();
