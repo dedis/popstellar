@@ -10,6 +10,11 @@
     "action": {
       "const": "post"
     },
+	"transaction_id": {
+        "type": "string",
+        "contentEncoding": "base64",
+        "description": "SHA 256 Hash over base64 of transaction - must be verified"
+    },
     "transaction": {
       "type": "object",
       "description": "the transaction object",
@@ -100,5 +105,5 @@
       "required": ["Version", "TxIn", "TxOut", "LockTime"]
     }
   },
-  "required": ["object", "action", "transaction"]
+  "required": ["object", "action", "transaction_id", "transaction"]
 }
