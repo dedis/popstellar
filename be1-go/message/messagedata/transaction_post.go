@@ -37,21 +37,17 @@ type UnlockScript struct {
 	Sig    string `json:"Sig"`
 }
 
-/*
 // GetObject implements MessageData
 func (TransactionPost) GetObject() string {
-	return RollCallObject
+	return TransactionObject
 }
 
 // GetAction implements MessageData
 func (TransactionPost) GetAction() string {
-	return RollCallActionClose
+	return TransactionActionPost
 }
 
 // NewEmpty implements MessageData
 func (TransactionPost) NewEmpty() MessageData {
 	return &TransactionPost{}
 }
-
-
-*/

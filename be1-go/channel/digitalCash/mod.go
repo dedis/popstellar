@@ -10,6 +10,7 @@ import (
 	"popstellar/inbox"
 	jsonrpc "popstellar/message"
 	"popstellar/message/answer"
+	"popstellar/message/messagedata"
 	"popstellar/message/query"
 	"popstellar/message/query/method"
 	"popstellar/message/query/method/message"
@@ -188,39 +189,38 @@ func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error
 func (c *Channel) NewDigitalCashRegistry() registry.MessageRegistry {
 	registry := registry.NewMessageRegistry()
 
-	//	registry.Register(messagedata.something{}, c.processDigitalCashObject)
+	registry.Register(messagedata.TransactionPost{}, c.processTransactionPost)
 
 	return registry
 }
 
 // UPDATE FOLLOWING
 // processMessageObject handles a message object.
-/*
-func (c *Channel) processDigitalCashObject(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
+func (c *Channel) processTransactionPost(msg message.Message, msgData interface{}, _ socket.Socket) error {
 
-	_, ok := msgData.(*messagedata.MessageWitness)
-	if !ok {
-		return xerrors.Errorf("message %v isn't a message#witness message", msgData)
-	}
+	/*
+		_, ok := msgData.(*messagedata.MessageWitness)
+		if !ok {
+			return xerrors.Errorf("message %v isn't a message#witness message", msgData)
+		}
 
-	var witnessData messagedata.MessageWitness
+		var witnessData messagedata.MessageWitness
 
-	err := msg.UnmarshalData(&witnessData)
-	if err != nil {
-		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
-	}
+		err := msg.UnmarshalData(&witnessData)
+		if err != nil {
+			return xerrors.Errorf("failed to unmarshal witness data: %v", err)
+		}
 
-	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
-	if err != nil {
-		return answer.NewError(-4, "invalid witness signature")
-	}
+		err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
+		if err != nil {
+			return answer.NewError(-4, "invalid witness signature")
+		}
 
-	err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
-	if err != nil {
-		return xerrors.Errorf("failed to add witness signature: %w", err)
-	}
-
+		err = c.inbox.AddWitnessSignature(witnessData.MessageID, msg.Sender, witnessData.Signature)
+		if err != nil {
+			return xerrors.Errorf("failed to add witness signature: %w", err)
+		}
+	*/
 	return nil
 }
-*/
