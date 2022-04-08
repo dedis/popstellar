@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
   private static final int LAUNCH_POSITION = 2;
   private static final int SOCIAL_MEDIA_POSITION = 4;
 
-   private HomeViewModel mViewModel;
+  private HomeViewModel mViewModel;
 
   private BottomNavigationView navbar;
 
@@ -74,22 +74,15 @@ public class HomeActivity extends AppCompatActivity {
     navbar = findViewById(R.id.home_nav_bar);
     setupNavigationBar();
 
-    // Subscribe to "open home" event
-    mViewModel
-        .getOpenHomeEvent()
-        .observe(
-            this,
-            booleanEvent -> {
-              Boolean event = booleanEvent.getContentIfNotHandled();
-              if (navbar.getSelectedItemId() != R.id.home_home_menu) {
-                navbar.setSelectedItemId(R.id.home_home_menu);
-              }
-              if (event != null) {
-                setupHomeFragment();
-              }
-            });
+    subscribeOpenHomeEvents();
+    subscribeWalletEvents();
+    subscribeSocialMediaEvents();
+    subscribeLaoRelatedEvents();
+    subscribeSettingsEvents();
+  }
 
-    // Subscribe to "open settings" event
+  private void subscribeOpenHomeEvents() {
+    // Subscribe to "open home" event
     mViewModel
         .getOpenSettingsEvent()
         .observe(
@@ -100,13 +93,9 @@ public class HomeActivity extends AppCompatActivity {
                 setupSettingsActivity();
               }
             });
-
-    subscribeWalletEvents();
-    subscribeSocialMediaEvent();
-    subscribeLaoRelatedEvent();
   }
 
-  private void subscribeLaoRelatedEvent() {
+  private void subscribeLaoRelatedEvents() {
     // Subscribe to "open lao" event
     mViewModel
         .getOpenLaoEvent()
@@ -159,6 +148,20 @@ public class HomeActivity extends AppCompatActivity {
               Boolean event = booleanEvent.getContentIfNotHandled();
               if (event != null) {
                 setupLaunchFragment();
+              }
+            });
+  }
+
+  private void subscribeSettingsEvents() {
+    // Subscribe to open settings event
+    mViewModel
+        .getOpenSettingsEvent()
+        .observe(
+            this,
+            booleanEvent -> {
+              Boolean event = booleanEvent.getContentIfNotHandled();
+              if (event != null) {
+                setupSettingsActivity();
               }
             });
   }
@@ -224,7 +227,7 @@ public class HomeActivity extends AppCompatActivity {
             });
   }
 
-  private void subscribeSocialMediaEvent() {
+  private void subscribeSocialMediaEvents() {
 
     MenuItem socialMediaItem = navbar.getMenu().getItem(SOCIAL_MEDIA_POSITION);
 
@@ -375,41 +378,34 @@ public class HomeActivity extends AppCompatActivity {
         getSupportFragmentManager(), fragment, R.id.fragment_container_home);
   }
 
-  @SuppressLint("NonConstantResourceId")
   public void setupNavigationBar() {
     navbar.setOnItemSelectedListener(
         item -> {
-          switch (item.getItemId()) {
-            case R.id.home_home_menu:
-              mViewModel.openHome();
-              break;
-            case R.id.home_connect_menu:
-              if (checkWalletInitialization()) {
-                mViewModel.openConnect();
-              } else {
-                revertToHome();
-              }
-              break;
-            case R.id.home_launch_menu:
-              if (checkWalletInitialization()) {
-                mViewModel.openLaunch();
-              } else {
-                revertToHome();
-              }
-              break;
-            case R.id.home_wallet_menu:
-              mViewModel.openWallet();
-              break;
-            case R.id.home_social_media_menu:
-              if (mViewModel.getLAOs().getValue() == null) {
-                ErrorUtils.logAndShow(
-                    getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
-                revertToHome();
-              } else {
-                mViewModel.openSocialMedia();
-              }
-              break;
-            default:
+          int id = item.getItemId();
+          if (id == R.id.home_home_menu) {
+            mViewModel.openHome();
+          } else if (id == R.id.home_connect_menu) {
+            if (checkWalletInitialization()) {
+              mViewModel.openConnect();
+            } else {
+              revertToHome();
+            }
+          } else if (id == R.id.home_launch_menu) {
+            if (checkWalletInitialization()) {
+              mViewModel.openLaunch();
+            } else {
+              revertToHome();
+            }
+          } else if (id == R.id.home_wallet_menu) {
+            mViewModel.openWallet();
+          } else if (id == R.id.home_social_media_menu) {
+            if (mViewModel.getLAOs().getValue() == null) {
+              ErrorUtils.logAndShow(
+                  getApplicationContext(), TAG, new NoLAOException(), R.string.error_no_lao);
+              revertToHome();
+            } else {
+              mViewModel.openSocialMedia();
+            }
           }
           return true;
         });
