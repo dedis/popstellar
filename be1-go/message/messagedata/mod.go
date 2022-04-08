@@ -127,6 +127,6 @@ func Hash(strs ...string) string {
 		h.Write([]byte(fmt.Sprintf("%d", len(s))))
 		h.Write([]byte(s))
 	}
-	
+
 	return base64.URLEncoding.EncodeToString(h.Sum(nil))
 }

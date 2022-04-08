@@ -142,7 +142,6 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
-
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -169,7 +168,9 @@ func (c *Channel) NewReactionRegistry() registry.MessageRegistry {
 }
 
 // processReactionAdd is the callback that processes reaction#add messages
-func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processReactionAdd(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
 	err := c.verifyAddReactionMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to verify add reaction message: %v", err)
@@ -179,7 +180,9 @@ func (c *Channel) processReactionAdd(msg message.Message, msgData interface{}, _
 }
 
 // processReactionDelete is the callback that processes reaction#delete messages
-func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processReactionDelete(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
 	err := c.verifyDeleteReactionMessage(msg)
 	if err != nil {
 		return xerrors.Errorf("failed to verify delete reaction message: %v", err)
@@ -190,7 +193,6 @@ func (c *Channel) processReactionDelete(msg message.Message, msgData interface{}
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
 func (c *Channel) verifyMessage(msg message.Message) error {
-
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -336,6 +338,7 @@ func (a *attendees) isPresent(key string) bool {
 	defer a.Unlock()
 
 	_, ok := a.store[key]
+
 	return ok
 }
 

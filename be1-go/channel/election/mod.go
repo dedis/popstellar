@@ -247,7 +247,8 @@ func (c *Channel) NewElectionRegistry() registry.MessageRegistry {
 	return registry
 }
 
-func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processElectionOpen(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.ElectionOpen)
 	if !ok {
@@ -296,7 +297,8 @@ func (c *Channel) processElectionOpen(msg message.Message, msgData interface{}, 
 }
 
 // processCastVote is the callback that processes election#cast_vote messages
-func (c *Channel) processCastVote(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processCastVote(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.VoteCastVote)
 	if !ok {
@@ -348,7 +350,8 @@ func (c *Channel) processCastVote(msg message.Message, msgData interface{}, _ so
 }
 
 // processElectionEnd is the callback that processes election#end messages
-func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processElectionEnd(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.ElectionEnd)
 	if !ok {
@@ -408,7 +411,9 @@ func (c *Channel) processElectionEnd(msg message.Message, msgData interface{}, _
 }
 
 // processElectionResult is the callback that processes election#result messages
-func (c *Channel) processElectionResult(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processElectionResult(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
 	data, ok := msgData.(*messagedata.ElectionResult)
 	if !ok {
 		return xerrors.Errorf("message '%T' isn't a election#result message", msgData)
@@ -430,7 +435,6 @@ func (c *Channel) processElectionResult(msg message.Message, msgData interface{}
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
 func (c *Channel) verifyMessage(msg message.Message) error {
-
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -497,7 +501,6 @@ func (a *attendees) isPresent(key string) bool {
 
 // broadcastElectionResult gathers and broadcasts the results of an election
 func (c *Channel) broadcastElectionResult() error {
-
 	resultElection, err := gatherResults(c.questions, c.log)
 	if err != nil {
 		return xerrors.Errorf("failed to gather results: %v", err)
@@ -537,7 +540,9 @@ func (c *Channel) broadcastElectionResult() error {
 	return nil
 }
 
-func gatherResults(questions map[string]*question, log zerolog.Logger) (messagedata.ElectionResult, error) {
+func gatherResults(questions map[string]*question,
+	log zerolog.Logger) (messagedata.ElectionResult, error) {
+
 	log.Info().Msgf("gathering results for the election")
 
 	resultElection := messagedata.ElectionResult{
@@ -549,7 +554,8 @@ func gatherResults(questions map[string]*question, log zerolog.Logger) (messaged
 	for id := range questions {
 		question, ok := questions[id]
 		if !ok {
-			return resultElection, xerrors.Errorf("no question with this questionId '%s' was recorded", id)
+			return resultElection, xerrors.Errorf("no question with this"+
+				"questionId '%s' was recorded", id)
 		}
 
 		votes := question.validVotes
@@ -596,13 +602,16 @@ func checkMethodProperties(method string, length int) error {
 		return answer.NewError(-4, "No ballot option was chosen for plurality voting method")
 	}
 	if method == "Approval" && length != 1 {
-		return answer.NewError(-4, "Cannot choose multiple ballot options on approval voting method")
+		return answer.NewError(-4, "Cannot choose multiple ballot options"+
+			"on approval voting method")
 	}
 
 	return nil
 }
 
-func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, questions map[string]*question) error {
+func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote,
+	questions map[string]*question) error {
+
 	// this should update any previously set vote if the message ids are the same
 	for _, vote := range castVote.Votes {
 
@@ -640,7 +649,6 @@ func updateVote(msgID string, sender string, castVote messagedata.VoteCastVote, 
 }
 
 func getAllQuestionsForElectionChannel(questions []messagedata.ElectionSetupQuestion) map[string]*question {
-
 	qs := make(map[string]*question)
 	for _, q := range questions {
 		ballotOpts := make([]string, len(q.BallotOptions))

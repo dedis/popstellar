@@ -142,7 +142,6 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
-
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -174,7 +173,9 @@ func (c *Channel) NewChirpRegistry() registry.MessageRegistry {
 	return newRegistry
 }
 
-func (c *Channel) processAddChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processAddChirp(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
 	data, ok := msgData.(*messagedata.ChirpAdd)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#add message", msgData)
@@ -184,11 +185,13 @@ func (c *Channel) processAddChirp(msg message.Message, msgData interface{}, _ so
 	if err != nil {
 		return xerrors.Errorf("failed to verify add chirp message: %v", err)
 	}
-	
+
 	return nil
 }
 
-func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
 	data, ok := msgData.(*messagedata.ChirpDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#delete message", msgData)
@@ -209,7 +212,6 @@ func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{}, _
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
 func (c *Channel) verifyMessage(msg message.Message) error {
-
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -284,7 +286,6 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 }
 
 func (c *Channel) broadcastViaGeneral(msg message.Message) error {
-
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf("failed to decode the data: %v", err)

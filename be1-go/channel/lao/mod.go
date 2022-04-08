@@ -215,7 +215,6 @@ func (c *Channel) Broadcast(broadcast method.Broadcast, socket socket.Socket) er
 
 // handleMessage handles a message received in a broadcast or publish method
 func (c *Channel) handleMessage(msg message.Message, socket socket.Socket) error {
-
 	err := c.registry.Process(msg, socket)
 	if err != nil {
 		return xerrors.Errorf("failed to process message: %w", err)
@@ -250,7 +249,8 @@ func (c *Channel) NewLAORegistry() registry.MessageRegistry {
 }
 
 // processLaoState processes a lao state action.
-func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{}, sender socket.Socket) error {
+func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{},
+	sender socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.LaoState)
 	if !ok {
@@ -263,7 +263,8 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 	msg, ok := c.inbox.GetMessage(data.ModificationID)
 
 	if !ok {
-		return answer.NewErrorf(-4, "cannot find lao/update_properties with ID: %s", data.ModificationID)
+		return answer.NewErrorf(-4, "cannot find lao/update_properties with ID: %s",
+			data.ModificationID)
 	}
 
 	// Check if the signatures are from witnesses we need.
@@ -280,14 +281,17 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 	c.witnessMu.Unlock()
 
 	if match != expected {
-		return answer.NewErrorf(-4, "not enough witness signatures provided. Needed %d got %d", expected, match)
+		return answer.NewErrorf(-4, "not enough witness signatures provided. Needed %d got %d",
+			expected, match)
 	}
 
 	// Check if the signatures match
 	for _, pair := range data.ModificationSignatures {
-		err := schnorr.VerifyWithChecks(crypto.Suite, []byte(pair.Witness), []byte(data.ModificationID), []byte(pair.Signature))
+		err := schnorr.VerifyWithChecks(crypto.Suite, []byte(pair.Witness),
+			[]byte(data.ModificationID), []byte(pair.Signature))
 		if err != nil {
-			return answer.NewErrorf(-4, "signature verfication failed for witness: %s", pair.Witness)
+			return answer.NewErrorf(-4, "signature verfication failed for witness: %s",
+				pair.Witness)
 		}
 	}
 
@@ -318,7 +322,8 @@ func (c *Channel) processLaoState(rawMessage message.Message, msgData interface{
 }
 
 // processRollCallCreate processes a roll call creation object.
-func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.RollCallCreate)
 	if !ok {
@@ -333,7 +338,8 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 
 	// Check that the ProposedEnd is greater than the ProposedStart
 	if data.ProposedStart > data.ProposedEnd {
-		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field `proposed_end`: %d > %d", data.ProposedStart, data.ProposedEnd)
+		return answer.NewErrorf(-4, "The field `proposed_start` is greater than the field"+
+			" `proposed_end`: %d > %d", data.ProposedStart, data.ProposedEnd)
 	}
 
 	c.rollCall.id = string(data.ID)
@@ -343,7 +349,8 @@ func (c *Channel) processRollCallCreate(msg message.Message, msgData interface{}
 }
 
 // processRollCallOpen processes an open roll call object.
-func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.RollCallOpen)
 	if !ok {
@@ -369,7 +376,8 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}, 
 	}
 
 	if !c.rollCall.checkPrevID([]byte(rollCallOpen.Opens)) {
-		return answer.NewError(-1, "The field `opens` does not correspond to the id of the previous roll call message")
+		return answer.NewError(-1, "The field `opens` does not correspond to the id of"+
+			"the previous roll call message")
 	}
 
 	c.rollCall.id = rollCallOpen.UpdateID
@@ -379,7 +387,8 @@ func (c *Channel) processRollCallOpen(msg message.Message, msgData interface{}, 
 }
 
 // processRollCallClose processes a close roll call message.
-func (c *Channel) processRollCallClose(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
+func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
+	senderSocket socket.Socket) error {
 
 	data, ok := msgData.(*messagedata.RollCallClose)
 	if !ok {
@@ -397,7 +406,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 	}
 
 	if !c.rollCall.checkPrevID([]byte(data.Closes)) {
-		return answer.NewError(-4, "The field `closes` does not correspond to the id of the previous roll call message")
+		return answer.NewError(-4, "The field `closes` does not correspond to the id of"+
+			"the previous roll call message")
 	}
 
 	c.rollCall.id = data.UpdateID
@@ -436,7 +446,8 @@ func (c *Channel) processRollCallClose(msg message.Message, msgData interface{},
 }
 
 // processElectionObject handles an election object.
-func (c *Channel) processElectionObject(msg message.Message, msgData interface{}, senderSocket socket.Socket) error {
+func (c *Channel) processElectionObject(msg message.Message, msgData interface{},
+	senderSocket socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.ElectionSetup)
 	if !ok {
@@ -478,12 +489,13 @@ func (c *Channel) processElectionObject(msg message.Message, msgData interface{}
 	}
 
 	c.log.Info().Msg("election created with success")
-	
+
 	return nil
 }
 
 // processMessageWitness handles a message object.
-func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processMessageWitness(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
 
 	_, ok := msgData.(*messagedata.MessageWitness)
 	if !ok {
@@ -497,7 +509,8 @@ func (c *Channel) processMessageWitness(msg message.Message, msgData interface{}
 		return xerrors.Errorf("failed to unmarshal witness data: %v", err)
 	}
 
-	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID), []byte(witnessData.Signature))
+	err = schnorr.VerifyWithChecks(crypto.Suite, []byte(msg.Sender), []byte(witnessData.MessageID),
+		[]byte(witnessData.Signature))
 	if err != nil {
 		return answer.NewError(-4, "invalid witness signature")
 	}
@@ -516,7 +529,6 @@ func (c *Channel) processEmptyFun(message.Message, interface{}, socket.Socket) e
 
 // verifyMessage checks if a message in a Publish or Broadcast method is valid
 func (c *Channel) verifyMessage(msg message.Message) error {
-
 	jsonData, err := base64.URLEncoding.DecodeString(msg.Data)
 	if err != nil {
 		return xerrors.Errorf(failedToDecodeData, err)
@@ -570,7 +582,9 @@ func (c *Channel) broadcastToAllClients(msg message.Message) error {
 }
 
 // createGeneralChirpingChannel creates a new general chirping channel and returns it
-func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities, socket socket.Socket) *generalChirping.Channel {
+func createGeneralChirpingChannel(laoID string, hub channel.HubFunctionalities,
+	socket socket.Socket) *generalChirping.Channel {
+
 	generalChannelPath := laoID + social + chirps
 	generalChirpingChannel := generalChirping.NewChannel(generalChannelPath, hub, be1_go.Logger)
 	hub.NotifyNewChannel(generalChannelPath, generalChirpingChannel, socket)
@@ -595,15 +609,16 @@ func (c *Channel) createElection(msg message.Message,
 	// Check if the Lao ID of the message corresponds to the channel ID
 	channelID := c.channelID[6:]
 	if channelID != setupMsg.Lao {
-		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be equal to the channel ID %s",
-			setupMsg.Lao, channelID)
+		return answer.NewErrorf(-4, "Lao ID of the message is %s, should be"+
+			"equal to the channel ID %s", setupMsg.Lao, channelID)
 	}
 
 	// Compute the new election channel id
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg, c.attendees, c.hub, c.log, c.organizerPubKey)
+	electionCh := election.NewChannel(channelPath, setupMsg, c.attendees,
+		c.hub, c.log, c.organizerPubKey)
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)
@@ -616,11 +631,13 @@ func (c *Channel) createElection(msg message.Message,
 
 func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.LaoState) error {
 	if update.LastModified != state.LastModified {
-		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d", update.LastModified, state.LastModified)
+		return answer.NewErrorf(-4, "mismatch between last modified: expected %d got %d",
+			update.LastModified, state.LastModified)
 	}
 
 	if update.Name != state.Name {
-		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s", update.Name, state.Name)
+		return answer.NewErrorf(-4, "mismatch between name: expected %s got %s",
+			update.Name, state.Name)
 	}
 
 	M := len(update.Witnesses)
@@ -642,7 +659,8 @@ func compareLaoUpdateAndState(update messagedata.LaoUpdate, state messagedata.La
 	}
 
 	if match != M {
-		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to match but %d matched", M, match)
+		return answer.NewErrorf(-4, "mismatch between witness keys: expected %d keys to"+
+			"match but %d matched", M, match)
 	}
 
 	return nil
@@ -674,7 +692,9 @@ func (r *rollCall) checkPrevID(prevID []byte) bool {
 }
 
 // CreateChannelFromDB restores a channel from the db
-func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities, log zerolog.Logger) (channel.Channel, error) {
+func CreateChannelFromDB(db *sql.DB, channelPath string, hub channel.HubFunctionalities,
+	log zerolog.Logger) (channel.Channel, error) {
+
 	log = log.With().Str("channel", "lao").Logger()
 
 	channel := Channel{

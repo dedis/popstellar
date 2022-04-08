@@ -50,7 +50,8 @@ func (message ConsensusLearn) Verify() error {
 	for acceptor := range message.AcceptorSignatures {
 		_, err := base64.URLEncoding.DecodeString(message.AcceptorSignatures[acceptor])
 		if err != nil {
-			return xerrors.Errorf("acceptor id is %s, should be base64URL encoded", message.AcceptorSignatures[acceptor])
+			return xerrors.Errorf("acceptor id is %s, should be base64URL encoded",
+				message.AcceptorSignatures[acceptor])
 		}
 	}
 

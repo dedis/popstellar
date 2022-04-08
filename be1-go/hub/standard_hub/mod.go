@@ -546,7 +546,8 @@ func (h *Hub) createLao(msg message.Message, laoCreate messagedata.LaoCreate,
 	}
 
 	if !h.GetPubKeyOwner().Equal(senderPubKey) {
-		return answer.NewErrorf(-5, "sender's public key does not match the organizer's: %q != %q", senderPubKey, h.GetPubKeyOwner())
+		return answer.NewErrorf(-5, "sender's public key does not match the organizer's: %q != %q",
+			senderPubKey, h.GetPubKeyOwner())
 	}
 
 	laoCh := h.laoFac(laoChannelPath, h, msg, h.log, senderPubKey, socket)
@@ -578,7 +579,7 @@ func (h *Hub) Sign(data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, xerrors.Errorf("failed to sign the data: %v", err)
 	}
-	
+
 	return signatureBuf, nil
 }
 

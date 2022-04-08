@@ -8,7 +8,8 @@ import (
 )
 
 // createPrepareMessage creates the data for a new prepare message
-func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
+func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance,
+	messageID string) ([]byte, error) {
 
 	newData := messagedata.ConsensusPrepare{
 		Object:     "consensus",
@@ -32,7 +33,8 @@ func (c *Channel) createPrepareMessage(consensusInstance *ConsensusInstance, mes
 }
 
 // createPromiseMessage creates the data for a new promise message
-func (c *Channel) createPromiseMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
+func (c *Channel) createPromiseMessage(consensusInstance *ConsensusInstance,
+	messageID string) ([]byte, error) {
 
 	newData := messagedata.ConsensusPromise{
 		Object:     "consensus",
@@ -95,7 +97,8 @@ func (c *Channel) createProposeMessage(consensusInstance *ConsensusInstance, mes
 }
 
 // createAcceptMessage creates the data for a new accept message
-func (c *Channel) createAcceptMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
+func (c *Channel) createAcceptMessage(consensusInstance *ConsensusInstance,
+	messageID string) ([]byte, error) {
 
 	newData := messagedata.ConsensusAccept{
 		Object:     "consensus",
@@ -120,7 +123,8 @@ func (c *Channel) createAcceptMessage(consensusInstance *ConsensusInstance, mess
 }
 
 // createLearnMessage creates the data for a learn message
-func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
+func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance,
+	messageID string) ([]byte, error) {
 
 	newData := messagedata.ConsensusLearn{
 		Object:     "consensus",
@@ -150,11 +154,13 @@ func (c *Channel) createLearnMessage(consensusInstance *ConsensusInstance, messa
 }
 
 // createFailureMessage creates the data for a failure message
-func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance, messageID string) ([]byte, error) {
+func (c *Channel) createFailureMessage(consensusInstance *ConsensusInstance,
+	messageID string) ([]byte, error) {
 
 	electInstance, ok := consensusInstance.electInstances[messageID]
 	if !ok {
-		return nil, xerrors.Errorf("message Id doesn't correspond to any previously received message")
+		return nil, xerrors.Errorf("message Id doesn't correspond to any" +
+			"previously received message")
 	}
 
 	if electInstance.failed {

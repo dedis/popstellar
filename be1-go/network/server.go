@@ -151,7 +151,7 @@ func (s *Server) Shutdown() error {
 	close(s.done)
 
 	s.wg.Wait()
-	
+
 	return nil
 }
 

@@ -153,7 +153,9 @@ func (c *Channel) processAddChirp(msg message.Message, msgData interface{}, _ so
 }
 
 // processDeleteChirp checks a delete chirp message
-func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{}, _ socket.Socket) error {
+func (c *Channel) processDeleteChirp(msg message.Message, msgData interface{},
+	_ socket.Socket) error {
+
 	data, ok := msgData.(*messagedata.ChirpNotifyDelete)
 	if !ok {
 		return xerrors.Errorf("message %v isn't a chirp#notifyDelete message", msgData)
@@ -222,7 +224,6 @@ func (c *Channel) verifyNotifyChirp(msg message.Message, chirpMsg messagedata.Ve
 // broadcastToAllClients is a helper message to broadcast a message to all
 // subscribers.
 func (c *Channel) broadcastToAllClients(msg message.Message) error {
-
 	c.log.Info().
 		Str(msgID, msg.MessageID).
 		Msg("broadcast new chirp to all clients")
