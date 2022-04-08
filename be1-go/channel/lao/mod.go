@@ -5,7 +5,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"go.dedis.ch/kyber/v3"
 	be1_go "popstellar"
 	"popstellar/channel"
 	"popstellar/channel/chirp"
@@ -27,6 +26,8 @@ import (
 	"popstellar/validation"
 	"strconv"
 	"sync"
+
+	"go.dedis.ch/kyber/v3"
 
 	"github.com/rs/zerolog/log"
 
@@ -507,8 +508,7 @@ func (c *Channel) createElection(msg message.Message,
 	channelPath := "/root/" + setupMsg.Lao + "/" + setupMsg.ID
 
 	// Create the new election channel
-	electionCh := election.NewChannel(channelPath, setupMsg.StartTime, setupMsg.EndTime,
-		setupMsg.Questions, c.attendees, c.hub, c.log, c.organizerPubKey)
+	electionCh := election.NewChannel(channelPath, setupMsg, c.attendees, c.hub, c.log, c.organizerPubKey)
 
 	// Saving the election channel creation message on the lao channel
 	c.inbox.StoreMessage(msg)

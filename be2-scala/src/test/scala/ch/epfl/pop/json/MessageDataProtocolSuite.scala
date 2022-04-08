@@ -6,6 +6,7 @@ import ch.epfl.pop.model.objects._
 import org.scalatest.{FunSuite, Matchers}
 
 import scala.io.{BufferedSource, Source}
+import ch.epfl.pop.model.network.method.message.data.cash.PostTransaction
 
 class MessageDataProtocolSuite extends FunSuite with Matchers {
 
@@ -109,5 +110,15 @@ class MessageDataProtocolSuite extends FunSuite with Matchers {
 
     messageData shouldBe a[CastVoteElection]
     messageData shouldEqualTo (expected)
+  }
+
+  test("Parser correctly encodes/decodes a CashTransaction message data") {
+    val example: String = getExampleMessage("messageData/cash/post_transaction.json")
+    val messageData = PostTransaction.buildFromJson(example)
+
+    val expected = PostTransaction(Transaction(Version=1, TxIn=List(TxIn(Hash(Base64Data("47DEQpj8HBSa--TImW-5JCeuQeRkm5NMpJWZG3hSuFU=")), 0, UnlockScript("P2PKH", PublicKey(Base64Data("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=")), Base64Data("CAFEBABE")))), TxOut=List(TxOut(32, LockScript("P2PKH",Address(Base64Data("2jmj7l5rSw0yVb-vlWAYkK-YBwk=")))))))
+
+    messageData shouldBe a[PostTransaction]
+    messageData should equal (expected)
   }
 }
